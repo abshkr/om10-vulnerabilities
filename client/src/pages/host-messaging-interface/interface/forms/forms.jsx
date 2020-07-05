@@ -18,7 +18,9 @@ import MessageArea from '../MessageArea';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ msg, visible, from, action, content_format, handleFormState, auth }) => {
+const FormModal = ({ msg, visible, from, action, content_format, handleFormState}) => {
+
+
   const { t } = useTranslation();
 
 	const [notEdit, setNotEdit] = useState(!msg);
@@ -26,26 +28,10 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 	const [notice, setNotice] = useState('');
 	const [ifrom, setFrom] = useState(from);
 	const [iaction, setAction] = useState(action);
-	const [cFormat, setContentFormat] = useState(content_format);
-
-/*
-	useEffect(() => {
-		const timer = setTimeout(() => {
-			setNotice('');
-		}, 30000);
-		return () => clearTimeout(timer);
-	}, [notice]);
-*/
+	const [icontentFormat, setContentFormat] = useState(content_format);
+	const [imsg, setMessage] = useState(msg);
 
 
-/*
-	useEffect(() => {
-		if (!notEdit)
-		{
-			setLabel(t('operations.edit'));
-		}
-	}, [label]);
-*/
 
 	useEffect(() => {
 		if (from != ifrom)
@@ -64,6 +50,28 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 			setFrom(from);
 		}
 	}, [from]);
+
+	useEffect(() => {
+		if (action != iaction)
+		{
+			setAction(action);
+		}
+	}, [action]);
+
+	useEffect(() => {
+		if (content_format != icontentFormat)
+		{
+			setContentFormat(content_format);
+		}
+	}, [content_format]);
+
+	useEffect(() => {
+		if (msg != imsg)
+		{
+			setMessage(msg);
+		}
+	}, [msg]);
+
 
 
 	const onEdit = async () => {
@@ -97,12 +105,10 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 			if (from === 'host')
 			{
 				url = urlprefix + '/hmi/resubmit/host_message';
-				//url = '/hmi/resubmit/host_message';
 			}
 			else if (from === 'omega')
 			{
 				url = urlprefix + '/hmi/resubmit/omega_message';
-				//url = '/hmi/resubmit/omega_message';
 			}
 
 			fetch(url, {
@@ -182,19 +188,19 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 				<Tabs defaultActiveKey="1" size="small" type="line">
 					<TabPane key="1" tab={'Details'}>
 						<DetailsArea
-							from={from}
+							from={ifrom}
 							action={iaction}
-							message={msg}
-							content_format={cFormat}
+							message={imsg}
+							content_format={icontentFormat}
 						/>
 					</TabPane>
 
 					<TabPane key="2" tab={'Contents'}>
 						<ContentsArea
-							from={from}
+							from={ifrom}
 							action={iaction}
-							message={msg}
-							content_format={cFormat}
+							message={imsg}
+							content_format={icontentFormat}
 							handleFormState={handleFormState}
 						/>
 					</TabPane>
@@ -203,10 +209,10 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 			<div><br/></div>
 			<div>
 				<MessageArea
-					from={from}
+					from={ifrom}
 					action={iaction}
-					message={msg}
-					content_format={cFormat}
+					message={imsg}
+					content_format={icontentFormat}
 					handleTaskComplete={handleTaskComplete}
 				/>
 			</div>

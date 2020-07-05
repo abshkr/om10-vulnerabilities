@@ -1,101 +1,108 @@
 import React from 'react';
 import { Component } from 'react';
+import { useState, useEffect } from 'react';
+import useSWR from 'swr';
 import fs from 'fs';
 //import cfg from './Config';
 
-class MessageArea extends Component
-{
-	constructor(props)
+const MessageArea = ({from, action, message, content_format, handleTaskComplete}) => {
+
+	const [ifrom, setFrom] = useState(from);
+	const [iaction, setAction] = useState(action);
+	const [icontent_format, setContentFormat] = useState(content_format);
+	const [imessage, setMessage] = useState(message);
+	const [icontent, setContent] = useState('');
+
+
+	var urlprefix = process.env.REACT_APP_API_URL;
+	if (!urlprefix)
 	{
-		super(props);
+		urlprefix = '';
+	}
 
-		this.state = {
-			from: this.props.from,
-			action: this.props.action,
-			message: this.props.message,
-			content_fomat: this.props.content_format,
-			handleTaskComplete: this.props.handleTaskComplete
-		};
+	var url;
+	if (from === 'host')
+	{
+		url = urlprefix + '/hmi/parse/host_message';
+	}
+	else if (from === 'omega')
+	{
+		url = urlprefix + '/hmi/parse/omega_message';
+	}
 
-		this.urlprefix = process.env.REACT_APP_API_URL;
-		if (!this.urlprefix)
+	const getData = () => {
+		if (message)
 		{
-			this.urlprefix = '';
+			if (content_format === 1)
+			{
+				// BEWARE: when using post method with body data, must:
+				// 1. on client side, set text content type in header, AND
+				// 2. on server side, specify urlencoded body in second arg in the route
+				fetch(url, {
+					method: 'POST',
+					headers: {
+						'Accept': 'application/text',
+						'Content-Type': 'application/json'
+					},
+					credentials: 'include',
+					body: JSON.stringify({rec_id: message.REC_ID, content_format: content_format})
+				}).then(response => {
+					response.text().then(function (text) {
+						//console.log('resp:'+ JSON.stringify(body, null, '\t'));
+						setContent(text);	
+					});
+				});
+			}
+			else if (content_format === 2)
+			{
+				// BEWARE: when using post method with body data, must:
+				// 1. on client side, set json content type in header, AND
+				// 2. on server side, specify json body in second arg in the route
+				fetch(url, {
+					method: 'POST',
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					},
+					credentials: 'include',
+					body: JSON.stringify({rec_id: message.REC_ID, content_format: content_format})
+				}).then(response => {
+					response.json().then(body => {
+						//console.log('resp:'+ JSON.stringify(body, null, '\t'));
+						setContent(body);
+					});
+				});
+			}
 		}
-
-		this.state.handleTaskComplete = this.state.handleTaskComplete.bind(this);
-		this.onEditChange = this.onEditChange.bind(this);
-		//this.getCfgData = this.getCfgData.bind(this);
-		this.onSubmitChange = this.onSubmitChange.bind(this);
-		this.viewMessage = this.viewMessage.bind(this);
-		this.traverse = this.traverse.bind(this);
-		this.convert = this.convert.bind(this);
-		this.getData = this.getData.bind(this);
-		this.getConnObj = this.getConnObj.bind(this);
-		this.extractValues = this.extractValues.bind(this);
-		this.create_filename_from_content = this.create_filename_from_content.bind(this);
-		this.find_conn_data_for_host_msg = this.find_conn_data_for_host_msg.bind(this);
-		this.find_conn_data_for_om_msg = this.find_conn_data_for_om_msg.bind(this);
 	}
 
 
-	// This allows state change in parent component to initiate state change in child component
+  //const { data: payload, isValidating, revalidate } = useSWR(url, getData);
+
+  useEffect(() => {
 /*
-	componentWillReceiveProps(nextProps)
-	{
-		if (this.props.from !== nextProps.from)
+		if (payload?.message)
 		{
-			this.setState({ from: nextProps.from });  
+			setMessage(payload?.message);
 		}
-
-		if (this.props.action !== nextProps.action)
-		{
-			this.setState({ action: nextProps.action });  
-		}
-
-		// TODO: need to check individual field?
-		if (this.props.message !== nextProps.message)
-		{
-			this.setState({ message: nextProps.message });  
-		}
-
-		if (this.props.content_format !== nextProps.content_format)
-		{
-			this.setState({ content_format: nextProps.content_format });  
-		}
-	}
 */
-	static getDerivedStateFromProps(nextProps, prevState)
-	{
-		var res = {};
-		if (nextProps.from !== prevState.from)
+		if (   (from !== ifrom)
+			  || (action !== iaction)
+				|| (content_format !== icontent_format)
+			  || (message !== imessage)
+			 )
 		{
-			res['from'] = nextProps.from;  
+			setFrom(from);
+			setAction(action);
+			setContentFormat(content_format);
+			setMessage(message);
+			getData();
 		}
-
-		if (nextProps.action !== prevState.action)
-		{
-			res['action'] = nextProps.action;  
-		}
-
-		if (nextProps.message !== prevState.message)
-		{
-			res['message'] = nextProps.message;  
-		}
-
-		if (nextProps.content_format !== prevState.content_format)
-		{
-			res['content_format'] = nextProps.content_format;  
-		}
-
-		return res;
-	}
+  }, [from, action, content_format, message]);
 
 
 
-
-	viewMessage(contents)
-	{
+	const viewMessage = (contents) => {
 		var heading = document.getElementById("messageAreaHeading");
 		if (heading == null)
 		{
@@ -125,11 +132,11 @@ class MessageArea extends Component
 			newContent.innerHTML = contents;
 			elem.appendChild(newContent);
 
-			if (this.state.from === 'host')
+			if (from === 'host')
 			{
 				elem.setAttribute("class", "messageAreaFilledByHostMsg");
 			}
-			else if (this.state.from === 'omega')
+			else if (from === 'omega')
 			{
 				elem.setAttribute("class", "messageAreaFilledByOmMsg");
 			}
@@ -137,8 +144,7 @@ class MessageArea extends Component
 	}
 
 
-	traverse(jsmsg, txt, indent_level)
-	{
+	const traverse = (jsmsg, txt, indent_level) => {
 		txt += '<tr>';
 		txt += '<td>';
 		for (var i=0; i<indent_level; i++)
@@ -162,7 +168,7 @@ class MessageArea extends Component
 			// size does not seem to work in CSS, so do it here
 			txt += ('<input id="' + jsmsg.field_name + '" type="text" size="40%" value="'
 							+ (jsmsg.value ? jsmsg.value : '&nbsp;')
-							+ '" onChange={this.onEditChange}');
+							+ '" onChange={onEditChange}');
 			txt += '</input>';
 			txt += ('</td>');
 		}
@@ -172,15 +178,14 @@ class MessageArea extends Component
 		{
 			for (var obj of jsmsg.fields)
 			{
-				txt = this.traverse(obj, txt, indent_level+1);
+				txt = traverse(obj, txt, indent_level+1);
 			}
 		}
 
 		return txt;
 	}
 
-	convert(jsmsg)
-	{
+	const convert = (jsmsg) => {
 		// WARNING: when creating html tags by concatenation, use keyword "class", NOT "className".
 
 		var res = '';
@@ -189,26 +194,11 @@ class MessageArea extends Component
 		//res += '<thead><tr><td>Field</td><td>Type</td><td>Size</td><td>Value</td></tr></thead>';
 		res += '<tbody class="messageAreaPreBody">';
 		res += '<tr><td>Field</td><td>Type</td><td>Size</td><td>Value</td></tr>';
-		res = this.traverse(jsmsg, res, 0);
+		res = traverse(jsmsg, res, 0);
 		res += '</tbody>';
 		res += '</table></div>';
-		//res += '<hr/>';
-		//res += '<div class="adjacent">';
-		//res += '<button id="submit" class=submitButton onClick={this.onSubmitChange}>Submit</button>';
-		//res += '&nbsp';
-		//res += '<p id="submitConfirmation" />';
-		//res += '</div>';
 		//console.log('res:'+res);
 
-/*
-		var win = window.open("", "Message", "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=no");
-		// NOTE: If popup setting of browser is blocked, this may cause browser crash
-		// TODO: detect this and handle appropriately
-		// TODO: current limitation: can't open multiple windows; if invoke multiple functions, all contents go into
-		// one window.
-    	win.document.body.appendChild(win.document.createElement('div')).innerHTML = res;
-		win.resizeTo(900,800);
-*/
 
 		var heading = document.getElementById("messageAreaHeading");
 		if (heading == null)
@@ -229,126 +219,23 @@ class MessageArea extends Component
 		}
 		else
 		{
-			if (this.state.from === 'host')
+			if (from === 'host')
 			{
 				elem.setAttribute("class", "messageAreaFilledByHostMsg");
 			}
-			else if (this.state.from === 'omega')
+			else if (from === 'omega')
 			{
 				elem.setAttribute("class", "messageAreaFilledByOmMsg");
 			}
 
-			elem.setAttribute("onChange", "{this.onEditChange}");
-			elem.setAttribute("onClick", "{this.onSubmitChange}");
+			elem.setAttribute("onChange", "{onEditChange}");
+			elem.setAttribute("onClick", "{onSubmitChange}");
 			elem.innerHTML = res;
 		}
 	}
 
 
-	getData()
-	{
-		var url;
-		if (this.state.from === 'host')
-		{
-			url = this.urlprefix + '/hmi/parse/host_message';
-			//url = '/hmi/parse/host_message';
-		}
-		else if (this.state.from === 'omega')
-		{
-			//url = "http://10.2.20.53:6443/hmi/parse/omega_message/";
-			url = this.urlprefix + '/hmi/parse/omega_message';
-			//url = '/hmi/parse/omega_message';
-		}
-
-		var act = this.state.action;
-		var viewFn = this.viewMessage;
-		var editFn = this.convert;
-		var submitFn = this.onSubmitChange;
-
-		if (this.state.content_format === 1)
-		{
-			// BEWARE: when using post method with body data, must:
-			// 1. on client side, set text content type in header, AND
-			// 2. on server side, specify urlencoded body in second arg in the route
-			fetch(url, {
-				method: 'POST',
-				headers: {
-					'Accept': 'application/text',
-					'Content-Type': 'application/json'
-				},
-				credentials: 'include',
-				body: JSON.stringify({rec_id: this.state.message.REC_ID, content_format: this.state.content_format})
-			}).then(response => {
-				response.text().then(function (text) {
-					//console.log('resp:'+ JSON.stringify(body, null, '\t'));
-					if (response.ok)
-					{
-						if (act === 'view')
-						{
-							viewFn(text);
-						}
-						else if (act === 'edit')
-						{
-							var err = 'Cannot edit text version of message';
-							console.error('ERROR:' + err);
-							// TODO: clear message area
-							alert(err);
-						}
-					}
-					else
-					{
-						console.error('ERROR:' + text);
-						// TODO: clear message area
-						viewFn('ERROR: ' + text);
-					}
-				});
-			});
-		}
-		else if (this.state.content_format === 2)
-		{
-			// BEWARE: when using post method with body data, must:
-			// 1. on client side, set json content type in header, AND
-			// 2. on server side, specify json body in second arg in the route
-			fetch(url, {
-				method: 'POST',
-				headers: {
-					'Accept': 'application/json',
-					'Content-Type': 'application/json'
-				},
-				credentials: 'include',
-				body: JSON.stringify({rec_id: this.state.message.REC_ID, content_format: this.state.content_format})
-			}).then(response => {
-				response.json().then(body => {
-					//console.log('resp:'+ JSON.stringify(body, null, '\t'));
-					if (response.ok)
-					{
-						if (this.state.action === 'view')
-						{
-							viewFn(body);
-						}
-						else if (this.state.action === 'edit')
-						{
-							editFn(body);
-						}
-						else if (this.state.action === 'submit')
-						{
-							submitFn(body);
-						}
-					}
-					else
-					{
-						console.error('ERROR:' + body.message);
-						// TODO: clear message area
-						viewFn('ERROR:' + body.message);
-					}
-				});
-			});
-		}
-	}
-
-
-	extractValues(conn)
-	{
+	const extractValues = (conn) => {
 		var elem = document.getElementById("messageArea");
 		var valstr='';
 		if (elem)
@@ -358,14 +245,14 @@ class MessageArea extends Component
 
 			if (inserted_msgid_fld == '')
 			{
-				for (var i=0; i<valueList.length; i++)
+				for (var i=0; i < valueList.length; i++)
 				{
 					valstr += valueList[i].value;
 				}
 			}
 			else
 			{
-				for (var i=0; i<valueList.length; i++)
+				for (var i=0; i < valueList.length; i++)
 				{
 					if (inserted_msgid_fld != valueList[i].id)
 					{
@@ -378,10 +265,7 @@ class MessageArea extends Component
 		return valstr;
 	}
 
-	onEditChange(ev)
-	{
-		if (ev) { ev.preventDefault(); }
-		//console.log('onEditChange:'+ev.target.id + ',' + ev.type + ',' + ev.target.value);
+	const onEditChange = (ev) => {
 		var changedElem = document.getElementById(ev.target.id);
 		//console.log('current value:'+changedElem.value);
 		changedElem.setAttribute("class", "edited");
@@ -389,16 +273,13 @@ class MessageArea extends Component
 
 
 
-	//onSubmitChange(ev)
-	onSubmitChange()
-	{
+	const onSubmitChange = () => {
 		//console.log('onSubmitChange:'+ev.target.id + ',' + ev.type + ',' + ev.target.value);
 		//if (ev) { ev.preventDefault(); }
 		//if (ev.target.id === "submit")
 		{
 			// TODO: do this once only
-			var url = this.urlprefix + '/hmi/config';
-			//var url = '/hmi/config';
+			var url = urlprefix + '/hmi/config';
 			fetch(url, {
 				method: 'POST',
 				credentials: 'include'
@@ -406,32 +287,30 @@ class MessageArea extends Component
 				response.json().then(body => {
 					if (response.ok)
 					{
-						var conn = this.getConnObj(body.message.hosts);
+						var conn = getConnObj(body.message.hosts);
 
 						var jsval = {};
-						jsval['origin'] = this.state.message.ORIGIN;
-						jsval['destination'] = this.state.message.DESTINATION;
-						jsval['file_name'] = this.state.message.FILE_NAME; 
-						jsval['content'] = this.extractValues(conn);
+						jsval['origin'] = message.ORIGIN;
+						jsval['destination'] = message.DESTINATION;
+						jsval['file_name'] = message.FILE_NAME; 
+						jsval['content'] = extractValues(conn);
 
 						// BEWARE: when using post method with json body data, must:
 						// 1. on client side, set json content type in header, AND
 						// 2. on server side, specify json body in second arg in the route
-						if (this.state.from === 'host')
+						if (from === 'host')
 						{
-							url = this.urlprefix + '/hmi/edit/host_message';
-							//url = '/hmi/edit/host_message';
+							url = urlprefix + '/hmi/edit/host_message';
 
-							var res = this.create_filename_from_content(conn);
+							var res = create_filename_from_content(conn);
 							if (res.ok)
 							{
 								jsval['file_name'] = res.result;
 							}
 						}
-						else if (this.state.from === 'omega')
+						else if (from === 'omega')
 						{
-							url = this.urlprefix + '/hmi/edit/omega_message';
-							//url = '/hmi/edit/omega_message';
+							url = urlprefix + '/hmi/edit/omega_message';
 						}
 
 						fetch(url, {
@@ -447,21 +326,12 @@ class MessageArea extends Component
 								if (response.ok)
 								{
 									//console.log('resp:'+ JSON.stringify(body, null, '\t'));
-
-									//var elem = document.getElementById("submitConfirmation");
-									//if (elem != null)
-									{
-										//var res = '<div>' + body.message + '</div>';
-										//elem.appendChild(document.createElement('div')).innerHTML = res;
-										//elem.innerHTML = body.message;
-										//elem.setAttribute("class", "blinking");
-										this.state.handleTaskComplete(body.message);  
-									}
+									handleTaskComplete(body.message);  
 								}
 								else
 								{
 									console.error('ERROR:' + body.message);
-									this.state.handleTaskComplete(body.message);  
+									handleTaskComplete(body.message);  
 									alert(body.message);
 								}
 							});
@@ -470,7 +340,7 @@ class MessageArea extends Component
 					else
 					{
 						console.error('ERROR:' + body.message);
-						this.state.handleTaskComplete(body.message);  
+						handleTaskComplete(body.message);  
 						alert(body.message);
 					}
 				})
@@ -479,30 +349,8 @@ class MessageArea extends Component
 	}
 
 
-	render()
-	{
-		if (this.state.from && this.state.action && this.state.message)
-		{
-			this.getData();
-		}
 
-		return (
-			<div>
-				<b id="messageAreaHeading">Message</b>
-				<div id="messageArea" className="messageArea"
-						onInput={this.onEditChange}
-						//onClick={this.onSubmitChange}
-				>
-					Click a message on the left to see the message contents
-				</div>
-			</div>
-		);
-	}
-
-
-
-	get_cfg_data(filenm)
-	{
+	const get_cfg_data = (filenm) => {
 		var data = null;
 		var cfg_data = null;
 
@@ -534,8 +382,7 @@ class MessageArea extends Component
 
 
 
-	find_conn_data_for_host_msg(search_criteria, host_list)
-	{
+	const find_conn_data_for_host_msg = (search_criteria, host_list) => {
 		var found = false;
 		var conn = [];
 		for (var i = 0; i < host_list.length && !found; i++)
@@ -558,8 +405,7 @@ class MessageArea extends Component
 		return conn;
 	}
 
-	find_conn_data_for_om_msg(search_criteria, host_list)
-	{
+	const find_conn_data_for_om_msg = (search_criteria, host_list) => {
 		var found = false;
 		var conn = '';
 		for (var i = 0; i < host_list.length && !found; i++)
@@ -589,15 +435,14 @@ class MessageArea extends Component
 		return conn;
 	}
 
-	getConnObj(host_list)
-	{
-		if (this.state.from === 'host')
+	const getConnObj = (host_list) => {
+		if (from === 'host')
 		{
-			return this.find_conn_data_for_host_msg(this.state.message.ORIGIN, host_list);
+			return find_conn_data_for_host_msg(message.ORIGIN, host_list);
 		}
-		else if (this.state.from === 'omega')
+		else if (from === 'omega')
 		{
-			return this.find_conn_data_for_om_msg(this.state.message.ORIGIN, host_list);
+			return find_conn_data_for_om_msg(message.ORIGIN, host_list);
 		}
 		else
 		{
@@ -605,23 +450,19 @@ class MessageArea extends Component
 		}
 	}
 
-	create_filename_from_content(conn)
-	{
+
+	const create_filename_from_content = (conn) => {
 		var file_nm = '';
 
-		if (this.state.from === 'host')
+		if (from === 'host')
 		{
-			//console.log('origin:'+this.state.message.ORIGIN);
-			//console.log('host_list:'+JSON.stringify(host_list,null,'\t'));
-			//var conn = this.find_conn_data_for_host_msg(this.state.message.ORIGIN, host_list);
-			//console.log('conn:'+JSON.stringify(conn,null,'\t'));
 			var err;
 			var elem;
 			var elemTyp;
 			var fldnm;
 			var fldfmt;
 			var fe_fields = conn.file_name_format.fe_fields;
-			var search_key = this.state.message.MESSAGE_TYPE;
+			var search_key = message.MESSAGE_TYPE;
 
 			for (var fef = 0; fef < fe_fields.length; ++fef)
 			{
@@ -793,6 +634,56 @@ class MessageArea extends Component
 
 		return {'ok': true, 'result': file_nm};
 	}
+
+	const create_display_data = () => {
+
+		if (content_format === 1)
+		{
+			if (action === 'view')
+			{
+				viewMessage(icontent);
+			}
+			else if (action === 'edit')
+			{
+				var err = 'Cannot edit text version of message';
+				console.error('ERROR:' + err);
+				// TODO: clear message area
+				alert(err);
+			}
+		}
+		else if (content_format === 2)
+		{
+			if (action === 'view')
+			{
+				viewMessage(icontent);
+			}
+			else if (action === 'edit')
+			{
+				convert(icontent);
+			}
+			else if (action === 'submit')
+			{
+				onSubmitChange();
+			}
+		}
+	}
+
+
+	create_display_data();
+
+	return (
+
+		<div>
+			<b id="messageAreaHeading">Message</b>
+			<div id="messageArea" className="messageArea"
+					onInput={onEditChange}
+			>
+				Click a message on the left to see the message contents
+			</div>
+		</div>
+	);
+
+
 }
 
 export default MessageArea;
