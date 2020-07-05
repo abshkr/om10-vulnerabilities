@@ -94,8 +94,21 @@ export default class NumericEditor extends Component {
       const { data, colDef } = this.props;
       const { options } = colDef;
 
-      const min = data[options?.min];
-      const max = data[options?.max];
+      //console.log('colDef', colDef, data);
+      // const min = data[options?.min];
+      // const max = data[options?.max];
+      let min;
+      let max;
+      if (_.isNumber(options?.min)) {
+        min = options?.min;
+      } else {
+        min = data[options?.min];
+      }
+      if (_.isNumber(options?.max)) {
+        max = options?.max;
+      } else {
+        max = data[options?.max];
+      }
 
       const payload = this.state.value > max || min > this.state.value;
 
