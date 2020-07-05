@@ -20,6 +20,35 @@ class TankService
     public function tank_proddata()
     {
         $query = "
+            SELECT 
+                TANK_BASE,
+                TANK_BASE_NAME,
+                TANK_BASE_CLASS,
+                TANK_BCLASS_NAME,
+                TANK_DENSITY,
+                NVL(TANK_BASE_DENS_LO, TANK_BCLASS_DENS_LO) DENSITY_LO,
+                NVL(TANK_BASE_DENS_HI, TANK_BCLASS_DENS_HI) DENSITY_HI,
+                TANK_TEMP,
+                TANK_BCLASS_TEMP_LO TEMP_LO,
+                TANK_BCLASS_TEMP_HI TEMP_HI
+            FROM GUI_TANKS
+            WHERE TANK_CODE = :tank_code 
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function tank_proddata2()
+    {
+        // GUI_TANKS already has everthing including tanks, base products, and base classes.
+        $query = "
             SELECT TANK_BASE,
                 TANK_DENSITY,
                 NVL(BASE_DENS_LO, BCLASS_DENS_LO) DENSITY_LO,

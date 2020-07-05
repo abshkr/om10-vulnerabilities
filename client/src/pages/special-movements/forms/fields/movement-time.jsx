@@ -31,7 +31,7 @@ const MovementTime = ({ form, value, type, disabled }) => {
 
   return (
     <Form.Item name="mlitm_dtim_start" label={t('fields.movementDateAndTime')}>
-      <DatePicker showTime format={FORMAT} disabled={IS_DISABLED} />
+      <DatePicker showTime format={FORMAT} disabled={IS_DISABLED} style={{ width: '100%' }} />
     </Form.Item>
   );
 };

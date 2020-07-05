@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, useState } from 'react';
 import useSWR from 'swr';
 import api from 'api';
 import { useTranslation } from 'react-i18next';
-import { Form, InputNumber, Select } from 'antd';
+import { Form, InputNumber, Select, Row, Col } from 'antd';
 import _ from 'lodash';
 
 import { SPECIAL_MOVEMENTS } from 'api';
@@ -77,69 +77,88 @@ const Calculate = ({ form, value, disabled, type, tank }) => {
   }, [getLimit, tank]);
 
   return (
-    <div>
-      <Form.Item name="mlitm_qty_amb" label={t('fields.observedQuantity')}>
-        <InputNumber precision={config.precisionVolume} disabled={IS_DISALBED} style={{ width: '100%' }} />
-      </Form.Item>
+    <>
+      <Row gutter={[8, 8]}>
+        <Col span={12}>
+          <Form.Item name="mlitm_qty_amb" label={t('fields.observedQuantity')}>
+            <InputNumber precision={config.precisionVolume} disabled={IS_DISALBED} style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+        </Col>
+      </Row>
 
-      <Form.Item name="mlitm_qty_cor" label={t('fields.standardQuantity')}>
-        <InputNumber precision={config.precisionVolume} disabled={IS_DISALBED} style={{ width: '100%' }} />
-      </Form.Item>
+      <Row gutter={[8, 8]}>
+        <Col span={12}>
+          <Form.Item name="mlitm_qty_cor" label={t('fields.standardQuantity')}>
+            <InputNumber precision={config.precisionVolume} disabled={IS_DISALBED} style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item name="mlitm_qty_kg" label={t('fields.observedMass')}>
+            <InputNumber precision={config.precisionMass} disabled={IS_DISALBED} style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+      </Row>
 
-      <Form.Item name="mlitm_qty_kg" label={t('fields.observedMass')}>
-        <InputNumber precision={config.precisionMass} disabled={IS_DISALBED} style={{ width: '100%' }} />
-      </Form.Item>
-
-      <Form.Item
-        name="mlitm_temp_amb"
-        label={`${t('fields.observedTemperature')} [${limit ? `${limit.temp_lo} - ${limit.temp_hi}` : ''}]`}
-      >
-        <InputNumber
-          precision={config.precisionTemperature}
-          min={limit?.temp_lo}
-          max={limit?.temp_hi}
-          disabled={IS_DISALBED}
-          style={{ width: '100%' }}
-        />
-      </Form.Item>
-
-      <Form.Item
-        name="mlitm_dens_cor"
-        label={`${t('fields.standardDensity')} [${limit ? `${limit.density_lo} - ${limit.density_hi}` : ''}]`}
-      >
-        <InputNumber
-          precision={config.precisionDensity}
-          min={limit?.density_lo}
-          max={limit?.density_hi}
-          disabled={IS_DISALBED}
-          style={{ width: '100%' }}
-        />
-      </Form.Item>
-
-      <div style={{ display: 'flex' }}>
-        <Form.Item name="mlitm_qty_rpt" label={t('fields.alternateQuantity')} style={{ width: '75%' }}>
-          <InputNumber precision={config.precisionVolume} disabled={IS_DISALBED} style={{ width: '100%' }} />
-        </Form.Item>
-
-        <Form.Item name="mlitm_unit_rpt" label={t('fields.unit')} style={{ width: '25%', marginLeft: 5 }}>
-          <Select
-            showSearch
-            loading={isValidating}
-            disabled={IS_DISALBED}
-            optionFilterProp="children"
-            filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }
+      <Row gutter={[8, 8]}>
+        <Col span={12}>
+          <Form.Item
+            name="mlitm_dens_cor"
+            label={`${t('fields.standardDensity')} ${limit ? `[${limit.density_lo} - ${limit.density_hi}]` : ''}`}
           >
-            {options?.records.map((item, index) => (
-              <Select.Option key={index} value={item.unit}>
-                {item.unit}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-      </div>
-    </div>
+            <InputNumber
+              precision={config.precisionDensity}
+              min={limit?.density_lo}
+              max={limit?.density_hi}
+              disabled={IS_DISALBED}
+              style={{ width: '100%' }}
+            />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item
+            name="mlitm_temp_amb"
+            label={`${t('fields.observedTemperature')} ${limit ? `[${limit.temp_lo} - ${limit.temp_hi}]` : ''}`}
+          >
+            <InputNumber
+              precision={config.precisionTemperature}
+              min={limit?.temp_lo}
+              max={limit?.temp_hi}
+              disabled={IS_DISALBED}
+              style={{ width: '100%' }}
+            />
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Row gutter={[8, 8]}>
+        <Col span={12}>
+          <Form.Item name="mlitm_qty_rpt" label={t('fields.alternateQuantity')} >
+            <InputNumber precision={config.precisionVolume} disabled={IS_DISALBED} style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item name="mlitm_unit_rpt" label={t('fields.unit')} >
+            <Select
+              showSearch
+              loading={isValidating}
+              disabled={IS_DISALBED}
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {options?.records.map((item, index) => (
+                <Select.Option key={index} value={item.unit}>
+                  {item.unit}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+      </Row>
+    </>
   );
 };
 

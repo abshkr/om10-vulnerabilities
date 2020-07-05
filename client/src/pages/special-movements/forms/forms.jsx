@@ -11,7 +11,7 @@ import {
   SaveOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal, Divider, message, Drawer } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Divider, message, Drawer, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import api from 'api';
@@ -245,7 +245,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="50vw"
+      width="60vw"
       visible={visible}
       footer={
         <>
@@ -318,11 +318,17 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey={tab} onChange={setTab} animated={false}>
           <TabPane tab={t('tabColumns.general')} forceRender={true} key="1">
-            <MovementType form={form} value={value} onChange={setType} disabled={DISABLED} />
-
-            <ReasonCode form={form} value={value} type={type} disabled={DISABLED} />
-
-            <MovementTime form={form} value={value} type={type} disabled={DISABLED} />
+            <Row gutter={[8, 8]}>
+              <Col span={8}>
+                <MovementType form={form} value={value} onChange={setType} disabled={DISABLED} />
+              </Col>
+              <Col span={8}>
+                <ReasonCode form={form} value={value} type={type} disabled={DISABLED} />
+              </Col>
+              <Col span={8}>
+                <MovementTime form={form} value={value} type={type} disabled={DISABLED} />
+              </Col>
+            </Row>
 
             <Comments form={form} value={value} type={type} disabled={DISABLED} />
 
