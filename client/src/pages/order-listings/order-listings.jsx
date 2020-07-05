@@ -21,6 +21,7 @@ const OrderListings = ({popup, params}) => {
   const [rangeEnd, setRangeEnd] = useState(0);
 
   const config = useConfig();
+  const rangeSetting = config.openOrderDateRange;
   const ranges = getDateRangeOffset(config.openOrderDateRange, '30');
   //const ranges = getDateRangeOffset(false, '30');
   //const ranges = getDateRangeOffset("7~~0", '30');
@@ -101,14 +102,26 @@ const OrderListings = ({popup, params}) => {
   };
 
   const setRange = (start, end) => {
-    setStart(start);
-    setEnd(end);
+    // setStart(start);
+    // setEnd(end);
+    if (rangeSetting !== '-1~~-1') {
+      setStart(start);
+      setEnd(end);
+    } else {
+      setStart('-1');
+      setEnd('-1');
+    }
   };
 
   const onRefresh = () => {
-    setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-    setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-    //revalidate();
+    if (rangeSetting !== '-1~~-1') {
+      setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    } else {
+      setStart('-1');
+      setEnd('-1');
+      revalidate();
+    }
   };
 
   const locateOrder = (value) => {
@@ -145,33 +158,33 @@ const OrderListings = ({popup, params}) => {
     });
   };
 
-  /* useEffect(() => {
-    console.log("I am here 888", start, end, ranges);
-    //if (!start && (ranges?.beforeToday || ranges?.beforeToday===0)) {
-    if (!start && ranges?.beforeToday) {
-      setStart(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-    }
-
-    //if (!end && (ranges?.afterToday || ranges?.afterToday===0)) {
-    if (!end && ranges?.afterToday) {
-      setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-    }
-  }, [ranges, start, end]); */
-
   useEffect(() => {
     console.log("I am here: rangeStart, start", start, rangeStart);
-    setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    if (rangeSetting !== '-1~~-1') {
+      setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    } else {
+      setStart('-1');
+    }
   }, [rangeStart]);
 
   useEffect(() => {
     console.log("I am here: rangeEnd, end", end, rangeEnd);
-    setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    if (rangeSetting !== '-1~~-1') {
+      setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    } else {
+      setEnd('-1');
+    }
   }, [rangeEnd]);
 
   useEffect(() => {
     if (ranges) {
-      setRangeStart(ranges?.beforeToday);
-      setRangeEnd(ranges?.afterToday);
+      if (rangeSetting !== '-1~~-1') {
+        setRangeStart(ranges?.beforeToday);
+        setRangeEnd(ranges?.afterToday);
+      } else {
+        setRangeStart(-1);
+        setRangeEnd(-1);
+      }
     }
   }, [ranges]);
 
@@ -199,27 +212,31 @@ const OrderListings = ({popup, params}) => {
 
   const modifiers = (
     <>
-      <div style={{ float: 'left' }}>
-        <Select
-          defaultValue={filterByExpiry?'ORDER_EXP_TIME':'ORDER_ORD_TIME'}
-          onChange={setTimeOption}
-          optionFilterProp="children"
-          placeholder={null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {timeOptions.map((item, index) => (
-            <Select.Option key={index} value={item.code}>
-              {item.name}
-            </Select.Option>
-          ))}
-        </Select>
-      </div>
+      {rangeSetting !== '-1~~-1' && (
+        <div style={{ float: 'left' }}>
+          <Select
+            defaultValue={filterByExpiry?'ORDER_EXP_TIME':'ORDER_ORD_TIME'}
+            onChange={setTimeOption}
+            optionFilterProp="children"
+            placeholder={null}
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {timeOptions.map((item, index) => (
+              <Select.Option key={index} value={item.code}>
+                {item.name}
+              </Select.Option>
+            ))}
+          </Select>
+        </div>
+      )}
 
-      <div style={{ float: 'left', width: '420px' }}>
-        <Calendar handleChange={setRange} start={start} end={end} />
-      </div>
+      {rangeSetting !== '-1~~-1' && (
+        <div style={{ float: 'left', width: '420px' }}>
+          <Calendar handleChange={setRange} start={start} end={end} />
+        </div>
+      )}
 
       <Button icon={<SyncOutlined />} onClick={onRefresh} loading={isLoading}>
         {t('operations.refresh')}
