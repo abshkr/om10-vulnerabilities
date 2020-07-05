@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
-import { Input, Form } from 'antd';
+
 import { useTranslation } from 'react-i18next';
+import { Input, Form } from 'antd';
 import _ from 'lodash';
 
 const InputNumber = ({ form, value, name, label, min, max, required, decimals }) => {
