@@ -56,7 +56,7 @@ const Overview = ({ selected, isLoading }) => {
                 {selected?.tank_vapour_kg} Kg
               </Descriptions.Item>
 
-              <Descriptions.Item label={t('fields.weightInVaccum')} span={24}></Descriptions.Item>
+              <Descriptions.Item label={t('fields.weightInVacuum')} span={24}></Descriptions.Item>
 
               <Descriptions.Item label={t('fields.waterLevel')} span={24}>
                 {selected?.tank_water_lvl} Kg
