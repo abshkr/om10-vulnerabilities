@@ -367,6 +367,15 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
     });
   }, [orderItems, setFieldsValue]);
 
+  const handleItemSelect = (value) => {
+    // console.log('handleItemSelect', value);
+    if (value) {
+      value.editable = pageState==='detail'? false : true;
+    }
+    // console.log('handleItemSelect222', value);
+    setSelected(value);
+  };
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -580,8 +589,8 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
                 height="60vh"
                 minimal
                 columns={fields}
-                //onClick={(value) => setSelected(value)}
-                handleSelect={(value) => setSelected(value[0])}
+                //onClick={(value) => handleItemSelect(value)}
+                handleSelect={(value) => handleItemSelect(value[0])}
                 apiContext={setTableAPI}
                 //selectionMode="single"
                 onEditingFinished={onEditingFinished}
