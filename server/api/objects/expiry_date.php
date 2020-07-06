@@ -233,6 +233,11 @@ class ExpiryDate extends CommonClass
         }
 
         foreach ($expiry_dates as $key => $value) {
+            /* Flex frontend always use 23:59:59, so here we use it too */
+            if (substr($value->ed_exp_date, 11, 8) === "00:00:00") {
+                $value->ed_exp_date = substr($value->ed_exp_date, 0, 11) . " 23:59:59";
+            }
+
             // write_log($key, __FILE__, __LINE__);
             // write_log(json_encode($value), __FILE__, __LINE__);
             // write_log(json_encode($this), __FILE__, __LINE__);
