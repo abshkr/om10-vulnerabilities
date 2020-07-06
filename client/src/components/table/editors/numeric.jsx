@@ -9,7 +9,7 @@ const KEY_F2 = 113;
 export default class NumericEditor extends Component {
   constructor(props) {
     super(props);
-
+    // console.log('in NumericEditor constructor', props);
     this.cancelBeforeStart = this.props.charPress && '1234567890'.indexOf(this.props.charPress) < 0;
 
     this.state = this.createInitialState(props);
@@ -21,6 +21,7 @@ export default class NumericEditor extends Component {
   createInitialState(props) {
     let startValue;
     let highlightAllOnFocus = true;
+    // console.log('in NumericEditor createInitialState', props);
 
     if (props.keyPress === KEY_BACKSPACE || props.keyPress === KEY_DELETE) {
       // if backspace or delete pressed, we clear the cell
@@ -45,6 +46,7 @@ export default class NumericEditor extends Component {
 
   componentDidMount() {
     const { data } = this.props;
+    // console.log('in NumericEditor componentDidMount', data);
 
     if (data?.editable) {
       this.refs.input.addEventListener('keydown', this.onKeyDown);
@@ -53,6 +55,7 @@ export default class NumericEditor extends Component {
 
   componentWillUnmount() {
     const { data } = this.props;
+    // console.log('in NumericEditor componentWillUnmount', data);
 
     if (data?.editable) {
       this.refs.input.removeEventListener('keydown', this.onKeyDown);
@@ -61,6 +64,7 @@ export default class NumericEditor extends Component {
 
   afterGuiAttached() {
     const eInput = this.refs.input;
+    // console.log('in NumericEditor afterGuiAttached', eInput);
 
     eInput.focus();
     if (this.state.highlightAllOnFocus) {
@@ -83,14 +87,15 @@ export default class NumericEditor extends Component {
 
   isCancelBeforeStart() {
     const { data } = this.props;
-    return this.cancelBeforeStart || data?.editable;
+    // console.log('in NumericEditor isCancelBeforeStart', this.cancelBeforeStart, data);
+    return this.cancelBeforeStart || (data?.editable!==undefined && !data?.editable);
   }
 
   isCancelAfterEnd() {
     const value = _.toNumber(this.state.value);
     const valid = !_.isNaN(value);
     const { data, colDef, ranges } = this.props;
-    console.log('NumericEditor - isCancelAfterEnd', colDef, data, ranges);
+    // console.log('NumericEditor - isCancelAfterEnd', colDef, data, ranges);
 
     if (valid) {
       //const { options } = colDef;
@@ -141,6 +146,7 @@ export default class NumericEditor extends Component {
   }
 
   onKeyDown(event) {
+    // console.log('in NumericEditor onKeyDown', event);
     if (this.isLeftOrRight(event) || this.deleteOrBackspace(event)) {
       event.stopPropagation();
       return;

@@ -12,7 +12,7 @@ const groupTo = [2, 0];
 //const to = ['Transfer', 'Receipt'];
 
 const useColumns = (value, selected) => {
-  console.log('i am here', value, selected);
+  //console.log('i am here', value, selected);
 
   //const [type, setType] = useState('Receipt');
   const [type, setType] = useState(0);

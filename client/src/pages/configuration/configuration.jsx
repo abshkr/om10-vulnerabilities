@@ -261,14 +261,31 @@ const FormSwitch = ({ config, onChange }) => {
         />
       );
 
+    case 'SITE_DATETIME_FORMAT':
+      return (
+        <Input
+          disabled={true}
+          style={{ width: '200px' }}
+          onChange={(event) => onChange(config, event.target.value)}
+          value={config.config_value}
+        />
+      );
+
     default:
       return (
-        <InputNumber
+        // it is more reasonable to use Input instead of InputNumber as default 
+        // because the data type of config_value is VARCHAR2.
+        <Input
+          style={{ width: '10vw' }}
+          value={config.config_value}
+          onChange={(event) => onChange(config, event.target.value)}
+        />
+        /* <InputNumber
           value={config.config_value}
           min={0}
           max={999999}
           onChange={(value) => onChange(config, value)}
-        />
+        /> */
       );
   }
 };

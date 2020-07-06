@@ -15,7 +15,7 @@ import NominationTransactions from './nomination-transactions';
 import { DataTable } from '../../../../components';
 import api, { MOVEMENT_NOMIATIONS } from '../../../../api';
 
-import columns from './columns';
+import useColumns from './columns';
 
 const Items = ({ setTableAPIContext, value }) => {
   const { t } = useTranslation();
@@ -45,7 +45,7 @@ const Items = ({ setTableAPIContext, value }) => {
   const disabled = selected?.length === 0 || !selected;
   //const canModifyFurther = selected[0]?.mvitm_status_name === 'NEW' || disabled;
   const canModifyFurther = selected?.[0]?.mvitm_status === 0 || disabled;
-  const fields = columns(value, selected);
+  const fields = useColumns(value, selected);
 
   const handleButtonState = (state) => {
     /** 

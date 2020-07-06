@@ -25,6 +25,8 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
     mutate(EQUIPMENT_TYPES.READ);
     if (etyp_title) {
       setFilterValue("" + etyp_title);
+    } else {
+      setFilterValue(" ");
     }
   };
 
@@ -34,6 +36,16 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
     const compartments = [];
 
     const record = await form.validateFields();
+
+    if (IS_CREATING && IS_COMBINATION) {
+      if (record.composition.length < 2) {
+        notification.error({
+          message: t('descriptions.minEqptForCombination'),
+          description: t('descriptions.eqptTypeCounts') + String(record.composition.length),
+        });
+        return;
+      }
+    }
 
     _.forEach(record.names, (value, key) => {
       const payload = {
@@ -45,11 +57,22 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
       compartments.push(payload);
     });
 
+    if (IS_CREATING && !IS_COMBINATION) {
+      const catg = record.etyp_category?.toUpperCase();
+      if (catg !== 'P' && catg !== 'F' && compartments.length === 0) {
+        notification.error({
+          message: t('descriptions.zeroCompartmentCount'),
+          description: t('descriptions.oneCompartmentRequired'), // + String(record.names.length),
+        });
+        return;
+      }
+    }
+
     if (!IS_COMBINATION && !IS_CREATING) {
       values = {
         etyp_id: value.etyp_id,
         etyp_category: record.etyp_category?.toUpperCase(),
-        etyp_isrigid: record.etyp_category?.toUpperCase() === "R",
+        etyp_isrigid: record.etyp_category?.toUpperCase() === "R" || record.etyp_category?.toUpperCase() === "S",
       };
     }
 
@@ -63,7 +86,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
       values = {
         etyp_title: record.etyp_title,
         etyp_category: record.etyp_category?.toUpperCase(),
-        etyp_isrigid: record.etyp_category?.toUpperCase() === "R",
+        etyp_isrigid: record.etyp_category?.toUpperCase() === "R" || record.etyp_category?.toUpperCase() === "S",
         etyp_schedul: compartments.length > 0,
         compartments,
       };
