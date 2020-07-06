@@ -61,9 +61,11 @@ const columns = (t, pageState, form, units) => [
     editable: (pageState==='detail'? false : true),
     width: 100,
     cellEditor: 'NumericEditor',
-    options: {
-      max: 999999999,
-      min: 0,
+    cellEditorParams: {
+      ranges: {
+        max: 999999999,
+        min: 0,
+      },
     },
   },
   {

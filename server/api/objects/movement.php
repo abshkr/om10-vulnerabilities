@@ -46,7 +46,7 @@ class Movement extends CommonClass
     );
 
     public $BOOLEAN_FIELDS = array(
-        
+        "MVITM_COMPLETED" => 1
     );
 
     public function check_nomination_key()

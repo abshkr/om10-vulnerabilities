@@ -84,7 +84,7 @@ const useColumns = (value, selected) => {
   }, []);
 
   useEffect(() => {
-    const id = selected[0]?.mvitm_prodcmpy_from;
+    const id = selected?.[0]?.mvitm_prodcmpy_from;
 
     if (id) {
       console.log("useEffect, getProductsFromBySupplier", id);
@@ -93,7 +93,7 @@ const useColumns = (value, selected) => {
   }, [selected, getProductsFromBySupplier]);
 
   useEffect(() => {
-    const id = selected[0]?.mvitm_prodcmpy_to;
+    const id = selected?.[0]?.mvitm_prodcmpy_to;
 
     if (id) {
       console.log("useEffect, getProductsToBySupplier", id);
@@ -102,8 +102,8 @@ const useColumns = (value, selected) => {
   }, [selected, getProductsToBySupplier]);
 
   useEffect(() => {
-    const supplier = selected[0]?.mvitm_prodcmpy_from;
-    const product = selected[0]?.mvitm_prodcode_from;
+    const supplier = selected?.[0]?.mvitm_prodcmpy_from;
+    const product = selected?.[0]?.mvitm_prodcode_from;
 
     if (supplier && product) {
       console.log("useEffect, getTanksFromByProduct", supplier, product);
@@ -112,8 +112,8 @@ const useColumns = (value, selected) => {
   }, [selected, getTanksFromByProduct]);
 
   useEffect(() => {
-    const supplier = selected[0]?.mvitm_prodcmpy_to;
-    const product = selected[0]?.mvitm_prodcode_to;
+    const supplier = selected?.[0]?.mvitm_prodcmpy_to;
+    const product = selected?.[0]?.mvitm_prodcode_to;
 
     if (supplier && product) {
       console.log("useEffect, getTanksToByProduct", supplier, product);
@@ -122,7 +122,7 @@ const useColumns = (value, selected) => {
   }, [selected, getTanksToByProduct]);
 */
   useEffect(() => {
-    const value = selected[0]?.mvitm_type;
+    const value = selected?.[0]?.mvitm_type;
 
     console.log('before type', type, value);
     if (value) {
@@ -182,7 +182,7 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 140,
       suppressSizeToFit: true,
-      editable: selected[0]?.editable || !value,
+      editable: selected?.[0]?.editable || !value,
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
@@ -207,7 +207,7 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 80,
       suppressSizeToFit: true,
-      editable: selected[0]?.editable,
+      editable: selected?.[0]?.editable,
     },
     {
       headerName: t('fields.itemStatus'),
@@ -225,8 +225,14 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 100,
       suppressSizeToFit: true,
-      editable: selected[0]?.editable || !value,
-      //cellEditor: 'NumericEditor',
+      editable: true, //selected?.[0]?.editable || !value,
+      cellEditor: 'NumericEditor',
+      cellEditorParams: {
+        ranges: {
+          max: 999999999,
+          min: 0,
+        },
+      },
     },
     {
       headerName: t('fields.productUnit'),
@@ -236,7 +242,7 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 100,
       suppressSizeToFit: true,
-      editable: selected[0]?.editable || !value,
+      editable: selected?.[0]?.editable || !value,
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
@@ -261,7 +267,7 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 100,
       suppressSizeToFit: true,
-      editable: selected[0]?.editable && groupFrom.includes(selected[0]?.mvitm_type),
+      editable: selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type),
       cellEditor: 'SelectEditor',
       cellEditorParams: {
         values: _.uniq(_.map(plants?.records, 'cmpy_plant')),
@@ -274,7 +280,7 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 150,
       suppressSizeToFit: true,
-      editable: selected[0]?.editable && groupFrom.includes(selected[0]?.mvitm_type),
+      editable: selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type),
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
@@ -299,12 +305,12 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 200,
       suppressSizeToFit: true,
-      editable: selected[0]?.editable && groupFrom.includes(selected[0]?.mvitm_type),
+      editable: selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type),
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
           _.map(
-            productsFrom?.records?.filter((item) => item.prod_cmpy === selected[0]?.mvitm_prodcmpy_from),
+            productsFrom?.records?.filter((item) => item.prod_cmpy === selected?.[0]?.mvitm_prodcmpy_from),
             (item) => {
               return { code: item.prod_code, name: item.prod_name };
             }
@@ -315,7 +321,7 @@ const useColumns = (value, selected) => {
       cellEditorParams: {
         values: _.uniq(
           _.map(
-            productsFrom?.records?.filter((item) => item.prod_cmpy === selected[0]?.mvitm_prodcmpy_from),
+            productsFrom?.records?.filter((item) => item.prod_cmpy === selected?.[0]?.mvitm_prodcmpy_from),
             (item) => {
               return { code: item.prod_code, name: item.prod_name };
             }
@@ -330,15 +336,15 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 100,
       suppressSizeToFit: true,
-      editable: selected[0]?.editable && groupFrom.includes(selected[0]?.mvitm_type),
+      editable: selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type),
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
           _.map(
             tanksFrom?.records?.filter(
               (item) =>
-                item.prod_cmpy === selected[0]?.mvitm_prodcmpy_from &&
-                item.prod_code === selected[0]?.mvitm_prodcode_from
+                item.prod_cmpy === selected?.[0]?.mvitm_prodcmpy_from &&
+                item.prod_code === selected?.[0]?.mvitm_prodcode_from
             ),
             (item) => {
               return { code: item.tank_code, name: item.tank_name };
@@ -352,8 +358,8 @@ const useColumns = (value, selected) => {
           _.map(
             tanksFrom?.records?.filter(
               (item) =>
-                item.prod_cmpy === selected[0]?.mvitm_prodcmpy_from &&
-                item.prod_code === selected[0]?.mvitm_prodcode_from
+                item.prod_cmpy === selected?.[0]?.mvitm_prodcmpy_from &&
+                item.prod_code === selected?.[0]?.mvitm_prodcode_from
             ),
             (item) => {
               return { code: item.tank_code, name: item.tank_name };
@@ -393,7 +399,7 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 100,
       suppressSizeToFit: true,
-      editable: selected[0]?.editable && groupTo.includes(selected[0]?.mvitm_type),
+      editable: selected?.[0]?.editable && groupTo.includes(selected?.[0]?.mvitm_type),
       cellEditor: 'SelectEditor',
       cellEditorParams: {
         values: _.uniq(_.map(plants?.records, 'cmpy_plant')),
@@ -406,7 +412,7 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 150,
       suppressSizeToFit: true,
-      editable: selected[0]?.editable && groupTo.includes(selected[0]?.mvitm_type),
+      editable: selected?.[0]?.editable && groupTo.includes(selected?.[0]?.mvitm_type),
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
@@ -431,12 +437,12 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 200,
       suppressSizeToFit: true,
-      editable: selected[0]?.editable && groupTo.includes(selected[0]?.mvitm_type),
+      editable: selected?.[0]?.editable && groupTo.includes(selected?.[0]?.mvitm_type),
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
           _.map(
-            productsTo?.records?.filter((item) => item.prod_cmpy === selected[0]?.mvitm_prodcmpy_to),
+            productsTo?.records?.filter((item) => item.prod_cmpy === selected?.[0]?.mvitm_prodcmpy_to),
             (item) => {
               return { code: item.prod_code, name: item.prod_name };
             }
@@ -447,7 +453,7 @@ const useColumns = (value, selected) => {
       cellEditorParams: {
         values: _.uniq(
           _.map(
-            productsTo?.records?.filter((item) => item.prod_cmpy === selected[0]?.mvitm_prodcmpy_to),
+            productsTo?.records?.filter((item) => item.prod_cmpy === selected?.[0]?.mvitm_prodcmpy_to),
             (item) => {
               return { code: item.prod_code, name: item.prod_name };
             }
@@ -462,15 +468,15 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 100,
       suppressSizeToFit: true,
-      editable: selected[0]?.editable && groupTo.includes(selected[0]?.mvitm_type),
+      editable: selected?.[0]?.editable && groupTo.includes(selected?.[0]?.mvitm_type),
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
           _.map(
             tanksTo?.records?.filter(
               (item) =>
-                item.prod_cmpy === selected[0]?.mvitm_prodcmpy_to &&
-                item.prod_code === selected[0]?.mvitm_prodcode_to
+                item.prod_cmpy === selected?.[0]?.mvitm_prodcmpy_to &&
+                item.prod_code === selected?.[0]?.mvitm_prodcode_to
             ),
             (item) => {
               return { code: item.tank_code, name: item.tank_name };
@@ -484,8 +490,8 @@ const useColumns = (value, selected) => {
           _.map(
             tanksTo?.records?.filter(
               (item) =>
-                item.prod_cmpy === selected[0]?.mvitm_prodcmpy_to &&
-                item.prod_code === selected[0]?.mvitm_prodcode_to
+                item.prod_cmpy === selected?.[0]?.mvitm_prodcmpy_to &&
+                item.prod_code === selected?.[0]?.mvitm_prodcode_to
             ),
             (item) => {
               return { code: item.tank_code, name: item.tank_name };
@@ -525,7 +531,7 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 100,
       suppressSizeToFit: true,
-      editable: selected[0]?.editable || !value,
+      editable: selected?.[0]?.editable || !value,
     },
     {
       headerName: t('fields.quantityScheduled'),
@@ -542,7 +548,7 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 100,
       suppressSizeToFit: true,
-      editable: false, //selected[0]?.editable || !value,
+      editable: false, //selected?.[0]?.editable || !value,
       cellEditor: 'NumericEditor',
     },
     {
@@ -552,7 +558,7 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 100,
       suppressSizeToFit: true,
-      editable: false, //selected[0]?.editable || !value,
+      editable: selected?.[0]?.editable || !value,
       cellEditor: 'NumericEditor',
     },
   ];

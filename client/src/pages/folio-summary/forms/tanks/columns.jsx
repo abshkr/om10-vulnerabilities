@@ -101,6 +101,12 @@ const columns = (t) => [
     editable: true,
     width: 100,
     cellEditor: 'NumericEditor',
+    cellEditorParams: {
+      ranges: {
+        max: 'max_temp',
+        min: 'min_temp',
+      },
+    },
     options: {
       max: 'max_temp',
       min: 'min_temp',
@@ -116,6 +122,12 @@ const columns = (t) => [
     editable: true,
     width: 100,
     cellEditor: 'NumericEditor',
+    cellEditorParams: {
+      ranges: {
+        max: 'bclass_dens_hi',
+        min: 'bclass_dens_lo',
+      },
+    },
     options: {
       max: 'bclass_dens_hi',
       min: 'bclass_dens_lo',

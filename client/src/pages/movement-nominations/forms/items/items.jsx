@@ -44,7 +44,7 @@ const Items = ({ setTableAPIContext, value }) => {
 
   const disabled = selected?.length === 0 || !selected;
   //const canModifyFurther = selected[0]?.mvitm_status_name === 'NEW' || disabled;
-  const canModifyFurther = selected[0]?.mvitm_status === 0 || disabled;
+  const canModifyFurther = selected?.[0]?.mvitm_status === 0 || disabled;
   const fields = columns(value, selected);
 
   const handleButtonState = (state) => {
@@ -153,7 +153,7 @@ const Items = ({ setTableAPIContext, value }) => {
   };
 
   const gotoMakeTransactions = () => {
-    const currItem = selected[0];
+    const currItem = selected?.[0];
     currItem.mvitm_carrier = value?.mv_carrier;
     currItem.mvitm_tanker = value?.mv_vehicle;
     if (!currItem.mvitm_tanker) {
@@ -214,11 +214,14 @@ const Items = ({ setTableAPIContext, value }) => {
     if (value && value[0]) {
       value[0].editable = value?.[0]?.mvitm_status === 0 && !value?.[0]?.mvitm_completed;
     }
+    console.log('handleItemSelect222', value);
     setSelected(value);
   };
 
   const onEditingFinished = (value) => {
     let payload = value.data;
+
+    console.log('onEditingFinished', value, value.colDef);
 
     if (value.colDef.field === 'mvitm_prodcmpy_from') {
       payload.mvitm_prodcode_from = t('placeholder.selectPlease');
@@ -268,7 +271,8 @@ const Items = ({ setTableAPIContext, value }) => {
 
     tableAPI.updateRowData({ update: [payload] });
 
-    setSelected([payload]);
+    //setSelected([payload]);
+    handleItemSelect([payload]);
   };
 
   const onToggle = () => {
@@ -323,8 +327,8 @@ const Items = ({ setTableAPIContext, value }) => {
   }, [tableAPI, setTableAPIContext]);
 
   useEffect(() => {
-    if (selected[0]) {
-      const buttonStates = handleButtonState(selected[0]?.mvitm_status);
+    if (selected?.[0]) {
+      const buttonStates = handleButtonState(selected?.[0]?.mvitm_status);
 
       setButtonState(buttonStates);
     }
@@ -394,7 +398,7 @@ const Items = ({ setTableAPIContext, value }) => {
           visible={transactionVisible}
           width="100vw"
         >
-          <TransactionList selected={selected[0]} />
+          <TransactionList selected={selected?.[0]} />
         </Drawer>
       )}
 
@@ -418,7 +422,7 @@ const Items = ({ setTableAPIContext, value }) => {
           visible={scheduleVisible}
           width="100vw"
         >
-          <Schedules selected={selected[0]} />
+          <Schedules selected={selected?.[0]} />
         </Drawer>
       )}
 

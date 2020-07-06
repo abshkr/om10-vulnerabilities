@@ -41,7 +41,7 @@ class MovementItem extends CommonClass
     );
 
     public $BOOLEAN_FIELDS = array(
-        //"MVITM_COMPLETED"
+        "MVITM_COMPLETED" => 1
     );
 
     

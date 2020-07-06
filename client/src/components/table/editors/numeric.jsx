@@ -89,28 +89,38 @@ export default class NumericEditor extends Component {
   isCancelAfterEnd() {
     const value = _.toNumber(this.state.value);
     const valid = !_.isNaN(value);
+    const { data, colDef, ranges } = this.props;
+    console.log('NumericEditor - isCancelAfterEnd', colDef, data, ranges);
 
     if (valid) {
-      const { data, colDef } = this.props;
-      const { options } = colDef;
+      //const { options } = colDef;
+      // ag-grid: invalid colDef property 'options' 
+      const options = !ranges ? colDef?.options : ranges;
 
-      //console.log('colDef', colDef, data);
       // const min = data[options?.min];
       // const max = data[options?.max];
-      let min;
-      let max;
-      if (_.isNumber(options?.min)) {
-        min = options?.min;
-      } else {
-        min = data[options?.min];
-      }
-      if (_.isNumber(options?.max)) {
-        max = options?.max;
-      } else {
-        max = data[options?.max];
+      let min=undefined;
+      let max=undefined;
+      if (options !== undefined) {
+        if (_.isNumber(options?.min)) {
+          min = options?.min;
+        } else {
+          min = data[options?.min];
+        }
+        if (_.isNumber(options?.max)) {
+          max = options?.max;
+        } else {
+          max = data[options?.max];
+        }
       }
 
-      const payload = this.state.value > max || min > this.state.value;
+      let payload = false;
+      if (max !== undefined && this.state.value > max) {
+        payload = true;
+      }
+      if (min !== undefined && min > this.state.value) {
+        payload = true;
+      }
 
       if (payload) {
         notification.error({
@@ -120,6 +130,11 @@ export default class NumericEditor extends Component {
       }
 
       return payload;
+    } else {
+      notification.error({
+        message: `${colDef.headerName} data type is the number!`,
+        description: `Please enter a number`,
+      });
     }
 
     return true;
