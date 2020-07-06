@@ -58,7 +58,7 @@ const Company = ({ form, value, onChange, disable }) => {
       >
         {options?.records.map((item, index) => (
           <Select.Option key={index} value={item.cmpy_code}>
-            {item.cmpy_name}
+            {item.cmpy_desc}
           </Select.Option>
         ))}
       </Select>

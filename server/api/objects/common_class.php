@@ -573,14 +573,14 @@ class CommonClass
 
         if (isset($this->CLOB_FIELDS) && count($this->CLOB_FIELDS)>0 ) {
             $this->commit_mode = OCI_DEFAULT;
-            write_log("CLOB commit_mode " . $this->commit_mode, __FILE__, __LINE__, LogLevel::DEBUG);
+            // write_log("CLOB commit_mode " . $this->commit_mode, __FILE__, __LINE__, LogLevel::DEBUG);
         } else {
             $this->commit_mode = OCI_NO_AUTO_COMMIT;
         }
         //$this->commit_mode = OCI_NO_AUTO_COMMIT;
 
         $stmt = $this->prepare_insert();
-        write_log("after prepare_insert " . $stmt, __FILE__, __LINE__, LogLevel::ERROR);
+        // write_log("after prepare_insert " . $stmt, __FILE__, __LINE__, LogLevel::ERROR);
 
         if (!$stmt) {
             write_log("stmt error" . $stmt, __FILE__, __LINE__, LogLevel::ERROR);
@@ -591,16 +591,16 @@ class CommonClass
             oci_rollback($this->conn);
             return false;
         }
-        write_log("after oci_execute " . $this->commit_mode, __FILE__, __LINE__, LogLevel::DEBUG);
+        // write_log("after oci_execute " . $this->commit_mode, __FILE__, __LINE__, LogLevel::DEBUG);
 
         // save clob data
         if (isset($this->CLOB_FIELDS) && 
             count($this->CLOB_FIELDS) > 0 && 
             isset($this->CLOB_LOCATORS) && 
             count($this->CLOB_LOCATORS) > 0 ) {
-            write_log('we have clob fields ', __FILE__, __LINE__, LogLevel::DEBUG);
+            // write_log('we have clob fields ', __FILE__, __LINE__, LogLevel::DEBUG);
             foreach ($this->CLOB_LOCATORS as $key => $locator) {
-                write_log('CLOB locators '. $key . ' - ' . $this->$key, __FILE__, __LINE__, LogLevel::DEBUG);
+                // write_log('CLOB locators '. $key . ' - ' . $this->$key, __FILE__, __LINE__, LogLevel::DEBUG);
                 if (isset($locator)){
                     if (!$locator->save($this->$key)) {
                         // On error, rollback the transaction
@@ -614,10 +614,10 @@ class CommonClass
                     }
                 }
             }
-            write_log('we have clob fields2 ', __FILE__, __LINE__, LogLevel::DEBUG);
+            // write_log('we have clob fields2 ', __FILE__, __LINE__, LogLevel::DEBUG);
         }
         
-        write_log("after clob save " . $this->commit_mode, __FILE__, __LINE__, LogLevel::DEBUG);
+        // write_log("after clob save " . $this->commit_mode, __FILE__, __LINE__, LogLevel::DEBUG);
 
         if ($this->post_create() === false) {
             write_log("Failed to execute post_create", __FILE__, __LINE__, LogLevel::ERROR);
@@ -625,7 +625,7 @@ class CommonClass
             return false;
         }
         
-        write_log("after post create " . $this->commit_mode, __FILE__, __LINE__, LogLevel::DEBUG);
+        // write_log("after post create " . $this->commit_mode, __FILE__, __LINE__, LogLevel::DEBUG);
 
         if (!$this->insert_children()) {
             write_log("Failed to execute insert_children", __FILE__, __LINE__, LogLevel::ERROR);
@@ -633,7 +633,7 @@ class CommonClass
             return false;
         }
         
-        write_log("after insert children " . $this->commit_mode, __FILE__, __LINE__, LogLevel::DEBUG);
+        // write_log("after insert children " . $this->commit_mode, __FILE__, __LINE__, LogLevel::DEBUG);
 
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
@@ -668,7 +668,7 @@ class CommonClass
             isset($this->CLOB_LOCATORS) && 
             count($this->CLOB_LOCATORS) > 0 ) {
             foreach ($this->CLOB_LOCATORS as $key => $locator) {
-                write_log('i am here to free resource '. $key . ' - ' . $this->$key, __FILE__, __LINE__, LogLevel::DEBUG);
+                // write_log('i am here to free resource '. $key . ' - ' . $this->$key, __FILE__, __LINE__, LogLevel::DEBUG);
                 if (isset($locator)){
                     $locator->free();
                 }

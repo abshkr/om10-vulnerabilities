@@ -2389,8 +2389,22 @@ https://{{server_ip}}/api/pages/partner/delete.php?prtnr_seq=1
 https://10.1.10.66/api/pages/partnership/read.php
 https://10.1.10.66/api/pages/partnership/suppliers.php
 https://10.1.10.66/api/pages/partnership/customers.php?supplier=5860106
-https://10.1.10.66/api/pages/partnership/partners.php?supplier=5860106
-https://{{server_ip}}/api/pages/partnership/update.php    //There is no create, delete; all by this update
+https://10.1.10.66/api/pages/partnership/partners.php?supplier=5860106		//All the available partners
+https://10.1.10.66/api/pages/partnership/partnerships.php?supplier=5860106&customer=	//Current partnerships of a supplier company
+https://{{server_ip}}/api/pages/partnership/update.php    
+{
+    "partner_cust_acct": "11626230",
+    "partner_cmpy_code": "5860106",
+    "partners": [
+        {
+            "partner_seq": "3"
+        },
+        {
+            "partner_seq": "4"
+        }
+    ]
+}
+https://{{server_ip}}/api/pages/partnership/create.php    
 {
     "partner_cust_acct": "11626230",
     "partner_cmpy_code": "5860106",

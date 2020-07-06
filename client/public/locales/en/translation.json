@@ -1454,7 +1454,8 @@
     "unauthorized": "Unauthorized",
     "favourites": "Favourites",
     "manual": "Manual",
-    "copyright": "Copyright"
+    "copyright": "Copyright",
+	"noPartners": "Please add at least one partner to this partnership"
   },
 
   "prompts": {
@@ -1604,7 +1605,8 @@
     "zeroCompartmentCount": "The compartment counts cannot be ZERO",
     "oneCompartmentRequired": "At least one compartment required if the equipment is neither Prime Mover nor Flatbed",
     "minEqptForCombination" : "The combination type needs at least 2 pieces of equipment",
-    "eqptTypeCounts" : "The current counts of equipment is "
+    "eqptTypeCounts" : "The current counts of equipment is ",
+	"selectPartners": "Please select partners"
   },
 
   "placeholder": {

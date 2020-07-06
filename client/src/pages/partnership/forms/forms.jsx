@@ -1,23 +1,30 @@
 import React, { useState, useEffect } from 'react';
 
-import { EditOutlined, PlusOutlined, CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
+import { EditOutlined, PlusOutlined, CloseOutlined, QuestionCircleOutlined, DeleteOutlined, FormOutlined } from '@ant-design/icons';
+import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Space } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { mutate } from 'swr';
+import useSWR, { mutate, SWRConfig } from 'swr';
 import _ from 'lodash';
+import { fetcher } from 'utils';
 
-import { Company, Customer, Partner } from './fields';
+import { Company, Customer, Partners } from './fields';
 import api, { PARTNERSHIP } from '../../../api';
+import { DataTable } from 'components';
+import columns from './fields/columns';
 
 const TabPane = Tabs.TabPane;
 
 const PartnerForm = ({ value, visible, handleFormState, access }) => {
+  console.log(value)
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
 
   const [company, setCompany] = useState(value?.partner_cmpy_code);
-  const [selected, setSelected] = useState(null);
+  const { data: payload, isValidating } = useSWR(`${PARTNERSHIP.PARTNERSHIPS}?supplier=${value?.partner_cmpy_code}&partner_cust_acct=${value?.partner_cust_acct}`);
+  
+  const [selected, setSelected] = useState([]);
+  const [partners, setPartners] = useState(null);
 
   const IS_CREATING = !value;
 
@@ -27,8 +34,16 @@ const PartnerForm = ({ value, visible, handleFormState, access }) => {
   };
 
   const onFinish = async () => {
+    if (IS_CREATING && partners.length <= 0) {
+      notification.error({
+        message: t("messages.validationFailed"),
+        description: t("messages.noPartners"),
+      });
+      return;
+    }
+
     const values = await form.validateFields();
-    values.partners = selected;
+    values.partners = partners;
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
@@ -39,7 +54,7 @@ const PartnerForm = ({ value, visible, handleFormState, access }) => {
       centered: true,
       onOk: async () => {
         await api
-          .post(PARTNERSHIP.UPDATE, _.omit(values, ['partner']))
+          .post(IS_CREATING ? PARTNERSHIP.CREATE : PARTNERSHIP.UPDATE, _.omit(values, ['partner']))
           .then((response) => {
             onComplete();
 
@@ -48,13 +63,60 @@ const PartnerForm = ({ value, visible, handleFormState, access }) => {
               description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
             });
           })
-
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
+      },
+    });
+  };
+
+  const deletePartners = () => {
+    setPartners(_.filter(partners, (item) => {
+      for (let i = 0; i < selected.length; i += 1) {
+        if (item.partner_seq === selected[i].partner_seq) {
+          return false;
+        }
+      }
+      return true;
+    }));
+    setSelected([]);
+  }
+
+  const addPartnershipCallBack = (values) => {
+    const newPartners = [
+      ...partners,
+      ...values,
+    ];
+    
+    setPartners(_.orderBy(newPartners, (item) => {
+      return parseInt(item.partner_seq);
+    }));
+  };
+
+  const addPartnership = (v) => {
+    Modal.info({
+      className: 'form-container',
+      title: t("descriptions.selectPartners"),
+      centered: true,
+      width: '40vw',
+      icon: <FormOutlined />,
+      content: (
+        <SWRConfig
+          value={{
+            refreshInterval: 0,
+            fetcher,
+          }}
+        >
+          <Partners existings={partners} company={v} addPartnershipCallBack={addPartnershipCallBack} />
+        </SWRConfig>
+      ),
+      okButtonProps: {
+        style: { display: 'none' },
       },
     });
   };
@@ -65,6 +127,12 @@ const PartnerForm = ({ value, visible, handleFormState, access }) => {
       setCompany(null);
     }
   }, [value]);
+
+  useEffect(() => {
+    if (payload?.records) {
+      setPartners(payload.records);
+    }
+  }, [payload?.records]);
 
   return (
     <Drawer
@@ -104,9 +172,40 @@ const PartnerForm = ({ value, visible, handleFormState, access }) => {
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
             <Company form={form} value={value} onChange={setCompany} disable={!IS_CREATING} />
-            <Customer form={form} value={value} company={company} />
+            <Customer form={form} value={value} company={company} disable={!IS_CREATING}/>
             <Divider>{t('pageNames.partners')}</Divider>
-            <Partner form={form} value={value} company={company} setSelected={setSelected} />
+            <Form.Item name="partners" noStyle >
+              <DataTable
+                data={partners}
+                isLoading={isValidating}
+                height="40vh"
+                minimal
+                columns={columns(t)}
+                handleSelect={setSelected}
+              />
+            </Form.Item>
+            <Space style={{ marginTop: 10 }}>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                loading={isValidating}
+                onClick={() => addPartnership(company)}
+                style={{ float: 'right', marginRight: 5 }}
+              >
+                {t('operations.add')}
+              </Button>
+
+              <Button
+                type="primary"
+                icon={<DeleteOutlined />}
+                onClick={deletePartners}
+                disabled={selected?.length <= 0}
+                style={{ float: 'right', marginRight: 5 }}
+              >
+                {t('operations.delete')}
+              </Button>
+            </Space>
+
             {/* <Form.Item name="partners" noStyle >
               <DataTable
                 data={partnersData}

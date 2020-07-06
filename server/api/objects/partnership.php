@@ -12,13 +12,13 @@ class Partnership extends CommonClass
     protected $TABLE_NAME = 'CMPY_CUST_PRTNR';
     protected $VIEW_NAME = 'CMPY_CUST_PRTNR';
 
-    public $check_exists = false;
+    // public $check_exists = false;
     protected $check_mandatory = false;
 
     protected $primary_keys = array(
-        // "ccp_cmpy_code",
+        "ccp_cmpy_code",
         "ccp_cust_acct",
-        // "ccp_prtnr_seq"
+        "ccp_prtnr_seq"
     );
 
     protected $table_view_map = array(
@@ -51,13 +51,51 @@ class Partnership extends CommonClass
         }
     }
 
+    //Current partnerships of a supplier company
+    public function parterships()
+    {
+        // write_log(json_encode($this), __FILE__, __LINE__);
+        $query = "SELECT PRTNR_SEQ PARTNER_SEQ, 
+            PRTNR_CMPY PARTNER_CMPY, 
+            CMPY_NAME PARTNER_CMPY_NAME, 
+            PRTNR_CODE, 
+            PRTNR_NAME1, 
+            PRTNR_TYPE, 
+            PARTNER_TYPE_NAME PRTNR_TYPE_NAME,
+            PRTNR_SEQ || ' - ' || PRTNR_CODE || ' - ' || PRTNR_NAME1 PRTNR_DESC
+        FROM CMPY_CUST_PRTNR, PARTNER, GUI_COMPANYS, PARTNER_TYPES
+        WHERE PARTNER.PRTNR_CMPY = CMPY_CUST_PRTNR.CCP_CMPY_CODE
+            AND PRTNR_SEQ = CMPY_CUST_PRTNR.CCP_PRTNR_SEQ
+            AND PRTNR_CMPY = GUI_COMPANYS.CMPY_CODE
+            AND PRTNR_TYPE = PARTNER_TYPES.PARTNER_TYPE_CODE
+            AND CMPY_CUST_PRTNR.CCP_CMPY_CODE = :supplier ";
+
+        if (isset($this->partner_cust_acct) && $this->partner_cust_acct !== "") {
+            $query .= " AND CCP_CUST_ACCT = :ccp_cust_acct ";
+        } else {
+            $query .= " AND CCP_CUST_ACCT IS NULL ";
+        }
+        $query .= " ORDER BY PRTNR_SEQ";
+        $stmt = oci_parse($this->conn, $query);
+        if (!isset($this->supplier)) {
+            $this->supplier = '-1';
+        }
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        if (isset($this->partner_cust_acct) && $this->partner_cust_acct !== "") {
+            oci_bind_by_name($stmt, ':ccp_cust_acct', $this->partner_cust_acct);
+        }
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function partners()
     {
-        $query = "SELECT ALL_PARTNERS.*, 
-                DECODE(CMPY_CUST_PRTNR.CCP_PRTNR_SEQ, NULL, 'N', 'Y') SELECTED
-            FROM
-            (
-                SELECT PR.PRTNR_SEQ PARTNER_SEQ,
+        $query = "SELECT PR.PRTNR_SEQ PARTNER_SEQ,
                     PR.PRTNR_CMPY PARTNER_CMPY,
                     CM.CMPY_NAME PARTNER_CMPY_NAME,
                     PR.PRTNR_CODE,
@@ -70,10 +108,8 @@ class Partnership extends CommonClass
                     PARTNER_TYPES PT
                 WHERE PR.PRTNR_TYPE = PT.PARTNER_TYPE_CODE
                     AND PR.PRTNR_CMPY = CM.CMPY_CODE
-                    AND PRTNR_CMPY = :supplier) ALL_PARTNERS, CMPY_CUST_PRTNR
-                WHERE ALL_PARTNERS.PARTNER_CMPY = CMPY_CUST_PRTNR.CCP_CMPY_CODE(+)
-                    AND ALL_PARTNERS.PARTNER_SEQ = CMPY_CUST_PRTNR.CCP_PRTNR_SEQ(+)
-                ORDER BY PARTNER_SEQ";
+                    AND PRTNR_CMPY = :supplier
+                ORDER BY PRTNR_SEQ";
         $stmt = oci_parse($this->conn, $query);
         if (!isset($this->supplier)) {
             $this->supplier = '-1';
@@ -82,9 +118,46 @@ class Partnership extends CommonClass
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
     }
+    
+    // public function partners()
+    // {
+    //     $query = "SELECT ALL_PARTNERS.*, 
+    //             DECODE(CMPY_CUST_PRTNR.CCP_PRTNR_SEQ, NULL, 'N', 'Y') SELECTED
+    //         FROM
+    //         (
+    //             SELECT PR.PRTNR_SEQ PARTNER_SEQ,
+    //                 PR.PRTNR_CMPY PARTNER_CMPY,
+    //                 CM.CMPY_NAME PARTNER_CMPY_NAME,
+    //                 PR.PRTNR_CODE,
+    //                 PR.PRTNR_NAME1,
+    //                 PR.PRTNR_TYPE,
+    //                 PT.PARTNER_TYPE_NAME PRTNR_TYPE_NAME,
+    //                 PR.PRTNR_SEQ || ' - ' || PR.PRTNR_CODE || ' - ' || PR.PRTNR_NAME1 PRTNR_DESC
+    //             FROM PARTNER PR,
+    //                 GUI_COMPANYS CM,
+    //                 PARTNER_TYPES PT
+    //             WHERE PR.PRTNR_TYPE = PT.PARTNER_TYPE_CODE
+    //                 AND PR.PRTNR_CMPY = CM.CMPY_CODE
+    //                 AND PRTNR_CMPY = :supplier) ALL_PARTNERS, CMPY_CUST_PRTNR
+    //             WHERE ALL_PARTNERS.PARTNER_CMPY = CMPY_CUST_PRTNR.CCP_CMPY_CODE(+)
+    //                 AND ALL_PARTNERS.PARTNER_SEQ = CMPY_CUST_PRTNR.CCP_PRTNR_SEQ(+)
+    //             ORDER BY PARTNER_SEQ";
+    //     $stmt = oci_parse($this->conn, $query);
+    //     if (!isset($this->supplier)) {
+    //         $this->supplier = '-1';
+    //     }
+    //     oci_bind_by_name($stmt, ':supplier', $this->supplier);
+    //     if (oci_execute($stmt, $this->commit_mode)) {
+    //         return $stmt;
+    //     } else {
+    //         return null;
+    //     }
+    // }
 
     public function read()
     {
@@ -136,6 +209,18 @@ class Partnership extends CommonClass
             return null;
         }
     }
+
+    // public function pre_create()
+    // {
+    //     return $this->pre_update();
+    // }
+
+    // public function pre_update()
+    // {
+    //     if (!isset($this->partner_cust_acct) || $this->partner_cust_acct === "") {
+    //         $this->partner_cust_acct = '-1';
+    //     };
+    // }
 
     // public function read_hook(&$hook_item)
     // {
@@ -197,7 +282,7 @@ class Partnership extends CommonClass
         // }
 
         foreach ($this->partners as $value) {
-            // write_log(json_encode($value), __FILE__, __LINE__);
+            write_log(json_encode($value), __FILE__, __LINE__);
             // write_log($site_code, __FILE__, __LINE__);
             $query = "INSERT INTO CMPY_CUST_PRTNR (
                 CCP_CMPY_CODE,
@@ -213,7 +298,7 @@ class Partnership extends CommonClass
             oci_bind_by_name($stmt, ':ccp_cust_acct', $this->partner_cust_acct);
             oci_bind_by_name($stmt, ':ccp_prtnr_seq', $value->partner_seq);
             
-            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            if (!oci_execute($stmt, $this->commit_mode)) {
                 $e = oci_error($stmt);
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 return false;
@@ -228,11 +313,18 @@ class Partnership extends CommonClass
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
+        $partner_cust_acct = $this->partner_cust_acct;
+        if (!isset($partner_cust_acct) || $partner_cust_acct === "") {
+            $partner_cust_acct = '-1';
+        };
+
         $query = "
             DELETE FROM CMPY_CUST_PRTNR
-            WHERE CCP_CMPY_CODE = :partner_cmpy_code";
+            WHERE CCP_CMPY_CODE = :partner_cmpy_code
+                AND (CCP_CUST_ACCT = :ccp_cust_acct OR :ccp_cust_acct = '-1')";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':partner_cmpy_code', $this->partner_cmpy_code);
+        oci_bind_by_name($stmt, ':ccp_cust_acct', $partner_cust_acct);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -247,14 +339,21 @@ class Partnership extends CommonClass
 
     protected function retrieve_children_data()
     {
+        $partner_cust_acct = $this->partner_cust_acct;
+        if (!isset($partner_cust_acct) || $partner_cust_acct === "") {
+            $partner_cust_acct = '-1';
+        };
+
         $query = "SELECT CCP_CMPY_CODE,
                 CCP_CUST_ACCT,
                 CCP_PRTNR_SEQ,
                 CCP_CMPY_CODE || ' - ' || CCP_PRTNR_SEQ SUPP_PARTNER
             FROM CMPY_CUST_PRTNR
-            WHERE CCP_CMPY_CODE = :partner_cmpy_code";
+            WHERE CCP_CMPY_CODE = :partner_cmpy_code
+                AND (CCP_CUST_ACCT = :ccp_cust_acct OR :ccp_cust_acct = '-1')";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':partner_cmpy_code', $this->partner_cmpy_code);
+        oci_bind_by_name($stmt, ':ccp_cust_acct', $partner_cust_acct);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -315,6 +414,36 @@ class Partnership extends CommonClass
 
     public function check_existence()
     {
-        return true;
+        write_log(json_encode($this), __FILE__, __LINE__);
+        $query = "SELECT COUNT(*) CN
+            FROM CMPY_CUST_PRTNR 
+            WHERE CMPY_CUST_PRTNR.CCP_CMPY_CODE = :supplier ";
+
+        if (isset($this->partner_cust_acct) && $this->partner_cust_acct !== "") {
+            $query .= " AND CCP_CUST_ACCT = :ccp_cust_acct ";
+        } else {
+            $query .= " AND CCP_CUST_ACCT IS NULL ";
+        }
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supplier', $this->partner_cmpy_code);
+        if (isset($this->partner_cust_acct) && $this->partner_cust_acct !== "") {
+            oci_bind_by_name($stmt, ':ccp_cust_acct', $this->partner_cust_acct);
+        }
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", sprintf("database storage error:%s", $e['message'])));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return false;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        return $row['CN'] > 0;
+    }
+
+    public function create()
+    {
+        return $this->insert_children();
     }
 }

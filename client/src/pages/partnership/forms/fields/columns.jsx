@@ -5,9 +5,6 @@ const columns = (t, value) => [
     suppressSizeToFit: true, 
     checkboxSelection: true,
     headerCheckboxSelection: true,
-    cellRenderer: (params) => {
-        params.node.setSelected(params.data.selected === 'Y');
-    },
     width: 40,
   },
   {

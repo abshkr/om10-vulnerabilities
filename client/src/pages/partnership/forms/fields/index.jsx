@@ -1,5 +1,5 @@
 import Company from './company';
 import Customer from './customer';
-import Partner from './partner';
+import Partners from './partners';
 
-export { Company, Customer, Partner };
+export { Company, Customer, Partners };
