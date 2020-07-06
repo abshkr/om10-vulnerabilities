@@ -35,6 +35,16 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
 
     const record = await form.validateFields();
 
+    if (IS_CREATING && IS_COMBINATION) {
+      if (record.composition.length < 2) {
+        notification.error({
+          message: t('descriptions.minEqptForCombination'),
+          description: t('descriptions.eqptTypeCounts') + String(record.composition.length),
+        });
+        return;
+      }
+    }
+
     _.forEach(record.names, (value, key) => {
       const payload = {
         cmpt_no: String(key + 1),

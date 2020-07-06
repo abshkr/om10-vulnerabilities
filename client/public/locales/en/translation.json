@@ -1600,7 +1600,9 @@
     "productGrpUsed": "Cannot delete product group that has product in it",
     "prescheduleReady": "Please select product in at least one compartment",
     "preOrderReady": "Please input quantity for at least one product",
-    "preOrderProdUnit": "Please select unit for product"
+    "preOrderProdUnit": "Please select unit for product",
+    "minEqptForCombination" : "The combination type needs at least 2 pieces of equipment",
+    "eqptTypeCounts" : "The current counts of equipment is "
   },
 
   "placeholder": {
