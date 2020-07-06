@@ -25,6 +25,8 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
     mutate(EQUIPMENT_TYPES.READ);
     if (etyp_title) {
       setFilterValue("" + etyp_title);
+    } else {
+      setFilterValue(" ");
     }
   };
 
@@ -70,7 +72,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
       values = {
         etyp_id: value.etyp_id,
         etyp_category: record.etyp_category?.toUpperCase(),
-        etyp_isrigid: record.etyp_category?.toUpperCase() === "R",
+        etyp_isrigid: record.etyp_category?.toUpperCase() === "R" || record.etyp_category?.toUpperCase() === "S",
       };
     }
 
@@ -84,7 +86,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
       values = {
         etyp_title: record.etyp_title,
         etyp_category: record.etyp_category?.toUpperCase(),
-        etyp_isrigid: record.etyp_category?.toUpperCase() === "R",
+        etyp_isrigid: record.etyp_category?.toUpperCase() === "R" || record.etyp_category?.toUpperCase() === "S",
         etyp_schedul: compartments.length > 0,
         compartments,
       };
