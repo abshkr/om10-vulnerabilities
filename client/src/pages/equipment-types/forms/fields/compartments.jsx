@@ -172,7 +172,14 @@ const Compartments = ({ form, value, isCombination }) => {
       hide: !showSeals,
       editable: showSeals,
       suppressSizeToFit: true,
-    },
+      cellEditor: 'NumericEditor',
+      cellEditorParams: {
+        ranges: {
+          max: _.toNumber(maxSealsPerCompartment),
+          min: 0,
+        },
+      },
+      },
   ];
 
   return (
