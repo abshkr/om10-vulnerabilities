@@ -55,6 +55,17 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
       compartments.push(payload);
     });
 
+    if (IS_CREATING && !IS_COMBINATION) {
+      const catg = record.etyp_category?.toUpperCase();
+      if (catg !== 'P' && catg !== 'F' && compartments.length === 0) {
+        notification.error({
+          message: t('descriptions.zeroCompartmentCount'),
+          description: t('descriptions.oneCompartmentRequired'), // + String(record.names.length),
+        });
+        return;
+      }
+    }
+
     if (!IS_COMBINATION && !IS_CREATING) {
       values = {
         etyp_id: value.etyp_id,
