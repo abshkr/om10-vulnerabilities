@@ -121,6 +121,18 @@ const From = ({ onChange, form, value, disabled }) => {
     getSuppliers();
   }, [getSuppliers]);
 
+  useEffect(() => {
+    if (value) {
+      const prodCompany = value.mlitm_prodcmpy === '' ? undefined : value.mlitm_prodcmpy;
+      const tankCode = value.mlitm_tankcode === '' ? undefined : value.mlitm_tankcode;
+      const prodCode = value.mlitm_prodcode === '' ? undefined : value.mlitm_prodcode;
+
+      getSuppliers();
+      getTanks(prodCompany);
+      getProducts(tankCode);
+    }
+  }, [value]);
+
   return (
     <>
       <Row gutter={[8, 8]}>
