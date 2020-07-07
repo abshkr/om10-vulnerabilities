@@ -9,10 +9,13 @@ class GenericProduct extends CommonClass
 {
     protected $TABLE_NAME = 'GENERIC_PROD';
     protected $primary_keys = array("gen_prod_code");
+    public $NUMBER_FIELDS = array(
+        "GEN_PROD_COUNT",
+    );
 
     public function read()
     {
-        $query = "SELECT * FROM GUI_GENERIC_PRODUCTS ORDER BY GEN_PROD_CODE";
+        $query = "SELECT * FROM GUI_GENERIC_PRODUCTS ORDER BY GEN_PROD_CODE, GEN_DPROD_CODE";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;

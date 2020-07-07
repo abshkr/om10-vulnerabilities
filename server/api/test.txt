@@ -957,6 +957,8 @@ https://10.1.10.66/api/pages/product/drawers.php
 https://10.1.10.66/api/pages/product/hazchems.php
 https://10.1.10.66/api/pages/product/base_products.php
 https://10.1.10.66/api/pages/generic_product/read.php		//The generic product 
+https://10.1.10.66/api/pages/generic_product/delete.php?gen_prod_code=123		//The generic product 
+https://10.1.10.66/api/pages/generic_product/create.php?gen_prod_code=123		//The generic product 
 https://10.1.10.66/api/pages/product/dangerous_goods.php
 https://10.1.10.66/api/pages/dangerous_goods/read.php
 https://{{server_ip}}/api/pages/dangerous_goods/create.php

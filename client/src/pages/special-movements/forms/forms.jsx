@@ -13,6 +13,7 @@ import {
 
 import { Form, Button, Tabs, notification, Modal, Divider, message, Drawer, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
+import moment from 'moment';
 import { mutate } from 'swr';
 import api from 'api';
 import _ from 'lodash';
@@ -27,18 +28,23 @@ const TabPane = Tabs.TabPane;
 const FormModal = ({ value, visible, handleFormState, access, url, locateSpecialMv, config }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const { resetFields } = form;
+  const { resetFields, setFieldsValue } = form;
 
   const [type, setType] = useState(null);
   const [tab, setTab] = useState('1');
-  const [tank, setTank] = useState(undefined);
+  const [supplierFrom, setSupplierFrom] = useState(undefined);
+  const [supplierTo, setSupplierTo] = useState(undefined);
+  const [tankFrom, setTankFrom] = useState(undefined);
+  const [tankTo, setTankTo] = useState(undefined);
+  const [productFrom, setProductFrom] = useState(undefined);
+  const [productTo, setProductTo] = useState(undefined);
   const [quantitySource, setQuantitySource] = useState(null);
 
-  const changeToTank = (tank) => {
+  /* const changeToTank = (tank) => {
     if (type !== '2') {
       setTank(tank);
     }
-  };
+  }; */
 
   const IS_CREATING = !value;
   const DISABLED = value?.mlitm_status === '5';
@@ -46,7 +52,51 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
   const FROM = ['1', '2'];
   const TO = ['0', '2'];
 
+  const onTypeChange = (value) => {
+    setType(value);
+
+    /* setFieldsValue({
+      mlitm_reason_code: undefined,
+      mlitm_dtim_start: moment(),
+      mlitm_comment: '',
+      mlitm_prodcmpy: undefined,
+      mlitm_tankcode: undefined,
+      mlitm_prodcode: undefined,
+      mlitm_prodcmpy_to: undefined,
+      mlitm_tankcode_to: undefined,
+      mlitm_prodcode_to: undefined,
+      mlitm_qty_amb: '',
+      mlitm_qty_cor: '',
+      mlitm_qty_kg: '',
+      mlitm_temp_amb: '',
+      mlitm_dens_cor: '',
+      mlitm_qty_rpt: '',
+      mlitm_unit_rpt: undefined,
+    }); */
+
+    // setSupplierFrom(undefined);
+    // setSupplierTo(undefined);
+    // setTankFrom(undefined);
+    // setTankTo(undefined);
+    // setProductFrom(undefined);
+    // setProductTo(undefined);
+
+    // resetFields();
+  };
+
+  const onFormClosed = () => {
+    setType(null);
+    setTankFrom(undefined);
+    setTankTo(undefined);
+    resetFields();
+    handleFormState(false, null);
+  };
+
   const onComplete = (mlitm_id) => {
+    setType(null);
+    setTankFrom(undefined);
+    setTankTo(undefined);
+    resetFields();
     handleFormState(false, null);
     if (mlitm_id) {
       locateSpecialMv(mlitm_id);
@@ -67,7 +117,17 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       centered: true,
       onOk: async () => {
         values.mlitm_dtim_start = values?.mlitm_dtim_start?.format(SETTINGS.DATE_TIME_FORMAT);
-
+        if (type === '0') {
+          values.mlitm_prodcmpy = '';
+          values.mlitm_tankcode = '';
+          values.mlitm_prodcode = '';
+        }
+        if (type === '1') {
+          values.mlitm_prodcmpy_to = '';
+          values.mlitm_tankcode_to = '';
+          values.mlitm_prodcode_to = '';
+        }
+  
         await api
           .post(IS_CREATING ? SPECIAL_MOVEMENTS.CREATE : SPECIAL_MOVEMENTS.UPDATE, values)
           .then(
@@ -133,6 +193,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       'mlitm_qty_kg',
       'mlitm_temp_amb',
       'mlitm_dens_cor',
+      'mlitm_prodcode',
+      'mlitm_prodcode_to',
     ]);
 
     if (String(payload?.mlitm_qty_amb).trim().length === 0 && 
@@ -207,7 +269,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       centered: true,
       onOk: async () => {
         try {
-          const values = await form.validateFields();
+          const values = payload; // await form.validateFields();
           await api
             .post(SPECIAL_MOVEMENTS.CALCULATE, {
               frm_baseCd: TO.includes(type) ? values.mlitm_prodcode_to : values.mlitm_prodcode,
@@ -244,7 +306,17 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       onOk: async () => {
         try {
           const values = await form.validateFields();
-
+          if (type === '0') {
+            values.mlitm_prodcmpy = '';
+            values.mlitm_tankcode = '';
+            values.mlitm_prodcode = '';
+          }
+          if (type === '1') {
+            values.mlitm_prodcmpy_to = '';
+            values.mlitm_tankcode_to = '';
+            values.mlitm_prodcode_to = '';
+          }
+  
           await api
             .post(SPECIAL_MOVEMENTS.SUBMIT, values)
             .then(()=> {
@@ -314,7 +386,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
-      onClose={() => handleFormState(false, null)}
+      onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
       mask={IS_CREATING}
@@ -408,10 +480,36 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
 
             {type && <Divider>{t('divider.directions')}</Divider>}
 
-            {FROM.includes(type) && <From onChange={setTank} form={form} value={value} disabled={DISABLED} />}
+            {FROM.includes(type) && (
+              <From
+                type={type}
+                supplier={supplierFrom}
+                setSupplier={setSupplierFrom}
+                tank={tankFrom}
+                setTank={setTankFrom}
+                product={productFrom}
+                setProduct={setProductFrom}
+                // onChange={setTankFrom}
+                form={form}
+                value={value}
+                disabled={DISABLED}
+              />
+            )}
 
             {TO.includes(type) && (
-              <To type={type} onChange={changeToTank} form={form} value={value} disabled={DISABLED} />
+              <To
+                type={type}
+                supplier={supplierTo}
+                setSupplier={setSupplierTo}
+                tank={tankTo}
+                setTank={setTankTo}
+                product={productTo}
+                setProduct={setProductTo}
+                // onChange={setTankTo}
+                form={form}
+                value={value}
+                disabled={DISABLED}
+              />
             )}
 
             <Divider>{t('divider.calculation')}</Divider>
@@ -421,7 +519,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
               value={value}
               type={type}
               disabled={DISABLED}
-              tank={tank}
+              tank={type==='0' ? tankTo : tankFrom}
               config={config}
               pinQuantity={setQuantitySource}
             />

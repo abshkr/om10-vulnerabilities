@@ -359,6 +359,27 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
     }
   };
 
+  const onTabChange = (v) => {
+    if (v === '3') {
+      if (value?.status === 'A') {
+        Modal.confirm({
+          title: t('prompts.completeTrip'),
+          icon: <QuestionCircleOutlined />,
+          okText: t('operations.yes'),
+          cancelText: t('operations.no'),
+          // content: 'Some descriptions',
+          onOk() {
+            setTab(v);
+          }
+        });
+      } else {
+        setTab(v);
+      }
+    } else {
+      setTab(v);
+    }
+  }
+
   useEffect(() => {
     if (!value) {
       setTab('0');
@@ -504,7 +525,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       }
     >
       <Form layout="vertical" form={form} scrollToFirstError initialValues={{ shls_ld_type: '3' }}>
-        <Tabs defaultActiveKey="1" activeKey={tab} onChange={setTab} animated={false}>
+        <Tabs 
+          defaultActiveKey="1" 
+          activeKey={tab} 
+          onChange={onTabChange} 
+          animated={false}
+        >
           <TabPane tab={t('tabColumns.general')} key="0">
             <Form.Item name="supermode" noStyle />
             <Form.Item name="shls_ld_type">

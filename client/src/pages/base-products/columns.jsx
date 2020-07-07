@@ -1,6 +1,6 @@
 const columns = (t, config) => [
   {
-    headerName: t('fields.code'),
+    headerName: t('fields.baseProductCode'),
     field: 'base_code',
     sortable: true,
     filter: 'FuzzyFilter',
@@ -10,7 +10,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.name'),
+    headerName: t('fields.baseProductName'),
     field: 'base_name',
     sortable: true,
     filter: 'FuzzyFilter',

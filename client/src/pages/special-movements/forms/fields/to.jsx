@@ -1,11 +1,21 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Select, Row, Col } from 'antd';
-import api from 'api';
+import api, { SPECIAL_MOVEMENTS } from 'api';
 
-import { SPECIAL_MOVEMENTS } from '../../../../api';
-
-const To = ({ type, onChange, form, value, disabled }) => {
+const To = ({
+  type,
+  supplier,
+  setSupplier,
+  tank,
+  setTank,
+  product,
+  setProduct,
+  // onChange,
+  form,
+  value,
+  disabled
+}) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -15,9 +25,6 @@ const To = ({ type, onChange, form, value, disabled }) => {
   const [products, setProducts] = useState([]);
 
   const [isLoading, setLoading] = useState(false);
-
-  const [supplier, setSupplier] = useState(undefined);
-  const [tank, setTank] = useState(undefined);
 
   const IS_DISABLED = disabled;
 
@@ -68,8 +75,9 @@ const To = ({ type, onChange, form, value, disabled }) => {
           setLoading(false);
 
           if (response.data.records.length > 0) {
+            setProduct(response.data.records?.[0]?.tank_base);
             setFieldsValue({
-              mlitm_prodcode_to: response.data.records[0]?.tank_base
+              mlitm_prodcode_to: response.data.records?.[0]?.tank_base
             });
           }
         })
@@ -83,6 +91,7 @@ const To = ({ type, onChange, form, value, disabled }) => {
   const onSupplierChange = value => {
     setSupplier(value);
     setTank(undefined);
+    setProduct(undefined);
 
     getTanks(value);
 
@@ -93,12 +102,11 @@ const To = ({ type, onChange, form, value, disabled }) => {
   };
 
   const onTankChange = value => {
-    if (type === '0') {
-      onChange(value);
-    }
-
     setTank(value);
+    setProduct(undefined);
     getProducts(value);
+
+    // onChange(value);
   };
 
   useEffect(() => {
@@ -109,10 +117,9 @@ const To = ({ type, onChange, form, value, disabled }) => {
 
       setSupplier(prodCompany);
       setTank(tankCode);
-
-      if (type === '0') {
-        onChange(tankCode);
-      }
+      setProduct(prodCode);
+      // onChange(tankCode);
+      console.log('here I am in TO 2!....', prodCompany, tankCode, prodCode, type);
 
       setFieldsValue({
         mlitm_prodcmpy_to: prodCompany,
@@ -120,23 +127,54 @@ const To = ({ type, onChange, form, value, disabled }) => {
         mlitm_prodcode_to: prodCode
       });
     }
-  }, [value, setFieldsValue, type, onChange]);
+  // }, [value, setFieldsValue, onChange]);
+  }, [value, setFieldsValue, setSupplier, setTank, setProduct]);
 
   useEffect(() => {
     getSuppliers();
   }, [getSuppliers]);
 
+  /* useEffect(() => {
+    if (type === '0' || type === '2') {
+      setSupplier(null);
+      setTank(null);
+    }
+  }, [type]); */
+
   useEffect(() => {
     if (value) {
       const prodCompany = value.mlitm_prodcmpy_to === '' ? undefined : value.mlitm_prodcmpy_to;
       const tankCode = value.mlitm_tankcode_to === '' ? undefined : value.mlitm_tankcode_to;
-      const prodCode = value.mlitm_prodcode_to === '' ? undefined : value.mlitm_prodcode_to;
-
-      getSuppliers();
+      // const prodCode = value.mlitm_prodcode_to === '' ? undefined : value.mlitm_prodcode_to;
+      console.log('here I am!....');
+      // getSuppliers();
       getTanks(prodCompany);
       getProducts(tankCode);
     }
-  }, [value]);
+  }, [value, getTanks, getProducts]);
+
+  const validate = (rule, value) => {
+    if (rule.required === false) {
+      return;
+    }
+
+    let title = "Supplier or Tank or Base Product";
+    if (rule.field === 'mlitm_prodcmpy_to') {
+      title = t('fields.toPlantSupplier');
+    }
+    if (rule.field === 'mlitm_tankcode_to') {
+      title = t('fields.toTank');
+    }
+    if (rule.field === 'mlitm_prodcode_to') {
+      title = t('fields.toProduct');
+    }
+
+    if (value === '' || !value) {
+      return Promise.reject(`${t('validate.set')} ─ ${title}`);
+    }
+
+    return Promise.resolve();
+  };
 
   return (
     <>
@@ -146,6 +184,7 @@ const To = ({ type, onChange, form, value, disabled }) => {
             name="mlitm_prodcmpy_to"
             label={t('fields.toPlantSupplier')}
             style={{ width: '100%', marginRight: 5 }}
+            rules={[{ required: type==='0'||type==='2', validator: validate }]}
           >
             <Select
               showSearch
@@ -171,6 +210,7 @@ const To = ({ type, onChange, form, value, disabled }) => {
             name="mlitm_tankcode_to"
             label={t('fields.toTank')}
             style={{ width: '100%', marginRight: 5 }}
+            rules={[{ required: type==='0'||type==='2', validator: validate }]}
           >
             <Select
               showSearch
@@ -192,7 +232,12 @@ const To = ({ type, onChange, form, value, disabled }) => {
           </Form.Item>
         </Col>
         <Col span={9}>
-          <Form.Item name="mlitm_prodcode_to" label={t('fields.toProduct')} style={{ width: '100%' }}>
+          <Form.Item
+            name="mlitm_prodcode_to"
+            label={t('fields.toProduct')}
+            style={{ width: '100%' }}
+            rules={[{ required: type==='0'||type==='2', validator: validate }]}
+          >
             <Select
               showSearch
               loading={isLoading}

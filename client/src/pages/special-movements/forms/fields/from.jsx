@@ -1,11 +1,21 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Select, Row, Col } from 'antd';
-import api from 'api';
+import api, { SPECIAL_MOVEMENTS } from 'api';
 
-import { SPECIAL_MOVEMENTS } from 'api';
-
-const From = ({ onChange, form, value, disabled }) => {
+const From = ({
+  type,
+  supplier,
+  setSupplier,
+  tank,
+  setTank,
+  product,
+  setProduct,
+  // onChange,
+  form,
+  value,
+  disabled
+}) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -15,9 +25,6 @@ const From = ({ onChange, form, value, disabled }) => {
   const [products, setProducts] = useState([]);
 
   const [isLoading, setLoading] = useState(false);
-
-  const [supplier, setSupplier] = useState(undefined);
-  const [tank, setTank] = useState(undefined);
 
   const IS_DISABLED = disabled;
 
@@ -68,8 +75,9 @@ const From = ({ onChange, form, value, disabled }) => {
           setLoading(false);
 
           if (response.data.records.length > 0) {
+            setProduct(response.data.records?.[0]?.tank_base);
             setFieldsValue({
-              mlitm_prodcode: response.data.records[0]?.tank_base
+              mlitm_prodcode: response.data.records?.[0]?.tank_base
             });
           }
         })
@@ -83,6 +91,7 @@ const From = ({ onChange, form, value, disabled }) => {
   const onSupplierChange = value => {
     setSupplier(value);
     setTank(undefined);
+    setProduct(undefined);
 
     getTanks(value);
 
@@ -94,9 +103,10 @@ const From = ({ onChange, form, value, disabled }) => {
 
   const onTankChange = value => {
     setTank(value);
+    setProduct(undefined);
     getProducts(value);
 
-    onChange(value);
+    // onChange(value);
   };
 
   useEffect(() => {
@@ -107,7 +117,9 @@ const From = ({ onChange, form, value, disabled }) => {
 
       setSupplier(prodCompany);
       setTank(tankCode);
-      onChange(tankCode);
+      setProduct(prodCode);
+      // onChange(tankCode);
+      console.log('here I am in FROM  2!....', prodCompany, tankCode, prodCode, type);
 
       setFieldsValue({
         mlitm_prodcmpy: prodCompany,
@@ -115,23 +127,54 @@ const From = ({ onChange, form, value, disabled }) => {
         mlitm_prodcode: prodCode
       });
     }
-  }, [value, setFieldsValue, onChange]);
+  // }, [value, setFieldsValue, onChange]);
+  }, [value, setFieldsValue, setSupplier, setTank, setProduct]);
 
   useEffect(() => {
     getSuppliers();
   }, [getSuppliers]);
 
+  /* useEffect(() => {
+    if (type === '0' || type === '2') {
+      setSupplier(null);
+      setTank(null);
+    }
+  }, [type]); */
+
   useEffect(() => {
     if (value) {
       const prodCompany = value.mlitm_prodcmpy === '' ? undefined : value.mlitm_prodcmpy;
       const tankCode = value.mlitm_tankcode === '' ? undefined : value.mlitm_tankcode;
-      const prodCode = value.mlitm_prodcode === '' ? undefined : value.mlitm_prodcode;
+      // const prodCode = value.mlitm_prodcode === '' ? undefined : value.mlitm_prodcode;
 
-      getSuppliers();
+      // getSuppliers();
       getTanks(prodCompany);
       getProducts(tankCode);
     }
-  }, [value]);
+  }, [value, getTanks, getProducts]);
+
+  const validate = (rule, value) => {
+    if (rule.required === false) {
+      return;
+    }
+
+    let title = "Supplier or Tank or Base Product";
+    if (rule.field === 'mlitm_prodcmpy') {
+      title = t('fields.fromPlantSupplier');
+    }
+    if (rule.field === 'mlitm_tankcode') {
+      title = t('fields.fromTank');
+    }
+    if (rule.field === 'mlitm_prodcode') {
+      title = t('fields.fromProduct');
+    }
+
+    if (value === '' || !value) {
+      return Promise.reject(`${t('validate.set')} ─ ${title}`);
+    }
+
+    return Promise.resolve();
+  };
 
   return (
     <>
@@ -141,6 +184,7 @@ const From = ({ onChange, form, value, disabled }) => {
             name="mlitm_prodcmpy"
             label={t('fields.fromPlantSupplier')}
             style={{ width: '100%', marginRight: 5 }}
+            rules={[{ required: type==='1'||type==='2', validator: validate }]}
           >
             <Select
               showSearch
@@ -162,7 +206,12 @@ const From = ({ onChange, form, value, disabled }) => {
           </Form.Item>
         </Col>
         <Col span={9}>
-          <Form.Item name="mlitm_tankcode" label={t('fields.fromTank')} style={{ width: '100%', marginRight: 5 }}>
+          <Form.Item
+            name="mlitm_tankcode"
+            label={t('fields.fromTank')}
+            style={{ width: '100%', marginRight: 5 }}
+            rules={[{ required: type==='1'||type==='2', validator: validate }]}
+          >
             <Select
               showSearch
               loading={isLoading}
@@ -183,7 +232,12 @@ const From = ({ onChange, form, value, disabled }) => {
           </Form.Item>
         </Col>
         <Col span={9}>
-          <Form.Item name="mlitm_prodcode" label={t('fields.fromProduct')} style={{ width: '100%' }}>
+          <Form.Item
+            name="mlitm_prodcode"
+            label={t('fields.fromProduct')}
+            style={{ width: '100%' }}
+            rules={[{ required: type==='1'||type==='2', validator: validate }]}
+          >
             <Select
               showSearch
               loading={isLoading}

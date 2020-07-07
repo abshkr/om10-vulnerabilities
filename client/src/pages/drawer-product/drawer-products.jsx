@@ -5,7 +5,7 @@ import { SWRConfig } from 'swr';
 import { Button, Tabs, Modal } from 'antd';
 import { fetcher } from 'utils';
 import { useTranslation } from 'react-i18next';
-import { SyncOutlined, PlusOutlined, ReconciliationOutlined, EditOutlined } from '@ant-design/icons';
+import { SyncOutlined, PlusOutlined, ReconciliationOutlined, EditOutlined, TrademarkOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download, FormModal } from 'components';
 import { DRAWER_PRODUCTS } from '../../api';
@@ -16,6 +16,7 @@ import auth from '../../auth';
 import Forms from './forms';
 import Assets from './assets/assets'
 import ManageImgForm from './assets/manage-images'
+import GenericForm from './generics/forms'
 
 const DrawerProduct = () => {
   const [visible, setVisible] = useState(false);
@@ -56,6 +57,29 @@ const DrawerProduct = () => {
     });
   };
 
+  const manageGenerics = () => {
+    Modal.info({
+      className: 'form-container',
+      title: t('operations.manageGeneric'),
+      centered: true,
+      width: '60vw',
+      icon: <EditOutlined />,
+      content: (
+        <SWRConfig
+          value={{
+            refreshInterval: 0,
+            fetcher,
+          }}
+        >
+          <GenericForm />
+        </SWRConfig>
+      ),
+      okButtonProps: {
+        style: { display: 'none' },
+      },
+    });
+  };
+
   const fields = columns(t);
 
   const data = payload?.records;
@@ -80,6 +104,16 @@ const DrawerProduct = () => {
         disabled={!access?.canUpdate}
       >
         {t('operations.manageImage')}
+      </Button>
+
+      <Button
+        type="primary"
+        icon={<TrademarkOutlined />}
+        onClick={manageGenerics}
+        // style={{ float: 'right', marginRight: 5 }}
+        disabled={!access?.canUpdate}
+      >
+        {t('operations.genericProd')}
       </Button>
 
       <Button
