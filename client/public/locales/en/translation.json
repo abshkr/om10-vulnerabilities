@@ -1496,7 +1496,8 @@
     "zeroEquipmentSelected": "You have not selected equipment for some Tankers. If you do not want to choose the existing one, system will create a new one for you automatically. Please confirm to process",
     "unlockAll": "Are you sure you want to unlock all compartments?",
     "noImageSeleted": "Please select an image",
-    "deleteImage": "Are you sure you want to remove image from server?"
+    "deleteImage": "Are you sure you want to remove image from server?",
+	"completeTrip": "View BOL will complete this trip, do you want to continue?"
   },
 
   "divider": {

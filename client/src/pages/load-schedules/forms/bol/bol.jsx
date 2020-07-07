@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { LOAD_SCHEDULES } from '../../../../api';
 
 const BOL = ({ value, redo, supermode, locateTrip }) => {
+  console.log("BOL START")
   const { t } = useTranslation();
 
   const [data, setData] = useState(null);
@@ -27,7 +28,9 @@ const BOL = ({ value, redo, supermode, locateTrip }) => {
         })
         .then((res) => {
           setData(res.data)
-          locateTrip(value.shls_trip_no);
+          if (value?.status === 'A') {
+            locateTrip(value.shls_trip_no);
+          }
         })
         .catch((errors) => {
           _.forEach(errors.response.data.errors, (error) => {
