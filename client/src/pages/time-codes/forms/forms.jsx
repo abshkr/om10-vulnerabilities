@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import {
   EditOutlined,
@@ -18,6 +18,8 @@ const TabPane = Tabs.TabPane;
 const TimecodeForm = ({ value, visible, handleFormState }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+
+  const { setFieldsValue } = form;
 
   const IS_CREATING = !value;
   
@@ -71,6 +73,12 @@ const TimecodeForm = ({ value, visible, handleFormState }) => {
     return Promise.resolve();
   };
 
+  useEffect(() => {
+    setFieldsValue({
+      tcd_title: "",
+    })
+  }, [value, visible]);
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -103,7 +111,14 @@ const TimecodeForm = ({ value, visible, handleFormState }) => {
         </>
       }
     >
-      <Form layout="vertical" form={form} scrollToFirstError>
+      <Form 
+        layout="vertical" 
+        form={form} 
+        scrollToFirstError 
+        initialValues={{
+          tcd_title: "",
+        }}
+      >
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
             <Form.Item name="tcd_title" label={t('fields.timeCode')} rules={[{ required: true, validator: validate }]}>
