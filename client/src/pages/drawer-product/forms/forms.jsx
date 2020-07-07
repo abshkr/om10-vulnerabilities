@@ -121,7 +121,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, setFilterValue })
 
   const handleBase = (v) => {
     FormModal({
-      width: '50vh',
+      width: '30vw',
       value: v,
       form: <BaseProductForm value={v} handleBaseCallBack={handleBaseCallBack} />,
       id: v?.pitem_base_code,

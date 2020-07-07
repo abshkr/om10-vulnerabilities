@@ -7,7 +7,7 @@ import {
   DeleteOutlined
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, Select, InputNumber, Checkbox } from 'antd';
+import { Form, Button, Tabs, Modal, Select, InputNumber, Checkbox, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 import _ from 'lodash';
@@ -84,7 +84,7 @@ const FormModal = ({ value, handleBaseCallBack }) => {
                 // loading={isValidating}
                 showSearch
                 optionFilterProp="children"
-                placeholder={!value ? t('placeholder.selectDepot') : null}
+                placeholder={!value ? t('placeholder.selectBaseProduct') : null}
                 filterOption={(input, option) =>
                   option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                 }
@@ -107,28 +107,35 @@ const FormModal = ({ value, handleBaseCallBack }) => {
               />
             </Form.Item>
 
-            <Form.Item name="pitem_bltol_ntol" label={t('fields.lowerLimit')} rules={[{ required: false }]}>
-              <InputNumber
-                min={-200}
-                max={0}
-                // defaultValue={-10}
-                formatter={value => `${value}%`}
-                parser={value => value.replace('%', '')}
-                disabled={!pitem_bltol_flag}
-                // onChange={onChangeNtol}
-              />
-            </Form.Item>
-
-            <Form.Item name="pitem_bltol_ptol" label={t('fields.upperLimit')} rules={[{ required: false }]}>
-              <InputNumber
-                min={0}
-                max={200}
-                formatter={value => `${value}%`}
-                parser={value => value.replace('%', '')}
-                disabled={!pitem_bltol_flag}
-                // onChange={onChangePtol}
-              />
-            </Form.Item>        
+            <Row gutter={[8, 20]}>
+              <Col span={12}>
+                <Form.Item name="pitem_bltol_ntol" label={t('fields.lowerLimit')} rules={[{ required: false }]}>
+                  <InputNumber
+                    min={-200}
+                    max={0}
+                    // defaultValue={-10}
+                    formatter={value => `${value}%`}
+                    parser={value => value.replace('%', '')}
+                    disabled={!pitem_bltol_flag}
+                    // onChange={onChangeNtol}
+                    style={{ width: '100%' }}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={12}>
+                <Form.Item name="pitem_bltol_ptol" label={t('fields.upperLimit')} rules={[{ required: false }]}>
+                  <InputNumber
+                    min={0}
+                    max={200}
+                    formatter={value => `${value}%`}
+                    parser={value => value.replace('%', '')}
+                    disabled={!pitem_bltol_flag}
+                    // onChange={onChangePtol}
+                    style={{ width: '100%' }}
+                  />
+                </Form.Item>        
+              </Col>
+            </Row>
             
           </TabPane>
         </Tabs>
