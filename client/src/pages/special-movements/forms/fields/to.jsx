@@ -1,11 +1,21 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Select, Row, Col } from 'antd';
-import api from 'api';
+import api, { SPECIAL_MOVEMENTS } from 'api';
 
-import { SPECIAL_MOVEMENTS } from '../../../../api';
-
-const To = ({ type, onChange, form, value, disabled }) => {
+const To = ({
+  type,
+  supplier,
+  setSupplier,
+  tank,
+  setTank,
+  product,
+  setProduct,
+  // onChange,
+  form,
+  value,
+  disabled
+}) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -15,9 +25,6 @@ const To = ({ type, onChange, form, value, disabled }) => {
   const [products, setProducts] = useState([]);
 
   const [isLoading, setLoading] = useState(false);
-
-  const [supplier, setSupplier] = useState(undefined);
-  const [tank, setTank] = useState(undefined);
 
   const IS_DISABLED = disabled;
 
@@ -68,8 +75,9 @@ const To = ({ type, onChange, form, value, disabled }) => {
           setLoading(false);
 
           if (response.data.records.length > 0) {
+            setProduct(response.data.records?.[0]?.tank_base);
             setFieldsValue({
-              mlitm_prodcode_to: response.data.records[0]?.tank_base
+              mlitm_prodcode_to: response.data.records?.[0]?.tank_base
             });
           }
         })
@@ -83,6 +91,7 @@ const To = ({ type, onChange, form, value, disabled }) => {
   const onSupplierChange = value => {
     setSupplier(value);
     setTank(undefined);
+    setProduct(undefined);
 
     getTanks(value);
 
@@ -93,14 +102,11 @@ const To = ({ type, onChange, form, value, disabled }) => {
   };
 
   const onTankChange = value => {
-    /* if (type === '0') {
-      onChange(value);
-    } */
-
     setTank(value);
+    setProduct(undefined);
     getProducts(value);
 
-    onChange(value);
+    // onChange(value);
   };
 
   useEffect(() => {
@@ -111,10 +117,8 @@ const To = ({ type, onChange, form, value, disabled }) => {
 
       setSupplier(prodCompany);
       setTank(tankCode);
-      onChange(tankCode);
-      /* if (type === '0') {
-        onChange(tankCode);
-      } */
+      setProduct(prodCode);
+      // onChange(tankCode);
       console.log('here I am in TO 2!....', prodCompany, tankCode, prodCode, type);
 
       setFieldsValue({
@@ -123,18 +127,19 @@ const To = ({ type, onChange, form, value, disabled }) => {
         mlitm_prodcode_to: prodCode
       });
     }
-  }, [value, setFieldsValue, onChange]);
+  // }, [value, setFieldsValue, onChange]);
+  }, [value, setFieldsValue, setSupplier, setTank, setProduct]);
 
   useEffect(() => {
     getSuppliers();
   }, [getSuppliers]);
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (type === '0' || type === '2') {
       setSupplier(null);
       setTank(null);
     }
-  }, [type]);
+  }, [type]); */
 
   useEffect(() => {
     if (value) {
