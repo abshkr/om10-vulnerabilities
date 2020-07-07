@@ -27,18 +27,20 @@ const TabPane = Tabs.TabPane;
 const FormModal = ({ value, visible, handleFormState, access, url, locateSpecialMv, config }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const { resetFields } = form;
+  const { resetFields, setFieldsValue } = form;
 
   const [type, setType] = useState(null);
   const [tab, setTab] = useState('1');
-  const [tank, setTank] = useState(undefined);
+  // const [tank, setTank] = useState(undefined);
+  const [tankFrom, setTankFrom] = useState(undefined);
+  const [tankTo, setTankTo] = useState(undefined);
   const [quantitySource, setQuantitySource] = useState(null);
 
-  const changeToTank = (tank) => {
+  /* const changeToTank = (tank) => {
     if (type !== '2') {
       setTank(tank);
     }
-  };
+  }; */
 
   const IS_CREATING = !value;
   const DISABLED = value?.mlitm_status === '5';
@@ -46,7 +48,31 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
   const FROM = ['1', '2'];
   const TO = ['0', '2'];
 
+  const onTypeChange = (value) => {
+    setType(value);
+    setTankFrom(undefined);
+    setTankTo(undefined);
+
+    /* resetFields();
+
+    setFieldsValue({
+      mlitm_type: value
+    }); */
+  };
+
+  const onFormClosed = () => {
+    setType(null);
+    setTankFrom(undefined);
+    setTankTo(undefined);
+    resetFields();
+    handleFormState(false, null);
+  };
+
   const onComplete = (mlitm_id) => {
+    setType(null);
+    setTankFrom(undefined);
+    setTankTo(undefined);
+    resetFields();
     handleFormState(false, null);
     if (mlitm_id) {
       locateSpecialMv(mlitm_id);
@@ -314,7 +340,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
-      onClose={() => handleFormState(false, null)}
+      onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
       mask={IS_CREATING}
@@ -394,7 +420,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
           <TabPane tab={t('tabColumns.general')} forceRender={true} key="1">
             <Row gutter={[8, 8]}>
               <Col span={8}>
-                <MovementType form={form} value={value} onChange={setType} disabled={DISABLED} />
+                <MovementType form={form} value={value} onChange={onTypeChange} disabled={DISABLED} />
               </Col>
               <Col span={8}>
                 <ReasonCode form={form} value={value} type={type} disabled={DISABLED} />
@@ -408,10 +434,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
 
             {type && <Divider>{t('divider.directions')}</Divider>}
 
-            {FROM.includes(type) && <From onChange={setTank} form={form} value={value} disabled={DISABLED} />}
+            {FROM.includes(type) && (
+              <From type={type} onChange={setTankFrom} form={form} value={value} disabled={DISABLED} />
+            )}
 
             {TO.includes(type) && (
-              <To type={type} onChange={changeToTank} form={form} value={value} disabled={DISABLED} />
+              <To type={type} onChange={setTankTo} form={form} value={value} disabled={DISABLED} />
             )}
 
             <Divider>{t('divider.calculation')}</Divider>
@@ -421,7 +449,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
               value={value}
               type={type}
               disabled={DISABLED}
-              tank={tank}
+              tank={type==='0' ? tankTo : tankFrom}
               config={config}
               pinQuantity={setQuantitySource}
             />

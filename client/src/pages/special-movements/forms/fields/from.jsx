@@ -5,7 +5,7 @@ import api from 'api';
 
 import { SPECIAL_MOVEMENTS } from 'api';
 
-const From = ({ onChange, form, value, disabled }) => {
+const From = ({ type, onChange, form, value, disabled }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -108,6 +108,7 @@ const From = ({ onChange, form, value, disabled }) => {
       setSupplier(prodCompany);
       setTank(tankCode);
       onChange(tankCode);
+      console.log('here I am in FROM  2!....', prodCompany, tankCode, prodCode, type);
 
       setFieldsValue({
         mlitm_prodcmpy: prodCompany,
@@ -122,16 +123,46 @@ const From = ({ onChange, form, value, disabled }) => {
   }, [getSuppliers]);
 
   useEffect(() => {
+    if (type === '0' || type === '2') {
+      setSupplier(null);
+      setTank(null);
+    }
+  }, [type]);
+
+  useEffect(() => {
     if (value) {
       const prodCompany = value.mlitm_prodcmpy === '' ? undefined : value.mlitm_prodcmpy;
       const tankCode = value.mlitm_tankcode === '' ? undefined : value.mlitm_tankcode;
-      const prodCode = value.mlitm_prodcode === '' ? undefined : value.mlitm_prodcode;
+      // const prodCode = value.mlitm_prodcode === '' ? undefined : value.mlitm_prodcode;
 
-      getSuppliers();
+      // getSuppliers();
       getTanks(prodCompany);
       getProducts(tankCode);
     }
-  }, [value]);
+  }, [value, getTanks, getProducts]);
+
+  const validate = (rule, value) => {
+    if (rule.required === false) {
+      return;
+    }
+
+    let title = "Supplier or Tank or Base Product";
+    if (rule.field === 'mlitm_prodcmpy') {
+      title = t('fields.fromPlantSupplier');
+    }
+    if (rule.field === 'mlitm_tankcode') {
+      title = t('fields.fromTank');
+    }
+    if (rule.field === 'mlitm_prodcode') {
+      title = t('fields.fromProduct');
+    }
+
+    if (value === '' || !value) {
+      return Promise.reject(`${t('validate.set')} ─ ${title}`);
+    }
+
+    return Promise.resolve();
+  };
 
   return (
     <>
@@ -141,6 +172,7 @@ const From = ({ onChange, form, value, disabled }) => {
             name="mlitm_prodcmpy"
             label={t('fields.fromPlantSupplier')}
             style={{ width: '100%', marginRight: 5 }}
+            rules={[{ required: type==='1'||type==='2', validator: validate }]}
           >
             <Select
               showSearch
@@ -162,7 +194,12 @@ const From = ({ onChange, form, value, disabled }) => {
           </Form.Item>
         </Col>
         <Col span={9}>
-          <Form.Item name="mlitm_tankcode" label={t('fields.fromTank')} style={{ width: '100%', marginRight: 5 }}>
+          <Form.Item
+            name="mlitm_tankcode"
+            label={t('fields.fromTank')}
+            style={{ width: '100%', marginRight: 5 }}
+            rules={[{ required: type==='1'||type==='2', validator: validate }]}
+          >
             <Select
               showSearch
               loading={isLoading}
@@ -183,7 +220,12 @@ const From = ({ onChange, form, value, disabled }) => {
           </Form.Item>
         </Col>
         <Col span={9}>
-          <Form.Item name="mlitm_prodcode" label={t('fields.fromProduct')} style={{ width: '100%' }}>
+          <Form.Item
+            name="mlitm_prodcode"
+            label={t('fields.fromProduct')}
+            style={{ width: '100%' }}
+            rules={[{ required: type==='1'||type==='2', validator: validate }]}
+          >
             <Select
               showSearch
               loading={isLoading}

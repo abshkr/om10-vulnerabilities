@@ -93,12 +93,14 @@ const To = ({ type, onChange, form, value, disabled }) => {
   };
 
   const onTankChange = value => {
-    if (type === '0') {
+    /* if (type === '0') {
       onChange(value);
-    }
+    } */
 
     setTank(value);
     getProducts(value);
+
+    onChange(value);
   };
 
   useEffect(() => {
@@ -109,10 +111,11 @@ const To = ({ type, onChange, form, value, disabled }) => {
 
       setSupplier(prodCompany);
       setTank(tankCode);
-
-      if (type === '0') {
+      onChange(tankCode);
+      /* if (type === '0') {
         onChange(tankCode);
-      }
+      } */
+      console.log('here I am in TO 2!....', prodCompany, tankCode, prodCode, type);
 
       setFieldsValue({
         mlitm_prodcmpy_to: prodCompany,
@@ -120,23 +123,53 @@ const To = ({ type, onChange, form, value, disabled }) => {
         mlitm_prodcode_to: prodCode
       });
     }
-  }, [value, setFieldsValue, type, onChange]);
+  }, [value, setFieldsValue, onChange]);
 
   useEffect(() => {
     getSuppliers();
   }, [getSuppliers]);
 
   useEffect(() => {
+    if (type === '0' || type === '2') {
+      setSupplier(null);
+      setTank(null);
+    }
+  }, [type]);
+
+  useEffect(() => {
     if (value) {
       const prodCompany = value.mlitm_prodcmpy_to === '' ? undefined : value.mlitm_prodcmpy_to;
       const tankCode = value.mlitm_tankcode_to === '' ? undefined : value.mlitm_tankcode_to;
-      const prodCode = value.mlitm_prodcode_to === '' ? undefined : value.mlitm_prodcode_to;
-
-      getSuppliers();
+      // const prodCode = value.mlitm_prodcode_to === '' ? undefined : value.mlitm_prodcode_to;
+      console.log('here I am!....');
+      // getSuppliers();
       getTanks(prodCompany);
       getProducts(tankCode);
     }
-  }, [value]);
+  }, [value, getTanks, getProducts]);
+
+  const validate = (rule, value) => {
+    if (rule.required === false) {
+      return;
+    }
+
+    let title = "Supplier or Tank or Base Product";
+    if (rule.field === 'mlitm_prodcmpy_to') {
+      title = t('fields.toPlantSupplier');
+    }
+    if (rule.field === 'mlitm_tankcode_to') {
+      title = t('fields.toTank');
+    }
+    if (rule.field === 'mlitm_prodcode_to') {
+      title = t('fields.toProduct');
+    }
+
+    if (value === '' || !value) {
+      return Promise.reject(`${t('validate.set')} ─ ${title}`);
+    }
+
+    return Promise.resolve();
+  };
 
   return (
     <>
@@ -146,6 +179,7 @@ const To = ({ type, onChange, form, value, disabled }) => {
             name="mlitm_prodcmpy_to"
             label={t('fields.toPlantSupplier')}
             style={{ width: '100%', marginRight: 5 }}
+            rules={[{ required: type==='0'||type==='2', validator: validate }]}
           >
             <Select
               showSearch
@@ -171,6 +205,7 @@ const To = ({ type, onChange, form, value, disabled }) => {
             name="mlitm_tankcode_to"
             label={t('fields.toTank')}
             style={{ width: '100%', marginRight: 5 }}
+            rules={[{ required: type==='0'||type==='2', validator: validate }]}
           >
             <Select
               showSearch
@@ -192,7 +227,12 @@ const To = ({ type, onChange, form, value, disabled }) => {
           </Form.Item>
         </Col>
         <Col span={9}>
-          <Form.Item name="mlitm_prodcode_to" label={t('fields.toProduct')} style={{ width: '100%' }}>
+          <Form.Item
+            name="mlitm_prodcode_to"
+            label={t('fields.toProduct')}
+            style={{ width: '100%' }}
+            rules={[{ required: type==='0'||type==='2', validator: validate }]}
+          >
             <Select
               showSearch
               loading={isLoading}
