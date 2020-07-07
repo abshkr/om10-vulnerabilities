@@ -11,8 +11,9 @@ import Overview from './overview';
 import ReleaseNotes from './release-notes';
 import { useAuth } from '../../hooks';
 
-const Dashboard = () => {
+const Dashboard = ({ user }) => {
   const { t } = useTranslation();
+
   const access = useAuth('MENU_HOME');
 
   return (
@@ -27,9 +28,11 @@ const Dashboard = () => {
             <Overview />
           </Tabs.TabPane>
 
-          {/* <Tabs.TabPane tab="Release Notes" key="3">
-            <ReleaseNotes />
-          </Tabs.TabPane> */}
+          {user?.per_code === '9999' && (
+            <Tabs.TabPane tab="Release Notes" key="3">
+              <ReleaseNotes />
+            </Tabs.TabPane>
+          )}
         </Tabs>
       </DashboardContainer>
     </Page>

@@ -8,7 +8,245 @@ const { Panel } = Collapse;
 
 const data = [
   {
-    title: `Latest Release Version Notes (${VERSION})- 29/06/2020`,
+    title: `Latest Release Version Notes (${VERSION}) - 07/06/2020`,
+    content: (
+      <>
+        <>
+          <Divider>Features</Divider>
+        </>
+
+        <>
+          <Divider>Enhancements</Divider>
+
+          <p>
+            OM5K-6981 - Drawer product Asset screen - Can not select the image by clicking it, User has to
+            click on the name to select <a>https://diamondkey.com/browse/OM5K-6981</a>
+          </p>
+          <p>
+            OM5K-6989 - Journal Screen - The screen keep refreshing, it gives a flickering effect
+            <a>https://diamondkey.com/browse/OM5K-6989</a>
+          </p>
+        </>
+
+        <>
+          <Divider>Bug Fixes</Divider>
+
+          <p>
+            OM5K-6439 - <a>https://diamondkey.com.browse/OM5K-6439</a>
+          </p>
+          <p>
+            OM5K-6521 - <a>https://diamondkey.combrowse/OM5K-6521</a>
+          </p>
+          <p>
+            OM5K-7000 - <a>https://diamondkey.com/browse/OM5K-7000</a>
+          </p>
+          <p>
+            OM5K-7001 - <a>https://diamondkey.com/browse/OM5K-7001</a>
+          </p>
+          <p>
+            OM5K-7002 - <a>https://diamondkey.com/browse/OM5K-7002</a>
+          </p>
+          <p>
+            OM5K-7007 - <a>https://diamondkey.com/browse/OM5K-7007</a>
+          </p>
+          <p>
+            OM5K-6491 - <a>https://diamondkey.com/browse/OM5K-6491</a>
+          </p>
+          <p>
+            OM5K-6625 - <a>https://diamondkey.com/browse/OM5K-6625</a>
+          </p>
+          <p>
+            OM5K-6800 - <a>https://diamondkey.com/browse/OM5K-6800</a>
+          </p>
+          <p>
+            OM5K-6948 - <a>https://diamondkey.com/browse/OM5K-6948</a>
+          </p>
+          <p>
+            OM5K-6978 - <a>https://diamondkey.com/browse/OM5K-6978</a>
+          </p>
+          <p>
+            OM5K-7003 - <a>https://diamondkey.com/browse/OM5K-7003</a>
+          </p>
+          <p>
+            OM5K-7019 - <a>https://diamondkey.com/browse/OM5K-7019</a>
+          </p>
+          <p>
+            OM5K-7041 - <a>https://diamondkey.com/browse/OM5K-7041</a>
+          </p>
+          <p>
+            OM5K-7042 - <a>https://diamondkey.com/browse/OM5K-7042</a>
+          </p>
+          <p>
+            OM5K-7043 - <a>https://diamondkey.com/browse/OM5K-7043</a>
+          </p>
+          <p>
+            OM5K-6515 - <a>https://diamondkey.com/browse/OM5K-6515</a>
+          </p>
+          <p>
+            OM5K-6681 - <a>https://diamondkey.com/browse/OM5K-6681</a>
+          </p>
+          <p>
+            OM5K-6796 - <a>https://diamondkey.com/browse/OM5K-6796</a>
+          </p>
+          <p>
+            OM5K-6834 - <a>https://diamondkey.com/browse/OM5K-6834</a>
+          </p>
+          <p>
+            OM5K-6976 - <a>https://diamondkey.com/browse/OM5K-6976</a>
+          </p>
+          <p>
+            OM5K-6986 - <a>https://diamondkey.com/browse/OM5K-6986</a>
+          </p>
+          <p>
+            OM5K-6990 - <a>https://diamondkey.com/browse/OM5K-6990</a>
+          </p>
+          <p>
+            OM5K-6993 - <a>https://diamondkey.com/browse/OM5K-6993</a>
+          </p>
+          <p>
+            OM5K-6995 - <a>https://diamondkey.com/browse/OM5K-6995</a>
+          </p>
+          <p>
+            OM5K-7006 - <a>https://diamondkey.com/browse/OM5K-7006</a>
+          </p>
+          <p>
+            OM5K-7008 - <a>https://diamondkey.com/browse/OM5K-7008</a>
+          </p>
+          <p>
+            OM5K-7009 - <a>https://diamondkey.com/browse/OM5K-7009</a>
+          </p>
+          <p>
+            OM5K-7023 - <a>https://diamondkey.com/browse/OM5K-7023</a>
+          </p>
+          <p>
+            OM5K-7024 - <a>https://diamondkey.com/browse/OM5K-7024</a>
+          </p>
+          <p>
+            OM5K-7044 - <a>https://diamondkey.com/browse/OM5K-7044</a>
+          </p>
+          <p>
+            OM5K-7046 - <a>https://diamondkey.com/browse/OM5K-7046</a>
+          </p>
+          <p>
+            OM5K-7049 - <a>https://diamondkey.com/browse/OM5K-7049</a>
+          </p>
+          <p>
+            OM5K-6855 - <a>https://diamondkey.com/browse/OM5K-6855</a>
+          </p>
+          <p>
+            OM5K-6864 - <a>https://diamondkey.com/browse/OM5K-6864</a>
+          </p>
+          <p>
+            OM5K-6917 - <a>https://diamondkey.com/browse/OM5K-6917</a>
+          </p>
+          <p>
+            OM5K-6924 - <a>https://diamondkey.com/browse/OM5K-6924</a>
+          </p>
+          <p>
+            OM5K-6929 - <a>https://diamondkey.com/browse/OM5K-6929</a>
+          </p>
+          <p>
+            OM5K-6959 - <a>https://diamondkey.com/browse/OM5K-6959</a>
+          </p>
+        </>
+      </>
+    ),
+  },
+
+  {
+    title: `Release Version Notes (10.0.15) - 03/07/2020`,
+    content: (
+      <>
+        <>
+          <Divider>Features</Divider>
+        </>
+
+        <>
+          <Divider>Enhancements</Divider>
+        </>
+
+        <>
+          <Divider>Bug Fixes</Divider>
+
+          <p>
+            OM5K-6836 - <a>https://diamondkey.com/browse/OM5K-6836</a>
+          </p>
+          <p>
+            OM5K-6961 - <a>https://diamondkey.com/browse/OM5K-6961</a>
+          </p>
+          <p>
+            OM5K-6975 - <a>https://diamondkey.com/browse/OM5K-6975</a>
+          </p>
+          <p>
+            OM5K-6982 - <a>https://diamondkey.com/browse/OM5K-6982</a>
+          </p>
+          <p>
+            OM5K-6687 - <a>https://diamondkey.com/browse/OM5K-6687</a>
+          </p>
+          <p>
+            OM5K-6838 - <a>https://diamondkey.com/browse/OM5K-6838</a>
+          </p>
+          <p>
+            OM5K-6857 - <a>https://diamondkey.com/browse/OM5K-6857</a>
+          </p>
+          <p>
+            OM5K-6861 - <a>https://diamondkey.com/browse/OM5K-6861</a>
+          </p>
+          <p>
+            OM5K-6915 - <a>https://diamondkey.com/browse/OM5K-6915</a>
+          </p>
+          <p>
+            OM5K-6956 - <a>https://diamondkey.com/browse/OM5K-6956</a>
+          </p>
+          <p>
+            OM5K-6960 - <a>https://diamondkey.com/browse/OM5K-6960</a>
+          </p>
+          <p>
+            OM5K-6965 - <a>https://diamondkey.com/browse/OM5K-6965</a>
+          </p>
+          <p>
+            OM5K-6983 - <a>https://diamondkey.com/browse/OM5K-6983</a>
+          </p>
+          <p>
+            OM5K-6655 - <a>https://diamondkey.com/browse/OM5K-6655</a>
+          </p>
+          <p>
+            OM5K-6689 - <a>https://diamondkey.com/browse/OM5K-6689</a>
+          </p>
+          <p>
+            OM5K-6783 - <a>https://diamondkey.com/browse/OM5K-6783</a>
+          </p>
+          <p>
+            OM5K-6865 - <a>https://diamondkey.com/browse/OM5K-6865</a>
+          </p>
+          <p>
+            OM5K-6930 - <a>https://diamondkey.com/browse/OM5K-6930</a>
+          </p>
+          <p>
+            OM5K-6949 - <a>https://diamondkey.com/browse/OM5K-6949</a>
+          </p>
+          <p>
+            OM5K-6950 - <a>https://diamondkey.com/browse/OM5K-6950</a>
+          </p>
+          <p>
+            OM5K-6952 - <a>https://diamondkey.com/browse/OM5K-6952</a>
+          </p>
+          <p>
+            OM5K-6955 - <a>https://diamondkey.com/browse/OM5K-6955</a>
+          </p>
+          <p>
+            OM5K-6958 - <a>https://diamondkey.com/browse/OM5K-6958</a>
+          </p>
+          <p>
+            OM5K-6863 - <a>https://diamondkey.com/browse/OM5K-6863</a>
+          </p>
+        </>
+      </>
+    ),
+  },
+
+  {
+    title: `Release Version Notes (10.0.14)- 29/06/2020`,
     content: (
       <>
         <>
