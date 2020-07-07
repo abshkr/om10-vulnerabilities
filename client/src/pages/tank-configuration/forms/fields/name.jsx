@@ -16,6 +16,10 @@ const Name = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   const validate = (rule, input) => {
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.name')}`);
+    }
+
     if (input && input.length > 30) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 30 ─ ${t('descriptions.maxCharacters')}`);
     }
@@ -24,7 +28,7 @@ const Name = ({ form, value }) => {
   };
 
   return (
-    <Form.Item name="tank_name" label={t('fields.name')} rules={[{ required: false, validator: validate }]}>
+    <Form.Item name="tank_name" label={t('fields.name')} rules={[{ required: true, validator: validate }]}>
       <Input />
     </Form.Item>
   );
