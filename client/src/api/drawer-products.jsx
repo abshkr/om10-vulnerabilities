@@ -13,6 +13,10 @@ export const CUSTOMERS = '/api/pages/product/customers.php';
 export const AVAILABLE_BASES = '/api/pages/product/base_products.php';
 export const BASES = '/api/pages/product/prod_ratios.php';
 
+export const GENERICS_READ = '/api/pages/generic_product/read.php';
+export const GENERICS_DELETE = '/api/pages/generic_product/delete.php';
+export const GENERICS_CREATE = '/api/pages/generic_product/create.php';
+
 export const CREATE = '/api/pages/product/create.php';
 export const UPDATE = '/api/pages/product/update.php';
 export const DELETE = '/api/pages/product/delete.php';

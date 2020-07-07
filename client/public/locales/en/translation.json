@@ -1087,7 +1087,9 @@
     "thisMonth": "This Month",
     "leakDetection": "Leak Detection",
     "serverTime": "Server Time",
-    "loggedInAs": "Logged In As"
+    "loggedInAs": "Logged In As",
+	"drawerProdCode": "Drawer Product Code",
+	"drawerProdName": "Drawer Product Name"
   },
 
   "pageMenu": {
@@ -1317,9 +1319,11 @@
     "viewOrderSeals": "View Order Seals",
     "setAddressTemplate": "Set As Default Template",
     "manageImage": "Manage Images",
+	"manageGeneric": "Manage Generic Product",
     "uploadImg": "Upload Image",
     "removeImg": "Remove From Server",
-    "authenticate": "Authenticate"
+    "authenticate": "Authenticate",
+	"genericProd": "Generic Products"
   },
 
   "tabColumns": {
@@ -1455,7 +1459,8 @@
     "favourites": "Favourites",
     "manual": "Manual",
     "copyright": "Copyright",
-	"noPartners": "Please add at least one partner to this partnership"
+	"noPartners": "Please add at least one partner to this partnership",
+	"toAddGeneric": "Please input new generic name and create"
   },
 
   "prompts": {
