@@ -1,5 +1,14 @@
 const columns = (t, form, products, soldTo, shipTo, units) => [
   {
+    headerName: t('fields.equipment'),
+    field: 'eqpt_code',
+    resizable: true,
+    width: 130,
+    suppressSizeToFit: true,
+    pinned: 'left',
+  },
+
+  {
     headerName: t('fields.compartment'),
     field: 'compartment',
     resizable: true,
