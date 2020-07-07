@@ -125,6 +125,8 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
         <Col span={12}>
           <Form.Item name="mlitm_qty_amb" label={t('fields.observedQuantity')}>
             <InputNumber
+              min={0}
+              max={999999999}
               precision={config.precisionVolume}
               disabled={IS_DISALBED}
               style={{ width: '100%' }}
@@ -140,6 +142,8 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
         <Col span={12}>
           <Form.Item name="mlitm_qty_cor" label={t('fields.standardQuantity')}>
             <InputNumber
+              min={0}
+              max={999999999}
               precision={config.precisionVolume}
               disabled={IS_DISALBED}
               style={{ width: '100%' }}
@@ -150,6 +154,8 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
         <Col span={12}>
           <Form.Item name="mlitm_qty_kg" label={t('fields.observedMass')}>
             <InputNumber
+              min={0}
+              max={999999999}
               precision={config.precisionMass}
               disabled={IS_DISALBED}
               style={{ width: '100%' }}
@@ -195,7 +201,13 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
       <Row gutter={[8, 8]}>
         <Col span={12}>
           <Form.Item name="mlitm_qty_rpt" label={t('fields.alternateQuantity')} >
-            <InputNumber precision={config.precisionVolume} disabled={IS_DISALBED} style={{ width: '100%' }} />
+            <InputNumber
+              min={0}
+              max={999999999}
+              precision={config.precisionVolume}
+              disabled={IS_DISALBED}
+              style={{ width: '100%' }}
+            />
           </Form.Item>
         </Col>
         <Col span={12}>
