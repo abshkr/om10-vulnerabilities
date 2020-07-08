@@ -144,7 +144,6 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       if (findResult) {
         notification.error({
           message: t("messages.validationFailed"),
-          // description: `${t("descriptions.preOrderProdUnit")} `,
           description: `${t("descriptions.preOrderProdUnit")} ${findResult.prod_code}/${findResult.prod_name} `,
         });
         return;
@@ -169,7 +168,6 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       if (findResult) {
         notification.error({
           message: t("messages.validationFailed"),
-          // description: `${t("descriptions.preOrderProdUnit")} `,
           description: `${t("descriptions.preSchedProdUnit")} ${findResult.compartment} `,
         });
         return;
@@ -182,7 +180,6 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       if (findResult) {
         notification.error({
           message: t("messages.validationFailed"),
-          // description: `${t("descriptions.preOrderProdUnit")} `,
           description: `${t("descriptions.preSchedProd")} ${findResult.compartment} `,
         });
         return;
