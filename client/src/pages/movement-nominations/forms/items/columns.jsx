@@ -165,7 +165,7 @@ const useColumns = (value, selected) => {
     {
       headerName: t('fields.itemLock'),
       field: 'mvitm_completed',
-      filter: 'MultiFilter',
+      filter: 'BooleanFilter',
       sortable: true,
       resizable: true,
       width: 90,

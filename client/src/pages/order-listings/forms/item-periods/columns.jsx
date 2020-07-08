@@ -92,7 +92,7 @@ const columns = (t, pageState, form, units) => [
   {
     headerName: t('fields.orderApproved'),
     field: 'oprd_approved',
-    filter: 'FuzzyFilter',
+    filter: 'BooleanFilter',
     sortable: true,
     resizable: true,
     hide: false,
@@ -247,7 +247,7 @@ const columns = (t, pageState, form, units) => [
   {
     headerName: t('fields.oprdPriceFixed'),
     field: 'oprd_price_fixed',
-    filter: 'FuzzyFilter',
+    filter: 'BooleanFilter',
     sortable: true,
     resizable: true,
     hide: false,

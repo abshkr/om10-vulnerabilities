@@ -15,7 +15,7 @@ const columns = t => [
   {
     headerName: '00:00',
     field: '0',
-    filter: 'FuzzyFilter',
+    filter: 'BooleanFilter',
     sortable: true,
     resizable: true,
     cellRenderer: 'BooleanRenderer'

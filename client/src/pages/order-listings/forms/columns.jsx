@@ -106,7 +106,7 @@ const columns = (t, pageState, form, units) => [
   {
     headerName: t('fields.oitemByPacks'),
     field: 'oitem_by_packs',
-    filter: 'FuzzyFilter',
+    filter: 'BooleanFilter',
     sortable: true,
     resizable: true,
     hide: true,
