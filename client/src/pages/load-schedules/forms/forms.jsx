@@ -124,7 +124,6 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
   const onFinish = async () => {
     const record = await form.validateFields();
-    console.log(record);
     
     if (record?.shls_ld_type === "3" /* Preorder*/) {
       let findResult = _.find(record.products, (item) => {
@@ -151,7 +150,6 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
         return;
       }
     } else if (record?.shls_ld_type === "2" /* PreSchedule*/) {
-      console.log("get here preschedule");
       let findResult = _.find(record.compartments, (item) => {
         return item.prod_code !== "";
       });
