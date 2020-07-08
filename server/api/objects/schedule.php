@@ -396,7 +396,8 @@ class Schedule extends CommonClass
 
         if (isset($this->compartments)) {
             foreach ($this->compartments as $compartment) {
-                if ($compartment->qty_scheduled <= 0 || $compartment->qty_scheduled === "") {
+                if ($compartment->qty_scheduled <= 0 || $compartment->qty_scheduled === ""
+                    || $compartment->prod_code === "") {
                     continue;
                 }
 
