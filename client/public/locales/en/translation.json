@@ -1608,6 +1608,8 @@
     "prescheduleReady": "Please select product in at least one compartment",
     "preOrderReady": "Please input quantity for at least one product",
     "preOrderProdUnit": "Please select unit for product",
+	"preSchedProdUnit": "Please select unit for compartment",
+	"preSchedProd": "Please select product for compartment",
     "zeroCompartmentCount": "The compartment counts cannot be ZERO",
     "oneCompartmentRequired": "At least one compartment required if the equipment is neither Prime Mover nor Flatbed",
     "minEqptForCombination" : "The combination type needs at least 2 pieces of equipment",
