@@ -45,6 +45,11 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     }
   );
 
+  const onFormClosed = () => {
+    resetFields();
+    handleFormState(false, null);
+  };
+
   const onItemValidation = items => {
     const errors = [];
 
@@ -95,6 +100,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   };
 
   const onComplete = (db_address_key) => {
+    resetFields();
     handleFormState(false, null);
     mutate(ADDRESSES.READ);
     if (db_address_key) {
@@ -240,7 +246,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
-      onClose={() => handleFormState(false, null)}
+      onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
       mask={IS_CREATING}
@@ -253,7 +259,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={onFormClosed}
           >
             {t('operations.cancel')}
           </Button>
