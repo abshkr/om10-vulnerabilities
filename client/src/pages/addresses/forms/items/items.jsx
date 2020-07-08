@@ -77,9 +77,11 @@ const Items = ({ setTableAPIContext, value, addressCode }) => {
       address_action: '+',
       db_addr_line_id: addressCode,
       db_addrline_no: length,
-      db_addr_line_type: type,
+      // db_addr_line_type: type,
+      db_addr_line_type: type === '' ? t('placeholder.selectAddressLineType') : type,
       db_addr_line_typename: '',
-      db_addr_line: '',
+      // db_addr_line: '',
+      db_addr_line: t('placeholder.enterAddressLineText'),
       editable: true,
     };
 

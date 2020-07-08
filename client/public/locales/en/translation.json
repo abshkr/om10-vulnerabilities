@@ -1726,7 +1726,9 @@
     "setSourceUnit": "Please Select Source Unit",
     "setDestinationUnit": "Please Select Destination Unit",
     "selectLocale": "Please Select Locale",
-    "selectMessage": "Please Select Message"
+    "selectMessage": "Please Select Message",
+    "selectAddressLineType" : "Dbl-click to select type",
+    "enterAddressLineText" : "Dbl-click to enter the line text"
   },
 
   "validate": {
