@@ -428,6 +428,7 @@ const Items = ({ setTableAPIContext, value }) => {
 
       <Form.Item name="items">
         <DataTable
+          minimal={true}
           columns={fields}
           data={data}
           handleSelect={(value) => handleItemSelect(value)}

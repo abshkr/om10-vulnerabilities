@@ -60,7 +60,7 @@ const Addresses = ({popup}) => {
   return (
     <Page page={page} name={name} modifiers={modifiers} access={access} standalone={popup} avatar="addresses">
       <DataTable
-        minimal={popup}
+        minimal={false}
         data={data}
         columns={fields}
         isLoading={isLoading}

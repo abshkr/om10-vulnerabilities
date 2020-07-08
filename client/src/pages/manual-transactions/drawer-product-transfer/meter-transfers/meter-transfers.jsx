@@ -126,6 +126,7 @@ const MeterTransfers = ({
     <Spin indicator={null} spinning={isLoading}>
       <Form.Item name="meter_transfers">
         <DataTable 
+          minimal={true}
           data={data} 
           height="70vh" 
           columns={fields} 

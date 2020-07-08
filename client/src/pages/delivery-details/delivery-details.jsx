@@ -83,7 +83,7 @@ const DeliveryDetails = ({ params }) => {
         selectionMode="single"
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
-        minimal
+        minimal={true}
         autoColWidth
       />
       <Forms

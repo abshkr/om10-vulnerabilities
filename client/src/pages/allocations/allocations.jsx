@@ -12,6 +12,7 @@ import columns from './columns';
 import auth from '../../auth';
 
 import Forms from './forms';
+import { stubFalse } from 'lodash';
 
 const Allocations = ({popup}) => {
   const [visible, setVisible] = useState(false);
@@ -59,7 +60,7 @@ const Allocations = ({popup}) => {
   return (
     <Page page={page} name={name} modifiers={modifiers} access={access} standalone={popup} >
       <DataTable
-        minimal={popup}
+        minimal={false}
         data={data}
         columns={fields}
         isLoading={isLoading}

@@ -180,6 +180,7 @@ const MeterTotals = ({
     <Spin indicator={null} spinning={isLoading}>
       <Form.Item name="meter_totals">
         <DataTable 
+          minimal={true}
           data={data} 
           height="70vh" 
           columns={fields} 

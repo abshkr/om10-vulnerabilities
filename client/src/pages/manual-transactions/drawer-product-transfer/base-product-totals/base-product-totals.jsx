@@ -207,6 +207,7 @@ const BaseProductTotals = ({
     <Spin indicator={null} spinning={isLoading}>
       <Form.Item name="base_totals">
         <DataTable 
+          minimal={true}
           data={data} 
           height="70vh" 
           columns={fields} 

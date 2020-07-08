@@ -274,7 +274,7 @@ const OrderListings = ({popup, params}) => {
   return (
     <Page page={page} name={name} modifiers={modifiers} access={access} standalone={popup}>
       <DataTable
-        minimal={popup}
+        minimal={false}
         data={data}
         columns={fields}
         isLoading={isLoading}
