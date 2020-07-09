@@ -16,7 +16,7 @@ const components = {
   ScheduleEditor: Schedule,
 };
 
-const Products = ({ value, form, drawer }) => {
+const Products = ({ value, form, drawer, access }) => {
   const { t } = useTranslation();
   const { data: units } = useSWR(LOAD_SCHEDULES.UNIT_TYPES);
 
@@ -24,7 +24,7 @@ const Products = ({ value, form, drawer }) => {
 
   const { setFieldsValue } = form;
 
-  const fields = columns(t, form, units);
+  const fields = columns(t, form, units, access);
 
   useEffect(() => {
     setData([]);

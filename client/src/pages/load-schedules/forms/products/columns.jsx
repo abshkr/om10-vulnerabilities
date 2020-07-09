@@ -1,4 +1,4 @@
-const columns = (t, form, units) => [
+const columns = (t, form, units, access) => [
   {
     headerName: t('fields.code'),
     field: 'prod_code',
@@ -20,7 +20,7 @@ const columns = (t, form, units) => [
     resizable: true,
     width: 200,
     suppressSizeToFit: true,
-    editable: true,
+    editable: access.extra,
     cellEditor: 'ScheduleEditor',
     cellEditorParams: {
       form: form,

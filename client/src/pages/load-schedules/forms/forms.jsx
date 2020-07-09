@@ -633,7 +633,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               <Compartments form={form} value={value} drawer={drawer} tanker={tanker} />
             )}
 
-            {mode === '3' && !READ_ONLY && <Products form={form} value={value} drawer={drawer} />}
+            {mode === '3' && !READ_ONLY && <Products form={form} value={value} drawer={drawer} access={access} />}
 
             {READ_ONLY && <Summary value={value} />}
           </TabPane>

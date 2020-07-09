@@ -22,6 +22,7 @@ const useAuth = (module) => {
     canUpdate: false,
     canCreate: false,
     canView: false,
+    extra: false
   });
 
   useEffect(() => {
@@ -40,6 +41,7 @@ const useAuth = (module) => {
           canUpdate: access.priv_update,
           canCreate: access.priv_create,
           canView: access.priv_view,
+          extra: access.priv_extra,
           isLoading: false,
         });
       }
