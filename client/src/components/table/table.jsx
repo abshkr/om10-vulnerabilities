@@ -228,6 +228,7 @@ const Table = ({
                   onCellValueChanged={onCellUpdate}
                   onFirstDataRendered={handleFirstDataRendered}
                   pinnedBottomRowData={footer}
+                  stopEditingWhenGridLosesFocus={true}
                 />
               </div>
             </div>
