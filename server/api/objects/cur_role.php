@@ -16,7 +16,8 @@ class CurRole extends CommonClass
         "PRIV_VIEW" => 1,
         "PRIV_CREATE" => 1,
         "PRIV_DELETE" => 1,
-        "PRIV_PROTECT" => 1
+        "PRIV_PROTECT" => 1,
+        "PRIV_EXTRA" => 1,      //Like schedule product in LOAD SCHEDULE screen
     );
 
     public function prev_on_page()
@@ -55,7 +56,10 @@ class CurRole extends CommonClass
                     AND E.DOMAIN_ID = A.DOMAIN_ID AND E.OBJECT_ID = A.OBJECT_ID) PRIV_DELETE,
                 (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES F
                 WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 5
-                    AND F.DOMAIN_ID = A.DOMAIN_ID AND F.OBJECT_ID = A.OBJECT_ID) PRIV_PROTECT
+                    AND F.DOMAIN_ID = A.DOMAIN_ID AND F.OBJECT_ID = A.OBJECT_ID) PRIV_PROTECT,
+                (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES F
+                WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 6
+                    AND F.DOMAIN_ID = A.DOMAIN_ID AND F.OBJECT_ID = A.OBJECT_ID) PRIV_EXTRA
             FROM URBAC_DOMAIN_OBJECTS A, URBAC_DOMAINS, URBAC_OBJECTS
             WHERE A.DOMAIN_ID != 1
                 AND A.DOMAIN_ID = URBAC_DOMAINS.DOMAIN_ID
@@ -124,7 +128,10 @@ class CurRole extends CommonClass
                     AND E.DOMAIN_ID = A.DOMAIN_ID AND E.OBJECT_ID = A.OBJECT_ID) PRIV_DELETE,
                 (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES F
                 WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 5
-                    AND F.DOMAIN_ID = A.DOMAIN_ID AND F.OBJECT_ID = A.OBJECT_ID) PRIV_PROTECT
+                    AND F.DOMAIN_ID = A.DOMAIN_ID AND F.OBJECT_ID = A.OBJECT_ID) PRIV_PROTECT,
+                (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES F
+                WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 6
+                    AND F.DOMAIN_ID = A.DOMAIN_ID AND F.OBJECT_ID = A.OBJECT_ID) PRIV_EXTRA
             FROM URBAC_DOMAIN_OBJECTS A, URBAC_DOMAINS, URBAC_OBJECTS
             WHERE A.DOMAIN_ID != 1
                 AND A.DOMAIN_ID = URBAC_DOMAINS.DOMAIN_ID

@@ -165,8 +165,10 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
   }, [value, IS_CREATING, setFieldsValue]);
 
   const options = ['View', 'Update', 'Create', 'Delete', 'Password'];
-  const loadScheduleOptions = [...options, 'Schedule Product'];
-  const folioOptions = [...options, 'Close/Freeze Folio'];
+  const loadScheduleOptions = [...options, {label: 'Schedule Product', value: 'Extra'}];
+  // const loadScheduleOptions = [...options, 'Schedule Product'];
+  const folioOptions = [...options, {label: 'Close/Freeze Folio', value: 'Extra'}];
+  // const folioOptions = [...options, 'Close/Freeze Folio'];
 
   // if (IS_CREATING) {
   //   return (

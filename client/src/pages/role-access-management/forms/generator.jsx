@@ -12,6 +12,7 @@ const generator = (data, values) => {
       element.priv_protect = changed.includes('Password');
       element.priv_update = changed.includes('Update');
       element.priv_view = changed.includes('View');
+      element.priv_extra = changed.includes('Extra');
     }
 
     payload.push(element);
@@ -44,6 +45,10 @@ const setter = (data) => {
 
     if (element.priv_protect) {
       value.push('Password');
+    }
+
+    if (element.priv_extra) {
+      value.push('Extra');
     }
 
     payload[element.object_text] = value;
