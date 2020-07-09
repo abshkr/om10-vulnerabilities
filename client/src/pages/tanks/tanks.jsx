@@ -158,7 +158,7 @@ const Tanks = () => {
 
             {config.manageTankStrapping && (
               <TabPane key="7" tab={t('tabColumns.strapping')}>
-                <TankStrapping code={selected?.tank_code} tanks={read} access={access} />
+                <TankStrapping terminal={selected?.tank_terminal} code={selected?.tank_code} tanks={read} access={access} />
               </TabPane>
             )}
 

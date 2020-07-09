@@ -252,4 +252,9 @@ class TankStrap extends CommonClass
     //     oci_commit($this->conn);
     //     return true;
     // }
+
+    public function batch_import() {
+        
+    }
 }
+

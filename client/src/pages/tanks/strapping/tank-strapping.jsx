@@ -17,10 +17,11 @@ import _ from 'lodash';
 import { DataTable } from '../../../components';
 import api, { TANK_STRAPPING } from '../../../api';
 import columns from './columns';
+import StrapImportManager from './import';
 
 const { TabPane } = Tabs;
 
-const TankStrapping = ({ code, isLoading, access, tanks }) => {
+const TankStrapping = ({ terminal, code, isLoading, access, tanks }) => {
   const url = code ? `${TANK_STRAPPING.READ}?strap_tankcode=${code}` : null;
 
   const { data } = useSWR(url);
@@ -127,7 +128,34 @@ const TankStrapping = ({ code, isLoading, access, tanks }) => {
     return Promise.resolve();
   };
 
+  const loadStraps = async (value) => {
+    console.log('Forms: loadStraps', value);
+  }
+
+  const handleImport = () => {
+    // pop up the dialog to manage straping data import
+    StrapImportManager(
+      t('operations.importStrapping'),
+      {tank_code: code, tank_terminal: terminal},
+      loadStraps,
+      '60vw',
+      '50vh',
+    );
+  };
+
   const modifiers = (
+    <>
+    <Button
+      style={{ marginRight: 10 }}
+      type="primary"
+      loading={isLoading}
+      disabled={!access.canCreate}
+      onClick={handleImport}
+    >
+      {t('operations.importStrapping')}
+    </Button>
+
+
     <Button
       type="primary"
       loading={isLoading}
@@ -136,6 +164,7 @@ const TankStrapping = ({ code, isLoading, access, tanks }) => {
     >
       {t('operations.addStrapping')}
     </Button>
+    </>
   );
 
   useEffect(() => {
