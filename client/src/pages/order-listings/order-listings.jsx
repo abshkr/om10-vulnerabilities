@@ -60,8 +60,7 @@ const OrderListings = ({popup, params}) => {
     popup && supplier && customer
       ? (
         start && end
-        ? `${ORDER_LISTINGS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}
-          &order_supp_code=${supplier}&order_cust_acnt=${customer}`
+        ? `${ORDER_LISTINGS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}&order_supp_code=${supplier}&order_cust_acnt=${customer}`
         : null // `${ORDER_LISTINGS.READ}?order_supp_code=${supplier}&order_cust_acnt=${customer}`
       )
       : (
@@ -274,7 +273,7 @@ const OrderListings = ({popup, params}) => {
   return (
     <Page page={page} name={name} modifiers={modifiers} access={access} standalone={popup}>
       <DataTable
-        minimal={popup}
+        minimal={false}
         data={data}
         columns={fields}
         isLoading={isLoading}

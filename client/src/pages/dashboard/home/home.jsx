@@ -1,11 +1,13 @@
 import React, { useContext } from 'react';
 import { Card, Col, Row } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { useHistory } from 'react-router-dom';
 import useSWR from 'swr';
 import _ from 'lodash';
 
 import { DataTable } from 'components';
 import { DASHBOARD } from 'api';
+import * as ROUTES from 'constants/routes';
 
 import { folio, movement, ids } from './columns';
 
@@ -13,15 +15,53 @@ const Home = () => {
   const { t } = useTranslation();
   const { data: payload } = useSWR(DASHBOARD.HOME);
 
+  let history = useHistory();
+
   const data = payload?.records ? payload?.records[0] : {};
 
   const isLoading = !payload;
+
+  const onTankers = (v) => {
+    if (v.target.className === "ant-card-head-title") {
+      history.push(ROUTES.TANKER_LIST);
+    }
+  }
+
+  const onPersonnel = (v) => {
+    if (v.target.className === "ant-card-head-title") {
+      history.push(ROUTES.PERSONNEL);
+    }
+  }
+
+  const onID = (v) => {
+    if (v.target.className === "ant-card-head-title") {
+      history.push(ROUTES.ID_ASSIGNMENT);
+    }
+  }
+
+  const onFolio = (v) => {
+    if (v.target.className === "ant-card-head-title") {
+      history.push(ROUTES.FOLIO_SUMMARY);
+    }
+  }
+
+  const onSchedule = (v) => {
+    if (v.target.className === "ant-card-head-title") {
+      history.push(ROUTES.LOAD_SCHEDULES);
+    }
+  }
+
+  const onTransactionList = (v) => {
+    if (v.target.className === "ant-card-head-title") {
+      history.push(ROUTES.TRANSACTION_LIST);
+    } 
+  }
 
   return (
     <>
       <Row gutter={[16, 16]}>
         <Col span={8}>
-          <Card title={`Tankers`} hoverable size="small" loading={isLoading}>
+          <Card title={`Tankers`} hoverable size="small" loading={isLoading} onClick={onTankers}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <div
                 style={{
@@ -67,7 +107,7 @@ const Home = () => {
         </Col>
 
         <Col span={8}>
-          <Card title={`Personnel`} hoverable size="small" loading={isLoading}>
+          <Card title={`Personnel`} hoverable size="small" loading={isLoading} onClick={onPersonnel}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <div
                 style={{
@@ -112,7 +152,7 @@ const Home = () => {
         </Col>
 
         <Col span={8}>
-          <Card title={`ID Assignment`} hoverable size="small" loading={isLoading}>
+          <Card title={`ID Assignment`} hoverable size="small" loading={isLoading} onClick={onID}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <div
                 style={{
@@ -165,7 +205,7 @@ const Home = () => {
 
       <Row gutter={[16, 16]}>
         <Col span={8}>
-          <Card title="Current Folio" hoverable size="small" loading={isLoading}>
+          <Card title="Current Folio" hoverable size="small" loading={isLoading} onClick={onFolio}>
             <DataTable
               data={data?.folio_loads}
               columns={folio(t)}
@@ -188,7 +228,7 @@ const Home = () => {
         </Col>
 
         <Col span={8}>
-          <Card title="Tanker Movement" hoverable size="small" loading={isLoading}>
+          <Card title="Tanker Movement" hoverable size="small" loading={isLoading} onClick={onSchedule}>
             <DataTable
               data={data?.tanker_movement}
               columns={movement(t)}
@@ -208,7 +248,7 @@ const Home = () => {
         </Col>
 
         <Col span={8}>
-          <Card title="Transaction Numbers" hoverable size="small" loading={isLoading}>
+          <Card title="Transaction Numbers" hoverable size="small" loading={isLoading} onClick={onTransactionList}>
             <DataTable data={data?.transaction_ids} columns={ids(t)} parentHeight="450px" minimal />
           </Card>
         </Col>

@@ -124,12 +124,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
   const onFinish = async () => {
     const record = await form.validateFields();
-
+    
     if (record?.shls_ld_type === "3" /* Preorder*/) {
-      const b = _.find(record.products, (item) => {
+      let findResult = _.find(record.products, (item) => {
         return item.qty_scheduled > 0;
       });
-      if (!b) {
+      if (!findResult) {
         notification.error({
           message: t("messages.validationFailed"),
           description: t("descriptions.preOrderReady"),
@@ -137,26 +137,50 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
         return;
       }
 
-      const c = _.find(record.products, (item) => {
+      findResult = _.find(record.products, (item) => {
         return item.qty_scheduled > 0 && item.unit_code === "";
       });
       
-      if (c) {
+      if (findResult) {
         notification.error({
           message: t("messages.validationFailed"),
-          // description: `${t("descriptions.preOrderProdUnit")} `,
-          description: `${t("descriptions.preOrderProdUnit")} ${c.prod_code}/${c.prod_name} `,
+          description: `${t("descriptions.preOrderProdUnit")} ${findResult.prod_code}/${findResult.prod_name} `,
         });
         return;
       }
     } else if (record?.shls_ld_type === "2" /* PreSchedule*/) {
-      const b = _.find(record.compartments, (item) => {
+      let findResult = _.find(record.compartments, (item) => {
         return item.prod_code !== "";
       });
-      if (!b) {
+
+      if (!findResult) {
         notification.error({
           message: t("messages.validationFailed"),
           description: t("descriptions.prescheduleReady"),
+        });
+        return;
+      }
+
+      findResult = _.find(record.compartments, (item) => {
+        return item.qty_scheduled > 0 && item.unit_code === "";
+      });
+      
+      if (findResult) {
+        notification.error({
+          message: t("messages.validationFailed"),
+          description: `${t("descriptions.preSchedProdUnit")} ${findResult.compartment} `,
+        });
+        return;
+      }
+
+      findResult = _.find(record.compartments, (item) => {
+        return item.qty_scheduled > 0 && item.prod_code === "";
+      });
+      
+      if (findResult) {
+        notification.error({
+          message: t("messages.validationFailed"),
+          description: `${t("descriptions.preSchedProd")} ${findResult.compartment} `,
         });
         return;
       }

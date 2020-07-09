@@ -558,6 +558,7 @@ const DrawerProductTransfers = ({
       <Card size="small" title={t('divider.drawerProductTransfer')}>
         <Form.Item name="transfers" noStyle>
           <DataTable
+            minimal={false}
             parentHeight="200px"
             data={payload}
             extra={modifiers}

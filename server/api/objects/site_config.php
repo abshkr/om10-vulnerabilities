@@ -45,14 +45,30 @@ class SiteConfig extends CommonClass
             $this->config_key === "SITE_LD_RETNPRD_USED_MOV") {
             return true;
         }
+        // These two settings are created by source code and do not exist in any tables
+        // But need to pretend they exist first
+        // Then do nothing when updating
+        if ($this->config_key === "SITE_IDENTIFIER" ||
+            $this->config_key === "SERVER_TIME_OFFSET" ) {
+            // write_log("DB error1:" . $this->config_key."<<<<<<<<<<<<<<<<<<<<<<<", __FILE__, __LINE__, LogLevel::ERROR);
+            return true;
+        }
         return parent::check_existence();
     }
 
     //site_al_adj, site_cl_adj, site_kg_adj are in SITE table. 
     public function update() 
     {
+        // These two settings are created by source code and do not exist in any tables
+        // Do nothing when updating
+        if ($this->config_key === "SITE_IDENTIFIER" ||
+            $this->config_key === "SERVER_TIME_OFFSET" ) {
+            // write_log("DB error:" . $this->config_key."<<<<<<<<<<<<<<<<<<<<<<<", __FILE__, __LINE__, LogLevel::ERROR);
+            return true;
+        }
+    
         $this->commit_mode = OCI_NO_AUTO_COMMIT;
-        
+
         if ($this->config_key === "SITE_AL_ADJ" ||
             $this->config_key === "SITE_CL_ADJ" ||
             $this->config_key === "SITE_KG_ADJ" ||

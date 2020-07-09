@@ -72,7 +72,7 @@ const columns = t => [
     headerName: t('fields.status'),
     field: 'status',
     sortable: true,
-    filter: 'MultiFilter',
+    filter: 'BooleanFilter',
     resizable: true,
     cellRenderer: 'BooleanRenderer',
     maxWidth: 100,

@@ -195,7 +195,7 @@ const columns = (t) => [
   {
     headerName: t('fields.orderApproved'),
     field: 'order_approved',
-    filter: 'FuzzyFilter',
+    filter: 'BooleanFilter',
     sortable: true,
     resizable: true,
     suppressSizeToFit: true,
@@ -364,7 +364,7 @@ const columns = (t) => [
   {
     headerName: t('fields.orderPricePrinted'),
     field: 'order_price_printed',
-    filter: 'FuzzyFilter',
+    filter: 'BooleanFilter',
     sortable: true,
     resizable: true,
     width: 80,

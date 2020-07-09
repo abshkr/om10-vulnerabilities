@@ -215,6 +215,7 @@ const BaseProductTransfers = ({
     <Spin indicator={null} spinning={isLoading}>
       <Form.Item name="base_transfers">
         <DataTable 
+          minimal={true}
           data={data.filter((o)=>(o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no))} 
           height="70vh" 
           columns={fields} 

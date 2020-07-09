@@ -1319,11 +1319,24 @@
     "viewOrderSeals": "View Order Seals",
     "setAddressTemplate": "Set As Default Template",
     "manageImage": "Manage Images",
-	"manageGeneric": "Manage Generic Product",
+	  "manageGeneric": "Manage Generic Product",
     "uploadImg": "Upload Image",
     "removeImg": "Remove From Server",
     "authenticate": "Authenticate",
-	"genericProd": "Generic Products"
+    "genericProd": "Generic Products",
+    "import": "Import",
+    "importData": "Import Data",
+    "importStrapping": "Import Strapping",
+    "selectFile": "Select File",
+    "preview": "Preview",
+    "previewData": "Preview Data",
+    "verify": "Verify",
+    "verifyData": "Verify Data",
+    "validate": "Validate",
+    "validateData": "Validate Data",
+    "exportData": "Export Data",
+    "upload": "Upload",
+    "uploadData": "Upload Data"
   },
 
   "tabColumns": {
@@ -1459,8 +1472,9 @@
     "favourites": "Favourites",
     "manual": "Manual",
     "copyright": "Copyright",
-	"noPartners": "Please add at least one partner to this partnership",
-	"toAddGeneric": "Please input new generic name and create"
+	  "noPartners": "Please add at least one partner to this partnership",
+    "toAddGeneric": "Please input new generic name and create",
+    "uploadSuccess": "Successfully Uploaded."
   },
 
   "prompts": {
@@ -1497,7 +1511,8 @@
     "unlockAll": "Are you sure you want to unlock all compartments?",
     "noImageSeleted": "Please select an image",
     "deleteImage": "Are you sure you want to remove image from server?",
-	"completeTrip": "View BOL will complete this trip, do you want to continue?"
+    "completeTrip": "View BOL will complete this trip, do you want to continue?",
+    "upload": "Are you sure you want to upload this data?"
   },
 
   "divider": {
@@ -1608,11 +1623,29 @@
     "prescheduleReady": "Please select product in at least one compartment",
     "preOrderReady": "Please input quantity for at least one product",
     "preOrderProdUnit": "Please select unit for product",
+	  "preSchedProdUnit": "Please select unit for compartment",
+	  "preSchedProd": "Please select product for compartment",
     "zeroCompartmentCount": "The compartment counts cannot be ZERO",
     "oneCompartmentRequired": "At least one compartment required if the equipment is neither Prime Mover nor Flatbed",
     "minEqptForCombination" : "The combination type needs at least 2 pieces of equipment",
     "eqptTypeCounts" : "The current counts of equipment is ",
-	"selectPartners": "Please select partners"
+    "selectPartners": "Please select partners",
+    "tankLevelMustBeInteger": "Tank level must be an integer",
+    "tankLevelCannotNegative": "Tank level cannot be negative",
+    "tankVolumeMustBeNumber": "Tank volume must be a number",
+    "tankVolumeCannotNegative": "Tank volume cannot be negative",
+    "tankNotMatch": "Tank does not match",
+    "terminalNotMatch": "Terminal does not match",
+    "tankLevelInLine": "The tank level in line ",
+    "notInteger": " is not an integer",
+    "isNegative": " is negative",
+    "tankVolumeInLine": "The tank volume in line ",
+    "notNumber": " is not a number",
+    "shouldBe": "Should be ",
+    "butIs": "but is ",
+    "inLine": " in line ",
+    "uploadStrapSuccess": "You have uploaded strapping data for tank ",
+    "uploadStrapFailed": "Failed to upload strapping data for tank "
   },
 
   "placeholder": {
@@ -1726,7 +1759,9 @@
     "setSourceUnit": "Please Select Source Unit",
     "setDestinationUnit": "Please Select Destination Unit",
     "selectLocale": "Please Select Locale",
-    "selectMessage": "Please Select Message"
+    "selectMessage": "Please Select Message",
+    "selectAddressLineType" : "Dbl-click to select type",
+    "enterAddressLineText" : "Dbl-click to enter the line text"
   },
 
   "validate": {

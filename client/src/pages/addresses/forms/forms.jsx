@@ -45,20 +45,25 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     }
   );
 
+  const onFormClosed = () => {
+    resetFields();
+    handleFormState(false, null);
+  };
+
   const onItemValidation = items => {
     const errors = [];
 
     _.forEach(items, item => {
       //check the column 'db_addr_line_type' and column 'db_addr_line'
       if (item.db_addrline_no) {
-        if (!item.db_addr_line_type) {
+        if (!item.db_addr_line_type || item.db_addr_line_type === t('placeholder.selectAddressLineType')) {
           errors.push({
             key: String(item.db_addrline_no)+':'+t('fields.addressLineType'),
             field: t('fields.addressLineType'),
             message: `Please Fill This Field on Line Item ${item.db_addrline_no}`
           });
         }
-        if (!item.db_addr_line) {
+        if (!item.db_addr_line || item.db_addr_line === t('placeholder.enterAddressLineText')) {
           errors.push({
             key: String(item.db_addrline_no)+':'+t('fields.addressLineText'),
             field: t('fields.addressLineText'),
@@ -95,6 +100,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   };
 
   const onComplete = (db_address_key) => {
+    resetFields();
     handleFormState(false, null);
     mutate(ADDRESSES.READ);
     if (db_address_key) {
@@ -240,7 +246,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
-      onClose={() => handleFormState(false, null)}
+      onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
       mask={IS_CREATING}
@@ -253,7 +259,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={onFormClosed}
           >
             {t('operations.cancel')}
           </Button>

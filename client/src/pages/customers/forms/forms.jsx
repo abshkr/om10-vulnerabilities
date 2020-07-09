@@ -297,7 +297,13 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
           }
           {!IS_CREATING && 
           <TabPane tab={t('tabColumns.allocations')} key="4">
-            <AllocationsPopup popup={true} />
+            <AllocationsPopup
+              popup={true}
+              params={{
+                alloc_type: '3',
+                alloc_cmpycode: value?.cust_cmpy_code,
+              }}
+            />
           </TabPane>
           }
           {!IS_CREATING && 

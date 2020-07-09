@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import useSWR from 'swr';
 import { Button } from 'antd';
@@ -12,16 +12,35 @@ import columns from './columns';
 import auth from '../../auth';
 
 import Forms from './forms';
+import { stubFalse } from 'lodash';
 
-const Allocations = ({popup}) => {
+const Allocations = ({popup, params}) => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [alloctype, setAlloctype] = useState(null);
+  const [company, setCompany] = useState(null);
 
   const { t } = useTranslation();
 
   const access = useAuth('M_ALLOCATIONS');
 
-  const { data: payload, isValidating, revalidate } = useSWR(ALLOCATIONS.READ);
+  const [start, setStart] = useState('-1');
+  const [end, setEnd] = useState('-1');
+
+  const url =
+    popup && alloctype && company
+      ? (
+        start && end
+        ? `${ALLOCATIONS.READ}?start_date=${start}&end_date=${end}&alloc_type=${alloctype}&alloc_cmpycode=${company}`
+        : null // `${ALLOCATIONS.READ}?alloc_type=${alloctype}&alloc_cmpycode=${company}`
+      )
+      : (
+        start && end
+        ? `${ALLOCATIONS.READ}?start_date=${start}&end_date=${end}`
+        : null
+      );
+
+  const { data: payload, isValidating, revalidate } = useSWR(url);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -35,6 +54,13 @@ const Allocations = ({popup}) => {
 
   const page = t('pageMenu.companies');
   const name = t('pageNames.allocations');
+
+  useEffect(() => {
+    if (popup && params) {
+      setAlloctype(params?.alloc_type);
+      setCompany(params?.alloc_cmpycode);
+    }
+  }, [popup, params]);
 
   const modifiers = (
     <>
@@ -59,7 +85,7 @@ const Allocations = ({popup}) => {
   return (
     <Page page={page} name={name} modifiers={modifiers} access={access} standalone={popup} >
       <DataTable
-        minimal={popup}
+        minimal={false}
         data={data}
         columns={fields}
         isLoading={isLoading}

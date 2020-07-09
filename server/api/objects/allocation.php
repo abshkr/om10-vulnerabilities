@@ -433,6 +433,83 @@ class Allocation extends CommonClass
 
     public function read()
     {
+        //write_log("DB error:" . print_r($this, true), __FILE__, __LINE__, LogLevel::ERROR);
+        if (!isset($this->alloc_type)) {
+            $this->alloc_type = -1;
+        }
+        if (!isset($this->alloc_cmpycode)) {
+            $this->alloc_cmpycode = "-1";
+        }
+        if (!isset($this->alloc_suppcode)) {
+            $this->alloc_suppcode = "-1";
+        }
+        if (!isset($this->alloc_lock)) {
+            $this->alloc_lock = -1;
+        }
+        if (!isset($this->start_date)) {
+            $this->start_date = "-1";
+        }
+        if (!isset($this->end_date)) {
+            $this->end_date = "-1";
+        }
+        
+        $query = "
+            SELECT *
+            FROM " . $this->VIEW_NAME . "
+            WHERE 
+                1 = 1
+                AND (-1 = :alloc_type OR ALLOC_TYPE = :alloc_type)
+                AND ('-1' = :alloc_cmpycode OR ALLOC_CMPYCODE = :alloc_cmpycode)
+                AND ('-1' = :alloc_suppcode OR ALLOC_SUPPCODE = :alloc_suppcode)
+                AND (-1 = :alloc_lock OR ALLOC_LOCK = :alloc_lock)
+                AND (:start_date = '-1' OR ALLOC_DATETIME > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+                AND (:end_date = '-1' OR ALLOC_DATETIME < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+            ORDER BY ALLOC_TYPE DESC
+        ";
+
+        /* if ($this->start_date === "-1" || $this->start_date === -1) {
+            $query .= "
+                AND (:start_date = '-1') 
+            ";
+        } else {
+            $query .= "
+                AND (ALLOC_DATETIME > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+            ";
+        }
+        if ($this->end_date === "-1" || $this->end_date === -1) {
+            $query .= "
+                AND (:end_date = '-1')
+            ";
+        } else {
+            $query .= "
+                AND (ALLOC_DATETIME < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+            ";
+        }
+        $query .= "
+            ORDER BY ALLOC_TYPE DESC
+        ";
+        write_log("DB error:" . $query, __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB error: start>>>>" . $this->start_date."<<<<", __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB error: end>>>>" . $this->end_date."<<<<", __FILE__, __LINE__, LogLevel::ERROR); */
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':start_date', $this->start_date);
+        oci_bind_by_name($stmt, ':end_date', $this->end_date);
+        oci_bind_by_name($stmt, ':alloc_suppcode', $this->alloc_suppcode);
+        oci_bind_by_name($stmt, ':alloc_cmpycode', $this->alloc_cmpycode);
+        oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
+        oci_bind_by_name($stmt, ':alloc_lock', $this->alloc_lock);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function read_all()
+    {
         $query = "
             SELECT *
             FROM " . $this->VIEW_NAME . "

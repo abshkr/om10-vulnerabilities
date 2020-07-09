@@ -29,6 +29,7 @@ const useColumns = (value, selected) => {
       //checkboxSelection: true,
       cellRenderer: 'MarkRenderer',
       suppressSizeToFit: true,
+      hide: true,
       // pinned: 'left'
     },
     {

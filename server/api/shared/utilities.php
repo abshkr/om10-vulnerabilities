@@ -122,7 +122,7 @@ class Utilities
         return $result;
     }
 
-    public static function read($class, $method = 'read', $filter = false, $params = null)
+    public static function read($class, $method = 'read', $filter = true, $params = null)
     {
         write_log(sprintf("%s::%s() START, class:%s, method:%s",
             __CLASS__, __FUNCTION__, $class, $method),

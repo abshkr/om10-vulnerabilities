@@ -54,7 +54,7 @@ const CustomerCategories = ({popup}) => {
   return (
     <Page page={page} name={name} modifiers={modifiers} access={access} standalone={popup} avatar="customerCategories">
       <DataTable
-        minimal={popup}
+        minimal={false}
         columns={fields}
         data={payload?.records}
         isLoading={isValidating}

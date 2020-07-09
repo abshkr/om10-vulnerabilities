@@ -88,7 +88,7 @@ const Page = ({ name, page, children, modifiers, minimal, transparent, access, a
     setLocked(access?.isProtected);
   }, [access]);
 
-  if (standalone) {
+  if (standalone && isViewable && !isLocked) {
     return (
       <>
         <PageHeaderContainer>
