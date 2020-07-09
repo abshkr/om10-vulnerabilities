@@ -40,7 +40,7 @@ const TripNumber = ({ form, value, supplier, onChange }) => {
 
   return (
     <Form.Item name="shls_trip_no" label={t('fields.tripNumber')}>
-      <InputNumber min={0} style={{ width: '100%' }} disabled={!supplier || !!value} />
+      <InputNumber min={1} style={{ width: '100%' }} disabled={!supplier || !!value} />
     </Form.Item>
   );
 };
