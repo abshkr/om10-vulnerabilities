@@ -602,7 +602,7 @@ const Settings = ({ value, access }) => {
             icon={<SafetyCertificateOutlined />}
             style={{ float: 'right', marginRight: 5 }}
             onClick={closeCloseout}
-            disabled={!access?.canUpdate}
+            disabled={!access?.extra}
           >
             {t('operations.closeCloseout')}
           </Button>
@@ -612,7 +612,7 @@ const Settings = ({ value, access }) => {
             icon={<SafetyCertificateOutlined />}
             style={{ float: 'right', marginRight: 5 }}
             onClick={freezeCloseout}
-            disabled={!access?.canUpdate || !freezeCloseoutFlag}
+            disabled={!access?.extra || !freezeCloseoutFlag}
           >
             {t('operations.freezeCloseout')}
           </Button>
