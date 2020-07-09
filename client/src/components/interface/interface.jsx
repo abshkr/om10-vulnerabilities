@@ -23,13 +23,21 @@ const Interface = ({ token, onRefresh, children }) => {
   return token ? (
     <InterfaceContainer>
       <ConfigProvider>
-        <Layout className="layout">
+        <Layout>
           <Sider width={250} collapsedWidth={120} collapsible defaultCollapsed>
-            <Navigation />
+            <div
+              className="navigation-slider"
+              style={{
+                height: 'calc(100vh - 50px)',
+                overflowY: 'scroll',
+              }}
+            >
+              <Navigation />
+            </div>
           </Sider>
-          <Layout className="omega">
+          <Layout>
             <NavBar />
-            <Content className="content">{children}</Content>
+            <Content>{children}</Content>
             <Footer>
               <Status />
             </Footer>

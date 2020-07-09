@@ -21,7 +21,7 @@ const InterfaceContainer = styled.div`
   }
 
   .ant-layout-footer {
-    height: 25px;
+    height: 30px;
     padding: 12px 5px 10px 5px;
     display: flex;
     justify-content: space-between;
@@ -32,6 +32,10 @@ const InterfaceContainer = styled.div`
       0 5px 12px 4px rgba(0, 0, 0, 0.09);
 
     border: 1px solid #0054a400 !important;
+  }
+
+  .navigation-slider::-webkit-scrollbar {
+    display: none;
   }
 `;
 

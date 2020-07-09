@@ -178,54 +178,57 @@ const Table = ({
       }}
       indicator={icon}
     >
-      <div
-        style={{
-          width: '100%',
-        }}
-        className="ag-theme-balham"
-      >
-        {!minimal && (
-          <>
-            <Search value={value} search={setValue} isLoading={!!isLoading && !data} />
-
-            <Button
-              icon={<ClearOutlined />}
-              style={{ float: 'right', marginLeft: 5 }}
-              onClick={onFilterClear}
+      <div style={{ width: '100%', height: '100%' }}>
+        <div style={{ display: 'flex', flexDirection: 'row' }}>
+          <div style={{ overflow: 'hidden', flexGrow: '1' }}>
+            <div
+              style={{
+                width: '100%',
+              }}
+              className="ag-theme-balham"
             >
-              Clear Filters
-            </Button>
-          </>
-        )}
+              {!minimal && (
+                <>
+                  <Search value={value} search={setValue} isLoading={!!isLoading && !data} />
 
-        <div style={{ float: 'right' }}>{extra}</div>
+                  <Button
+                    icon={<ClearOutlined />}
+                    style={{ float: 'right', marginLeft: 5 }}
+                    onClick={onFilterClear}
+                  >
+                    Clear Filters
+                  </Button>
+                </>
+              )}
 
-        <div
-          style={{
-            height: parentHeight || `calc(100vh - ${height || '250px'})`,
-            minHeight: parentHeight || height ? null : 720,
-            marginTop: 5,
-          }}
-        >
-          <AgGridReact
-            columnDefs={columns}
-            rowData={payload}
-            onGridReady={handleGridReady}
-            frameworkComponents={{ ...defaultComponents, ...components }}
-            onRowDoubleClicked={(value) => onClick && onClick(value.data)}
-            loadingOverlayComponent="LoadingStatus"
-            rowSelection={selectionMode || 'multiple'}
-            defaultColDef={defaultColumnDef}
-            onCellEditingStopped={onEditingFinished}
-            onRowSelected={handleMultipleSelection}
-            animateRows={true}
-            enableCellTextSelection={true}
-            onCellDoubleClicked={onCellClick}
-            rowHeight={rowHeight || null}
-            onCellValueChanged={onCellUpdate}
-            onFirstDataRendered={handleFirstDataRendered}
-            pinnedBottomRowData={footer}
-          />
+              <div style={{ float: 'right' }}>{extra}</div>
+
+              <div
+                className={parentHeight || height ? null : 'ag-table-container'}
+                style={{ height: parentHeight || `calc(100vh - ${height || '250px'})` }}
+              >
+                <AgGridReact
+                  columnDefs={columns}
+                  rowData={payload}
+                  onGridReady={handleGridReady}
+                  frameworkComponents={{ ...defaultComponents, ...components }}
+                  onRowDoubleClicked={(value) => onClick && onClick(value.data)}
+                  loadingOverlayComponent="LoadingStatus"
+                  rowSelection={selectionMode || 'multiple'}
+                  defaultColDef={defaultColumnDef}
+                  onCellEditingStopped={onEditingFinished}
+                  onRowSelected={handleMultipleSelection}
+                  animateRows={true}
+                  enableCellTextSelection={true}
+                  onCellDoubleClicked={onCellClick}
+                  rowHeight={rowHeight || null}
+                  onCellValueChanged={onCellUpdate}
+                  onFirstDataRendered={handleFirstDataRendered}
+                  pinnedBottomRowData={footer}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </Spin>

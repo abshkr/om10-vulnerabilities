@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, Badge, Tooltip } from 'antd';
+import { Menu, Tooltip } from 'antd';
 
 import { LogoContainer, MenuContainer } from './style';
 import { ROUTES, SETTINGS } from '../../constants';
