@@ -2610,6 +2610,30 @@ https://10.1.10.66/api/pages/tank_strap/delete.php
     "strap_tankcode": "DPLVP",
     "strap_sitecode": "P251"
 }
+https://{{server_ip}}/api/pages/tank_strap/import.php
+{
+    "data": [
+        {
+            "strap_height": 5,
+            "strap_volume": 600,
+            "strap_tankcode": "A0430D",
+            "strap_sitecode": "CNS"
+        },
+        {
+            "strap_height": 6,
+            "strap_volume": 700,
+            "strap_tankcode": "A0430D",
+            "strap_sitecode": "CNS"
+        },
+        {
+            "strap_height": 7,
+            "strap_volume": 800,
+            "strap_tankcode": "A0430D",
+            "strap_sitecode": "CNS"
+        }
+    ],
+    "delete_strap": true
+}
 
 //Product Movements
 https://10.1.10.66/api/pages/prod_movement/read.php

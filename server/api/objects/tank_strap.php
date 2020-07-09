@@ -115,6 +115,84 @@ class TankStrap extends CommonClass
         $this->pre_create();
     }
 
+    public function batch_import()
+    {
+        // write_log(sprintf("%s::%s() START.", __CLASS__, __FUNCTION__), 
+        //     __FILE__, __LINE__);
+        // write_log(json_encode($this), __FILE__, __LINE__);
+
+        if (!$this->data || count($this->data) <= 0) {
+            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__", "parameter missing: data"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            write_log("Data not set, cannot continue", __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        $this->commit_mode = OCI_NO_AUTO_COMMIT;
+
+        if ($this->delete_strap) {
+            $query = "
+                DELETE FROM STRAPS
+                WHERE STR_TK_TANKCODE = :str_tk_tankcode 
+                    AND STR_TK_TANKDEPO = :str_tk_tankdepo";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':str_tk_tankcode', $this->data[0]->strap_tankcode);
+            oci_bind_by_name($stmt, ':str_tk_tankdepo', $this->data[0]->strap_sitecode);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", sprintf("database storage error:%s", $e['message'])));
+                echo json_encode($error, JSON_PRETTY_PRINT);
+                oci_rollback($this->conn);
+                return;
+            }
+        }
+
+        $heights = array();
+        $volumes = array();
+        $tankcodes = array();
+        $sitecodes = array();
+        foreach ($this->data as $key => $rowobj) {
+            $heights[$key] = $rowobj->strap_height;
+            $volumes[$key] = $rowobj->strap_volume;
+            $tankcodes[$key] = $rowobj->strap_tankcode;
+            $sitecodes[$key] = $rowobj->strap_sitecode;
+        }
+
+        $query = "BEGIN LOADER_PKG.Load_Straps_Data (:hdata, :vdata, :tdata, :sdata); END;";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_array_by_name($stmt, ":hdata", $heights, count($this->data), 9, SQLT_INT);
+        oci_bind_array_by_name($stmt, ":vdata", $volumes, count($this->data), 20, SQLT_FLT);
+        oci_bind_array_by_name($stmt, ":tdata", $tankcodes, count($this->data), 24, SQLT_CHR);
+        oci_bind_array_by_name($stmt, ":sdata", $sitecodes, count($this->data), 16, SQLT_CHR);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", sprintf("database storage error:%s", $e['message'])));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            oci_rollback($this->conn);
+            return;
+        }
+
+        $journal = new Journal($this->conn, false);
+        $jnl_data[0] = sprintf("Tank strap data imported by %s", Utilities::getCurrPsn());
+
+        if (!$journal->jnlLogEvent(
+            Lookup::TMM_TEXT_ONLY, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", sprintf("database storage error:%s", $e['message'])));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            oci_rollback($this->conn);
+            return;
+        }
+
+        oci_commit($this->conn);
+        $error = new EchoSchema(200, response("__STRAPS_IMPORTED__"));
+        echo json_encode($error, JSON_PRETTY_PRINT);
+        return;
+    }
+
     // public function create()
     // {
     //     $query = "
@@ -252,9 +330,4 @@ class TankStrap extends CommonClass
     //     oci_commit($this->conn);
     //     return true;
     // }
-
-    public function batch_import() {
-        
-    }
 }
-

@@ -257,7 +257,7 @@ class Utilities
         if ($filter) {
             //Prior to PHP 5.6, a stream opened with php://input could only be read once
             $data = json_decode(file_get_contents("php://input"));
-            // write_log(json_encode($data), __FILE__, __LINE__);
+            write_log(json_encode($data), __FILE__, __LINE__);
             if ($data) {
                 foreach ($data as $key => $value) {
                     $object->$key = $value;
@@ -918,6 +918,11 @@ class Utilities
     public static function getCurrPsn()
     {
         if (JWT_AUTH) {
+            if ((isset($_SERVER['HTTP_USER_AGENT']) && substr($_SERVER['HTTP_USER_AGENT'], 0, 7) === 'Postman')) {
+                write_log("Postman, use 9999 as user", __FILE__, __LINE__);
+                return "9999";
+            }
+
             try {
                 $token = get_http_token();
                 $pay_load = check_token($token);

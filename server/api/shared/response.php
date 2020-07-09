@@ -333,6 +333,10 @@ function response($case_name, $default = null, $params = null)
             "ENG" => "Cannot delete partner because there are partnership under it",
             "CHN" => "不能删除合作商，存在有合作商关系"
         ),
+        "__STRAPS_IMPORTED__" => array(
+            "ENG" => "Tank strap imported",
+            "CHN" => "油罐数据已经导入"
+        ),
     );
 
     $lang = Utilities::getCurrLang();
