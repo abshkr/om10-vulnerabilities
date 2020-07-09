@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Button, Input, Row, Col, notification, Modal, Upload } from 'antd';
-import { CloseOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
+import { CloseOutlined, QuestionCircleOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 import _ from 'lodash';
@@ -92,6 +92,17 @@ const StrapImport = ({ value, onClose }) => {
   };
 
   const onCellUpdate = (val) => {
+    const invalid = verifyStrap(val?.data, val?.rowIndex);
+
+    if (invalid) {
+      setCanUpload(false);
+    } else {
+      const newList = strapList.slice();
+      newList[val?.rowIndex] = val?.data;
+      setStrapList(newList);
+      // loop all lines to see if enabling Upload button
+      onVerifyData(newList, false);
+    }
 
   };
 
@@ -115,63 +126,75 @@ const StrapImport = ({ value, onClose }) => {
 
   };
 
-  const verifyStrap = (strap, line) => {
+  const verifyStrap = (strap, line, showWarning=true) => {
     let invalid = false;
     // ['strap_height', 'strap_vol', 'str_tk_tankcode', 'str_tk_tankdepo']
     if (!_.isInteger(_.toNumber(strap.strap_height))) {
       invalid = true;
-      notification.error({
-        message: t('descriptions.tankLevelMustBeInteger'),
-        description: strap.strap_height + ' - ' + t('descriptions.tankLevelInLine') + (line+1) + t('descriptions.notInteger'),
-      });
+      if (showWarning) {
+        notification.error({
+          message: t('descriptions.tankLevelMustBeInteger'),
+          description: strap.strap_height + ' - ' + t('descriptions.tankLevelInLine') + (line+1) + t('descriptions.notInteger'),
+        });
+      }
     }
     if (_.isInteger(_.toNumber(strap.strap_height)) && _.toNumber(strap.strap_height) < 0) {
       invalid = true;
-      notification.error({
-        message: t('descriptions.tankLevelCannotNegative'),
-        description: strap.strap_height + ' - ' + t('descriptions.tankLevelInLine') + (line+1) + t('descriptions.isNegative'),
-      });
+      if (showWarning) {
+        notification.error({
+          message: t('descriptions.tankLevelCannotNegative'),
+          description: strap.strap_height + ' - ' + t('descriptions.tankLevelInLine') + (line+1) + t('descriptions.isNegative'),
+        });
+      }
     }
 
     if (!_.isNumber(_.toNumber(strap.strap_vol))) {
       invalid = true;
-      notification.error({
-        message: t('descriptions.tankVolumeMustBeNumber'),
-        description: strap.strap_vol + ' - ' + t('descriptions.tankVolumeInLine') + (line+1) + t('descriptions.notNumber'),
-      });
+      if (showWarning) {
+        notification.error({
+          message: t('descriptions.tankVolumeMustBeNumber'),
+          description: strap.strap_vol + ' - ' + t('descriptions.tankVolumeInLine') + (line+1) + t('descriptions.notNumber'),
+        });
+      }
     }
     if (_.isNumber(_.toNumber(strap.strap_vol)) && _.toNumber(strap.strap_vol) < 0) {
       invalid = true;
-      notification.error({
-        message: t('descriptions.tankVolumeCannotNegative'),
-        description: strap.strap_vol + ' - ' + t('descriptions.tankVolumeInLine') + (line+1) + t('descriptions.isNegative'),
-      });
+      if (showWarning) {
+        notification.error({
+          message: t('descriptions.tankVolumeCannotNegative'),
+          description: strap.strap_vol + ' - ' + t('descriptions.tankVolumeInLine') + (line+1) + t('descriptions.isNegative'),
+        });
+      }
     }
 
     if (strap.str_tk_tankcode !== value?.tank_code) {
       invalid = true;
-      notification.error({
-        message: t('descriptions.tankNotMatch'),
-        description: t('descriptions.shouldBe') + value?.tank_code + ', ' + t('descriptions.butIs') + strap.str_tk_tankcode + t('descriptions.inLine') + (line+1),
-      });
+      if (showWarning) {
+        notification.error({
+          message: t('descriptions.tankNotMatch'),
+          description: t('descriptions.shouldBe') + value?.tank_code + ', ' + t('descriptions.butIs') + strap.str_tk_tankcode + t('descriptions.inLine') + (line+1),
+        });
+      }
     }
     if (strap.str_tk_tankdepo !== value?.tank_terminal) {
       invalid = true;
-      notification.error({
-        message: t('descriptions.terminalNotMatch'),
-        description: t('descriptions.shouldBe') + value?.tank_terminal + ', ' + t('descriptions.butIs') + strap.str_tk_tankdepo + t('descriptions.inLine') + (line+1),
-      });
+      if (showWarning) {
+        notification.error({
+          message: t('descriptions.terminalNotMatch'),
+          description: t('descriptions.shouldBe') + value?.tank_terminal + ', ' + t('descriptions.butIs') + strap.str_tk_tankdepo + t('descriptions.inLine') + (line+1),
+        });
+      }
     }
 
     return invalid;
 
   };
   
-  const onVerifyData = (json) => {
+  const onVerifyData = (json, showWarning=true) => {
     const len = json.length;
     let invalid = false;
     for (let i=0; i<len; i++) {
-      invalid = verifyStrap(json[i], i);
+      invalid = verifyStrap(json[i], i, showWarning);
       if (invalid) {
         break;
       }
@@ -182,7 +205,36 @@ const StrapImport = ({ value, onClose }) => {
   };
 
   const onUploadData = () => {
+    Modal.confirm({
+      title: t('prompts.upload'),
+      okText: t('operations.yes'),
+      okType: 'primary',
+      cancelText: t('operations.no'),
+      icon: <QuestionCircleOutlined />,
+      centered: true,
+      onOk: async () => {
+        const values = {};
+        values.tank_code = value?.tank_code;
+        values.tank_terminal = values?.tank_terminal;
+        values.straps = strapList;
+        await api
+          .post(TANK_STRAPPING.IMPORT, values)
+          .then((response) => {
 
+            notification.success({
+              message: t('messages.uploadSuccess'),
+              description: t('descriptions.uploadStrapSuccess'),
+            });
+          })
+
+          .catch((error) => {
+            notification.error({
+              message: error.message,
+              description: t('descriptions.uploadStrapFailed'),
+            });
+          });
+      },
+    });
   };
 
   const extra = (

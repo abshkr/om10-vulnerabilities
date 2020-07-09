@@ -1472,8 +1472,9 @@
     "favourites": "Favourites",
     "manual": "Manual",
     "copyright": "Copyright",
-	"noPartners": "Please add at least one partner to this partnership",
-	"toAddGeneric": "Please input new generic name and create"
+	  "noPartners": "Please add at least one partner to this partnership",
+    "toAddGeneric": "Please input new generic name and create",
+    "uploadSuccess": "Successfully Uploaded."
   },
 
   "prompts": {
@@ -1510,7 +1511,8 @@
     "unlockAll": "Are you sure you want to unlock all compartments?",
     "noImageSeleted": "Please select an image",
     "deleteImage": "Are you sure you want to remove image from server?",
-	"completeTrip": "View BOL will complete this trip, do you want to continue?"
+    "completeTrip": "View BOL will complete this trip, do you want to continue?",
+    "upload": "Are you sure you want to upload this data?"
   },
 
   "divider": {
@@ -1641,7 +1643,9 @@
     "notNumber": " is not a number",
     "shouldBe": "Should be ",
     "butIs": "but is ",
-    "inLine": " in line "
+    "inLine": " in line ",
+    "uploadStrapSuccess": "You have uploaded strapping data for tank ",
+    "uploadStrapFailed": "Failed to upload strapping data for tank "
   },
 
   "placeholder": {
