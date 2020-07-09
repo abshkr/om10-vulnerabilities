@@ -1319,11 +1319,24 @@
     "viewOrderSeals": "View Order Seals",
     "setAddressTemplate": "Set As Default Template",
     "manageImage": "Manage Images",
-	"manageGeneric": "Manage Generic Product",
+	  "manageGeneric": "Manage Generic Product",
     "uploadImg": "Upload Image",
     "removeImg": "Remove From Server",
     "authenticate": "Authenticate",
-	"genericProd": "Generic Products"
+    "genericProd": "Generic Products",
+    "import": "Import",
+    "importData": "Import Data",
+    "importStrapping": "Import Strapping",
+    "selectFile": "Select File",
+    "preview": "Preview",
+    "previewData": "Preview Data",
+    "verify": "Verify",
+    "verifyData": "Verify Data",
+    "validate": "Validate",
+    "validateData": "Validate Data",
+    "exportData": "Export Data",
+    "upload": "Upload",
+    "uploadData": "Upload Data"
   },
 
   "tabColumns": {
