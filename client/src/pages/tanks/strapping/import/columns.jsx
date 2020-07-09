@@ -17,7 +17,7 @@ const columns = (t) => [
   },
   {
     headerName: `${t('fields.observedVolume')} (${t('units.litres')})`,
-    field: 'strap_vol',
+    field: 'strap_volume',
     filter: 'FuzzyFilter',
     sortable: false,
     resizable: true,
@@ -33,7 +33,7 @@ const columns = (t) => [
   },
   {
     headerName: t('fields.tank'),
-    field: 'str_tk_tankcode',
+    field: 'strap_tankcode',
     filter: 'FuzzyFilter',
     sortable: false,
     resizable: true,
@@ -42,7 +42,7 @@ const columns = (t) => [
   },
   {
     headerName: t('fields.terminal'),
-    field: 'str_tk_tankdepo',
+    field: 'strap_sitecode',
     filter: 'FuzzyFilter',
     sortable: false,
     resizable: true,

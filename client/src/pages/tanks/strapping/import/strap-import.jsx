@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Form, Button, Input, Row, Col, notification, Modal, Upload } from 'antd';
 import { CloseOutlined, QuestionCircleOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import useSWR from 'swr';
 import _ from 'lodash';
 
 import { DataTable } from '../../../../components';
@@ -66,19 +65,19 @@ const StrapImport = ({ value, onClose }) => {
 
   const onAddLine = () => {
     const strap = {};
-    // ['strap_height', 'strap_vol', 'str_tk_tankcode', 'str_tk_tankdepo']
+    // ['strap_height', 'strap_volume', 'strap_tankcode', 'strap_sitecode']
     
     if (strapList.length > 0) {
       const line = strapList[strapList.length-1];
       strap.strap_height = String(_.toInteger(line.strap_height) + 1);
-      strap.strap_vol = line.strap_vol;
-      strap.str_tk_tankcode = line.str_tk_tankcode;
-      strap.str_tk_tankdepo = line.str_tk_tankdepo;
+      strap.strap_volume = line.strap_volume;
+      strap.strap_tankcode = line.strap_tankcode;
+      strap.strap_sitecode = line.strap_sitecode;
     } else {
       strap.strap_height = '0';
-      strap.strap_vol = '0';
-      strap.str_tk_tankcode = value?.tank_code;
-      strap.str_tk_tankdepo = value?.tank_terminal;
+      strap.strap_volume = '0';
+      strap.strap_tankcode = value?.tank_code;
+      strap.strap_sitecode = value?.tank_terminal;
     }
     const newList = strapList.slice();
     newList.push(strap);
@@ -116,7 +115,7 @@ const StrapImport = ({ value, onClose }) => {
       const json = csvToJSON(
         text, 
         [0,1,2,3], 
-        ['strap_height', 'strap_vol', 'str_tk_tankcode', 'str_tk_tankdepo']
+        ['strap_height', 'strap_volume', 'strap_tankcode', 'strap_sitecode']
       );
       setStrapList(json);
       onVerifyData(json);
@@ -128,7 +127,7 @@ const StrapImport = ({ value, onClose }) => {
 
   const verifyStrap = (strap, line, showWarning=true) => {
     let invalid = false;
-    // ['strap_height', 'strap_vol', 'str_tk_tankcode', 'str_tk_tankdepo']
+    // ['strap_height', 'strap_volume', 'strap_tankcode', 'strap_sitecode']
     if (!_.isInteger(_.toNumber(strap.strap_height))) {
       invalid = true;
       if (showWarning) {
@@ -148,40 +147,40 @@ const StrapImport = ({ value, onClose }) => {
       }
     }
 
-    if (!_.isNumber(_.toNumber(strap.strap_vol))) {
+    if (!_.isNumber(_.toNumber(strap.strap_volume))) {
       invalid = true;
       if (showWarning) {
         notification.error({
           message: t('descriptions.tankVolumeMustBeNumber'),
-          description: strap.strap_vol + ' - ' + t('descriptions.tankVolumeInLine') + (line+1) + t('descriptions.notNumber'),
+          description: strap.strap_volume + ' - ' + t('descriptions.tankVolumeInLine') + (line+1) + t('descriptions.notNumber'),
         });
       }
     }
-    if (_.isNumber(_.toNumber(strap.strap_vol)) && _.toNumber(strap.strap_vol) < 0) {
+    if (_.isNumber(_.toNumber(strap.strap_volume)) && _.toNumber(strap.strap_volume) < 0) {
       invalid = true;
       if (showWarning) {
         notification.error({
           message: t('descriptions.tankVolumeCannotNegative'),
-          description: strap.strap_vol + ' - ' + t('descriptions.tankVolumeInLine') + (line+1) + t('descriptions.isNegative'),
+          description: strap.strap_volume + ' - ' + t('descriptions.tankVolumeInLine') + (line+1) + t('descriptions.isNegative'),
         });
       }
     }
 
-    if (strap.str_tk_tankcode !== value?.tank_code) {
+    if (strap.strap_tankcode !== value?.tank_code) {
       invalid = true;
       if (showWarning) {
         notification.error({
           message: t('descriptions.tankNotMatch'),
-          description: t('descriptions.shouldBe') + value?.tank_code + ', ' + t('descriptions.butIs') + strap.str_tk_tankcode + t('descriptions.inLine') + (line+1),
+          description: t('descriptions.shouldBe') + value?.tank_code + ', ' + t('descriptions.butIs') + strap.strap_tankcode + t('descriptions.inLine') + (line+1),
         });
       }
     }
-    if (strap.str_tk_tankdepo !== value?.tank_terminal) {
+    if (strap.strap_sitecode !== value?.tank_terminal) {
       invalid = true;
       if (showWarning) {
         notification.error({
           message: t('descriptions.terminalNotMatch'),
-          description: t('descriptions.shouldBe') + value?.tank_terminal + ', ' + t('descriptions.butIs') + strap.str_tk_tankdepo + t('descriptions.inLine') + (line+1),
+          description: t('descriptions.shouldBe') + value?.tank_terminal + ', ' + t('descriptions.butIs') + strap.strap_sitecode + t('descriptions.inLine') + (line+1),
         });
       }
     }
@@ -216,7 +215,8 @@ const StrapImport = ({ value, onClose }) => {
         const values = {};
         values.tank_code = value?.tank_code;
         values.tank_terminal = values?.tank_terminal;
-        values.straps = strapList;
+        values.delete_strap = true;
+        values.data = strapList;
         await api
           .post(TANK_STRAPPING.IMPORT, values)
           .then((response) => {
