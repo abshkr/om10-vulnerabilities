@@ -33,6 +33,7 @@ import { LoadingStatus } from './status';
 import { Search } from '..';
 
 import './table.css';
+import useWindowSize from 'hooks/use-window-size';
 
 const defaultComponents = {
   FuzzyFilter,
@@ -89,6 +90,8 @@ const Table = ({
   footer,
   isPolling,
 }) => {
+  const { windowWidth } = useWindowSize();
+
   const [payload, setPayload] = useState([]);
   const [value, setValue] = useState(filterValue);
   const [api, setAPI] = useState('');
@@ -148,7 +151,7 @@ const Table = ({
     if (api) {
       api.sizeColumnsToFit();
     }
-  }, [data, api]);
+  }, [api, windowWidth]);
 
   useEffect(() => {
     setPayload(data);

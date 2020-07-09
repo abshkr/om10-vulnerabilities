@@ -5,6 +5,7 @@ const GlobalStyleProvider = createGlobalStyle`
         font-family: 'Poppins', sans-serif;
         background-color: white;
         margin: 0px;
+        min-width: 920px;
     }
   
   a {
