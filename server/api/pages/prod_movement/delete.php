@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/prod_movement.php';
 
-Utilities::delete('ProdMovement');
+Utilities::exec('ProdMovement', $method='delete', $filter=true);

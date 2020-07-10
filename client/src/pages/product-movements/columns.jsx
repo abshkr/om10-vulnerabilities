@@ -84,8 +84,8 @@ const columns = (t) => [
     width: 100,
   },
   {
-    headerName: t('fields.openingStandardVolume'),
-    field: 'pmv_moved_qty',
+    headerName: t('fields.initialStandardVolume'),
+    field: 'pmv_opening_qty',
     sortable: true,
     resizable: true,
     suppressSizeToFit: true,

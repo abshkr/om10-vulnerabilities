@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/prod_movement.php';
 
-Utilities::exec('ProdMovement', $method='create', $filter=true);
+Utilities::exec('ProdMovement', $method='complete_batch', $filter=true);

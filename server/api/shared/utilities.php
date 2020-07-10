@@ -227,7 +227,7 @@ class Utilities
     /**
      * Identical to read(), the difference is it does not continue after calling $object->$method()
      */
-    public static function exec($class, $method = 'read', $filter = false, $params = null)
+    public static function exec($class, $method = 'read', $filter = true, $params = null)
     {
         write_log(sprintf("%s::%s() START, class:%s, method:%s",
             __CLASS__, __FUNCTION__, $class, $method),

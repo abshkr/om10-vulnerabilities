@@ -324,7 +324,7 @@ class CommonClass
             // oci_bind_by_name($stmt, ':' . $key, $this->$key);
         }
 
-        write_log('prepare_insert successfully', __FILE__, __LINE__, LogLevel::DEBUG);
+        // write_log('prepare_insert successfully', __FILE__, __LINE__, LogLevel::DEBUG);
 
         return $stmt;
     }

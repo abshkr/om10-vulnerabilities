@@ -199,11 +199,27 @@ function response($case_name, $default = null, $params = null)
         ),
         "__PRODUCTMOVEMENT_STARTED__" => array(
             "ENG" => "Product movment started",
-            "CHN" => "产品移动开始"
+            "CHN" => "油品入库开始"
+        ),
+        "__PRODUCTMOVEMENT_START_FAIL3__" => array(
+            "ENG" => "A movement is already in progress for an associated tank",
+            "CHN" => "一个相关的油罐正在进行中，不能开始新的油品入库"
+        ),
+        "__PRODUCTMOVEMENT_START_FAIL2__" => array(
+            "ENG" => "Movement is automatic -  controlled via a process - and cannot be started",
+            "CHN" => "不能开始油品入库"
+        ),
+        "__PRODUCTMOVEMENT_START_FAIL__" => array(
+            "ENG" => "Could not Start Product Movement",
+            "CHN" => "不能开始油品入库"
         ),
         "__PRODUCTMOVEMENT_HALTED__" => array(
             "ENG" => "Product movment halted",
-            "CHN" => "产品移动停止"
+            "CHN" => "油品入库停止"
+        ),
+        "__PRODUCTMOVEMENT_CREATED__" => array(
+            "ENG" => "Product movment created",
+            "CHN" => "油品入库已经创建"
         ),
         "__INVALID_SPECIAL_MOVEMENT__" => array(
             "ENG" => "Invalid special movement",

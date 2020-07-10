@@ -9,12 +9,22 @@ import {
   RedoOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
+import { 
+  MovementType, 
+  Unit, 
+  Source, 
+  Destination, 
+  BatchCode, 
+  Quantity, 
+  Class,
+  BaseProduct,
+} from './fields';
+
+import { Form, Button, Tabs, Modal, notification, Drawer, Input, InputNumber } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import _ from 'lodash';
 
-import { MovementType, Unit, Source, Destination, BatchCode, Quantity, Class, BaseProduct } from './fields';
 import api, { PRODUCT_MOVEMENTS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
@@ -28,6 +38,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   const CAN_DELETE = value?.pmv_status_name === 'NEW';
 
   const [base, setBase] = useState(null);
+  const [movementType, setMovementType] = useState("NEW");
 
   const onComplete = () => {
     handleFormState(false, null);
@@ -43,6 +54,10 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         description: t('validate.prodMoveSrcAndDst'),
       });
       return;
+    }
+
+    if (movementType === 'COMPLETE') {
+      values.pmv_status = 3;
     }
 
     Modal.confirm({
@@ -140,6 +155,38 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     });
   };
 
+  const onCompleteBatch = () => {
+    Modal.confirm({
+      title: t('prompts.pmvCompleteBatch'),
+      okText: t('operations.start'),
+      okType: 'primary',
+      icon: <RedoOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await api
+          .post(PRODUCT_MOVEMENTS.COMPLETE_BATCH, value)
+          .then((response) => {
+            onComplete();
+
+            notification.success({
+              message: t('messages.submitSuccess'),
+              description: t('descriptions.pmvBatchCompleted'),
+            });
+          })
+
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
+            });
+          });
+      },
+    });
+  };
+
   const onDelete = () => {
     Modal.confirm({
       title: t('prompts.delete'),
@@ -172,11 +219,37 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     });
   };
 
+  const validateInitial = (rule, input) => {
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.initialStandardVolume')}`);
+    }
+
+    return Promise.resolve();
+  };
+
+  const validateDens = (rule, input) => {
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.prodMovDens')}`);
+    }
+
+    return Promise.resolve();
+  };
+  
+
   useEffect(() => {
     if (!value && !visible) {
       resetFields();
     }
   }, [value, visible]);
+
+  // const layout = {
+  //   labelCol: {
+  //     span: 6,
+  //   },
+  //   wrapperCol: {
+  //     span: 18,
+  //   },
+  // };
 
   return (
     <Drawer
@@ -235,7 +308,18 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             </>
           )}
 
-          {!IS_CREATING && !CAN_DELETE && (
+          {!IS_CREATING && value.pmv_status === "3" /* Complete */ && (
+            <Button
+              type="primary"
+              icon={<WarningOutlined />}
+              style={{ float: 'right', marginRight: 5 }}
+              onClick={onCompleteBatch}
+            >
+              {t('operations.completeBatch')}
+            </Button>
+          )}
+
+          {!IS_CREATING && value.pmv_status === "1" /* In Progress */ && (
             <Button
               type="danger"
               icon={<WarningOutlined />}
@@ -250,6 +334,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     >
       <Form
         layout="vertical"
+        // layout={{...layout}}
         form={form}
         onFinish={onFinish}
         scrollToFirstError
@@ -261,14 +346,32 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       >
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-            <MovementType value={value} />
-            <Unit form={form} value={value} />
+            <MovementType value={value} onChange={setMovementType} />
             <BaseProduct form={form} value={value} setBase={setBase} />
-            <Class form={form} value={value} />
             <Source form={form} value={value} base={base} />
             <Destination form={form} value={value} base={base} />
             <BatchCode form={form} value={value} />
+            <Class form={form} value={value} />
             <Quantity form={form} value={value} />
+            <Unit form={form} value={value} />
+            {IS_CREATING && movementType === "COMPLETE" && 
+              <Form.Item
+                name="pmv_opening_qty"
+                label={t('fields.initialStandardVolume')}
+                rules={[{ required: true, validator: validateInitial }]}
+              >
+                <Input disabled={!!value} />
+              </Form.Item>
+            }
+            {IS_CREATING && movementType === "COMPLETE" && 
+              <Form.Item
+                name="pmv_obsvd_dens"
+                label={t('fields.prodMovDens')}
+                rules={[{ required: true, validator: validateDens }]}
+              >
+                <InputNumber min={0} disabled={!!value} />
+              </Form.Item>
+            }
           </TabPane>
         </Tabs>
       </Form>

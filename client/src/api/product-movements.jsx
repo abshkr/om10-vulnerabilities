@@ -10,3 +10,4 @@ export const DELETE = '/api/pages/prod_movement/delete.php';
 export const PROGRESS = '/api/pages/prod_movement/progress.php';
 export const START = '/api/pages/prod_movement/start.php';
 export const HALT = '/api/pages/prod_movement/halt.php';
+export const COMPLETE_BATCH = '/api/pages/prod_movement/complete_batch.php';
