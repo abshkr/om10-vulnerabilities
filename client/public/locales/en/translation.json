@@ -1498,7 +1498,7 @@
     "printLoadReport": "Are you sure you want to print this Load Report?",
     "submit": "Are you sure you want to submit this record?",
     "onReverse": "Are you sure you want to reverse this record?",
-    "halt": "Are you sure you want to halt?",
+    "pmvHalt": "Are you sure you want to halt this batch?",
     "cancel": "Are you sure you want to cancel?",
     "closeTransaction": "Are you sure you want to Close this Transaction?",
     "reset": "Are you sure you want to reset this record?",
@@ -1517,7 +1517,8 @@
     "deleteImage": "Are you sure you want to remove image from server?",
     "completeTrip": "View BOL will complete this trip, do you want to continue?",
     "upload": "Are you sure you want to upload this data?",
-	"pmvCompleteBatch": "Are you sure you want to complete this batch?"
+	"pmvCompleteBatch": "Are you sure you want to complete this batch?",
+	"pmvStart": "Are you sure you want to start this batch?"
   },
 
   "divider": {

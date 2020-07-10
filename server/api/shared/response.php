@@ -213,6 +213,18 @@ function response($case_name, $default = null, $params = null)
             "ENG" => "Could not Start Product Movement",
             "CHN" => "不能开始油品入库"
         ),
+        "__PRODUCTMOVEMENT_ALREADY_COMPLETED__" => array(
+            "ENG" => "This Batch is already completed",
+            "CHN" => "油品入库已经完成"
+        ),
+        "__PRODUCTMOVEMENT_BATCH_COMPLETE_FAIL__" => array(
+            "ENG" => "Batch could not complete due to some product movement is not in COMPLETE",
+            "CHN" => "结束油品入库失败"
+        ),
+        "__PRODUCTMOVEMENT_BATCH_COMPLETED__" => array(
+            "ENG" => "Batch successfully completed",
+            "CHN" => "结束油品入库"
+        ),
         "__PRODUCTMOVEMENT_HALTED__" => array(
             "ENG" => "Product movment halted",
             "CHN" => "油品入库停止"

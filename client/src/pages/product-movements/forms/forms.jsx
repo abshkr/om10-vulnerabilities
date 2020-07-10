@@ -35,14 +35,21 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   const { resetFields } = form;
 
   const IS_CREATING = !value;
-  const CAN_DELETE = value?.pmv_status_name === 'NEW';
-
+  
   const [base, setBase] = useState(null);
   const [movementType, setMovementType] = useState("NEW");
+  
+  /** Status:
+  0	NEW
+  1 In progress
+  2 Halted
+  3 COMPLETE
+  4 Does not exist */
 
   const onComplete = () => {
     handleFormState(false, null);
     mutate(PRODUCT_MOVEMENTS.READ);
+    setMovementType("NEW");
   };
 
   const onFinish = async () => {
@@ -93,7 +100,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   const onHalt = () => {
     Modal.confirm({
-      title: t('prompts.halt'),
+      title: t('prompts.pmvHalt'),
       okText: t('operations.halt'),
       okType: 'primary',
       icon: <WarningOutlined />,
@@ -125,7 +132,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   const onStart = () => {
     Modal.confirm({
-      title: t('prompts.start'),
+      title: t('prompts.pmvStart'),
       okText: t('operations.start'),
       okType: 'primary',
       icon: <RedoOutlined />,
@@ -285,27 +292,28 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             </Button>
           )}
 
-          {CAN_DELETE && (
-            <>
-              <Button
-                type="primary"
-                icon={<RedoOutlined />}
-                onClick={onStart}
-                style={{ float: 'right', marginRight: 5 }}
-                disabled={!access?.canDelete}
-              >
-                {t('operations.start')}
-              </Button>
-              <Button
-                type="danger"
-                icon={<DeleteOutlined />}
-                onClick={onDelete}
-                style={{ float: 'right', marginRight: 5 }}
-                disabled={!access?.canDelete}
-              >
-                {t('operations.delete')}
-              </Button>
-            </>
+          {!IS_CREATING && value.pmv_status === "0" /* New */ && (
+            <Button
+              type="danger"
+              icon={<DeleteOutlined />}
+              onClick={onDelete}
+              style={{ float: 'right', marginRight: 5 }}
+              disabled={!access?.canDelete}
+            >
+              {t('operations.delete')}
+            </Button>
+          )}
+
+          {!IS_CREATING && (value.pmv_status === "0" || value.pmv_status === "2") /* New Or Halted */ && (
+            <Button
+              type="primary"
+              icon={<RedoOutlined />}
+              onClick={onStart}
+              style={{ float: 'right', marginRight: 5 }}
+              disabled={!access?.canDelete}
+            >
+              {t('operations.start')}
+            </Button>
           )}
 
           {!IS_CREATING && value.pmv_status === "3" /* Complete */ && (

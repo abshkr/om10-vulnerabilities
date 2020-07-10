@@ -40,7 +40,7 @@ class ProdMovement extends CommonClass
     public function tanks()
     {
         $serv = new TankService($this->conn);
-        return $serv->tanks_by_base(isset($this->base_code) ? $this->base_code : "");
+        return $serv->tanks_by_base(isset($this->base_code) ? $this->base_code : null);
     }
 
     //op=206&h_PMV_NUMBER=2&pmvDepot=MOBPET&sess_id=GDyaQelbVjls
@@ -109,9 +109,8 @@ class ProdMovement extends CommonClass
 
         // write_log($res, __FILE__, __LINE__);
 
-        echo '{';
-        echo '"message": "' . response("__PRODUCTMOVEMENT_HALTED__") . '"';
-        echo '}';
+        $error = new EchoSchema(200, response("__PRODUCTMOVEMENT_HALTED__"));
+        echo json_encode($error, JSON_PRETTY_PRINT);
     }
 
     /**
@@ -227,19 +226,30 @@ class ProdMovement extends CommonClass
             "&h_PMV_STATUS=3&pg=1&preqstr=&op=9";
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/stck_mgmt/prod_movement.cgi", $query_string);
-        write_log($res, __FILE__, __LINE__);
-        if (strpos($res, "op=\"29\"") || strpos($res, "op=\"19\"")) {
-            $error = new EchoSchema(200, response("__PRODUCTMOVEMENT_CREATED__"));
+        $op_pos = strpos($res, "op=");
+        if (strpos($res, "op=") === false) {
+            $error = new EchoSchema(400, response("__CGI_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            
-            return true;
+            return;
         }
 
-        // write_log($res, __FILE__, __LINE__);
+        $return_code = substr($res, $op_pos + 4, 2);
+        write_log("CGI returns: " . $return_code, __FILE__, __LINE__);
 
-        $error = new EchoSchema(400, response("__CGI_FAILED__"));
+        if ($return_code === "19") {
+            $error = new EchoSchema(400, response("__PRODUCTMOVEMENT_ALREADY_COMPLETED__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        } else if ($return_code === "39") {
+            $error = new EchoSchema(400, response("__PRODUCTMOVEMENT_BATCH_COMPLETE_FAIL__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        } 
+        
+        $error = new EchoSchema(200, response("__PRODUCTMOVEMENT_STARTED__"));
         echo json_encode($error, JSON_PRETTY_PRINT);
-        return false;
+
+        return;
     }
 
     // public function pre_create()
@@ -358,6 +368,8 @@ class ProdMovement extends CommonClass
                 UNIT_SCALE_VW.DESCRIPTION PMV_UNIT_NAME,
                 PMV_INTENDED_QTY,
                 PMV_OPENING_QTY,
+                PMV_MOVED_QTY,
+                PMV_MOVED_QTY / PMV_INTENDED_QTY PERCENT,
                 PMV_EXPCTD_DENS,
                 PMV_OBSVD_DENS,
                 PMV.PMV_DST_TERMINAL,
