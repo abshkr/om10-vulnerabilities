@@ -29,7 +29,7 @@ import api, { PRODUCT_MOVEMENTS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -46,10 +46,13 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   3 COMPLETE
   4 Does not exist */
 
-  const onComplete = () => {
+  const onComplete = (pmv_batchcode) => {
     handleFormState(false, null);
     mutate(PRODUCT_MOVEMENTS.READ);
     setMovementType("NEW");
+    if (pmv_batchcode) {
+      setFilterValue("" + pmv_batchcode);
+    }
   };
 
   const onFinish = async () => {
@@ -78,7 +81,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         await api
           .post(PRODUCT_MOVEMENTS.CREATE, values)
           .then((response) => {
-            onComplete();
+            onComplete(values?.pmv_batchcode);
 
             notification.success({
               message: t('messages.createSuccess'),
@@ -110,7 +113,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         await api
           .post(PRODUCT_MOVEMENTS.HALT, value)
           .then((response) => {
-            onComplete();
+            onComplete(value?.pmv_batchcode);
 
             notification.success({
               message: t('messages.haltSuccess'),
@@ -142,7 +145,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         await api
           .post(PRODUCT_MOVEMENTS.START, value)
           .then((response) => {
-            onComplete();
+            onComplete(value?.pmv_batchcode);
 
             notification.success({
               message: t('messages.startSuccess'),
@@ -174,7 +177,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         await api
           .post(PRODUCT_MOVEMENTS.COMPLETE_BATCH, value)
           .then((response) => {
-            onComplete();
+            onComplete(value?.pmv_batchcode);
 
             notification.success({
               message: t('messages.submitSuccess'),
@@ -292,18 +295,6 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             </Button>
           )}
 
-          {!IS_CREATING && value.pmv_status === "0" /* New */ && (
-            <Button
-              type="danger"
-              icon={<DeleteOutlined />}
-              onClick={onDelete}
-              style={{ float: 'right', marginRight: 5 }}
-              disabled={!access?.canDelete}
-            >
-              {t('operations.delete')}
-            </Button>
-          )}
-
           {!IS_CREATING && (value.pmv_status === "0" || value.pmv_status === "2") /* New Or Halted */ && (
             <Button
               type="primary"
@@ -313,6 +304,18 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               disabled={!access?.canDelete}
             >
               {t('operations.start')}
+            </Button>
+          )}
+
+          {!IS_CREATING && value.pmv_status === "0" /* New */ && (
+            <Button
+              type="danger"
+              icon={<DeleteOutlined />}
+              onClick={onDelete}
+              style={{ float: 'right', marginRight: 5 }}
+              disabled={!access?.canDelete}
+            >
+              {t('operations.delete')}
             </Button>
           )}
 

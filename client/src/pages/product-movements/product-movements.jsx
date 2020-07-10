@@ -22,6 +22,7 @@ const ProductMovements = () => {
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [filterValue, setFilterValue] = useState('');
 
   const fields = columns(t);
   const data = generator(payload?.records);
@@ -64,8 +65,15 @@ const ProductMovements = () => {
         selectionMode="single"
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
+        filterValue={filterValue}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
+      <Forms 
+        value={selected} 
+        visible={visible} 
+        handleFormState={handleFormState} 
+        access={access} 
+        setFilterValue={setFilterValue}
+      />
     </Page>
   );
 };
