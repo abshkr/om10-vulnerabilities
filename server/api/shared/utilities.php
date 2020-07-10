@@ -257,7 +257,7 @@ class Utilities
         if ($filter) {
             //Prior to PHP 5.6, a stream opened with php://input could only be read once
             $data = json_decode(file_get_contents("php://input"));
-            write_log(json_encode($data), __FILE__, __LINE__);
+            // write_log(json_encode($data), __FILE__, __LINE__);
             if ($data) {
                 foreach ($data as $key => $value) {
                     $object->$key = $value;
