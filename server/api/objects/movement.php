@@ -368,6 +368,7 @@ class Movement extends CommonClass
     
     public function read()
     {
+        // write_log("DB error111:>>>" . $this->start_date . "<<< >>>>".$this->end_date."<<<<", __FILE__, __LINE__, LogLevel::ERROR);
         if (!isset($this->time_option)) {
             $this->time_option = "MV_DTIM_EFFECT";
         }
@@ -400,6 +401,14 @@ class Movement extends CommonClass
             $this->start_date = "-1";
             $this->end_date = "-1";
         }
+        if (isset($this->start_date) && $this->start_date === -1) {
+            $this->start_date = "-1";
+        }
+        if (isset($this->end_date) && $this->end_date === -1) {
+            $this->end_date = "-1";
+        }
+        $this->start_date = trim($this->start_date);
+        $this->end_date = trim($this->end_date);
 
         $query = "
             SELECT 
@@ -472,8 +481,29 @@ class Movement extends CommonClass
             WHERE 
                 1 = 1 
                 AND MV_SRCTYPE = MOVSOURCE_TYPES.MOVSOURCE_TYPE_ID
-                AND ('-1' = :start_date OR " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
-                AND ('-1' = :end_date OR " . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+        ";
+
+        //        AND ('-1' = :start_date OR " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+        if ( $this->start_date === "-1") {
+            $query .= "
+                AND ('-1' = :start_date) 
+            ";
+        } else {
+            $query .= "
+                AND (" . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+            ";
+        }
+        //        AND ('-1' = :end_date OR " . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+        if ( $this->end_date === "-1") {
+            $query .= "
+                AND ('-1' = :end_date)
+            ";
+        } else {
+            $query .= "
+                AND (" . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+            ";
+        }
+        $query .= "
                 AND MV_STATUS = MOVSTATUS_TYPES.MOVSTATUS_TYPE_ID(+)
                 AND ('-1' = :mv_key OR MV_KEY LIKE '%'||:mv_key||'%')
                 AND ('-1' = :mv_number OR MV_NUMBER LIKE '%'||:mv_number||'%')
@@ -482,7 +512,6 @@ class Movement extends CommonClass
                 AND (-1 = :mv_terminal OR MV_TERMINAL = :mv_terminal)
             ORDER BY " . $this->time_option . " DESC
         ";
-        //    -- ORDER BY MV_ID DESC
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':start_date', $this->start_date);
         oci_bind_by_name($stmt, ':end_date', $this->end_date);
@@ -491,13 +520,13 @@ class Movement extends CommonClass
         oci_bind_by_name($stmt, ':mv_status', $this->mv_status);
         oci_bind_by_name($stmt, ':mv_srctype', $this->mv_srctype);
         oci_bind_by_name($stmt, ':mv_terminal', $this->mv_terminal);
+        // write_log("DB error2:>>>" . $this->start_date . "<<< >>>>".$this->end_date."<<<<", __FILE__, __LINE__, LogLevel::ERROR);
         
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            write_log("DB error2:" . $this->start_date . $this->end_date, __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
     }

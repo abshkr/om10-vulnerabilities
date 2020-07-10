@@ -452,6 +452,14 @@ class Allocation extends CommonClass
         if (!isset($this->end_date)) {
             $this->end_date = "-1";
         }
+        if (isset($this->start_date) && $this->start_date === -1) {
+            $this->start_date = "-1";
+        }
+        if (isset($this->end_date) && $this->end_date === -1) {
+            $this->end_date = "-1";
+        }
+        $this->start_date = trim($this->start_date);
+        $this->end_date = trim($this->end_date);
         
         $query = "
             SELECT *
@@ -462,12 +470,10 @@ class Allocation extends CommonClass
                 AND ('-1' = :alloc_cmpycode OR ALLOC_CMPYCODE = :alloc_cmpycode)
                 AND ('-1' = :alloc_suppcode OR ALLOC_SUPPCODE = :alloc_suppcode)
                 AND (-1 = :alloc_lock OR ALLOC_LOCK = :alloc_lock)
-                AND (:start_date = '-1' OR ALLOC_DATETIME > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
-                AND (:end_date = '-1' OR ALLOC_DATETIME < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
-            ORDER BY ALLOC_TYPE DESC
         ";
 
-        /* if ($this->start_date === "-1" || $this->start_date === -1) {
+        //        AND (:start_date = '-1' OR ALLOC_DATETIME > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+        if ($this->start_date === "-1") {
             $query .= "
                 AND (:start_date = '-1') 
             ";
@@ -476,7 +482,8 @@ class Allocation extends CommonClass
                 AND (ALLOC_DATETIME > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
             ";
         }
-        if ($this->end_date === "-1" || $this->end_date === -1) {
+        //        AND (:end_date = '-1' OR ALLOC_DATETIME < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+        if ($this->end_date === "-1") {
             $query .= "
                 AND (:end_date = '-1')
             ";
@@ -488,7 +495,7 @@ class Allocation extends CommonClass
         $query .= "
             ORDER BY ALLOC_TYPE DESC
         ";
-        write_log("DB error:" . $query, __FILE__, __LINE__, LogLevel::ERROR);
+        /* write_log("DB error:" . $query, __FILE__, __LINE__, LogLevel::ERROR);
         write_log("DB error: start>>>>" . $this->start_date."<<<<", __FILE__, __LINE__, LogLevel::ERROR);
         write_log("DB error: end>>>>" . $this->end_date."<<<<", __FILE__, __LINE__, LogLevel::ERROR); */
 

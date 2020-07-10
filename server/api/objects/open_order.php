@@ -104,13 +104,42 @@ class OpenOrder extends CommonClass
             $this->start_date = "-1";
             $this->end_date = "-1";
         }
+        if (isset($this->start_date) && $this->start_date === -1) {
+            $this->start_date = "-1";
+        }
+        if (isset($this->end_date) && $this->end_date === -1) {
+            $this->end_date = "-1";
+        }
+        $this->start_date = trim($this->start_date);
+        $this->end_date = trim($this->end_date);
 
         $query = "
             SELECT * FROM " . $this->VIEW_NAME . "
             WHERE 
                 1 = 1
-                AND ('-1' = :start_date OR " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
-                AND ('-1' = :end_date OR " . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+        ";
+
+        //        AND ('-1' = :start_date OR " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+        if ( $this->start_date === "-1") {
+            $query .= "
+                AND ('-1' = :start_date) 
+            ";
+        } else {
+            $query .= "
+                AND (" . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+            ";
+        }
+        //        AND ('-1' = :end_date OR " . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+        if ( $this->end_date === "-1") {
+            $query .= "
+                AND ('-1' = :end_date)
+            ";
+        } else {
+            $query .= "
+                AND (" . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+            ";
+        }
+        $query .= "
                 AND ('-1' = :supplier OR ORDER_SUPP_CODE = :supplier)
                 AND ('-1' = :customer OR ORDER_CUST_ACNT = :customer)
                 AND (-1 = :status OR ORDER_STAT_ID = :status)
