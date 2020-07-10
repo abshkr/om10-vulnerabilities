@@ -190,7 +190,6 @@ class Customer extends CommonClass
             GROUP BY DB_ADDR_LINE_ID
             ) DL,
             DELV_LOCATION DV,
-            -- , CUSTOMER_AMNT_TYP AT,
             CUSTOMER_INV_TYP IT,
             CUSTOMER_PRICE_TYP PT,
             CUSTOMER_SALE_TYP ST,

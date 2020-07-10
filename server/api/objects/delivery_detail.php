@@ -66,7 +66,6 @@ class DeliveryDetail extends CommonClass
             , (
                 select distinct 
                     ccp.CCP_CMPY_CODE				as PARTNER_CMPY_CODE
---                    , ccp.CCP_CUST_ACCT				as PARTNER_CUST_ACCT
                     , ccp.CCP_PRTNR_SEQ				as PARTNER_SEQ
                     , pr.PRTNR_CODE					as PARTNER_CODE
                     , pr.PRTNR_TYPE					as PARTNER_TYPE
@@ -83,7 +82,6 @@ class DeliveryDetail extends CommonClass
             , (
                 select distinct 
                     ccp.CCP_CMPY_CODE				as PARTNER_CMPY_CODE
---                    , ccp.CCP_CUST_ACCT				as PARTNER_CUST_ACCT
                     , ccp.CCP_PRTNR_SEQ				as PARTNER_SEQ
                     , pr.PRTNR_CODE					as PARTNER_CODE
                     , pr.PRTNR_TYPE					as PARTNER_TYPE
@@ -106,8 +104,6 @@ class DeliveryDetail extends CommonClass
             and dd.DD_SHIP_TO = shp.PARTNER_CODE(+)
             and dd.DD_SUPP_CODE = sld.PARTNER_CMPY_CODE(+)
             and dd.DD_SUPP_CODE = shp.PARTNER_CMPY_CODE(+)
---            and sld.PARTNER_CUST_ACCT is null
---            and shp.PARTNER_CUST_ACCT is null
     ";
 
 

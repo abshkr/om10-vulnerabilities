@@ -481,8 +481,8 @@ class Movement extends CommonClass
                 AND (-1 = :mv_srctype OR MV_SRCTYPE = :mv_srctype)
                 AND (-1 = :mv_terminal OR MV_TERMINAL = :mv_terminal)
             ORDER BY " . $this->time_option . " DESC
-            -- ORDER BY MV_ID DESC
         ";
+        //    -- ORDER BY MV_ID DESC
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':start_date', $this->start_date);
         oci_bind_by_name($stmt, ':end_date', $this->end_date);
