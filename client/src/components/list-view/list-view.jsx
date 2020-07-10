@@ -27,6 +27,12 @@ const ListView = ({ id, data, onSelect, name, description, content, children, is
       const results = search(query, data);
 
       setPayload(results);
+
+      // find if selected item is still in the filtered results
+      const idx = results?.findIndex((o) => (o[id] === selected));
+      if (idx === -1) {
+        onSelect(results?.[0]);
+      }
     }
   }, [data, query]);
 
@@ -39,6 +45,7 @@ const ListView = ({ id, data, onSelect, name, description, content, children, is
               style={{ borderRadius: 5 }}
               placeholder="Search Tanks"
               onSearch={setQuery}
+              onChange={e => setQuery(e.target.value)}
               size="large"
             />
           </div>
