@@ -155,6 +155,7 @@ const Items = ({ setTableAPIContext, value, addressCode }) => {
     ) {
       option.address_action = '-';
       tableAPI.updateRowData({ update: [option] });
+      tableAPI.updateRowData({ remove: [option] });
     } else {
     }
 
@@ -219,6 +220,7 @@ const Items = ({ setTableAPIContext, value, addressCode }) => {
           selectionMode="single"
           onEditingFinished={onEditingFinished}
           minimal
+          // stopEditingWhenGridLosesFocus={true}
         />
       </Form.Item>
     </>

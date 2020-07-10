@@ -89,6 +89,7 @@ const Table = ({
   filterValue,
   footer,
   isPolling,
+  stopEditingWhenGridLosesFocus,
 }) => {
   const { windowWidth } = useWindowSize();
 
@@ -228,7 +229,7 @@ const Table = ({
                   onCellValueChanged={onCellUpdate}
                   onFirstDataRendered={handleFirstDataRendered}
                   pinnedBottomRowData={footer}
-                  stopEditingWhenGridLosesFocus={true}
+                  stopEditingWhenGridLosesFocus={stopEditingWhenGridLosesFocus===undefined ? true : stopEditingWhenGridLosesFocus}
                 />
               </div>
             </div>
