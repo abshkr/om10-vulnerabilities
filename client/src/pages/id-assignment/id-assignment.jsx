@@ -37,8 +37,9 @@ const IdAssignment = () => {
 
   const handleTagLookUp = () => {
     IButton({
-      setSearch,
-      t,
+      setSearch: setSearch,
+      t: t,
+      buttonType: 'search',
     });
   };
 

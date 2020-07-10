@@ -1336,7 +1336,9 @@
     "validateData": "Validate Data",
     "exportData": "Export Data",
     "upload": "Upload",
-    "uploadData": "Upload Data"
+    "uploadData": "Upload Data",
+    "read": "Read",
+    "copy": "Copy"
   },
 
   "tabColumns": {

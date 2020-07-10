@@ -6,7 +6,7 @@ import { Form, Select } from 'antd';
 
 import { ID_ASSIGNMENT } from '../../../../api';
 
-const PhysicalType = ({ form, value }) => {
+const PhysicalType = ({ form, value, onChange }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -26,6 +26,8 @@ const PhysicalType = ({ form, value }) => {
       setFieldsValue({
         kya_phys_type: value.kya_phys_type
       });
+
+      onChange(value.kya_phys_type);
     }
   }, [value, setFieldsValue]);
 
@@ -38,6 +40,7 @@ const PhysicalType = ({ form, value }) => {
       <Select
         loading={isValidating}
         showSearch
+        onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectPhysicalType') : null}
         filterOption={(input, option) =>

@@ -38,9 +38,12 @@ const TabPane = Tabs.TabPane;
 const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const { resetFields } = form;
+  const { resetFields, getFieldsValue, setFieldsValue } = form;
 
   const [type, setType] = useState(null);
+  const [keyNo, setKeyNo] = useState(null);
+  const [issuer, setIssuer] = useState(null);
+  const [physType, setPhysType] = useState(null);
   const [carrier, setCarrier] = useState(null);
   const [employer, setEmployer] = useState(null);
   const [role, setRole] = useState(null);
@@ -52,6 +55,8 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     mutate(ID_ASSIGNMENT.READ);
     if (kya_txt) {
       setFilterValue("" + kya_txt);
+    } else {
+      setFilterValue(" ");
     }
   };
 
@@ -126,6 +131,107 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     });
   };
 
+  const adjustKeyText = (txt) => {
+    return txt.toUpperCase();
+  }
+
+  // When physical type is Touch Button - I Button
+  const decryptKeyText = (txt) => {
+
+    let card_txt = txt.trim();
+    //trace("decryptKeyText", kya_phys_type);
+    //trace("decryptKeyText", kya_phys_type.selectedIndex);
+    if ( physType === '7' )
+    {
+      // only touch button requires the chop of prefix and postfix characters
+      card_txt = card_txt.substring(2, card_txt.length-2);
+    }
+    
+    setFieldsValue({
+      kya_txt: card_txt
+    });
+
+  }
+
+  // When physical type is Track Two Card
+  const makeDefaultCard = () => {
+    // check user entry 
+    const values = getFieldsValue([
+      'kya_key_no',
+      'kya_txt', 
+      'kya_phys_type', 
+      'kya_type',
+      'kya_key_issuer'
+    ]);
+    let keyPhysType = String(values?.kya_phys_type);
+    let keyNo = String(values?.kya_key_no);
+    let cardID = '';
+    if (values?.kya_txt) {
+      cardID = values?.kya_txt;
+    }
+    
+    if (keyPhysType === '2') {
+      //slice 37 mate
+      cardID = cardID.slice(0,37);
+      //prefill text with trailling 0s
+      cardID = cardID.padEnd(37, '0');
+      keyNo = keyNo.slice(0,4);
+      setFieldsValue({
+        kya_key_no: keyNo
+      });
+      // string build
+      let type = values?.kya_type ? String(values?.kya_type) : '';
+      let issuer = values?.kya_key_issuer ? values?.kya_key_issuer : '';
+      // card mapping
+      switch (type) {
+        case '1': type = '0'; break;
+        case '2': type = '1'; break;
+        case '3': type = '1'; break;
+        case '4': type = '3'; break;
+        case '5': type = '4'; break;
+        case '6': type = '3'; break;
+        case '7': type = '3'; break;
+        case '8': type = '3'; break;
+        case '9': type = '3'; break;
+      }
+      // slice trails and prepend 0s
+      type = type.slice(0,2);
+      type = type.padStart(2, '0');
+      issuer = issuer.slice(0,4);
+      issuer = issuer.padStart(4, '0');
+      keyNo = keyNo.slice(0,4);
+      keyNo = keyNo.padStart(4, '0');
+      // 2 + 2 + 4 + 4 = 12
+      cardID = type + '00' + issuer + keyNo + cardID.slice(12);
+      // slice excess
+      cardID = cardID.slice(0,37);
+    }
+    
+    setFieldsValue({
+      kya_txt: cardID
+    });
+  };
+
+  const onPhysicalTypeChange = (type) => {
+    setPhysType(String(type));
+    makeDefaultCard();
+  };
+
+  const onKeyNoChange = (num) => {
+    setKeyNo(num);
+    makeDefaultCard();
+  };
+
+  const onIssuerChange = (issuer) => {
+    setIssuer(issuer);
+    makeDefaultCard();
+  };
+
+  const onKeyTypeChange = (type) => {
+    setType(String(type));
+    makeDefaultCard();
+  };
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -175,16 +281,16 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
-            <AssignmentNumber form={form} value={value} />
-            <Issuer form={form} value={value} />
-            <PhysicalType form={form} value={value} />
-            <PhysicalTagText form={form} value={value} />
+            <AssignmentNumber form={form} value={value} physType={physType} onChange={onKeyNoChange} />
+            <Issuer form={form} value={value} onChange={onIssuerChange} />
+            <PhysicalType form={form} value={value} onChange={onPhysicalTypeChange} />
+            <PhysicalTagText form={form} value={value} physType={physType} />
             <TimeCode form={form} value={value} />
             <Flags form={form} value={value} />
           </TabPane>
 
           <TabPane className="ant-tab-window" tab={t('tabColumns.assignments')} forceRender={true} key="2">
-            <AssignmentType form={form} value={value} onChange={setType} />
+            <AssignmentType form={form} value={value} onChange={onKeyTypeChange} />
 
             {['1', '3', '5'].includes(type) && (
               <>

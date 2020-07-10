@@ -6,7 +6,7 @@ import { Form, Select } from 'antd';
 
 import { ID_ASSIGNMENT } from '../../../../api';
 
-const Issuer = ({ form, value }) => {
+const Issuer = ({ form, value, onChange }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -26,6 +26,8 @@ const Issuer = ({ form, value }) => {
       setFieldsValue({
         kya_key_issuer: value.kya_key_issuer
       });
+
+      onChange(value.kya_key_issuer);
     }
   }, [value, setFieldsValue]);
 
@@ -39,6 +41,7 @@ const Issuer = ({ form, value }) => {
         disabled={!!value}
         loading={isValidating}
         showSearch
+        onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectIssuer') : null}
         filterOption={(input, option) =>
