@@ -633,8 +633,31 @@ class Movement extends CommonClass
                 AND (-1 = :mv_status OR MV_STATUS = :mv_status)
                 AND (-1 = :mv_srctype OR MV_SRCTYPE = :mv_srctype)
                 AND (-1 = :mv_terminal OR MV_TERMINAL = :mv_terminal)
-                AND ('-1' = :start_date OR " . $this->time_option . " > :start_date)
-                AND ('-1' = :end_date OR " . $this->time_option . " < :end_date)
+        ";
+
+        //        AND ('-1' = :start_date OR " . $this->time_option . " > :start_date)
+        //        AND ('-1' = :start_date OR " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+        if ( $this->start_date === "-1") {
+            $query .= "
+                AND ('-1' = :start_date) 
+            ";
+        } else {
+            $query .= "
+                AND (" . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+            ";
+        }
+        //        AND ('-1' = :end_date OR " . $this->time_option . " < :end_date)
+        //        AND ('-1' = :end_date OR " . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+        if ( $this->end_date === "-1") {
+            $query .= "
+                AND ('-1' = :end_date)
+            ";
+        } else {
+            $query .= "
+                AND (" . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+            ";
+        }
+        $query .= "
             ORDER BY MV_ID DESC
         ";
         $stmt = oci_parse($this->conn, $query);

@@ -199,8 +199,31 @@ class OpenOrder extends CommonClass
                 AND (-1 = :status OR ORDER_STAT_ID = :status)
                 AND (-1 = :order_cust_no OR ORDER_CUST_NO LIKE '%'||:order_cust_no||'%')
                 AND ('-1' = :order_ref_code OR ORDER_REF_CODE LIKE '%'||:order_ref_code||'%')
-                AND ('-1' = :start_date OR " . $this->time_option . " > :start_date)
-                AND ('-1' = :end_date OR " . $this->time_option . " < :end_date)
+        ";
+
+        //        AND ('-1' = :start_date OR " . $this->time_option . " > :start_date)
+        //        AND ('-1' = :start_date OR " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+        if ( $this->start_date === "-1") {
+            $query .= "
+                AND ('-1' = :start_date) 
+            ";
+        } else {
+            $query .= "
+                AND (" . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+            ";
+        }
+        //        AND ('-1' = :end_date OR " . $this->time_option . " < :end_date)
+        //        AND ('-1' = :end_date OR " . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+        if ( $this->end_date === "-1") {
+            $query .= "
+                AND ('-1' = :end_date)
+            ";
+        } else {
+            $query .= "
+                AND (" . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+            ";
+        }
+        $query .= "
             ORDER BY ORDER_ORD_TIME DESC
         ";
         $stmt = oci_parse($this->conn, $query);
