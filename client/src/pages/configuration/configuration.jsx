@@ -304,7 +304,8 @@ const ConfigurationItems = ({ data, onChange }) => (
             avatar={
               <Switch
                 checked={item.config_value === 'Y'}
-                disabled={item.config_value !== 'N' && item.config_value !== 'Y'}
+                // disabled={item.config_value !== 'N' && item.config_value !== 'Y'}
+                style={{visibility: item.config_value === 'N' || item.config_value === 'Y'? "visible":"hidden"}}
                 checkedChildren={<span>On</span>}
                 unCheckedChildren={<span>Off</span>}
                 onChange={(value) => onChange(item, value ? 'Y' : 'N')}
