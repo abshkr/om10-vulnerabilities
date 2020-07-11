@@ -35,7 +35,7 @@ const NominationId = ({ form, value, pageState }) => {
       label={t('fields.nomtranNomId')}
       rules={[{ required: false, validator: validate }]}
     >
-      <Input style={{ width: '100%' }} disabled={pageState === 'create' ? true : true} />
+      <Input style={{ width: '100%' }} disabled={pageState === 'transfer' ? true : true} />
     </Form.Item>
   );
 };

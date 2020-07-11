@@ -76,7 +76,9 @@ const SourceTank = ({ form, value, onChange, arm, pageState }) => {
         allowClear
         showSearch
         onChange={onTankChange}
-        disabled={pageState === 'receipt' ? true : arm?.length > 0 ? true : false}
+        // disabled={pageState === 'receipt' ? true : (arm?.length > 0 ? true : false)}
+        // disabled={!(!(pageState==='disposal' && arm?.length > 0) && (arm?.[0]?.rat_count <= 1) && (pageState!=='receipt'))}
+        disabled={(pageState==='disposal' && arm?.length > 0) || (arm?.[0]?.rat_count > 1) || (pageState==='receipt')}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectFromTank') : null}
         filterOption={(value, option) =>

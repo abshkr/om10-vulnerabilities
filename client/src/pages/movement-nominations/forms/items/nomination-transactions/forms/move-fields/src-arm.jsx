@@ -7,7 +7,7 @@ import _ from 'lodash';
 
 import { NOMINATION_TRANSACTIONS } from '../../../../../../../api';
 
-const SourceArm = ({ form, value, onChange, pageState }) => {
+const SourceArm = ({ form, value, onChange, tank, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -33,9 +33,8 @@ const SourceArm = ({ form, value, onChange, pageState }) => {
   const getArmItem = (code, list) => {
     // find the item having a particular stream_armcode
     let arm_item = _.filter(list, (item) => {
-      return item.stream_armcode === code;
+      return code === (item.stream_tankcode + ' - ' + item.stream_baycode + ' - ' + item.stream_armcode);
     });
-
     return arm_item;
   };
 
@@ -65,7 +64,9 @@ const SourceArm = ({ form, value, onChange, pageState }) => {
         allowClear
         showSearch
         onChange={onArmChange}
-        disabled={pageState === 'disposal' ? false : true}
+        // disabled={pageState !== 'disposal' ? true : (tank?.length > 0 ? true : false)}
+        // disabled={!(!(pageState==='disposal' && (tank?.length > 0)) && (pageState!=='transfer') && (pageState !== 'receipt'))}
+        disabled={(pageState==='disposal' && (tank?.length > 0)) || (pageState==='transfer') || (pageState === 'receipt')}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectFromArm') : null}
         filterOption={(value, option) =>
@@ -73,8 +74,15 @@ const SourceArm = ({ form, value, onChange, pageState }) => {
         }
       >
         {options?.records.map((item, index) => (
-          <Select.Option key={index} value={item.stream_armcode}>
+          /* <Select.Option key={index} value={item.stream_armcode}>
             {item.stream_armcode}
+          </Select.Option> */
+          <Select.Option
+            key={index}
+            value={`${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
+            item={item}
+          >
+            {`${item.ratio_seq}: ${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
           </Select.Option>
         ))}
       </Select>

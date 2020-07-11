@@ -50,7 +50,7 @@ const ItemEffectTime = ({ form, value, pageState }) => {
         showTime
         format={FORMAT}
         style={{ width: '100%' }}
-        disabled={pageState === 'create' ? false : false}
+        disabled={pageState === 'transfer' ? false : false}
       />
     </Form.Item>
   );

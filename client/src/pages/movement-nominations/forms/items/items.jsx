@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { PlusOutlined, MinusOutlined, EyeOutlined, CarryOutOutlined, LockOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-
 import { Button, Form, Drawer, Modal, notification } from 'antd';
-
 import useSWR, { mutate } from 'swr';
-
 import moment from 'moment';
+import _ from 'lodash';
 
 import Schedules from './schedules';
 import TransactionList from './transaction-list';
@@ -159,8 +157,21 @@ const Items = ({ setTableAPIContext, value, config }) => {
     if (!currItem.mvitm_tanker) {
       currItem.mvitm_tanker = 'Generic Nom Vol';
     }
+    if (!currItem.mvitm_key) {
+      currItem.mvitm_key = value?.mv_key;
+    }
+    if (!currItem.mvitm_terminal) {
+      currItem.mvitm_terminal = value?.mv_terminal;
+    }
+    if (currItem.mvitm_prodname_from === '') {
+      currItem.mvitm_prodname_from = currItem?.mvitm_prodcode_from;
+    }
+    if (currItem.mvitm_prodname_to === '') {
+      currItem.mvitm_prodname_to = currItem?.mvitm_prodcode_to;
+    }
     currItem.mvitm_dtim_effect = moment();
     currItem.mvitm_dtim_expiry = moment();
+    console.log('params for MT4NOM', currItem, selected);
     setTransItem(currItem);
     setMakeTransactionVisible(true);
   };
@@ -168,9 +179,11 @@ const Items = ({ setTableAPIContext, value, config }) => {
   const handleItemAdd = () => {
     const length = size + 1;
 
-    const value = {
+    const line = {
       mvitm_line_id: String(size + 1),
       mvitm_item_id: '',
+      mvitm_key: value?.mv_key,
+      mvitm_terminal: value?.mv_terminal,
       mvitm_type: 0,
       mvitm_type_name: 'Receipt',
       mvitm_item_key: String(size + 1),
@@ -202,7 +215,7 @@ const Items = ({ setTableAPIContext, value, config }) => {
 
     setSize(length);
 
-    tableAPI.updateRowData({ add: [value] });
+    tableAPI.updateRowData({ add: [line] });
   };
 
   const handleItemRemove = () => {
@@ -222,6 +235,28 @@ const Items = ({ setTableAPIContext, value, config }) => {
     let payload = value.data;
 
     console.log('onEditingFinished', value, value.colDef);
+    
+    // set the product name by product code
+    if (value.colDef.field === 'mvitm_prodcode_from') {
+      const prodFromList = value.colDef?.cellRendererParams?.values;
+      if (prodFromList) {
+        const prodFrom = _.filter(prodFromList, (o) => (o.code === value?.value));
+        payload.mvitm_prodname_from = prodFrom?.[0]?.code + ' - ' + prodFrom?.[0]?.name;
+      } else {
+        payload.mvitm_prodname_from = value?.value;
+      }
+    }
+    
+    // set the product name by product code
+    if (value.colDef.field === 'mvitm_prodcode_to') {
+      const prodToList = value.colDef?.cellRendererParams?.values;
+      if (prodToList) {
+        const prodTo = _.filter(prodToList, (o) => (o.code === value?.value));
+        payload.mvitm_prodname_to = prodTo?.[0]?.code + ' - ' + prodTo?.[0]?.name;
+      } else {
+        payload.mvitm_prodname_to = value?.value;
+      }
+    }
 
     if (value.colDef.field === 'mvitm_prodcmpy_from') {
       payload.mvitm_prodcode_from = t('placeholder.selectPlease');
@@ -330,6 +365,13 @@ const Items = ({ setTableAPIContext, value, config }) => {
     if (selected?.[0]) {
       const buttonStates = handleButtonState(selected?.[0]?.mvitm_status);
 
+      if (!selected?.[0]?.mvitm_item_id) {
+        buttonStates.makeSchedule = false;
+        buttonStates.viewSchedule = false;
+        buttonStates.makeTransaction = false;
+        buttonStates.viewTransaction = false;
+      }
+
       setButtonState(buttonStates);
     }
   }, [selected]);
@@ -354,7 +396,7 @@ const Items = ({ setTableAPIContext, value, config }) => {
         type="primary"
         icon={<CarryOutOutlined />}
         style={{ float: 'right', marginRight: 5 }}
-        disabled={!buttonState?.makeTransaction || disabled || !value}
+        disabled={!buttonState?.makeTransaction || disabled || !value }
         onClick={() => gotoMakeTransactions()}
       >
         {t('operations.makeTransaction')}

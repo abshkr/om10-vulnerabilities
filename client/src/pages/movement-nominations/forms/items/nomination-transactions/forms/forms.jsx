@@ -400,19 +400,13 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, default
 
                     <Row gutter={[8, 1]}>
                       <Col span={24}>
-                        <SourceArm form={form} value={value} onChange={setArm} pageState={pageState} />
+                        <SourceArm form={form} value={value} onChange={setArm} tank={tank} pageState={pageState} />
                       </Col>
                     </Row>
 
                     <Row gutter={[8, 1]}>
                       <Col span={24}>
-                        <SourceTank
-                          form={form}
-                          value={value}
-                          onChange={setTank}
-                          arm={arm}
-                          pageState={pageState}
-                        />
+                        <SourceTank form={form} value={value} onChange={setTank} arm={arm} pageState={pageState} />
                       </Col>
                     </Row>
                   </Card>

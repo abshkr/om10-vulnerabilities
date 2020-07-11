@@ -47,7 +47,7 @@ const Carrier = ({ form, value, onChange, carrier, pageState }) => {
         loading={isValidating}
         showSearch
         onChange={onCarrierChange}
-        disabled={pageState === 'create' || pageState === 'edit' ? false : false}
+        disabled={pageState === 'transfer' ? false : false}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectCarrier') : null}
         filterOption={(value, option) =>

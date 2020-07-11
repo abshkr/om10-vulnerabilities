@@ -49,7 +49,7 @@ const Tanker = ({ form, value, carrier, onChange, pageState }) => {
         loading={isValidating}
         showSearch
         onChange={onTankerChange}
-        disabled={(pageState === 'create' || pageState === 'edit' ? false : false) || !carrier}
+        disabled={(pageState === 'transfer' ? false : false) || !carrier}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectTanker') : null}
         filterOption={(value, option) =>

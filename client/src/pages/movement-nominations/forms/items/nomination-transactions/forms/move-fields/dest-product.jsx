@@ -35,7 +35,10 @@ const DestinationProduct = ({ form, value, pageState }) => {
       label={t('fields.nomtranToDrawProd')}
       rules={[{ required: false, validator: validate }]}
     >
-      <Input style={{ width: '100%' }} disabled={pageState === 'transfer' ? true : true} />
+      <Input
+        style={{ width: '100%' }}
+        disabled={(pageState === 'disposal' ? true : false) || true}
+      />
     </Form.Item>
   );
 };

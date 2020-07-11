@@ -153,6 +153,24 @@ const useColumns = (value, selected) => {
       pinned: 'left',
     },
     {
+      headerName: t('fields.nominationKey'),
+      field: 'mvitm_key',
+      sortable: true,
+      resizable: true,
+      width: 70,
+      suppressSizeToFit: true,
+      hide: true,
+    },
+    {
+      headerName: t('fields.terminal'),
+      field: 'mvitm_terminal',
+      sortable: true,
+      resizable: true,
+      width: 70,
+      suppressSizeToFit: true,
+      hide: true,
+    },
+    {
       headerName: t('fields.itemId'),
       field: 'mvitm_item_id',
       filter: 'MultiFilter',
@@ -330,6 +348,16 @@ const useColumns = (value, selected) => {
       },
     },
     {
+      headerName: t('fields.fromProduct'),
+      field: 'mvitm_prodname_from',
+      sortable: true,
+      resizable: true,
+      width: 200,
+      suppressSizeToFit: true,
+      editable: false,
+      hide: true,
+    },
+    {
       headerName: t('fields.fromTank'),
       field: 'mvitm_tank_from',
       sortable: true,
@@ -460,6 +488,16 @@ const useColumns = (value, selected) => {
           )
         ),
       },
+    },
+    {
+      headerName: t('fields.toProduct'),
+      field: 'mvitm_prodname_to',
+      sortable: true,
+      resizable: true,
+      width: 200,
+      suppressSizeToFit: true,
+      editable: false,
+      hide: true,
     },
     {
       headerName: t('fields.toTank'),

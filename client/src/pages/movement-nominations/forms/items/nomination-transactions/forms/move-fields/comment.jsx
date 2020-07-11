@@ -35,7 +35,7 @@ const Comment = ({ form, value, pageState }) => {
       label={t('fields.nomtranComment')}
       rules={[{ required: false, validator: validate }]}
     >
-      <Input style={{ width: '100%' }} disabled={pageState === 'create' ? false : false} />
+      <Input style={{ width: '100%' }} disabled={pageState === 'transfer' ? false : false} />
     </Form.Item>
   );
 };

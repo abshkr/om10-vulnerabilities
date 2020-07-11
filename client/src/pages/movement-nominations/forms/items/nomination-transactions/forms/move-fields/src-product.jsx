@@ -35,7 +35,10 @@ const SourceProduct = ({ form, value, pageState }) => {
       label={t('fields.nomtranFromDrawProd')}
       rules={[{ required: false, validator: validate }]}
     >
-      <Input style={{ width: '100%' }} disabled={pageState === 'transfer' ? true : true} />
+      <Input
+        style={{ width: '100%' }}
+        disabled={(pageState === 'receipt' ? true : false) || true}
+      />
     </Form.Item>
   );
 };

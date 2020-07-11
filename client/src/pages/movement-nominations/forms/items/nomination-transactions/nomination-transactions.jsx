@@ -37,8 +37,8 @@ const NominationTransactions = ({ access, params, config }) => {
   }; */
   //const [pageState, setPageState] = useState(_.toLower(params?.mvitm_type));
   const [pageState, setPageState] = useState(
-    params?.mvitm_type === "0"? "receipt" 
-                              : (params?.mvitm_type === "1"? "disposal" : "transfer")
+    String(params?.mvitm_type) === '0'? 'receipt' 
+                              : (String(params?.mvitm_type) === '1'? 'disposal' : 'transfer')
   );
   const [visible, setVisible] = useState(true);
   const [nomTanker, setNomTanker] = useState(null);
