@@ -169,7 +169,7 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
         <Col span={12}>
           <Form.Item
             name="mlitm_dens_cor"
-            label={`${t('fields.standardDensity')} ${limit ? `[${limit.density_lo} - ${limit.density_hi}]` : ''}`}
+            label={`${t('fields.standardDensity')} ${limit ? `[${limit.density_lo} - ${limit.density_hi}]` : ''}` + '(' + t('fields.nomtranStdDensUnit') + ')'}
           >
             <InputNumber
               precision={densDecimals>config.precisionDensity ? config.precisionDensity : densDecimals}
@@ -184,7 +184,7 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
         <Col span={12}>
           <Form.Item
             name="mlitm_temp_amb"
-            label={`${t('fields.observedTemperature')} ${limit ? `[${limit.temp_lo} - ${limit.temp_hi}]` : ''}`}
+            label={`${t('fields.observedTemperature')} ${limit ? `[${limit.temp_lo} - ${limit.temp_hi}]` : ''}`+ '(' + t('fields.nomtranObsTempUnit') + ')'}
           >
             <InputNumber
               precision={tempDecimals>config.precisionTemperature ? config.precisionTemperature : tempDecimals}

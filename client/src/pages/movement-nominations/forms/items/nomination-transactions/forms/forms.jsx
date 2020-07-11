@@ -56,7 +56,7 @@ import MeterDetails from './meter-details/meter-details';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, pageState, defaultTanker }) => {
+const FormModal = ({ value, visible, handleFormState, access, pageState, defaultTanker, config }) => {
   const [drawerWidth, setDrawerWidth] = useState('80vw');
   const [mainTabOn, setMainTabOn] = useState(true);
   const [disableCalculation, setDisableCalculation] = useState(false);
@@ -202,10 +202,18 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, default
   const onCalculate = () => {
     Modal.confirm({
       title: t('prompts.calculate'),
-      okText: t('operations.yes'),
+      title:
+        t('prompts.calculate') +
+        ' (' +
+        t('descriptions.lastFieldChanged') +
+        ': ' +
+        calcSource?.title +
+        ')',
+      okText: t('operations.calculate'),
       okType: 'primary',
       cancelText: t('operations.no'),
       icon: <QuestionCircleOutlined />,
+      width: '30vw',
       centered: true,
       onOk: async () => {
         try {
@@ -448,17 +456,17 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, default
               <Card size="small" title={t('divider.calculation')}>
                 <Row gutter={[8, 1]}>
                   <Col span={12}>
-                    <PlanQty form={form} value={value} pageState={pageState} />
+                    <PlanQty form={form} value={value} pageState={pageState} config={config} />
                   </Col>
 
                   <Col span={12}>
-                    <AvailQty form={form} value={value} pageState={pageState} />
+                    <AvailQty form={form} value={value} pageState={pageState} config={config} />
                   </Col>
                 </Row>
 
                 <Row gutter={[8, 1]}>
                   <Col span={12}>
-                    <ObsQty form={form} value={value} onChange={setCalcSource} pageState={pageState} />
+                    <ObsQty form={form} value={value} onChange={setCalcSource} pageState={pageState} config={config} />
                   </Col>
 
                   <Col span={12}>
@@ -487,28 +495,28 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, default
 
                 <Row gutter={[8, 1]}>
                   <Col span={12}>
-                    <StdQty form={form} value={value} onChange={setCalcSource} pageState={pageState} />
+                    <StdQty form={form} value={value} onChange={setCalcSource} pageState={pageState} config={config} />
                   </Col>
 
                   <Col span={12}>
-                    <ObsMass form={form} value={value} onChange={setCalcSource} pageState={pageState} />
+                    <ObsMass form={form} value={value} onChange={setCalcSource} pageState={pageState} config={config} />
                   </Col>
                 </Row>
 
                 <Row gutter={[8, 1]}>
                   <Col span={12}>
-                    <ObsTemp form={form} value={value} tank={tank} pageState={pageState} />
+                    <ObsTemp form={form} value={value} tank={tank} pageState={pageState} config={config} />
                   </Col>
 
                   <Col span={12}>
-                    <StdDensity form={form} value={value} tank={tank} pageState={pageState} />
+                    <StdDensity form={form} value={value} tank={tank} pageState={pageState} config={config} />
                   </Col>
                 </Row>
               </Card>
 
               <Row gutter={[8, 1]}>
                 <Col span={12}>
-                  <AltQty form={form} value={value} onChange={setAltQty} pageState={pageState} />
+                  <AltQty form={form} value={value} onChange={setAltQty} pageState={pageState} config={config} />
                 </Col>
 
                 <Col span={12}>

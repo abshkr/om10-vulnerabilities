@@ -270,6 +270,7 @@ const MovementNominations = () => {
           access={access}
           url={url}
           locateNomination={locateNomination}
+          config={config}
         />
       )}
     </Page>

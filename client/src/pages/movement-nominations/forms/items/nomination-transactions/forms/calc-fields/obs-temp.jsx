@@ -4,9 +4,9 @@ import { Form, InputNumber } from 'antd';
 
 import _ from 'lodash';
 
-const ObsTemp = ({ form, value, tank, pageState }) => {
-  const [minTemp, setMinTemp] = useState(0);
-  const [maxTemp, setMaxTemp] = useState(2000);
+const ObsTemp = ({ form, value, tank, pageState, config }) => {
+  const [minTemp, setMinTemp] = useState(-273);
+  const [maxTemp, setMaxTemp] = useState(500);
 
   console.log('in ObsTemp', tank);
   const { t } = useTranslation();
@@ -54,7 +54,7 @@ const ObsTemp = ({ form, value, tank, pageState }) => {
   return (
     <Form.Item
       name="mlitm_temp_amb"
-      label={t('fields.nomtranObsTemp') + '(' + t('fields.nomtranObsTempUnit') + ')'}
+      label={t('fields.nomtranObsTemp') + '[' + String(minTemp) + ' ~ ' + String(maxTemp) + ']' + '(' + t('fields.nomtranObsTempUnit') + ')'}
       rules={[{ required: false, validator: validate }]}
     >
       <InputNumber
@@ -63,6 +63,7 @@ const ObsTemp = ({ form, value, tank, pageState }) => {
         placeholder={String(minTemp) + ' ~ ' + String(maxTemp)}
         min={_.toNumber(minTemp)}
         max={_.toNumber(maxTemp)}
+        precision={config.precisionTemperature}
       />
     </Form.Item>
   );

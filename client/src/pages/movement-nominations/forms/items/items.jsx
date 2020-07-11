@@ -17,7 +17,7 @@ import api, { MOVEMENT_NOMIATIONS } from '../../../../api';
 
 import useColumns from './columns';
 
-const Items = ({ setTableAPIContext, value }) => {
+const Items = ({ setTableAPIContext, value, config }) => {
   const { t } = useTranslation();
 
   const url = value ? `${MOVEMENT_NOMIATIONS.ITEMS}?mv_id=${value?.mv_id}` : null;
@@ -410,7 +410,7 @@ const Items = ({ setTableAPIContext, value }) => {
           visible={makeTransactionVisible}
           width="100vw"
         >
-          <NominationTransactions params={transItem} access={null} />
+          <NominationTransactions params={transItem} access={null} config={config} />
         </Drawer>
       )}
 

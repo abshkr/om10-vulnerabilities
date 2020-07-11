@@ -5,7 +5,7 @@ import _ from 'lodash';
 import Forms from './forms';
 import { NOMINATION_TRANSACTIONS } from '../../../../../api';
 
-const NominationTransactions = ({ access, params }) => {
+const NominationTransactions = ({ access, params, config }) => {
   /* let params2 = {
     mvitm_move_id: '5089', 
     mvitm_key: '99887766', 
@@ -71,6 +71,7 @@ const NominationTransactions = ({ access, params }) => {
         access={access}
         pageState={pageState}
         defaultTanker={nomTanker}
+        config={config}
       />
     </>
   );
