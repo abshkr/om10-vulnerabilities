@@ -82,7 +82,8 @@ const SpecialMovements = () => {
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
-      <Download data={payload?.records} isLoading={isValidating} columns={fields} />
+
+      <Download data={data} isLoading={isValidating} columns={fields} />
 
       <Button
         type="primary"
