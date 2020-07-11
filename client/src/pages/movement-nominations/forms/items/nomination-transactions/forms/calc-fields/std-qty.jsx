@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
 
-const StdQty = ({ form, value, onChange, pageState }) => {
+const StdQty = ({ form, value, onChange, pageState, config }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -27,12 +27,12 @@ const StdQty = ({ form, value, onChange, pageState }) => {
         mlitm_qty_cor: value.mlitm_qty_cor,
       });
 
-      onChange({ qty: value.mlitm_qty_cor, type: 'L15' });
+      onChange({ qty: value.mlitm_qty_cor, type: 'L15', title: t('fields.nomtranStdQty') });
     }
   }, [value, setFieldsValue]);
 
   const handleFieldChange = (value) => {
-    onChange({ qty: value, type: 'L15' });
+    onChange({ qty: value, type: 'L15', title: t('fields.nomtranStdQty') });
   };
 
   return (
@@ -42,6 +42,9 @@ const StdQty = ({ form, value, onChange, pageState }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <InputNumber
+        min={0}
+        max={999999999}
+        precision={config.precisionVolume}
         style={{ width: '100%' }}
         onChange={handleFieldChange}
         disabled={pageState === 'transfer' ? false : false}

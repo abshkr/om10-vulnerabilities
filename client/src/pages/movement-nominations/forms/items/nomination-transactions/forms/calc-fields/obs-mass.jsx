@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
 
-const ObsMass = ({ form, value, onChange, pageState }) => {
+const ObsMass = ({ form, value, onChange, pageState, config }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -27,12 +27,12 @@ const ObsMass = ({ form, value, onChange, pageState }) => {
         mlitm_qty_kg: value.mlitm_qty_kg,
       });
 
-      onChange({ qty: value.mlitm_qty_kg, type: 'KG' });
+      onChange({ qty: value.mlitm_qty_kg, type: 'KG', title: t('fields.nomtranMass') });
     }
   }, [value, setFieldsValue]);
 
   const handleFieldChange = (value) => {
-    onChange({ qty: value, type: 'KG' });
+    onChange({ qty: value, type: 'KG', title: t('fields.nomtranMass') });
   };
 
   return (
@@ -42,6 +42,9 @@ const ObsMass = ({ form, value, onChange, pageState }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <InputNumber
+        min={0}
+        max={999999999}
+        precision={config.precisionMass}
         style={{ width: '100%' }}
         onChange={handleFieldChange}
         disabled={pageState === 'transfer' ? false : false}

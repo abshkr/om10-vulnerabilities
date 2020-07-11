@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
 
-const PlanQty = ({ form, value, pageState }) => {
+const PlanQty = ({ form, value, pageState, config }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -35,7 +35,13 @@ const PlanQty = ({ form, value, pageState }) => {
       label={t('fields.nomtranPlanQty') + '(' + value?.mvitm_prod_unit + ')'}
       rules={[{ required: false, validator: validate }]}
     >
-      <InputNumber style={{ width: '100%' }} disabled={pageState === 'transfer' ? true : true} />
+      <InputNumber 
+        min={0}
+        max={999999999}
+        precision={config.precisionVolume}
+        style={{ width: '100%' }} 
+        disabled={pageState === 'transfer' ? true : true} 
+      />
     </Form.Item>
   );
 };

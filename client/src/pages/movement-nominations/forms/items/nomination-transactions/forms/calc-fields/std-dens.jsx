@@ -4,7 +4,7 @@ import { Form, InputNumber } from 'antd';
 
 import _ from 'lodash';
 
-const StdDensity = ({ form, value, tank, pageState }) => {
+const StdDensity = ({ form, value, tank, pageState, config }) => {
   const [minDens, setMinDens] = useState(0);
   const [maxDens, setMaxDens] = useState(2000);
 
@@ -54,7 +54,7 @@ const StdDensity = ({ form, value, tank, pageState }) => {
   return (
     <Form.Item
       name="mlitm_dens_cor"
-      label={t('fields.nomtranStdDens') + '(' + t('fields.nomtranStdDensUnit') + ')'}
+      label={t('fields.nomtranStdDens') + '(' + String(minDens) + ' ~ ' + String(maxDens) + ')' + '(' + t('fields.nomtranStdDensUnit') + ')'}
       rules={[{ required: false, validator: validate }]}
     >
       <InputNumber
@@ -63,6 +63,7 @@ const StdDensity = ({ form, value, tank, pageState }) => {
         placeholder={String(minDens) + ' ~ ' + String(maxDens)}
         min={_.toNumber(minDens)}
         max={_.toNumber(maxDens)}
+        precision={config.precisionDensity}
         //step={0.01}
       />
     </Form.Item>

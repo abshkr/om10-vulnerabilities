@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
 
-const AltQty = ({ form, value, onChange, pageState }) => {
+const AltQty = ({ form, value, onChange, pageState, config }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -37,6 +37,9 @@ const AltQty = ({ form, value, onChange, pageState }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <InputNumber
+        min={0}
+        max={999999999}
+        precision={config.precisionVolume}
         style={{ width: '100%' }}
         onChange={onChange}
         disabled={pageState === 'transfer' ? false : false}

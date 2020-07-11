@@ -32,7 +32,7 @@ import { SETTINGS } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, url, locateNomination }) => {
+const FormModal = ({ value, visible, handleFormState, access, url, locateNomination, config }) => {
   const [tableAPI, setTableAPI] = useState(null);
   const [carrier, setCarrier] = useState(null);
   const { t } = useTranslation();
@@ -293,7 +293,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
             <Comments form={form} value={value} />
           </TabPane>
           <TabPane tab={t('tabColumns.items')} forceRender={true} key="2">
-            <Items setTableAPIContext={setTableAPI} value={value} />
+            <Items setTableAPIContext={setTableAPI} value={value} config={config} />
           </TabPane>
         </Tabs>
       </Form>
