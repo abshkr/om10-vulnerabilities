@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Form, InputNumber, Input, Select, Row, Col } from 'antd';
 import useSWR from 'swr';
 
-import { TANK_STATUS, TANKS } from '../../../../api';
+import { ORDER_LISTINGS, TANK_STATUS, TANKS } from '../../../../api';
 import { VCFManager } from '../../../../utils';
 
 const General = ({ form, value, config }) => {
@@ -13,8 +13,9 @@ const General = ({ form, value, config }) => {
   const { data: status, isValidating: statusLoading } = useSWR(TANK_STATUS.STATUS);
   const { data: methods, isValidating: methodsLoading } = useSWR(TANK_STATUS.METHODS);
   const { data: products, isValidating: baseLoading } = useSWR(TANKS.BASE_LIST);
+  const { data: terminals, isValidating: terminalLoading } = useSWR(ORDER_LISTINGS.TERMINAL);
 
-  const isLoading = areasLoading || statusLoading || methodsLoading || baseLoading;
+  const isLoading = areasLoading || statusLoading || methodsLoading || baseLoading || terminalLoading;
 
   const { setFieldsValue } = form;
 
@@ -51,6 +52,7 @@ const General = ({ form, value, config }) => {
         tank_mtol_volume: value.tank_mtol_volume,
         tank_dtol_percent: value.tank_dtol_percent,
         tank_density: value.tank_density,
+        tank_terminal: value.tank_terminal,
       });
     }
   }, [value, setFieldsValue]);
@@ -77,6 +79,25 @@ const General = ({ form, value, config }) => {
 
       <Row gutter={[8, 8]}>
         <Col span={12}>
+          <Form.Item name="tank_terminal" label={t('fields.terminal')}>
+            <Select
+              loading={isLoading}
+              showSearch
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {terminals?.records?.map((item, index) => (
+                <Select.Option key={index} value={item.term_code}>
+                  {item.term_name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Col>
+
+        <Col span={12}>
           <Form.Item name="tank_status" label={t('fields.tankStatus')}>
             <Select
               loading={isLoading}
@@ -92,19 +113,6 @@ const General = ({ form, value, config }) => {
                 </Select.Option>
               ))}
             </Select>
-          </Form.Item>
-        </Col>
-
-        <Col span={12}>
-          <Form.Item
-            name="tank_density"
-            label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${
-              value?.tank_base_dens_hi
-            }) ${`@${config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(
-              config?.referenceTemperature
-            )}ºF`}`}
-          >
-            <InputNumber style={{ width: '100%' }} />
           </Form.Item>
         </Col>
       </Row>
@@ -131,6 +139,21 @@ const General = ({ form, value, config }) => {
 
         <Col span={12}>
           <Form.Item
+            name="tank_density"
+            label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${
+              value?.tank_base_dens_hi
+            }) ${`@${config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(
+              config?.referenceTemperature
+            )}ºF`}`}
+          >
+            <InputNumber style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Row gutter={[8, 8]}>
+        <Col span={12}>
+          <Form.Item
             name="tank_gaugingmthd"
             label={t('fields.gaugingMethod')}
             rules={[{ required: true, validator: validate, label: t('fields.gaugingMethod') }]}
@@ -151,35 +174,6 @@ const General = ({ form, value, config }) => {
             </Select>
           </Form.Item>
         </Col>
-      </Row>
-
-      <Row gutter={[8, 8]}>
-        <Col span={12}>
-          <Form.Item
-            name="tank_ullage"
-            label={t('fields.ullage')}
-            rules={[{ required: true, validator: validate, label: t('fields.ullage') }]}
-          >
-            <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
-          </Form.Item>
-        </Col>
-
-        <Col span={12}>
-          <Form.Item name="tank_sulphur" label={`${t('fields.sulphur')} (${t('units.sulphur')})`}>
-            <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
-          </Form.Item>
-        </Col>
-      </Row>
-
-      <Row gutter={[8, 8]}>
-        <Col span={12}>
-          <Form.Item
-            name="tank_flashpoint"
-            label={`${t('fields.flashPoint')} (${t(`units.${config?.temperatureUnit}`)})`}
-          >
-            <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
-          </Form.Item>
-        </Col>
 
         <Col span={12}>
           <Form.Item name="tank_location" label={t('fields.area')}>
@@ -197,6 +191,33 @@ const General = ({ form, value, config }) => {
                 </Select.Option>
               ))}
             </Select>
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Row gutter={[8, 8]}>
+        <Col span={8}>
+          <Form.Item
+            name="tank_ullage"
+            label={t('fields.ullage')}
+            rules={[{ required: true, validator: validate, label: t('fields.ullage') }]}
+          >
+            <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+
+        <Col span={8}>
+          <Form.Item name="tank_sulphur" label={`${t('fields.sulphur')} (${t('units.sulphur')})`}>
+            <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+
+        <Col span={8}>
+          <Form.Item
+            name="tank_flashpoint"
+            label={`${t('fields.flashPoint')} (${t(`units.${config?.temperatureUnit}`)})`}
+          >
+            <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
           </Form.Item>
         </Col>
       </Row>

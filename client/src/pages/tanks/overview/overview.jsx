@@ -28,6 +28,10 @@ const Overview = ({ selected, isLoading }) => {
                 {selected?.tank_code}
               </Descriptions.Item>
 
+              <Descriptions.Item label={t('fields.terminal')} span={24}>
+                {selected?.tank_sitename}
+              </Descriptions.Item>
+
               <Descriptions.Item label={t('fields.product')} span={24}>
                 {selected?.tank_base_name}
               </Descriptions.Item>
