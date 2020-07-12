@@ -9,20 +9,21 @@ const columns = (t) => [
   },
 
   {
+    headerName: t('fields.terminal'),
+    field: 'mv_terminal',
+    filter: 'MultiFilter',
+    sortable: true,
+    resizable: true,
+    width: 125,
+  },
+
+  {
     headerName: t('fields.nominationKey'),
     field: 'mv_key',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
   },
-
-  // {
-  //   headerName: t('fields.terminal'),
-  //   field: 'mv_terminal',
-  //   filter: 'MultiFilter',
-  //   sortable: true,
-  //   resizable: true,
-  // },
 
   {
     headerName: t('fields.nominationNumber'),
@@ -78,7 +79,6 @@ const columns = (t) => [
   {
     headerName: t('fields.lastModifiedBy'),
     field: 'mv_oper_change',
-    cellRenderer: 'DateRenderer',
     sortable: true,
     resizable: true,
   },

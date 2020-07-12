@@ -509,7 +509,7 @@ class Movement extends CommonClass
                 AND ('-1' = :mv_number OR MV_NUMBER LIKE '%'||:mv_number||'%')
                 AND (-1 = :mv_status OR MV_STATUS = :mv_status)
                 AND (-1 = :mv_srctype OR MV_SRCTYPE = :mv_srctype)
-                AND (-1 = :mv_terminal OR MV_TERMINAL = :mv_terminal)
+                AND ('-1' = :mv_terminal OR MV_TERMINAL = :mv_terminal)
             ORDER BY " . $this->time_option . " DESC
         ";
         $stmt = oci_parse($this->conn, $query);
@@ -632,7 +632,7 @@ class Movement extends CommonClass
                 AND ('-1' = :mv_number OR MV_NUMBER LIKE '%'||:mv_number||'%')
                 AND (-1 = :mv_status OR MV_STATUS = :mv_status)
                 AND (-1 = :mv_srctype OR MV_SRCTYPE = :mv_srctype)
-                AND (-1 = :mv_terminal OR MV_TERMINAL = :mv_terminal)
+                AND ('-1' = :mv_terminal OR MV_TERMINAL = :mv_terminal)
         ";
 
         //        AND ('-1' = :start_date OR " . $this->time_option . " > :start_date)

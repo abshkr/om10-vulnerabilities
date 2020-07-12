@@ -17,6 +17,7 @@ import moment from 'moment';
 import { mutate } from 'swr';
 import api from 'api';
 import _ from 'lodash';
+import jwtDecode from 'jwt-decode';
 
 import { MovementType, ReasonCode, MovementTime, Comments, To, From } from './fields';
 import { SPECIAL_MOVEMENTS } from '../../../api';
@@ -45,6 +46,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       setTank(tank);
     }
   }; */
+  const token = sessionStorage.getItem('token');
+  const decoded = jwtDecode(token);
+  const user_code = decoded?.per_code;
+  const site_code = decoded?.site_code
 
   const IS_CREATING = !value;
   const DISABLED = value?.mlitm_status === '5';
@@ -127,6 +132,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
           values.mlitm_tankcode_to = '';
           values.mlitm_prodcode_to = '';
         }
+        values.mlitm_terminal = site_code;
   
         await api
           .post(IS_CREATING ? SPECIAL_MOVEMENTS.CREATE : SPECIAL_MOVEMENTS.UPDATE, values)
