@@ -8,6 +8,7 @@ import {
   RedoOutlined,
   ClockCircleOutlined,
   CloseOutlined,
+  CaretDownOutlined,
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Row, Col } from 'antd';
@@ -38,7 +39,7 @@ import {
   OrderInstructions,
 } from './fields';
 
-import { DataTable } from '../../../components';
+import { DataTable, SelectInput, PartnershipManager } from '../../../components';
 import { SETTINGS } from '../../../constants';
 import api, { ORDER_LISTINGS } from '../../../api';
 import columns from './columns';
@@ -70,6 +71,8 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   const [selected, setSelected] = useState(null);
   const [approved, setApproved] = useState(value?.order_approved);
   const [carrier, setCarrier] = useState(value?.order_carr_code);
+  const [shipTo, setShipTo] = useState(value?.order_ship_to_num);
+  const [soldTo, setSoldTo] = useState(value?.order_sold_to_num);
 
   const [orderItems, setOrderItems] = useState([]);
   const [showPeriod, setShowPeriod] = useState(false);
@@ -551,11 +554,55 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
               </Col>
 
               <Col span={6}>
-                <SoldTo form={form} value={value} supplier={supplier} pageState={pageState} />
+                {/* <SoldTo form={form} value={value} supplier={supplier} pageState={pageState} /> */}
+                <SelectInput
+                  form={form}
+                  value={value}
+                  name="order_sold_to_num"
+                  label={t('fields.orderSoldTo')}
+                  required={false}
+                  allowClear={true}
+                  maxLength={20}
+                  disabled={(pageState==='create'||pageState==='edit'||pageState==='detail')? false : true}
+                  onChange={setSoldTo}
+                  popupManager={PartnershipManager}
+                  popupTitle={t('fields.orderSoldTo') + ' - ' + t('pageNames.partnership')}
+                  popupDisabled={!supplier}
+                  popupIcon={<CaretDownOutlined />}
+                  popupLabel={''}
+                  popupParams={{
+                    partner_code: soldTo,
+                    partner_type: 'AG',
+                    partner_cmpy_code: supplier,
+                    partner_cust_acct: ''
+                  }}
+                />
               </Col>
 
               <Col span={6}>
-                <ShipTo form={form} value={value} supplier={supplier} pageState={pageState} />
+                {/* <ShipTo form={form} value={value} supplier={supplier} pageState={pageState} /> */}
+                <SelectInput
+                  form={form}
+                  value={value}
+                  name="order_ship_to_num"
+                  label={t('fields.orderShipTo')}
+                  required={false}
+                  allowClear={true}
+                  maxLength={20}
+                  disabled={(pageState==='create'||pageState==='edit'||pageState==='detail')? false : true}
+                  onChange={setShipTo}
+                  popupManager={PartnershipManager}
+                  popupTitle={t('fields.orderShipTo') + ' - ' + t('pageNames.partnership')}
+                  popupDisabled={!supplier}
+                  popupIcon={<CaretDownOutlined />}
+                  popupLabel={''}
+                  popupParams={{
+                    partner_code: shipTo,
+                    partner_type: 'WE',
+                    partner_cmpy_code: supplier,
+                    partner_cust_acct: ''
+                  }}
+                />
               </Col>
             </Row>
 

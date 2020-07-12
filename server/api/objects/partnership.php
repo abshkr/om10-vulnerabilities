@@ -210,6 +210,69 @@ class Partnership extends CommonClass
         }
     }
 
+    public function read_by_condition()
+    {
+        if (!isset($this->partner_cmpy_code)) {
+            $this->partner_cmpy_code = "-1";
+        }
+        if (!isset($this->partner_type)) {
+            $this->partner_type = "-1";
+        }
+        $query = "
+            SELECT 
+                CCP.CCP_CMPY_CODE PARTNER_CMPY_CODE,
+                CMP.CMPY_NAME PARTNER_CMPY_NAME,
+                CCP.CCP_CUST_ACCT PARTNER_CUST_ACCT,
+                CCM.CMPY_NAME PARTNER_CUST_NAME,
+                CCP.CCP_PRTNR_SEQ PARTNER_SEQ,
+                PR.PRTNR_CODE PARTNER_CODE,
+                PR.PRTNR_NAME1,
+                PR.PRTNR_NAME2,
+                PR.PRTNR_NAME3,
+                PR.PRTNR_NAME4,
+                PR.PRTNR_NAME5,
+                PR.PRTNR_TYPE,
+                PT.PARTNER_TYPE_NAME PRTNR_TYPE_NAME,
+                PR.PRTNR_ADDR,
+                DL.DB_ADDR_TEXT PRTNR_ADDR_TEXT,
+                PR.PRTNR_SEQ || ' - ' || PR.PRTNR_CODE || ' - ' || PR.PRTNR_NAME1 PRTNR_DESC
+            FROM 
+                CMPY_CUST_PRTNR CCP,
+                GUI_COMPANYS CMP,
+                CUSTOMER CST,
+                COMPANYS CCM,
+                PARTNER PR,
+                PARTNER_TYPES PT,
+                DB_ADDRESS DA,
+                (
+                    SELECT DB_ADDR_LINE_ID, LISTAGG(DB_ADDR_LINE, ', ') WITHIN GROUP (ORDER BY DB_ADDRLINE_NO) AS DB_ADDR_TEXT
+                    FROM DB_ADDRESS_LINE
+                    GROUP BY DB_ADDR_LINE_ID
+                ) DL
+            WHERE CCP.CCP_PRTNR_SEQ = PR.PRTNR_SEQ
+                AND PR.PRTNR_TYPE = PT.PARTNER_TYPE_CODE
+                AND PR.PRTNR_ADDR = DA.DB_ADDRESS_KEY(+)
+                AND DA.DB_ADDRESS_KEY = DL.DB_ADDR_LINE_ID(+)
+                AND CCP.CCP_CMPY_CODE = CMP.CMPY_CODE
+                AND CCP.CCP_CUST_ACCT = CST.CUST_ACCT(+)
+                AND CST.CUST_CODE = CCM.CMPY_CODE(+)
+                AND CCP.CCP_CMPY_CODE = PR.PRTNR_CMPY
+                AND ('-1' = :partner_cmpy_code OR PR.PRTNR_CMPY = :partner_cmpy_code)
+                AND ('-1' = :partner_type OR PR.PRTNR_TYPE = :partner_type)
+            ORDER BY CCP_CMPY_CODE, CCP_PRTNR_SEQ
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':partner_cmpy_code', $this->partner_cmpy_code);
+        oci_bind_by_name($stmt, ':partner_type', $this->partner_type);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     // public function pre_create()
     // {
     //     return $this->pre_update();
