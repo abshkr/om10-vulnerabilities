@@ -1652,7 +1652,8 @@
     "butIs": "but is ",
     "inLine": " in line ",
     "uploadStrapSuccess": "You have uploaded strapping data for tank ",
-    "uploadStrapFailed": "Failed to upload strapping data for tank "
+    "uploadStrapFailed": "Failed to upload strapping data for tank ",
+	"sealNumberRequired": "To allocation seals, seal number must be greater than 0"
   },
 
   "placeholder": {

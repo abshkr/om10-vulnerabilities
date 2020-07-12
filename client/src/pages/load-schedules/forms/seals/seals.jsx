@@ -49,6 +49,14 @@ const Seals = ({ value }) => {
 
   const onAllocation = (val) => {
     if (payload?.records?.length === 0) {
+      if (val <= 0) {
+        notification.error({
+          message: t("messages.validationFailed"),
+          description: t("descriptions.sealNumberRequired"),
+        });
+        return;
+      }
+
       api
         .post(LOAD_SCHEDULES.ALLOCATE_ALL, {
           supplier: value.supplier_code,
