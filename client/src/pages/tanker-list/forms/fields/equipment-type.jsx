@@ -3,6 +3,7 @@ import { TANKER_LIST } from '../../../../api';
 import useSWR from 'swr';
 import { Form, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
+import _ from 'lodash';
 
 const EquipmentType = ({ form, value, onChange }) => {
   const { t } = useTranslation();
@@ -22,7 +23,7 @@ const EquipmentType = ({ form, value, onChange }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tnkr_etp: value.tnkr_etp,
+        tnkr_etp: _.toNumber(value.tnkr_etp),
       });
     }
   }, [value, setFieldsValue]);
@@ -46,7 +47,7 @@ const EquipmentType = ({ form, value, onChange }) => {
       >
         {options?.records?.map((item, index) => (
           <Select.Option key={index} value={item.etyp_id}>
-            {item.etyp_title}
+            {`${item.etyp_id} - ${item.etyp_title} `}
           </Select.Option>
         ))}
       </Select>

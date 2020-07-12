@@ -107,6 +107,7 @@ const Compartments = ({ form, value, equipment }) => {
         compartment['eqpt_list'] = tanker.eqpt_list;
         compartment['tc_eqpt'] = tanker.tc_eqpt;
         compartment['image'] = tanker.image;
+        compartment['etyp_title'] = tanker.etyp_title;
 
         payload.splice(index, 1, compartment);
         setdata(payload);
@@ -117,6 +118,7 @@ const Compartments = ({ form, value, equipment }) => {
         compartment['eqpt_list'] = tanker.eqpt_list;
         compartment['etyp_id'] = tanker.etyp_id;
         compartment['image'] = tanker.image;
+        compartment['etyp_title'] = tanker.etyp_title;
 
         payload.splice(index, 1, compartment);
         setdata(payload);
@@ -160,7 +162,10 @@ const Compartments = ({ form, value, equipment }) => {
         <div style={{ display: 'flex' }}>
           {[...data].map((item, index) => (
             <div key={index} style={{ marginRight: 10 }}>
-              <Equipment image={_.toLower(item.image)} isLoading={isLoading} />
+              <Equipment image={_.toLower(item.image)} isLoading={isLoading} showName={item.etyp_title} />
+              {/* <div style={{ textAlign: 'center' }}>
+                <b>{item.etyp_title}</b>
+              </div> */}
               <Select
                 onChange={(value) => changeType(item, value)}
                 placeholder={item.eqpt_code || 'Select Equipment'}
@@ -175,7 +180,7 @@ const Compartments = ({ form, value, equipment }) => {
                 {!isLoading &&
                   item.eqpt_list.map((item, index) => (
                     <Select.Option key={index} value={item.eqpt_id}>
-                      {item.eqpt_code}
+                      {item.eqpt_name}
                     </Select.Option>
                   ))}
               </Select>
