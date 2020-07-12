@@ -16,3 +16,5 @@ export const SUBMIT = '/api/pages/special_mv/submit.php';
 export const CREATE = '/api/pages/special_mv/create.php';
 export const UPDATE = '/api/pages/special_mv/update.php';
 export const DELETE = '/api/pages/special_mv/delete.php';
+
+export const NEXT_ID = '/api/pages/special_mv/next_id.php';

@@ -3278,6 +3278,7 @@ https://10.1.10.66/api/pages/special_mv/create.php
       "mlitm_comment": ""
 }
 https://10.1.10.66/api/pages/special_mv/suppliers.php
+https://10.1.10.66/api/pages/special_mv/next_id.php
 https://10.1.10.66/api/pages/special_mv/alternate_units.php
 https://10.1.10.66/api/pages/special_mv/tanks.php?supplier=5860114
 https://10.1.10.66/api/pages/special_mv/tank_proddata.php?tank_code=SP-18

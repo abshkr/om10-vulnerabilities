@@ -134,6 +134,14 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
         }
         values.mlitm_terminal = site_code;
   
+        if (IS_CREATING) {
+          await api.get(`${SPECIAL_MOVEMENTS.NEXT_ID}`)
+          .then((response) => {
+            const payload = response.data?.records || [];
+            values.mlitm_id = payload[0].next_id;
+          });
+        }
+
         await api
           .post(IS_CREATING ? SPECIAL_MOVEMENTS.CREATE : SPECIAL_MOVEMENTS.UPDATE, values)
           .then(
@@ -321,6 +329,32 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
             values.mlitm_prodcmpy_to = '';
             values.mlitm_tankcode_to = '';
             values.mlitm_prodcode_to = '';
+          }
+
+          if (IS_CREATING) {
+            await api.get(`${SPECIAL_MOVEMENTS.NEXT_ID}`)
+              .then((response) => {
+                const payload = response.data?.records || [];
+                values.mlitm_id = payload[0].next_id;
+              });
+
+            values.mlitm_dtim_start = values?.mlitm_dtim_start?.format(SETTINGS.DATE_TIME_FORMAT);
+            await api
+              .post(SPECIAL_MOVEMENTS.CREATE, values)
+              .then(
+                () => {
+                  // console.log("Created");
+                }
+              )
+              .catch((errors) => {
+                _.forEach(errors.response.data.errors, (error) => {
+                  notification.error({
+                    message: error.type,
+                    description: error.message,
+                  });
+                });
+                return;
+              });
           }
   
           await api
