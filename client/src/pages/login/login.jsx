@@ -83,20 +83,43 @@ const Login = ({ handleLogin, auth }) => {
       content: (
         <div>
           <p>
-            <strong>{t('generic.international')}: </strong> +61 3 9730 8883
+            <strong>{t('generic.international')}: </strong> +60 3 7661 6218
           </p>
           <p>
-            <strong>{t('generic.withinAustralia')}: </strong> 03 9730 8883
+            <strong>{t('generic.tollFreeAU')}: </strong> 1800 333 319
           </p>
           <p>
-            <strong>{t('generic.tollFree')}: </strong> 1800 333 319
+            <strong>{t('generic.tollFreeNZ')}: </strong> 0800 475 032
           </p>
+
+          <p>
+            <strong>{t('generic.tollFreeMYS')}: </strong> 1300 133 356
+          </p>
+
+          <p>
+            <strong>{t('generic.tollFreeINDO')}: </strong> 0803 321 8405
+          </p>
+
+          <p>
+            <strong>{t('generic.tollFreeTHAI')}: </strong> 1800 012 325
+          </p>
+
+          <p>
+            <strong>{t('generic.tollFreeUK')}: </strong> 0800 041 8138
+          </p>
+
+          <p>
+            <strong>{t('generic.directDialPHIL')}: </strong> +63 2395 3486
+          </p>
+
+          <p>
+            <strong>{t('generic.directDialCN')}: </strong> +86 21 8024 6089
+          </p>
+
           <p>
             <strong>{t('generic.email')}: </strong> support@diamondkey.com
           </p>
-          <p>
-            <strong>{t('generic.facsimile')}: </strong> +61 3 9764 9601
-          </p>
+
           <Divider />
           <h3>{t('generic.help')}</h3>
           <a href="/om5000/docs/manual.pdf">{t('operations.clickHere')}</a>
