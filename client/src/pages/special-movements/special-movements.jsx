@@ -77,7 +77,7 @@ const SpecialMovements = () => {
 
   const modifiers = (
     <>
-      <Calendar handleChange={setRange} start={start} end={end} />
+      <Calendar handleChange={setRange} start={start} end={end} max={1000} />
 
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
