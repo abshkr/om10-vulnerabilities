@@ -16,6 +16,21 @@ const columns = (configuration, t) => [
     filter: 'FuzzyFilter'
   },
   {
+    headerName: t('fields.terminal'),
+    field: 'tank_terminal',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
+    hide: true,
+  },
+  {
+    headerName: t('fields.terminal'),
+    field: 'tank_sitename',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter'
+  },
+  {
     headerName: t('fields.baseProductCode'),
     field: 'tank_base',
     sortable: true,

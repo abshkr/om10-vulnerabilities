@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import _ from 'lodash';
 
-import { Name, Code, Product, Density, Flags, DailyVariance, MontlhyVariance } from './fields';
+import { Name, Code, Terminal, Product, Density, Flags, DailyVariance, MontlhyVariance } from './fields';
 import api, { TANKS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
@@ -157,6 +157,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane tab={t('tabColumns.general')} forceRender={true} key="1">
+            <Terminal form={form} value={value} />
             <Code form={form} value={value} />
             <Name form={form} value={value} />
             <Product form={form} value={value} onChange={setProduct} />

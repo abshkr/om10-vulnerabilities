@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, Checkbox } from 'antd';
+import { Form, Checkbox, Row, Col } from 'antd';
 
 const Flags = ({ form, value }) => {
   const { t } = useTranslation();
@@ -20,21 +20,30 @@ const Flags = ({ form, value }) => {
 
   return (
     <div>
-      <Form.Item name="tank_exc_pid" valuePropName="checked">
-        <Checkbox>{t('fields.excludeFromPID')}</Checkbox>
-      </Form.Item>
-
-      <Form.Item name="tank_exc_pds" valuePropName="checked">
-        <Checkbox>{t('fields.excludeFromPDS')}</Checkbox>
-      </Form.Item>
-
-      <Form.Item name="tank_exc_spmv" valuePropName="checked">
-        <Checkbox>{t('fields.excludeFromSMG')}</Checkbox>
-      </Form.Item>
-
-      <Form.Item name="tank_exc_stckrpt" valuePropName="checked">
-        <Checkbox>{t('fields.excludeFromStockReport')}</Checkbox>
-      </Form.Item>
+      <Row gutter={[8,4]}>
+        <Col span={12}>
+          <Form.Item name="tank_exc_pid" valuePropName="checked">
+            <Checkbox>{t('fields.excludeFromPID')}</Checkbox>
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item name="tank_exc_spmv" valuePropName="checked">
+            <Checkbox>{t('fields.excludeFromSMG')}</Checkbox>
+          </Form.Item>
+        </Col>
+      </Row>
+      <Row gutter={[8,4]}>
+        <Col span={12}>
+          <Form.Item name="tank_exc_pds" valuePropName="checked">
+            <Checkbox>{t('fields.excludeFromPDS')}</Checkbox>
+          </Form.Item>
+        </Col>
+        <Col span={12}>
+          <Form.Item name="tank_exc_stckrpt" valuePropName="checked">
+            <Checkbox>{t('fields.excludeFromStockReport')}</Checkbox>
+          </Form.Item>
+        </Col>
+      </Row>
     </div>
   );
 };

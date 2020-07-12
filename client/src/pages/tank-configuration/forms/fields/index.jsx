@@ -9,6 +9,7 @@ import Code from './code';
 import UserHLevel from './userHLevel';
 import UserLLevel from './userLLevel';
 import MaxLevel from './maxLevel';
+import Terminal from './terminal';
 
 export {
   Name,
@@ -21,5 +22,6 @@ export {
   MaxFlow,
   UserHLevel,
   UserLLevel,
-  MaxLevel
+  MaxLevel,
+  Terminal
 };
