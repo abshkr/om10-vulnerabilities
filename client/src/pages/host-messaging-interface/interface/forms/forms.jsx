@@ -69,6 +69,7 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 		if (msg != imsg)
 		{
 			setMessage(msg);
+			setNotice('');
 		}
 	}, [msg]);
 
@@ -127,7 +128,6 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 		}
 		else
 		{
-			console.log('changing action to submit');
 			setAction('submit');
 		}
 	};

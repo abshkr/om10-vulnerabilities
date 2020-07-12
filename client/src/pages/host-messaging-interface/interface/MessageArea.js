@@ -7,10 +7,10 @@ import fs from 'fs';
 
 const MessageArea = ({from, action, message, content_format, handleTaskComplete}) => {
 
-	const [ifrom, setFrom] = useState(from);
-	const [iaction, setAction] = useState(action);
-	const [icontent_format, setContentFormat] = useState(content_format);
-	const [imessage, setMessage] = useState(message);
+	const [ifrom, setFrom] = useState('');
+	const [iaction, setAction] = useState('');
+	const [icontent_format, setContentFormat] = useState('');
+	const [imessage, setMessage] = useState('');
 	const [icontent, setContent] = useState('');
 
 
@@ -48,8 +48,9 @@ const MessageArea = ({from, action, message, content_format, handleTaskComplete}
 					body: JSON.stringify({rec_id: message.REC_ID, content_format: content_format})
 				}).then(response => {
 					response.text().then(function (text) {
-						//console.log('resp:'+ JSON.stringify(body, null, '\t'));
+						//console.log('resp:'+ JSON.stringify(text, null, '\t'));
 						setContent(text);	
+						//create_display_data();
 					});
 				});
 			}
@@ -70,6 +71,7 @@ const MessageArea = ({from, action, message, content_format, handleTaskComplete}
 					response.json().then(body => {
 						//console.log('resp:'+ JSON.stringify(body, null, '\t'));
 						setContent(body);
+						//create_display_data();
 					});
 				});
 			}
@@ -100,6 +102,12 @@ const MessageArea = ({from, action, message, content_format, handleTaskComplete}
 		}
   }, [from, action, content_format, message]);
 
+  useEffect(() => {
+		if (action !== iaction && action === 'submit')
+		{
+			onSubmitChange();
+		}
+  }, [action]);
 
 
 	const viewMessage = (contents) => {
@@ -636,7 +644,7 @@ const MessageArea = ({from, action, message, content_format, handleTaskComplete}
 	}
 
 	const create_display_data = () => {
-
+		//console.log('create_display_data:'+content_format+','+action+','+icontent.length);
 		if (content_format === 1)
 		{
 			if (action === 'view')
@@ -663,13 +671,12 @@ const MessageArea = ({from, action, message, content_format, handleTaskComplete}
 			}
 			else if (action === 'submit')
 			{
-				onSubmitChange();
+				//onSubmitChange();
 			}
 		}
 	}
 
 
-	create_display_data();
 
 	return (
 
@@ -678,7 +685,7 @@ const MessageArea = ({from, action, message, content_format, handleTaskComplete}
 			<div id="messageArea" className="messageArea"
 					onInput={onEditChange}
 			>
-				Click a message on the left to see the message contents
+				{create_display_data()}
 			</div>
 		</div>
 	);
