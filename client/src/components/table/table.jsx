@@ -117,6 +117,7 @@ const Table = ({
   const onFilterClear = () => {
     api.setFilterModel(null);
     api.onFilterChanged();
+    api.setSortModel(null);
     setValue('');
   };
 
