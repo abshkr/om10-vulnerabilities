@@ -8,7 +8,8 @@ import {
   PrinterOutlined,
   RedoOutlined,
   CloseOutlined,
-  AuditOutlined
+  AuditOutlined,
+  CaretDownOutlined,
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col, Radio, Checkbox } from 'antd';
@@ -34,6 +35,7 @@ import {
   LoadSecurityInformation,
 } from './fields';
 
+import { SelectInput, PartnershipManager } from '../../../components';
 import { SETTINGS } from '../../../constants';
 import { LOAD_SCHEDULES } from '../../../api';
 
@@ -68,6 +70,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const [tanker, setTanker] = useState(undefined);
   const [trip, setTrip] = useState(undefined);
   const [redoBOL, setRedoBOL] = useState(0);
+  const [shipTo, setShipTo] = useState(value?.shls_ship_to_num);
+  const [soldTo, setSoldTo] = useState(value?.shls_sold_to_num);
 
   /*
     1	F	NEW SCHEDULE
@@ -597,11 +601,55 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               <Dates form={form} value={value} />
 
               <Col span={6}>
-                <SoldTo form={form} value={value} mode={mode} />
+                {/* <SoldTo form={form} value={value} mode={mode} /> */}
+                <SelectInput
+                  form={form}
+                  value={value}
+                  name="shls_sold_to_num"
+                  label={t('fields.soldTo')}
+                  required={false}
+                  allowClear={true}
+                  maxLength={20}
+                  disabled={mode === '2' || (value && value?.status !== 'F')}
+                  onChange={setSoldTo}
+                  popupManager={PartnershipManager}
+                  popupTitle={t('fields.soldTo') + ' - ' + t('pageNames.partnership')}
+                  popupDisabled={!supplier}
+                  popupIcon={<CaretDownOutlined />}
+                  popupLabel={''}
+                  popupParams={{
+                    partner_code: soldTo,
+                    partner_type: 'AG',
+                    partner_cmpy_code: supplier,
+                    partner_cust_acct: ''
+                  }}
+                />
               </Col>
 
               <Col span={6}>
-                <ShipTo form={form} value={value} mode={mode} carrier={carrier} />
+                {/* <ShipTo form={form} value={value} mode={mode} carrier={carrier} /> */}
+                <SelectInput
+                  form={form}
+                  value={value}
+                  name="shls_ship_to_num"
+                  label={t('fields.shipTo')}
+                  required={false}
+                  allowClear={true}
+                  maxLength={20}
+                  disabled={mode === '2' || (value && value?.status !== 'F')}
+                  onChange={setShipTo}
+                  popupManager={PartnershipManager}
+                  popupTitle={t('fields.shipTo') + ' - ' + t('pageNames.partnership')}
+                  popupDisabled={!supplier}
+                  popupIcon={<CaretDownOutlined />}
+                  popupLabel={''}
+                  popupParams={{
+                    partner_code: shipTo,
+                    partner_type: 'WE',
+                    partner_cmpy_code: supplier,
+                    partner_cust_acct: ''
+                  }}
+                />
               </Col>
             </Row>
 
