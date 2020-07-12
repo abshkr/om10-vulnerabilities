@@ -412,7 +412,7 @@
     "progress": "Progress",
     "sourceType": "Source Type",
     "initialStandardVolume": "Initial Standard Volume",
-	"prodMovDens": "Density (kg/m³)",
+    "prodMovDens": "Density (kg/m³)",
     "destinationType": "Destination Type",
     "destinationUnit": "Destination Unit",
     "quantity": "Quantity",
@@ -1089,8 +1089,9 @@
     "leakDetection": "Leak Detection",
     "serverTime": "Server Time",
     "loggedInAs": "Logged In As",
-	"drawerProdCode": "Drawer Product Code",
-	"drawerProdName": "Drawer Product Name"
+    "drawerProdCode": "Drawer Product Code",
+    "drawerProdName": "Drawer Product Name",
+    "contact": "Contact"
   },
 
   "pageMenu": {
@@ -1320,7 +1321,7 @@
     "viewOrderSeals": "View Order Seals",
     "setAddressTemplate": "Set As Default Template",
     "manageImage": "Manage Images",
-	  "manageGeneric": "Manage Generic Product",
+    "manageGeneric": "Manage Generic Product",
     "uploadImg": "Upload Image",
     "removeImg": "Remove From Server",
     "authenticate": "Authenticate",
@@ -1340,7 +1341,7 @@
     "uploadData": "Upload Data",
     "read": "Read",
     "copy": "Copy",
-	"completeBatch": "Complete Batch"
+    "completeBatch": "Complete Batch"
   },
 
   "tabColumns": {
@@ -1476,7 +1477,7 @@
     "favourites": "Favourites",
     "manual": "Manual",
     "copyright": "Copyright",
-	  "noPartners": "Please add at least one partner to this partnership",
+    "noPartners": "Please add at least one partner to this partnership",
     "toAddGeneric": "Please input new generic name and create",
     "uploadSuccess": "Successfully Uploaded."
   },
@@ -1517,8 +1518,8 @@
     "deleteImage": "Are you sure you want to remove image from server?",
     "completeTrip": "View BOL will complete this trip, do you want to continue?",
     "upload": "Are you sure you want to upload this data?",
-	"pmvCompleteBatch": "Are you sure you want to complete this batch?",
-	"pmvStart": "Are you sure you want to start this batch?"
+    "pmvCompleteBatch": "Are you sure you want to complete this batch?",
+    "pmvStart": "Are you sure you want to start this batch?"
   },
 
   "divider": {
@@ -1591,7 +1592,7 @@
     "loginSuccess": "You have logged in as: ",
     "haltSuccess": "You have halted the record. ",
     "startSuccess": "You have started the record. ",
-	"pmvBatchCompleted": "You have completed the batch. ",
+    "pmvBatchCompleted": "You have completed the batch. ",
     "haltFailed": "Failed to Halt the Process",
     "startFailed": "Failed to Start the Process.",
     "cuztomizeLanding": "With OMEGA you can manage and create Equipment with a few clicks.",
@@ -1630,12 +1631,12 @@
     "prescheduleReady": "Please select product in at least one compartment",
     "preOrderReady": "Please input quantity for at least one product",
     "preOrderProdUnit": "Please select unit for product",
-	  "preSchedProdUnit": "Please select unit for compartment",
-	  "preSchedProd": "Please select product for compartment",
+    "preSchedProdUnit": "Please select unit for compartment",
+    "preSchedProd": "Please select product for compartment",
     "zeroCompartmentCount": "The compartment counts cannot be ZERO",
     "oneCompartmentRequired": "At least one compartment required if the equipment is neither Prime Mover nor Flatbed",
-    "minEqptForCombination" : "The combination type needs at least 2 pieces of equipment",
-    "eqptTypeCounts" : "The current counts of equipment is ",
+    "minEqptForCombination": "The combination type needs at least 2 pieces of equipment",
+    "eqptTypeCounts": "The current counts of equipment is ",
     "selectPartners": "Please select partners",
     "tankLevelMustBeInteger": "Tank level must be an integer",
     "tankLevelCannotNegative": "Tank level cannot be negative",
@@ -1767,8 +1768,8 @@
     "setDestinationUnit": "Please Select Destination Unit",
     "selectLocale": "Please Select Locale",
     "selectMessage": "Please Select Message",
-    "selectAddressLineType" : "Dbl-click to select type",
-    "enterAddressLineText" : "Dbl-click to enter the line text"
+    "selectAddressLineType": "Dbl-click to select type",
+    "enterAddressLineText": "Dbl-click to enter the line text"
   },
 
   "validate": {

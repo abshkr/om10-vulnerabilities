@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
 
+import Locations from './locations';
 import { useAuth } from '../../hooks';
 import { ConfigurationContainer } from './styles';
 import api, { SITE_CONFIGURATION } from '../../api';
@@ -273,7 +274,7 @@ const FormSwitch = ({ config, onChange }) => {
 
     default:
       return (
-        // it is more reasonable to use Input instead of InputNumber as default 
+        // it is more reasonable to use Input instead of InputNumber as default
         // because the data type of config_value is VARCHAR2.
         <Input
           style={{ width: '10vw' }}
@@ -305,7 +306,9 @@ const ConfigurationItems = ({ data, onChange }) => (
               <Switch
                 checked={item.config_value === 'Y'}
                 // disabled={item.config_value !== 'N' && item.config_value !== 'Y'}
-                style={{visibility: item.config_value === 'N' || item.config_value === 'Y'? "visible":"hidden"}}
+                style={{
+                  visibility: item.config_value === 'N' || item.config_value === 'Y' ? 'visible' : 'hidden',
+                }}
                 checkedChildren={<span>On</span>}
                 unCheckedChildren={<span>Off</span>}
                 onChange={(value) => onChange(item, value ? 'Y' : 'N')}
@@ -359,9 +362,14 @@ const Configuration = ({ user, config }) => {
   const [features, setFeatures] = useState([]);
   const [tab, setTab] = useState('1');
 
+  const [visible, setVisible] = useState(false);
+  const [selected, setSelected] = useState(null);
+
   const { t } = useTranslation();
 
-  const UPDATING_FEATURES = tab === '6';
+  const UPDATING_FEATURES = tab === '7';
+
+  const UPDATING_TERMINALS = tab === '5';
 
   const onConfigurationEdit = (object, value) => {
     let payload = [...configuration];
@@ -451,11 +459,18 @@ const Configuration = ({ user, config }) => {
     });
   };
 
+  const handleFormState = (visibility, value) => {
+    setVisible(visibility);
+    setSelected(value);
+  };
+
   const modifiers = (
     <>
-      <Button icon={<EditOutlined />} type="primary" onClick={onUpdate} disabled={!access?.canUpdate}>
-        {t('operations.update')}
-      </Button>
+      {!UPDATING_TERMINALS && (
+        <Button icon={<EditOutlined />} type="primary" onClick={onUpdate} disabled={!access?.canUpdate}>
+          {t('operations.update')}
+        </Button>
+      )}
 
       {UPDATING_FEATURES && (
         <Button
@@ -476,6 +491,18 @@ const Configuration = ({ user, config }) => {
           disabled={!access?.canUpdate}
         >
           {t('operations.deselectAll')}
+        </Button>
+      )}
+
+      {UPDATING_TERMINALS && (
+        <Button
+          icon={<PlusOutlined />}
+          onClick={onFeatureDeselectAll}
+          type="primary"
+          disabled={!access?.canUpdate}
+          onClick={() => handleFormState(true, null)}
+        >
+          {t('operations.create')}
         </Button>
       )}
     </>
@@ -513,7 +540,16 @@ const Configuration = ({ user, config }) => {
             />
           </TabPane>
 
-          <TabPane tab={t('tabColumns.seals')} key="5">
+          <TabPane tab={t('tabColumns.terminalLocations')} key="5">
+            <Locations
+              handleFormState={handleFormState}
+              visible={visible}
+              selected={selected}
+              access={access}
+            />
+          </TabPane>
+
+          <TabPane tab={t('tabColumns.seals')} key="6">
             <ConfigurationItems
               data={_.filter(configuration, ['config_required_by_gui', 'S'])}
               onChange={onConfigurationEdit}
@@ -521,7 +557,7 @@ const Configuration = ({ user, config }) => {
           </TabPane>
 
           {user?.per_code === '9999' && (
-            <TabPane tab={t('tabColumns.features')} key="6">
+            <TabPane tab={t('tabColumns.features')} key="7">
               <FeatureItems data={features} onChange={onFeatureEdit} />
             </TabPane>
           )}

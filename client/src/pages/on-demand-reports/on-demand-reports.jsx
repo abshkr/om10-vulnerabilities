@@ -5,6 +5,7 @@ import { ReloadOutlined } from '@ant-design/icons';
 import { Button, Select, Radio, Form, InputNumber, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
+import _ from 'lodash';
 
 import { useAuth } from '../../hooks';
 import { Page, DataTable, Calendar } from '../../components';
@@ -61,12 +62,12 @@ const OnDemandReports = () => {
           description: t('descriptions.reportGenerationSuccessful'),
         });
       })
-      .catch((error) => {
-        setLoading(false);
-
-        notification.error({
-          message: error.message,
-          description: t('descriptions.reportGenerationFailed'),
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
         });
       });
   };

@@ -68,13 +68,13 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       eqpt_selected = false;
     } else {
       _.forEach(values?.tnkr_equips, (equipment, index) => {
-        console.log(equipment)
+        console.log(equipment);
         if (!equipment.eqpt_id) {
           eqpt_selected = false;
         }
       });
     }
-    
+
     const createPrompt = !eqpt_selected ? t('prompts.zeroEquipmentSelected') : t('prompts.create');
 
     if (!IS_CREATING) {
