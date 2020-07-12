@@ -192,6 +192,45 @@ const DrawerProductTransfers = ({
     setPayload(payload2);
   };
 
+  const verifySourceQuantity = (bases, draws) => {
+    let tidx = 0;
+    let bidx = 0;
+
+    for (tidx = 0; tidx < draws.length; tidx++) {
+      const transfer = draws[tidx];
+      const cmpt = transfer.trsf_cmpt_no;
+      for (bidx=0; bidx<bases.length; bidx++) {
+        const base = bases[bidx];
+        if (base.trsf_bs_cmpt_no === cmpt) {
+          let changed = false;
+          if (transfer?.trsf_qty_amb && _.toNumber(transfer?.trsf_qty_amb) > 0) {
+            if (!base?.trsf_bs_qty_amb || (base?.trsf_bs_qty_amb && _.toNumber(base?.trsf_bs_qty_amb) === 0)) {
+              base.trsf_bs_qty_amb = calcBaseRatios(transfer?.trsf_qty_amb, base?.trsf_bs_ratio_value, base?.trsf_bs_ratio_total);
+              changed = true;
+            }
+          }
+          if (transfer?.trsf_qty_cor && _.toNumber(transfer?.trsf_qty_cor) > 0) {
+            if (!base?.trsf_bs_qty_cor || (base?.trsf_bs_qty_cor && _.toNumber(base?.trsf_bs_qty_cor) === 0)) {
+              base.trsf_bs_qty_cor = calcBaseRatios(transfer?.trsf_qty_cor, base?.trsf_bs_ratio_value, base?.trsf_bs_ratio_total);
+              changed = true;
+            }
+          }
+          if (transfer?.trsf_load_kg && _.toNumber(transfer?.trsf_load_kg) > 0) {
+            if (!base?.trsf_bs_load_kg || (base?.trsf_bs_load_kg && _.toNumber(base?.trsf_bs_load_kg) === 0)) {
+              base.trsf_bs_load_kg = calcBaseRatios(transfer?.trsf_load_kg, base?.trsf_bs_ratio_value, base?.trsf_bs_ratio_total);
+              changed = true;
+            }
+          }
+          if (changed) {
+            bases[bidx] = base;
+          }
+        }
+      }
+    }
+
+    return bases;
+  }
+
   const CalcDrawQuantity = async () => {
     //const items = form.getFieldsValue(['transfers', 'base_transfers', 'base_totals', 'meter_totals'])    
     //console.log('DrawerProductTransfers: onCalculate', items);
@@ -201,7 +240,14 @@ const DrawerProductTransfers = ({
 
     const draws = _.clone(payload);
     // const bases = form.getFieldValue('base_transfers');
-    const bases = _.clone(dataBaseTransfers);
+    let bases = _.clone(dataBaseTransfers);
+    // console.log('CalcDrawQuantity bases', bases);
+    // console.log('CalcDrawQuantity dataBaseTransfers', dataBaseTransfers);
+    // console.log('CalcDrawQuantity base_transfers', form.getFieldValue('base_transfers'));
+
+    // make sure the base quantity is available for alculation, if not, populate it with the ratio of drawer product quantity
+    bases = verifySourceQuantity(bases, draws);
+
     for (tidx = 0; tidx < draws.length; tidx++) {
       const transfer = draws[tidx];
       const cmpt = transfer.trsf_cmpt_no;
