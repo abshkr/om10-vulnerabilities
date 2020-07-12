@@ -15,7 +15,7 @@ const Calendar = ({ handleChange, start, end, disabled, max, format }) => {
 
   const formatted = format || dateTimeFormat;
 
-  const limit = max || 7;
+  const limit = max || 365;
 
   const ranges = {
     [t('fields.today')]: [moment().startOf('day'), moment().endOf('day'), 'range'],
