@@ -9,13 +9,13 @@ const ContentsArea = ({from, action, message, contentFormat, handleFormState}) =
   const [imessage, setMessage] = useState(message);
   const [icontent, setContent] = useState('');
 
-	var urlprefix = process.env.REACT_APP_API_URL;
-	if (!urlprefix)
+	var urlprefix = process.env.REACT_APP_API_URL || '';
+	var dbstr = process.env.REACT_APP_OMEGA_USER || '';
+	var url = urlprefix + '/hmi/read_file';
+	if (dbstr)
 	{
-		urlprefix = '';
+		url = url + '?db=' + dbstr;
 	}
-	const url = urlprefix + '/hmi/read_file';
-	//const url = '/hmi/read_file';
 
 	var getData = async () => {
 		fetch(url, {

@@ -19,13 +19,13 @@ const OmegaMessages = ({handleClick}) => {
 
   const fields = columns(t);
 
-	var urlprefix = process.env.REACT_APP_API_URL;
-	if (!urlprefix)
+	var urlprefix = process.env.REACT_APP_API_URL || '';
+	var dbstr = process.env.REACT_APP_OMEGA_USER || '';
+	var url = urlprefix + '/hmi/omega_message';
+	if (dbstr)
 	{
-		urlprefix = '';
+		url = url + '?db=' + dbstr;
 	}
-	const url = urlprefix + '/hmi/omega_message';
-	//const url = '/hmi/omega_message';
 	//console.log('omega url:'+url);
 
 	const getData = async () => {
