@@ -23,7 +23,7 @@ const columns = (t) => [
     field: 'pmv_srctype_name',
     sortable: true,
     resizable: true,
-    suppressSizeToFit: true,
+    // suppressSizeToFit: true,
     width: 110,
   },
 
@@ -56,7 +56,7 @@ const columns = (t) => [
     field: 'pmv_batchcode',
     sortable: true,
     resizable: true,
-    suppressSizeToFit: true,
+    // suppressSizeToFit: true,
     width: 100,
   },
   {
@@ -65,7 +65,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     suppressSizeToFit: true,
-    width: 150,
+    width: 120,
   },
   {
     headerName: t('fields.class'),
@@ -80,7 +80,7 @@ const columns = (t) => [
     field: 'pmv_intended_qty',
     sortable: true,
     resizable: true,
-
+    suppressSizeToFit: true,
     width: 100,
   },
   {
@@ -96,6 +96,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     suppressSizeToFit: true,
+    width: 110,
   },
   {
     headerName: t('fields.progress'),

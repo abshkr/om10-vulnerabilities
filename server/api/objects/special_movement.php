@@ -204,6 +204,19 @@ class SpecialMovement extends CommonClass
         }
     }
 
+    public function next_id()
+    {
+        $query = "SELECT NVL(MAX(MLITM_ID), 0) + 1 NEXT_ID FROM MOV_LOAD_ITEMS";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function pre_create()
     {
         $query = "SELECT NVL(MAX(MLITM_ID), 0) + 1 NEXT_ID FROM MOV_LOAD_ITEMS";

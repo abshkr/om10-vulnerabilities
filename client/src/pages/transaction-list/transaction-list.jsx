@@ -97,7 +97,7 @@ const TransactionList = () => {
 
   const modifiers = (
     <>
-      <Calendar handleChange={setRange} start={start} end={end} />
+      <Calendar handleChange={setRange} start={start} end={end} max={1000} />
 
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
         {t('operations.refresh')}

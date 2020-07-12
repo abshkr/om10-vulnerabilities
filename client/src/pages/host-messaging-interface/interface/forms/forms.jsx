@@ -96,11 +96,8 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 	const onSubmit = async () => {
 		if (notEdit)
 		{
-			var urlprefix = process.env.REACT_APP_API_URL;
-			if (!urlprefix)
-			{
-				urlprefix = '';
-			}
+			var urlprefix = process.env.REACT_APP_API_URL || '';
+			var dbstr = process.env.REACT_APP_OMEGA_USER || '';
 
 			var url = '';
 			if (from === 'host')
@@ -110,6 +107,10 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 			else if (from === 'omega')
 			{
 				url = urlprefix + '/hmi/resubmit/omega_message';
+			}
+			if (dbstr)
+			{
+				url = url + '?db=' + dbstr;
 			}
 
 			fetch(url, {

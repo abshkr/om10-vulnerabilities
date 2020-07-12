@@ -1,9 +1,6 @@
 import React from 'react';
-import { Component } from 'react';
 import { useState, useEffect } from 'react';
-import useSWR from 'swr';
 import fs from 'fs';
-//import cfg from './Config';
 
 const MessageArea = ({from, action, message, content_format, handleTaskComplete}) => {
 
@@ -13,26 +10,27 @@ const MessageArea = ({from, action, message, content_format, handleTaskComplete}
 	const [imessage, setMessage] = useState('');
 	const [icontent, setContent] = useState('');
 
-
-	var urlprefix = process.env.REACT_APP_API_URL;
-	if (!urlprefix)
-	{
-		urlprefix = '';
-	}
-
-	var url;
-	if (from === 'host')
-	{
-		url = urlprefix + '/hmi/parse/host_message';
-	}
-	else if (from === 'omega')
-	{
-		url = urlprefix + '/hmi/parse/omega_message';
-	}
+	var urlprefix = process.env.REACT_APP_API_URL || '';
+	var dbstr = process.env.REACT_APP_OMEGA_USER || '';
 
 	const getData = () => {
 		if (message)
 		{
+			var url;
+			if (from === 'host')
+			{
+				url = urlprefix + '/hmi/parse/host_message';
+			}
+			else if (from === 'omega')
+			{
+				url = urlprefix + '/hmi/parse/omega_message';
+			}
+
+			if (dbstr)
+			{
+				url = url + '?db=' + dbstr;
+			}
+
 			if (content_format === 1)
 			{
 				// BEWARE: when using post method with body data, must:
@@ -79,15 +77,7 @@ const MessageArea = ({from, action, message, content_format, handleTaskComplete}
 	}
 
 
-  //const { data: payload, isValidating, revalidate } = useSWR(url, getData);
-
   useEffect(() => {
-/*
-		if (payload?.message)
-		{
-			setMessage(payload?.message);
-		}
-*/
 		if (   (from !== ifrom)
 			  || (action !== iaction)
 				|| (content_format !== icontent_format)
@@ -288,6 +278,11 @@ const MessageArea = ({from, action, message, content_format, handleTaskComplete}
 		{
 			// TODO: do this once only
 			var url = urlprefix + '/hmi/config';
+			if (dbstr)
+			{
+				url = url + '?db=' + dbstr;
+			}
+
 			fetch(url, {
 				method: 'POST',
 				credentials: 'include'
@@ -309,6 +304,10 @@ const MessageArea = ({from, action, message, content_format, handleTaskComplete}
 						if (from === 'host')
 						{
 							url = urlprefix + '/hmi/edit/host_message';
+							if (dbstr)
+							{
+								url = url + '?db=' + dbstr;
+							}
 
 							var res = create_filename_from_content(conn);
 							if (res.ok)
@@ -319,6 +318,10 @@ const MessageArea = ({from, action, message, content_format, handleTaskComplete}
 						else if (from === 'omega')
 						{
 							url = urlprefix + '/hmi/edit/omega_message';
+							if (dbstr)
+							{
+								url = url + '?db=' + dbstr;
+							}
 						}
 
 						fetch(url, {

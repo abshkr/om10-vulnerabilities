@@ -6,6 +6,7 @@ import {
   DeleteOutlined,
   QuestionCircleOutlined,
   CloseOutlined,
+  CaretDownOutlined,
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col } from 'antd';
@@ -39,7 +40,7 @@ import {
   SellCompany,
 } from './fields';
 
-import { DataTable } from '../../../components';
+import { DataTable, SelectInput, PartnershipManager } from '../../../components';
 import { SETTINGS } from '../../../constants';
 import api, { DELIVERY_DETAILS } from '../../../api';
 import DeliveryDetailItems from './dd-items/delivery-detail-items';
@@ -66,6 +67,8 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
   const [orderNo, setOrderNo] = useState(value?.order_sys_no);
   const [supplier, setSupplier] = useState(params?.dd_supp_code);
   const [selected, setSelected] = useState(null);
+  const [shipTo, setShipTo] = useState(value?.dd_ship_to);
+  const [soldTo, setSoldTo] = useState(value?.dd_sold_to);
 
   const [orderItems, setDdiItems] = useState([]);
   const [showPeriod, setShowPeriod] = useState(false);
@@ -303,11 +306,55 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
               </Col>
 
               <Col span={6}>
-                <SoldTo form={form} value={value} supplier={supplier} pageState={pageState} />
+                {/* <SoldTo form={form} value={value} supplier={supplier} pageState={pageState} /> */}
+                <SelectInput
+                  form={form}
+                  value={value}
+                  name="dd_sold_to"
+                  label={t('fields.ddSoldTo')}
+                  required={true}
+                  allowClear={true}
+                  maxLength={20}
+                  disabled={(pageState==='create'||pageState==='edit'||pageState==='detail')? false : true}
+                  onChange={setSoldTo}
+                  popupManager={PartnershipManager}
+                  popupTitle={t('fields.ddSoldTo') + ' - ' + t('pageNames.partnership')}
+                  popupDisabled={false} // !supplier}
+                  popupIcon={<CaretDownOutlined />}
+                  popupLabel={''}
+                  popupParams={{
+                    partner_code: soldTo,
+                    partner_type: 'AG',
+                    partner_cmpy_code: supplier,
+                    partner_cust_acct: ''
+                  }}
+                />
               </Col>
 
               <Col span={6}>
-                <ShipTo form={form} value={value} supplier={supplier} pageState={pageState} />
+                {/* <ShipTo form={form} value={value} supplier={supplier} pageState={pageState} /> */}
+                <SelectInput
+                  form={form}
+                  value={value}
+                  name="dd_ship_to"
+                  label={t('fields.ddShipTo')}
+                  required={true}
+                  allowClear={true}
+                  maxLength={20}
+                  disabled={(pageState==='create'||pageState==='edit'||pageState==='detail')? false : true}
+                  onChange={setShipTo}
+                  popupManager={PartnershipManager}
+                  popupTitle={t('fields.ddShipTo') + ' - ' + t('pageNames.partnership')}
+                  popupDisabled={false} // !supplier}
+                  popupIcon={<CaretDownOutlined />}
+                  popupLabel={''}
+                  popupParams={{
+                    partner_code: shipTo,
+                    partner_type: 'WE',
+                    partner_cmpy_code: supplier,
+                    partner_cust_acct: ''
+                  }}
+                />
               </Col>
             </Row>
 

@@ -19,13 +19,14 @@ const HostMessages = ({handleClick}) => {
 
   const fields = columns(t);
 
-	var urlprefix = process.env.REACT_APP_API_URL;
-	if (!urlprefix)
+	var urlprefix = process.env.REACT_APP_API_URL || '';
+	var dbstr = process.env.REACT_APP_OMEGA_USER || '';
+	var url = urlprefix + '/hmi/host_message';
+	if (dbstr)
 	{
-		urlprefix = '';
+		url = url + '?db=' + dbstr;
 	}
-	const url = urlprefix + '/hmi/host_message';
-	//console.log('host url:'+url);
+	console.log('host url:'+url);
 
 	const getData = async () => {
 		fetch(url, {

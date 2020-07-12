@@ -119,7 +119,7 @@ const From = ({
       setTank(tankCode);
       setProduct(prodCode);
       // onChange(tankCode);
-      console.log('here I am in FROM  2!....', prodCompany, tankCode, prodCode, type);
+      // console.log('here I am in FROM  2!....', prodCompany, tankCode, prodCode, type);
 
       setFieldsValue({
         mlitm_prodcmpy: prodCompany,
