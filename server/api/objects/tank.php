@@ -468,7 +468,7 @@ class Tank extends CommonClass
                 0,
                 0,
                 0,
-                :tank_terminal,
+                'ON_SITE',
                 0,
                 0,
                 0,
