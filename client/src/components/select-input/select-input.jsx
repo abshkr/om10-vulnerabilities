@@ -81,6 +81,9 @@ const SelectInput = ({
       if (_.isObject(value) && value.hasOwnProperty(name)) {
         index = value[name];
       }
+      if (_.isObject(value) && !value.hasOwnProperty(name)) {
+        index = '';
+      }
       setFieldsValue({
         [name]: index,
       });
