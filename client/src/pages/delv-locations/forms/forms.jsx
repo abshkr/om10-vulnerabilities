@@ -33,12 +33,13 @@ import {
 } from './fields';
 
 import { LocationCode, LocationName, CustomerSupplier, CustomerCategory, CustomerLink } from './links';
+import { AddressesPopup } from 'pages/addresses';
 
 import api, { DELV_LOCATIONS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
   const [flag, setFlag] = useState(undefined);
   const [supplier, setSupplier] = useState(undefined);
   const [category, setCategory] = useState(undefined);
@@ -58,12 +59,12 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   const { resetFields } = form;
 
   const doTabChanges = (tabPaneKey) => {
-    if (tabPaneKey === '2') {
-      setDrawerWidth('90vw');
-      setMainTabOn(false);
-    } else {
+    if (tabPaneKey === '1') {
       setDrawerWidth('50vw');
       setMainTabOn(true);
+    } else {
+      setDrawerWidth('90vw');
+      setMainTabOn(false);
     }
   };
 
@@ -74,12 +75,18 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     setMainTabOn(true);
   };
 
-  const onComplete = () => {
+  const onComplete = (delv_code) => {
     resetFields();
     handleFormState(false, null);
     mutate(DELV_LOCATIONS.READ);
     setDrawerWidth('50vw');
     setMainTabOn(true);
+    if (delv_code) {
+      setFilterValue("" + delv_code);
+    } else {
+      setFilterValue(' ');
+    }
+
   };
 
   const onFinish = async () => {
@@ -96,7 +103,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         await api
           .post(IS_CREATING ? DELV_LOCATIONS.CREATE : DELV_LOCATIONS.UPDATE, values)
           .then(() => {
-            onComplete();
+            onComplete(values?.delv_code);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
@@ -227,7 +234,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             </Row>
             <Row gutter={[8, 2]}>
               <Col span={12}>
-                <Address form={form} value={value} />
+                <Address form={form} value={value} reload={mainTabOn} />
               </Col>
               <Col span={12}>
                 <Grid form={form} value={value} flag={flag} />
@@ -299,6 +306,9 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               category={category}
               location={value?.delv_code}
             />
+          </TabPane>
+          <TabPane tab={t('tabColumns.addresses')} key="3">
+            <AddressesPopup popup={true} />
           </TabPane>
         </Tabs>
       </Form>

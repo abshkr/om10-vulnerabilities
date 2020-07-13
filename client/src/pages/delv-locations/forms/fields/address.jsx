@@ -6,10 +6,10 @@ import { useTranslation } from 'react-i18next';
 import { PARTNERS } from 'api';
 import { Form, Select } from 'antd';
 
-const Address = ({ form, value }) => {
+const Address = ({ form, value, reload }) => {
   const { t } = useTranslation();
 
-  const { data: options, isValidating } = useSWR(PARTNERS.ADDRESSES);
+  const { data: options, isValidating, revalidate } = useSWR(PARTNERS.ADDRESSES);
 
   const { setFieldsValue } = form;
 
@@ -28,6 +28,12 @@ const Address = ({ form, value }) => {
       });
     }
   }, [value, setFieldsValue]);
+
+  useEffect(() => {
+    if (reload && revalidate) {
+      revalidate();
+    }
+  }, [reload, revalidate]);
 
   return (
     <Form.Item
