@@ -7,7 +7,7 @@ import columns from './columns';
 import Forms from './forms';
 import TemperatureRender from './temperature-render';
 
-const Table = ({ data, access, visible, setVisible, selected, setSelected, config }) => {
+const Table = ({ data, access, visible, setVisible, selected, setSelected, config, isLoading }) => {
   const { t } = useTranslation();
 
   const fields = columns(t, config);
@@ -23,6 +23,7 @@ const Table = ({ data, access, visible, setVisible, selected, setSelected, confi
       <DataTable
         columns={fields}
         data={data}
+        isLoading={isLoading}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
         components={{

@@ -27,7 +27,7 @@ import transform from './transform';
 const { TabPane } = Tabs;
 
 const Tanks = () => {
-  const { data: read, revalidate } = useSWR(TANKS.READ);
+  const { data: read, revalidate, isValidating } = useSWR(TANKS.READ);
   const { t } = useTranslation();
 
   const location = useLocation();
@@ -43,7 +43,7 @@ const Tanks = () => {
 
   const simple = mode === '1';
   const fields = columns(t);
-  const isLoading = !read;
+  const isLoading = !read || isValidating;
 
   const page = t('pageMenu.stock');
   const name = t('pageNames.tanks');
@@ -158,7 +158,12 @@ const Tanks = () => {
 
             {config.manageTankStrapping && (
               <TabPane key="7" tab={t('tabColumns.strapping')}>
-                <TankStrapping terminal={selected?.tank_terminal} code={selected?.tank_code} tanks={read} access={access} />
+                <TankStrapping
+                  terminal={selected?.tank_terminal}
+                  code={selected?.tank_code}
+                  tanks={read}
+                  access={access}
+                />
               </TabPane>
             )}
 
@@ -173,6 +178,7 @@ const Tanks = () => {
           selected={listSelected}
           setSelected={setlistSelected}
           config={config}
+          isLoading={isLoading}
         />
       )}
     </Page>
