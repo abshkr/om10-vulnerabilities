@@ -35,7 +35,7 @@ import { AddressesPopup } from 'pages/addresses';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
   const [supplier, setSupplier] = useState(undefined);
   const [drawerWidth, setDrawerWidth] = useState('60vw');
   const [mainTabOn, setMainTabOn] = useState(true);
@@ -64,12 +64,17 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     setMainTabOn(true);
   };
 
-  const onComplete = () => {
+  const onComplete = (cust_account) => {
     resetFields();
     handleFormState(false, null);
     mutate(CUSTOMERS.READ);
     setDrawerWidth('60vw');
     setMainTabOn(true);
+    if (cust_account) {
+      setFilterValue("" + cust_account);
+    } else {
+      setFilterValue(' ');
+    }
   };
 
   const onFinish = async () => {
@@ -86,7 +91,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         await api
           .post(IS_CREATING ? CUSTOMERS.CREATE : CUSTOMERS.UPDATE, values)
           .then(() => {
-            onComplete();
+            onComplete(values?.cust_account);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
