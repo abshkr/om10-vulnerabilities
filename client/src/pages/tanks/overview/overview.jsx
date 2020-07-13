@@ -41,33 +41,36 @@ const Overview = ({ selected, isLoading }) => {
               </Descriptions.Item>
 
               <Descriptions.Item label={t('fields.observedVolume')} span={24}>
-                {selected?.tank_amb_vol} Litres
+                {selected?.tank_amb_vol} {t('units.litres')}
               </Descriptions.Item>
 
               <Descriptions.Item label={t('fields.standardVolume')} span={24}>
-                {selected?.tank_cor_vol} Litres
+                {selected?.tank_cor_vol} {t('units.litres')}
               </Descriptions.Item>
 
               <Descriptions.Item label={t('fields.temperature')} span={24}>
-                {selected?.tank_temp} C
+                {selected?.tank_temp} {t('units.degC')}
               </Descriptions.Item>
 
               <Descriptions.Item label={t('fields.standardDensity')} span={24}>
-                {selected?.tank_15_density} Kg/M3
+                {selected?.tank_15_density} {t('units.kg/m3')}
               </Descriptions.Item>
 
               <Descriptions.Item label={t('fields.weightInAir')} span={24}>
                 {selected?.tank_vapour_kg} Kg
               </Descriptions.Item>
 
-              <Descriptions.Item label={t('fields.weightInVacuum')} span={24}></Descriptions.Item>
+              <Descriptions.Item label={t('fields.weightInVacuum')} span={24}>
+                {selected?.tank_liquid_kg} Kg
+              </Descriptions.Item>
 
               <Descriptions.Item label={t('fields.waterLevel')} span={24}>
-                {selected?.tank_water_lvl} Kg
+                {selected?.tank_water_lvl} mm
               </Descriptions.Item>
 
               <Descriptions.Item label={t('fields.maximumCapacity')} span={24}>
-                {_.toNumber(selected?.tank_ullage) || 0 + _.toNumber(selected?.tank_cor_vol) || 0} Litres
+                {selected?.tank_max_capacity} {selected?.tank_max_capacity==='' ? '' : t('units.litres')}
+                {/* {_.toNumber(selected?.tank_ullage) || 0 + _.toNumber(selected?.tank_cor_vol) || 0} Litres */}
               </Descriptions.Item>
 
               <Descriptions.Item label={t('fields.classification')} span={24}>
