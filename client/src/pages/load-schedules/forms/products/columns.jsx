@@ -19,7 +19,7 @@ const columns = (t, form, units, access) => [
     field: 'qty_scheduled',
     resizable: true,
     width: 200,
-    suppressSizeToFit: true,
+    // suppressSizeToFit: true,
     editable: access.extra,
     cellEditor: 'ScheduleEditor',
     cellEditorParams: {
