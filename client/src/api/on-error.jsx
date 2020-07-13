@@ -12,7 +12,7 @@ const onError = (err, key, config) => {
     </Button>
   );
 
-  if (code !== 498) {
+  if (code === 498) {
     const key = 'force_logout';
 
     notification.error({
