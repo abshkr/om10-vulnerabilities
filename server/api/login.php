@@ -125,7 +125,7 @@ if ($array['MSG_CODE'] === "0") {
     $login_result['email'] = "";
     $login_result['displayName'] = $object->user;
     $login_result['token'] = get_token($object->user, $array['USER_DETAIL']['USER_SESSION'], 
-        $array['USER_DETAIL']['SITE_CODE'], $array['USER_DETAIL']['SITE_NAME'], $array['USER_DETAIL']['USER_LANG']);
+        $array['USER_DETAIL']['SITE_CODE'], $array['USER_DETAIL']['SITE_NAME'], $array['USER_DETAIL']['USER_LANG'], 24 * 60 * 60);
     $login_result['refreshToken'] = get_token($object->user, $array['USER_DETAIL']['USER_SESSION'], 
         $array['USER_DETAIL']['SITE_CODE'], $array['USER_DETAIL']['SITE_NAME'], $array['USER_DETAIL']['USER_LANG'], $exp_min * 60);
     $login_result['expiresIn'] = $exp_min * 60;
