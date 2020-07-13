@@ -46,7 +46,11 @@ const NominationSource = ({ form, value }) => {
         }
       >
         {options?.records.map((item, index) => (
-          <Select.Option key={index} value={item.movsource_type_id}>
+          <Select.Option
+            key={index}
+            value={item.movsource_type_id}
+            disabled={!value && (item.movsource_type_id === '0' || item.movsource_type_id === '3')}
+          >
             {item.movsource_type_name}
           </Select.Option>
         ))}
