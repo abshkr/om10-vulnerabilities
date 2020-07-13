@@ -14,10 +14,11 @@ import { GlobalStyleProvider, AntdStyleProvider } from '../styles';
 import { Interface, Loading } from '../components';
 import { authStore } from '../stores';
 import { ROUTES } from '../constants';
+
+import onError from 'api/on-error';
 import paths from './paths';
 import api from 'api';
-import * as actions from 'actions/auth';
-import { refresh } from 'actions/auth';
+
 /**
  * @description
  * Creating main redux store to authenticate our credentials
@@ -49,6 +50,7 @@ const App = () => {
             refreshInterval: 0,
             fetcher: (url) => api.get(url).then((response) => response.data),
             errorRetryCount: 3,
+            onError: onError,
           }}
         >
           <BrowserRouter>
