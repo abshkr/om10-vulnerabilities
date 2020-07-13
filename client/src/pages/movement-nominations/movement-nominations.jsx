@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 
 import useSWR from 'swr';
 import moment from 'moment';
-import { Button, Select } from 'antd';
+import { Button, Select, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
+import { SyncOutlined, PlusOutlined, FileSearchOutlined, EyeOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download, Calendar, WindowSearch } from '../../components';
 import api, { MOVEMENT_NOMIATIONS } from '../../api';
@@ -16,6 +16,7 @@ import Forms from './forms';
 import { useAuth } from '../../hooks';
 import { useConfig } from '../../hooks';
 import { getDateRangeOffset } from '../../utils';
+import Schedules from './forms/items/schedules';
 
 const MovementNominations = () => {
   const [rangeStart, setRangeStart] = useState(0);
@@ -33,6 +34,7 @@ const MovementNominations = () => {
   const [selected, setSelected] = useState(null);
   const [timeOption, setTimeOption] = useState(filterByExpiry?'MV_DTIM_EXPIRY':'MV_DTIM_EFFECT');
   const [data, setData] = useState(null);
+  const [scheduleOpen, setScheduleOpen] = useState(false);
 
   const { t } = useTranslation();
 
@@ -216,6 +218,15 @@ const MovementNominations = () => {
         </div>
       )}
 
+      <Button
+        type="primary"
+        icon={<EyeOutlined />}
+        disabled={false}
+        onClick={() => setScheduleOpen(true)}
+      >
+        {t('pageMenu.schedules')}
+      </Button>
+
       <Button icon={<SyncOutlined />} onClick={onRefresh} loading={isLoading}>
         {t('operations.refresh')}
       </Button>
@@ -252,28 +263,41 @@ const MovementNominations = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access} modifiers={modifiers}>
-      <DataTable
-        columns={fields}
-        data={data}
-        isLoading={isValidating}
-        selectionMode="single"
-        onClick={(payload) => handleFormState(true, payload)}
-        handleSelect={(payload) => handleFormState(true, payload[0])}
-      />
-
-      {visible && (
-        <Forms
-          value={selected}
-          visible={visible}
-          handleFormState={handleFormState}
-          access={access}
-          url={url}
-          locateNomination={locateNomination}
-          config={config}
-        />
+    <>
+      {scheduleOpen && (
+        <Drawer
+          placement="right"
+          bodyStyle={{ paddingTop: 5 }}
+          onClose={() => setScheduleOpen(false)}
+          visible={scheduleOpen}
+          width="100vw"
+        >
+          <Schedules selected={null} />
+        </Drawer>
       )}
-    </Page>
+      <Page page={page} name={name} modifiers={modifiers} access={access}>
+        <DataTable
+          columns={fields}
+          data={data}
+          isLoading={isValidating}
+          selectionMode="single"
+          onClick={(payload) => handleFormState(true, payload)}
+          handleSelect={(payload) => handleFormState(true, payload[0])}
+        />
+
+        {visible && (
+          <Forms
+            value={selected}
+            visible={visible}
+            handleFormState={handleFormState}
+            access={access}
+            url={url}
+            locateNomination={locateNomination}
+            config={config}
+          />
+        )}
+      </Page>
+    </>
   );
 };
 

@@ -99,7 +99,11 @@ const SelectInput = ({
         onPressEnter={handlePressEnter}
         addonAfter={
           !popupDisabled && (
-            <Button icon={popupIcon} onClick={() => handlePopup()}>
+            <Button
+              icon={popupIcon}
+              onClick={() => handlePopup()}
+              disabled={disabled}
+            >
               {popupLabel}
             </Button>
           )
