@@ -105,7 +105,7 @@ const columns = (t) => [
       hide: true,
     },
     {
-      headerName: t('fields.delvEtypTitle'),
+      headerName: t('fields.delvEtyp'),
       field: 'delv_etyp_title',
       filter: 'FuzzyFilter',
       sortable: true,
