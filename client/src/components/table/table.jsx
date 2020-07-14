@@ -90,8 +90,7 @@ const Table = ({
   footer,
   isPolling,
   stopEditingWhenGridLosesFocus,
-  singleClickEdit,
-  editType
+	clearSelection
 }) => {
   const { windowWidth } = useWindowSize();
 
@@ -100,6 +99,11 @@ const Table = ({
   const [api, setAPI] = useState('');
 
   // const loading = !data || isLoading;
+
+	if (clearSelection)
+	{
+			api.deselectAll();
+	};
 
   const handleMultipleSelection = () => {
     if (handleSelect) {
@@ -232,8 +236,6 @@ const Table = ({
                   onCellValueChanged={onCellUpdate}
                   onFirstDataRendered={handleFirstDataRendered}
                   pinnedBottomRowData={footer}
-                  singleClickEdit={singleClickEdit === false ? false : true}  //Default true
-                  editType={editType === 'fullRow'? 'fullRow' : ''}           //Default not fullRow
                   stopEditingWhenGridLosesFocus={stopEditingWhenGridLosesFocus===undefined ? true : stopEditingWhenGridLosesFocus}
                 />
               </div>

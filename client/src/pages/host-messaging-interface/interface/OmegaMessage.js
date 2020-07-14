@@ -13,7 +13,6 @@ import { SETTINGS } from '../../../constants';
 const OmegaMessages = ({handleClick}) => {
 
   const [visible, setVisible] = useState(false);
-  const [selected, setSelected] = useState(null);
 
   const { t } = useTranslation();
 
@@ -47,6 +46,7 @@ const OmegaMessages = ({handleClick}) => {
 
   const { data: payload, isValidating, revalidate } = useSWR(url, getData);
   const [messages, setMessages] = useState(payload?.message);
+  const [clearSelected, setClearSelected] = useState(false);
 
 	const from = 'omega';
 	const action = 'view';
@@ -67,7 +67,19 @@ const OmegaMessages = ({handleClick}) => {
 		getData();
   }, [start, end]);
 
-	const exportToCSV = () => { };	
+
+
+	const selected = async (message) => {
+		if (message != '' && message != [])
+		{
+			handleClick(true, from, action, cformat, message[0]);
+
+			if (messages && messages.length <= 1)
+			{
+				setClearSelected(true);
+			}
+		}
+	};
 
   const extras = (
     <>
@@ -84,9 +96,10 @@ const OmegaMessages = ({handleClick}) => {
 				columns={fields}
 				selectionMode="single"
 				isLoading={isValidating}
-				onClick={(message) => handleClick(true, from, action, cformat, message[0])}
-				handleSelect={(message) => handleClick(true, from, action, cformat, message[0])}
+				onClick={(message) => selected(message)}
+				handleSelect={(message) => selected(message)}
 				extra={extras}
+				clearSelection={clearSelected}
 			/>
 		</div>
 	);

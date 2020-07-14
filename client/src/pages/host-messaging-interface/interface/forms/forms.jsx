@@ -20,7 +20,6 @@ const TabPane = Tabs.TabPane;
 
 const FormModal = ({ msg, visible, from, action, content_format, handleFormState}) => {
 
-
   const { t } = useTranslation();
 
 	const [notEdit, setNotEdit] = useState(!msg);
@@ -28,7 +27,7 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 	const [notice, setNotice] = useState('');
 	const [ifrom, setFrom] = useState(from);
 	const [iaction, setAction] = useState(action);
-	const [icontentFormat, setContentFormat] = useState(content_format);
+	const [icontent_format, setContentFormat] = useState(content_format);
 	const [imsg, setMessage] = useState(msg);
 
 
@@ -59,7 +58,7 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 	}, [action]);
 
 	useEffect(() => {
-		if (content_format != icontentFormat)
+		if (content_format != icontent_format)
 		{
 			setContentFormat(content_format);
 		}
@@ -192,7 +191,7 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 							from={ifrom}
 							action={iaction}
 							message={imsg}
-							content_format={icontentFormat}
+							content_format={icontent_format}
 						/>
 					</TabPane>
 
@@ -201,8 +200,7 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 							from={ifrom}
 							action={iaction}
 							message={imsg}
-							content_format={icontentFormat}
-							handleFormState={handleFormState}
+							content_format={icontent_format}
 						/>
 					</TabPane>
 				</Tabs>
@@ -213,7 +211,7 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 					from={ifrom}
 					action={iaction}
 					message={imsg}
-					content_format={icontentFormat}
+					content_format={icontent_format}
 					handleTaskComplete={handleTaskComplete}
 				/>
 			</div>

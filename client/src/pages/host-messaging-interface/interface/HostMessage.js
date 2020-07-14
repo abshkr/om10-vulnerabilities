@@ -26,7 +26,7 @@ const HostMessages = ({handleClick}) => {
 	{
 		url = url + '?db=' + dbstr;
 	}
-	console.log('host url:'+url);
+	//console.log('host url:'+url);
 
 	const getData = async () => {
 		fetch(url, {
@@ -47,6 +47,7 @@ const HostMessages = ({handleClick}) => {
 
   const { data: payload, isValidating, revalidate } = useSWR(url, getData);
   const [messages, setMessages] = useState(payload?.message);
+  const [clearSelected, setClearSelected] = useState(false);
 
 	const from = 'host';
 	const action = 'view';
@@ -69,6 +70,18 @@ const HostMessages = ({handleClick}) => {
   }, [start, end]);
 
 
+	const selected = async (message) => {
+		if (message != '' && message != [])
+		{
+			handleClick(true, from, action, cformat, message[0]);
+
+			if (messages && messages.length <= 1)
+			{
+				setClearSelected(true);
+			}
+		}
+	};
+
   const extras = (
     <>
       <Calendar handleChange={setRange} start={start} end={end} />
@@ -84,9 +97,10 @@ const HostMessages = ({handleClick}) => {
 				columns={fields}
 				selectionMode="single"
 				isLoading={isValidating}
-				onClick={(message) => handleClick(true, from, action, cformat, message[0])}
-				handleSelect={(message) => handleClick(true, from, action, cformat, message[0])}
+				onClick={(message) => selected(message)}
+				handleSelect={(message) => selected(message)}
 				extra={extras}
+				clearSelection={clearSelected}
 			/>
 		</div>
 	);
