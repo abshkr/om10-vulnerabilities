@@ -3,11 +3,12 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, DatePicker, Col } from 'antd';
 import moment from 'moment';
+import _ from 'lodash';
 
 import { SETTINGS } from '../../../../constants';
 import { getDateTimeFormat } from '../../../../utils';
 
-const Dates = ({ form, value }) => {
+const Dates = ({ form, value, expiry }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -33,9 +34,11 @@ const Dates = ({ form, value }) => {
       </Col>
 
       <Col span={6}>
-        <Form.Item name="shls_exp2" label={t('fields.expiryDate')}>
-          <DatePicker disabled={IS_DISABLED} showTime format={FORMAT} style={{ width: '100%' }} />
-        </Form.Item>
+        {(expiry !== null && expiry !== undefined && expiry !== '' && _.toNumber(expiry) > 0) && (
+          <Form.Item name="shls_exp2" label={t('fields.expiryDate')}>
+            <DatePicker disabled={IS_DISABLED} showTime format={FORMAT} style={{ width: '100%' }} />
+          </Form.Item>
+        )}
       </Col>
     </>
   );

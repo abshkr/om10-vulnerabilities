@@ -16,7 +16,7 @@ import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col, Radio, Check
 
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
-import { mutate } from 'swr';
+import useSWR, { mutate } from 'swr';
 import api from 'api';
 import _ from 'lodash';
 
@@ -37,7 +37,7 @@ import {
 
 import { SelectInput, PartnershipManager } from '../../../components';
 import { SETTINGS } from '../../../constants';
-import { LOAD_SCHEDULES } from '../../../api';
+import { LOAD_SCHEDULES, SITE_CONFIGURATION } from '../../../api';
 
 import { useConfig } from '../../../hooks';
 
@@ -72,7 +72,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const [redoBOL, setRedoBOL] = useState(0);
   const [shipTo, setShipTo] = useState(value?.shls_ship_to_num);
   const [soldTo, setSoldTo] = useState(value?.shls_sold_to_num);
-
+  const [expHour, setExpHour] = useState(undefined); // SITE.SITE_SHLS_EXP_H
+  
   /*
     1	F	NEW SCHEDULE
     2	S	SPECED
@@ -106,6 +107,9 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const CAN_MAKE_TRANSACTIONS = CAN_MAKE && manageMakeManualTransaction;
   const CAN_REPOST_TRANSACTIONS = CAN_REPOST && manageMakeManualTransaction;
   const CAN_ADD_HOST_DATA = value?.shls_ld_type === '2' && manageAdditionalHostData;
+
+  const { data: siteData } = useSWR(SITE_CONFIGURATION.GET_SITE);
+
 
   const { resetFields, setFieldsValue } = form;
 
@@ -415,6 +419,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   }, [value]);
 
   useEffect(() => {
+    if (siteData) {
+      setExpHour(siteData?.records?.[0].site_shls_exp_h);
+    }
+  }, [siteData, setExpHour]);
+
+  useEffect(() => {
     if (value) {
       setTab('0');
 
@@ -437,10 +447,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
       setFieldsValue({
         shls_caldate: moment(),
-        shls_exp2: moment(),
+        shls_exp2: !expHour ? moment() : moment().add(_.toNumber(expHour), 'hours'),
       });
     }
-  }, [resetFields, visible, value]);
+  }, [resetFields, visible, value, expHour]);
 
   return (
     <Drawer
@@ -598,7 +608,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             </Row>
 
             <Row gutter={[8, 8]}>
-              <Dates form={form} value={value} />
+              <Dates form={form} value={value} expiry={expHour} />
 
               <Col span={6}>
                 {/* <SoldTo form={form} value={value} mode={mode} /> */}
