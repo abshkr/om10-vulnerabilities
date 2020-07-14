@@ -63,6 +63,7 @@ const columns = (t, values, form) => [
     sortable: true,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     suppressSizeToFit: true,
     cellEditorParams: {
       form: form,
@@ -76,20 +77,20 @@ const columns = (t, values, form) => [
     sortable: true,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     suppressSizeToFit: true,
     width: 220,
     valueParser: (params) => {
       const regEx = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-      const result = params.newValue.replace(/\s/g, "").split(/:|;/);   
-      for(let i = 0; i < result.length; i++) {
-          
-        if(!regEx.test(result[i])) {
+      const result = params.newValue.replace(/\s/g, '').split(/:|;/);
+      for (let i = 0; i < result.length; i++) {
+        if (!regEx.test(result[i])) {
           return params.oldValue;
         }
       }
 
       return params.newValue;
-    }
+    },
   },
   {
     headerName: t('fields.tiggerPoint'),

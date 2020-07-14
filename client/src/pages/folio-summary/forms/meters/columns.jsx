@@ -1,12 +1,12 @@
-const columns = t => [
+const columns = (t) => [
   {
     headerName: t('fields.meterCode'),
     field: 'meter_code',
     sortable: true,
     resizable: true,
     width: 100,
-    suppressSizeToFit: true, 
-    pinned: "left",
+    suppressSizeToFit: true,
+    pinned: 'left',
   },
   {
     headerName: t('fields.productCode'),
@@ -14,7 +14,7 @@ const columns = t => [
     sortable: true,
     resizable: true,
     width: 110,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.productName'),
@@ -22,7 +22,7 @@ const columns = t => [
     sortable: true,
     resizable: true,
     width: 140,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.closingAmbient'),
@@ -30,9 +30,10 @@ const columns = t => [
     sortable: true,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     width: 100,
     cellEditor: 'NumericEditor',
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.closingMass'),
@@ -40,7 +41,7 @@ const columns = t => [
     sortable: true,
     resizable: true,
     width: 100,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
 
   {
@@ -49,9 +50,10 @@ const columns = t => [
     sortable: true,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     width: 100,
     cellEditor: 'NumericEditor',
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
 
   {
@@ -60,7 +62,7 @@ const columns = t => [
     sortable: true,
     resizable: true,
     width: 100,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
 
   {
@@ -69,8 +71,9 @@ const columns = t => [
     sortable: true,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     width: 300,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
 
   {
@@ -79,8 +82,9 @@ const columns = t => [
     sortable: true,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     width: 250,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
 
   {
@@ -89,7 +93,7 @@ const columns = t => [
     sortable: true,
     resizable: true,
     width: 80,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
 
   {
@@ -98,7 +102,7 @@ const columns = t => [
     sortable: true,
     resizable: true,
     width: 100,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
 
   {
@@ -108,8 +112,8 @@ const columns = t => [
     resizable: true,
     width: 190,
     cellRenderer: 'DateRenderer',
-    suppressSizeToFit: true, 
-  }
+    suppressSizeToFit: true,
+  },
 ];
 
 export default columns;

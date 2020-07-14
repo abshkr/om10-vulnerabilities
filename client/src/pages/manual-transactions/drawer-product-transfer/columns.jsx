@@ -9,21 +9,20 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     pinned: 'left',
   },
 
-  // (!sourceType || !loadNumber || (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT')) && 
-  // (!sourceType || !loadNumber || (sourceType === 'SCHEDULE' && loadType !== 'BY_COMPARTMENT')) && 
-  // (!sourceType || !loadNumber || (sourceType === 'OPENORDER')) && 
+  // (!sourceType || !loadNumber || (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT')) &&
+  // (!sourceType || !loadNumber || (sourceType === 'SCHEDULE' && loadType !== 'BY_COMPARTMENT')) &&
+  // (!sourceType || !loadNumber || (sourceType === 'OPENORDER')) &&
   {
     headerName: t('fields.soldTo'),
     field: 'trsf_sold_to',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: (
-      !sourceType || 
-      !loadNumber || 
-      (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') || 
-      (sourceType === 'OPENORDER')
-    ),
+    hide:
+      !sourceType ||
+      !loadNumber ||
+      (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') ||
+      sourceType === 'OPENORDER',
     width: 100,
   },
 
@@ -33,12 +32,11 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    editable: (sourceType === 'SCHEDULE' ? false : true),
-    hide: (
-      !sourceType || 
-      !loadNumber || 
-      (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') 
-    ),
+    editable: sourceType === 'SCHEDULE' ? false : true,
+
+    cellClass: sourceType !== 'SCHEDULE' ? 'selected-editable-ag-grid-cell' : '',
+
+    hide: !sourceType || !loadNumber || (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT'),
     width: 100,
   },
 
@@ -48,12 +46,11 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: (
-      !sourceType || 
-      !loadNumber || 
-      (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') || 
-      (sourceType === 'OPENORDER')
-    ),
+    hide:
+      !sourceType ||
+      !loadNumber ||
+      (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') ||
+      sourceType === 'OPENORDER',
     width: 100,
   },
 
@@ -66,6 +63,7 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     width: 120,
     cellEditor: 'EquipmentEditor',
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
 
     cellEditorParams: {
       values: [],
@@ -84,7 +82,7 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
   {
     headerName: t('fields.drawerProduct'),
     field: 'trsf_prod_code',
-    width: ((sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') ? 200 : 360),
+    width: sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT' ? 200 : 360,
     hide: true,
   },
 
@@ -102,11 +100,9 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     resizable: true,
     cellEditor: 'DrawerProductsEditor',
     editable: true,
-    width: ((
-      !sourceType || 
-      !loadNumber ||
-      (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT')) ? 200 : 400
-    ),
+    cellClass: 'editable-ag-grid-cell',
+    width:
+      !sourceType || !loadNumber || (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') ? 200 : 400,
     cellEditorParams: {
       values: products?.records || [],
       form,
@@ -124,6 +120,7 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     width: 250,
     cellEditor: 'BayArmEditor',
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     cellEditorParams: {
       values: [],
       form,
@@ -138,13 +135,12 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     sortable: true,
     resizable: true,
     editable: false,
-    hide: (
-      !sourceType || 
-      !loadNumber || 
-      (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') || 
-      (sourceType === 'OPENORDER')
-    ),
-    width:120,
+    hide:
+      !sourceType ||
+      !loadNumber ||
+      (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') ||
+      sourceType === 'OPENORDER',
+    width: 120,
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
       digits: '0',
@@ -158,13 +154,12 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     sortable: true,
     resizable: true,
     editable: false,
-    hide: (
-      !sourceType || 
-      !loadNumber || 
-      (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') || 
-      (sourceType === 'OPENORDER')
-    ),
-    width:120,
+    hide:
+      !sourceType ||
+      !loadNumber ||
+      (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') ||
+      sourceType === 'OPENORDER',
+    width: 120,
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
       digits: '0',
@@ -193,6 +188,7 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     width: 140,
     cellEditor: 'TemperatureEditor',
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     cellEditorParams: {
       min: -18,
       max: 150,
@@ -211,6 +207,7 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     resizable: true,
     cellEditor: 'ObservedEditor',
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     cellEditorParams: {
       min: 0,
       max: 999999999,
@@ -230,6 +227,7 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     resizable: true,
     cellEditor: 'StandardEditor',
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     cellEditorParams: {
       min: 0,
       max: 999999999,
@@ -249,6 +247,7 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     resizable: true,
     cellEditor: 'MassEditor',
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     width: 150,
     cellEditorParams: {
       min: 0,

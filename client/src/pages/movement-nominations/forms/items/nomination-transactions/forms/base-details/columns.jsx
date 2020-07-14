@@ -32,7 +32,8 @@ const columns = (t, pageState, form, arm) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    editable: ((pageState==='disposal' && !!arm)? true : false),
+    editable: pageState === 'disposal' && !!arm ? true : false,
+    cellClass: pageState === 'disposal' && !!arm ? 'selected-editable-ag-grid-cell' : '',
   },
   {
     headerName: t('fields.nomtranTemperature'),
@@ -50,7 +51,8 @@ const columns = (t, pageState, form, arm) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    editable: ((pageState==='disposal' && !!arm)? true : false),
+    editable: pageState === 'disposal' && !!arm ? true : false,
+    cellClass: pageState === 'disposal' && !!arm ? 'selected-editable-ag-grid-cell' : '',
   },
   {
     headerName: t('fields.nomtranCorVol'),
@@ -59,7 +61,8 @@ const columns = (t, pageState, form, arm) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    editable: ((pageState==='disposal' && !!arm)? true : false),
+    editable: pageState === 'disposal' && !!arm ? true : false,
+    cellClass: pageState === 'disposal' && !!arm ? 'selected-editable-ag-grid-cell' : '',
   },
   {
     headerName: t('fields.nomtranLiqKg'),
@@ -68,7 +71,8 @@ const columns = (t, pageState, form, arm) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    editable: ((pageState==='disposal' && !!arm)? true : false),
+    editable: pageState === 'disposal' && !!arm ? true : false,
+    cellClass: pageState === 'disposal' && !!arm ? 'selected-editable-ag-grid-cell' : '',
   },
 ];
 

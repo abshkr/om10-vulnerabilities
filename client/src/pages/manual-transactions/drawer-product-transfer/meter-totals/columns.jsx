@@ -37,6 +37,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     cellEditor: 'NumericEditor',
   },
   {
@@ -46,6 +47,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     cellEditor: 'NumericEditor',
   },
   {
@@ -55,6 +57,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     cellEditor: 'NumericEditor',
   },
   {
@@ -64,6 +67,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     cellEditor: 'NumericEditor',
   },
   {
@@ -73,6 +77,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     cellEditor: 'NumericEditor',
   },
 
@@ -83,6 +88,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     cellEditor: 'NumericEditor',
   },
   // {

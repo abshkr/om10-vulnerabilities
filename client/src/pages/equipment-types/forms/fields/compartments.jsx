@@ -44,8 +44,7 @@ const Compartments = ({ form, value, isCombination }) => {
     if (cmpt === 0) {
       list.push('p');
       list.push('f');
-    }
-    else {
+    } else {
       list.push('t');
       list.push('r');
       if (railTankAvailable) {
@@ -88,8 +87,14 @@ const Compartments = ({ form, value, isCombination }) => {
     if (!_.isInteger(_.toNumber(value?.newValue))) {
       notification.error({
         message: t('descriptions.mustBeInteger'),
-        description: value?.colDef?.headerName + ': ' + value?.newValue + ', ' + 
-        t('fields.compartment') + ': ' + value?.data.cmpt_no,
+        description:
+          value?.colDef?.headerName +
+          ': ' +
+          value?.newValue +
+          ', ' +
+          t('fields.compartment') +
+          ': ' +
+          value?.data.cmpt_no,
       });
 
       return;
@@ -98,8 +103,14 @@ const Compartments = ({ form, value, isCombination }) => {
     if (_.toNumber(value?.newValue) > _.toNumber(maxSealsPerCompartment)) {
       notification.error({
         message: t('descriptions.exceedMaxNumber'),
-        description: value?.colDef?.headerName + ': ' + value?.newValue + ', ' + 
-        t('fields.maxNumber') + ': ' + String(maxSealsPerCompartment),
+        description:
+          value?.colDef?.headerName +
+          ': ' +
+          value?.newValue +
+          ', ' +
+          t('fields.maxNumber') +
+          ': ' +
+          String(maxSealsPerCompartment),
       });
 
       return;
@@ -171,6 +182,8 @@ const Compartments = ({ form, value, isCombination }) => {
       width: showSeals ? 150 : 1,
       hide: !showSeals,
       editable: showSeals,
+
+      cellClass: showSeals ? 'editable-ag-grid-cell' : '',
       suppressSizeToFit: true,
       cellEditor: 'NumericEditor',
       cellEditorParams: {
@@ -179,7 +192,7 @@ const Compartments = ({ form, value, isCombination }) => {
           min: 0,
         },
       },
-      },
+    },
   ];
 
   return (
@@ -245,15 +258,14 @@ const Compartments = ({ form, value, isCombination }) => {
           {composition?.records?.map((item) => (
             <div key={item} style={{ marginRight: 10, width: '400px' }}>
               <Equipment image={item?.etyp_category?.toLowerCase()} showName={item.etyp_title} />
-              { item.etyp_category.toUpperCase() !== 'P' && 
-                item.etyp_category.toUpperCase() !== 'F' && (
-                <DataTable 
-                  data={item?.compartments} 
-                  columns={columns} 
-                  minimal 
-                  height="80vh" 
+              {item.etyp_category.toUpperCase() !== 'P' && item.etyp_category.toUpperCase() !== 'F' && (
+                <DataTable
+                  data={item?.compartments}
+                  columns={columns}
+                  minimal
+                  height="80vh"
                   onCellUpdate={(value) => onCellUpdate(value)}
-                  />
+                />
               )}
             </div>
           ))}

@@ -1,10 +1,10 @@
-const columns = t => [
+const columns = (t) => [
   {
     title: t('fields.compartment'),
     dataIndex: 'cmpt_no',
     key: 'cmpt_no',
     align: 'center',
-    width: 120
+    width: 120,
   },
   {
     title: t('fields.safeFill'),
@@ -12,14 +12,15 @@ const columns = t => [
     key: 'safefill',
     align: 'center',
     editable: true,
-    width: 120
+    cellClass: 'editable-ag-grid-cell',
+    width: 120,
   },
   {
     title: t('fields.safeFillUnit'),
     dataIndex: 'cmpt_units',
     key: 'cmpt_units',
     align: 'center',
-    width: 120
+    width: 120,
   },
   {
     title: t('fields.capacity'),
@@ -27,7 +28,8 @@ const columns = t => [
     key: 'sfl',
     align: 'center',
     editable: true,
-    width: 120
+    cellClass: 'editable-ag-grid-cell',
+    width: 120,
   },
   {
     title: t('fields.locked'),
@@ -35,8 +37,9 @@ const columns = t => [
     key: 'adj_cmpt_lock',
     width: 120,
     editable: true,
-    align: 'center'
-  }
+    cellClass: 'editable-ag-grid-cell',
+    align: 'center',
+  },
 ];
 
 export default columns;

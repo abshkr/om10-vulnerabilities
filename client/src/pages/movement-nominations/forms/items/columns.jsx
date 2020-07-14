@@ -134,7 +134,7 @@ const useColumns = (value, selected) => {
   return [
     {
       // headerName: `${t('fields.select')}`,
-      headerName: "",
+      headerName: '',
       field: 'mvitm_line_id',
       width: 40,
       checkboxSelection: true,
@@ -201,6 +201,7 @@ const useColumns = (value, selected) => {
       width: 140,
       suppressSizeToFit: true,
       editable: selected?.[0]?.editable || !value,
+      cellClass: selected?.[0]?.editable ? 'selected-editable-ag-grid-cell' : '',
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
@@ -226,6 +227,7 @@ const useColumns = (value, selected) => {
       width: 80,
       suppressSizeToFit: true,
       editable: selected?.[0]?.editable,
+      cellClass: 'selected-editable-ag-grid-cell', //selected?.[0]?.editable || !value,
     },
     {
       headerName: t('fields.itemStatus'),
@@ -243,7 +245,8 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 100,
       suppressSizeToFit: true,
-      editable: true, //selected?.[0]?.editable || !value,
+      editable: true,
+      cellClass: 'editable-ag-grid-cell', //selected?.[0]?.editable || !value,
       cellEditor: 'NumericEditor',
       cellEditorParams: {
         ranges: {
@@ -261,6 +264,7 @@ const useColumns = (value, selected) => {
       width: 100,
       suppressSizeToFit: true,
       editable: selected?.[0]?.editable || !value,
+      cellClass: selected?.[0]?.editable ? 'selected-editable-ag-grid-cell' : '',
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
@@ -286,6 +290,11 @@ const useColumns = (value, selected) => {
       width: 100,
       suppressSizeToFit: true,
       editable: selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type),
+
+      cellClass:
+        selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type)
+          ? 'selected-editable-ag-grid-cell'
+          : '',
       cellEditor: 'SelectEditor',
       cellEditorParams: {
         values: _.uniq(_.map(plants?.records, 'cmpy_plant')),
@@ -299,6 +308,12 @@ const useColumns = (value, selected) => {
       width: 150,
       suppressSizeToFit: true,
       editable: selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type),
+
+      cellClass:
+        selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type)
+          ? 'selected-editable-ag-grid-cell'
+          : '',
+
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
@@ -324,6 +339,12 @@ const useColumns = (value, selected) => {
       width: 200,
       suppressSizeToFit: true,
       editable: selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type),
+
+      cellClass:
+        selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type)
+          ? 'selected-editable-ag-grid-cell'
+          : '',
+
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
@@ -365,6 +386,12 @@ const useColumns = (value, selected) => {
       width: 100,
       suppressSizeToFit: true,
       editable: selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type),
+
+      cellClass:
+        selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type)
+          ? 'selected-editable-ag-grid-cell'
+          : '',
+
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
@@ -428,6 +455,12 @@ const useColumns = (value, selected) => {
       width: 100,
       suppressSizeToFit: true,
       editable: selected?.[0]?.editable && groupTo.includes(selected?.[0]?.mvitm_type),
+
+      cellClass:
+        selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type)
+          ? 'selected-editable-ag-grid-cell'
+          : '',
+
       cellEditor: 'SelectEditor',
       cellEditorParams: {
         values: _.uniq(_.map(plants?.records, 'cmpy_plant')),
@@ -441,6 +474,12 @@ const useColumns = (value, selected) => {
       width: 150,
       suppressSizeToFit: true,
       editable: selected?.[0]?.editable && groupTo.includes(selected?.[0]?.mvitm_type),
+
+      cellClass:
+        selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type)
+          ? 'selected-editable-ag-grid-cell'
+          : '',
+
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
@@ -466,6 +505,12 @@ const useColumns = (value, selected) => {
       width: 200,
       suppressSizeToFit: true,
       editable: selected?.[0]?.editable && groupTo.includes(selected?.[0]?.mvitm_type),
+
+      cellClass:
+        selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type)
+          ? 'selected-editable-ag-grid-cell'
+          : '',
+
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
@@ -507,6 +552,12 @@ const useColumns = (value, selected) => {
       width: 100,
       suppressSizeToFit: true,
       editable: selected?.[0]?.editable && groupTo.includes(selected?.[0]?.mvitm_type),
+
+      cellClass:
+        selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type)
+          ? 'selected-editable-ag-grid-cell'
+          : '',
+
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
@@ -570,6 +621,8 @@ const useColumns = (value, selected) => {
       width: 100,
       suppressSizeToFit: true,
       editable: selected?.[0]?.editable || !value,
+
+      cellClass: selected?.[0]?.editable || !value ? 'selected-editable-ag-grid-cell' : '',
     },
     {
       headerName: t('fields.quantityScheduled'),
@@ -597,6 +650,7 @@ const useColumns = (value, selected) => {
       width: 100,
       suppressSizeToFit: true,
       editable: selected?.[0]?.editable || !value,
+      cellClass: selected?.[0]?.editable || !value ? 'selected-editable-ag-grid-cell' : '',
       cellEditor: 'NumericEditor',
     },
   ];

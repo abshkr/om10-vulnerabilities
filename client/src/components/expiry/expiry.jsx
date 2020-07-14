@@ -15,7 +15,7 @@ const Expiry = ({ form, value, type }) => {
 
   const [count, setCount] = useState(value ? value.expiry_dates.length : 3);
   const [data, setData] = useState(value ? value.expiry_dates : []);
-  
+
   const { setFieldsValue } = form;
 
   const handleSave = (row) => {
@@ -80,6 +80,7 @@ const Expiry = ({ form, value, type }) => {
       key: 'edt_type_desc',
       width: 250,
       editable: true,
+      cellClass: 'editable-ag-grid-cell',
     },
     {
       title: t('fields.expiryDate'),
@@ -88,6 +89,7 @@ const Expiry = ({ form, value, type }) => {
       width: 300,
       align: 'center',
       editable: true,
+      cellClass: 'editable-ag-grid-cell',
       render: (text, record) => {
         return (
           <span>
@@ -104,6 +106,7 @@ const Expiry = ({ form, value, type }) => {
       key: 'ed_status',
       align: 'center',
       editable: true,
+      cellClass: 'editable-ag-grid-cell',
     },
     {
       title: t('fields.operations'),

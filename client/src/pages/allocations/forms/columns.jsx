@@ -5,7 +5,7 @@ const columns = (t, isCreating, form, units) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 150,
   },
   {
@@ -14,7 +14,7 @@ const columns = (t, isCreating, form, units) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 170,
   },
   {
@@ -24,7 +24,8 @@ const columns = (t, isCreating, form, units) => [
     sortable: true,
     resizable: true,
     editable: true,
-    suppressSizeToFit: true, 
+    cellClass: 'editable-ag-grid-cell',
+    suppressSizeToFit: true,
     width: 160,
   },
   {
@@ -33,7 +34,7 @@ const columns = (t, isCreating, form, units) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 120,
   },
   {
@@ -42,7 +43,7 @@ const columns = (t, isCreating, form, units) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 120,
   },
   {
@@ -52,6 +53,7 @@ const columns = (t, isCreating, form, units) => [
     sortable: true,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     cellEditor: 'UnitEditor',
     width: 130,
     cellEditorParams: {

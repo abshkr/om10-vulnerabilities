@@ -5,8 +5,8 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 100,
-    suppressSizeToFit: true, 
-    pinned: "left",
+    suppressSizeToFit: true,
+    pinned: 'left',
   },
   {
     headerName: t('fields.productCode'),
@@ -14,7 +14,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 100,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
 
   {
@@ -23,7 +23,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 100,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
 
   {
@@ -32,7 +32,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 100,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
 
   {
@@ -41,9 +41,10 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     width: 100,
     cellEditor: 'NumericEditor',
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
 
   {
@@ -52,9 +53,10 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     width: 100,
     cellEditor: 'NumericEditor',
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
 
   {
@@ -63,9 +65,10 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     width: 100,
     cellEditor: 'NumericEditor',
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
 
   {
@@ -76,7 +79,7 @@ const columns = (t) => [
     checkboxSelection: true,
     headerCheckboxSelection: true,
     cellRenderer: 'NullRenderer',
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
 
   {
@@ -86,11 +89,12 @@ const columns = (t) => [
     resizable: true,
     width: 100,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     cellEditor: 'SelectEditor',
     cellEditorParams: {
       values: ['123', '555', 'test'],
     },
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
 
   {
@@ -99,6 +103,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     width: 100,
     cellEditor: 'NumericEditor',
     cellEditorParams: {
@@ -111,7 +116,7 @@ const columns = (t) => [
       max: 'max_temp',
       min: 'min_temp',
     },
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
 
   {
@@ -120,6 +125,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     width: 100,
     cellEditor: 'NumericEditor',
     cellEditorParams: {
@@ -132,7 +138,7 @@ const columns = (t) => [
       max: 'bclass_dens_hi',
       min: 'bclass_dens_lo',
     },
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
 
   {
@@ -141,8 +147,9 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     width: 160,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
 
   {
@@ -151,7 +158,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     width: 100,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
 
   {
@@ -161,7 +168,7 @@ const columns = (t) => [
     resizable: true,
     width: 160,
     cellRenderer: 'DateRenderer',
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
   },
 ];
 

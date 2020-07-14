@@ -21,7 +21,9 @@ const columns = (t, pageState, form, arm) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    editable: ((pageState==='disposal' && !!arm)? true : false),
+    editable: pageState === 'disposal' && !!arm ? true : false,
+
+    cellClass: pageState === 'disposal' && !!arm ? 'selected-editable-ag-grid-cell' : '',
   },
   {
     headerName: t('fields.closingAmbient'),
@@ -29,7 +31,8 @@ const columns = (t, pageState, form, arm) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    editable: ((pageState==='disposal' && !!arm)? true : false),
+    editable: pageState === 'disposal' && !!arm ? true : false,
+    cellClass: pageState === 'disposal' && !!arm ? 'selected-editable-ag-grid-cell' : '',
   },
   {
     headerName: t('fields.observedQuantity'),
@@ -45,7 +48,8 @@ const columns = (t, pageState, form, arm) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    editable: ((pageState==='disposal' && !!arm)? true : false),
+    editable: pageState === 'disposal' && !!arm ? true : false,
+    cellClass: pageState === 'disposal' && !!arm ? 'selected-editable-ag-grid-cell' : '',
   },
   {
     headerName: t('fields.closingCorrected'),
@@ -53,7 +57,8 @@ const columns = (t, pageState, form, arm) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    editable: ((pageState==='disposal' && !!arm)? true : false),
+    editable: pageState === 'disposal' && !!arm ? true : false,
+    cellClass: pageState === 'disposal' && !!arm ? 'selected-editable-ag-grid-cell' : '',
   },
   {
     headerName: t('fields.standardQuantity'),
@@ -69,7 +74,8 @@ const columns = (t, pageState, form, arm) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    editable: ((pageState==='disposal' && !!arm)? true : false),
+    editable: pageState === 'disposal' && !!arm ? true : false,
+    cellClass: pageState === 'disposal' && !!arm ? 'selected-editable-ag-grid-cell' : '',
   },
   {
     headerName: t('fields.closingMass'),
@@ -77,7 +83,8 @@ const columns = (t, pageState, form, arm) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    editable: ((pageState==='disposal' && !!arm)? true : false),
+    editable: pageState === 'disposal' && !!arm ? true : false,
+    cellClass: pageState === 'disposal' && !!arm ? 'selected-editable-ag-grid-cell' : '',
   },
   {
     headerName: t('fields.massQuantity'),
@@ -86,7 +93,7 @@ const columns = (t, pageState, form, arm) => [
     sortable: true,
     resizable: true,
     editable: false,
-  }
+  },
 ];
 
 export default columns;

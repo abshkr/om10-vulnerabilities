@@ -211,6 +211,7 @@ const Items = ({ setTableAPIContext, value, config }) => {
       mvitm_qty_move: '0',
       mvitm_qty_delv: '0',
       editable: true,
+      cellClass: 'editable-ag-grid-cell',
     };
 
     setSize(length);
@@ -235,23 +236,23 @@ const Items = ({ setTableAPIContext, value, config }) => {
     let payload = value.data;
 
     console.log('onEditingFinished', value, value.colDef);
-    
+
     // set the product name by product code
     if (value.colDef.field === 'mvitm_prodcode_from') {
       const prodFromList = value.colDef?.cellRendererParams?.values;
       if (prodFromList) {
-        const prodFrom = _.filter(prodFromList, (o) => (o.code === value?.value));
+        const prodFrom = _.filter(prodFromList, (o) => o.code === value?.value);
         payload.mvitm_prodname_from = prodFrom?.[0]?.code + ' - ' + prodFrom?.[0]?.name;
       } else {
         payload.mvitm_prodname_from = value?.value;
       }
     }
-    
+
     // set the product name by product code
     if (value.colDef.field === 'mvitm_prodcode_to') {
       const prodToList = value.colDef?.cellRendererParams?.values;
       if (prodToList) {
-        const prodTo = _.filter(prodToList, (o) => (o.code === value?.value));
+        const prodTo = _.filter(prodToList, (o) => o.code === value?.value);
         payload.mvitm_prodname_to = prodTo?.[0]?.code + ' - ' + prodTo?.[0]?.name;
       } else {
         payload.mvitm_prodname_to = value?.value;
@@ -396,7 +397,7 @@ const Items = ({ setTableAPIContext, value, config }) => {
         type="primary"
         icon={<CarryOutOutlined />}
         style={{ float: 'right', marginRight: 5 }}
-        disabled={!buttonState?.makeTransaction || disabled || !value }
+        disabled={!buttonState?.makeTransaction || disabled || !value}
         onClick={() => gotoMakeTransactions()}
       >
         {t('operations.makeTransaction')}

@@ -12,7 +12,7 @@ const useColumns = (value, selected) => {
   const { t } = useTranslation();
 
   const { data: types } = useSWR(ADDRESSES.TYPES, { refreshInterval: 0 });
-/*
+  /*
   useEffect(() => {
     const type = selected[0]?.mvitm_type_name;
 
@@ -62,17 +62,31 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 200,
       suppressSizeToFit: true,
-      editable: selected[0]?.addresss_action==='+' || selected[0]?.addresss_action==='*' || !!value,
+      editable: selected[0]?.addresss_action === '+' || selected[0]?.addresss_action === '*' || !!value,
+
+      cellClass:
+        selected[0]?.addresss_action === '+' || selected[0]?.addresss_action === '*' || !!value
+          ? 'selected-editable-ag-grid-cell'
+          : '',
+
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         //values: _.uniq(_.map(types?.records, (item)=>{return String(item.enum_no)+'|'+item.message;}))
-        values: _.uniq(_.map(types?.records, (item)=>{return {code: _.toNumber(item.enum_no), name: item.message};}))
+        values: _.uniq(
+          _.map(types?.records, (item) => {
+            return { code: _.toNumber(item.enum_no), name: item.message };
+          })
+        ),
       },
       cellEditor: 'ListEditor',
       cellEditorParams: {
         //values: _.uniq(_.map(types?.records, (item)=>{return String(item.enum_no)+'|'+item.message;}))
-        values: _.uniq(_.map(types?.records, (item)=>{return {code: _.toNumber(item.enum_no), name: item.message};}))
-      }
+        values: _.uniq(
+          _.map(types?.records, (item) => {
+            return { code: _.toNumber(item.enum_no), name: item.message };
+          })
+        ),
+      },
     },
     {
       headerName: t('fields.addressLineTypeName'),
@@ -82,7 +96,7 @@ const useColumns = (value, selected) => {
       hide: true,
       width: 120,
       suppressSizeToFit: true,
-      editable: false
+      editable: false,
     },
     {
       headerName: t('fields.addressLineText'),
@@ -92,8 +106,13 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 500,
       suppressSizeToFit: true,
-      editable: selected[0]?.addresss_action==='+' || selected[0]?.addresss_action==='*' || !!value,
-    }
+      editable: selected[0]?.addresss_action === '+' || selected[0]?.addresss_action === '*' || !!value,
+
+      cellClass:
+        selected[0]?.addresss_action === '+' || selected[0]?.addresss_action === '*' || !!value
+          ? 'selected-editable-ag-grid-cell'
+          : '',
+    },
   ];
 };
 

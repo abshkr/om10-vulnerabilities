@@ -57,5 +57,9 @@ const GlobalStyleProvider = createGlobalStyle`
   .editable-ag-grid-cell {
     background: #d9f9d5;
   }
+
+  .ag-row-selected .selected-editable-ag-grid-cell {
+    background: #d9f9d5;
+  }
 `;
 export default GlobalStyleProvider;

@@ -6,6 +6,7 @@ const columns = (t) => [
     sortable: false,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     width: 100,
     cellEditor: 'NumericEditor',
     cellEditorParams: {
@@ -22,6 +23,7 @@ const columns = (t) => [
     sortable: false,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     width: 120,
     cellEditor: 'NumericEditor',
     cellEditorParams: {
@@ -38,6 +40,7 @@ const columns = (t) => [
     sortable: false,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     width: 160,
   },
   {
@@ -47,6 +50,7 @@ const columns = (t) => [
     sortable: false,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     width: 160,
   },
 ];

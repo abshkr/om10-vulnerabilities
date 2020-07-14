@@ -34,6 +34,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
       digits: '1',
@@ -57,12 +58,13 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     editable: true,
+    cellClass: 'editable-ag-grid-cell',
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
       digits: '0',
       min: '100',
     },
- },
+  },
   {
     headerName: t('fields.standardQuantity'),
     field: 'trsf_bs_qty_cor_tot',

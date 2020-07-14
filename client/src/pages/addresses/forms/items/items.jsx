@@ -11,7 +11,6 @@ import { ADDRESSES } from '../../../../api';
 import columns from './columns';
 
 const Items = ({ setTableAPIContext, value, addressCode }) => {
-
   const { data: payload } = useSWR(`${ADDRESSES.READ_TEMPLATE}?config_key=${'SITE_ADDRESS_TEMPLATE'}`);
 
   const [lineAddDisabled, setLineAddDisabled] = useState(false);
@@ -70,7 +69,7 @@ const Items = ({ setTableAPIContext, value, addressCode }) => {
     adjustModifiers(options);
   };
 
-  const addOneLine = (type='') => {
+  const addOneLine = (type = '') => {
     const length = getNextLineNo();
 
     const option = {
@@ -83,6 +82,7 @@ const Items = ({ setTableAPIContext, value, addressCode }) => {
       // db_addr_line: '',
       db_addr_line: t('placeholder.enterAddressLineText'),
       editable: true,
+      cellClass: 'editable-ag-grid-cell',
     };
 
     setSize(length);
@@ -95,11 +95,10 @@ const Items = ({ setTableAPIContext, value, addressCode }) => {
     setLineEditDisabled(true);
 
     //setSize(value?.length);
-    const length = getNextLineNo()
+    const length = getNextLineNo();
     if (length > 1 || !template) {
       addOneLine('');
-    }
-    else {
+    } else {
       const types = template.split(',');
       types.forEach((type) => addOneLine(_.toNumber(type)));
     }
@@ -113,7 +112,7 @@ const Items = ({ setTableAPIContext, value, addressCode }) => {
       db_addr_line_type: '',
       db_addr_line_typename: '',
       db_addr_line: '',
-      editable: true,
+      editable: true, cellClass: 'editable-ag-grid-cell',
     };
 
     setSize(length);
