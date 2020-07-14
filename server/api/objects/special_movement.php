@@ -393,14 +393,14 @@ class SpecialMovement extends CommonClass
             BS.BCLASS_VCF_ALG					
         FROM PRODUCTS DP, RPTOBJ_PROD_RATIOS_VW PR, BASE_PRODS BP, TANKS TK, TERMINAL TL, BASECLASS BS 
         WHERE DP.PROD_CMPY  = PR.RAT_PROD_PRODCMPY 
-        AND DP.PROD_CODE  = PR.RAT_PROD_PRODCODE 
-        AND PR.RATIO_BASE = BP.BASE_CODE 
-        AND BP.BASE_CODE  = TK.TANK_BASE 
-        AND TL.TERM_CODE  = TK.TANK_TERMINAL
-        AND PR.RAT_COUNT  = 1 
-        AND DP.PROD_CMPY  != 'BaSePrOd'
-        AND DP.PROD_CMPY = :supplier
-        AND BP.BASE_CAT = BS.BCLASS_NO
+            AND DP.PROD_CODE  = PR.RAT_PROD_PRODCODE 
+            AND PR.RATIO_BASE = BP.BASE_CODE 
+            AND BP.BASE_CODE  = TK.TANK_BASE 
+            AND TL.TERM_CODE  = TK.TANK_TERMINAL
+            AND PR.RAT_COUNT  = 1 
+            AND DP.PROD_CMPY  != 'BaSePrOd'
+            AND DP.PROD_CMPY = :supplier
+            AND BP.BASE_CAT = BS.BCLASS_NO
         ORDER BY TL.TERM_CODE, DP.PROD_CMPY, TK.TANK_CODE";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':supplier', $this->supplier);
@@ -411,6 +411,29 @@ class SpecialMovement extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    //Adjust data in the record that special movement created in MOVEMENTS table 
+    private function adjust_movement()
+    {
+        $query = "UPDATE MOVEMENTS
+            SET MV_DTIM_EFFECT = SYSDATE,
+                MV_DTIM_EXPIRY = SYSDATE
+            WHERE MV_KEY = (
+                SELECT MLITM_MOV_KEY FROM MOV_LOAD_ITEMS
+                WHERE MLITM_ID = :mlitm_id
+                )
+                AND MV_DTIM_EFFECT IS NULL
+                AND MV_DTIM_EXPIRY IS NULL";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':mlitm_id', $this->mlitm_id);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -425,6 +448,8 @@ class SpecialMovement extends CommonClass
         
         $error_msg = null;
         if ($serv->submit($error_msg)) {
+            $this->adjust_movement();
+
             $result = new EchoSchema(200, response("__SPECIAL_MOVEMENT_SUBMITTED__",
                 sprintf("Special movment %d submitted", $this->mlitm_id)));
             echo json_encode($result, JSON_PRETTY_PRINT);
