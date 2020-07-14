@@ -18,7 +18,7 @@ const TPP = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Row gutter={[12, 3]}>
+    <Row gutter={[8, 3]}>
       <Col span={6}>
         <Form.Item name="mv_tppoint" label={t('fields.tpp')}>
           <Input placeholder={t('placeholder.setTPPCode')} style={{ width: '100%' }} maxLength={16} />

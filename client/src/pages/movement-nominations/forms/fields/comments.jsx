@@ -16,8 +16,9 @@ const Comments = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   const validate = (rule, input) => {
-    if (input && input.length > 4000) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 4000 ─ ${t('descriptions.maxCharacters')}`);
+    const len = (new TextEncoder().encode(input)).length;
+    if (input && len > 256) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 256 ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();
@@ -29,7 +30,7 @@ const Comments = ({ form, value }) => {
       label={t('fields.comments')}
       rules={[{ required: false, validator: validate }]}
     >
-      <Input.TextArea />
+      <Input placeholder={t('placeholder.setComments')} style={{ width: '100%' }} maxLength={256} />
     </Form.Item>
   );
 };
