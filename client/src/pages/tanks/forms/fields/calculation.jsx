@@ -148,18 +148,46 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
 
   return (
     <>
+      <OmegaInputNumber
+        form={form}
+        value={value?.tank_density}
+        name="tank_density"
+        label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${`@ Reference Temperature ${
+          config?.vsmCompensation || config?.referenceTemperature
+        }ºC/${VCFManager.temperatureC2F(config?.vsmCompensation || config?.referenceTemperature)}ºF`}`}
+        min={value?.tank_base_dens_lo}
+        max={value?.tank_base_dens_hi}
+        style={{ width: '100%' }}
+        precision={config.precisionDensity}
+        onChange={handleCorDensFieldChange}
+      />
+      {/* <Form.Item
+        name="tank_density"
+        label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${`@${
+          config?.vsmCompensation || config?.referenceTemperature
+        }ºC/${VCFManager.temperatureC2F(config?.vsmCompensation || config?.referenceTemperature)}ºF`}`}
+      >
+        <InputNumber
+          min={value?.tank_base_dens_lo}
+          max={value?.tank_base_dens_hi}
+          style={{ width: '100%' }}
+          precision={config.precisionDensity}
+          onChange={handleCorDensFieldChange}
+        />
+      </Form.Item> */}
+
       {config?.temperatureUnit === 'degC' &&
         config?.referenceTemperature === '15' &&
         config?.vsmCompensation === '30' && (
           <OmegaInputNumber
             form={form}
-            value={value?.tank_density}
-            name="tank_density"
+            value={value?.tank_15_density}
+            name="tank_15_density"
             label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${
               value?.tank_base_dens_hi
-            }) ${`@ Ref Temperature ${config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(
+            }) ${`@ Compensation Temperature ${config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(
               config?.referenceTemperature
-            )}ºF `}`}
+            )}ºF`}`}
             min={value?.tank_base_dens_lo}
             max={value?.tank_base_dens_hi}
             style={{ width: '100%' }}
@@ -185,34 +213,6 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
             />
           </Form.Item> */
         )}
-
-      <OmegaInputNumber
-        form={form}
-        value={value?.tank_15_density}
-        name="tank_15_density"
-        label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${`@ Compensation Temperature ${
-          config?.vsmCompensation || config?.referenceTemperature
-        }ºC/${VCFManager.temperatureC2F(config?.vsmCompensation || config?.referenceTemperature)}ºF`}`}
-        min={value?.tank_base_dens_lo}
-        max={value?.tank_base_dens_hi}
-        style={{ width: '100%' }}
-        precision={config.precisionDensity}
-        onChange={handleCorDensFieldChange}
-      />
-      {/* <Form.Item
-        name="tank_density"
-        label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${`@${
-          config?.vsmCompensation || config?.referenceTemperature
-        }ºC/${VCFManager.temperatureC2F(config?.vsmCompensation || config?.referenceTemperature)}ºF`}`}
-      >
-        <InputNumber
-          min={value?.tank_base_dens_lo}
-          max={value?.tank_base_dens_hi}
-          style={{ width: '100%' }}
-          precision={config.precisionDensity}
-          onChange={handleCorDensFieldChange}
-        />
-      </Form.Item> */}
 
       {config?.manageAPI && (
         <OmegaInputNumber
