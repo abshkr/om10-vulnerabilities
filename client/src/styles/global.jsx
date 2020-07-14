@@ -53,5 +53,9 @@ const GlobalStyleProvider = createGlobalStyle`
     font-size: 14px;
     color: black;
   }
+
+  .editable-ag-grid-cell {
+    background: #d9f9d5;
+  }
 `;
 export default GlobalStyleProvider;
