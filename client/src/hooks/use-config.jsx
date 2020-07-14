@@ -129,7 +129,7 @@ const useConfig = () => {
         temperatureUnit: environment?.SITE_TEMPERATURE_UNIT || 'degC',
         densityUnit: environment?.SITE_DENSITY_UNIT || 'kg/m3',
         referenceTemperature: environment?.TEMP_COMP_REF_TEMPERATURE || '15',
-        vsmCompensation: environment?.VSM_COMPENSATION_PT,
+        vsmCompensation: environment?.VSM_COMPENSATION_PT || '15',
         scheduledUnit: environment?.SCHEDUNITS,
         manageBaseProductDensityRange: featuresObject?.BASE_PROD__DENS_RANGE,
         manageDCS: featuresObject?.DCS,

@@ -49,13 +49,18 @@ const SpecialMovements = () => {
   }
 
   const setSearch = (values) => {
-    if (!values.mlitm_id && !values.mlitm_status && !values.mlitm_type && !values.mlitm_reason_code) {
+    if (!values.mlitm_id && 
+      !values.mlitm_status && 
+      !values.mlitm_type && 
+      !values.mlitm_prodcmpy && 
+      !values.mlitm_reason_code) {
       return;
     }
 
     api
       .get(SPECIAL_MOVEMENTS.SEARCH, {
         params: {
+          mlitm_prodcmpy: values.mlitm_prodcmpy,
           mlitm_id: values.mlitm_id,
           mlitm_status: values.mlitm_status,
           mlitm_type: values.mlitm_type,
@@ -92,6 +97,7 @@ const SpecialMovements = () => {
         icon={<FileSearchOutlined />}
         onClick={() =>
           WindowSearch(setSearch, t('operations.search'), {
+            mlitm_prodcmpy: true,
             mlitm_id: true,
             mlitm_status: true,
             mlitm_type: true,

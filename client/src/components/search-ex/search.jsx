@@ -15,6 +15,7 @@ import { DateRange,
   Tanker, 
   Trip, 
   TrsaID,
+  PlantSupplier,
   MovementID,
   MovementStatus,
   MovementType,
@@ -48,6 +49,7 @@ const SearchForm = ({onSearch, fields}) => {
   return (
     <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError style={{marginTop: "1rem"}}>
       {fields?.shls_trip_no && <Trip />}
+      {fields?.mlitm_prodcmpy && <PlantSupplier />}
       {fields?.mlitm_id && <MovementID />}
       {fields?.load_id && <LoadID />}
       {fields?.trsa_id && <TrsaID />}

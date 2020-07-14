@@ -153,13 +153,13 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         config?.vsmCompensation === '30' && (
           <OmegaInputNumber
             form={form}
-            value={value?.tank_15_density}
-            name="tank_15_density"
+            value={value?.tank_density}
+            name="tank_density"
             label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${
               value?.tank_base_dens_hi
-            }) ${`@${config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(
+            }) ${`@ Ref Temperature ${config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(
               config?.referenceTemperature
-            )}ºF`}`}
+            )}ºF `}`}
             min={value?.tank_base_dens_lo}
             max={value?.tank_base_dens_hi}
             style={{ width: '100%' }}
@@ -188,9 +188,9 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
 
       <OmegaInputNumber
         form={form}
-        value={value?.tank_density}
-        name="tank_density"
-        label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${`@${
+        value={value?.tank_15_density}
+        name="tank_15_density"
+        label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${`@ Compensation Temperature ${
           config?.vsmCompensation || config?.referenceTemperature
         }ºC/${VCFManager.temperatureC2F(config?.vsmCompensation || config?.referenceTemperature)}ºF`}`}
         min={value?.tank_base_dens_lo}

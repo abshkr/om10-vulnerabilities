@@ -87,6 +87,10 @@ class SpecialMovement extends CommonClass
             $query = $query . " AND MLITM_REASON_CODE = :reason";
         }
 
+        if (isset($this->mlitm_prodcmpy)) {
+            $query = $query . " AND (MLITM_PRODCMPY = :plant OR MLITM_PRODCMPY_TO = :plant)";
+        }
+
         $query = $query . " ORDER BY MLITM_DTIM_START DESC";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':mlitm_id', $mlitm_id);
@@ -107,6 +111,10 @@ class SpecialMovement extends CommonClass
         if (isset($this->mlitm_reason_code)) {
             oci_bind_by_name($stmt, ':reason', $this->mlitm_reason_code);
         }
+
+        if (isset($this->mlitm_prodcmpy)) {
+            oci_bind_by_name($stmt, ':plant', $this->mlitm_prodcmpy);
+       }
 
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
