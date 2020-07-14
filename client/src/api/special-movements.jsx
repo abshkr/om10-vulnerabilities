@@ -6,6 +6,7 @@ export const REASONS = '/api/pages/special_mv/mv_reasons.php';
 export const UNITS = '/api/pages/special_mv/alternate_units.php';
 
 export const SUPPLIERS = '/api/pages/special_mv/suppliers.php';
+export const PLANT_SUPPLIERS = '/api/pages/special_mv/plant_suppliers.php';
 export const TANKS = '/api/pages/special_mv/tanks.php';
 export const PRODUCTS = '/api/pages/special_mv/tank_proddata.php';
 

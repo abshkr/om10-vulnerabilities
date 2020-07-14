@@ -459,4 +459,27 @@ class SpecialMovement extends CommonClass
             echo json_encode($result, JSON_PRETTY_PRINT);
         }
     }
+
+    public function plant_suppliers()
+    {
+        $query = "
+            SELECT 
+                CMPY_CODE, 
+                CMPY_NAME,
+                CMPY_PLANT,
+                NVL(CMPY_PLANT, CMPY_CODE) ||' - '|| CMPY_CODE ||' - '|| CMPY_NAME AS CMPY_DESC
+            FROM GUI_COMPANYS
+            WHERE BITAND(CMPY_TYPE, POWER(2, 1)) != 0
+            ORDER BY NVL(CMPY_PLANT, CMPY_CODE), CMPY_NAME ASC
+        ";
+
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
 }
