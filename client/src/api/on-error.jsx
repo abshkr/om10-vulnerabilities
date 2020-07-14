@@ -1,28 +1,32 @@
-import React from 'react';
-import { notification, Button } from 'antd';
+import { message } from 'antd';
+import _ from 'lodash';
 
 import { LOG_OUT } from 'constants/routes';
+
+const onTimeOut = () => {
+  message
+    .loading({
+      key: 'loading',
+      duration: 2,
+      content: 'Session Expired. Safely Logging Out',
+    })
+
+    .then(() => {
+      message
+        .warning({
+          key: 'warn',
+          content: 'User Logged Out Safely. Please login again to continue.',
+          duration: 1,
+        })
+        .then(() => (window.location.pathname = LOG_OUT));
+    });
+};
 
 const onError = (err, key, config) => {
   const code = err?.response?.status;
 
-  const btn = (
-    <Button type="primary" size="small" onClick={() => (window.location.pathname = LOG_OUT)}>
-      Log Out
-    </Button>
-  );
-
   if (code === 498) {
-    const key = 'force_logout';
-
-    notification.error({
-      duration: 0,
-      message: 'Session has Expired.',
-
-      description: 'Please Login again to continue.',
-      btn,
-      key,
-    });
+    onTimeOut();
   }
   return null;
 };
