@@ -58,7 +58,8 @@ const columns = (t, pageState, form, units) => [
     sortable: true,
     resizable: true,
     hide: false,
-    editable: (pageState==='detail'? false : true),
+    editable: pageState === 'detail' ? false : true,
+    cellClass: pageState !== 'detail' ? 'editable-ag-grid-cell' : '',
     width: 100,
     cellEditor: 'NumericEditor',
     cellEditorParams: {
@@ -75,7 +76,8 @@ const columns = (t, pageState, form, units) => [
     sortable: true,
     resizable: true,
     hide: false,
-    editable: (pageState==='detail'? false : true),
+    editable: pageState === 'detail' ? false : true,
+    cellClass: pageState !== 'detail' ? 'editable-ag-grid-cell' : '',
     width: 130,
     //cellEditor: 'UnitEditor',
     //cellEditorParams: {
@@ -85,13 +87,21 @@ const columns = (t, pageState, form, units) => [
     cellRenderer: 'ListRenderer',
     cellRendererParams: {
       //values: _.uniq(_.map(units?.records, (item)=>{return String(item.unit_id)+'|'+item.description;}))
-      values: _.uniq(_.map(units?.records, (item)=>{return {code: _.toNumber(item.unit_id), name: item.description};}))
+      values: _.uniq(
+        _.map(units?.records, (item) => {
+          return { code: _.toNumber(item.unit_id), name: item.description };
+        })
+      ),
     },
     cellEditor: 'ListEditor',
     cellEditorParams: {
       //values: _.uniq(_.map(units?.records, (item)=>{return String(item.unit_id)+'|'+item.description;}))
-      values: _.uniq(_.map(units?.records, (item)=>{return {code: _.toNumber(item.unit_id), name: item.description};}))
-    }
+      values: _.uniq(
+        _.map(units?.records, (item) => {
+          return { code: _.toNumber(item.unit_id), name: item.description };
+        })
+      ),
+    },
   },
   {
     headerName: t('fields.oitemUnitName'),
@@ -120,7 +130,7 @@ const columns = (t, pageState, form, units) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: (pageState==='detail'? false : true),
+    hide: pageState === 'detail' ? false : true,
     editable: false,
     width: 60,
   },
@@ -138,7 +148,7 @@ const columns = (t, pageState, form, units) => [
       colorAvail: '#009900',
       colorUsed: '#C80000',
     },
-},
+  },
   {
     headerName: t('fields.oitemLoadQty'),
     field: 'oitem_load_qty',

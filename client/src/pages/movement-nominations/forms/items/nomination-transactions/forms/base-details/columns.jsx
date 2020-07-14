@@ -33,7 +33,7 @@ const columns = (t, pageState, form, arm) => [
     sortable: true,
     resizable: true,
     editable: pageState === 'disposal' && !!arm ? true : false,
-    cellClass: pageState === 'disposal' && !!arm ? 'selected-editable-ag-grid-cell' : '',
+    cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
   },
   {
     headerName: t('fields.nomtranTemperature'),
@@ -52,7 +52,7 @@ const columns = (t, pageState, form, arm) => [
     sortable: true,
     resizable: true,
     editable: pageState === 'disposal' && !!arm ? true : false,
-    cellClass: pageState === 'disposal' && !!arm ? 'selected-editable-ag-grid-cell' : '',
+    cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
   },
   {
     headerName: t('fields.nomtranCorVol'),
@@ -62,7 +62,7 @@ const columns = (t, pageState, form, arm) => [
     sortable: true,
     resizable: true,
     editable: pageState === 'disposal' && !!arm ? true : false,
-    cellClass: pageState === 'disposal' && !!arm ? 'selected-editable-ag-grid-cell' : '',
+    cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
   },
   {
     headerName: t('fields.nomtranLiqKg'),
@@ -72,7 +72,7 @@ const columns = (t, pageState, form, arm) => [
     sortable: true,
     resizable: true,
     editable: pageState === 'disposal' && !!arm ? true : false,
-    cellClass: pageState === 'disposal' && !!arm ? 'selected-editable-ag-grid-cell' : '',
+    cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
   },
 ];
 
