@@ -17,6 +17,8 @@ import { DateRange,
   TrsaID,
   MovementID,
   MovementStatus,
+  MovementType,
+  MovementReason,
   OrderNumber,
   OrderSupplier,
   OrderCustomer,
@@ -34,6 +36,7 @@ import { DateRange,
 
 const SearchForm = ({onSearch, fields}) => {
   const [orderSupplier, setOrderSupplier] = useState(null);
+  const [specmvType, setSpecmvType] = useState(null);
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -51,6 +54,8 @@ const SearchForm = ({onSearch, fields}) => {
       {fields?.supplier_code && <Supplier />}
       {fields?.trip_status && <TripStatus />}
       {fields?.mlitm_status && <MovementStatus />}
+      {fields?.mlitm_type && <MovementType onChange={setSpecmvType} />}
+      {fields?.mlitm_reason_code && <MovementReason type={specmvType} />}
       {fields?.tnkr_code && <Tanker />}
       {fields?.order_cust_no && <OrderNumber />}
       {fields?.order_supp_code && <OrderSupplier onChange={setOrderSupplier} />}

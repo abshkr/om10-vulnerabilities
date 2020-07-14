@@ -79,17 +79,33 @@ class SpecialMovement extends CommonClass
             $query = $query . " AND MLITM_DTIM_START > :start_date AND MLITM_DTIM_START < :end_date";
         }
 
+        if (isset($this->mlitm_type)) {
+            $query = $query . " AND MLITM_TYPE = :mvtype";
+        }
+
+        if (isset($this->mlitm_reason_code)) {
+            $query = $query . " AND MLITM_REASON_CODE = :reason";
+        }
+
         $query = $query . " ORDER BY MLITM_DTIM_START DESC";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':mlitm_id', $mlitm_id);
 
-        if (isset($this->status)) {
+        if (isset($this->mlitm_status)) {
             oci_bind_by_name($stmt, ':status', $this->mlitm_status);
         }
 
         if (isset($this->start_date) && isset($this->end_date)) {
             oci_bind_by_name($stmt, ':start_date', $this->start_date);
             oci_bind_by_name($stmt, ':end_date', $this->end_date);
+        }
+
+        if (isset($this->mlitm_type)) {
+            oci_bind_by_name($stmt, ':mvtype', $this->mlitm_type);
+        }
+
+        if (isset($this->mlitm_reason_code)) {
+            oci_bind_by_name($stmt, ':reason', $this->mlitm_reason_code);
         }
 
         if (oci_execute($stmt, $this->commit_mode)) {
