@@ -46,7 +46,9 @@ const Tanks = ({ id, enabled, access, handleFormState }) => {
       content: t('descriptions.saveToFolioWarning'),
       onOk: async () => {
         await api
-          .post(FOLIO_SUMMARY.SAVE_TANKS, data)
+          .post(FOLIO_SUMMARY.SAVE_TANKS, {
+            folio_tanks: data
+          })
           .then((response) => {
             fetch();
 
@@ -136,7 +138,7 @@ const Tanks = ({ id, enabled, access, handleFormState }) => {
       content: t('descriptions.saveToTanksWarning'),
       onOk: async () => {
         await api
-          .post(FOLIO_SUMMARY.SAVE_TANKS, data)
+          .post(FOLIO_SUMMARY.UPDATE_TANKS, data)
           .then((response) => {
             notification.success({
               message: t('messages.saveSuccess'),
