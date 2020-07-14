@@ -9,7 +9,7 @@ import {
   UnlockOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal, Drawer, Row, Col } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Drawer, Row, Col, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 
@@ -249,14 +249,19 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     >
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane tab={t('tabColumns.identification')} forceRender={true} key="1">
+          <TabPane
+            tab={t('tabColumns.identification')}
+            style={{ height: 'calc(100vh - 150px)', overflowY: 'scroll' }}
+            forceRender={true}
+            key="1"
+          >
             <Depot form={form} value={value} />
             <Owner form={form} value={value} />
             <Code form={form} value={value} />
             <Carrier form={form} value={value} />
             <Name form={form} value={value} />
 
-            <Row gutter={[12, 0]}>
+            <Row gutter={[6, 0]}>
               <Col span={12}>
                 <TotalTrips form={form} value={value} />
               </Col>
@@ -269,7 +274,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             <Comments form={form} value={value} />
             <TankerPrompt form={form} value={value} />
 
-            <Row gutter={[12, 0]}>
+            <Row gutter={[6, 0]}>
               <Col span={12}>
                 <Pin form={form} value={value} />
               </Col>
@@ -279,20 +284,16 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               </Col>
             </Row>
 
-            {/* <Destination form={form} value={value} />
-            <LastDepot form={form} value={value} />
-            <CurrentDepot form={form} value={value} /> */}
-
             <Locks form={form} value={value} />
             <SLP form={form} value={value} />
-          </TabPane>
 
-          <TabPane tab={t('tabColumns.configuration')} forceRender={true} key="3">
+            <Divider>{t('tabColumns.configuration')} </Divider>
+
             <EquipmentType form={form} value={value} onChange={setEquipment} />
             <Compartments form={form} value={value} equipment={equipment} />
-          </TabPane>
 
-          <TabPane tab={t('tabColumns.expiryDates')} forceRender={true} key="4">
+            <Divider>{t('tabColumns.expiryDates')} </Divider>
+
             <Expiry form={form} value={value} type={TANKER_LIST.EXPIRY} />
           </TabPane>
         </Tabs>
