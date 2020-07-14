@@ -32,7 +32,7 @@ const To = ({
     setLoading(true);
 
     api
-      .get(SPECIAL_MOVEMENTS.SUPPLIERS)
+      .get(SPECIAL_MOVEMENTS.PLANT_SUPPLIERS)
       .then(response => {
         setSuppliers(response.data.records);
         setLoading(false);
@@ -199,7 +199,7 @@ const To = ({
             >
               {suppliers.map((item, index) => (
                 <Select.Option key={index} value={item.cmpy_code}>
-                  {item.cmpy_code} - {item.cmpy_name}
+                  {item.cmpy_desc}
                 </Select.Option>
               ))}
             </Select>
