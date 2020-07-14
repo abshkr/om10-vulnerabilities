@@ -49,7 +49,7 @@ const SpecialMovements = () => {
   }
 
   const setSearch = (values) => {
-    if (!values.mlitm_id && !values.mlitm_status) {
+    if (!values.mlitm_id && !values.mlitm_status && !values.mlitm_type && !values.mlitm_reason_code) {
       return;
     }
 
@@ -58,6 +58,8 @@ const SpecialMovements = () => {
         params: {
           mlitm_id: values.mlitm_id,
           mlitm_status: values.mlitm_status,
+          mlitm_type: values.mlitm_type,
+          mlitm_reason_code: values.mlitm_reason_code,
           start_date: values.use_date_range ? values.start_date : null,
           end_date: values.use_date_range ? values.end_date : null,
         },
@@ -92,6 +94,8 @@ const SpecialMovements = () => {
           WindowSearch(setSearch, t('operations.search'), {
             mlitm_id: true,
             mlitm_status: true,
+            mlitm_type: true,
+            mlitm_reason_code: true,
           })
         }
       >

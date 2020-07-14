@@ -7,6 +7,8 @@ import Trip from './trip-number';
 import TrsaID from './trsa-id';
 import MovementID from './mv-id';
 import MovementStatus from './mv-status';
+import MovementType from './mv-type';
+import MovementReason from './mv-reason';
 import OrderNumber from './order-number';
 import OrderSupplier from './order-supplier';
 import OrderCustomer from './order-customer';
@@ -31,6 +33,8 @@ export {
   TrsaID,
   MovementID,
   MovementStatus,
+  MovementType,
+  MovementReason,
   OrderNumber,
   OrderSupplier,
   OrderCustomer,
