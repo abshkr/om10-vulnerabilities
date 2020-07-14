@@ -569,8 +569,6 @@ class CommonClass
             __FILE__, __LINE__);
         // write_log(json_encode($this), __FILE__, __LINE__);
 
-        Utilities::sanitize($this);
-
         if (isset($this->CLOB_FIELDS) && count($this->CLOB_FIELDS)>0 ) {
             $this->commit_mode = OCI_DEFAULT;
             // write_log("CLOB commit_mode " . $this->commit_mode, __FILE__, __LINE__, LogLevel::DEBUG);

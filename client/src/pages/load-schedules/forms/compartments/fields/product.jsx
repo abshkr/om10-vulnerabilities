@@ -40,7 +40,7 @@ export default class Product extends Component {
     const { values } = this.props;
 
     return (
-      <div style={{ width: '180%',  display: 'flex' }}>
+      <div style={{ width: '100%',  display: 'flex' }}>
         <Select value={this.state.value} style={{ width: '100%' }} onChange={this.onClick} bordered={false}>
           {values?.map((item) => (
             <Select.Option key={item.prod_code} value={item.prod_name}>

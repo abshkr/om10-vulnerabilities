@@ -2,6 +2,7 @@ const columns = (IS_NOMINATION, t) => [
   {
     headerName: t('fields.tripNumber'),
     field: 'shls_trip_no',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     width: 120,
@@ -23,9 +24,10 @@ const columns = (IS_NOMINATION, t) => [
   {
     headerName: t('fields.loadId'),
     field: 'shlsload_load_id',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 70,
+    width: 100,
     suppressSizeToFit: true,
   },
   {
@@ -116,6 +118,7 @@ const columns = (IS_NOMINATION, t) => [
   {
     headerName: t('fields.supplier'),
     field: 'supplier',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     width: 120,
@@ -128,7 +131,7 @@ const columns = (IS_NOMINATION, t) => [
     sortable: true,
     resizable: true,
     hide: !IS_NOMINATION,
-    width: 120,
+    width: 160,
     suppressSizeToFit: true,
   },
   {
@@ -164,7 +167,7 @@ const columns = (IS_NOMINATION, t) => [
     field: 'shls_ld_start',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 160,
     suppressSizeToFit: true,
     cellRenderer: 'DateRenderer',
   },
@@ -173,7 +176,7 @@ const columns = (IS_NOMINATION, t) => [
     field: 'shls_ld_end',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 160,
     suppressSizeToFit: true,
     cellRenderer: 'DateRenderer',
   },
@@ -181,10 +184,11 @@ const columns = (IS_NOMINATION, t) => [
   {
     headerName: t('fields.product'),
     field: 'trsf_product',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     hide: !IS_NOMINATION,
-    width: 120,
+    width: 200,
     suppressSizeToFit: true,
   },
 
@@ -224,7 +228,7 @@ const columns = (IS_NOMINATION, t) => [
     sortable: true,
     resizable: true,
     hide: !IS_NOMINATION,
-    width: 120,
+    width: 160,
     suppressSizeToFit: true,
     cellRenderer: 'DateRenderer',
   },
@@ -252,6 +256,7 @@ const columns = (IS_NOMINATION, t) => [
   {
     headerName: t('fields.tripType'),
     field: 'ld_type',
+    filter: 'MultiFilter',
     sortable: true,
     resizable: true,
     hide: !IS_NOMINATION,
@@ -270,6 +275,7 @@ const columns = (IS_NOMINATION, t) => [
   {
     headerName: t('fields.reversed'),
     field: 'cmpy_schd_rev_repost',
+    filter: 'BooleanFilter',
     sortable: true,
     resizable: true,
     width: 120,

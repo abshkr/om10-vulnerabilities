@@ -11,7 +11,9 @@ import { useAuth } from '../../../../../hooks';
 import Forms from '../../../../load-schedules/forms';
 
 const Schedules = ({ selected }) => {
-  const url = selected ? `${MOVEMENT_NOMIATIONS.SCHEDULES}?mv_key=${selected?.mvitm_key}` : null;
+  const url = selected 
+    ? `${MOVEMENT_NOMIATIONS.SCHEDULES}?mv_key=${selected?.mvitm_key}` 
+    : `${MOVEMENT_NOMIATIONS.SCHEDULES}`;
 
   const [visible, setVisible] = useState(false);
   const [picked, setPicked] = useState(null);

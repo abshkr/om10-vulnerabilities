@@ -16,19 +16,21 @@ export default class DrawerProducts extends Component {
   }
 
   onClick = (value, record) => {
-    const { form, setPayload, t } = this.props;
+    const { form, payload, setPayload, t } = this.props;
 
+    // let current = payload;
     let current = form.getFieldValue('transfers');
 
     const key = this.props.data?.trsf_cmpt_no; // tnkr_cmpt_no;
     const index = _.findIndex(current, ['trsf_cmpt_no', key]);
+    console.log('DrawerProducts, onClick', key, index, this.props);
 
     current[index].trsf_prod_code = record?.item?.prod_code;
     current[index].trsf_prod_name = record.children;
     current[index].trsf_prod_cmpy = record?.item?.prod_cmpy;
     current[index].trsf_arm_cd = t('placeholder.selectArmCode');
-    current[index].trsf_qty_plan = null;
-    current[index].trsf_qty_left = null;
+    // current[index].trsf_qty_plan = null;
+    // current[index].trsf_qty_left = null;
     current[index].trsf_density = null;
     current[index].trsf_temp = null;
     current[index].trsf_qty_cor = null;

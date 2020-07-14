@@ -48,28 +48,33 @@ export default class BayArm extends Component {
   };
 
   onClick = (value, record) => {
-    const { form, setPayload } = this.props;
+    const { form, payload, setPayload } = this.props;
 
+    // let current = payload;
     let current = form.getFieldValue('transfers');
 
     const key = this.props.data?.trsf_cmpt_no; // tnkr_cmpt_no;
     const index = _.findIndex(current, ['trsf_cmpt_no', key]);
+    // console.log('BayArm, onClick', record?.item?.stream_index, this.props);
 
     current[index].trsf_arm_cd = record?.item?.stream_armcode;
-    //current[index].trsf_qty_plan = null;
-    //current[index].trsf_qty_left = null;
-    //current[index].trsf_density = record?.item?.stream_tankden;
+    // current[index].trsf_qty_plan = null;
+    // current[index].trsf_qty_left = null;
+    // current[index].trsf_density = record?.item?.stream_tankden;
     current[index].trsf_density = this.calcDensity(record?.item?.stream_index);
-    //current[index].trsf_temp = null;
-    //current[index].trsf_qty_amb = null;
-    //current[index].trsf_qty_cor = null;
-    //current[index].trsf_load_kg = null;
+    // current[index].trsf_temp = null;
+    // current[index].trsf_qty_amb = null;
+    // current[index].trsf_qty_cor = null;
+    // current[index].trsf_load_kg = null;
 
+    // console.log('BayArm, onClick', key, index, current);
 
 
     form.setFieldsValue({
       transfers: current,
     });
+
+    setPayload(current);
 
     this.setState(
       {

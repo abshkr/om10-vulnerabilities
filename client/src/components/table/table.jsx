@@ -90,6 +90,8 @@ const Table = ({
   footer,
   isPolling,
   stopEditingWhenGridLosesFocus,
+  singleClickEdit,
+  editType
 }) => {
   const { windowWidth } = useWindowSize();
 
@@ -230,6 +232,8 @@ const Table = ({
                   onCellValueChanged={onCellUpdate}
                   onFirstDataRendered={handleFirstDataRendered}
                   pinnedBottomRowData={footer}
+                  singleClickEdit={singleClickEdit === false ? false : true}  //Default true
+                  editType={editType === 'fullRow'? 'fullRow' : ''}           //Default not fullRow
                   stopEditingWhenGridLosesFocus={stopEditingWhenGridLosesFocus===undefined ? true : stopEditingWhenGridLosesFocus}
                 />
               </div>

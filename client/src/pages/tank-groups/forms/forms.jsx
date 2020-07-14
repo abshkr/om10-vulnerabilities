@@ -8,7 +8,7 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal, Input, Select, Drawer } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Input, Select, Drawer, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
@@ -276,7 +276,9 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               <Input disabled={!!value}></Input>
             </Form.Item>
 
-            <Form.Item name="tgr_tanklist">
+            <Divider >{t('fields.availableTanks')}</Divider>
+
+            <Form.Item name="tgr_tanklist" >
               <Select
                 showSearch
                 onChange={handleTankChange}
@@ -289,13 +291,13 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               >
                 {pickups.map((item, index) => (
                   <Select.Option key={index} value={item.tank_code}>
-                    {`${t('fields.baseProductCode')}: ${item.tank_basecode} - ${t('fields.tankCode')}: ${
-                      item.tank_code
-                    }`}
+                    {`${t('fields.baseProduct')}: [ ${item.tank_basecode} - ${item.tank_basename} ] - ${t('fields.tank')}: [ ${item.tank_code} ]`}
                   </Select.Option>
                 ))}
               </Select>
             </Form.Item>
+
+            <Divider>{t('fields.tankGroupMemebers')}</Divider>
 
             <DataTable height="60vh" data={tanks} columns={fields} handleSelect={setSelected} minimal />
           </TabPane>

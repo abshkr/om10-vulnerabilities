@@ -79,17 +79,33 @@ class SpecialMovement extends CommonClass
             $query = $query . " AND MLITM_DTIM_START > :start_date AND MLITM_DTIM_START < :end_date";
         }
 
+        if (isset($this->mlitm_type)) {
+            $query = $query . " AND MLITM_TYPE = :mvtype";
+        }
+
+        if (isset($this->mlitm_reason_code)) {
+            $query = $query . " AND MLITM_REASON_CODE = :reason";
+        }
+
         $query = $query . " ORDER BY MLITM_DTIM_START DESC";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':mlitm_id', $mlitm_id);
 
-        if (isset($this->status)) {
+        if (isset($this->mlitm_status)) {
             oci_bind_by_name($stmt, ':status', $this->mlitm_status);
         }
 
         if (isset($this->start_date) && isset($this->end_date)) {
             oci_bind_by_name($stmt, ':start_date', $this->start_date);
             oci_bind_by_name($stmt, ':end_date', $this->end_date);
+        }
+
+        if (isset($this->mlitm_type)) {
+            oci_bind_by_name($stmt, ':mvtype', $this->mlitm_type);
+        }
+
+        if (isset($this->mlitm_reason_code)) {
+            oci_bind_by_name($stmt, ':reason', $this->mlitm_reason_code);
         }
 
         if (oci_execute($stmt, $this->commit_mode)) {
@@ -377,14 +393,14 @@ class SpecialMovement extends CommonClass
             BS.BCLASS_VCF_ALG					
         FROM PRODUCTS DP, RPTOBJ_PROD_RATIOS_VW PR, BASE_PRODS BP, TANKS TK, TERMINAL TL, BASECLASS BS 
         WHERE DP.PROD_CMPY  = PR.RAT_PROD_PRODCMPY 
-        AND DP.PROD_CODE  = PR.RAT_PROD_PRODCODE 
-        AND PR.RATIO_BASE = BP.BASE_CODE 
-        AND BP.BASE_CODE  = TK.TANK_BASE 
-        AND TL.TERM_CODE  = TK.TANK_TERMINAL
-        AND PR.RAT_COUNT  = 1 
-        AND DP.PROD_CMPY  != 'BaSePrOd'
-        AND DP.PROD_CMPY = :supplier
-        AND BP.BASE_CAT = BS.BCLASS_NO
+            AND DP.PROD_CODE  = PR.RAT_PROD_PRODCODE 
+            AND PR.RATIO_BASE = BP.BASE_CODE 
+            AND BP.BASE_CODE  = TK.TANK_BASE 
+            AND TL.TERM_CODE  = TK.TANK_TERMINAL
+            AND PR.RAT_COUNT  = 1 
+            AND DP.PROD_CMPY  != 'BaSePrOd'
+            AND DP.PROD_CMPY = :supplier
+            AND BP.BASE_CAT = BS.BCLASS_NO
         ORDER BY TL.TERM_CODE, DP.PROD_CMPY, TK.TANK_CODE";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':supplier', $this->supplier);
@@ -395,6 +411,29 @@ class SpecialMovement extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    //Adjust data in the record that special movement created in MOVEMENTS table 
+    private function adjust_movement()
+    {
+        $query = "UPDATE MOVEMENTS
+            SET MV_DTIM_EFFECT = SYSDATE,
+                MV_DTIM_EXPIRY = SYSDATE
+            WHERE MV_KEY = (
+                SELECT MLITM_MOV_KEY FROM MOV_LOAD_ITEMS
+                WHERE MLITM_ID = :mlitm_id
+                )
+                AND MV_DTIM_EFFECT IS NULL
+                AND MV_DTIM_EXPIRY IS NULL";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':mlitm_id', $this->mlitm_id);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -409,6 +448,8 @@ class SpecialMovement extends CommonClass
         
         $error_msg = null;
         if ($serv->submit($error_msg)) {
+            $this->adjust_movement();
+
             $result = new EchoSchema(200, response("__SPECIAL_MOVEMENT_SUBMITTED__",
                 sprintf("Special movment %d submitted", $this->mlitm_id)));
             echo json_encode($result, JSON_PRETTY_PRINT);
@@ -416,6 +457,29 @@ class SpecialMovement extends CommonClass
             $result = new EchoSchema(500, response("__SPECIAL_MOVEMENT_FAILED__",
                 "Failed to submit special movement, error message: " . $error_msg));
             echo json_encode($result, JSON_PRETTY_PRINT);
+        }
+    }
+
+    public function plant_suppliers()
+    {
+        $query = "
+            SELECT 
+                CMPY_CODE, 
+                CMPY_NAME,
+                CMPY_PLANT,
+                NVL(CMPY_PLANT, CMPY_CODE) ||' - '|| CMPY_CODE ||' - '|| CMPY_NAME AS CMPY_DESC
+            FROM GUI_COMPANYS
+            WHERE BITAND(CMPY_TYPE, POWER(2, 1)) != 0
+            ORDER BY NVL(CMPY_PLANT, CMPY_CODE), CMPY_NAME ASC
+        ";
+
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
         }
     }
 }

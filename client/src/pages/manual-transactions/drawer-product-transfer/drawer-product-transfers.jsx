@@ -231,6 +231,60 @@ const DrawerProductTransfers = ({
     return bases;
   }
 
+  const initBaseTotals = (items) => {
+    const totals = [];
+    console.log('DrawerProductTransfers: initBaseTotals - start', items);
+
+    _.forEach(items, (item) => {
+      totals.push({
+        trsf_bs_prodcd_tot: item.trsf_bs_prodcd,
+        trsf_bs_prodname_tot: item.trsf_bs_prodname,
+        trsf_bs_tk_cd_tot: item.trsf_bs_tk_cd,
+        trsf_bs_prodcls_tot: item.trsf_bs_prodcls,
+        trsf_bs_den_tot: item.trsf_bs_den,
+        trsf_bs_temp_tot: item.trsf_bs_temp,
+        trsf_bs_qty_amb_tot: item.trsf_bs_qty_amb,
+        trsf_bs_qty_cor_tot: item.trsf_bs_qty_cor,
+        trsf_bs_load_kg_tot: item.trsf_bs_load_kg,
+        trsf_bs_adtv_flag_tot: item.trsf_bs_adtv_flag,
+        trsf_bs_ratio_value_tot: item.trsf_bs_ratio_value,
+        trsf_bs_ratio_total_tot: item.trsf_bs_ratio_total,
+        trsf_bs_ratio_total2_tot: item.trsf_bs_ratio_total2,
+        is_updated: item.is_updated,
+      });
+    });
+    console.log('DrawerProductTransfers: initBaseTotals - end', totals);
+
+    return totals;
+  }
+
+  const makeBaseTotals = (items) => {
+    const totals = [];
+    console.log('DrawerProductTransfers: makeBaseTotals - start', items);
+    let itemExisted = false;
+
+    _.forEach(items, (item) => {
+      itemExisted = false;
+      for (let index = 0; index < totals.length; index++) {
+        const total = totals[index];
+        if (total.trsf_bs_prodcd_tot === item.trsf_bs_prodcd_tot && total.trsf_bs_tk_cd_tot === item.trsf_bs_tk_cd_tot) {
+          total.trsf_bs_qty_amb_tot = _.toNumber(total.trsf_bs_qty_amb_tot) + _.toNumber(item.trsf_bs_qty_amb_tot);
+          total.trsf_bs_qty_cor_tot = _.toNumber(total.trsf_bs_qty_cor_tot) + _.toNumber(item.trsf_bs_qty_cor_tot);
+          total.trsf_bs_load_kg_tot = _.toNumber(total.trsf_bs_load_kg_tot) + _.toNumber(item.trsf_bs_load_kg_tot);
+          total.trsf_bs_temp_tot = null;
+          totals[index] = total;
+          itemExisted = true;
+        }
+      }
+      if (!itemExisted) {
+        totals.push(item);
+      }
+    });
+    console.log('DrawerProductTransfers: makeBaseTotals - end', totals);
+
+    return totals;
+  }
+
   const CalcDrawQuantity = async () => {
     //const items = form.getFieldsValue(['transfers', 'base_transfers', 'base_totals', 'meter_totals'])    
     //console.log('DrawerProductTransfers: onCalculate', items);
@@ -274,7 +328,10 @@ const DrawerProductTransfers = ({
       }
     }
 
+    const baseTotals = makeBaseTotals(initBaseTotals(bases));
+
     setDataBaseTransfers(bases);
+    setDataBaseTotals(baseTotals);
     setPayload(draws);
   };
 

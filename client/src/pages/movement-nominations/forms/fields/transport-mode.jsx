@@ -18,7 +18,7 @@ const TransportMode = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Row gutter={[12, 3]}>
+    <Row gutter={[8, 3]}>
       <Col span={6}>
         <Form.Item name="mv_tpmode" label={t('fields.transportMode')}>
           <Input placeholder={t('placeholder.setTransportMode')} style={{ width: '100%' }} maxLength={16}/>

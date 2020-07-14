@@ -23,8 +23,11 @@ const GateControl = () => {
   const fields = columns(t);
 
   const handleGateOpening = () => {
+    const values = {
+      gates: selected,
+    }
     api
-      .post(GATE_CONTROL.OPEN_ALL_GATES, selected)
+      .post(GATE_CONTROL.OPEN_ALL_GATES, values)
       .then((response) => {
         mutate(GATE_CONTROL.READ);
 

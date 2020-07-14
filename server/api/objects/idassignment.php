@@ -695,13 +695,13 @@ class IDAssignment extends CommonClass
         oci_bind_by_name($stmt, ':kya_timecd', $this->kya_timecode);
         oci_bind_by_name($stmt, ':kya_lock', $this->kya_lock);
         oci_bind_by_name($stmt, ':kya_adhoc', $this->kya_adhoc);
-        oci_bind_by_name($stmt, ':kya_psn', $this->kya_psn);
+        oci_bind_by_name($stmt, ':kya_psn', $this->kya_personnel);
         oci_bind_by_name($stmt, ':kya_role', $this->kya_role);
         oci_bind_by_name($stmt, ':kya_drawer', $this->kya_drawer);
         oci_bind_by_name($stmt, ':kya_tanker', $this->kya_tanker);
         oci_bind_by_name($stmt, ':kya_equipment', $this->kya_equipment);
         oci_bind_by_name($stmt, ':default_pin', $default_pin);
-        oci_bind_by_name($stmt, ':kya_sp_supplier', $this->kya_sp_supplier);
+        oci_bind_by_name($stmt, ':kya_sp_supplier', $this->kya_supplier);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);

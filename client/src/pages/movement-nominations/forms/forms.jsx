@@ -239,43 +239,37 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
       >
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane tab={t('tabColumns.general')} forceRender={true} key="1">
-            <Row gutter={[12, 3]}>
-              <Col span={12}>
+            <Row gutter={[8, 3]}>
+              <Col span={6}>
                 <NominationKey form={form} value={value} />
               </Col>
-              <Col span={12}>
+              <Col span={6}>
                 <NominationNumber form={form} value={value} />
               </Col>
-            </Row>
-
-            <Row gutter={[12, 3]}>
-              <Col span={12}>
+              <Col span={6}>
                 <NominationStatus form={form} value={value} />
               </Col>
-              <Col span={12}>
+              <Col span={6}>
                 <NominationSource form={form} value={value} />
               </Col>
             </Row>
 
-            <Row gutter={[12, 3]}>
-              <Col span={12}>
+            <Row gutter={[8, 3]}>
+              <Col span={6}>
                 <Terminal form={form} value={value} />
               </Col>
-              <Col span={12}>
+              <Col span={6}>
                 <Supplier form={form} value={value} />
               </Col>
-            </Row>
-
-            <Row gutter={[12, 3]}>
-              <Col span={12}>
+              <Col span={6}>
                 <Carrier form={form} value={value} onChange={setCarrier} />
               </Col>
-              <Col span={12}>
+              <Col span={6}>
                 <Vehicle form={form} value={value} carrier={carrier} />
               </Col>
             </Row>
 
-            <Row gutter={[12, 3]}>
+            <Row gutter={[8, 3]}>
               <Col span={12}>
                 <EffectiveFrom form={form} value={value} />
               </Col>
@@ -288,13 +282,21 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
 
             <TransportMode form={form} value={value} />
 
-            <TransportSystem form={form} value={value} />
+            <Row gutter={[8, 3]}>
+              <Col span={6}>
+                <TransportSystem form={form} value={value} />
+              </Col>
+              <Col span={18}>
+                <Comments form={form} value={value} />
+              </Col>
+            </Row>
 
-            <Comments form={form} value={value} />
-          </TabPane>
-          <TabPane tab={t('tabColumns.items')} forceRender={true} key="2">
+            <Divider style={{ marginTop: 3, marginBottom: 13 }} />
             <Items setTableAPIContext={setTableAPI} value={value} config={config} />
           </TabPane>
+          {/* <TabPane tab={t('tabColumns.items')} forceRender={true} key="2">
+            <Items setTableAPIContext={setTableAPI} value={value} config={config} />
+          </TabPane> */}
         </Tabs>
       </Form>
     </Drawer>

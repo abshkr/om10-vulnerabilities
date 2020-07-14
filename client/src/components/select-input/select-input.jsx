@@ -81,6 +81,9 @@ const SelectInput = ({
       if (_.isObject(value) && value.hasOwnProperty(name)) {
         index = value[name];
       }
+      if (_.isObject(value) && !value.hasOwnProperty(name)) {
+        index = '';
+      }
       setFieldsValue({
         [name]: index,
       });
@@ -99,7 +102,11 @@ const SelectInput = ({
         onPressEnter={handlePressEnter}
         addonAfter={
           !popupDisabled && (
-            <Button icon={popupIcon} onClick={() => handlePopup()}>
+            <Button
+              icon={popupIcon}
+              onClick={() => handlePopup()}
+              disabled={disabled}
+            >
               {popupLabel}
             </Button>
           )

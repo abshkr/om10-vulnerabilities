@@ -71,7 +71,14 @@ const Products = ({ value, form, drawer, access }) => {
 
   return (
     <Form.Item name="products" noStyle>
-      <DataTable data={data} columns={fields} parentHeight="350px" components={components} minimal />
+      <DataTable 
+        data={data} 
+        columns={fields} 
+        parentHeight="350px" 
+        components={components} 
+        minimal
+        editType='fullRow'
+      />
     </Form.Item>
   );
 };
