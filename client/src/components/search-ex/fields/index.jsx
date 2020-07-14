@@ -5,6 +5,7 @@ import TripStatus from './trip-status';
 import Tanker from './tanker';
 import Trip from './trip-number';
 import TrsaID from './trsa-id';
+import PlantSupplier from './plant-supplier';
 import MovementID from './mv-id';
 import MovementStatus from './mv-status';
 import MovementType from './mv-type';
@@ -31,6 +32,7 @@ export {
   Tanker, 
   Trip, 
   TrsaID,
+  PlantSupplier,
   MovementID,
   MovementStatus,
   MovementType,
