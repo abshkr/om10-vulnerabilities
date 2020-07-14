@@ -168,7 +168,9 @@ const Compartments = ({ form, value, equipment }) => {
               </div> */}
               <Select
                 onChange={(value) => changeType(item, value)}
-                placeholder={item.eqpt_code || 'Select Equipment'}
+                // value={item.tc_eqpt || undefined}
+                // placeholder={t('placeholder.selectEquipment')}
+                placeholder={!item?.tc_eqpt ? t('placeholder.selectEquipment') : (item.eqpt_code + '[' + item.eqpt_title + ']')}
                 style={{ marginBottom: 10, marginTop: 30 }}
                 disabled={item.eqpt_list.length === 0}
                 showSearch
