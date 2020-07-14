@@ -190,12 +190,15 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
 
+          {/* {!IS_CREATING && (value?.delv_cust_count > 0|| value?.delv_order_count > 0) && (<span>{'This record has been used by '}</span>)}
+          {!IS_CREATING && value?.delv_cust_count > 0 && (<span>{value?.delv_cust_count + ' customers! '}</span>)}
+          {!IS_CREATING && value?.delv_order_count > 0 && (<span>{value?.delv_order_count + ' orders!'}</span>)} */}
           {!IS_CREATING && (
             <Button
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={!access?.canDelete || !mainTabOn}
+              disabled={!access?.canDelete || !mainTabOn || value?.delv_cust_count > 0 || value?.delv_order_count > 0}
               onClick={onDelete}
             >
               {t('operations.delete')}

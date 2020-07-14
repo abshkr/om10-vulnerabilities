@@ -91,7 +91,7 @@ const columns = (t) => [
       hide: true,
     },
     {
-      headerName: t('fields.custAllocLockName'),
+      headerName: t('fields.custAllocLock'),
       field: 'cust_alloc_lockname',
       filter: 'FuzzyFilter',
       sortable: true,
