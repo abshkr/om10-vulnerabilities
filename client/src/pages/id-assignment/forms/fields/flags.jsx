@@ -20,7 +20,7 @@ const Flags = ({ form, value }) => {
     <div>
       <Divider>{t('divider.flags')}</Divider>
       <div style={{ display: 'flex' }}>
-        <Form.Item name="kya_lock">
+        <Form.Item name="kya_lock" valuePropName="checked">
           <Checkbox>{t('fields.locked')}</Checkbox>
         </Form.Item>
 
