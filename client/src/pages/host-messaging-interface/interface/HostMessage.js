@@ -52,10 +52,11 @@ const HostMessages = ({handleClick}) => {
 	const from = 'host';
 	const action = 'view';
 	const cformat = 1;
+	const initStart = moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT);
+	const initEnd = moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT);
 
-
-  const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-  const [end, setEnd] = useState(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+  const [start, setStart] = useState(initStart);
+  const [end, setEnd] = useState(initEnd);
 
   const setRange = (start, end) => {
     setStart(start);
@@ -64,6 +65,15 @@ const HostMessages = ({handleClick}) => {
 		// TODO: is this really working?
 		revalidate();
   };
+
+  const reset = () => {
+    setStart(initStart);
+    setEnd(initEnd);
+
+		// TODO: is this really working?
+		revalidate();
+  };
+
 
   useEffect(() => {
 		getData();
@@ -84,7 +94,7 @@ const HostMessages = ({handleClick}) => {
 
   const extras = (
     <>
-      <Calendar handleChange={setRange} start={start} end={end} />
+      <Calendar handleChange={setRange} handleClear={reset} start={start} end={end} enableClear={true} />
       <Download data={messages} isLoading={isValidating} columns={fields} />
     </>
   );
