@@ -71,6 +71,14 @@ const Tanks = ({ id, enabled, access, handleFormState }) => {
   };
 
   const calculate = () => {
+    if (selected.length <= 0) {
+      notification.error({
+        message: t('messages.validationFailed'),
+        description: t('descriptions.tankNotSelected'),
+      });
+      return;
+    }
+
     Modal.confirm({
       title: t('prompts.calculate'),
       okText: t('operations.yes'),
@@ -160,8 +168,7 @@ const Tanks = ({ id, enabled, access, handleFormState }) => {
 
   const onEditingFinished = (values) => {
     const payload = [];
-
-    values.tableAPI.forEachNode((node) => payload.push(node.data));
+    values.api.forEachNode((node) => payload.push(node.data));
 
     setData(payload);
   };
@@ -199,7 +206,7 @@ const Tanks = ({ id, enabled, access, handleFormState }) => {
           icon={<RedoOutlined />}
           style={{ float: 'right', marginRight: 5 }}
           onClick={calculate}
-          disabled={!enabled}
+          disabled={!enabled || selected.length <= 0}
         >
           {t('operations.calculate')}
         </Button>

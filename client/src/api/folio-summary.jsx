@@ -10,6 +10,6 @@ export const SAVE_TANKS = '/api/pages/folio/save_to_tanks.php';
 
 export const CREATE_PDS = '/api/pages/folio/pds.php';
 export const MANUAL_CLOSE = '/api/pages/folio/manual_close.php';
-export const CALCULATE = '/api/pages/folio/calc_vcf.php';
+export const CALCULATE = '/api/pages/folio/calc_tank_vcfs.php';
 
 export const OPEN_REPORT = '/api/pages/folio/report_gateway.php';
