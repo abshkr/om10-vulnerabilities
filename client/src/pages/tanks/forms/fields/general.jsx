@@ -51,7 +51,7 @@ const General = ({ form, value, config }) => {
         tank_mtol_percent: value.tank_mtol_percent,
         tank_mtol_volume: value.tank_mtol_volume,
         tank_dtol_percent: value.tank_dtol_percent,
-        tank_15_density: value.tank_15_density,
+        tank_density: value.tank_density,
         tank_terminal: value.tank_terminal,
       });
     }
@@ -139,7 +139,7 @@ const General = ({ form, value, config }) => {
 
         <Col span={12}>
           <Form.Item
-            name="tank_15_density"
+            name="tank_density"
             label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${
               value?.tank_base_dens_hi
             }) ${`@${config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(
