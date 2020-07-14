@@ -8,7 +8,7 @@ import { DATE_TIME_FORMAT } from 'constants/settings';
 
 const { RangePicker } = DatePicker;
 
-const Calendar = ({ handleChange, start, end, disabled, max, format }) => {
+const Calendar = ({ handleChange, handleClear, start, end, disabled, enableClear, max, format }) => {
   const { dateTimeFormat } = useContext(ConfigStore);
 
   const { t } = useTranslation();
@@ -37,14 +37,19 @@ const Calendar = ({ handleChange, start, end, disabled, max, format }) => {
   };
 
   const onRangeSelect = (dates) => {
-    if (dates[2] === 'range') {
-      handleChange(dates[0].format(DATE_TIME_FORMAT), dates[1].format(DATE_TIME_FORMAT));
-    }
+		if (dates) {
+			if (dates[2] === 'range') {
+				handleChange(dates[0].format(DATE_TIME_FORMAT), dates[1].format(DATE_TIME_FORMAT));
+			}
+		}
+		else {
+			handleClear();
+		}
   };
 
   return (
     <RangePicker
-      allowClear={false}
+      allowClear={enableClear}
       format={formatted}
       disabled={disabled || (!start && !end)}
       showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
