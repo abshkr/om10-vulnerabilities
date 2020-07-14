@@ -496,14 +496,14 @@ const Calculations = ({ selected, access, isLoading, config }) => {
                 description: response?.data?.MSG_CODE + ': ' + response?.data?.MSG_DESC,
               });
             } else {
-              /* setFieldsValue({
+              setFieldsValue({
                 tank_amb_vol: _.round(response?.data?.REAL_LITRE, isAdtv ? config.precisionAdditive : config.precisionVolume),
                 tank_cor_vol: _.round(response?.data?.REAL_LITRE15, isAdtv ? config.precisionAdditive : config.precisionVolume),
                 tank_liquid_kg: _.round(response?.data?.REAL_KG, isAdtv ? config.precisionAdditive : config.precisionMass),
-              }); */
-              selected.tank_amb_vol = _.round(response?.data?.REAL_LITRE, isAdtv ? config.precisionAdditive : config.precisionVolume);
-              selected.tank_cor_vol = _.round(response?.data?.REAL_LITRE15, isAdtv ? config.precisionAdditive : config.precisionVolume);
-              selected.tank_liquid_kg = _.round(response?.data?.REAL_LITRE15, isAdtv ? config.precisionAdditive : config.precisionMass);
+              });
+              // selected.tank_amb_vol = _.round(response?.data?.REAL_LITRE, isAdtv ? config.precisionAdditive : config.precisionVolume);
+              // selected.tank_cor_vol = _.round(response?.data?.REAL_LITRE15, isAdtv ? config.precisionAdditive : config.precisionVolume);
+              // selected.tank_liquid_kg = _.round(response?.data?.REAL_LITRE15, isAdtv ? config.precisionAdditive : config.precisionMass);
               notification.success({
                 message: t('messages.calculateSuccess'),
                 description: t('descriptions.calculateSuccess'),
