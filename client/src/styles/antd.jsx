@@ -307,5 +307,20 @@ const AntdStyleProvider = createGlobalStyle`
   .ant-input-clear-icon {
     color: #ff6666 !important;
   }
+
+  .ant-form-item-label > label {
+    color: rgb(0, 84, 164);
+    font-weight: 500;
+  }
+
+  .ant-list-items {
+    margin-right: 10px !important;
+  }
+
+  .ant-list-item-meta-title h4 {
+    color: #0054a4 !important;
+  }
+
+  
 `;
 export default AntdStyleProvider;
