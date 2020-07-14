@@ -32,7 +32,7 @@ const MovementNominations = () => {
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [timeOption, setTimeOption] = useState(filterByExpiry?'MV_DTIM_EXPIRY':'MV_DTIM_EFFECT');
+  const [timeOption, setTimeOption] = useState(filterByExpiry?'MV_DTIM_EXPIRY':'MV_DTIM_CREATE'); //'MV_DTIM_EFFECT');
   const [data, setData] = useState(null);
   const [scheduleOpen, setScheduleOpen] = useState(false);
 
@@ -49,12 +49,12 @@ const MovementNominations = () => {
       code: 'MV_DTIM_EXPIRY',
       name: t('fields.expiredAfter'),
     },
-    /* {
+    {
       index: 3,
       code: 'MV_DTIM_CREATE',
       name: t('fields.createdAt'),
     },
-    {
+    /* {
       index: 4,
       code: 'MV_DTIM_CHANGE',
       name: t('fields.lastModified'),
@@ -179,7 +179,7 @@ const MovementNominations = () => {
     if (filterByExpiry) {
       setTimeOption('MV_DTIM_EXPIRY');
     }else {
-      setTimeOption('MV_DTIM_EFFECT');
+      setTimeOption('MV_DTIM_CREATE');
     }
   }, [filterByExpiry]);
 
@@ -195,7 +195,7 @@ const MovementNominations = () => {
       {rangeSetting !== '-1~~-1' && (
         <div style={{ float: 'left' }}>
           <Select
-            defaultValue={filterByExpiry?'MV_DTIM_EXPIRY':'MV_DTIM_EFFECT'}
+            defaultValue={filterByExpiry?'MV_DTIM_EXPIRY':'MV_DTIM_CREATE'}
             onChange={setTimeOption}
             optionFilterProp="children"
             placeholder={null}
