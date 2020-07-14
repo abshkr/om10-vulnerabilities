@@ -1097,7 +1097,9 @@
     "loggedInAs": "Logged In As",
     "drawerProdCode": "Drawer Product Code",
     "drawerProdName": "Drawer Product Name",
-    "contact": "Contact"
+    "contact": "Contact",
+    "availableTanks": "Available Tank(s)",
+    "tankGroupMemebers": "Tank Group Memebers"
   },
 
   "pageMenu": {
