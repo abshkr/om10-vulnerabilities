@@ -81,7 +81,8 @@ class DetailsArea extends Component
 		{
 			txt = 'origin               >' + this.state.message.ORIGIN + '<\n'
 				+ 'message id           >' + this.state.message.MESSAGE_ID + '<\n'
-				+ 'received time        >' + this.state.message.RECV_TIME + '<\n'
+				+ 'local receive time   >' + this.state.message.LOCAL_RECV_TIME + '<\n'
+				+ 'receive time         >' + this.state.message.RECV_TIME + '<\n'
 				+ 'destination          >' + this.state.message.DESTINATION + '<\n'
 				+ 'destination site     >' + this.state.message.DEST_SITE + '<\n'
 				+ 'record id            >' + this.state.message.REC_ID + '<\n'
@@ -101,7 +102,8 @@ class DetailsArea extends Component
 		{
         	txt = 'origin               >' + this.state.message.ORIGIN + '<\n'
 				+ 'message id           >' + this.state.message.MESSAGE_ID + '<\n'
-				+ 'received time        >' + this.state.message.RECV_TIME + '<\n'
+				+ 'local receive time   >' + this.state.message.LOCAL_RECV_TIME + '<\n'
+				+ 'receive time         >' + this.state.message.RECV_TIME + '<\n'
 				+ 'destination          >' + this.state.message.DESTINATION + '<\n'
 				+ 'record id            >' + this.state.message.REC_ID + '<\n'
 				+ 'file name            >' + this.state.message.FILE_NAME + '<\n'
