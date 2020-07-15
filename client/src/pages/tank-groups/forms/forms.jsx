@@ -6,6 +6,7 @@ import {
   CloseOutlined,
   DeleteOutlined,
   QuestionCircleOutlined,
+  CheckOutlined,
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, notification, Modal, Input, Select, Drawer, Divider } from 'antd';
@@ -235,7 +236,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
           {!IS_CREATING && (
             <Button
               htmlType="button"
-              icon={<CloseOutlined />}
+              icon={<CheckOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               disabled={IS_CREATING || selected.length <= 0 || selected[0].tank_code == old_active}
               onClick={onActivate}
