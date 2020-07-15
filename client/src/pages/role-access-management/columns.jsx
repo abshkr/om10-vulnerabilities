@@ -19,7 +19,23 @@ const columns = t => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
-  }
+  },
+  {
+    headerName: t('fields.personLockCheck'),
+    field: 'lock_check',
+    filter: 'BooleanFilter',
+    cellRenderer: 'BooleanRenderer',
+    sortable: true,
+    resizable: true
+  },
+  {
+    headerName: t('fields.personDeleteCheck'),
+    field: 'delete_check',
+    filter: 'BooleanFilter',
+    cellRenderer: 'BooleanRenderer',
+    sortable: true,
+    resizable: true
+  },
 ];
 
 export default columns;

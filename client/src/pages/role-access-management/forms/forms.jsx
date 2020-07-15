@@ -8,7 +8,7 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal, Checkbox, Input, Drawer } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Checkbox, Input, Drawer, Switch } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import _ from 'lodash';
@@ -40,7 +40,7 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
 
   const onFinish = async () => {
     const values = await form.validateFields();
-
+    
     const privTemplate = IS_CREATING ? privileges?.records : value?.privilege;
     const privilege = generator(privTemplate, values);
 
@@ -48,6 +48,8 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
       auth_level_name: IS_CREATING ? values?.auth_level_name : value?.auth_level_name,
       role_note: IS_CREATING ? values?.role_note : value?.role_note,
       role_code: IS_CREATING ? undefined : value?.role_code,
+      delete_check: values?.delete_check,
+      lock_check: values?.lock_check,
       privilege,
     };
 
@@ -154,6 +156,8 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
         ...set,
         role_note: value?.role_note,
         auth_level_name: value?.auth_level_name,
+        lock_check: value?.lock_check,
+        delete_check: value?.delete_check,
       });
     } else {
       resetFields();
@@ -298,6 +302,22 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
               rules={[{ required: true, validator: validate }]}
             >
               <Input.TextArea options={options} style={{ flexDirection: 'row' }} />
+            </Form.Item>
+
+            <Form.Item
+              name="lock_check"
+              label={t('fields.personLockCheck')}
+              valuePropName="checked"
+            >
+              <Switch></Switch>
+            </Form.Item>
+
+            <Form.Item
+              name="delete_check"
+              label={t('fields.personDeleteCheck')}
+              valuePropName="checked"
+            >
+              <Switch></Switch>
             </Form.Item>
           </TabPane>
 

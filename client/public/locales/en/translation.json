@@ -245,6 +245,8 @@
     "logicalPrinter": "Logical Printer",
     "roleId": "Role Id",
     "roleName": "Role Name",
+	"personLockCheck": "Unused Personnel Lock Check",
+	"personDeleteCheck": "Unused Personnel Delete Check",
     "menuItem": "Menu Item",
     "view": "View",
     "update": "Update",

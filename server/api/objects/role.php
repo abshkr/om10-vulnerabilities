@@ -19,6 +19,8 @@ class Role extends CommonClass
         "PRIV_DELETE" => 1,
         "PRIV_PROTECT" => 1,
         "PRIV_EXTRA" => 1,
+        "LOCK_CHECK" => "Y",
+        "DELETE_CHECK" => "Y",
     );
 
     protected $table_view_map = array(
@@ -37,7 +39,9 @@ class Role extends CommonClass
             ROLE_TYPE,
             ROLE_STATUS,
             RECORD_SWITCH,
-            RECORD_ORDER 
+            RECORD_ORDER,
+            LOCK_CHECK,
+            DELETE_CHECK
         FROM URBAC_ROLES,
             AUTH_LEVEL_TYP
         WHERE ROLE_ID = AUTH_LEVEL_ID
