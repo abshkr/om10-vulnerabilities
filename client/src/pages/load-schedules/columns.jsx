@@ -9,7 +9,6 @@ const columns = (IS_NOMINATION, t) => [
     suppressSizeToFit: true,
     pinned: 'left',
   },
-
   {
     headerName: t('fields.tripNumber'),
     field: 'shls_trip_no',
@@ -18,26 +17,6 @@ const columns = (IS_NOMINATION, t) => [
     width: 120,
     suppressSizeToFit: true,
     pinned: 'left',
-  },
-
-  {
-    headerName: t('fields.source'),
-    field: 'shls_srctype_desc',
-    filter: 'FuzzyFilter',
-    sortable: true,
-    resizable: true,
-    width: 130,
-    suppressSizeToFit: true,
-    hide: IS_NOMINATION,
-  },
-
-  {
-    headerName: t('fields.loadId'),
-    field: 'shlsload_load_id',
-    sortable: true,
-    resizable: true,
-    width: 90,
-    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.origin'),
@@ -50,7 +29,17 @@ const columns = (IS_NOMINATION, t) => [
     hide: IS_NOMINATION,
   },
   {
-    headerName: t('fields.date'),
+    headerName: t('fields.source'),
+    field: 'shls_srctype_desc',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    width: 130,
+    suppressSizeToFit: true,
+    hide: IS_NOMINATION,
+  },
+  {
+    headerName: t('fields.schedDate'),
     field: 'shls_caldate',
     sortable: true,
     resizable: true,
@@ -59,7 +48,7 @@ const columns = (IS_NOMINATION, t) => [
     cellRenderer: 'DateRenderer',
   },
   {
-    headerName: t('fields.status'),
+    headerName: t('fields.tripStatus'),
     field: 'shls_status',
     filter: 'MultiFilter',
     sortable: true,
@@ -98,7 +87,7 @@ const columns = (IS_NOMINATION, t) => [
   },
 
   {
-    headerName: t('fields.tanker'),
+    headerName: t('fields.tankerCode'),
     field: 'tnkr_code',
     sortable: true,
     resizable: true,
@@ -152,6 +141,15 @@ const columns = (IS_NOMINATION, t) => [
     suppressSizeToFit: true,
   },
   {
+    headerName: t('fields.hostData'),
+    field: 'shl_fleet_data',
+    sortable: true,
+    resizable: true,
+    hide: IS_NOMINATION,
+    width: 130,
+    suppressSizeToFit: true,
+  },
+  {
     headerName: t('fields.orderNumber'),
     field: 'order_cust_ordno',
     sortable: true,
@@ -188,7 +186,6 @@ const columns = (IS_NOMINATION, t) => [
     suppressSizeToFit: true,
     cellRenderer: 'DateRenderer',
   },
-
   {
     headerName: t('fields.product'),
     field: 'trsf_product',
@@ -272,15 +269,25 @@ const columns = (IS_NOMINATION, t) => [
 
   {
     headerName: t('fields.unload'),
-    field: 'shls_ld_type',
+    field: 'unload',
     sortable: true,
     resizable: true,
     width: 120,
     suppressSizeToFit: true,
+    cellRenderer: 'BooleanRenderer',
+  },
+  {
+    headerName: t('fields.loadExpiry'),
+    field: 'shls_exp2',
+    sortable: true,
+    resizable: true,
+    width: 150,
+    suppressSizeToFit: true,
+    cellRenderer: 'DateRenderer',
   },
   {
     headerName: t('fields.reversed'),
-    field: 'cmpy_schd_rev_repost',
+    field: 'reversed',
     sortable: true,
     resizable: true,
     width: 120,
@@ -289,7 +296,7 @@ const columns = (IS_NOMINATION, t) => [
   },
   {
     headerName: t('fields.archived'),
-    field: 'cmpy_schd_archive',
+    field: 'archived',
     sortable: true,
     resizable: true,
     hide: IS_NOMINATION,
@@ -304,6 +311,14 @@ const columns = (IS_NOMINATION, t) => [
     resizable: true,
     hide: IS_NOMINATION,
     width: 120,
+    suppressSizeToFit: true,
+  },
+  {
+    headerName: t('fields.loadId'),
+    field: 'shlsload_load_id',
+    sortable: true,
+    resizable: true,
+    width: 90,
     suppressSizeToFit: true,
   },
   {
