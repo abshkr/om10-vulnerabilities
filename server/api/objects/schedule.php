@@ -355,6 +355,25 @@ class Schedule extends CommonClass
         }
     }
 
+    private function clean_up_zero_products()
+    {
+        $query = "DELETE FROM SPECPROD
+            WHERE SCHPSPID_SHLSTRIP = :trip
+                AND SCHPSPID_SHLSSUPP = :supplier
+                AND (SCHP_SPECQTY <= 0 OR SCHP_SPECQTY IS NULL)";
+        $stmt = oci_parse($this->conn, $query);
+        // oci_bind_by_name($stmt, ':default', $default);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier_code);
+        oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            throw new DatabaseException($e['message']);;
+        }
+
+        return;
+    }
+
     //Because both create and update are calling CGI, and the only diffence is cmd
     private function create_n_update($cmd = "ADD")
     {
@@ -396,9 +415,44 @@ class Schedule extends CommonClass
 
         if (isset($this->compartments)) {
             foreach ($this->compartments as $compartment) {
-                if ($compartment->qty_scheduled <= 0 || $compartment->qty_scheduled === ""
-                    || $compartment->prod_code === "") {
-                    continue;
+                if ($cmd == "MOD") {
+                    $query = "SELECT SCHD_COMP_ID, SCHDPROD_PRODCODE
+                        FROM SPECDETS
+                        WHERE SCHDSPEC_SHLSTRIP = :trip
+                            AND SCHDSPEC_SHLSSUPP = :supplier
+                            AND SCHD_SPECQTY > 0";
+                    $stmt = oci_parse($this->conn, $query);
+                    oci_bind_by_name($stmt, ':supplier', $this->supplier_code);
+                    oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+                    if (!oci_execute($stmt, $this->commit_mode)) {
+                        $e = oci_error($stmt);
+                        write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                        throw new DatabaseException($e['message']);;
+                    }
+            
+                    $existing_cmpts = array();
+                    while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+                        $existing_cmpts[$row["SCHD_COMP_ID"]] = $row["SCHDPROD_PRODCODE"];
+                    };
+
+                    // write_log(json_encode($existing_cmpts), __FILE__, __LINE__, LogLevel::ERROR);
+                    // write_log(json_encode($compartment), __FILE__, __LINE__, LogLevel::ERROR);
+
+                    if (isset($existing_cmpts[strval($compartment->compartment)])) {
+                        if ($compartment->prod_code === "") {
+                            $compartment->prod_code = $existing_cmpts[strval($compartment->compartment)];
+                        }
+                    } else {
+                        if ($compartment->qty_scheduled <= 0 || $compartment->qty_scheduled === ""
+                            || $compartment->prod_code === "") {
+                            continue;
+                        }
+                    }
+                } else {
+                    if ($compartment->qty_scheduled <= 0 || $compartment->qty_scheduled === ""
+                        || $compartment->prod_code === "") {
+                        continue;
+                    }
                 }
 
                 $query_string = "tankTerm=" . rawurlencode(strip_tags($site_code)) . 
@@ -428,8 +482,33 @@ class Schedule extends CommonClass
         
         if (isset($this->products)) {
             foreach ($this->products as $product) {
-                if ($product->qty_scheduled <= 0 || $product->qty_scheduled === "") {
-                    continue;
+                if ($cmd == "MOD") {
+                    $query = "SELECT SCHPPROD_PRODCODE, SCHPPROD_PRODCMPY
+                        FROM SPECPROD
+                        WHERE SCHPSPID_SHLSTRIP = :trip
+                            AND SCHPSPID_SHLSSUPP = :supplier";
+                    $stmt = oci_parse($this->conn, $query);
+                    oci_bind_by_name($stmt, ':supplier', $this->supplier_code);
+                    oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+                    if (!oci_execute($stmt, $this->commit_mode)) {
+                        $e = oci_error($stmt);
+                        write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                        throw new DatabaseException($e['message']);;
+                    }
+            
+                    $existing_products = array();
+                    while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+                        array_push($existing_products, $row["SCHPPROD_PRODCODE"]);
+                    };
+
+                    if (!in_array($product->prod_code, $existing_products) && 
+                        ($product->qty_scheduled <= 0 || $product->qty_scheduled === "")) {
+                        continue;
+                    }
+                } else {
+                    if ($product->qty_scheduled <= 0 || $product->qty_scheduled === "") {
+                        continue;
+                    }
                 }
 
                 $query_string = "tankTerm=" . rawurlencode(strip_tags($site_code)) . 
@@ -442,7 +521,7 @@ class Schedule extends CommonClass
                     "&tanker=" . rawurlencode(strip_tags($this->tnkr_code)) . 
                     "&drawer=" . rawurlencode(strip_tags($this->drawer_code)) . 
                     "&op=" . strval($op) . "&cmd=" . $cmd;
-    
+
                 $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/load_spec_prod.cgi", $query_string);
                 if ($cmd == "ADD") {
                     if (strpos($res, "Success!") === false) {
@@ -474,6 +553,8 @@ class Schedule extends CommonClass
                 }
             }
         }
+
+        $this->clean_up_zero_products();
 
         return true;
     }
@@ -703,7 +784,7 @@ class Schedule extends CommonClass
                 SELECT TC_SEQNO, EQPT_CODE,
                     EQPT_ETP,
                     CMPT_NO EQPT_CMPT,
-                    CMPT_UNITS UNIT_CODE,
+                    DECODE(CMPT_UNITS, 28, 5, CMPT_UNITS) UNIT_CODE,
                     DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') UNIT_NAME,
                     DECODE(ADJ_AMNT, NULL, CMPT_CAPACIT, CMPT_CAPACIT + ADJ_AMNT) SAFEFILL,
                     DECODE(ADJ_CAPACITY, NULL, CMPT_CAPACIT, ADJ_CAPACITY) SFL,
