@@ -30,7 +30,6 @@ const Summary = ({ value }) => {
   const productFields = productColumns(t);
 
   const onChange = (v) => {
-    console.log(v);
     setHidProd(v.target.checked)
   }
 

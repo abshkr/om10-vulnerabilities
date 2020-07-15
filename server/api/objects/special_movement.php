@@ -353,11 +353,11 @@ class SpecialMovement extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return;
         }
-
+        
         while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
-            $supplier = $row['MSITM_SHLSSUPP'];
-            $trip_no = $row['MSITM_SHLSTRIP'];
-            $serv = new ManualTransactionService($this->conn, $supplier = $supplier, $trip_no = $trip_no);
+            $serv = new ManualTransactionService($this->conn);
+            $serv->trip_no = $row['MSITM_SHLSTRIP'];
+            $serv->supplier = $row['MSITM_SHLSSUPP'];
             $error_msg = null;
             if (!$serv->reverse_trip($error_msg)) {
                 if ($error_msg) {
