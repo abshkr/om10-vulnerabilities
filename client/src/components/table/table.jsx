@@ -237,6 +237,8 @@ const Table = ({
                   onFirstDataRendered={handleFirstDataRendered}
                   pinnedBottomRowData={footer}
                   stopEditingWhenGridLosesFocus={stopEditingWhenGridLosesFocus===undefined ? true : stopEditingWhenGridLosesFocus}
+                  singleClickEdit={true}
+                  // editType='fullRow'
                 />
               </div>
             </div>
