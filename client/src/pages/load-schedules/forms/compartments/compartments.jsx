@@ -101,6 +101,8 @@ const Compartments = ({ form, value, tanker, drawer }) => {
     let scheduled = current[values.rowIndex].qty_scheduled;
     if (parseInt(scheduled) === 0 && current[values.rowIndex].prod_code !== "") {
       scheduled = parseInt(current[values.rowIndex].safefill);
+    } else if (current[values.rowIndex].prod_code === "" || !current[values.rowIndex].prod_code) {
+      scheduled = 0;
     }
     current[values.rowIndex].qty_scheduled = scheduled;
     setCompartments([]);
