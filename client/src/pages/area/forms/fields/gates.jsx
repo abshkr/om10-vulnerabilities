@@ -198,16 +198,6 @@ const Gates = ({ form, value }) => {
     <>
       <FormModal visible={visible} onCreate={onGateCreate} onCancel={() => setVisible(false)} gates={data} />
 
-      <Button
-        type="primary"
-        block
-        onClick={() => {
-          setVisible(true);
-        }}
-      >
-        {t('operations.add')}
-      </Button>
-
       <Divider> {t('tabColumns.gates')} </Divider>
 
       <Form.Item name="gates" noStyle>
@@ -243,6 +233,16 @@ const Gates = ({ form, value }) => {
           )}
         />
       </Form.Item>
+
+      <Button
+        type="primary"
+        block
+        onClick={() => {
+          setVisible(true);
+        }}
+      >
+        {t('operations.add')}
+      </Button>
     </>
   );
 };
