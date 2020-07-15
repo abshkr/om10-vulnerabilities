@@ -1354,7 +1354,8 @@
     "uploadData": "Upload Data",
     "read": "Read",
     "copy": "Copy",
-    "completeBatch": "Complete Batch"
+    "completeBatch": "Complete Batch",
+	"hideSpecProd": "Hide Product Information"
   },
 
   "tabColumns": {
