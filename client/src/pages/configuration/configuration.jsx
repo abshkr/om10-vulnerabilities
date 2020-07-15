@@ -551,7 +551,7 @@ const Configuration = ({ user, config }) => {
 
           <TabPane tab={t('tabColumns.seals')} key="6">
             <ConfigurationItems
-              data={_.filter(configuration, ['config_required_by_gui', 'S'])}
+              data={_.sortBy(_.filter(configuration, ['config_required_by_gui', 'S']), ['config_key', 'config_comment'])}
               onChange={onConfigurationEdit}
             />
           </TabPane>

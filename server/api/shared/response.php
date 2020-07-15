@@ -325,6 +325,10 @@ function response($case_name, $default = null, $params = null)
             "ENG" => "Internal error, check logs/php_rest_*.log file for details",
             "CHN" => "内部错误，请检查日志文件获取详情"
         ),
+        "__SITE_NEXT_SEAL__" => array(
+            "ENG" => "Next seal number",
+            "CHN" => "下一个封签号"
+        ),
         "__AMB_ADJUSTMENT__" => array(
             "ENG" => "Ambient Quantity Adjustment (L)",
             "CHN" => "视量调整(升)"
