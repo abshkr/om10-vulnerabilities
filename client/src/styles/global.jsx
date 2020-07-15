@@ -55,11 +55,11 @@ const GlobalStyleProvider = createGlobalStyle`
   }
 
   .editable-ag-grid-cell {
-    background: #d9f9d5;
+    background: #faf0af;
   }
 
   .ag-row-selected .selected-editable-ag-grid-cell {
-    background: #d9f9d5;
+    background: #faf0af;
   }
 `;
 export default GlobalStyleProvider;
