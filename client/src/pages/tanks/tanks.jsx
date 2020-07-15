@@ -47,6 +47,7 @@ const Tanks = () => {
 
   const page = t('pageMenu.stock');
   const name = t('pageNames.tanks');
+  // const name = simple ? t('pageNames.tanks') : t('pageNames.tankStatus');
 
   const onSelect = (value) => {
     setSelected(value);

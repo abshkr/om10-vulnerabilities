@@ -169,10 +169,10 @@ const Navigation = () => {
             <span>{t('pageNames.productInventory')}</span>
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.TANK_STATUS} style={{ display: 'flex' }} newscreen={ROUTES.TANK_STATUS}>
+          {/* <Menu.Item key={ROUTES.TANK_STATUS} style={{ display: 'flex' }} newscreen={ROUTES.TANK_STATUS}>
             <Icons size={40} hidden type="tankStatus" />
             {t('pageNames.tankStatus')}
-          </Menu.Item>
+          </Menu.Item> */}
 
           <Menu.Item key={ROUTES.SELF_FUEL_TRANSACTION_LIST} style={{ display: 'flex', marginBottom: 10 }} newscreen={ROUTES.SELF_FUEL_TRANSACTION_LIST}>
             <Icons size={40} hidden type="selfFuelTransactionList" />
