@@ -607,20 +607,20 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
             </Row>
 
             <Row gutter={[8, 8]}>
-              <Col span={12}>
-                <Row gutter={(8, 8)}>
-                  <Col span={24}>
-                    <ApproveFlag form={form} value={value} onChange={setApproved} pageState={pageState} />
-                  </Col>
-                </Row>
+              <Col span={6}>
                 <Row gutter={(8, 8)}>
                   <Col span={24}>
                     <TransferType form={form} value={value} pageState={pageState} />
                   </Col>
                 </Row>
+                <Row gutter={(8, 8)}>
+                  <Col span={24}>
+                    <ApproveFlag form={form} value={value} onChange={setApproved} pageState={pageState} />
+                  </Col>
+                </Row>
               </Col>
 
-              <Col span={12}>
+              <Col span={18}>
                 <OrderInstructions form={form} value={value} pageState={pageState} />
               </Col>
             </Row>
