@@ -25,6 +25,8 @@ const columns = (t, form, units, access) => [
     cellEditor: 'ScheduleEditor',
     cellEditorParams: {
       form: form,
+      min: 0,
+      max: 999999999,
     },
   },
 

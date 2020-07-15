@@ -102,7 +102,25 @@ export default class Schedule extends Component {
   }
 
   handleChange(value) {
-    const { form, rowIndex, data } = this.props;
+    console.log('products:handleChange1', this.props);
+    const { form, rowIndex, data, colDef } = this.props;
+    console.log('products:handleChange2', data);
+
+    let min = colDef?.cellEditorParams?.min;
+    if (min === undefined) {
+      min = 0;
+    }
+    let max = colDef?.cellEditorParams?.max;
+    if (max === undefined) {
+      max = 999999999;
+    }
+
+    if (value < min) {
+      value = min;
+    }
+    if (value > max) {
+      value = max;
+    }
 
     let current = form.getFieldValue('products');
 
@@ -134,6 +152,7 @@ export default class Schedule extends Component {
         onChange={this.handleChange}
         style={{ width: '100%' }}
         min={0}
+        precision={0}
       />
     );
   }
