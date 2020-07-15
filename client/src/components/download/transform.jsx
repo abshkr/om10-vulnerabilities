@@ -28,7 +28,9 @@ const transform = (data, columns) => {
     const record = {};
 
     _.forEach(columns, (column) => {
-      record[column.headerName] = parser(column, element[column.field]);
+      if (!column.hide) {
+        record[column.headerName] = parser(column, element[column.field]);
+      }
     });
 
     collection.push(record);
