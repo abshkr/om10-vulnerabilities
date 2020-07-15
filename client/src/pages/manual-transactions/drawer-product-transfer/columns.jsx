@@ -99,7 +99,7 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     sortable: true,
     resizable: true,
     cellEditor: 'DrawerProductsEditor',
-    editable: true,
+    editable: !(sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT'),
     cellClass: 'editable-ag-grid-cell',
     width:
       !sourceType || !loadNumber || (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') ? 200 : 400,
