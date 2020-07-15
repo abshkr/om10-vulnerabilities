@@ -94,6 +94,19 @@ const Compartments = ({ form, value, tanker, drawer }) => {
     }
   }, [value, tanker, setFieldsValue]);
 
+  const rowEditingStopped = (values) => {
+    // console.log(values)
+    
+    const current = form.getFieldValue('compartments');
+    let scheduled = current[values.rowIndex].qty_scheduled;
+    if (parseInt(scheduled) === 0 && current[values.rowIndex].prod_code !== "") {
+      scheduled = parseInt(current[values.rowIndex].safefill);
+    }
+    current[values.rowIndex].qty_scheduled = scheduled;
+    setCompartments([]);
+    setCompartments(current);
+  };
+
   return (
     <Form.Item name="compartments">
       <DataTable 
@@ -103,6 +116,7 @@ const Compartments = ({ form, value, tanker, drawer }) => {
         components={components} 
         minimal 
         editType='fullRow'
+        rowEditingStopped={rowEditingStopped}
       />
     </Form.Item>
   );
