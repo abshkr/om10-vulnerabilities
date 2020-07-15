@@ -53,8 +53,8 @@ const columns = (t) => [
 		pinned: 'left'
   },
   {
-    headerName: t('fields.recv_time'),
-    field: 'RECV_TIME',
+    headerName: t('fields.local_recv_time'),
+    field: 'LOCAL_RECV_TIME',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
