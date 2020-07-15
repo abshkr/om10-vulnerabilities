@@ -22,6 +22,7 @@ const columns = (t, form, units, access) => [
     width: 400,
     // suppressSizeToFit: true,
     editable: access.extra,
+    cellClass: 'editable-ag-grid-cell',
     cellEditor: 'ScheduleEditor',
     cellEditorParams: {
       form: form,
@@ -38,7 +39,6 @@ const columns = (t, form, units, access) => [
     suppressSizeToFit: true,
     cellEditor: 'UnitEditor',
     editable: true,
-    cellClass: 'editable-ag-grid-cell',
     cellClass: 'editable-ag-grid-cell',
     cellEditorParams: {
       values: units?.records || [],
