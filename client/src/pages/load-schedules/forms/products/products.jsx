@@ -58,7 +58,7 @@ const Products = ({ value, form, drawer, access }) => {
           },
         })
         .then((res) => {
-          const payload = res?.data?.records;
+          const payload = transform(res?.data?.records);
 
           setData(payload);
 

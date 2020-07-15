@@ -8,7 +8,7 @@ const transform = (data) => {
       const record = {
         prod_code: element.prod_code,
         prod_name: element.prod_name,
-        qty_scheduled: '',
+        qty_scheduled: element.qty_scheduled > 0 ? element.qty_scheduled : '',
         unit_name: 'l (amb)',
         unit_code: '5',
       };
