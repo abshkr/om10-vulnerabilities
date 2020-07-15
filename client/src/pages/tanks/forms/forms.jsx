@@ -585,7 +585,10 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
 
           {CAN_CALCULATE && (
             <>
-              {config?.manageAPI && (
+              {(config?.manageAPI || (
+                config?.temperatureUnit === 'degC' &&
+                config?.referenceTemperature === '15' &&
+                config?.vsmCompensation === '30')) && (
                 <Button
                   type="primary"
                   icon={<RedoOutlined />}
