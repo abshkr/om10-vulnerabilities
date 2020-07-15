@@ -445,6 +445,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
       resetFields();
 
+      setMode('2');   //By default, set preschedule
+      setFieldsValue({
+        shls_ld_type: '2',
+      });
+
       setFieldsValue({
         shls_caldate: moment(),
         shls_exp2: !expHour ? moment() : moment().add(_.toNumber(expHour), 'hours'),
