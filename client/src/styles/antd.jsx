@@ -307,6 +307,10 @@ const AntdStyleProvider = createGlobalStyle`
   .ant-input-clear-icon {
     color: #ff6666 !important;
   }
+  
+  .ant-select-clear {
+    color: #ff6666 !important;
+  }
 
   .ant-form-item-label > label {
     color: rgb(0, 84, 164);

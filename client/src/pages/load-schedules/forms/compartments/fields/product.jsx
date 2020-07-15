@@ -22,8 +22,8 @@ export default class Product extends Component {
     if (!record) {
       const current = form.getFieldValue('compartments');
       
-      current[rowIndex].prod_code = null;
-      current[rowIndex].prod_name = null;
+      current[rowIndex].prod_code = "";
+      current[rowIndex].prod_name = "";
       current[rowIndex].qty_scheduled = 0;
 
       form.setFieldsValue({
@@ -55,7 +55,13 @@ export default class Product extends Component {
 
     return (
       <div style={{ width: '100%',  display: 'flex' }}>
-        <Select value={this.state.value} style={{ width: '100%' }} onChange={this.onClick} bordered={false} allowClear={true}>
+        <Select 
+          value={this.state.value} 
+          style={{ width: '100%' }} 
+          onChange={this.onClick} 
+          bordered={false} 
+          allowClear={!!this.state.value}
+        >
           {values?.map((item) => (
             <Select.Option key={item.prod_code} value={item.prod_name}>
               {item.prod_code + " - " + item.prod_name}
