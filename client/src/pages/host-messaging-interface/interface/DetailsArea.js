@@ -83,7 +83,7 @@ class DetailsArea extends Component
 				+ 'message id           >' + this.state.message.MESSAGE_ID + '<\n'
 				+ 'received time        >' + this.state.message.RECV_TIME + '<\n'
 				+ 'destination          >' + this.state.message.DESTINATION + '<\n'
-				+ 'destinated site      >' + this.state.message.DEST_SITE + '<\n'
+				+ 'destination site     >' + this.state.message.DEST_SITE + '<\n'
 				+ 'record id            >' + this.state.message.REC_ID + '<\n'
 				+ 'file name            >' + this.state.message.FILE_NAME + '<\n'
 				+ 'file format          >' + this.state.message.FILE_FORMAT + '<\n'

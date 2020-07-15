@@ -3,10 +3,11 @@ import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 
 
-const ContentsArea = ({from, action, message, contentFormat, handleFormState}) => {
+const ContentsArea = ({from, action, message, content_format }) => {
 
-  const [ifrom, setFrom] = useState(from);
-  const [imessage, setMessage] = useState(message);
+  const [ifrom, setFrom] = useState('');
+	const [icontent_format, setContentFormat] = useState('');
+  const [imessage, setMessage] = useState('');
   const [icontent, setContent] = useState('');
 
 	var urlprefix = process.env.REACT_APP_API_URL || '';
@@ -18,35 +19,40 @@ const ContentsArea = ({from, action, message, contentFormat, handleFormState}) =
 	}
 
 	var getData = async () => {
-		fetch(url, {
-			method: 'POST',
-			headers: {
-				'Accept': 'application/text',
-				'Content-Type': 'application/json'
-			},
-			credentials: 'include',
-			body: JSON.stringify({rec_id: message.REC_ID, from: from})
-		}).then(response => {
-			response.json().then(body => {
-				setContent(body.message);
-				return body;
+		if (message && from)
+		{
+			fetch(url, {
+				method: 'POST',
+				headers: {
+					'Accept': 'application/text',
+					'Content-Type': 'application/json'
+				},
+				credentials: 'include',
+				body: JSON.stringify({rec_id: message.REC_ID, from: from})
+			}).then(response => {
+				response.json().then(body => {
+					setContent(body.message);
+				});
 			});
-		});
+		}
 	};
 
   const { data: payload } = useSWR(url, getData);
 
   useEffect(() => {
-		if (	 (message && imessage && message.REC_ID !== imessage.REC_ID)
+
+		var msg_recid = message?.REC_ID || '';
+		var imsg_recid = imessage?.REC_ID || ''; 
+		if (	 (msg_recid != imsg_recid)
 				|| (from && ifrom && from !== ifrom)
 			 )
 		{
 			setFrom(from);
 			setMessage(message);
-			setContent('');
 			getData();
 		}
   }, [from, message]);
+
 
 	if (from === 'host')
 	{

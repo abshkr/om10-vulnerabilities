@@ -48,7 +48,6 @@ const MessageArea = ({from, action, message, content_format, handleTaskComplete}
 					response.text().then(function (text) {
 						//console.log('resp:'+ JSON.stringify(text, null, '\t'));
 						setContent(text);	
-						//create_display_data();
 					});
 				});
 			}
@@ -69,7 +68,6 @@ const MessageArea = ({from, action, message, content_format, handleTaskComplete}
 					response.json().then(body => {
 						//console.log('resp:'+ JSON.stringify(body, null, '\t'));
 						setContent(body);
-						//create_display_data();
 					});
 				});
 			}
