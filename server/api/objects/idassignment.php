@@ -800,7 +800,7 @@ class IDAssignment extends CommonClass
 
         $this->key_history("MODIFIED", "AFTER");
 
-        if ($this->remove_pin) {
+        if (isset($this->remove_pin) && $this->remove_pin) {
             $query = "
                 UPDATE ACCESS_KEYS SET KYA_PIN = NULL
                 WHERE KYA_KEY_ISSUER = :kya_key_issuer AND KYA_KEY_NO = :kya_key_no";
@@ -825,7 +825,7 @@ class IDAssignment extends CommonClass
             }
         }
 
-        if ($this->reset_pin) {
+        if (isset($this->reset_pin) && $this->reset_pin) {
             $default_pin = "bHUA7XfvOYA2"; /* encrypted "0000" */
             $query = "
                 UPDATE ACCESS_KEYS SET KYA_PIN = :default_pin
