@@ -35,7 +35,11 @@ class MovementReason extends CommonClass
                 MR_REASON_CODE_ORI,
                 MR_MOV_TYPE_REV,
                 MR_REASON_CODE_REV,
-                MR_FLAG
+                MR_FLAG,
+                DECODE(MR_FLAG, 0, 'Active, Do not send to host',
+                    1, 'Active, Send to host',
+                    2, 'Active, Read only, Send to host',
+                    'Unknown') MR_FLAG_DESC
             FROM MOV_REASONS,
                 (SELECT MOVITEM_TYPE_ID, 
                 DECODE(MOVITEM_TYPE_ID, 0, 'R', 1, 'D', 2, 'T', 'R') MOVITEM_TYPE_CODE, 
