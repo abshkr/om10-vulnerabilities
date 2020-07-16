@@ -1585,6 +1585,7 @@
     "PDSFailed": "Failed to create PDS File.",
     "PDSSuccessful": "PDS File was Successfully Created.",
     "closeFolioSuccess": "First Frozen Folio Successfully Closed.",
+	"closeFolioTriggered": "Successfully Triggered to Close First Frozen Folio.",
     "closeFolioFailed": "Failed to close the First Frozen Folio.",
     "calculateFailed": "Failed to caclulate the values.",
     "calculateSuccess": "You have caclulated the values successfully.",

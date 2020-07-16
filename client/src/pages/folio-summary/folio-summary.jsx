@@ -58,8 +58,8 @@ const FolioSummary = () => {
       .post(FOLIO_SUMMARY.MANUAL_CLOSE)
       .then((response) => {
         notification.success({
-          message: t('messages.closeFolioSuccess'),
-          description: t('descriptions.closeFolioSuccess'),
+          message: t('messages.submitSuccess'),
+          description: t('descriptions.closeFolioTriggered'),
         });
       })
 
