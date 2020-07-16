@@ -696,7 +696,7 @@ const DrawerProductTransfers = ({
               setDataLoadFlag={setDataLoadFlagBaseTransfers}
               dataLoaded={dataLoaded}
               setDataLoaded={setDataLoaded}
-                />
+            />
           </TabPane>
           <TabPane tab={t('tabColumns.cumulativeBaseProduct')} key="2" forceRender={true}>
             <BaseProductTotals 
@@ -713,7 +713,7 @@ const DrawerProductTransfers = ({
               setDataLoadFlag={setDataLoadFlagBaseTotals}
               dataLoaded={dataLoaded}
               setDataLoaded={setDataLoaded}
-                />
+            />
           </TabPane>
         </Tabs>
       </Card>
@@ -738,7 +738,7 @@ const DrawerProductTransfers = ({
               setDataLoadFlag={setDataLoadFlagMeterTransfers}
               dataLoaded={dataLoaded}
               setDataLoaded={setDataLoaded}
-                />
+            />
           </TabPane>
           <TabPane tab={t('tabColumns.cumulativeMeterTotals')} key="2" forceRender={true}>
             <MeterTotals 
@@ -754,7 +754,7 @@ const DrawerProductTransfers = ({
               setDataLoadFlag={setDataLoadFlagMeterTotals}
               dataLoaded={dataLoaded}
               setDataLoaded={setDataLoaded}
-                />
+            />
           </TabPane>
         </Tabs>
       </Card>

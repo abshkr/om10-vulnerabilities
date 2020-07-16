@@ -254,7 +254,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
 
             <Divider>{t('tabColumns.equipmentAndSafefill')}</Divider>
 
-            <Equipment image={image} />
+            <Equipment image={image} showName={value?.eqpt_etp_title} />
             <LoadType form={form} value={value} />
             <EquipmentType form={form} value={value} onChange={setEquipment} />
             <Compartments form={form} value={value} equipment={equipment} onChange={setImage} />

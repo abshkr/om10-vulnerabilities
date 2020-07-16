@@ -123,7 +123,7 @@ const Compartments = ({ form, value, equipment, onChange }) => {
     };
   });
 
-  if (equipment) {
+  if (equipment && data.length > 0) {
     return (
       <Form.Item name="compartments">
         <Select
@@ -141,7 +141,7 @@ const Compartments = ({ form, value, equipment, onChange }) => {
         >
           {options.map((item, index) => (
             <Select.Option key={item.eqpt_id} value={item.eqpt_id}>
-              {item.eqpt_code} / {item.eqpt_title}
+              {item.eqpt_code}[{item.eqpt_title}]
             </Select.Option>
           ))}
         </Select>
