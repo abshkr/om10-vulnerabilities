@@ -184,6 +184,7 @@ const MeterTotals = ({
           data={data} 
           height="70vh" 
           columns={fields} 
+          editType={false}
         />
       </Form.Item>
     </Spin>

@@ -221,7 +221,8 @@ const BaseProductTransfers = ({
           columns={fields} 
           apiContext={setChildTableAPI}
           onCellUpdate={(value) => onCellUpdate(value)}
-          />
+          editType={false}
+        />
       </Form.Item>
 
       <Row gutter={[8,8]}>

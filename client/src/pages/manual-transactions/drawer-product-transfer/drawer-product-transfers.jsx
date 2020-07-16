@@ -670,6 +670,7 @@ const DrawerProductTransfers = ({
             apiContext={setTableAPI}
             onCellUpdate={(value) => onCellUpdate(value)}
             handleSelect={(value) => setClicked(value[0])}
+            editType={false}
           />
         </Form.Item>
       </Card>
