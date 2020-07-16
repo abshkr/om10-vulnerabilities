@@ -82,6 +82,8 @@ const DrawerProductTransfers = ({
     )
   );
 
+  const { data: composition } = useSWR(tanker && `${MANUAL_TRANSACTIONS.COMPOSITION}?tnkr_code=${tanker}`);
+
   const { t } = useTranslation();
   //const { setFieldsValue } = form;
 
@@ -578,10 +580,10 @@ const DrawerProductTransfers = ({
   }, [sourceType]);
 
   useEffect(() => {
-    const values = columns(t, form, sourceType, loadType, loadNumber, setPayload, payload, products);
+    const values = columns(t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition);
 
     setFields(values);
-  }, [t, form, sourceType, loadType, loadNumber, setPayload, payload, products]);
+  }, [t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition]);
 
   useEffect(() => {
     if (dataLoadFlagDrawTransfers !== 0) {
