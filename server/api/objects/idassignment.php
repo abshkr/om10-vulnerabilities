@@ -12,15 +12,12 @@ class IDAssignment extends CommonClass
 
     public $kya_sp_supplier = '-1';
 
-    public $resetpin = null;
-    public $removepin = null;
-
     public $start_num = 1;
     public $end_num = null;
 
     public $BOOLEAN_FIELDS = array(
         "KYA_LOCK" => "Y",
-        "KYA_ADHOC" => "Y"
+        "KYA_ADHOC" => "Y",
     );
 
     public $NUMBER_FIELDS = array(
@@ -803,7 +800,7 @@ class IDAssignment extends CommonClass
 
         $this->key_history("MODIFIED", "AFTER");
 
-        if ($this->removepin === "on") {
+        if ($this->remove_pin) {
             $query = "
                 UPDATE ACCESS_KEYS SET KYA_PIN = NULL
                 WHERE KYA_KEY_ISSUER = :kya_key_issuer AND KYA_KEY_NO = :kya_key_no";
@@ -828,7 +825,7 @@ class IDAssignment extends CommonClass
             }
         }
 
-        if ($this->resetpin === "on") {
+        if ($this->reset_pin) {
             $default_pin = "bHUA7XfvOYA2"; /* encrypted "0000" */
             $query = "
                 UPDATE ACCESS_KEYS SET KYA_PIN = :default_pin
