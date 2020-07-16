@@ -479,6 +479,7 @@ const Items = ({ setTableAPIContext, value, config }) => {
           selectionMode="single"
           onEditingFinished={onEditingFinished}
           height={'70vh'}
+          editType={false}
         />
       </Form.Item>
     </>
