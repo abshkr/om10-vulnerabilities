@@ -36,11 +36,12 @@ const Interface = ({ token, onRefresh, children }) => {
             </div>
           </Sider>
           <Layout>
+            <Status />
             <NavBar />
             <Content>{children}</Content>
-            <Footer>
+            {/* <Footer>
               <Status />
-            </Footer>
+            </Footer> */}
           </Layout>
         </Layout>
       </ConfigProvider>

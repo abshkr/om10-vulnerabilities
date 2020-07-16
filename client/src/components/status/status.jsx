@@ -10,7 +10,7 @@ const Status = () => {
   const { t } = useTranslation();
   const { authenticated } = useSelector((state) => state.auth);
   const { id, offset, dateTimeFormat } = useContext(ConfigStore);
-
+  
   const [user, setUser] = useState(null);
   const [time, setTime] = useState(null);
 
@@ -39,18 +39,18 @@ const Status = () => {
   }, [authenticated]);
 
   return (
-    <>
-      <div style={{ fontSize: 12 }}>
-        <strong>{t('fields.serverTime')}</strong>: <span>{time || '...'}</span>
+    <div style={{display: "flex", justifyContent: "flex-end", paddingTop: 5 }}>
+        <div style={{ width:"230px", fontSize: 12, textAlign: 'left', marginRight: 10 }}>
+          <strong>{t('fields.serverTime')}</strong>: <span>{time || '...'} </span>
+        </div>
+      
+        <div style={{ fontSize: 12, textAlign: 'right', marginRight: 15}}>
+          <strong>{t('fields.loggedInAs')}</strong>:{' '}
+          <span>
+            {user || '...'} ({id})
+          </span>
       </div>
-
-      <div style={{ fontSize: 12, textAlign: 'right' }}>
-        <strong>{t('fields.loggedInAs')}</strong>:{' '}
-        <span>
-          {user || '...'} ({id})
-        </span>
-      </div>
-    </>
+    </div>
   );
 };
 
