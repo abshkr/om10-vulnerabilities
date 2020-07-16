@@ -183,10 +183,12 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, default
               });
             })
 
-            .catch((error) => {
-              notification.error({
-                message: error.message,
-                description: t('descriptions.submitFailed'),
+            .catch((errors) => {
+              _.forEach(errors.response.data.errors, (error) => {
+                notification.error({
+                  message: error.type,
+                  description: error.message,
+                });
               });
             });
         } catch (error) {

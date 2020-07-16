@@ -223,13 +223,16 @@ const Items = ({ setTableAPIContext, value, config }) => {
     tableAPI.updateRowData({ remove: selected });
   };
 
-  const handleItemSelect = (value) => {
-    console.log('handleItemSelect', value);
-    if (value && value[0]) {
-      value[0].editable = value?.[0]?.mvitm_status === 0 && !value?.[0]?.mvitm_completed;
+  const handleItemSelect = (items) => {
+    console.log('handleItemSelect', items);
+    if (items && items[0]) {
+      items[0].editable = items?.[0]?.mvitm_status === 0 && !items?.[0]?.mvitm_completed;
+      if (!items?.[0]?.mvitm_key) {
+        items[0].mvitm_key = value?.mv_key;
+      }
     }
-    console.log('handleItemSelect222', value);
-    setSelected(value);
+    console.log('handleItemSelect222', items);
+    setSelected(items);
   };
 
   const onEditingFinished = (value) => {
@@ -377,6 +380,12 @@ const Items = ({ setTableAPIContext, value, config }) => {
     }
   }, [selected]);
 
+  useEffect(() => {
+    if (value) {
+      setSelected([]);
+    }
+  }, [value]);
+
   return (
     <>
       <Button type="primary" icon={<PlusOutlined />} onClick={handleItemAdd} style={{ marginRight: 5 }}>
@@ -418,6 +427,7 @@ const Items = ({ setTableAPIContext, value, config }) => {
         icon={<EyeOutlined />}
         style={{ float: 'right', marginRight: 5 }}
         disabled={!buttonState?.viewSchedule || disabled}
+        // disabled={!(buttonState?.viewSchedule || value?.mv_status!==0) || disabled}
         onClick={() => setScheduleVisible(true)}
       >
         {t('operations.viewSchedule')}
@@ -465,7 +475,7 @@ const Items = ({ setTableAPIContext, value, config }) => {
           visible={scheduleVisible}
           width="100vw"
         >
-          <Schedules selected={selected?.[0]} />
+          <Schedules selected={!selected?.[0]?.mvitm_key ? {mvitm_key: value?.mv_key} : selected?.[0]} />
         </Drawer>
       )}
 

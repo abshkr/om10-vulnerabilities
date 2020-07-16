@@ -132,12 +132,20 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
               });
             })
 
-            .catch((error) => {
+            .catch((errors) => {
+              _.forEach(errors.response.data.errors, (error) => {
+                notification.error({
+                  message: error.type,
+                  description: error.message,
+                });
+              });
+            });
+            /* .catch((error) => {
               notification.error({
                 message: error.message,
                 description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
               });
-            });
+            }); */
         },
       });
     }
@@ -163,10 +171,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
             });
           })
 
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: t('descriptions.deleteFailed'),
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
       },
