@@ -95,6 +95,28 @@ const data = [
           <p>
             OM5K-7066 - <a>https://dev.diamondkey.com/browse/OM5K-7066</a>
           </p>
+
+          <p>
+            OM5K-7167 - <a>https://dev.diamondkey.com/browse/OM5K-7167</a>
+          </p>
+          <p>
+            OM5K-7012 - <a>https://dev.diamondkey.com/browse/OM5K-7012</a>
+          </p>
+          <p>
+            OM5K-7138 - <a>https://dev.diamondkey.com/browse/OM5K-7138</a>
+          </p>
+          <p>
+            OM5K-7168 - <a>https://dev.diamondkey.com/browse/OM5K-7168</a>
+          </p>
+          <p>
+            OM5K-7077 - <a>https://dev.diamondkey.com/browse/OM5K-7077</a>
+          </p>
+          <p>
+            OM5K-7083 - <a>https://dev.diamondkey.com/browse/OM5K-7083</a>
+          </p>
+          <p>
+            OM5K-7102 - <a>https://dev.diamondkey.com/browse/OM5K-7102</a>
+          </p>
         </>
       </>
     ),
