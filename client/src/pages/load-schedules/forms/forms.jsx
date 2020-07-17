@@ -478,7 +478,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             {t('operations.cancel')}
           </Button>
 
-          {!READ_ONLY && (
+          {!READ_ONLY && tab !== "8" && tab !== "9" && (
             <Button
               type="primary"
               icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
@@ -490,7 +490,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             </Button>
           )}
 
-          {!IS_CREATING && !READ_ONLY && (
+          {!IS_CREATING && !READ_ONLY && tab !== "8" && tab !== "9" && (
             <>
               <Button
                 type="danger"
