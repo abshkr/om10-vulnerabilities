@@ -9,7 +9,7 @@ import _ from 'lodash';
 import General from '../forms/fields/general';
 import api, { TANKS } from '../../../api';
 
-const Details = ({ selected, access, isLoading, config }) => {
+const Details = ({ selected, access, isLoading, config, setSelected }) => {
   const { t } = useTranslation();
 
   const [form] = Form.useForm();
@@ -29,6 +29,8 @@ const Details = ({ selected, access, isLoading, config }) => {
           .post(TANKS.UPDATE, values)
           .then(() => {
             mutate(TANKS.READ);
+            // to refresh changes in the form, need to NULL the selected
+            setSelected(null);
 
             notification.success({
               message: t('messages.updateSuccess'),

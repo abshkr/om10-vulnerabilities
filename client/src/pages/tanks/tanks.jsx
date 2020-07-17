@@ -136,7 +136,7 @@ const Tanks = () => {
             </TabPane>
 
             <TabPane key="2" tab={t('tabColumns.details')} disabled={isLoading}>
-              <Details selected={selected} access={access} config={config} />
+              <Details selected={selected} access={access} config={config} setSelected={setSelected} />
             </TabPane>
 
             <TabPane key="3" tab={t('tabColumns.connectedArms')} disabled={isLoading}>
@@ -144,7 +144,7 @@ const Tanks = () => {
             </TabPane>
 
             <TabPane key="4" tab={t('tabColumns.calculations')} disabled={isLoading}>
-              <Calculations selected={selected} access={access} config={config} />
+              <Calculations selected={selected} access={access} config={config} setSelected={setSelected} />
             </TabPane>
 
             {config?.manageTankLevelAlarms && (
@@ -154,7 +154,7 @@ const Tanks = () => {
             )}
 
             <TabPane key="6" tab={t('tabColumns.gauge')} disabled={isLoading}>
-              <Gauging selected={selected} access={access} />
+              <Gauging selected={selected} access={access} setSelected={setSelected} />
             </TabPane>
 
             {config.manageTankStrapping && (

@@ -156,7 +156,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         name="tank_density"
         label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${
           value?.tank_base_dens_hi
-        }) ${`@ Reference Temperature ${config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(
+        })${t('units.kg/m3')} ${`@ Reference Temperature ${config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(
           config?.referenceTemperature
         )}ºF`}`}
         min={value?.tank_base_dens_lo}
@@ -187,7 +187,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
             form={form}
             value={value?.tank_15_density}
             name="tank_15_density"
-            label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${`@ Compensation Temperature ${
+            label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi})${t('units.kg/m3')} ${`@ Compensation Temperature ${
               config?.vsmCompensation || config?.referenceTemperature
             }ºC/${VCFManager.temperatureC2F(config?.vsmCompensation || config?.referenceTemperature)}ºF`}`}
             min={value?.tank_base_dens_lo}

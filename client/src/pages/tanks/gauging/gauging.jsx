@@ -10,7 +10,7 @@ import _ from 'lodash';
 import GaugingForm from '../forms/fields/gauging';
 import api, { TANKS } from '../../../api';
 
-const Gauging = ({ selected, access, isLoading }) => {
+const Gauging = ({ selected, access, isLoading, setSelected }) => {
   const { t } = useTranslation();
 
   const [form] = Form.useForm();
@@ -30,6 +30,8 @@ const Gauging = ({ selected, access, isLoading }) => {
           .post(TANKS.UPDATE, values)
           .then(() => {
             mutate(TANKS.READ);
+            // to refresh changes in the form, need to NULL the selected
+            setSelected(null);
 
             notification.success({
               message: t('messages.updateSuccess'),

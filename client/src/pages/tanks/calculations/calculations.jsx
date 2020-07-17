@@ -11,7 +11,7 @@ import Calculation from '../forms/fields/calculation';
 import { VCFManager } from '../../../utils';
 import api, { TANKS, TANK_STATUS } from '../../../api';
 
-const Calculations = ({ selected, access, isLoading, config }) => {
+const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
   const { data: counter } = useSWR(
     `${TANK_STATUS.COUNT_STRAPS}?tank_code=${selected?.tank_code}&tank_terminal=${selected?.tank_terminal}`
   );
@@ -114,6 +114,8 @@ const Calculations = ({ selected, access, isLoading, config }) => {
           .post(TANKS.UPDATE, payload)
           .then(() => {
             mutate(TANKS.READ);
+            // to refresh changes in the form, need to NULL the selected
+            setSelected(null);
 
             notification.success({
               message: t('messages.updateSuccess'),

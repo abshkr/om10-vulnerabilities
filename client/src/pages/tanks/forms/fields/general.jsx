@@ -5,6 +5,7 @@ import useSWR from 'swr';
 
 import { ORDER_LISTINGS, TANK_STATUS, TANKS } from '../../../../api';
 import { VCFManager } from '../../../../utils';
+import { InputNumber as OmegaInputNumber } from '../../../../components';
 
 const General = ({ form, value, config }) => {
   const { t } = useTranslation();
@@ -138,18 +139,35 @@ const General = ({ form, value, config }) => {
         </Col>
 
         <Col span={12}>
-          <Form.Item
+          <OmegaInputNumber
+            form={form}
+            value={value?.tank_density}
             name="tank_density"
-            /* label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${`@${
-              config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(config?.referenceTemperature)}ºF`}`} */
+            label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${
+              value?.tank_base_dens_hi
+            })${t('units.kg/m3')} ${`@ Reference Temperature ${config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(
+              config?.referenceTemperature
+            )}ºF`}`}
+            min={value?.tank_base_dens_lo}
+            max={value?.tank_base_dens_hi}
+            style={{ width: '100%' }}
+            precision={config.precisionDensity}
+          />
+          {/* <Form.Item
+            name="tank_density"
               label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${
                 value?.tank_base_dens_hi
               }) ${`@ Reference Temperature ${config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(
                 config?.referenceTemperature
               )}ºF`}`}
           >
-            <InputNumber style={{ width: '100%' }} />
-          </Form.Item>
+            <InputNumber
+              style={{ width: '100%' }}
+              min={value?.tank_base_dens_lo}
+              max={value?.tank_base_dens_hi}
+              precision={config.precisionDensity}
+            />
+          </Form.Item> */}
         </Col>
       </Row>
 
