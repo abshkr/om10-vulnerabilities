@@ -1469,6 +1469,7 @@
     "submitFailed": "Submit Failed.",
     "movementReverseSuccess": "Successfully Reversed.",
     "reportGenerationSuccessful": "Successfully Generated Report.",
+    "csvGenerationSuccessful": "Generated succesfully. You can open or save it now.",
     "haltSuccess": "Successfully Halted.",
     "startSuccess": "Successfully Started.",
     "cuztomizeLanding": "Customize Your Equipment",
