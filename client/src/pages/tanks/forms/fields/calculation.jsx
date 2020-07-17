@@ -152,14 +152,16 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         form={form}
         value={value?.tank_density}
         name="tank_density"
-        label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${`@ Reference Temperature ${
-          config?.vsmCompensation || config?.referenceTemperature
-        }ºC/${VCFManager.temperatureC2F(config?.vsmCompensation || config?.referenceTemperature)}ºF`}`}
+        label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${
+          value?.tank_base_dens_hi
+        }) ${`@ Reference Temperature ${config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(
+          config?.referenceTemperature
+        )}ºF`}`}
         min={value?.tank_base_dens_lo}
         max={value?.tank_base_dens_hi}
         style={{ width: '100%' }}
         precision={config.precisionDensity}
-        onChange={handleCorDensFieldChange}
+        onChange={handleStdDensFieldChange}
       />
       {/* <Form.Item
         name="tank_density"
@@ -183,16 +185,14 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
             form={form}
             value={value?.tank_15_density}
             name="tank_15_density"
-            label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${
-              value?.tank_base_dens_hi
-            }) ${`@ Compensation Temperature ${config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(
-              config?.referenceTemperature
-            )}ºF`}`}
+            label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${`@ Compensation Temperature ${
+              config?.vsmCompensation || config?.referenceTemperature
+            }ºC/${VCFManager.temperatureC2F(config?.vsmCompensation || config?.referenceTemperature)}ºF`}`}
             min={value?.tank_base_dens_lo}
             max={value?.tank_base_dens_hi}
             style={{ width: '100%' }}
             precision={config.precisionDensity}
-            onChange={handleStdDensFieldChange}
+            onChange={handleCorDensFieldChange}
           />
           /* <Form.Item
             name="tank_15_density"
