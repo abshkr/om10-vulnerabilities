@@ -35,11 +35,11 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
 
       // initialize the density source for calculation
       if (value?.tank_density) {
-        pinDensity({ dens: value?.tank_density, type: 'D30C', title: t('fields.density') });
+        pinDensity({ dens: value?.tank_density, type: 'D15C', title: t('fields.density') });
       } else if (value?.tank_api) {
         pinDensity({ dens: value?.tank_api, type: 'A60F', title: t('fields.api') });
       } else {
-        pinDensity({ dens: value?.tank_15_density, type: 'D15C', title: t('fields.standardDensity') });
+        pinDensity({ dens: value?.tank_15_density, type: 'D30C', title: t('fields.standardDensity') });
       }
       // initialize the quantity source for calculation
       if (value?.tank_amb_vol) {
@@ -127,6 +127,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
     }
   };
 
+  // this is for tank_density
   const handleStdDensFieldChange = (value) => {
     //console.log('handleStdDensFieldChange', value);
     if (value !== undefined && value !== null && String(value).trim().length > 0) {
@@ -134,6 +135,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
     }
   };
 
+  // this is for tank_15_density
   const handleCorDensFieldChange = (value) => {
     if (value !== undefined && value !== null && String(value).trim().length > 0) {
       pinDensity({ dens: value, type: 'D30C', title: t('fields.density') });
@@ -161,7 +163,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         max={value?.tank_base_dens_hi}
         style={{ width: '100%' }}
         precision={config.precisionDensity}
-        onChange={handleStdDensFieldChange}
+        onChange={handleStdDensFieldChange}  // D15C
       />
       {/* <Form.Item
         name="tank_density"
@@ -192,7 +194,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
             max={value?.tank_base_dens_hi}
             style={{ width: '100%' }}
             precision={config.precisionDensity}
-            onChange={handleCorDensFieldChange}
+            onChange={handleCorDensFieldChange} // D30C
           />
           /* <Form.Item
             name="tank_15_density"
