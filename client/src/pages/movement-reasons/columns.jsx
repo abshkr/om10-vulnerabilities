@@ -43,9 +43,9 @@ const columns = t => [
   },
   {
     headerName: t('fields.status'),
-    field: 'mr_flag',
-    filter: 'BooleanFilter',
-    cellRenderer: 'BooleanRenderer',
+    field: 'mr_flag_desc',
+    filter: 'FuzzyFilter',
+    // cellRenderer: 'BooleanRenderer',
     sortable: true,
     resizable: true
   }

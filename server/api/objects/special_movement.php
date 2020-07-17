@@ -466,6 +466,16 @@ class SpecialMovement extends CommonClass
                 "Failed to submit special movement, error message: " . $error_msg));
             echo json_encode($result, JSON_PRETTY_PRINT);
         }
+
+        //SCRIPT_NAME: /cgi-bin/en/spcl_mvment.cgi (HOST message thingy) REQUEST: user_id=9999&spclmnt_no=2698
+        $query_string = "user_id=" . rawurlencode(strip_tags(Utilities::getCurrPsn())) . 
+            "&spclmnt_no=" . rawurlencode(strip_tags($this->mlitm_id));
+        $cgi_response = Utilities::http_cgi_invoke("cgi-bin/en/spcl_mvment.cgi", $query_string);
+        write_log($cgi_response, __FILE__, __LINE__);
+        if ($cgi_response === false) {
+            $e = error_get_last();
+            write_log($e['message'], __FILE__, __LINE__);
+        }
     }
 
     public function plant_suppliers()

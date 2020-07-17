@@ -82,6 +82,8 @@ const DrawerProductTransfers = ({
     )
   );
 
+  const { data: composition } = useSWR(tanker && `${MANUAL_TRANSACTIONS.COMPOSITION}?tnkr_code=${tanker}`);
+
   const { t } = useTranslation();
   //const { setFieldsValue } = form;
 
@@ -192,6 +194,70 @@ const DrawerProductTransfers = ({
     setPayload(payload2);
   };
 
+  const checkQtySource = async (transfer) => {
+    // decide the calc type: LT, L15, KG
+    let type = 'LT';
+    let amount = 0;
+    if (transfer?.trsf_qty_amb) {
+      type = 'LT';
+      amount = transfer?.trsf_qty_amb;
+    }
+    else if (transfer?.trsf_qty_cor) {
+      type = 'L15';
+      amount = transfer?.trsf_qty_cor;
+    }
+    else if (transfer?.trsf_load_kg) {
+      type = 'KG';
+      amount = transfer?.trsf_load_kg;
+    }
+    else {
+      type = 'LT';
+      amount = transfer?.trsf_qty_amb;
+    }
+
+    return {type: type, amount: amount};
+  }
+
+  const verifySourceQuantity2 = (bases, draws) => {
+    let tidx = 0;
+    let bidx = 0;
+
+    for (tidx = 0; tidx < draws.length; tidx++) {
+      const transfer = draws[tidx];
+      const cmpt = transfer.trsf_cmpt_no;
+      const source = checkQtySource(transfer);
+      for (bidx=0; bidx<bases.length; bidx++) {
+        const base = bases[bidx];
+        if (base.trsf_bs_cmpt_no === cmpt) {
+          let changed = false;
+          if (transfer?.trsf_qty_amb && _.toNumber(transfer?.trsf_qty_amb) > 0 && source?.type === 'LT') {
+            // if (!base?.trsf_bs_qty_amb || (base?.trsf_bs_qty_amb && _.toNumber(base?.trsf_bs_qty_amb) === 0)) {
+              base.trsf_bs_qty_amb = calcBaseRatios(transfer?.trsf_qty_amb, base?.trsf_bs_ratio_value, base?.trsf_bs_ratio_total);
+              changed = true;
+            // }
+          }
+          if (transfer?.trsf_qty_cor && _.toNumber(transfer?.trsf_qty_cor) > 0 && source?.type === 'L15') {
+            // if (!base?.trsf_bs_qty_cor || (base?.trsf_bs_qty_cor && _.toNumber(base?.trsf_bs_qty_cor) === 0)) {
+              base.trsf_bs_qty_cor = calcBaseRatios(transfer?.trsf_qty_cor, base?.trsf_bs_ratio_value, base?.trsf_bs_ratio_total);
+              changed = true;
+            // }
+          }
+          if (transfer?.trsf_load_kg && _.toNumber(transfer?.trsf_load_kg) > 0 && source?.type === 'KG') {
+            // if (!base?.trsf_bs_load_kg || (base?.trsf_bs_load_kg && _.toNumber(base?.trsf_bs_load_kg) === 0)) {
+              base.trsf_bs_load_kg = calcBaseRatios(transfer?.trsf_load_kg, base?.trsf_bs_ratio_value, base?.trsf_bs_ratio_total);
+              changed = true;
+            // }
+          }
+          if (changed) {
+            bases[bidx] = base;
+          }
+        }
+      }
+    }
+
+    return bases;
+  }
+
   const verifySourceQuantity = (bases, draws) => {
     let tidx = 0;
     let bidx = 0;
@@ -286,14 +352,15 @@ const DrawerProductTransfers = ({
   }
 
   const CalcDrawQuantity = async () => {
-    //const items = form.getFieldsValue(['transfers', 'base_transfers', 'base_totals', 'meter_totals'])    
+    //const items = form.getFieldsValue(['transfers', 'base_transfers', 'base_totals', 'meter_totals']);
     //console.log('DrawerProductTransfers: onCalculate', items);
 
     let tidx = 0;
     let bidx = 0;
 
+    // const draws = form.getFieldValue('transfers');
     const draws = _.clone(payload);
-    // const bases = form.getFieldValue('base_transfers');
+    // let bases = form.getFieldValue('base_transfers');
     let bases = _.clone(dataBaseTransfers);
     // console.log('CalcDrawQuantity bases', bases);
     // console.log('CalcDrawQuantity dataBaseTransfers', dataBaseTransfers);
@@ -513,10 +580,10 @@ const DrawerProductTransfers = ({
   }, [sourceType]);
 
   useEffect(() => {
-    const values = columns(t, form, sourceType, loadType, loadNumber, setPayload, payload, products);
+    const values = columns(t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition);
 
     setFields(values);
-  }, [t, form, sourceType, loadType, loadNumber, setPayload, payload, products]);
+  }, [t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition]);
 
   useEffect(() => {
     if (dataLoadFlagDrawTransfers !== 0) {

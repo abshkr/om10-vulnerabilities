@@ -228,11 +228,13 @@ const ManualTransactions = ({ popup, params }) => {
                 description: t('descriptions.submitSuccess'),
               });
             })
-
-            .catch((error) => {
-              notification.error({
-                message: error.message,
-                description: t('descriptions.submitFailed'),
+            
+            .catch((errors) => {
+              _.forEach(errors.response.data.errors, (error) => {
+                notification.error({
+                  message: error.type,
+                  description: error.message,
+                });
               });
             });
         } catch (error) {
@@ -894,10 +896,12 @@ const ManualTransactions = ({ popup, params }) => {
               });
             })
 
-            .catch((error) => {
-              notification.error({
-                message: error.message,
-                description: t('descriptions.saveFailed'),
+            .catch((errors) => {
+              _.forEach(errors.response.data.errors, (error) => {
+                notification.error({
+                  message: error.type,
+                  description: error.message,
+                });
               });
             });
         } catch (error) {

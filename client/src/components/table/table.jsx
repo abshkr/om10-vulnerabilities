@@ -240,7 +240,7 @@ const Table = ({
                   pinnedBottomRowData={footer}
                   stopEditingWhenGridLosesFocus={stopEditingWhenGridLosesFocus===undefined ? true : stopEditingWhenGridLosesFocus}
                   singleClickEdit={true}
-                  editType={editType===false?'':'fullRow'}
+                  editType={editType==='fullRow'?'fullRow':''}
                   onRowEditingStopped={rowEditingStopped}
                 />
               </div>

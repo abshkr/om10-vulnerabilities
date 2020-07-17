@@ -25,13 +25,15 @@ export default class Equipment extends Component {
 
   render() {
     const { values } = this.props;
+    // console.log('MT Equipment Column', values, this.props);
 
     return (
       <div style={{ display: 'flex' }}>
         <Select value={this.state.value} style={{ width: '100%' }} onChange={this.onClick} bordered={false}>
           {values?.map((item) => (
-            <Select.Option key={item.partner_code} value={item.partner_code}>
-              {`${item.partner_code} - ${item.partner_name1}`}
+            <Select.Option key={item.tc_eqpt} value={item.eqpt_code}>
+              {`${item.eqpt_code}${item.eqpt_code===item.eqpt_title?'':('['+item.eqpt_title+']')}`}
+              {/* {`${values?.length>1 ? (item.tc_seqno + ' - ') : ''}${item.eqpt_code}${item.eqpt_code===item.eqpt_title?'':('['+item.eqpt_title+']')}`} */}
             </Select.Option>
           ))}
         </Select>

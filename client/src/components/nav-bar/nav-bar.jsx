@@ -64,7 +64,7 @@ const NavBar = () => {
         backgroundColor: 'none',
         boxShadow: 'none',
         lineHeight: 0,
-        paddingTop: 15,
+        paddingTop: 5,
       }}
     >
       <NavBarContainer>

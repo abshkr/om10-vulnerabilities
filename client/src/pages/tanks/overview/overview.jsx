@@ -53,7 +53,8 @@ const Overview = ({ selected, isLoading }) => {
               </Descriptions.Item>
 
               <Descriptions.Item label={t('fields.standardDensity')} span={24}>
-                {selected?.tank_15_density} {t('units.kg/m3')}
+                {selected?.tank_density} {t('units.kg/m3')}
+                {/* {selected?.tank_15_density} {t('units.kg/m3')} */}
               </Descriptions.Item>
 
               {/* <Descriptions.Item label={t('fields.weightInAir')} span={24}>

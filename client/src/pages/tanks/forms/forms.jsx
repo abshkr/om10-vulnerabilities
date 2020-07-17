@@ -138,7 +138,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     };
 
     if (type === 'D15C') {
-      const converted = _.toNumber(tank_15_density);
+      const converted = _.toNumber(tank_density);
       const valid = _.isNumber(converted);
 
       if (valid) {
@@ -146,7 +146,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
         payload.type = 'D15C';
       }
     } else if (type === 'D30C') {
-      const converted = _.toNumber(tank_density);
+      const converted = _.toNumber(tank_15_density);
       const valid = _.isNumber(converted);
 
       if (valid) {
@@ -162,7 +162,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
         payload.type = 'A60F';
       }
     } else {
-      const converted = _.toNumber(tank_15_density);
+      const converted = _.toNumber(tank_density);
       const valid = _.isNumber(converted);
 
       if (valid) {
@@ -221,25 +221,25 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
         const payload = handleDensitySource(densitySource);
         
         if (base !== '6') {
-          if (payload.type === 'D15C') {
+          if (payload.type === 'D15C') { // tank_density as source
             const densityAtXC = VCFManager.densityAtXC(payload.value, payload.reference);
             const densityAt60F = VCFManager.densityAt60F(payload.value, payload.reference, 'C');
             const api = VCFManager.api(densityAt60F);
 
             form.setFieldsValue({
-              tank_density: densityAtXC.toFixed(config.precisionDensity),
+              tank_15_density: densityAtXC.toFixed(config.precisionDensity),
               tank_api: api.toFixed(config.precisionAPI),
             });
           }
 
-          if (payload.type === 'D30C') {
+          if (payload.type === 'D30C') { // tank_15_density as source
             const density15C = VCFManager.density15CFromXC(payload.value, payload.reference, config.precisionDensity);
             const densityAt60F = VCFManager.densityAt60F(density15C);
             const api = VCFManager.api(densityAt60F);
             // console.log('D30C', density15C, densityAt60F, api);
 
             form.setFieldsValue({
-              tank_15_density: density15C.toFixed(config.precisionDensity),
+              tank_density: density15C.toFixed(config.precisionDensity),
               tank_api: api.toFixed(config.precisionAPI),
             });
           }
@@ -249,12 +249,23 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             const densityAtXC = VCFManager.densityAtXC(densityAt15C, payload.reference);
 
             form.setFieldsValue({
-              tank_density: densityAtXC.toFixed(config.precisionDensity),
-              tank_15_density: densityAt15C.toFixed(config.precisionDensity),
+              tank_15_density: densityAtXC.toFixed(config.precisionDensity), // D30C
+              tank_density: densityAt15C.toFixed(config.precisionDensity), // D15C
             });
           }
         } else {
-          if (payload.type === 'D15C') {
+          if (payload.type === 'D15C') { // tank_density as source
+            const density = payload.value;
+            const densityAt60F = VCFManager.densityAt60F(density);
+            const api = VCFManager.api(densityAt60F);
+
+            form.setFieldsValue({
+              tank_15_density: density.toFixed(config.precisionDensity),
+              tank_api: api.toFixed(config.precisionAPI),
+            });
+          }
+
+          if (payload.type === 'D30C') { // tank_15_density as source
             const density = payload.value;
             const densityAt60F = VCFManager.densityAt60F(density);
             const api = VCFManager.api(densityAt60F);
@@ -265,22 +276,11 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             });
           }
 
-          if (payload.type === 'D30C') {
-            const density = payload.value;
-            const densityAt60F = VCFManager.densityAt60F(density);
-            const api = VCFManager.api(densityAt60F);
-
-            form.setFieldsValue({
-              tank_15_density: density.toFixed(config.precisionDensity),
-              tank_api: api.toFixed(config.precisionAPI),
-            });
-          }
-
           if (payload.type === 'A60F') {
             const density = VCFManager.densityAt60F(payload.value);
 
             form.setFieldsValue({
-              tank_15_density: density.toFixed(config.precisionDensity),
+              tank_density: density.toFixed(config.precisionDensity),
             });
           }
         }

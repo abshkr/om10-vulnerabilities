@@ -1,4 +1,4 @@
-const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload, products) => [
+const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition) => [
   {
     headerName: t('fields.compartmentNumber'),
     field: 'trsf_cmpt_no',
@@ -64,9 +64,8 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     cellEditor: 'EquipmentEditor',
     editable: true,
     cellClass: 'editable-ag-grid-cell',
-
     cellEditorParams: {
-      values: [],
+      values: composition?.records?.filter((o)=>(o.cmpt_count>0)) || [],
     },
   },
 

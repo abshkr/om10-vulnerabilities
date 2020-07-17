@@ -208,6 +208,7 @@ const Forms = ({
   const handleCarrierSelect = async (carrier) => {
     // get tanker list of the carrier
     const tankers = await getTankersByCarrier(carrier);
+    setSelectedTanker(null);
     setTankers(tankers);
   };
 
