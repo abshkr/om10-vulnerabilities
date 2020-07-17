@@ -172,6 +172,8 @@ const Forms = ({
       order_no: undefined,
     });
 
+    console.log('handleSupplierSelect', sourceType);
+
     if (sourceType === 'SCHEDULE') {
       const trips = await getTripsBySupplier(supplier);
       setTrips(trips);
@@ -303,6 +305,7 @@ const Forms = ({
   }, [popup, params, sourceType]);
 
   useEffect(() => {
+    // if (params && popup && (sourceType === 'SCHEDULE' || sourceType === 'OPENORDER') && !selectedSupplier) {
     if (params && popup && !selectedSupplier) {
       form.setFieldsValue({
         supplier: params?.supplier,
@@ -310,6 +313,7 @@ const Forms = ({
       handleSupplierSelect(params?.supplier);
     }
   }, [popup, params, selectedSupplier]);
+  // }, [popup, params, sourceType, selectedSupplier]);
 
   useEffect(() => {
     if (params && popup && sourceType === 'OPENORDER' && selectedSupplier && !selectedCustomer) {
@@ -623,7 +627,7 @@ const Forms = ({
 
         <Col span={8}>
           <Form.Item name="seal_range" label={t('fields.sealRange')} rules={[{ required: false }]}>
-            <Input disabled={true} />
+            <Input disabled={false} />
           </Form.Item>
         </Col>
 
@@ -632,13 +636,13 @@ const Forms = ({
             <Col span={24}></Col>
           </Row>
 
-          {sourceType === 'SCHEDULE' && !!trips && selectedTrip && (
+          {sourceType === 'SCHEDULE' && selectedTrip && (
             <Button type="primary" onClick={onViewTripSeals}>
               {t('operations.viewTripSeals')}
             </Button>
           )}
 
-          {sourceType === 'OPENORDER' && !!orders && selectedOrder && (
+          {sourceType === 'OPENORDER' && selectedOrder && (
             <Button type="primary" onClick={onViewOrderSeals}>
               {t('operations.viewOrderSeals')}
             </Button>
