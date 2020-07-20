@@ -82,9 +82,9 @@ const OmegaMessages = ({handleClick}) => {
 
 
 	const selected = async (message) => {
-		if (message != '' && message != [])
+		if (typeof message != undefined && message != '' && message != [])
 		{
-			handleClick(true, from, action, cformat, message[0]);
+			handleClick(true, from, action, cformat, message);
 
 			if (messages && messages.length <= 1)
 			{
@@ -109,7 +109,6 @@ const OmegaMessages = ({handleClick}) => {
 				selectionMode="single"
 				isLoading={isValidating}
 				onClick={(message) => selected(message)}
-				handleSelect={(message) => selected(message)}
 				extra={extras}
 				clearSelection={clearSelected}
 			/>
