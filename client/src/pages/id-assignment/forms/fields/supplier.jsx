@@ -32,7 +32,7 @@ const Supplier = ({ form, value }) => {
   return (
     <Form.Item
       name="kya_supplier"
-      label={t('fields.supplier')}
+      label={t('fields.schdSupplier')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select

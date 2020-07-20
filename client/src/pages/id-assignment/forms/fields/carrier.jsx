@@ -34,7 +34,7 @@ const Carrier = ({ form, value, onChange }) => {
   return (
     <Form.Item
       name="kya_tnkr_cmpy"
-      label={t('fields.carrier')}
+      label={t('fields.schdCarrier')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select

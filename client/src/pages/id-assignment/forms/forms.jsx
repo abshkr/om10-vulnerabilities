@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
-import { Form, Button, Tabs, Modal, notification, Drawer, setFilterValue } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Row, Col } from 'antd';
 
 import {
   EditOutlined,
@@ -280,17 +280,44 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     >
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" animated={false}>
-          <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
-            <AssignmentNumber form={form} value={value} physType={physType} onChange={onKeyNoChange} />
-            <Issuer form={form} value={value} onChange={onIssuerChange} />
-            <PhysicalType form={form} value={value} onChange={onPhysicalTypeChange} />
-            <PhysicalTagText form={form} value={value} physType={physType} />
-            <TimeCode form={form} value={value} />
-            <Flags form={form} value={value} />
-          </TabPane>
+          <TabPane 
+            //className="ant-tab-window"
+            tab={t('tabColumns.general')}
+            style={{ height: 'calc(100vh - 150px)' }}
+            forceRender={true}
+            key="1"
+          >
+            <Row gutter={[8, 3]}>
+              <Col span={12}>
+                <AssignmentNumber form={form} value={value} physType={physType} onChange={onKeyNoChange} />
+              </Col>
+              <Col span={12}>
+                <Issuer form={form} value={value} onChange={onIssuerChange} />
+              </Col>
+            </Row>
+            <Row gutter={[8, 3]}>
+              <Col span={12}>
+                <AssignmentType form={form} value={value} onChange={onKeyTypeChange} />
+              </Col>
+              <Col span={12}>
+                <PhysicalType form={form} value={value} onChange={onPhysicalTypeChange} />
+              </Col>
+            </Row>
+            <Row gutter={[8, 3]}>
+              <Col span={24}>
+                <PhysicalTagText form={form} value={value} physType={physType} />
+              </Col>
+            </Row>
+            <Row gutter={[40, 3]}>
+              <Col span={12}>
+                <TimeCode form={form} value={value} />
+              </Col>
+              <Col span={12}>
+                <Flags form={form} value={value} />
+              </Col>
+            </Row>
 
-          <TabPane className="ant-tab-window" tab={t('tabColumns.assignments')} forceRender={true} key="2">
-            <AssignmentType form={form} value={value} onChange={onKeyTypeChange} />
+            <Divider />
 
             {['1', '3', '5'].includes(type) && (
               <>
@@ -312,35 +339,47 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
 
             {['3', '5'].includes(type) && (
               <>
-                <DrawerField form={form} value={value} />
-              </>
-            )}
-
-            {['3', '5'].includes(type) && (
-              <>
-                <Supplier form={form} value={value} />
-              </>
-            )}
-
-            {['4', '5'].includes(type) && (
-              <>
-                <Carrier form={form} value={value} onChange={setCarrier} />
+                <Row gutter={[8, 3]}>
+                  <Col span={12}>
+                    <DrawerField form={form} value={value} />
+                  </Col>
+                  <Col span={12}>
+                    <Supplier form={form} value={value} />
+                  </Col>
+                </Row>
               </>
             )}
 
             {['4', '5'].includes(type) && (
               <>
-                <Tanker form={form} value={value} carrier={carrier} />
+                <Row gutter={[8, 3]}>
+                  <Col span={12}>
+                    <Carrier form={form} value={value} onChange={setCarrier} />
+                  </Col>
+                  <Col span={12}>
+                    <Tanker form={form} value={value} carrier={carrier} />
+                  </Col>
+                </Row>
               </>
             )}
 
             {['8', '9'].includes(type) && (
               <>
-                <EquipmentCarrier form={form} value={value} />
-                <TransportEquipment form={form} value={value} type={type} carrier={carrier} />
+                <Row gutter={[8, 3]}>
+                  <Col span={12}>
+                    <EquipmentCarrier form={form} value={value} />
+                  </Col>
+                  <Col span={12}>
+                    <TransportEquipment form={form} value={value} type={type} carrier={carrier} />
+                  </Col>
+                </Row>
               </>
             )}
           </TabPane>
+
+          {/* <TabPane className="ant-tab-window" tab={t('tabColumns.assignments')} forceRender={true} key="2">
+
+          </TabPane> */}
         </Tabs>
       </Form>
     </Drawer>
