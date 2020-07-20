@@ -119,6 +119,7 @@ thead {
   height: 100%;
   width: 100%;
   text-align: left;
+	line-height: 1;
 }
 
 .detailsAreaFilledByHostMsg,
@@ -163,6 +164,7 @@ thead {
   height: 450px;
   width: 100%;
   text-align: left;
+  line-height: 1;
 }
 
 .messageAreaPreBody {
@@ -171,6 +173,7 @@ thead {
   width: 100%;
   text-align: left;
   padding: 6px;
+  line-height: 1;
   overflow: auto;
 }
 
