@@ -20,6 +20,10 @@ const columns = (t) => [
 			{
 				desc = "rejected";
 			}
+			else if (parseInt(status) == 4)
+			{
+				desc = "error";
+			}
 			else
 			{
 				desc = "processing";
@@ -38,6 +42,10 @@ const columns = (t) => [
 			else if (parseInt(status) == 3)
 			{
 				color = "coral";
+			}
+			else if (parseInt(status) == 4)
+			{
+				color = "#FF3900";
 			}
 			else
 			{
