@@ -101,6 +101,7 @@ thead {
   border-radius: 10px;
 }
 
+/*
 .detailsArea,
 .contentsArea {
   display: block;
@@ -112,14 +113,16 @@ thead {
   border-radius: 10px;
   background-color: #e5eaed;
 }
+*/
 
 .detailsAreaPre,
 .contentsAreaPre {
   display: block;
-  height: 100%;
+  height: 200px;
   width: 100%;
   text-align: left;
 	line-height: 1;
+  overflow: unset;
 }
 
 .detailsAreaFilledByHostMsg,
@@ -133,6 +136,8 @@ thead {
   border-radius: 10px;
   background-color: #e5eaed;
   padding: 6px;
+	resize: vertical;
+  overflow: auto;
 }
 
 .detailsAreaFilledByOmMsg,
@@ -146,6 +151,8 @@ thead {
   border-radius: 10px;
   background-color: #e5eaed;
   padding: 6px;
+	resize: vertical;
+  overflow: auto;
 }
 
 .messageArea {
@@ -164,7 +171,8 @@ thead {
   height: 450px;
   width: 100%;
   text-align: left;
-  line-height: 1;
+	line-height: 1;
+  overflow: unset;
 }
 
 .messageAreaPreBody {
@@ -173,8 +181,7 @@ thead {
   width: 100%;
   text-align: left;
   padding: 6px;
-  line-height: 1;
-  overflow: auto;
+	line-height: 1;
 }
 
 .messageAreaPreBodyInputFld {
@@ -183,7 +190,7 @@ thead {
 
 .messageAreaFilledByHostMsg {
   display: block;
-  height: 100%;
+  height: 500px;
   width: 100%;
   text-align: left;
   border: 4px solid;
@@ -191,11 +198,13 @@ thead {
   border-radius: 10px;
   background-color: #e5eaed;
   padding: 6px;
+	resize: vertical;
+  overflow: auto;
 }
 
 .messageAreaFilledByOmMsg {
   display: block;
-  height: 100%;
+  height: 500px;
   width: 100%;
   text-align: left;
   border: 4px solid;
@@ -203,6 +212,8 @@ thead {
   border-radius: 10px;
   background-color: #e5eaed;
   padding: 6px;
+	resize: vertical;
+  overflow: auto;
 }
 
 td {
