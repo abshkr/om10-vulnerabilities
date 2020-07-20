@@ -98,6 +98,22 @@ const columns = (t) => [
     suppressSizeToFit: true
   },
   {
+    headerName: t('fields.status_description'),
+    field: 'STATUS_DESCRIPTION',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    suppressSizeToFit: true
+  },
+  {
+    headerName: t('fields.status'),
+    field: 'STATUS',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    suppressSizeToFit: true
+  },
+  {
     headerName: t('fields.origin'),
     field: 'ORIGIN',
     filter: 'FuzzyFilter',
@@ -144,26 +160,9 @@ const columns = (t) => [
     resizable: true,
     suppressSizeToFit: true
   },
-
   {
     headerName: t('fields.validity'),
     field: 'VALIDITY',
-    filter: 'FuzzyFilter',
-    sortable: true,
-    resizable: true,
-    suppressSizeToFit: true
-  },
-  {
-    headerName: t('fields.status'),
-    field: 'STATUS',
-    filter: 'FuzzyFilter',
-    sortable: true,
-    resizable: true,
-    suppressSizeToFit: true
-  },
-  {
-    headerName: t('fields.status_description'),
-    field: 'STATUS_DESCRIPTION',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
