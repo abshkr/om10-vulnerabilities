@@ -1,4 +1,5 @@
 export const READ = '/api/pages/idassignment/read.php';
+export const CHECK_ASSN_NUM = '/api/pages/idassignment/check_assn_num.php';
 export const CREATE = '/api/pages/idassignment/create.php';
 export const UPDATE = '/api/pages/idassignment/update.php';
 export const DELETE = '/api/pages/idassignment/delete.php';

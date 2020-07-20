@@ -24,6 +24,22 @@ class IDAssignment extends CommonClass
         
     );
 
+    public function check_assn_num()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM ACCESS_KEYS WHERE KYA_KEY_NO=:key_no
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':key_no', $this->kya_key_no);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function count()
     {
         $query = "
