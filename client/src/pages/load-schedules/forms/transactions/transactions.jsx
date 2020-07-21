@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { LoadingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Spin, Tabs } from 'antd';
+import { Spin, Tabs, Divider } from 'antd';
 
 import api, { LOAD_SCHEDULES } from '../../../../api';
 import { DataTable } from '../../../../components';
@@ -26,9 +26,16 @@ const Transactions = ({ value }) => {
   const transferFields = transferColumns(t);
   const meterFields = meterColumns(t);
 
-  const onTransactionSelect = (row) => {};
+  const onTransactionSelect = (row) => {
+    setTransfers(row?.transfers);
+    setProducts(row?.transfers[0].base_prods);
+    setMeters(row?.transfers[0].meters);
+  };
 
-  const onTransferSelect = (row) => {};
+  const onTransferSelect = (row) => {
+    setProducts(row?.base_prods);
+    setMeters(row?.meters);
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -65,19 +72,37 @@ const Transactions = ({ value }) => {
 
   return (
     <Spin spinning={isLoading} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
-      <DataTable data={transactions} columns={transactionsFields} height="80vh" />
+      <div style={{ marginTop: 20 }} />
 
-      <div style={{ marginTop: 10, marginBottom: 10 }} />
+      <DataTable 
+        data={transactions} 
+        columns={transactionsFields} 
+        height="80vh" 
+        handleSelect={(payload) => onTransactionSelect(payload[0])}
+        minimal 
+      />
 
-      <DataTable data={transfers} columns={transferFields} height="80vh" />
+      <div style={{ marginTop: 10, marginBottom: 30 }} />
+
+      <Divider orientation="left">{t("tabColumns.transferDetails")}</Divider>
+
+      <DataTable 
+        data={transfers} 
+        columns={transferFields} 
+        height="80vh" 
+        minimal 
+        handleSelect={(payload) => onTransferSelect(payload[0])}
+      />
+
+      <div style={{ marginTop: 20, marginBottom: 20 }} />
 
       <Tabs defaultActiveKey="1">
-        <Tabs.TabPane tab="Meter Details" key="1">
-          <DataTable data={meters} columns={meterFields} height="80vh" />
+        <Tabs.TabPane tab="Base Product Details" key="1">
+          <DataTable data={products} columns={productFields} height="80vh" minimal/>
         </Tabs.TabPane>
 
-        <Tabs.TabPane tab="Base Product Details" key="2">
-          <DataTable data={products} columns={productFields} height="80vh" />
+        <Tabs.TabPane tab="Meter Details" key="2">
+          <DataTable data={meters} columns={meterFields} height="80vh" minimal/>
         </Tabs.TabPane>
       </Tabs>
     </Spin>
