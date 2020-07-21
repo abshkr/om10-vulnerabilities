@@ -15,6 +15,7 @@ import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
 import api from 'api';
+import SourceRender from './source-render';
 
 const LoadSchedules = () => {
   const { scheduleDateRange } = useConfig();
@@ -76,6 +77,10 @@ const LoadSchedules = () => {
   };
 
   const fields = columns(false, t);
+
+  const components = {
+    SourceRender,
+  };
   // const data = payload?.records;
   const [data, setData] = useState(payload?.records);
   const isLoading = isValidating || !data;
@@ -147,6 +152,7 @@ const LoadSchedules = () => {
         columns={fields}
         isLoading={isLoading}
         selectionMode="single"
+        components={components}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
         autoColWidth

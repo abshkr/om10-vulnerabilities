@@ -37,6 +37,7 @@ const columns = (IS_NOMINATION, t) => [
     width: 130,
     suppressSizeToFit: true,
     hide: IS_NOMINATION,
+    cellRenderer: 'SourceRender',
   },
   {
     headerName: t('fields.schedDate'),
