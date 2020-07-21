@@ -1104,7 +1104,9 @@
     "drawerProdName": "Drawer Product Name",
     "contact": "Contact",
     "availableTanks": "Available Tank(s)",
-    "tankGroupMemebers": "Tank Group Memebers"
+    "tankGroupMemebers": "Tank Group Memebers",
+	"personLockCheck": "Unused Personnel Lock Check",
+	"personDeleteCheck": "Unused Personnel Delete Check"
   },
 
   "pageMenu": {
