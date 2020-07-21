@@ -7,14 +7,13 @@ const columns = (t, form, units, access) => [
     suppressSizeToFit: true,
     // pinned: 'left',
   },
-
   {
     headerName: t('fields.product'),
     field: 'prod_name',
     resizable: true,
     width: 400,
+    cellRenderer: 'ProductRender', 
   },
-
   {
     headerName: t('fields.schedule'),
     field: 'qty_scheduled',

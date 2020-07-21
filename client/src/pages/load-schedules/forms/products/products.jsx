@@ -4,7 +4,7 @@ import useSWR from 'swr';
 import { Form } from 'antd';
 import api from 'api';
 
-import { Unit, Schedule } from './fields';
+import { Unit, Schedule, ProductRender } from './fields';
 import { DataTable } from '../../../../components';
 import columns from './columns';
 import transform from './transform';
@@ -14,6 +14,7 @@ import { LOAD_SCHEDULES } from '../../../../api';
 const components = {
   UnitEditor: Unit,
   ScheduleEditor: Schedule,
+  ProductRender: ProductRender
 };
 
 const Products = ({ value, form, drawer, access }) => {

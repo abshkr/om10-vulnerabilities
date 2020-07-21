@@ -115,7 +115,7 @@ class Schedule extends CommonClass
     public function drawer_products()
     {
         $query = "
-            SELECT PROD_CODE, PROD_NAME FROM PRODUCTS 
+            SELECT PROD_CODE, PROD_NAME, PROD_IMAGE FROM PRODUCTS 
             WHERE PROD_CMPY = :cmpy_code
             ORDER BY PROD_CODE";
         $stmt = oci_parse($this->conn, $query);
@@ -678,6 +678,7 @@ class Schedule extends CommonClass
             NVL(PRODUCTS.PROD_CODE, LOADED.PROD_CODE) PROD_CODE,
             NVL(PRODUCTS.PROD_NAME, LOADED.PROD_NAME) PROD_NAME,
             NVL(PRODUCTS.PROD_CMPY, LOADED.PROD_CMPY) PROD_CMPY,
+            PROD_IMAGE,
             QTY_LOADED,
             UNIT_NAME, 
             QTY_PRELOADED,
