@@ -16,7 +16,7 @@ export default class DrawerProducts extends Component {
   }
 
   onClick = (value, record) => {
-    const { form, payload, setPayload, t } = this.props;
+    const { form, arms, payload, setPayload, t } = this.props;
 
     // let current = payload;
     let current = form.getFieldValue('transfers');
@@ -25,10 +25,12 @@ export default class DrawerProducts extends Component {
     const index = _.findIndex(current, ['trsf_cmpt_no', key]);
     console.log('DrawerProducts, onClick', key, index, this.props);
 
+    const items = _.filter(arms, (o) => (o.rat_prod_prodcmpy === record?.item?.prod_cmpy && o.rat_prod_prodcode === record?.item?.prod_code));
+
     current[index].trsf_prod_code = record?.item?.prod_code;
     current[index].trsf_prod_name = record.children;
     current[index].trsf_prod_cmpy = record?.item?.prod_cmpy;
-    current[index].trsf_arm_cd = t('placeholder.selectArmCode');
+    current[index].trsf_arm_cd = items?.length>0 ? t('placeholder.selectArmCode') : t('placeholder.noArmSelection');
     // current[index].trsf_qty_plan = null;
     // current[index].trsf_qty_left = null;
     current[index].trsf_density = null;

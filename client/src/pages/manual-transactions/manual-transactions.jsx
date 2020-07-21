@@ -69,6 +69,7 @@ const ManualTransactions = ({ popup, params }) => {
   const [trips, setTrips] = useState(null);
   const [tankers, setTankers] = useState(null);
   const [orders, setOrders] = useState(null);
+  const [productArms, setProductArms] = useState(undefined);
 
   const [customers, setCustomers] = useState(null);
   const [selectedSupplier, setSelectedSupplier] = useState(null);
@@ -1117,6 +1118,7 @@ const ManualTransactions = ({ popup, params }) => {
           setDataLoadFlag={setDataLoadFlagForm}
           dataLoaded={dataLoaded}
           setDataLoaded={setDataLoaded}
+          setProductArms={setProductArms}
         />
 
         <DrawerProductTransfers
@@ -1153,6 +1155,8 @@ const ManualTransactions = ({ popup, params }) => {
           setDataLoadFlagMeterTotals={setDataLoadFlagMeterTotals}
           dataLoaded={dataLoaded}
           setDataLoaded={setDataLoaded}
+          productArms={productArms}
+          setProductArms={setProductArms}
         />
       </Form>
     </Page>

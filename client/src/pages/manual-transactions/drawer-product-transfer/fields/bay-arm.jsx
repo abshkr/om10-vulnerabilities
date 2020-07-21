@@ -85,7 +85,13 @@ export default class BayArm extends Component {
   };
 
   componentDidMount() {
+    const { arms } = this.props;
     this.setState({
+      isLoading: false,
+      values: _.filter(arms, (o) => (o.rat_prod_prodcmpy === this.props.data.trsf_prod_cmpy && o.rat_prod_prodcode === this.props.data.trsf_prod_code)),
+    });
+
+    /* this.setState({
       isLoading: true,
     });
 
@@ -101,7 +107,7 @@ export default class BayArm extends Component {
         isLoading: false,
         values: res.data?.records,
       });
-    });
+    }); */
   }
 
   render() {

@@ -1783,6 +1783,7 @@
     "setPeriod": "Set Period",
     "selectDrawerProduct": "Select Drawer Product",
     "selectArmCode": "Select Arm Code",
+    "noArmSelection": "No Arm Selection",
     "selectTransType": "Please Select Transaction Type",
     "setSourceUnit": "Please Select Source Unit",
     "setDestinationUnit": "Please Select Destination Unit",

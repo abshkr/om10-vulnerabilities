@@ -46,6 +46,7 @@ const Forms = ({
   setDataLoadFlag,
   dataLoaded,
   setDataLoaded,
+  setProductArms,
 }) => {
   const { setFieldsValue, resetFields } = form;
 
@@ -132,6 +133,7 @@ const Forms = ({
     setTankers(tankerResults);
     setSelectedTrip(trip);
     setSelectedTanker(value?.tnkr_code);
+    setProductArms(undefined);
 
     setFieldsValue({
       tanker: value?.tnkr_code,
@@ -153,6 +155,7 @@ const Forms = ({
 
     setTankers(tankerResults);
     setSelectedOrder(order);
+    setProductArms(undefined);
 
     setFieldsValue({
       carrier: value?.order_carrier,

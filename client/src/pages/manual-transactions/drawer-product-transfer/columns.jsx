@@ -1,4 +1,4 @@
-const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition) => [
+const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms) => [
   {
     headerName: t('fields.compartmentNumber'),
     field: 'trsf_cmpt_no',
@@ -104,6 +104,7 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
       !sourceType || !loadNumber || (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') ? 200 : 400,
     cellEditorParams: {
       values: products?.records || [],
+      arms: productArms || [],
       form,
       payload,
       setPayload,
@@ -122,7 +123,7 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     editable: true,
     cellClass: 'editable-ag-grid-cell',
     cellEditorParams: {
-      values: [],
+      arms: productArms || [],
       form,
       payload,
       setPayload,

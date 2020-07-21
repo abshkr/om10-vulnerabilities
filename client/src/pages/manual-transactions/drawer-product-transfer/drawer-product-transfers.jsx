@@ -63,6 +63,8 @@ const DrawerProductTransfers = ({
   setDataLoadFlagMeterTotals,
   dataLoaded,
   setDataLoaded,
+  productArms,
+  setProductArms,
 }) => {
   const { data } = useSWR((
       sourceType === 'SCHEDULE' && supplier && trip && 
@@ -97,6 +99,27 @@ const DrawerProductTransfers = ({
   const [tableBaseTransfersAPI, setTableBaseTransfersAPI] = useState(null);
   const [canCalc, setCanCalc] = useState(false);
   const [canRestore, setCanRestore] = useState(false);
+
+  
+  const getProductArms = (supplier, products) => {
+    const prod_codes = [];
+    _.forEach(products, (o) => {
+      if (o.prod_cmpy === supplier) {
+        prod_codes.push(o.prod_code);
+      }
+    });
+
+    api
+    .get(MANUAL_TRANSACTIONS.GET_PROD_ARMS, {
+      params: {
+        prod_cmpy: supplier,
+        prod_code: prod_codes,
+      },
+    })
+    .then((res) => {
+      setProductArms(res.data?.records);
+    });
+  };
 
   const onDelete = () => {
     const filtered = _.reject(payload, ['trsf_cmpt_no', clicked?.trsf_cmpt_no]);
@@ -580,10 +603,16 @@ const DrawerProductTransfers = ({
   }, [sourceType]);
 
   useEffect(() => {
-    const values = columns(t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition);
+    if (supplier && products && !productArms) {
+      getProductArms(supplier, products?.records);
+    }
+  }, [supplier, products, productArms, getProductArms]);
+
+  useEffect(() => {
+    const values = columns(t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms);
 
     setFields(values);
-  }, [t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition]);
+  }, [t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms]);
 
   useEffect(() => {
     if (dataLoadFlagDrawTransfers !== 0) {
