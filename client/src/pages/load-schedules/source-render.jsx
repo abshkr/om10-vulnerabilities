@@ -12,15 +12,15 @@ export default class SourceRender extends Component {
   getBadge = () => {
 
     if (this.state.value === "Manually Created") {
-      return "blue";
+      return "yellow";
     } else if (this.state.value === "From Host") {
       return "green";
     } else if (this.state.value === "Open Order") {
-      return "red";
+      return "geekblue";
     } else if (this.state.value === "Standalone or Special") {
       return "gold";
     } else {
-      return "grey";
+      return "red";
     };
   }
 
