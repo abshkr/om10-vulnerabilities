@@ -116,13 +116,13 @@ export default class BayArm extends Component {
           onChange={this.onClick}
           bordered={false}
         >
-          {_.filter(values, (o) => (o.stream_bclass_code!=='6'))?.map((item) => (
+          {values?.map((item) => (
             <Select.Option
               key={`${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
               value={`${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
               item={item}
             >
-              {`${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
+              {`${item.ratio_seq}: ${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
             </Select.Option>
           ))}
         </Select>

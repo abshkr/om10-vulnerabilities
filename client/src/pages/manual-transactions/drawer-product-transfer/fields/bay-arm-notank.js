@@ -12,6 +12,7 @@ export default class BayArm extends Component {
     this.state = {
       value: this.props.value,
       values: [],
+      arms: [],
       isLoading: true,
     };
   }
@@ -84,6 +85,27 @@ export default class BayArm extends Component {
     );
   };
 
+  getArms = (items) => {
+    const arms = [];
+    console.log('BayArms: getArms - start', items);
+    let itemExisted = false;
+
+    _.forEach(items, (item) => {
+      itemExisted = false;
+      for (let index = 0; index < arms.length; index++) {
+        const arm = arms[index];
+        if (arm.stream_baycode === item.stream_baycode && arm.stream_armcode === item.stream_armcode && arm.stream_index === item.stream_index) {
+          itemExisted = true;
+		      break;
+        }
+      }
+      if (!itemExisted) {
+        arms.push(item);
+      }
+    });
+    return arms;
+  }
+
   componentDidMount() {
     this.setState({
       isLoading: true,
@@ -100,12 +122,13 @@ export default class BayArm extends Component {
       this.setState({
         isLoading: false,
         values: res.data?.records,
+        arms: this.getArms(res.data?.records),
       });
     });
   }
 
   render() {
-    const { isLoading, values } = this.state;
+    const { isLoading, values, arms } = this.state;
 
     return (
       <div style={{ display: 'flex' }}>
@@ -116,13 +139,22 @@ export default class BayArm extends Component {
           onChange={this.onClick}
           bordered={false}
         >
-          {_.filter(values, (o) => (o.stream_bclass_code!=='6'))?.map((item) => (
+          {/* {values?.map((item) => (
             <Select.Option
               key={`${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
               value={`${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
               item={item}
             >
-              {`${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
+              {`${item.ratio_seq}: ${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
+            </Select.Option>
+          ))} */}
+          {arms?.map((item) => (
+            <Select.Option
+              key={`${item.stream_index} - ${item.stream_baycode} - ${item.stream_armcode}`}
+              value={`${item.stream_index} - ${item.stream_baycode} - ${item.stream_armcode}`}
+              item={item}
+            >
+              {`${item.stream_baycode} - ${item.stream_armcode}`}
             </Select.Option>
           ))}
         </Select>
