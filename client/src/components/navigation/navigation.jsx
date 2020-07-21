@@ -9,6 +9,8 @@ import { LogoContainer, MenuContainer } from './style';
 import { ROUTES, SETTINGS } from '../../constants';
 
 import { Icons } from '..';
+import { AUTH } from 'api';
+import api from 'api';
 
 const { SubMenu } = Menu;
 
@@ -25,6 +27,20 @@ const Navigation = () => {
       history.push(ROUTES.TANKS, {
         listed: true,
       });
+    } else if (event?.key === ROUTES.BAY_VIEW) {
+      // const access = useAuth('M_BAYVIEW'); //Cannot use useAuth here because this is a function not a component
+      api
+        .get(`${AUTH.PERMISSIONS}?object_text=M_BAYVIEW`)
+        .then((res) => {
+          console.log(res.data.records);
+          if (!res.data.records[0].priv_view) {
+            console.log("cannot view");
+            history.push(ROUTES.UNAUTHORIZED);
+          } else {
+            // window.open(`https://10.1.10.238:22443/scadaviews/bayview/index.html#/overview`, "_blank");
+            window.open(`https://${window.location.hostname}/scadaviews/bayview/index.html#/overview`, "_blank");
+          }
+        }) ;
     } else {
       history.push(event.key);
     }
