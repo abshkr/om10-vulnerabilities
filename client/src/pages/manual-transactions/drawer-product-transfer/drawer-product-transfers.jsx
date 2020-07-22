@@ -101,6 +101,34 @@ const DrawerProductTransfers = ({
   const [canRestore, setCanRestore] = useState(false);
 
   
+  const getAvailableArms = (arms, prodcmpy, prodcode) => {
+
+    const armsByProd = _.filter(arms, (o) => (
+      o.rat_prod_prodcmpy === prodcmpy && o.rat_prod_prodcode === prodcode
+    ));
+    const basesByArm = {};
+    _.forEach(armsByProd, (o) => {
+      if (basesByArm.hasOwnProperty(o.stream_armcode)) {
+        basesByArm[o.stream_armcode] += 1;
+      } else {
+        basesByArm[o.stream_armcode] = 1;
+      }
+      o.rat_arm_bases = 0;
+    });
+    _.forEach(armsByProd, (o) => {
+      if (basesByArm.hasOwnProperty(o.stream_armcode)) {
+        o.rat_arm_bases = basesByArm[o.stream_armcode];
+      } 
+    });
+
+    const items = _.filter(armsByProd, (o) => (
+      o.stream_bclass_code !== '6' && String(o.rat_arm_bases) === o.rat_count
+    ));
+
+    return items;
+
+  };
+
   const getProductArms = (supplier, products) => {
     const prod_codes = [];
     _.forEach(products, (o) => {
@@ -646,7 +674,8 @@ const DrawerProductTransfers = ({
             trsf_prod_cmpy: record?.shls_supp,
             trsf_arm_cd: t('placeholder.selectArmCode'),
             trsf_qty_plan: record?.allowed_qty==='' ? null : record?.allowed_qty,
-            trsf_qty_left: record?.allowed_qty==='' ? null : String(_.toNumber(record?.allowed_qty) - _.toNumber(record?.load_qty)),
+            //trsf_qty_left: record?.allowed_qty==='' ? null : String(_.toNumber(record?.allowed_qty) - _.toNumber(record?.load_qty)),
+            trsf_qty_left: record?.load_qty==='' ? null : record?.load_qty,
             trsf_density: null,
             trsf_temp: null,
             trsf_qty_amb: null,

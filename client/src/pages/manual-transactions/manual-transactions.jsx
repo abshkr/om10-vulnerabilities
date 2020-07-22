@@ -1119,6 +1119,11 @@ const ManualTransactions = ({ popup, params }) => {
           dataLoaded={dataLoaded}
           setDataLoaded={setDataLoaded}
           setProductArms={setProductArms}
+          setDataDrawTransfers={setDataDrawTransfers}
+          setDataBaseTransfers={setDataBaseTransfers}
+          setDataBaseTotals={setDataBaseTotals}
+          setDataMeterTransfers={setDataMeterTransfers}
+          setDataMeterTotals={setDataMeterTotals}
         />
 
         <DrawerProductTransfers

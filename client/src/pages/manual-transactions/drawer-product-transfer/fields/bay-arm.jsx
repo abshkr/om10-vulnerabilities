@@ -67,12 +67,12 @@ export default class BayArm extends Component {
     // current[index].trsf_qty_cor = null;
     // current[index].trsf_load_kg = null;
 
-    // console.log('BayArm, onClick', key, index, current);
+    console.log('BayArm, onClick', key, index, record, current);
 
 
-    form.setFieldsValue({
+    /* form.setFieldsValue({
       transfers: current,
-    });
+    }); */
 
     setPayload(current);
 
@@ -85,10 +85,40 @@ export default class BayArm extends Component {
   };
 
   componentDidMount() {
-    const { arms } = this.props;
+    const { arms, t } = this.props;
+
+    const armsByProd = _.filter(arms, (o) => (
+      o.rat_prod_prodcmpy === this.props.data.trsf_prod_cmpy && o.rat_prod_prodcode === this.props.data.trsf_prod_code
+    ));
+    const basesByArm = {};
+    _.forEach(armsByProd, (o) => {
+      if (basesByArm.hasOwnProperty(o.stream_armcode)) {
+        basesByArm[o.stream_armcode] += 1;
+      } else {
+        basesByArm[o.stream_armcode] = 1;
+      }
+      o.rat_arm_bases = 0;
+    });
+    _.forEach(armsByProd, (o) => {
+      if (basesByArm.hasOwnProperty(o.stream_armcode)) {
+        o.rat_arm_bases = basesByArm[o.stream_armcode];
+      } 
+    });
+
+    const items = _.filter(armsByProd, (o) => (
+      o.stream_bclass_code !== '6' && String(o.rat_arm_bases) === o.rat_count
+    ));
+    if (items?.length === 0) {
+      this.setState(
+        {
+          value: t('placeholder.noArmAvailable'),
+        },
+      );
+    }
+
     this.setState({
       isLoading: false,
-      values: _.filter(arms, (o) => (o.rat_prod_prodcmpy === this.props.data.trsf_prod_cmpy && o.rat_prod_prodcode === this.props.data.trsf_prod_code)),
+      values: armsByProd,
     });
 
     /* this.setState({
@@ -122,7 +152,7 @@ export default class BayArm extends Component {
           onChange={this.onClick}
           bordered={false}
         >
-          {_.filter(values, (o) => (o.stream_bclass_code!=='6'))?.map((item) => (
+          {_.filter(values, (o) => (o.stream_bclass_code!=='6' && String(o.rat_arm_bases)===o.rat_count))?.map((item) => (
             <Select.Option
               key={`${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
               value={`${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
