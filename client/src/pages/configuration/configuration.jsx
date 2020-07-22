@@ -25,10 +25,19 @@ const FormSwitch = ({ config, onChange }) => {
   switch (config.config_key) {
     case 'URBAC_PWD_COMPLEXITY':
       return (
-        <Select defaultValue="1" style={{ width: 260 }} onChange={(value) => onChange(config, value)}>
+        <Select defaultValue={config.config_value} style={{ width: 260 }} onChange={(value) => onChange(config, value)}>
           <Option value="1">Simple (Alpha and Numeric)</Option>
           <Option value="2">Medium (Upper, Lower and Numeric)</Option>
           <Option value="3">Complex (Upper, Lower, Numberic and Symbol)</Option>
+        </Select>
+      );
+
+    case 'SITE_SEAL_MODE':
+      return (
+        <Select defaultValue={config.config_value} style={{ width: 260 }} onChange={(value) => onChange(config, value)}>
+          <Option value="0">No-auto Mode</Option>
+          <Option value="1">Allocate With DLI</Option>
+          <Option value="2">Allocate With BOL</Option>
         </Select>
       );
 
@@ -426,7 +435,9 @@ const Configuration = ({ user, config }) => {
   }, [configPayload, featuresPayload]);
 
   const onUpdate = () => {
-    const values = UPDATING_FEATURES ? features : configuration;
+    const values = UPDATING_FEATURES ? features : _.filter(configuration, (item) => {
+      return item.config_required_by_gui !== "";
+    });
 
     Modal.confirm({
       title: t('prompts.update'),
