@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Select } from 'antd';
 import _ from 'lodash';
 
+import {getAvailableArms} from '../../../../utils'
+
 export default class DrawerProducts extends Component {
   constructor(props) {
     super(props);
@@ -23,29 +25,9 @@ export default class DrawerProducts extends Component {
 
     const key = this.props.data?.trsf_cmpt_no; // tnkr_cmpt_no;
     const index = _.findIndex(current, ['trsf_cmpt_no', key]);
-    console.log('DrawerProducts, onClick', key, index, this.props);
+    console.log('DrawerProducts, onClick', key, index, record, this.props);
 
-    const armsByProd = _.filter(arms, (o) => (
-      o.rat_prod_prodcmpy === record?.item?.prod_cmpy && o.rat_prod_prodcode === record?.item?.prod_code
-    ));
-    const basesByArm = {};
-    _.forEach(armsByProd, (o) => {
-      if (basesByArm.hasOwnProperty(o.stream_armcode)) {
-        basesByArm[o.stream_armcode] += 1;
-      } else {
-        basesByArm[o.stream_armcode] = 1;
-      }
-      o.rat_arm_bases = 0;
-    });
-    _.forEach(armsByProd, (o) => {
-      if (basesByArm.hasOwnProperty(o.stream_armcode)) {
-        o.rat_arm_bases = basesByArm[o.stream_armcode];
-      } 
-    });
-
-    const items = _.filter(armsByProd, (o) => (
-      o.stream_bclass_code !== '6' && String(o.rat_arm_bases) === o.rat_count
-    ));
+    const items = getAvailableArms(arms, record?.item?.prod_cmpy, record?.item?.prod_code);
 
     current[index].trsf_prod_code = record?.item?.prod_code;
     current[index].trsf_prod_name = record.children;
@@ -59,9 +41,9 @@ export default class DrawerProducts extends Component {
     current[index].trsf_qty_amb = null;
     current[index].trsf_load_kg = null;
 
-    form.setFieldsValue({
+    /* form.setFieldsValue({
       transfers: current,
-    });
+    }); */
 
     setPayload(current);
 
