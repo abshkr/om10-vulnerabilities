@@ -459,6 +459,10 @@ class ManualTrans extends CommonClass
             $serv->set_property('trip_no', $this->trip_no);
             $serv->set_property('load_number', $this->trip_no);
         }
+
+        if (isset($this->load_security)) {
+            $serv->set_property('load_security', $this->load_security);
+        }
         
         $start_time = DateTime::createFromFormat('Y-m-d H:i:s', $this->start_time);
         $serv->set_property('start_time', $start_time->format('d.m.YH:i:s'));
