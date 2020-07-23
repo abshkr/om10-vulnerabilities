@@ -65,6 +65,7 @@ const LoadSchedules = () => {
         params: {
           shls_trip_no: values.shls_trip_no,
           supplier_code: values.supplier_code,
+          carrier_code: values.carrier_code,
           tnkr_code: values.tnkr_code,
           status: values.trip_status,
           start_date: values.use_date_range ? values.start_date : null,
@@ -129,6 +130,7 @@ const LoadSchedules = () => {
           supplier_code: true,
           trip_status: true,
           tnkr_code: true,
+          carrier_code: true,
         })}
       >
         {t('operations.search')}

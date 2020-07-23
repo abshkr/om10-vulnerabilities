@@ -1,6 +1,7 @@
 import DateRange from './date-range';
 import LoadID from './load-id';
 import Supplier from './supplier';
+import Carrier from './carrier';
 import TripStatus from './trip-status';
 import Tanker from './tanker';
 import Trip from './trip-number';
@@ -28,6 +29,7 @@ export {
   DateRange, 
   LoadID, 
   Supplier, 
+  Carrier,
   TripStatus, 
   Tanker, 
   Trip, 

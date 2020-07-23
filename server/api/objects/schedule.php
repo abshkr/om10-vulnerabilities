@@ -265,6 +265,10 @@ class Schedule extends CommonClass
             $query = $query . " AND SUPPLIER_CODE LIKE :supplier_code";
         }
 
+        if (isset($this->carrier_code)) {
+            $query = $query . " AND CARRIER_CODE LIKE :carrier_code";
+        }
+
         if (isset($this->tnkr_code)) {
             $query = $query . " AND TNKR_CODE LIKE :tnkr_code";
         }
@@ -286,9 +290,9 @@ class Schedule extends CommonClass
             oci_bind_by_name($stmt, ':supplier_code', $supplier_code);
         }
 
-        if (isset($this->supplier_code)) {
-            $supplier_code = '%' . $this->supplier_code . '%';
-            oci_bind_by_name($stmt, ':supplier_code', $supplier_code);
+        if (isset($this->carrier_code)) {
+            $carrier_code = '%' . $this->carrier_code . '%';
+            oci_bind_by_name($stmt, ':carrier_code', $carrier_code);
         }
 
         if (isset($this->tnkr_code)) {

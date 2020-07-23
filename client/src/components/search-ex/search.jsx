@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { DateRange, 
   LoadID, 
   Supplier, 
+  Carrier,
   TripStatus, 
   Tanker, 
   Trip, 
@@ -54,6 +55,7 @@ const SearchForm = ({onSearch, fields}) => {
       {fields?.load_id && <LoadID />}
       {fields?.trsa_id && <TrsaID />}
       {fields?.supplier_code && <Supplier />}
+      {fields?.carrier_code && <Carrier />}
       {fields?.trip_status && <TripStatus />}
       {fields?.mlitm_status && <MovementStatus />}
       {fields?.mlitm_type && <MovementType onChange={setSpecmvType} />}
@@ -108,7 +110,7 @@ const WindowSearch = (
     // title: t('operations.fields'),
     title: title? title: 'Search',
     centered: true,
-    width: '20vw',
+    width: '25vw',
     icon: <FileSearchOutlined />,
     content: (
     <SWRConfig
