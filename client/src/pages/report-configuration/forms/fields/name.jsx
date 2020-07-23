@@ -53,6 +53,7 @@ const Name = ({ form, value, company }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         disabled={!!value}
         showSearch

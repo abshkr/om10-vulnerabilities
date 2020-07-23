@@ -25,7 +25,9 @@ const HotTempFlag = ({ form, value }) => {
 
   return (
     <Form.Item name="base_limit_preset_ht" label="Limit Preset Mass Quantity to Capacity">
-      <Select>
+      <Select
+	    dropdownMatchSelectWidth={false}
+      >
         {flags.map((item, index) => (
           <Select.Option key={index} value={item.value}>
             {item.name}

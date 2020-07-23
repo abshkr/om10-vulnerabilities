@@ -61,7 +61,13 @@ export default class DrawerProducts extends Component {
 
     return (
       <div style={{ display: 'flex' }}>
-        <Select value={this.state.value} style={{ width: '100%' }} onChange={this.onClick} bordered={false}>
+        <Select 
+          dropdownMatchSelectWidth={false}
+          value={this.state.value} 
+          style={{ width: '100%' }} 
+          onChange={this.onClick} 
+          bordered={false}
+        >
           {values?.map((item) => (
             <Select.Option key={item.prod_code} value={item.prod_desc} item={item}>
               {/* {`${item.prod_code} - ${item.prod_name} (Planned: ${sourceType==='SCHEDULE' ? item.qty_scheduled : item.schp_specqty} | Loaded: ${item.qty_loaded} | ${item.unit_name})`} */}

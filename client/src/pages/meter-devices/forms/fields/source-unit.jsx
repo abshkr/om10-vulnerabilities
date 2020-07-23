@@ -43,6 +43,7 @@ const SourceUnit = ({ form, value, source }) => {
     >
       {IS_TANK ? (
         <Select
+          dropdownMatchSelectWidth={false}
           loading={isValidating}
           showSearch
           optionFilterProp="children"

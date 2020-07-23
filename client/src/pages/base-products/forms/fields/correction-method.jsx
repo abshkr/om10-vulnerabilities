@@ -24,6 +24,7 @@ const CorrectionMethod = ({ form, value }) => {
   return (
     <Form.Item name="base_corr_mthd" label={t('fields.correctionMethod')}>
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         optionFilterProp="children"

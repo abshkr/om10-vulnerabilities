@@ -30,6 +30,7 @@ const Role = ({ form, value }) => {
   return (
     <Form.Item name="per_auth" label={t('fields.role')} rules={[{ required: true, validator: validate }]}>
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         optionFilterProp="children"

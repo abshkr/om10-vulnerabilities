@@ -40,6 +40,7 @@ const CustomerCategory = ({ form, value, onChange }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         onChange={onChange}

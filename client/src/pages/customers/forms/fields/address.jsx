@@ -42,6 +42,7 @@ const Address = ({ form, value, reload }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         optionFilterProp="children"

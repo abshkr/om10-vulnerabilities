@@ -38,6 +38,7 @@ const Drawer = ({ form, value, onChange }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         onChange={onChange}

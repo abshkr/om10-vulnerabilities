@@ -36,6 +36,7 @@ const SoldTo = ({ form, value, supplier, pageState }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         mode="tags"
         loading={isValidating}
         showSearch

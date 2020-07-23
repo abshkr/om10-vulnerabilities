@@ -214,6 +214,7 @@ const OrderListings = ({popup, params}) => {
       {rangeSetting !== '-1~~-1' && (
         <div style={{ float: 'left' }}>
           <Select
+            dropdownMatchSelectWidth={false}
             defaultValue={filterByExpiry?'ORDER_EXP_TIME':'ORDER_ORD_TIME'}
             onChange={setTimeOption}
             optionFilterProp="children"

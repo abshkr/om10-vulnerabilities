@@ -53,6 +53,7 @@ const Category = ({ form, value, reload }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         allowClear
         showSearch

@@ -41,6 +41,7 @@ const CloseOutReportBy = ({ form, value }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         showSearch
         optionFilterProp="children"
         placeholder={t('placeholder.selectCloseOutReportBy')}

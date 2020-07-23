@@ -28,7 +28,13 @@ const ProductInventory = () => {
 
   const modifiers = (
     <>
-      <Select key="1" style={{ width: 200 }} defaultValue={unit} onChange={setUnit}>
+      <Select 
+        dropdownMatchSelectWidth={false}
+        key="1" 
+        style={{ width: 200 }} 
+        defaultValue={unit} 
+        onChange={setUnit}
+      >
         {units.map((item) => {
           return (
             <Select.Option key={item} value={item}>

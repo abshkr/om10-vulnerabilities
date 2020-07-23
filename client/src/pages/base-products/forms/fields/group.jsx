@@ -23,6 +23,7 @@ const Group = ({ form, value }) => {
   return (
     <Form.Item name="base_prod_group" label={t('fields.group')}>
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         optionFilterProp="children"

@@ -88,6 +88,7 @@ const FormModal = ({ visible, onCreate, onCancel, gates }) => {
           rules={[{ required: true, validator: onDeviceCodeValidation }]}
         >
           <Select
+            dropdownMatchSelectWidth={false}
             loading={isLoading}
             showSearch
             onChange={(value, key) => onDeviceChange(key)}

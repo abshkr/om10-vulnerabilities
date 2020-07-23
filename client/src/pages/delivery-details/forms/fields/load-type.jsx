@@ -38,6 +38,7 @@ const LoadType = ({ form, value, pageState }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         disabled={(pageState==='create')? true : true}

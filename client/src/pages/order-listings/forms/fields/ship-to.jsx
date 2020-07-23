@@ -24,6 +24,7 @@ const ShipTo = ({ form, value, supplier, pageState }) => {
   return (
     <Form.Item name="order_ship_to_num" label={t('fields.orderShipTo')}>
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         disabled={(pageState==='create'||pageState==='edit'||pageState==='detail')? false : true}

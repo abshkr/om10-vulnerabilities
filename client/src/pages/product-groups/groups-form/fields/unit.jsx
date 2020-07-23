@@ -32,6 +32,7 @@ const Unit = ({ form, value }) => {
   return (
     <Form.Item name="pgr_unit" label={t('fields.unit')} rules={[{ required: true, validator: validate }]}>
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         optionFilterProp="children"

@@ -195,6 +195,7 @@ const MovementNominations = () => {
       {rangeSetting !== '-1~~-1' && (
         <div style={{ float: 'left' }}>
           <Select
+            dropdownMatchSelectWidth={false}
             defaultValue={filterByExpiry?'MV_DTIM_EXPIRY':'MV_DTIM_CREATE'}
             onChange={setTimeOption}
             optionFilterProp="children"

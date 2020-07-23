@@ -33,7 +33,9 @@ export default class AdaptiveArmPriority extends Component {
         {getFieldDecorator('afc_priority', {
           rules: [{ required: false, message: 'Please Select An Arm Priority.' }]
         })(
-          <Select>
+          <Select
+            dropdownMatchSelectWidth={false}
+          >
             {options.map((item, index) => (
               <Option key={index} value={item.key}>
                 {item.value}

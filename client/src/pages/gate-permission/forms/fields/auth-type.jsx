@@ -45,6 +45,7 @@ const AuthType = ({ value, form, enabled }) => {
         rules={enabled && [{ required: true }]}
       >
         <Select
+          dropdownMatchSelectWidth={false}
           loading={isValidating}
           disabled={!enabled}
           showSearch

@@ -474,6 +474,7 @@ const Forms = ({
         <Col span={8}>
           <Form.Item name="source_type" label={t('fields.transactionType')} rules={[{ required: true }]}>
             <Select
+              dropdownMatchSelectWidth={false}
               disabled={popup}
               onChange={handleTypeSelect}
               placeholder={t('placeholder.selectTransType')}
@@ -518,6 +519,7 @@ const Forms = ({
         <Col span={8}>
           <Form.Item name="supplier" label={t('fields.mtDataSupplier')} rules={[{ required: true }]}>
             <Select
+              dropdownMatchSelectWidth={false}
               loading={suppliersLoading}
               allowClear
               showSearch
@@ -541,6 +543,7 @@ const Forms = ({
         <Col span={8}>
           <Form.Item name="tanker" label={t('fields.tanker')} rules={[{ required: true }]}>
             <Select
+              dropdownMatchSelectWidth={false}
               allowClear
               showSearch
               disabled={sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT'}
@@ -570,6 +573,7 @@ const Forms = ({
       <Row gutter={24}>
         <Col span={8}>
           <Form.Item
+            dropdownMatchSelectWidth={false}
             name="customer"
             label={t('fields.customer')}
             rules={[{ required: sourceType === 'OPENORDER' }]}
@@ -597,6 +601,7 @@ const Forms = ({
         <Col span={8}>
           <Form.Item name="driver" label={t('fields.driver')} rules={[{ required: true }]}>
             <Select
+              dropdownMatchSelectWidth={false}
               loading={driversLoading}
               allowClear
               showSearch
@@ -632,6 +637,7 @@ const Forms = ({
             rules={[{ required: sourceType === 'SCHEDULE' }]}
           >
             <Select
+              dropdownMatchSelectWidth={false}
               allowClear
               showSearch
               optionFilterProp="children"
@@ -684,6 +690,7 @@ const Forms = ({
             rules={[{ required: sourceType === 'OPENORDER' }]}
           >
             <Select
+              dropdownMatchSelectWidth={false}
               //loading={driversLoading}
               allowClear
               showSearch

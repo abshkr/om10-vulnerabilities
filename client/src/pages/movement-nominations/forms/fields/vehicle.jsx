@@ -24,6 +24,7 @@ const Vehicle = ({ form, value, carrier }) => {
   return (
     <Form.Item name="mv_vehicle" label={t('fields.vehicle')}>
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         optionFilterProp="children"

@@ -22,6 +22,7 @@ const CurrentDepot = ({ form, value }) => {
   return (
     <Form.Item name="tnkr_cur_depot" label={t('fields.currentDepot')} rules={[{ required: false }]}>
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         disabled={!!value}
         showSearch

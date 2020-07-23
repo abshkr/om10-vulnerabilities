@@ -40,6 +40,7 @@ const Supplier = ({ form, value, onChange, pageState }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         onChange={onChange}

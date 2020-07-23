@@ -42,6 +42,7 @@ export default class UnitEditor extends Component {
     return (
       <div style={{ display: 'flex' }}>
         <Select 
+          dropdownMatchSelectWidth={false}
           value={this.state.value} 
           style={{ width: '100%' }} 
           onChange={this.onClick} 

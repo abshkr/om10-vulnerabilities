@@ -27,6 +27,7 @@ const Group = ({ form, value }) => {
   return (
     <Form.Item name="prod_group" label={t('fields.productGroup')} rules={[{ validator: validate }]}>
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         optionFilterProp="children"

@@ -29,7 +29,13 @@ export default class Equipment extends Component {
 
     return (
       <div style={{ display: 'flex' }}>
-        <Select value={this.state.value} style={{ width: '100%' }} onChange={this.onClick} bordered={false}>
+        <Select 
+          dropdownMatchSelectWidth={false}
+          value={this.state.value} 
+          style={{ width: '100%' }} 
+          onChange={this.onClick} 
+          bordered={false}
+		>
           {values?.map((item) => (
             <Select.Option key={item.tc_eqpt} value={item.eqpt_code}>
               {`${item.eqpt_code}${item.eqpt_code===item.eqpt_title?'':('['+item.eqpt_title+']')}`}

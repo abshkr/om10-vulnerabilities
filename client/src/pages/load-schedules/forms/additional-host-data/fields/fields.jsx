@@ -127,6 +127,7 @@ const Fields = ({ value, units, revalidate, data }) => {
 
           <Form.Item name="aiprd_produnit" label={t('fields.unit')}>
             <Select
+              dropdownMatchSelectWidth={false}
               loading={!units}
               showSearch
               optionFilterProp="children"

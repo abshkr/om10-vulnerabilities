@@ -21,6 +21,7 @@ const RefSpecTemp = ({ form, value }) => {
   return (
     <Form.Item name="base_ref_temp_spec" label={t('fields.refTempSpec')}>
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         optionFilterProp="children"

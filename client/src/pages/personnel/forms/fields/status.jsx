@@ -33,6 +33,7 @@ const Status = ({ form, value }) => {
   return (
     <Form.Item name="user_status_flag" label={t('fields.status')}>
       <Select
+        dropdownMatchSelectWidth={false}
         showSearch
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectStatus') : null}

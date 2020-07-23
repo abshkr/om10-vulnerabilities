@@ -223,6 +223,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               rules={[{ required: true, validator: validate }]}
             >
               <Select
+                dropdownMatchSelectWidth={false}
                 loading={isLoading}
                 showSearch
                 optionFilterProp="children"
@@ -246,6 +247,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               rules={[{ required: true, validator: validate }]}
             >
               <Select
+                dropdownMatchSelectWidth={false}
                 loading={isLoading}
                 showSearch
                 optionFilterProp="children"
@@ -293,6 +295,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               rules={[{ required: true, validator: validate }]}
             >
               <Select
+                dropdownMatchSelectWidth={false}
                 loading={isLoading}
                 showSearch
                 optionFilterProp="children"

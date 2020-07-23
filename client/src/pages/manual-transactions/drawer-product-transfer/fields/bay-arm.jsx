@@ -131,6 +131,7 @@ export default class BayArm extends Component {
     return (
       <div style={{ display: 'flex' }}>
         <Select
+          dropdownMatchSelectWidth={false}
           value={this.state.value}
           style={{ width: '100%' }}
           loading={isLoading}

@@ -127,6 +127,7 @@ const Compartments = ({ form, value, equipment, onChange }) => {
     return (
       <Form.Item name="compartments">
         <Select
+          dropdownMatchSelectWidth={false}
           placeholder="Please Select"
           style={{ marginBottom: 10, marginTop: 10 }}
           showSearch

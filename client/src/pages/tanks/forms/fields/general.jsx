@@ -82,6 +82,7 @@ const General = ({ form, value, config }) => {
         <Col span={12}>
           <Form.Item name="tank_terminal" label={t('fields.terminal')}>
             <Select
+              dropdownMatchSelectWidth={false}
               loading={isLoading}
               showSearch
               optionFilterProp="children"
@@ -101,6 +102,7 @@ const General = ({ form, value, config }) => {
         <Col span={12}>
           <Form.Item name="tank_status" label={t('fields.tankStatus')}>
             <Select
+              dropdownMatchSelectWidth={false}
               loading={isLoading}
               showSearch
               optionFilterProp="children"
@@ -122,6 +124,7 @@ const General = ({ form, value, config }) => {
         <Col span={12}>
           <Form.Item name="tank_base" label={t('fields.baseProductName')}>
             <Select
+              dropdownMatchSelectWidth={false}
               loading={isLoading}
               showSearch
               optionFilterProp="children"
@@ -179,6 +182,7 @@ const General = ({ form, value, config }) => {
             rules={[{ required: true, validator: validate, label: t('fields.gaugingMethod') }]}
           >
             <Select
+              dropdownMatchSelectWidth={false}
               loading={isLoading}
               showSearch
               optionFilterProp="children"
@@ -198,6 +202,7 @@ const General = ({ form, value, config }) => {
         <Col span={12}>
           <Form.Item name="tank_location" label={t('fields.area')}>
             <Select
+              dropdownMatchSelectWidth={false}
               loading={isLoading}
               showSearch
               optionFilterProp="children"

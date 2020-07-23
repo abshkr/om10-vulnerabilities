@@ -38,6 +38,7 @@ const General = ({ form, value, refTempC, refTempF }) => {
 
       <Form.Item name="tank_location" label={t('fields.area')}>
         <Select
+          dropdownMatchSelectWidth={false}
           loading={isLoading}
           showSearch
           optionFilterProp="children"
@@ -55,6 +56,7 @@ const General = ({ form, value, refTempC, refTempF }) => {
 
       <Form.Item name="tank_status" label={t('fields.tankStatus')}>
         <Select
+          dropdownMatchSelectWidth={false}
           loading={isLoading}
           showSearch
           optionFilterProp="children"
@@ -72,6 +74,7 @@ const General = ({ form, value, refTempC, refTempF }) => {
 
       <Form.Item name="tank_gaugingmthd" label={t('fields.gaugingMethod')}>
         <Select
+          dropdownMatchSelectWidth={false}
           loading={isLoading}
           showSearch
           optionFilterProp="children"

@@ -38,6 +38,7 @@ const Issuer = ({ form, value, onChange }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         disabled={!!value}
         loading={isValidating}
         showSearch

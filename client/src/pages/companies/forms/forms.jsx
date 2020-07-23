@@ -373,6 +373,7 @@ const FormModal = ({
             />
             <Form.Item name="cmpy_addr" label={t('fields.address')}>
               <Select
+                dropdownMatchSelectWidth={false}
                 loading={isValidating}
                 // onChange={onChange}
                 // disabled={!!value || type === '1'}

@@ -81,6 +81,7 @@ const FormModal = ({ value, handleBaseCallBack }) => {
           <TabPane tab={t('tabColumns.general')} key="1" style={{ height: '60vh' }}>
             <Form.Item name="pitem_base_code" label={t('fields.baseProduct')} rules={[{ required: true }]}>
               <Select
+                dropdownMatchSelectWidth={false}
                 // loading={isValidating}
                 showSearch
                 optionFilterProp="children"

@@ -60,6 +60,7 @@ const SourceArm = ({ form, value, onChange, tank, pageState }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         allowClear
         showSearch

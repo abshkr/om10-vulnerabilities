@@ -281,6 +281,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
             <Form.Item name="tgr_tanklist" >
               <Select
+                dropdownMatchSelectWidth={false}
                 showSearch
                 onChange={handleTankChange}
                 mode="multiple"

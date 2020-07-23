@@ -49,6 +49,7 @@ const TransportEquipment = ({ form, value, type, carrier }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         optionFilterProp="children"

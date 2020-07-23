@@ -61,6 +61,7 @@ const DestinationTank = ({ form, value, onChange, pageState }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         allowClear
         showSearch

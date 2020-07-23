@@ -27,6 +27,7 @@ const Fields = ({ form, value }) => {
     <>
       <Form.Item name="strap_tankcode" label={t('fields.tank')}>
         <Select
+          dropdownMatchSelectWidth={false}
           loading={isLoading}
           showSearch
           disabled={!!value}

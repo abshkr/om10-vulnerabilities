@@ -578,10 +578,10 @@ const SupplierForm = ({ value, form }) => {
           {externalBlendAllowed && (
             <Form.Item name="cmpy_2nd_drawer" label={t('fields.linkedDrawer')} {...singleLineLayout}>
               <Select
+                dropdownMatchSelectWidth={false}
                 // loading={isValidating}
                 style={{ width: '14vh' }}
                 showSearch
-                dropdownMatchSelectWidth={false}
                 optionFilterProp="children"
                 disabled={!cmpy_2nd_drawer_flag}
                 // placeholder={!value ? t('placeholder.selectHostDataType') : null}

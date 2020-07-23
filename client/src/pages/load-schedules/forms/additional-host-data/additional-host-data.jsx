@@ -158,6 +158,7 @@ const AdditionalHostData = ({ value }) => {
             <Form layout="vertical" form={form}>
               <Form.Item name="dh_dor_type" label={t('fields.additionalHostDataType')}>
                 <Select
+                  dropdownMatchSelectWidth={false}
                   loading={isValidating}
                   showSearch
                   optionFilterProp="children"

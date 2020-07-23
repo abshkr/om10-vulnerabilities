@@ -37,6 +37,7 @@ const Generic = ({ form, value }) => {
   return (
     <Form.Item name="prod_class" label={t('fields.genericName')} rules={[{ required: true, validator: validate }]}>
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         onChange={handleChange}

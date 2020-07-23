@@ -36,6 +36,7 @@ const DeviceCode = ({ form, value }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         disabled={!!value}

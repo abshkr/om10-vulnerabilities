@@ -41,6 +41,7 @@ const Customer = ({ form, value, supplier, pageState }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         //disabled={!!value || !supplier}
         disabled={(pageState==='create'&&!!supplier)? false : true}

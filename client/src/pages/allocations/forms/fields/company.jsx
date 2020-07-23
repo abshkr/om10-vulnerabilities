@@ -37,6 +37,7 @@ const Company = ({ form, value, onChange }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         disabled={!!value}
         showSearch

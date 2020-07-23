@@ -32,6 +32,7 @@ const Usage = ({ form, value, company }) => {
   return (
     <Form.Item name="prt_usage" label={t('fields.usage')} rules={[{ required: true, validator: validate }]}>
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         disabled={!!value}

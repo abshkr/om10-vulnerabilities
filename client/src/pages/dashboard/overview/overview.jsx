@@ -362,6 +362,7 @@ const Overview = () => {
             loading={!payload}
             extra={
               <Select
+                dropdownMatchSelectWidth={false}
                 value={storageClass}
                 style={{ width: 250 }}
                 loading={!payload}
@@ -390,6 +391,7 @@ const Overview = () => {
             bodyStyle={{ overflow: 'hidden' }}
             extra={
               <Select
+                dropdownMatchSelectWidth={false}
                 value={folioClass}
                 style={{ width: 250 }}
                 loading={!payload}

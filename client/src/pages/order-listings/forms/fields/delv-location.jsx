@@ -38,6 +38,7 @@ const DeliveryLocation = ({ form, value, pageState }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         disabled={(pageState==='create'||pageState==='edit')? false : true}

@@ -26,6 +26,7 @@ const ShipTo = ({ form, value, mode }) => {
   return (
     <Form.Item name="shls_ship_to_num" label={t('fields.shipTo')}>
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         disabled={IS_DISABLED}

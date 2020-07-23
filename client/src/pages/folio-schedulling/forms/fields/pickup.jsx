@@ -129,6 +129,7 @@ const Pickup = ({ form, value }) => {
       {
         (IS_CREATING && value.window_name === undefined) || value.window_name == "WEEK_WINDOW"  ? (
           <Select 
+            dropdownMatchSelectWidth={false}
             name="week_day" 
             disabled={!IS_CREATING}
             // defaultValue="Monday"
@@ -155,6 +156,7 @@ const Pickup = ({ form, value }) => {
           (
             value.window_name == "MONTH_WINDOW" ? (
                 <Select 
+                  dropdownMatchSelectWidth={false}
                   name="month_day"
                   disabled={!IS_CREATING}
                   // rules={[{ required: true }]}
@@ -167,6 +169,7 @@ const Pickup = ({ form, value }) => {
               value.window_name == "DATE_YEAR_WINDOW" ? (
                 <div>
                   <Select 
+                    dropdownMatchSelectWidth={false}
                     name="month_day" 
                     disabled={!IS_CREATING}
                     style={{width:"150px"}} 
@@ -203,6 +206,7 @@ const Pickup = ({ form, value }) => {
               ) : (
                 <div>
                   <Select 
+                    dropdownMatchSelectWidth={false}
                     name="sequence_day" 
                     style={{width:"150px"}} 
                     // defaultValue="First"
@@ -217,6 +221,7 @@ const Pickup = ({ form, value }) => {
                     <Option key="5" value="4">Fifth</Option>
                   </Select>
                   <Select 
+                    dropdownMatchSelectWidth={false}
                     name="week_day" 
                     style={{width:"150px", paddingLeft: "20px"}} 
                     disabled={!IS_CREATING}
@@ -233,6 +238,7 @@ const Pickup = ({ form, value }) => {
                     <Option key="7" value="Sunday">Sunday</Option>
                   </Select>
                   <Select 
+                    dropdownMatchSelectWidth={false}
                     name="month" 
                     style={{width:"150px", paddingLeft: "20px"}} 
                     disabled={!IS_CREATING}

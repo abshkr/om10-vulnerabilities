@@ -213,6 +213,7 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
         <Col span={12}>
           <Form.Item name="mlitm_unit_rpt" label={t('fields.unit')} >
             <Select
+              dropdownMatchSelectWidth={false}
               showSearch
               loading={isValidating}
               disabled={IS_DISALBED}

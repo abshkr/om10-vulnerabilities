@@ -30,6 +30,7 @@ const Employer = ({ form, value }) => {
   return (
     <Form.Item name="per_cmpy" label={t('fields.employer')} rules={[{ required: true, validator: validate }]}>
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         optionFilterProp="children"

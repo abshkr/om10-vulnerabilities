@@ -66,6 +66,7 @@ const Type = ({ form, value, source }) => {
   return (
     <Form.Item name="report_type" label={t('fields.type')} rules={[{ required: true, validator: validate }]}>
       <Select
+        dropdownMatchSelectWidth={false}
         disabled={!!value}
         showSearch
         optionFilterProp="children"

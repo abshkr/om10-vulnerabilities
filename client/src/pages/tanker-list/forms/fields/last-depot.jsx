@@ -22,6 +22,7 @@ const LastDepot = ({ form, value }) => {
   return (
     <Form.Item name="tnkr_last_depot" label={t('fields.lastDepot')} rules={[{ required: false }]}>
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         disabled={!!value}
         showSearch

@@ -50,6 +50,7 @@ const MovementType = ({ form, value, onChange, disabled }) => {
         rules={[{ required: true, validator: validate }]}
       >
         <Select
+          dropdownMatchSelectWidth={false}
           loading={isValidating}
           showSearch
           disabled={IS_DISABLED}

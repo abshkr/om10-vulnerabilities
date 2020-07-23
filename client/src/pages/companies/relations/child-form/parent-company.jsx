@@ -27,6 +27,7 @@ const ParentField = ({ value, form, visible }) => {
   return (
     <Form.Item name="parent_cmpy_role" label={t('fields.parentCmpyType')} rules={[{ required: true }]}>
       <Select 
+        dropdownMatchSelectWidth={false}
         // onChange={onParentRoleChange}
         disabled={!IS_CREATING}
       >

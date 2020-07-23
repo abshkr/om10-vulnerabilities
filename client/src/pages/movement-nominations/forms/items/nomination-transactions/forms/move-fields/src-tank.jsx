@@ -72,6 +72,7 @@ const SourceTank = ({ form, value, onChange, arm, pageState }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         allowClear
         showSearch

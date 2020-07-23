@@ -187,6 +187,7 @@ const To = ({
             rules={[{ required: type==='0'||type==='2', validator: validate }]}
           >
             <Select
+              dropdownMatchSelectWidth={false}
               showSearch
               loading={isLoading}
               onChange={onSupplierChange}
@@ -213,6 +214,7 @@ const To = ({
             rules={[{ required: type==='0'||type==='2', validator: validate }]}
           >
             <Select
+              dropdownMatchSelectWidth={false}
               showSearch
               loading={isLoading}
               onChange={onTankChange}
@@ -239,6 +241,7 @@ const To = ({
             rules={[{ required: type==='0'||type==='2', validator: validate }]}
           >
             <Select
+              dropdownMatchSelectWidth={false}
               showSearch
               loading={isLoading}
               disabled={IS_DISABLED || !tank}

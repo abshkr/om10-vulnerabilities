@@ -38,6 +38,7 @@ const OrderStatus = ({ form, value, pageState }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         disabled={true}
         showSearch

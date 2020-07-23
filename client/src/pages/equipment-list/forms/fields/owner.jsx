@@ -31,6 +31,7 @@ const Owner = ({ form, value }) => {
   return (
     <Form.Item name="eqpt_owner" label={t('fields.owner')} rules={[{ required: true, validator: validate }]}>
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         disabled={!!value}
         showSearch

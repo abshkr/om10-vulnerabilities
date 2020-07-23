@@ -38,7 +38,12 @@ export default class ShipTo extends Component {
 
     return (
       <div style={{ width: '100%', display: 'flex' }}>
-        <Select value={this.state.value} style={{ width: '100%' }} onChange={this.onClick} bordered={false}>
+        <Select 
+          dropdownMatchSelectWidth={false}
+          value={this.state.value} 
+		  style={{ width: '100%' }} 
+		  onChange={this.onClick} 
+		  bordered={false}>
           {values?.map((item) => (
             <Select.Option key={item.partner_code} value={item.partner_code}>
               {`${item.partner_code} - ${item.partner_name1}`}

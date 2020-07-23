@@ -26,6 +26,7 @@ const Carrier = ({ form, value, onChange }) => {
   return (
     <Form.Item name="mv_carrier" label={t('fields.carrier')}>
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         onChange={onChange}

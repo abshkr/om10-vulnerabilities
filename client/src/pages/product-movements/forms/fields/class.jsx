@@ -38,6 +38,7 @@ const Class = ({ form, value }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isLoading}
         showSearch
         disabled={value}

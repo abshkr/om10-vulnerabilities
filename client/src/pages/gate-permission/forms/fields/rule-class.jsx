@@ -36,6 +36,7 @@ const RuleClass = ({ value, form, onCaseChange}) => {
     <div>
       <Form.Item name="rule_case" label={t('fields.permissionRuleClass')} rules={[{ required: true }]}>
         <Select
+          dropdownMatchSelectWidth={false}
           loading={isValidating}
           showSearch
           optionFilterProp="children"

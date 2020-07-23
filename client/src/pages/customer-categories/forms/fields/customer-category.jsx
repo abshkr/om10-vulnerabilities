@@ -19,6 +19,7 @@ const CustomerCategory = ({ form, value }) => {
   return (
     <Form.Item name="category_count" label={t('fields.customerCategory')}>
       <Select
+        dropdownMatchSelectWidth={false}
         showSearch
         disabled={!value}
         optionFilterProp="children"

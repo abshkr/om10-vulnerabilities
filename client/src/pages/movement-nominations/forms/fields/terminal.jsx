@@ -46,6 +46,7 @@ const Terminal = ({ form, value, pageState }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         disabled={false}
         showSearch

@@ -37,6 +37,7 @@ const DrawerCompany = ({ form, value }) => {
   return (
     <Form.Item name="prod_cmpycode" label={t('fields.drawer')} rules={[{ required: true, validator: validate }]}>
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         disabled={!!value}
         showSearch

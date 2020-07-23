@@ -167,6 +167,7 @@ const Compartments = ({ form, value, equipment }) => {
                 <b>{item.etyp_title}</b>
               </div> */}
               <Select
+                dropdownMatchSelectWidth={false}
                 onChange={(value) => changeType(item, value)}
                 // value={item.tc_eqpt || undefined}
                 // placeholder={t('placeholder.selectEquipment')}

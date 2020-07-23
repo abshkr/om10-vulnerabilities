@@ -118,7 +118,12 @@ class TankView extends Component {
         >
           <Search value={value} search={this.handleSearch} />
 
-          <Select value={sorter} style={{ width: 190, marginRight: 5 }} onChange={this.handleSorting}>
+          <Select 
+            dropdownMatchSelectWidth={false}
+            value={sorter} 
+            style={{ width: 190, marginRight: 5 }} 
+            onChange={this.handleSorting}
+          >
             <Select.Option value="tank_base_name">Sort By Product Name</Select.Option>
             <Select.Option value="tank_group">Sort By Group</Select.Option>
             <Select.Option value="tank_name">Sort By Tank Name</Select.Option>
@@ -126,7 +131,12 @@ class TankView extends Component {
             <Select.Option value="tank_status_name">Sort By Tank Status</Select.Option>
           </Select>
 
-          <Select value={order} style={{ width: 190 }} onChange={this.handleSortOrder}>
+          <Select 
+            dropdownMatchSelectWidth={false}
+            value={order} 
+            style={{ width: 190 }} 
+            onChange={this.handleSortOrder}
+          >
             <Select.Option value="asc">Order By Ascending</Select.Option>
             <Select.Option value="desc">Order By Descending</Select.Option>
           </Select>

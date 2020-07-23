@@ -38,6 +38,7 @@ const AltQtyUnit = ({ form, value, altQty, pageState }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         disabled={(pageState === 'transfer' ? false : false) || !altQty}

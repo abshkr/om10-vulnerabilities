@@ -21,6 +21,7 @@ const Destination = ({ form, value }) => {
   return (
     <Form.Item name="fields" label={t('fields.destination')} rules={[{ required: false }]}>
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         disabled={!!value}
         showSearch

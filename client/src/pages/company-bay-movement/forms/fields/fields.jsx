@@ -49,6 +49,7 @@ const Fields = ({ form, value }) => {
         rules={[{ required: true, validator: validate }]}
       >
         <Select
+          dropdownMatchSelectWidth={false}
           loading={isLoading}
           showSearch
           disabled={!!value}
@@ -72,6 +73,7 @@ const Fields = ({ form, value }) => {
         rules={[{ required: true, validator: validate }]}
       >
         <Select
+          dropdownMatchSelectWidth={false}
           loading={isLoading}
           showSearch
           disabled={!!value}
@@ -95,6 +97,7 @@ const Fields = ({ form, value }) => {
         rules={[{ required: true, validator: validate }]}
       >
         <Select
+          dropdownMatchSelectWidth={false}
           loading={isLoading}
           showSearch
           optionFilterProp="children"

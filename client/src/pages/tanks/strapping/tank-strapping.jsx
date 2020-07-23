@@ -253,6 +253,7 @@ const TankStrapping = ({ terminal, code, isLoading, access, tanks }) => {
                 rules={[{ required: true, validator: validate, label: t('fields.tank') }]}
               >
                 <Select
+                  dropdownMatchSelectWidth={false}
                   loading={isLoading}
                   disabled={true}
                   showSearch

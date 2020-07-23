@@ -52,6 +52,7 @@ const Source = ({ form, value, base }) => {
         rules={[{ required: true, validator: validateType }]}
       >
         <Select
+          dropdownMatchSelectWidth={false}
           loading={isLoading}
           showSearch
           onChange={setSource}
@@ -77,6 +78,7 @@ const Source = ({ form, value, base }) => {
       >
         {source === '3' ? (
           <Select
+            dropdownMatchSelectWidth={false}
             loading={isLoading}
             showSearch
             disabled={!source}

@@ -45,7 +45,13 @@ const Metering = () => {
         <p style={{ float: 'left', fontSize: '0.7rem', marginRight: '0.2rem', paddingTop: '0.3rem' }}>
           {t('fields.massUnit') + ':'}
         </p>
-        <Select key="1" style={{ width: 200 }} defaultValue={massUnit} onChange={setMassUnit}>
+        <Select 
+          dropdownMatchSelectWidth={false}
+          key="1" 
+          style={{ width: 200 }} 
+          defaultValue={massUnit} 
+          onChange={setMassUnit}
+        >
           {massUnits.map((item) => {
             return (
               <Select.Option key={item} value={item}>
@@ -68,7 +74,13 @@ const Metering = () => {
         >
           {t('fields.volumeUnit') + ':'}
         </p>
-        <Select key="1" style={{ width: 200 }} defaultValue={unit} onChange={setUnit}>
+        <Select 
+          dropdownMatchSelectWidth={false}
+          key="1" 
+          style={{ width: 200 }} 
+          defaultValue={unit} 
+          onChange={setUnit}
+        >
           {units.map((item) => {
             return (
               <Select.Option key={item} value={item}>

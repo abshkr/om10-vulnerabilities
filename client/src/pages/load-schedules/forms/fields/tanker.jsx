@@ -38,6 +38,7 @@ const Tanker = ({ form, value, carrier, onChange }) => {
   return (
     <Form.Item name="tnkr_code" label={t('fields.tanker')} rules={[{ required: true, validator: validate }]}>
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         onChange={onChange}

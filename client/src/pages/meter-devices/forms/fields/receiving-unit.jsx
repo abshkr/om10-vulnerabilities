@@ -43,6 +43,7 @@ const ReceivingUnit = ({ form, value, receiving }) => {
     >
       {IS_TANK ? (
         <Select
+          dropdownMatchSelectWidth={false}
           loading={isValidating}
           showSearch
           optionFilterProp="children"
