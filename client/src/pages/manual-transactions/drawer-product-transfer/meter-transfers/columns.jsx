@@ -31,7 +31,7 @@ const columns = (t) => [
     resizable: true,
   },
   {
-    headerName: t('fields.openingAmbient'),
+    headerName: t('fields.openingAmbient') + ' (' + t('units.ltr') + ')',
     field: 'trsf_mtr_opn_amb',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -41,7 +41,7 @@ const columns = (t) => [
     cellEditor: 'NumericEditor',
   },
   {
-    headerName: t('fields.closingAmbient'),
+    headerName: t('fields.closingAmbient') + ' (' + t('units.ltr') + ')',
     field: 'trsf_mtr_cls_amb',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -51,7 +51,7 @@ const columns = (t) => [
     cellEditor: 'NumericEditor',
   },
   {
-    headerName: t('fields.openingCorrected'),
+    headerName: t('fields.openingCorrected') + ' (' + t('units.ltr') + ')',
     field: 'trsf_mtr_opn_cor',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -61,7 +61,7 @@ const columns = (t) => [
     cellEditor: 'NumericEditor',
   },
   {
-    headerName: t('fields.closingCorrected'),
+    headerName: t('fields.closingCorrected') + ' (' + t('units.ltr') + ')',
     field: 'trsf_mtr_cls_cor',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -71,7 +71,7 @@ const columns = (t) => [
     cellEditor: 'NumericEditor',
   },
   {
-    headerName: t('fields.openingMass'),
+    headerName: t('fields.openingMass') + ' (' + t('units.kg') + ')',
     field: 'trsf_mtr_open_kg',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -82,7 +82,7 @@ const columns = (t) => [
   },
 
   {
-    headerName: t('fields.closingMass'),
+    headerName: t('fields.closingMass') + ' (' + t('units.kg') + ')',
     field: 'trsf_mtr_close_kg',
     filter: 'FuzzyFilter',
     sortable: true,
