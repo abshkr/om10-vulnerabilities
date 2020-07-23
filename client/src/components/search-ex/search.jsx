@@ -39,6 +39,7 @@ import { DateRange,
 const SearchForm = ({onSearch, fields}) => {
   const [orderSupplier, setOrderSupplier] = useState(null);
   const [specmvType, setSpecmvType] = useState(null);
+  const [carrier, setCarrier] = useState(null);
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -55,12 +56,12 @@ const SearchForm = ({onSearch, fields}) => {
       {fields?.load_id && <LoadID />}
       {fields?.trsa_id && <TrsaID />}
       {fields?.supplier_code && <Supplier />}
-      {fields?.carrier_code && <Carrier />}
+      {fields?.carrier_code && <Carrier onChange={setCarrier} />}
+      {fields?.tnkr_code && <Tanker carrier={carrier}/>}
       {fields?.trip_status && <TripStatus />}
       {fields?.mlitm_status && <MovementStatus />}
       {fields?.mlitm_type && <MovementType onChange={setSpecmvType} />}
       {fields?.mlitm_reason_code && <MovementReason type={specmvType} />}
-      {fields?.tnkr_code && <Tanker />}
       {fields?.order_cust_no && <OrderNumber />}
       {fields?.order_supp_code && <OrderSupplier onChange={setOrderSupplier} />}
       {fields?.order_cust_acnt && <OrderCustomer supplier={orderSupplier} />}
