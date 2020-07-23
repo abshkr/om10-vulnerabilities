@@ -9,7 +9,7 @@ const columns = (t) => [
     width: 50,
   },
   {
-    headerName: t('fields.product'),
+    headerName: t('fields.productCode'),
     field: 'trsf_bs_prodcd',
     filter: 'FuzzyFilter',
     sortable: true,

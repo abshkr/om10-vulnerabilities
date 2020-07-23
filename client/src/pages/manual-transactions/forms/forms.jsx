@@ -485,7 +485,7 @@ const Forms = ({
         </Col>
 
         <Col span={8}>
-          <Form.Item name="carrier" label={t('fields.carrier')} rules={[{ required: true }]}>
+          <Form.Item name="carrier" label={t('fields.mtDataCarrier')} rules={[{ required: true }]}>
             <Select
               allowClear
               showSearch
@@ -516,7 +516,7 @@ const Forms = ({
 
       <Row gutter={24}>
         <Col span={8}>
-          <Form.Item name="supplier" label={t('fields.supplier')} rules={[{ required: true }]}>
+          <Form.Item name="supplier" label={t('fields.mtDataSupplier')} rules={[{ required: true }]}>
             <Select
               loading={suppliersLoading}
               allowClear
