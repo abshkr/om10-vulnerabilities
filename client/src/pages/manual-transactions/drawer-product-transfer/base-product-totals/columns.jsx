@@ -1,6 +1,6 @@
 const columns = (t) => [
   {
-    headerName: t('fields.product'),
+    headerName: t('fields.productCode'),
     field: 'trsf_bs_prodcd_tot',
     filter: 'FuzzyFilter',
     sortable: true,

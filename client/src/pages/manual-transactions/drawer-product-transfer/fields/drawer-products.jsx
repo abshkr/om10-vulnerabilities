@@ -31,6 +31,7 @@ export default class DrawerProducts extends Component {
 
     current[index].trsf_prod_code = record?.item?.prod_code;
     current[index].trsf_prod_name = record.children;
+    // current[index].trsf_prod_name = record?.item?.prod_desc;
     current[index].trsf_prod_cmpy = record?.item?.prod_cmpy;
     current[index].trsf_arm_cd = items?.length>0 ? t('placeholder.selectArmCode') : t('placeholder.noArmAvailable');
     // current[index].trsf_qty_plan = null;
@@ -62,8 +63,9 @@ export default class DrawerProducts extends Component {
       <div style={{ display: 'flex' }}>
         <Select value={this.state.value} style={{ width: '100%' }} onChange={this.onClick} bordered={false}>
           {values?.map((item) => (
-            <Select.Option key={item.prod_code} value={item.prod_name} item={item}>
-              {`${item.prod_code} - ${item.prod_name} (Planned: ${sourceType==='SCHEDULE' ? item.qty_scheduled : item.schp_specqty} | Loaded: ${item.qty_loaded} | ${item.unit_name})`}
+            <Select.Option key={item.prod_code} value={item.prod_desc} item={item}>
+              {/* {`${item.prod_code} - ${item.prod_name} (Planned: ${sourceType==='SCHEDULE' ? item.qty_scheduled : item.schp_specqty} | Loaded: ${item.qty_loaded} | ${item.unit_name})`} */}
+              {`${item.prod_desc} (Planned: ${sourceType==='SCHEDULE' ? item.qty_scheduled : item.schp_specqty} | Loaded: ${item.qty_loaded||0} | ${item.unit_name})`}
             </Select.Option>
           ))}
         </Select>

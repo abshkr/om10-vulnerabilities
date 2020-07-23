@@ -626,8 +626,9 @@ const DrawerProductTransfers = ({
     setLoading(true);
     setPayload([]);
 
-    console.log('DrawerProductTransfers: Watch - data, supplier, trip, order, tanker!', data, supplier, trip, order, tanker);
+    // console.log('DrawerProductTransfers: Watch - data, supplier, trip, order, tanker!', data, supplier, trip, order, tanker);
 
+    // NOTE: this data is form get_order_details or get_sched_details, not the products
     if (data && productArms) {
       const transformed = [];
       console.log('DrawerProductTransfers: Watch data, supplier, trip, order, tanker! Data not null', data);
@@ -635,7 +636,7 @@ const DrawerProductTransfers = ({
       _.forEach(data?.records, (record) => {
         //console.log('watch data, supplier, trip, order, tanker in loop', record?.shls_supp);
         if (record.shls_supp !== '') {
-          //console.log('watch data, supplier, trip, order, tanker in if supplier', record?.shls_supp, record?.prod_code);
+          // console.log('watch data, supplier, trip, order, tanker in if supplier', record, record?.shls_supp, record?.prod_code);
           let armClnTitle = t('placeholder.selectArmCode');
           if (record?.prod_name !== '' && record?.prod_name !== undefined) {
             const items = getAvailableArms(productArms, record?.shls_supp, record?.prod_code);
@@ -652,7 +653,7 @@ const DrawerProductTransfers = ({
             trsf_cmpt_capacit: record?.cmpt_capacit,
             trsf_drwr_cd: record?.shls_supp,
             trsf_prod_code: record?.prod_code,
-            trsf_prod_name: record?.prod_name === '' ? t('placeholder.selectDrawerProduct') : record?.prod_name,
+            trsf_prod_name: record?.prod_name === '' ? t('placeholder.selectDrawerProduct') : record?.prod_desc,
             trsf_prod_cmpy: record?.shls_supp,
             trsf_arm_cd: armClnTitle,
             trsf_qty_plan: record?.allowed_qty==='' ? null : record?.allowed_qty,
