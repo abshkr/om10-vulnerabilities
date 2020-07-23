@@ -38,14 +38,23 @@ const OmegaMessages = ({handleClick}) => {
 			body: JSON.stringify({start: start, end: end})
 		}).then(response => {
 			response.json().then(body => {
-				setMessages(body.message);
-				return body;
+				if (response.ok)
+				{
+					setMessages(body.message);
+					return body;
+				}
+				else
+				{
+					alert(body.message);
+					return {};
+				}
 			});
 		});
 	};
 
   const { data: payload, isValidating, revalidate } = useSWR(url, getData);
-  const [messages, setMessages] = useState(payload?.message);
+  //const [messages, setMessages] = useState(payload?.message);
+  const [messages, setMessages] = useState({});
   const [clearSelected, setClearSelected] = useState(false);
 
 	const from = 'omega';

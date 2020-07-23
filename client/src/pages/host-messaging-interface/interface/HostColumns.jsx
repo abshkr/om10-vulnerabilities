@@ -59,7 +59,7 @@ const columns = (t) => [
 		}
   },
 	{
-    headerName: t('fields.id'),
+    headerName: t('fields.rowNumber'),
     field: 'ROW_ID',
     sortable: true,
     resizable: true,
@@ -78,7 +78,7 @@ const columns = (t) => [
 		pinned: 'left'
   },
   {
-    headerName: t('fields.local_recv_time'),
+    headerName: t('fields.recv_time'),
     field: 'LOCAL_RECV_TIME',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -114,7 +114,7 @@ const columns = (t) => [
     suppressSizeToFit: true
   },
   {
-    headerName: t('fields.origin'),
+    headerName: t('fields.messageOrigin'),
     field: 'ORIGIN',
     filter: 'FuzzyFilter',
     sortable: true,
