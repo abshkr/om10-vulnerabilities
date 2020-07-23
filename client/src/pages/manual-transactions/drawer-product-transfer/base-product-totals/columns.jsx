@@ -28,7 +28,7 @@ const columns = (t) => [
     resizable: true,
   },
   {
-    headerName: t('fields.density'),
+    headerName: t('fields.density') + ' (' + t('units.kg/m3') + ')',
     field: 'trsf_bs_den_tot',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -41,7 +41,7 @@ const columns = (t) => [
     },
   },
   {
-    headerName: t('fields.temperature'),
+    headerName: t('fields.temperature') + ' (' + t('units.degC') + ')',
     field: 'trsf_bs_temp_tot',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -52,7 +52,7 @@ const columns = (t) => [
     },
   },
   {
-    headerName: t('fields.observedQuantity'),
+    headerName: t('fields.observedQuantity') + ' (' + t('units.ltr') + ')',
     field: 'trsf_bs_qty_amb_tot',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -66,7 +66,7 @@ const columns = (t) => [
     },
   },
   {
-    headerName: t('fields.standardQuantity'),
+    headerName: t('fields.standardQuantity') + ' (' + t('units.ltr') + ')',
     field: 'trsf_bs_qty_cor_tot',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -78,7 +78,7 @@ const columns = (t) => [
     },
   },
   {
-    headerName: t('fields.massQuantity'),
+    headerName: t('fields.massQuantity') + ' (' + t('units.kg') + ')',
     field: 'trsf_bs_load_kg_tot',
     filter: 'FuzzyFilter',
     sortable: true,
