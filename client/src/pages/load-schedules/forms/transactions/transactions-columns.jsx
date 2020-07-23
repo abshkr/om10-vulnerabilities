@@ -5,6 +5,8 @@ const columns = (t) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
+    width: 90,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.transactionNumber'),
@@ -26,6 +28,8 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    width: 110,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.tanker'),
@@ -61,6 +65,8 @@ const columns = (t) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
+    width: 110,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.lastModifiedBy'),
@@ -68,6 +74,7 @@ const columns = (t) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
+    hide: true,
   },
   {
     headerName: t('fields.lastModified'),

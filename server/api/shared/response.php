@@ -357,6 +357,10 @@ function response($case_name, $default = null, $params = null)
             "ENG" => "Load Retention Used Movement (days) [60 - 1830]",
             "CHN" => "已使用货单保存时间(天)"
         ),
+        "__SITE_SEAL_MODE__" => array(
+            "ENG" => "Seal allocation mode",
+            "CHN" => "封条分配方式"
+        ),
         "__PERSONNEL_EXP_MONTHS__" => array(
             "ENG" => "Personnel Expiry Months [0 - 12]",
             "CHN" => "用户过期时间(月)"

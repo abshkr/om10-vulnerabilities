@@ -351,6 +351,103 @@ class ManualTrans extends CommonClass
         }
     }
 
+    public function get_prod_arms()
+    {
+        if (is_array($this->prod_code)) {
+            foreach($this->prod_code as &$value){
+                $value = "'$value'";
+            }
+            $comma_separated_prods = implode(',', $this->prod_code);
+            $query = "
+                SELECT 
+                    R.RAT_PROD_PRODCMPY, 
+                    R.RAT_PROD_PRODCODE, 
+                    B.STREAM_INDEX,
+                    B.STREAM_BAYCODE, 
+                    B.STREAM_ARMCODE, 
+                    B.STREAM_MTRCODE, 
+                    B.STREAM_INJCODE, 
+                    B.STREAM_BASECODE, 
+                    B.STREAM_BASENAME, 
+                    B.STREAM_BCLASS_CODE,
+                    DECODE(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, 
+                    DECODE(B.STREAM_BCLASS_CODE, 6, 'INJECT', 11,'INJECT','METER') METER_TYPE_DESC, 
+                    B.STREAM_BCLASS_NMAE,
+                    B.STREAM_TANKCODE, 
+                    B.STREAM_TANKDEN, 
+                    STREAM_TANKTEMP AS BASE_RPT_TEMP, 
+                    BP.BASE_RPT_TEMP AS BASE_RPT_TEMP2, 
+                    R.RATIO_VALUE,
+                    R.ADTV_FLAG,
+                    R.RAT_SUB_SEQ,
+                    R.RAT_SEQ,
+                    R.RAT_SUB_COUNT,
+                    R.RAT_COUNT,
+                    R.RAT_TOTAL as RATIO_TOTAL
+                FROM 
+                    RPTOBJ_PROD_RATIOS_VW R,
+                    GUI_PIPENODE B,
+                    BASE_PRODS BP
+                WHERE 
+                    B.STREAM_BASECODE = R.RATIO_BASE(+)
+                    AND B.STREAM_BASECODE = BP.BASE_CODE(+) 
+                    AND R.RAT_PROD_PRODCMPY = :prod_cmpy 
+                    AND R.RAT_PROD_PRODCODE IN (" . $comma_separated_prods . ") 
+                ORDER BY R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE, R.RAT_SEQ, B.STREAM_BASECODE
+            ";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':prod_cmpy', $this->prod_cmpy);
+        } else {
+            $query = "
+                SELECT 
+                    R.RAT_PROD_PRODCMPY, 
+                    R.RAT_PROD_PRODCODE, 
+                    B.STREAM_INDEX,
+                    B.STREAM_BAYCODE, 
+                    B.STREAM_ARMCODE, 
+                    B.STREAM_MTRCODE, 
+                    B.STREAM_INJCODE, 
+                    B.STREAM_BASECODE, 
+                    B.STREAM_BASENAME, 
+                    B.STREAM_BCLASS_CODE,
+                    DECODE(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, 
+                    DECODE(B.STREAM_BCLASS_CODE, 6, 'INJECT', 11,'INJECT','METER') METER_TYPE_DESC, 
+                    B.STREAM_BCLASS_NMAE,
+                    B.STREAM_TANKCODE, 
+                    B.STREAM_TANKDEN, 
+                    STREAM_TANKTEMP AS BASE_RPT_TEMP, 
+                    BP.BASE_RPT_TEMP AS BASE_RPT_TEMP2, 
+                    R.RATIO_VALUE,
+                    R.ADTV_FLAG,
+                    R.RAT_SUB_SEQ,
+                    R.RAT_SEQ,
+                    R.RAT_SUB_COUNT,
+                    R.RAT_COUNT,
+                    R.RAT_TOTAL as RATIO_TOTAL
+                FROM 
+                    RPTOBJ_PROD_RATIOS_VW R,
+                    GUI_PIPENODE B,
+                    BASE_PRODS BP
+                WHERE 
+                    B.STREAM_BASECODE = R.RATIO_BASE(+)
+                    AND B.STREAM_BASECODE = BP.BASE_CODE(+) 
+                    AND R.RAT_PROD_PRODCMPY = :prod_cmpy 
+                    AND R.RAT_PROD_PRODCODE = :prod_code 
+                ORDER BY R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE, R.RAT_SEQ, B.STREAM_BASECODE
+            ";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':prod_code', $this->prod_code);
+            oci_bind_by_name($stmt, ':prod_cmpy', $this->prod_cmpy);
+        }
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     //Old php: ManualTransactions.class.php::do_create
     public function submit()
     {
@@ -361,6 +458,10 @@ class ManualTrans extends CommonClass
         if (isset($this->trip_no)) {
             $serv->set_property('trip_no', $this->trip_no);
             $serv->set_property('load_number', $this->trip_no);
+        }
+
+        if (isset($this->load_security)) {
+            $serv->set_property('load_security', $this->load_security);
         }
         
         $start_time = DateTime::createFromFormat('Y-m-d H:i:s', $this->start_time);

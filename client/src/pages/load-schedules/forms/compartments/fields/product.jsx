@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Select } from 'antd';
+import { Select, Avatar } from 'antd';
 
 export default class Product extends Component {
   constructor(props) {
@@ -64,6 +64,12 @@ export default class Product extends Component {
         >
           {values?.map((item) => (
             <Select.Option key={item.prod_code} value={item.prod_name}>
+              {/* <Avatar 
+                size="small"
+                src={`api/assets/products/${item.prod_image}`} 
+                shape="square" 
+                style={{marginRight:"5px", visibility:item.prod_image? "visible": "hidden"}}
+              /> */}
               {item.prod_code + " - " + item.prod_name}
             </Select.Option>
           ))}

@@ -4,6 +4,8 @@ import generateOptions from './generate-options';
 import convertToLocale from './convert-to-locale';
 import getDateTimeFormat from './get-date-time-format';
 import getDateRangeOffset from './get-date-range-offset';
+import adjustProductArms from './adjust-product-arms';
+import getAvailableArms from './get-available-arms';
 import calcBaseRatios from './calculate-base-ratios';
 import csvToJSON from './csv-to-json';
 import fetcher from './fetcher';
@@ -21,6 +23,8 @@ export {
   massConverter,
   getDateTimeFormat,
   getDateRangeOffset,
+  adjustProductArms,
+  getAvailableArms,
   calcBaseRatios,
   csvToJSON,
   fetcher,

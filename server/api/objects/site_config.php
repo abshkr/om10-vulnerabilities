@@ -43,6 +43,7 @@ class SiteConfig extends CommonClass
             $this->config_key === "SITE_EXP_MONTHS" ||
             $this->config_key === "SITE_LD_RETN_NEWLDS" ||
             $this->config_key === "SITE_LD_RETNPRD_NEW_MOV" ||
+            $this->config_key === "SITE_SEAL_MODE" ||
             $this->config_key === "SITE_LD_RETNPRD_USED_MOV") {
             return true;
         }
@@ -78,10 +79,12 @@ class SiteConfig extends CommonClass
             $this->config_key === "SITE_EXP_MONTHS" ||
             $this->config_key === "SITE_LD_RETN_NEWLDS" ||
             $this->config_key === "SITE_LD_RETNPRD_NEW_MOV" ||
+            $this->config_key === "SITE_SEAL_MODE" ||
             $this->config_key === "SITE_LD_RETNPRD_USED_MOV") {
             
             $query = "SELECT SITE_NEXT_SEAL, SITE_AL_ADJ, SITE_CL_ADJ, SITE_KG_ADJ, SITE_LD_RETNPRD, 
-                SITE_EXP_MONTHS, SITE_LD_RETN_NEWLDS, SITE_LD_RETNPRD_NEW_MOV, SITE_LD_RETNPRD_USED_MOV FROM SITE";
+                SITE_EXP_MONTHS, SITE_LD_RETN_NEWLDS, SITE_LD_RETNPRD_NEW_MOV, SITE_LD_RETNPRD_USED_MOV,
+                SITE_SEAL_MODE FROM SITE";
             $stmt = oci_parse($this->conn, $query);
             if (!oci_execute($stmt, $this->commit_mode)) {
                 $e = oci_error($stmt);
@@ -129,7 +132,8 @@ class SiteConfig extends CommonClass
         $query = "SELECT SITE_NEXT_SEAL, SITE_AL_ADJ, SITE_CL_ADJ, SITE_KG_ADJ, SITE_LD_RETNPRD, 
             SITE_EXP_MONTHS, SITE_LD_RETN_NEWLDS, SITE_LD_RETNPRD_NEW_MOV, SITE_LD_RETNPRD_USED_MOV,
             SITE_CODE, SITE_NAME,
-            TZ_OFFSET(SESSIONTIMEZONE) SERVER_TIME_OFFSET
+            TZ_OFFSET(SESSIONTIMEZONE) SERVER_TIME_OFFSET,
+            SITE_SEAL_MODE
             FROM SITE";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, $this->commit_mode)) {
@@ -192,6 +196,12 @@ class SiteConfig extends CommonClass
             "config_value" => $row['SITE_LD_RETNPRD_USED_MOV'],
             "config_comment" => response("__LOAD_MOV_RETENTION__"),
             "config_required_by_gui" => "M",
+            ));
+        array_push($result_array, array(
+            "config_key" => "SITE_SEAL_MODE",
+            "config_value" => $row['SITE_SEAL_MODE'],
+            "config_comment" => response("__SITE_SEAL_MODE__"),
+            "config_required_by_gui" => "S",
             ));
         array_push($result_array, array(
             "config_key" => "SITE_IDENTIFIER",

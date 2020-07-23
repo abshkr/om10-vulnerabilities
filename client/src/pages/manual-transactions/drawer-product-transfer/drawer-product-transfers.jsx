@@ -10,7 +10,7 @@ import columns from './columns';
 import useSWR from 'swr';
 
 import api, { MANUAL_TRANSACTIONS } from '../../../api';
-import {calcBaseRatios} from '../../../utils'
+import {calcBaseRatios, getAvailableArms} from '../../../utils'
 
 import BaseProductTransfers from './base-product-transfers';
 import BaseProductTotals from './base-product-totals';
@@ -63,6 +63,8 @@ const DrawerProductTransfers = ({
   setDataLoadFlagMeterTotals,
   dataLoaded,
   setDataLoaded,
+  productArms,
+  setProductArms,
 }) => {
   const { data } = useSWR((
       sourceType === 'SCHEDULE' && supplier && trip && 
@@ -97,6 +99,30 @@ const DrawerProductTransfers = ({
   const [tableBaseTransfersAPI, setTableBaseTransfersAPI] = useState(null);
   const [canCalc, setCanCalc] = useState(false);
   const [canRestore, setCanRestore] = useState(false);
+  const [loadingArms, setLoadingArms] = useState(false);
+
+  
+  const getProductArms = (supplier, products) => {
+    setLoadingArms(true);
+    const prod_codes = [];
+    _.forEach(products, (o) => {
+      if (o.prod_cmpy === supplier) {
+        prod_codes.push(o.prod_code);
+      }
+    });
+
+    api
+    .get(MANUAL_TRANSACTIONS.GET_PROD_ARMS, {
+      params: {
+        prod_cmpy: supplier,
+        prod_code: prod_codes,
+      },
+    })
+    .then((res) => {
+      setProductArms(res.data?.records);
+      setLoadingArms(false);
+    });
+  };
 
   const onDelete = () => {
     const filtered = _.reject(payload, ['trsf_cmpt_no', clicked?.trsf_cmpt_no]);
@@ -580,10 +606,16 @@ const DrawerProductTransfers = ({
   }, [sourceType]);
 
   useEffect(() => {
-    const values = columns(t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition);
+    if (supplier && products && !productArms && !loadingArms) {
+      getProductArms(supplier, products?.records);
+    }
+  }, [supplier, products, productArms, loadingArms, getProductArms]);
+
+  useEffect(() => {
+    const values = columns(t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms);
 
     setFields(values);
-  }, [t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition]);
+  }, [t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms]);
 
   useEffect(() => {
     if (dataLoadFlagDrawTransfers !== 0) {
@@ -596,14 +628,21 @@ const DrawerProductTransfers = ({
 
     console.log('DrawerProductTransfers: Watch - data, supplier, trip, order, tanker!', data, supplier, trip, order, tanker);
 
-    if (data) {
+    if (data && productArms) {
       const transformed = [];
       console.log('DrawerProductTransfers: Watch data, supplier, trip, order, tanker! Data not null', data);
 
       _.forEach(data?.records, (record) => {
         //console.log('watch data, supplier, trip, order, tanker in loop', record?.shls_supp);
         if (record.shls_supp !== '') {
-          //console.log('watch data, supplier, trip, order, tanker in if supplier', record?.shls_supp);
+          //console.log('watch data, supplier, trip, order, tanker in if supplier', record?.shls_supp, record?.prod_code);
+          let armClnTitle = t('placeholder.selectArmCode');
+          if (record?.prod_name !== '' && record?.prod_name !== undefined) {
+            const items = getAvailableArms(productArms, record?.shls_supp, record?.prod_code);
+            if (items?.length === 0) {
+              armClnTitle = t('placeholder.noArmAvailable');
+            }
+          }
           const object = {
             trsf_sold_to: record?.customer_code,
             trsf_delv_num: record?.delivery_number,
@@ -615,9 +654,10 @@ const DrawerProductTransfers = ({
             trsf_prod_code: record?.prod_code,
             trsf_prod_name: record?.prod_name === '' ? t('placeholder.selectDrawerProduct') : record?.prod_name,
             trsf_prod_cmpy: record?.shls_supp,
-            trsf_arm_cd: t('placeholder.selectArmCode'),
+            trsf_arm_cd: armClnTitle,
             trsf_qty_plan: record?.allowed_qty==='' ? null : record?.allowed_qty,
-            trsf_qty_left: record?.allowed_qty==='' ? null : String(_.toNumber(record?.allowed_qty) - _.toNumber(record?.load_qty)),
+            //trsf_qty_left: record?.allowed_qty==='' ? null : String(_.toNumber(record?.allowed_qty) - _.toNumber(record?.load_qty)),
+            trsf_qty_left: record?.load_qty==='' ? null : record?.load_qty,
             trsf_density: null,
             trsf_temp: null,
             trsf_qty_amb: null,
@@ -643,7 +683,7 @@ const DrawerProductTransfers = ({
       }
       setLoading(false);
     }
-  }, [data, supplier, trip, order, tanker]);
+  }, [data, productArms, supplier, trip, order, tanker]);
 
   useEffect(() => {
     if (payload) {

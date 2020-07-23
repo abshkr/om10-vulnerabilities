@@ -46,6 +46,12 @@ const Forms = ({
   setDataLoadFlag,
   dataLoaded,
   setDataLoaded,
+  setProductArms,
+  setDataDrawTransfers,
+  setDataBaseTransfers,
+  setDataBaseTotals,
+  setDataMeterTransfers,
+  setDataMeterTotals,
 }) => {
   const { setFieldsValue, resetFields } = form;
 
@@ -116,6 +122,13 @@ const Forms = ({
   };
 
   const handleTripSelect = async (trip) => {
+
+    setDataDrawTransfers([]);
+    setDataBaseTransfers([]);
+    setDataBaseTotals([]);
+    setDataMeterTransfers([]);
+    setDataMeterTotals([]);
+
     const results = await getTripBasicsByTrip(trip);
 
     const value = results?.records?.[0];
@@ -132,6 +145,7 @@ const Forms = ({
     setTankers(tankerResults);
     setSelectedTrip(trip);
     setSelectedTanker(value?.tnkr_code);
+    setProductArms(undefined);
 
     setFieldsValue({
       tanker: value?.tnkr_code,
@@ -142,6 +156,12 @@ const Forms = ({
   };
 
   const handleOrderSelect = async (order) => {
+    setDataDrawTransfers([]);
+    setDataBaseTransfers([]);
+    setDataBaseTotals([]);
+    setDataMeterTransfers([]);
+    setDataMeterTotals([]);
+
     const results = await getOrderBasicsByOrder(order);
 
     const value = results?.records?.[0];
@@ -153,6 +173,7 @@ const Forms = ({
 
     setTankers(tankerResults);
     setSelectedOrder(order);
+    setProductArms(undefined);
 
     setFieldsValue({
       carrier: value?.order_carrier,
@@ -250,6 +271,11 @@ const Forms = ({
     setSelectedOrder(null);
     setSelectedTanker(null);
 
+    setDataDrawTransfers([]);
+    setDataBaseTransfers([]);
+    setDataBaseTotals([]);
+    setDataMeterTransfers([]);
+    setDataMeterTotals([]);
     //resetFields();
   };
 

@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Select } from 'antd';
 import _ from 'lodash';
 
+import {getAvailableArms} from '../../../../utils'
+
 export default class DrawerProducts extends Component {
   constructor(props) {
     super(props);
@@ -16,19 +18,21 @@ export default class DrawerProducts extends Component {
   }
 
   onClick = (value, record) => {
-    const { form, payload, setPayload, t } = this.props;
+    const { form, arms, payload, setPayload, t } = this.props;
 
     // let current = payload;
     let current = form.getFieldValue('transfers');
 
     const key = this.props.data?.trsf_cmpt_no; // tnkr_cmpt_no;
     const index = _.findIndex(current, ['trsf_cmpt_no', key]);
-    console.log('DrawerProducts, onClick', key, index, this.props);
+    console.log('DrawerProducts, onClick', key, index, record, this.props);
+
+    const items = getAvailableArms(arms, record?.item?.prod_cmpy, record?.item?.prod_code);
 
     current[index].trsf_prod_code = record?.item?.prod_code;
     current[index].trsf_prod_name = record.children;
     current[index].trsf_prod_cmpy = record?.item?.prod_cmpy;
-    current[index].trsf_arm_cd = t('placeholder.selectArmCode');
+    current[index].trsf_arm_cd = items?.length>0 ? t('placeholder.selectArmCode') : t('placeholder.noArmAvailable');
     // current[index].trsf_qty_plan = null;
     // current[index].trsf_qty_left = null;
     current[index].trsf_density = null;
@@ -37,9 +41,9 @@ export default class DrawerProducts extends Component {
     current[index].trsf_qty_amb = null;
     current[index].trsf_load_kg = null;
 
-    form.setFieldsValue({
+    /* form.setFieldsValue({
       transfers: current,
-    });
+    }); */
 
     setPayload(current);
 

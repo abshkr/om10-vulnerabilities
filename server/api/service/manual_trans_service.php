@@ -1160,13 +1160,15 @@ class ManualTransactionService
                 $query = "UPDATE SCHEDULE 
                     SET OPERATOR = :login_user, 
                         LAST_CHG_TIME = SYSDATE,
-                        SHLS_SEAL_NO = :seal_range
+                        SHLS_SEAL_NO = :seal_range,
+                        SHLS_LOAD_SECURITY_INFO = :load_security
                     WHERE SHLS_TRIP_NO = :trip_no AND SHLS_SUPP = :supplier";
                 $stmt = oci_parse($this->conn, $query);
                 oci_bind_by_name($stmt, ':login_user', $login_user);
                 oci_bind_by_name($stmt, ':seal_range', $this->seal_range);
                 oci_bind_by_name($stmt, ':trip_no', $this->trip_no);
                 oci_bind_by_name($stmt, ':supplier', $this->supplier);
+                oci_bind_by_name($stmt, ':load_security', $this->load_security);
                 if (!oci_execute($stmt, $this->commit_mode)) {
                     $e = oci_error($stmt);
                     write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -1256,12 +1258,14 @@ class ManualTransactionService
                     $login_user = Utilities::getCurrPsn();
                     
                     $query = "UPDATE SCHEDULE 
-                        SET OPERATOR = :login_user, LAST_CHG_TIME = SYSDATE 
+                        SET OPERATOR = :login_user, LAST_CHG_TIME = SYSDATE,
+                            SHLS_LOAD_SECURITY_INFO = :load_security
                         WHERE SHLS_TRIP_NO = :trip_no AND SHLS_SUPP = :supplier";
                     $stmt = oci_parse($this->conn, $query);
                     oci_bind_by_name($stmt, ':login_user', $login_user);
                     oci_bind_by_name($stmt, ':trip_no', $this->trip_no);
                     oci_bind_by_name($stmt, ':supplier', $this->supplier);
+                    oci_bind_by_name($stmt, ':load_security', $this->load_security);
                     if (!oci_execute($stmt, $this->commit_mode)) {
                         $e = oci_error($stmt);
                         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);

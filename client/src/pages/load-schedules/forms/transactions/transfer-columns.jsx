@@ -5,6 +5,8 @@ const transferColumns = (t) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
+    width: 110,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.trailerCode'),
@@ -26,6 +28,8 @@ const transferColumns = (t) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
+    width: 110,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.standard') + ' (L)',

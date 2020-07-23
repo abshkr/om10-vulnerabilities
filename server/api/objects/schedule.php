@@ -115,7 +115,7 @@ class Schedule extends CommonClass
     public function drawer_products()
     {
         $query = "
-            SELECT PROD_CODE, PROD_NAME FROM PRODUCTS 
+            SELECT PROD_CODE, PROD_NAME, PROD_IMAGE FROM PRODUCTS 
             WHERE PROD_CMPY = :cmpy_code
             ORDER BY PROD_CODE";
         $stmt = oci_parse($this->conn, $query);
@@ -370,6 +370,29 @@ class Schedule extends CommonClass
         }
     }
 
+    //In old php, it is DorHistoryService.php::updateTripHostDOR
+    private function update_host_data() 
+    {
+        if (!isset($this->shl_fleet_data)) {
+            return;
+        }
+
+        $query = "UPDATE SCHEDULE SET SHL_FLEET_DATA = :shl_fleet_data 
+            WHERE SHLS_TRIP_NO = :trip and SHLS_SUPP = :supplier";
+        $stmt = oci_parse($this->conn, $query);
+        // oci_bind_by_name($stmt, ':default', $default);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier_code);
+        oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+        oci_bind_by_name($stmt, ':shl_fleet_data', $this->shl_fleet_data);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            throw new DatabaseException($e['message']);;
+        }
+
+        return;
+    }
+
     private function clean_up_zero_products()
     {
         $query = "DELETE FROM SPECPROD
@@ -570,6 +593,7 @@ class Schedule extends CommonClass
         }
 
         $this->clean_up_zero_products();
+        $this->update_host_data();
 
         return true;
     }
@@ -678,6 +702,7 @@ class Schedule extends CommonClass
             NVL(PRODUCTS.PROD_CODE, LOADED.PROD_CODE) PROD_CODE,
             NVL(PRODUCTS.PROD_NAME, LOADED.PROD_NAME) PROD_NAME,
             NVL(PRODUCTS.PROD_CMPY, LOADED.PROD_CMPY) PROD_CMPY,
+            PROD_IMAGE,
             QTY_LOADED,
             UNIT_NAME, 
             QTY_PRELOADED,

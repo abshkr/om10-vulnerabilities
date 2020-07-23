@@ -19,6 +19,7 @@ export const ORDER_PRODUCTS = '/api/pages/manual_trans/get_order_products.php';
 export const ORDER_SUPPLIERS = '/api/pages/manual_trans/get_ord_suppliers.php';
 export const SCHEDULE_SUPPLIERS = '/api/pages/manual_trans/get_schd_suppliers.php';
 export const COMPOSITION = '/api/pages/tanker/tnkr_composition.php';
+export const GET_PROD_ARMS = '/api/pages/manual_trans/get_prod_arms.php';
 
 
 export const CALCULATE = '/api/pages/manual_trans/calc_vcf.php';
