@@ -1,5 +1,14 @@
 const transferColumns = (t) => [
   {
+    headerName: t('fields.transfer'),
+    field: 'trsf_id',
+    filter: 'MultiFilter',
+    sortable: true,
+    resizable: true,
+    width: 110,
+    suppressSizeToFit: true,
+  },
+  {
     headerName: t('fields.bayArm'),
     field: 'baa_bay_seq',
     filter: 'MultiFilter',

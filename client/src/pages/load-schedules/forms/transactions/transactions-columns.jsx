@@ -60,6 +60,23 @@ const columns = (t) => [
     resizable: true,
   },
   {
+    headerName: t('fields.reversed'),
+    field: 'trsa_reverse_flag',
+    sortable: true,
+    resizable: true,
+    width: 100,
+    // suppressSizeToFit: true,
+    cellRenderer: 'TrueRenderer',
+  },
+  {
+    headerName: t('fields.reversedTrans'),
+    field: 'trsa_reverse_ex',
+    sortable: true,
+    resizable: true,
+    width: 200,
+    suppressSizeToFit: true,
+  },
+  {
     headerName: t('fields.terminal'),
     field: 'trsa_terminal',
     filter: 'MultiFilter',

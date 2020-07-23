@@ -11,6 +11,7 @@ import productColumns from './product-columns';
 import transactionColumns from './transactions-columns';
 import transferColumns from './transfer-columns';
 import meterColumns from './meter-columns';
+import TrueRenderer from './true-render';
 
 const Transactions = ({ value }) => {
   const { t } = useTranslation();
@@ -70,6 +71,10 @@ const Transactions = ({ value }) => {
     }
   }, [value]);
 
+  const components = {
+    TrueRenderer,
+  };
+
   return (
     <Spin spinning={isLoading} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
       <div style={{ marginTop: 20 }} />
@@ -79,6 +84,8 @@ const Transactions = ({ value }) => {
         columns={transactionsFields} 
         height="80vh" 
         handleSelect={(payload) => onTransactionSelect(payload[0])}
+        components={components}
+        autoColWidth
         minimal 
       />
 

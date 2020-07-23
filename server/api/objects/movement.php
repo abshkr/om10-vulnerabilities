@@ -46,7 +46,8 @@ class Movement extends CommonClass
     );
 
     public $BOOLEAN_FIELDS = array(
-        "MVITM_COMPLETED" => 1
+        "MVITM_COMPLETED" => 1,
+        "TRSA_REVERSE_FLAG" => 1
     );
 
     public function check_nomination_key()
@@ -1533,7 +1534,9 @@ class Movement extends CommonClass
 
         if (isset($this->mv_id)) {
             $query = "
-                SELECT * FROM GUI_TRANSACTIONS 
+                SELECT GUI_TRANSACTIONS.*, 
+                    DECODE(TRSA_REVERSE_FLAG, 1, TRSA_REVERSE, NULL) TRSA_REVERSE_EX 
+                FROM GUI_TRANSACTIONS 
                 WHERE (TRSA_TRIP, TRSA_SUPPLIER) IN 
                     (SELECT MS.MS_SHLSTRIP, MS.MS_SHLSSUPP FROM MOV_SCHEDULES MS, MOV_SCHD_ITEMS MI 
                     WHERE MS.MS_SHLSTRIP = MI.MSITM_SHLSTRIP AND MS.MS_SHLSSUPP = MI.MSITM_SHLSSUPP 
@@ -1544,7 +1547,9 @@ class Movement extends CommonClass
             oci_bind_by_name($stmt, ':line_id', $this->line_id); 
         } else {
             $query = "
-                SELECT * FROM GUI_TRANSACTIONS 
+                SELECT GUI_TRANSACTIONS.*, 
+                    DECODE(TRSA_REVERSE_FLAG, 1, TRSA_REVERSE, NULL) TRSA_REVERSE_EX 
+                FROM GUI_TRANSACTIONS 
                 WHERE TRSA_TRIP = :trip_no
                     AND TRSA_SUPPLIER = :supplier
                 ORDER BY TRSA_ID";
