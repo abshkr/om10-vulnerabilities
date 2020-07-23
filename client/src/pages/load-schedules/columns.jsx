@@ -168,7 +168,15 @@ const columns = (IS_NOMINATION, t) => [
     width: 130,
     suppressSizeToFit: true,
   },
-
+  {
+    headerName: t('fields.customerName'),
+    field: 'order_cust_cmpy_name',
+    sortable: true,
+    resizable: true,
+    hide: IS_NOMINATION,
+    width: 130,
+    suppressSizeToFit: true,
+  },
   {
     headerName: t('fields.loadStart'),
     field: 'shls_ld_start',
