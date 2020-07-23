@@ -526,7 +526,7 @@ const DrawerProductTransfers = ({
   const onCellUpdate = (value) => {
     console.log('DrawerProductTransfers: onCellUpdate', value);
     console.log('DrawerProductTransfers: onCellUpdate2', value?.colDef?.field, value?.colDef?.headerName, value?.value, value?.newValue, value?.data.trsf_cmpt_capacit);
-    if (
+    /* if (
       value?.colDef?.field === 'trsf_qty_amb' || 
       value?.colDef?.field === 'trsf_qty_cor' ||
       value?.colDef?.field === 'trsf_load_kg' 
@@ -538,7 +538,7 @@ const DrawerProductTransfers = ({
           t('fields.compartment') + ' ' + t('fields.capacity') + ': ' + value?.data.trsf_cmpt_capacit,
         });
       }
-    }
+    } */
     setSelected({
       ...value?.data,
     });

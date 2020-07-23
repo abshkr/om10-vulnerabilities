@@ -96,7 +96,7 @@ export default class BayArm extends Component {
     });
 
     const items = _.filter(armsByProd, (o) => (
-      o.stream_bclass_code !== '6' && String(o.arm_bases) === o.rat_count
+      o.stream_bclass_code !== '6' && String(o.arm_bases) === o.rat_count && o.rat_seq === '1'
     ));
     if (items?.length === 0) {
       this.setState(
@@ -137,13 +137,13 @@ export default class BayArm extends Component {
           onChange={this.onClick}
           bordered={false}
         >
-          {_.filter(values, (o) => (o.stream_bclass_code!=='6' && String(o.arm_bases)===o.rat_count))?.map((item) => (
+          {_.filter(values, (o) => (o.stream_bclass_code!=='6' && String(o.arm_bases)===o.rat_count) && o.rat_seq === '1')?.map((item) => (
             <Select.Option
               key={`${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
               value={`${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
               item={item}
             >
-              {`${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
+              {`${item.stream_baycode} - ${item.stream_armcode}`}
             </Select.Option>
           ))}
         </Select>

@@ -105,9 +105,10 @@ export default class Observed extends Component {
     const { min, max, txt, data, colDef } = this.props;
 
     let capacity=max;
-    if (data?.trsf_cmpt_capacit !== undefined) {
-      capacity = _.toNumber(data?.trsf_cmpt_capacit);
-    }
+    // do not need to limit the quantity to compartment capacity in manual transactions
+    // if (data?.trsf_cmpt_capacit !== undefined) {
+    //   capacity = _.toNumber(data?.trsf_cmpt_capacit);
+    // }
 
     if (min <= value && capacity >= value) {
       this.setState({
