@@ -109,6 +109,7 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
       payload,
       setPayload,
       t,
+      sourceType,
     },
   },
 

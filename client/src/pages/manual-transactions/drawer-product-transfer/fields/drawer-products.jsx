@@ -56,14 +56,14 @@ export default class DrawerProducts extends Component {
   };
 
   render() {
-    const { values } = this.props;
+    const { values, sourceType } = this.props;
 
     return (
       <div style={{ display: 'flex' }}>
         <Select value={this.state.value} style={{ width: '100%' }} onChange={this.onClick} bordered={false}>
           {values?.map((item) => (
             <Select.Option key={item.prod_code} value={item.prod_name} item={item}>
-              {`${item.prod_code} - ${item.prod_name} (Planned: ${item.qty_scheduled} | Loaded: ${item.qty_loaded} | ${item.unit_name})`}
+              {`${item.prod_code} - ${item.prod_name} (Planned: ${sourceType==='SCHEDULE' ? item.qty_scheduled : item.schp_specqty} | Loaded: ${item.qty_loaded} | ${item.unit_name})`}
             </Select.Option>
           ))}
         </Select>
