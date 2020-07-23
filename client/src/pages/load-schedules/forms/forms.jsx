@@ -591,6 +591,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               >
                 {(IS_CREATING || value?.shls_ld_type === '3') && <Radio.Button value="3">{t('operations.preOrder')}</Radio.Button>}
                 {(IS_CREATING || value?.shls_ld_type === '2') && <Radio.Button value="2">{t('operations.preSchedule')}</Radio.Button>}
+                {/* {(IS_CREATING || value?.shls_ld_type === '6') && <Radio.Button value="6">{t('fields.unload')}</Radio.Button>} */}
                 {(!IS_CREATING && !['2', '3'].includes(value?.shls_ld_type)) && 
                   <Radio.Button value="4">{t('operations.openOrder')}</Radio.Button>}
                 {/* <Radio.Button value="3">{t('operations.preOrder')}</Radio.Button>
