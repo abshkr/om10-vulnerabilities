@@ -5,7 +5,7 @@ const getAvailableArms = (arms, prodcmpy, prodcode) => {
   const armsByProd = adjustProductArms(arms, prodcmpy, prodcode);
 
   const items = _.filter(armsByProd, (o) => (
-    o.stream_bclass_code !== '6' && String(o.arm_bases) === o.rat_count
+    o.stream_bclass_code !== '6' && String(o.arm_bases) === o.rat_count && o.rat_seq === '1'
   ));
 
   return items;
