@@ -9,6 +9,7 @@ import { DatePicker } from 'antd';
 import { Form, Button, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { DateRange, 
+  Terminal,
   LoadID, 
   Supplier, 
   Carrier,
@@ -50,6 +51,7 @@ const SearchForm = ({onSearch, fields}) => {
 
   return (
     <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError style={{marginTop: "1rem"}}>
+      {fields?.terminal && <Terminal />}
       {fields?.shls_trip_no && <Trip />}
       {fields?.mlitm_prodcmpy && <PlantSupplier />}
       {fields?.mlitm_id && <MovementID />}

@@ -24,6 +24,7 @@ import NominationNumber from './nomination-number';
 import JournalSearch from './journal-msg';
 import JournalEvent from './journal_event';
 import JournalCategory from './journal_categories';
+import Terminal from './terminal';
 
 export { 
   DateRange, 
@@ -52,5 +53,6 @@ export {
   JournalSearch,
   JournalEvent,
   JournalCategory,
+  Terminal,
 };
 

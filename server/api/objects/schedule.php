@@ -262,11 +262,15 @@ class Schedule extends CommonClass
             WHERE SHLS_TRIP_NO LIKE :shls_trip_no " ;
 
         if (isset($this->supplier_code)) {
-            $query = $query . " AND SUPPLIER_CODE LIKE :supplier_code";
+            $query = $query . " AND SUPPLIER_CODE = :supplier_code";
         }
 
         if (isset($this->carrier_code)) {
-            $query = $query . " AND CARRIER_CODE LIKE :carrier_code";
+            $query = $query . " AND CARRIER_CODE = :carrier_code";
+        }
+
+        if (isset($this->shls_terminal)) {
+            $query = $query . " AND SHLS_TERMINAL = :shls_terminal";
         }
 
         if (isset($this->tnkr_code)) {
@@ -286,13 +290,15 @@ class Schedule extends CommonClass
         oci_bind_by_name($stmt, ':shls_trip_no', $shls_trip_no);
 
         if (isset($this->supplier_code)) {
-            $supplier_code = '%' . $this->supplier_code . '%';
-            oci_bind_by_name($stmt, ':supplier_code', $supplier_code);
+            oci_bind_by_name($stmt, ':supplier_code', $this->supplier_code);
         }
 
         if (isset($this->carrier_code)) {
-            $carrier_code = '%' . $this->carrier_code . '%';
-            oci_bind_by_name($stmt, ':carrier_code', $carrier_code);
+            oci_bind_by_name($stmt, ':carrier_code', $this->carrier_code);
+        }
+
+        if (isset($this->shls_terminal)) {
+            oci_bind_by_name($stmt, ':shls_terminal', $this->shls_terminal);
         }
 
         if (isset($this->tnkr_code)) {

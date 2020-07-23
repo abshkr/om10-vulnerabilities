@@ -63,6 +63,7 @@ const LoadSchedules = () => {
     api
       .get(LOAD_SCHEDULES.SEARCH, {
         params: {
+          shls_terminal: values.terminal,
           shls_trip_no: values.shls_trip_no,
           supplier_code: values.supplier_code,
           carrier_code: values.carrier_code,
@@ -126,6 +127,7 @@ const LoadSchedules = () => {
         type="primary"
         icon={<FileSearchOutlined />} 
         onClick={() => WindowSearch(setSearch, t('operations.search'), {
+          terminal: true,
           shls_trip_no: true,
           supplier_code: true,
           trip_status: true,
