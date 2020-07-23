@@ -5,7 +5,7 @@ import { Spin } from 'antd';
 
 import api, { LOAD_SCHEDULES } from '../../../../api';
 
-const DriverInstructions = ({ value }) => {
+const DriverInstructions = ({ value, redoDLI }) => {
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ const DriverInstructions = ({ value }) => {
         })
         .then((res) => setData(res.data));
     }
-  }, [value]);
+  }, [value, redoDLI]);
 
   return (
     <Spin spinning={!data} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>

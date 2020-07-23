@@ -10,7 +10,7 @@ import columns from './columns';
 
 const { Search } = Input;
 
-const Seals = ({ value }) => {
+const Seals = ({ value, sealUpated }) => {
   const url = value
     ? `${LOAD_SCHEDULES.SEALS}?supplier=${value.supplier_code}&trip_no=${value?.shls_trip_no}`
     : null;
@@ -32,6 +32,7 @@ const Seals = ({ value }) => {
       })
       .then(() => {
         refreshNextSeal();
+        sealUpated();
 
         notification.success({
           message: t('messages.updateSuccess'),
@@ -65,6 +66,7 @@ const Seals = ({ value }) => {
         })
         .then(() => {
           refreshSeals();
+          sealUpated();
 
           notification.success({
             message: t('messages.updateSuccess'),
@@ -88,6 +90,7 @@ const Seals = ({ value }) => {
         .then(() => {
           refreshSeals();
           refreshNextSeal();
+          sealUpated();
 
           notification.success({
             message: t('messages.updateSuccess'),
@@ -115,6 +118,7 @@ const Seals = ({ value }) => {
       .then(() => {
         refreshSeals();
         refreshNextSeal();
+        sealUpated();
 
         notification.success({
           message: t('messages.updateSuccess'),
@@ -138,6 +142,7 @@ const Seals = ({ value }) => {
       .then(() => {
         refreshSeals();
         refreshNextSeal();
+        sealUpated();
 
         notification.success({
           message: t('messages.updateSuccess'),
@@ -162,6 +167,7 @@ const Seals = ({ value }) => {
       .then(() => {
         refreshSeals();
         refreshNextSeal();
+        sealUpated();
 
         notification.success({
           message: t('messages.updateSuccess'),

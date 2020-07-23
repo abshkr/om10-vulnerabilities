@@ -70,6 +70,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const [tanker, setTanker] = useState(undefined);
   const [trip, setTrip] = useState(undefined);
   const [redoBOL, setRedoBOL] = useState(0);
+  const [redoDLI, setRedoDLI] = useState(false);
   const [shipTo, setShipTo] = useState(value?.shls_ship_to_num);
   const [soldTo, setSoldTo] = useState(value?.shls_sold_to_num);
   const [expHour, setExpHour] = useState(undefined); // SITE.SITE_SHLS_EXP_H
@@ -391,6 +392,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
     }
   };
 
+  const onSealUpdate = () => {
+    setRedoDLI(!redoDLI);
+  } 
+
   const onTabChange = (v) => {
     if (v === '3') {
       if (value?.status === 'A') {
@@ -710,7 +715,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
           </TabPane>
 
           <TabPane tab={t('tabColumns.driverInstructions')} disabled={IS_CREATING} key="2">
-            <DriverInstructions value={value} />
+            <DriverInstructions value={value} redoDLI={redoDLI} />
           </TabPane>
 
           <TabPane tab={t('tabColumns.bol')} disabled={IS_CREATING || !CAN_VIEW_REPORTS} key="3">
@@ -722,7 +727,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
           </TabPane>
 
           <TabPane tab={t('tabColumns.seals')} disabled={IS_CREATING || !showSeals} key="5">
-            <Seals value={value} />
+            <Seals value={value} sealUpated={onSealUpdate} />
           </TabPane>
 
           <TabPane tab={t('tabColumns.deliveryDetails')} disabled={IS_CREATING} key="6">
