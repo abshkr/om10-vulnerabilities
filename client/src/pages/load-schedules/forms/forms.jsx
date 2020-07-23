@@ -114,10 +114,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
   const { resetFields, setFieldsValue } = form;
 
-  const onComplete = (shls_trip_no) => {
+  const onComplete = (value) => {
     handleFormState(false, null);
-    if (shls_trip_no) {
-      locateTrip(shls_trip_no);
+    if (value) {
+      locateTrip(value);
     } else {
       mutate(url);
     }
@@ -212,7 +212,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
         await api
           .post(IS_CREATING ? LOAD_SCHEDULES.CREATE : LOAD_SCHEDULES.UPDATE, values)
           .then(() => {
-            onComplete(values.shls_trip_no);
+            onComplete(values);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
@@ -282,6 +282,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             notification.success({
               message: t('messages.reverseSuccess'),
             });
+            onComplete(value);
           })
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {

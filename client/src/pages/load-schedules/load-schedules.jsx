@@ -47,7 +47,8 @@ const LoadSchedules = () => {
 
   const locateTrip = (value) => {
     setSearch({
-      shls_trip_no: value,
+      shls_trip_no: value.shls_trip_no,
+      supplier_code: value.supplier_code,
     })
   }
 

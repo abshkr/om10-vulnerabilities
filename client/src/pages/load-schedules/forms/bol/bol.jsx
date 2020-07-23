@@ -29,7 +29,7 @@ const BOL = ({ value, redo, supermode, locateTrip }) => {
         .then((res) => {
           setData(res.data)
           if (value?.status === 'A') {
-            locateTrip(value.shls_trip_no);
+            locateTrip(value);
           }
         })
         .catch((errors) => {

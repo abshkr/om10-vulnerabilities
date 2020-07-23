@@ -663,6 +663,18 @@ class Schedule extends CommonClass
         } else {
             $query = "
                 SELECT " . $this->VIEW_NAME . ".*, 
+                DECODE(LOAD_REVERSE_FLAG, 
+                    1, 'Y',
+                    'N'
+                ) REVERSED,
+                DECODE(LOAD_REVERSE_FLAG, 
+                    3, 'Y',
+                    'N'
+                ) ARCHIVED,
+                DECODE(SHLS_LD_TYPE, 
+                    6, 'Y',
+                    'N'
+                ) UNLOAD,
                 DECODE(SHLS_SRCTYPE, 
                     1, 'Manually Created',
                     2, 'From Host',
