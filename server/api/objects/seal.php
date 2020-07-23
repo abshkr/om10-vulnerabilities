@@ -146,6 +146,51 @@ class Seal extends CommonClass
         oci_commit($this->conn);
     }
 
+    /**
+     * This is because a CGI issue, check OM5K-7261; because CGI are in different
+     * branches and we don't change backend often, the workaround here is:
+     * if policy is 0, update it to 1 so that cgi can do allocation, then
+     * change it back to 0 after cgi invocation. 
+     * policy 0: none; 1: allocate seal in dli (before); 2: allocate seal in bol (after)
+    */
+    private function preset_policy() 
+    {
+        $query = "SELECT NVL(SITE_SEAL_MODE, 1) SITE_SEAL_MODE FROM SITE";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            // $error = new EchoSchema(400, response("__SAVE_FAILED__"));
+            // echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        if ($row['SITE_SEAL_MODE'] == "0") {
+            $this->site_seal_mode = '0';
+            write_log("SITE_SEAL_MODE is 0, change it to 1 before calling CGI", __FILE__, __LINE__);
+            $query = "UPDATE SITE SET SITE_SEAL_MODE = 1";
+            $stmt = oci_parse($this->conn, $query);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            }
+        }
+    }
+
+    private function restore_policy()
+    {
+        if (isset($this->site_seal_mode) && $this->site_seal_mode == "0") {
+            write_log("SITE_SEAL_MODE is 0, change it to 1 before calling CGI", __FILE__, __LINE__);
+            $query = "UPDATE SITE SET SITE_SEAL_MODE = 0";
+            $stmt = oci_parse($this->conn, $query);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            }
+        }
+    }
+
     //trip=246829219&supplier=7640114&seal_num=1
     public function allocate_seal()
     {
@@ -167,9 +212,10 @@ class Seal extends CommonClass
             return;
         }
 
+        $this->preset_policy();
+
         $query_string = "seal_num=" . $this->seal_num . "&supplier=" . $this->supplier .
             "&trip=" . $this->trip_no;
-
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/loadspec_seal.cgi", $query_string);
         if (strpos($res, "OK") === false) {
             write_log("load_spec_compt CGI error", __FILE__, __LINE__, LogLevel::ERROR);
@@ -177,6 +223,8 @@ class Seal extends CommonClass
             echo json_encode($error, JSON_PRETTY_PRINT);
             return;
         }
+
+        $this->restore_policy();
 
         $error = new EchoSchema(200, response("__SEAL_ALLOCATED__"));
         echo json_encode($error, JSON_PRETTY_PRINT);
@@ -201,9 +249,10 @@ class Seal extends CommonClass
             $this->cmpt_nr = 1;
         }
 
+        $this->preset_policy();
+
         $query_string = "cmpt_nr=" . $this->cmpt_nr . "&supplier=" . $this->supplier .
             "&trip=" . $this->trip_no . "&cmd=realloc";
-
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/loadspec_seal.cgi", $query_string);
         if (strpos($res, "OK") === false) {
             write_log("load_spec_compt CGI error", __FILE__, __LINE__, LogLevel::ERROR);
@@ -211,6 +260,8 @@ class Seal extends CommonClass
             echo json_encode($error, JSON_PRETTY_PRINT);
             return;
         }
+
+        $this->restore_policy();
 
         $error = new EchoSchema(200, response("__SEAL_ALLOCATED_ONE__"));
         echo json_encode($error, JSON_PRETTY_PRINT);
@@ -266,7 +317,7 @@ class Seal extends CommonClass
     //== deallocate + allocate_one
     public function reallocate()
     {
-        $this->commit_mode = OCI_NO_AUTO_COMMIT;
+        // $this->commit_mode = OCI_NO_AUTO_COMMIT;
         
         if (!isset($this->trip_no)) {
             $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__", "parameter missing: trip_no not provided"));
@@ -295,8 +346,9 @@ class Seal extends CommonClass
             return;
         }
 
-        $query_string = "supplier=" . $this->supplier . "&trip=" . $this->trip_no . "&cmd=reassemble";
+        $this->preset_policy();
 
+        $query_string = "supplier=" . $this->supplier . "&trip=" . $this->trip_no . "&cmd=reassemble";
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/loadspec_seal.cgi", $query_string);
         if (strpos($res, "OK") === false) {
             write_log("load_spec_compt CGI error", __FILE__, __LINE__, LogLevel::ERROR);
@@ -317,9 +369,11 @@ class Seal extends CommonClass
             return;
         }
 
+        $this->restore_policy();
+
         $error = new EchoSchema(200, response("__SET_REALLOCATED__"));
         echo json_encode($error, JSON_PRETTY_PRINT);
-        oci_commit($this->conn);
+        // oci_commit($this->conn);
     }
 
     public function deallocate_all()
