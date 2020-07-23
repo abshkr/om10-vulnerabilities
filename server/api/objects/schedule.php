@@ -241,6 +241,7 @@ class Schedule extends CommonClass
             SELECT " . $this->VIEW_NAME . ".*, 
                 DECODE(LOAD_REVERSE_FLAG, 
                     1, 'Y',
+                    3, 'Y',
                     'N'
                 ) REVERSED,
                 DECODE(LOAD_REVERSE_FLAG, 
@@ -639,6 +640,7 @@ class Schedule extends CommonClass
             SELECT " . $this->VIEW_NAME . ".*, 
                 DECODE(LOAD_REVERSE_FLAG, 
                     1, 'Y',
+                    3, 'Y',
                     'N'
                 ) REVERSED,
                 DECODE(LOAD_REVERSE_FLAG, 
@@ -665,6 +667,7 @@ class Schedule extends CommonClass
                 SELECT " . $this->VIEW_NAME . ".*, 
                 DECODE(LOAD_REVERSE_FLAG, 
                     1, 'Y',
+                    3, 'Y',
                     'N'
                 ) REVERSED,
                 DECODE(LOAD_REVERSE_FLAG, 
