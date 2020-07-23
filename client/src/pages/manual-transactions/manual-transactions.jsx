@@ -224,6 +224,11 @@ const ManualTransactions = ({ popup, params }) => {
               // resetFormGrids();
               resetLoadData();
 
+              !!params.onComplete && params.onComplete({
+                supplier_code: params?.supplier,
+                shls_trip_no: params?.trip_no,
+              });
+
               notification.success({
                 message: t('messages.submitSuccess'),
                 description: t('descriptions.submitSuccess'),

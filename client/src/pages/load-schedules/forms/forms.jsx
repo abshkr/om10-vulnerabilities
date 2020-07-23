@@ -763,6 +763,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
                 trans_type: 'SCHEDULE',
                 repost: false,
                 title: t('tabColumns.createTripTransactions'),
+                onComplete: onComplete,
               }}
             />
           </TabPane>
@@ -780,6 +781,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
                 trans_type: 'SCHEDULE',
                 repost: true,
                 title: t('tabColumns.repostTripTransactions'),
+                onComplete: onComplete,
               }}
             />
           </TabPane>
