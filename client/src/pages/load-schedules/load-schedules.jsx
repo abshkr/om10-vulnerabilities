@@ -56,6 +56,7 @@ const LoadSchedules = () => {
     if (!values.shls_trip_no && 
       !values.supplier_code &&
       !values.tnkr_code && 
+      !values.carrier_code && 
       !values.trip_status) {
       return;
     }
