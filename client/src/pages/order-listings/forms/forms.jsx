@@ -672,6 +672,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
                 order_cust_no: value?.order_cust_no,
                 trans_type: 'OPENORDER',
                 repost: false,
+                onComplete: onComplete,
               }}
             />
           </TabPane>

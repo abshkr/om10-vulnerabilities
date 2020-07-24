@@ -224,10 +224,16 @@ const ManualTransactions = ({ popup, params }) => {
               // resetFormGrids();
               resetLoadData();
 
-              !!params.onComplete && params.onComplete({
-                supplier_code: params?.supplier,
-                shls_trip_no: params?.trip_no,
-              });
+              if (sourceType === 'SCHEDULE') {
+                !!params.onComplete && params.onComplete({
+                  supplier_code: params?.supplier,
+                  shls_trip_no: params?.trip_no,
+                });
+              }
+
+              if (sourceType === 'OPENORDER') {
+                !!params.onComplete && params.onComplete(params?.order_cust_no);
+              }
 
               notification.success({
                 message: t('messages.submitSuccess'),
