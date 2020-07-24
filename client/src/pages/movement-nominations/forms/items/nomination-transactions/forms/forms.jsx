@@ -56,7 +56,17 @@ import MeterDetails from './meter-details/meter-details';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, pageState, defaultTanker, config }) => {
+const FormModal = ({
+  value,
+  visible,
+  handleFormState,
+  access,
+  pageState,
+  defaultTanker,
+  config,
+  cbFunction,
+  closeForm
+}) => {
   const [drawerWidth, setDrawerWidth] = useState('80vw');
   const [mainTabOn, setMainTabOn] = useState(true);
   const [disableCalculation, setDisableCalculation] = useState(false);
@@ -119,6 +129,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, default
     setDrawerWidth('80vw');
     setMainTabOn(true);
     setSelected(null);
+    closeForm(false);
     console.log('end of onComplete');
   };
 
@@ -176,6 +187,10 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, default
             .then((response) => {
               //Modal.destroyAll();
               onComplete();
+
+              if (!!cbFunction) {
+                cbFunction(values?.mvitm_key);
+              }
 
               notification.success({
                 message: t('messages.submitSuccess'),
@@ -554,7 +569,7 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, default
               htmlType="button"
               icon={<CloseOutlined />}
               style={{ float: 'right' }}
-              onClick={() => Modal.destroyAll()}
+              onClick={() => {Modal.destroyAll(); onComplete();}}
             >
               {t('operations.cancel')}
             </Button>

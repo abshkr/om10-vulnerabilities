@@ -302,7 +302,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
             </Row>
 
             <Divider style={{ marginTop: 3, marginBottom: 13 }} />
-            <Items setTableAPIContext={setTableAPI} value={value} config={config} />
+            <Items
+              setTableAPIContext={setTableAPI}
+              value={value}
+              config={config}
+              cbFunction={onComplete}
+            />
           </TabPane>
           {/* <TabPane tab={t('tabColumns.items')} forceRender={true} key="2">
             <Items setTableAPIContext={setTableAPI} value={value} config={config} />

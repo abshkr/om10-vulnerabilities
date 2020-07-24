@@ -5,7 +5,7 @@ import _ from 'lodash';
 import Forms from './forms';
 import { NOMINATION_TRANSACTIONS } from '../../../../../api';
 
-const NominationTransactions = ({ access, params, config }) => {
+const NominationTransactions = ({ access, params, config, cbFunction, closeForm }) => {
   /* let params2 = {
     mvitm_move_id: '5089', 
     mvitm_key: '99887766', 
@@ -72,6 +72,8 @@ const NominationTransactions = ({ access, params, config }) => {
         pageState={pageState}
         defaultTanker={nomTanker}
         config={config}
+        cbFunction={cbFunction}
+        closeForm={closeForm}
       />
     </>
   );
