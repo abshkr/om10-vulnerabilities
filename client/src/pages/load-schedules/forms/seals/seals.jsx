@@ -11,7 +11,6 @@ import columns from './columns';
 const { Search } = Input;
 
 const Seals = ({ value, sealUpated }) => {
-  console.log(value)
   const url = value
     ? `${LOAD_SCHEDULES.SEALS}?supplier=${value.supplier_code}&trip_no=${value?.shls_trip_no}`
     : null;

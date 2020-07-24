@@ -8,8 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { LOAD_SCHEDULES } from '../../../../api';
 
-const BOL = ({ value, redo, supermode, locateTrip }) => {
-  console.log("BOL START")
+const BOL = ({ value, redo, supermode, locateTrip, setCurStatus }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState(null);
@@ -29,6 +28,7 @@ const BOL = ({ value, redo, supermode, locateTrip }) => {
         .then((res) => {
           setData(res.data)
           if (value?.status === 'A') {
+            setCurStatus('E');
             locateTrip(value);
           }
         })

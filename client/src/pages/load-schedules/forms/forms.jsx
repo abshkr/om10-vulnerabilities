@@ -397,6 +397,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
     setRedoDLI(!redoDLI);
   } 
 
+  const setCurStatus = (status) => {
+    if (value) {
+      value.status = status;
+    }
+  }
+
   const onTabChange = (v) => {
     if (v === '3') {
       if (value?.status === 'A') {
@@ -721,7 +727,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
           </TabPane>
 
           <TabPane tab={t('tabColumns.bol')} disabled={IS_CREATING || !CAN_VIEW_REPORTS} key="3">
-            <BOL value={value} redo={redoBOL} supermode={form.getFieldValue('supermode')} locateTrip={locateTrip} />
+            <BOL 
+              value={value} 
+              redo={redoBOL} 
+              supermode={form.getFieldValue('supermode')} 
+              locateTrip={locateTrip} 
+              setCurStatus={setCurStatus}
+            />
           </TabPane>
 
           <TabPane tab={t('tabColumns.loadReport')} disabled={IS_CREATING || !CAN_VIEW_REPORTS} key="4">
