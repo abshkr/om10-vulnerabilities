@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Badge } from 'antd';
+import './source-render.css';
 
 export default class SourceRender extends Component {
   constructor(props) {
@@ -10,7 +11,6 @@ export default class SourceRender extends Component {
   }
 
   getBadge = () => {
-
     if (this.state.value === "Manually Created") {
       return "yellow";
     } else if (this.state.value === "From Host") {
