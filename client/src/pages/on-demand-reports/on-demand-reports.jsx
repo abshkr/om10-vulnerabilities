@@ -69,6 +69,7 @@ const OnDemandReports = () => {
             description: error.message,
           });
         });
+        setLoading(false);
       });
   };
 
