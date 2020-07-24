@@ -13,7 +13,7 @@ const Carrier = ({ form, value, onChange }) => {
 
   const { data: options, isValidating } = useSWR(LOAD_SCHEDULES.CARRIERS);
 
-  const IS_DISABLED = !value ? false : (value?.shls_status !== 'NEW SCHEDULE' || value?.shls_ld_type === '2');
+  const IS_DISABLED = !value ? false : value?.shls_status !== 'NEW SCHEDULE' || value?.shls_ld_type === '2';
 
   const validate = (rule, input) => {
     if (input === '' || !input) {

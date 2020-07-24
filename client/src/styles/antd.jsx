@@ -324,7 +324,14 @@ const AntdStyleProvider = createGlobalStyle`
   .ant-list-item-meta-title h4 {
     color: #0054a4 !important;
   }
-
   
+  .ant-select-item-option-content {
+    text-overflow: unset;
+    width: 300px;
+  }
+
+
+
+
 `;
 export default AntdStyleProvider;

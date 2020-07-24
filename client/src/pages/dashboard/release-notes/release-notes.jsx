@@ -8,7 +8,91 @@ const { Panel } = Collapse;
 
 const data = [
   {
-    title: `Latest Release Version Notes (${VERSION}) - 16/07/2020`,
+    title: `Latest Release Version Notes (${VERSION}) - 23/07/2020`,
+    content: (
+      <>
+        <>
+          <Divider>Bug Fixes</Divider>
+
+          <p>
+            OM5K-6697 - <a>https://dev.diamondkey.com/browse/OM5K-6697</a>
+          </p>
+          <p>
+            OM5K-6698 - <a>https://dev.diamondkey.com/browse/OM5K-6698</a>
+          </p>
+          <p>
+            OM5K-6699 - <a>https://dev.diamondkey.com/browse/OM5K-6699</a>
+          </p>
+          <p>
+            OM5K-6717 - <a>https://dev.diamondkey.com/browse/OM5K-6717</a>
+          </p>
+          <p>
+            OM5K-6723 - <a>https://dev.diamondkey.com/browse/OM5K-6723</a>
+          </p>
+          <p>
+            OM5K-6725 - <a>https://dev.diamondkey.com/browse/OM5K-6725</a>
+          </p>
+          <p>
+            OM5K-6726 - <a>https://dev.diamondkey.com/browse/OM5K-6726</a>
+          </p>
+          <p>
+            OM5K-6750 - <a>https://dev.diamondkey.com/browse/OM5K-6750</a>
+          </p>
+          <p>
+            OM5K-7163 - <a>https://dev.diamondkey.com/browse/OM5K-7163</a>
+          </p>
+          <p>
+            OM5K-7192 - <a>https://dev.diamondkey.com/browse/OM5K-7192</a>
+          </p>
+          <p>
+            OM5K-7209 - <a>https://dev.diamondkey.com/browse/OM5K-7209</a>
+          </p>
+          <p>
+            OM5K-7242 - <a>https://dev.diamondkey.com/browse/OM5K-7242</a>
+          </p>
+          <p>
+            OM5K-7038 - <a>https://dev.diamondkey.com/browse/OM5K-7038</a>
+          </p>
+          <p>
+            OM5K-7170 - <a>https://dev.diamondkey.com/browse/OM5K-7170</a>
+          </p>
+          <p>
+            OM5K-7190 - <a>https://dev.diamondkey.com/browse/OM5K-7190</a>
+          </p>
+          <p>
+            OM5K-7197 - <a>https://dev.diamondkey.com/browse/OM5K-7197</a>
+          </p>
+          <p>
+            OM5K-7198 - <a>https://dev.diamondkey.com/browse/OM5K-7198</a>
+          </p>
+          <p>
+            OM5K-7234 - <a>https://dev.diamondkey.com/browse/OM5K-7234</a>
+          </p>
+          <p>
+            OM5K-7183 - <a>https://dev.diamondkey.com/browse/OM5K-7183</a>
+          </p>
+          <p>
+            OM5K-7186 - <a>https://dev.diamondkey.com/browse/OM5K-7186</a>
+          </p>
+          <p>
+            OM5K-7187 - <a>https://dev.diamondkey.com/browse/OM5K-7187</a>
+          </p>
+          <p>
+            OM5K-7188 - <a>https://dev.diamondkey.com/browse/OM5K-7188</a>
+          </p>
+          <p>
+            OM5K-7184 - <a>https://dev.diamondkey.com/browse/OM5K-7184</a>
+          </p>
+          <p>
+            OM5K-7185 - <a>https://dev.diamondkey.com/browse/OM5K-7185</a>
+          </p>
+        </>
+      </>
+    ),
+  },
+
+  {
+    title: `Release Version Notes (10.1.2) - 16/07/2020`,
     content: (
       <>
         <>
