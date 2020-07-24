@@ -11,6 +11,7 @@ import columns from './columns';
 const { Search } = Input;
 
 const Seals = ({ value, sealUpated }) => {
+  console.log(value)
   const url = value
     ? `${LOAD_SCHEDULES.SEALS}?supplier=${value.supplier_code}&trip_no=${value?.shls_trip_no}`
     : null;
@@ -223,7 +224,12 @@ const Seals = ({ value, sealUpated }) => {
 
   const extra = (
     <>
-      <Button style={{ marginRight: 10 }} type="primary" disabled={!selected} onClick={onReallocateSelected}>
+      <Button 
+        style={{ marginRight: 10 }} 
+        type="primary" 
+        disabled={!selected || (value?.status !== 'A' && value?.status !== 'F')} 
+        onClick={onReallocateSelected}
+      >
         {t('operations.reallocateSelected')}
       </Button>
 
@@ -236,7 +242,11 @@ const Seals = ({ value, sealUpated }) => {
         {t('operations.deallocateSelected')}
       </Button>
 
-      <Button style={{ marginRight: 5 }} type="primary" onClick={onDellocateAll}>
+      <Button 
+        style={{ marginRight: 5 }} 
+        type="primary" 
+        onClick={onDellocateAll}
+      >
         {t('operations.deallocateAll')}
       </Button>
     </>
@@ -258,6 +268,7 @@ const Seals = ({ value, sealUpated }) => {
           <Search
             placeholder={payload?.records?.length}
             enterButton={payload?.records?.length === 0 ? t('operations.allocation') : t('operations.add')}
+            disabled={value?.status !== 'A' && value?.status !== 'F'}
             onSearch={(value) => onAllocation(value)}
             readOnly={!payload || payload?.records?.length > 0}
           />
