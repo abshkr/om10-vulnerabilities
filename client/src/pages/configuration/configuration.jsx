@@ -28,7 +28,7 @@ const FormSwitch = ({ config, onChange }) => {
         <Select 
           dropdownMatchSelectWidth={false}
           defaultValue={config.config_value} 
-          style={{ width: 260 }} 
+          style={{ width: 280 }} 
           onChange={(value) => onChange(config, value)}
         >
           <Option value="1">Simple (Alpha and Numeric)</Option>
@@ -40,9 +40,9 @@ const FormSwitch = ({ config, onChange }) => {
     case 'SITE_SEAL_MODE':
       return (
         <Select 
-          dropdownMatchSelectWidth={false}
+          // dropdownMatchSelectWidth={false}
           defaultValue={config.config_value} 
-          style={{ width: 260 }} 
+          style={{ width: 280 }} 
           onChange={(value) => onChange(config, value)}
         >
           <Option value="0">No-auto Mode</Option>
