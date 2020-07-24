@@ -160,7 +160,7 @@ const columns = (t, config) => [
   },
 
   {
-    headerName: t('fields.density'),
+    headerName: t('fields.standardDensity'),
     field: 'tank_density',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -170,12 +170,12 @@ const columns = (t, config) => [
   },
 
   {
-    headerName: t('fields.standardDensity'),
+    headerName: t('fields.density'),
     field: 'tank_15_density',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: !config?.manageAPI,
+    hide: !(config?.temperatureUnit === 'degC' && config?.referenceTemperature === '15' && config?.vsmCompensation === '30'),
     width: 140,
     suppressSizeToFit: true,
   },

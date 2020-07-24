@@ -54,7 +54,7 @@ const StdDensity = ({ form, value, tank, pageState, config }) => {
   return (
     <Form.Item
       name="mlitm_dens_cor"
-      label={t('fields.nomtranStdDens') + '(' + String(minDens) + ' ~ ' + String(maxDens) + ')' + '(' + t('fields.nomtranStdDensUnit') + ')'}
+      label={t('fields.nomtranStdDens') + '[' + String(minDens) + ' ~ ' + String(maxDens) + ']' + '(' + t('fields.nomtranStdDensUnit') + ')'}
       rules={[{ required: false, validator: validate }]}
     >
       <InputNumber

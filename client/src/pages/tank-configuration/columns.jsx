@@ -52,7 +52,7 @@ const columns = (configuration, t) => [
     filter: 'MultiFilter'
   },
   {
-    headerName: `${t('fields.density')} (${t('units.kg/m3')})`,
+    headerName: `${t('fields.standardDensity')} (${t('units.kg/m3')})`,
     field: 'tank_density',
     sortable: true,
     resizable: true

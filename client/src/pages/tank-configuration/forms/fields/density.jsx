@@ -65,7 +65,7 @@ const Density = ({ form, value, product }) => {
   return (
     <Form.Item
       name="tank_density"
-      label={t('fields.density')}
+      label={t('fields.standardDensity')}
       rules={[{ required: true, validator: validate }]}
     >
       <Input disabled={disabled} addonAfter={affix} />
