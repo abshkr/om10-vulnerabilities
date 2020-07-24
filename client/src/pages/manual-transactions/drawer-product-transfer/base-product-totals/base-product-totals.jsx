@@ -8,11 +8,14 @@ import columns from './columns';
 import api, { MANUAL_TRANSACTIONS } from '../../../../api';
 import {calcBaseRatios} from '../../../../utils'
 
+import { buildBaseTransfers, buildBaseTotals } from '../../data-builder';
+
 const BaseProductTotals = ({ 
   form, 
   sourceType, 
   selected, 
   transfers,
+  productArms,
   clicked,
   dataBoard,
   setDataBoard,
@@ -78,12 +81,14 @@ const BaseProductTotals = ({
     return totals;
   }
 
-  const getBaseTotals = async () => {
-    const pre = [];
+  const getBaseTotals = () => {
+    // const pre = [];
     //const transfers = form.getFieldValue('transfers');
     setLoading(true);
 
-    for (let index = 0; index < transfers?.length; index++) {
+    const pre = buildBaseTotals(productArms, transfers);
+
+    /* for (let index = 0; index < transfers?.length; index++) {
       const transfer = transfers[index];
 
       if (!transfer?.trsf_arm_cd.includes(' ')) {
@@ -125,7 +130,7 @@ const BaseProductTotals = ({
             }
           });
       }
-    }
+    } */
 
     setLoading(false);
     if (dataLoadFlag === 0) {
@@ -144,7 +149,7 @@ const BaseProductTotals = ({
     //if (dataLoadFlag === 0) {
       getBaseTotals();
     //}
-  }, [selected]);
+  }, [selected, transfers, productArms]);
 
   useEffect(() => {
     if (data) {

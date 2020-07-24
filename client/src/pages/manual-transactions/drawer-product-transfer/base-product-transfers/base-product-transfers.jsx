@@ -8,11 +8,14 @@ import columns from './columns';
 import api, { MANUAL_TRANSACTIONS } from '../../../../api';
 import {calcBaseRatios} from '../../../../utils'
 
+import { buildBaseTransfers, buildBaseTotals } from '../../data-builder';
+
 const BaseProductTransfers = ({
   form, 
   sourceType, 
   selected, 
   transfers,
+  productArms,
   clicked,
   setChildTableAPI,
   dataBoard,
@@ -34,12 +37,14 @@ const BaseProductTransfers = ({
 
   const fields = columns(t);
 
-  const getBaseTransfers = async (selected) => {
-    const pre = [];
+  const getBaseTransfers = (selected) => {
+    // const pre = [];
     //const transfers = form.getFieldValue('transfers');
     setLoading(true);
 
-    for (let index = 0; index < transfers?.length; index++) {
+    const pre = buildBaseTransfers(productArms, transfers);
+
+    /* for (let index = 0; index < transfers?.length; index++) {
       const transfer = transfers[index];
 
       if (selected?.trsf_cmpt_no !== transfer?.trsf_cmpt_no) {
@@ -86,7 +91,7 @@ const BaseProductTransfers = ({
             }
           });
       }
-    }
+    } */
 
     setLoading(false);
 
@@ -114,7 +119,7 @@ const BaseProductTransfers = ({
     //if (dataLoadFlag === 0) {
       getBaseTransfers(selected);
     //}
-  }, [selected]);
+  }, [selected, transfers, productArms]);
 
   useEffect(() => {
     if (data) {

@@ -38,7 +38,7 @@ const buildBaseTotalsByArm = (prodArms, transfer) => {
   return bases;
 };
 
-const buildBaseTotalsByTransfers = (prodArms, transfers) => {
+const buildBaseTotals = (prodArms, transfers) => {
   let bases = [];
   for (let index = 0; index < transfers.length; index++) {
     const transfer = transfers[index];
@@ -52,11 +52,11 @@ const buildBaseTotalsByTransfers = (prodArms, transfers) => {
   return bases;
 };
 
-const buildBaseTotals = (prodArms, transfers) => {
-  const items = buildBaseTotalsByTransfers(prodArms, transfers);
+const adjustBaseTotals = (prodArms, transfers) => {
+  const items = buildBaseTotals(prodArms, transfers);
 
   const totals = [];
-  console.log('buildBaseTotals - start', items);
+  console.log('adjustBaseTotals - start', items);
   let itemExisted = false;
 
   _.forEach(items, (item) => {
@@ -76,7 +76,7 @@ const buildBaseTotals = (prodArms, transfers) => {
       totals.push(item);
     }
   });
-  console.log('buildBaseTotals - end', totals);
+  console.log('adjustBaseTotals - end', totals);
 
   return totals;
 };

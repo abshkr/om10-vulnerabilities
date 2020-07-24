@@ -7,11 +7,14 @@ import { DataTable } from '../../../../components';
 import columns from './columns';
 import api, { MANUAL_TRANSACTIONS } from '../../../../api';
 
+import { buildMeterTransfers } from '../../data-builder';
+
 const MeterTransfers = ({ 
   form, 
   sourceType, 
   selected, 
   transfers,
+  productArms,
   dataBoard,
   setDataBoard,
   data,
@@ -29,12 +32,14 @@ const MeterTransfers = ({
   const fields = columns(t);
 
   useEffect(() => {
-    async function getMeters() {
-      const meters = [];
+    function getMeters() {
+      // const meters = [];
 
       setLoading(true);
 
-      for (let index = 0; index < transfers.length; index++) {
+      const meters = buildMeterTransfers(productArms, transfers);
+
+      /* for (let index = 0; index < transfers.length; index++) {
         const transfer = transfers[index];
 
         if (!transfer?.trsf_arm_cd.includes(' ')) {
@@ -67,7 +72,7 @@ const MeterTransfers = ({
               }
             });
         }
-      }
+      } */
 
       setLoading(false);
       if (dataLoadFlag === 0) {
@@ -84,7 +89,7 @@ const MeterTransfers = ({
     //if (dataLoadFlag === 0) {
       getMeters();
     //}
-  }, [selected, transfers]);
+  }, [selected, transfers, productArms]);
 
   useEffect(() => {
     if (data) {
