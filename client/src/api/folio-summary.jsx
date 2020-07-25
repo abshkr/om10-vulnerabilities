@@ -13,3 +13,5 @@ export const MANUAL_CLOSE = '/api/pages/folio/manual_close.php';
 export const CALCULATE = '/api/pages/folio/calc_tank_vcfs.php';
 
 export const OPEN_REPORT = '/api/pages/folio/report_gateway.php';
+
+export const CLOSEOUT_IS_IDLE = '/api/pages/folio/closeout_is_idle.php';

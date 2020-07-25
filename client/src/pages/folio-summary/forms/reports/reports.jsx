@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import useSWR from 'swr';
 import { RedoOutlined, CloseOutlined } from '@ant-design/icons';
 
@@ -15,6 +15,22 @@ const Reports = ({ id, enabled, handleFormState }) => {
 
   const { data } = useSWR(`${FOLIO_SUMMARY.REPORTS}?closeout_nr=${id}`);
 
+  const [closeoutIsIdle, setCloseoutIsIdle] = useState(false);
+
+  const getCloseoutStatus = useCallback(() => {
+    api.post(`${FOLIO_SUMMARY.CLOSEOUT_IS_IDLE}`).then((response) => {
+      setCloseoutIsIdle(response.data.records);
+    });
+  });
+
+  const showCloseoutStatus = () => {
+    if (!closeoutIsIdle)
+    {
+      return "Closeout is busy. Please try again later.";
+    }
+  };
+
+
   const regenerate = useCallback(() => {
     setRegenerate(true);
 
@@ -28,6 +44,11 @@ const Reports = ({ id, enabled, handleFormState }) => {
 
   const payload = generator(id, data?.records);
   const fields = columns(t);
+
+  useEffect(() => {
+    getCloseoutStatus();
+  });
+
 
   return (
     <div>
@@ -49,11 +70,12 @@ const Reports = ({ id, enabled, handleFormState }) => {
         </Button>
 
         <Button
+          title={showCloseoutStatus()}
           type="primary"
           icon={<RedoOutlined />}
           style={{ float: 'right', marginRight: 5 }}
           loading={isRegenerating}
-          disabled={!enabled}
+          disabled={!enabled || !closeoutIsIdle}
           onClick={() => regenerate()}
         >
           {t('operations.regenerate')}

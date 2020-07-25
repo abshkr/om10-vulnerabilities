@@ -490,6 +490,54 @@ class Folio extends CommonClass
         }
     }
 
+    /* Returns a json indicating if closeout is idle.
+       Closeout is considered idle if:
+       1. it is not scheduled to freeze folio (NEXT_MANUAL_FREEZE_DATETIME is set), AND
+       2. it is not scheduled to close folio (NEXT_MANUAL_CLOSE is set to "Y")
+    */
+    public function closeout_is_idle()
+		{
+        $result = array();
+   			$result["records"] = TRUE;
+
+        $query = "SELECT NEXT_MANUAL_FREEZE_DATETIME FROM SITE";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            $freezetime = $row["NEXT_MANUAL_FREEZE_DATETIME"];
+           	write_log("freezetime:" . $freezetime, __FILE__, __LINE__);
+            if ($freezetime)
+            {
+              $result["records"] = FALSE;
+						}
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        		$result["records"] = FALSE;
+        }
+
+        $query = "SELECT NEXT_MANUAL_CLOSE FROM SITE";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            $close = $row["NEXT_MANUAL_CLOSE"];
+
+            /* Closeout only recognises "Y" */
+            if ($close && $close == "Y")
+            {
+              $result["records"] = FALSE;
+						}
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        		$result["records"] = FALSE;
+        }
+
+				http_response_code(200);
+				echo json_encode($result, JSON_PRETTY_PRINT);
+				return $result;
+		}
+
     public function create_reports()
     {
         $query = "SELECT SITE_CODE FROM SITE";
