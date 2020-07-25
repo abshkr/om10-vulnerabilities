@@ -42,8 +42,11 @@ const TransactionList = () => {
   };
 
   const setSearch = (values) => {
-    console.log(values);
-    if (!values.shls_trip_no && !values.trsa_id && !values.tnkr_code && !values.load_id) {
+    if (!values.shls_trip_no && 
+      !values.trsa_id && 
+      !values.tnkr_code &&
+      !values.load_id &&
+      !values.use_date_range) {
       return;
     }
     api
