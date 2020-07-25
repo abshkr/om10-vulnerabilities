@@ -224,7 +224,7 @@ class Dashboard extends CommonClass
             WHERE TANK_BASE = BASE_CODE
                 AND BASE_CAT = BCLASS_NO
             GROUP BY TANK_BASE, BASE_NAME, BCLASS_NO, BCLASS_DESC
-            ORDER BY QTY_ABM desc";
+            ORDER BY QTY_ABM DESC";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
