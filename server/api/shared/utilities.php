@@ -85,7 +85,7 @@ class Utilities
 
     public static function http_cgi_invoke($cgi, $query_string = null)
     {
-        $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . "/" . $cgi . "?";
+        $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . ":" . $_SERVER['SERVER_PORT'] . "/" . $cgi . "?";
         if ($query_string) {
             $url .= $query_string . "&";
         } else {

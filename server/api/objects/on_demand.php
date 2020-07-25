@@ -78,6 +78,18 @@ class OndemandReport extends CommonClass
     {
         write_log(__METHOD__ . " START." . __FILE__, __LINE__);
 
+        /**
+         * Check if DOCUMENT_ROOT/reports and phpwrapper exist. If not, create it
+         * This is to avoid do any backend change. 
+        */
+        if (!file_exists($_SERVER['DOCUMENT_ROOT'] . "/reports")) {
+            mkdir($_SERVER['DOCUMENT_ROOT'] . "/reports");
+        }
+
+        if (!file_exists($_SERVER['DOCUMENT_ROOT'] . "/phpwrapper")) {
+            mkdir($_SERVER['DOCUMENT_ROOT'] . "/phpwrapper");
+        }
+
         if (!isset($this->company)) {
             if (isset($this->supplier)) {
                 $this->company = $this->supplier;
@@ -101,14 +113,29 @@ class OndemandReport extends CommonClass
         $json = json_encode($xml);
         $array = json_decode($json, TRUE);
         if ($array['result'] === 'OK') {
-            write_log("Jasper report created. report:" . $array['report'] . ", created:" . $array['filepath'], __FILE__, __LINE__, LogLevel::INFO);
-            $jasper_result = array(
-                'result' => $array['result'],
-                'filepath' => JASPERREPORT_DIR . $array['filepath']);
+            write_log("Jasper report created. report:" . $array['report'] . ", created:" . $array['filepath'], 
+                __FILE__, __LINE__, LogLevel::INFO);
+
+            if (strpos($array['filepath'], "temp_ondemand.php") !== false && !file_exists("../amfservices")) {
+                $content = file_get_contents($_SERVER['DOCUMENT_ROOT'] . "/reports//" . $array['filepath']);
+                // write_log($content, __FILE__, __LINE__);
+                $pos_start = strpos($content, '@readfile(');
+                $pos_end = strpos($content, ');?>');
+                $report_file = substr($content, $pos_start + strlen("@readfile('../"), $pos_end - $pos_start - 1 - strlen("@readfile('../"));
+                write_log($report_file, __FILE__, __LINE__);
+                $jasper_result = array(
+                    'result' => $array['result'],
+                    'filepath' => $report_file);
+            } else {
+                $jasper_result = array(
+                    'result' => $array['result'],
+                    'filepath' => JASPERREPORT_DIR . $array['filepath']);
+            }
 
             echo json_encode($jasper_result, JSON_PRETTY_PRINT);
         } else {
-            write_log("Jasper report creation failed. report:" . $array['report'] . ", created:" . $array['filepath'], __FILE__, __LINE__, LogLevel::ERROR);
+            write_log("Jasper report creation failed. report:" . $array['report'] . ", created:" . $array['filepath'], 
+                __FILE__, __LINE__, LogLevel::ERROR);
             $error = new EchoSchema(400, response("__CGI_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
         }
