@@ -326,7 +326,7 @@ const useColumns = (value, selected) => {
       cellEditorParams: {
         values: _.uniq(
           _.map(suppliers?.records, (item) => {
-            return { code: item.cmpy_code, name: item.cmpy_name };
+            return { code: item.cmpy_code, name: item.cmpy_code + ' - ' + item.cmpy_name };
           })
         ),
       },
@@ -362,7 +362,7 @@ const useColumns = (value, selected) => {
           _.map(
             productsFrom?.records?.filter((item) => item.prod_cmpy === selected?.[0]?.mvitm_prodcmpy_from),
             (item) => {
-              return { code: item.prod_code, name: item.prod_name };
+              return { code: item.prod_code, name: item.prod_code + ' - ' + item.prod_name };
             }
           )
         ),
@@ -417,7 +417,11 @@ const useColumns = (value, selected) => {
                 item.prod_code === selected?.[0]?.mvitm_prodcode_from
             ),
             (item) => {
-              return { code: item.tank_code, name: item.tank_name };
+              return { 
+                code: item.tank_code, 
+                // name: item.tank_code, 
+                name: item.tank_code + ' - ' + item.tank_name + ' [' + item.base_code + ' - ' + item.base_name + ']'
+              };
             }
           )
         ),
@@ -492,7 +496,7 @@ const useColumns = (value, selected) => {
       cellEditorParams: {
         values: _.uniq(
           _.map(suppliers?.records, (item) => {
-            return { code: item.cmpy_code, name: item.cmpy_name };
+            return { code: item.cmpy_code, name: item.cmpy_code + ' - ' + item.cmpy_name };
           })
         ),
       },
@@ -528,7 +532,7 @@ const useColumns = (value, selected) => {
           _.map(
             productsTo?.records?.filter((item) => item.prod_cmpy === selected?.[0]?.mvitm_prodcmpy_to),
             (item) => {
-              return { code: item.prod_code, name: item.prod_name };
+              return { code: item.prod_code, name: item.prod_code + ' - ' + item.prod_name };
             }
           )
         ),
@@ -583,7 +587,11 @@ const useColumns = (value, selected) => {
                 item.prod_code === selected?.[0]?.mvitm_prodcode_to
             ),
             (item) => {
-              return { code: item.tank_code, name: item.tank_name };
+              return { 
+                code: item.tank_code, 
+                // name: item.tank_code 
+                name: item.tank_code + ' - ' + item.tank_name + ' [' + item.base_code + ' - ' + item.base_name + ']'
+              };
             }
           )
         ),
