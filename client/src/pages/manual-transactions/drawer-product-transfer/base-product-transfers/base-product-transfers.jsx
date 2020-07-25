@@ -17,6 +17,8 @@ const BaseProductTransfers = ({
   transfers,
   productArms,
   clicked,
+  updating,
+  setUpdating,
   setChildTableAPI,
   dataBoard,
   setDataBoard,
@@ -164,6 +166,7 @@ const BaseProductTransfers = ({
       setStdTotal(0);
       setMassTotal(0);
     }
+    setUpdating(false)
   }, [data, clicked]);
 
   useEffect(() => {
@@ -220,6 +223,7 @@ const BaseProductTransfers = ({
     <Spin indicator={null} spinning={isLoading}>
       <Form.Item name="base_transfers">
         <DataTable 
+          isLoading={updating}
           minimal={true}
           data={data.filter((o)=>(o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no))} 
           height="70vh" 

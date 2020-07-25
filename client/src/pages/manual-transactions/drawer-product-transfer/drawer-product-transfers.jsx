@@ -102,6 +102,7 @@ const DrawerProductTransfers = ({
   const [canCalc, setCanCalc] = useState(false);
   const [canRestore, setCanRestore] = useState(false);
   const [loadingArms, setLoadingArms] = useState(false);
+  const [updating, setUpdating] = useState(false);
 
   
   const getProductArms = (supplier, products) => {
@@ -168,17 +169,25 @@ const DrawerProductTransfers = ({
       frm_real_dens: base?.trsf_bs_den,
     })
     .then((response) => {
-      if (type === 'LT') {
-        base.trsf_bs_qty_cor = _.toNumber(response?.data?.real_litre15);
-        base.trsf_bs_load_kg = _.toNumber(response?.data?.real_kg);
+      if (!response?.data?.real_litre) {
+        notification.error({
+          message: t('descriptions.calculateFailed') + ': ' + base?.trsf_bs_prodcd,
+          description: response?.data?.msg_code + ': ' + response?.data?.msg_desc,
+        });
       }
-      if (type === 'L15') {
-        base.trsf_bs_qty_amb = _.toNumber(response?.data?.real_litre);
-        base.trsf_bs_load_kg = _.toNumber(response?.data?.real_kg);
-      }
-      if (type === 'KG') {
-        base.trsf_bs_qty_amb = _.toNumber(response?.data?.real_litre);
-        base.trsf_bs_qty_cor = _.toNumber(response?.data?.real_litre15);
+      else {
+        if (type === 'LT') {
+          base.trsf_bs_qty_cor = _.toNumber(response?.data?.real_litre15);
+          base.trsf_bs_load_kg = _.toNumber(response?.data?.real_kg);
+        }
+        if (type === 'L15') {
+          base.trsf_bs_qty_amb = _.toNumber(response?.data?.real_litre);
+          base.trsf_bs_load_kg = _.toNumber(response?.data?.real_kg);
+        }
+        if (type === 'KG') {
+          base.trsf_bs_qty_amb = _.toNumber(response?.data?.real_litre);
+          base.trsf_bs_qty_cor = _.toNumber(response?.data?.real_litre15);
+        }
       }
       console.log('DrawerProductTransfers: calcBaseQuantity', base);
     });
@@ -431,16 +440,23 @@ const DrawerProductTransfers = ({
   };
 
   const onCalculate = async () => {
+    setUpdating(true);
     //const items = form.getFieldsValue(['transfers', 'base_transfers', 'base_totals', 'meter_totals'])    
     //console.log('DrawerProductTransfers: onCalculate', items);
 
-    CalcDrawQuantity();
+    await CalcDrawQuantity();
     //CalcDrawQuantityByCompartment(clicked?.trsf_cmpt_no);
 
     // trigger the changes in child components caused by clicked
     const option = clicked;
     setClicked(null);
     setClicked(option);
+    //setUpdating(false);
+
+    notification.success({
+      message: t('messages.calculateSuccess'),
+      description: t('descriptions.calculateSuccess'),
+    });
   };
 
   const onCalculateOld = async () => {
@@ -734,7 +750,7 @@ const DrawerProductTransfers = ({
         icon={<DeleteOutlined />}
         style={{ marginRight: 5 }}
         onClick={onDelete}
-        disabled={!clicked}
+        disabled={!clicked || updating}
       >
         {t('operations.deleteTransfer')}
       </Button>
@@ -744,7 +760,7 @@ const DrawerProductTransfers = ({
         icon={<UndoOutlined />}
         onClick={onCalculate}
         style={{ marginRight: 5 }}
-        disabled={!canCalc}
+        disabled={!canCalc || updating}
         /* disabled={
           !clicked || 
           !clicked?.trsf_temp || 
@@ -760,7 +776,7 @@ const DrawerProductTransfers = ({
         icon={<UndoOutlined />} 
         onClick={onRestore}
         style={{ marginRight: 5 }} 
-        disabled={!canRestore}>
+        disabled={!canRestore || updating}>
         {t('operations.getTankDensities')}
       </Button>
     </>
@@ -775,8 +791,10 @@ const DrawerProductTransfers = ({
       <Card size="small" title={t('divider.drawerProductTransfer')}>
         <Form.Item name="transfers" noStyle>
           <DataTable
+            isLoading={updating}
             minimal={false}
-            parentHeight="200px"
+            // parentHeight="200px"
+            parentHeight={!!payload ? `${payload.length*25+90}px`:"200px"}
             data={payload}
             extra={modifiers}
             columns={fields}
@@ -803,6 +821,8 @@ const DrawerProductTransfers = ({
               transfers={payload} 
               productArms={productArms}
               clicked={clicked}
+              updating={updating}
+              setUpdating={setUpdating}
               setChildTableAPI={setTableBaseTransfersAPI}
               dataBoard={dataBoard}
               setDataBoard={setDataBoard}
@@ -822,6 +842,8 @@ const DrawerProductTransfers = ({
               transfers={payload} 
               productArms={productArms}
               clicked={clicked}
+              updating={updating}
+              setUpdating={setUpdating}
               dataBoard={dataBoard}
               setDataBoard={setDataBoard}
               data={dataBaseTotals}

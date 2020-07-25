@@ -17,6 +17,8 @@ const BaseProductTotals = ({
   transfers,
   productArms,
   clicked,
+  updating,
+  setUpdating,
   dataBoard,
   setDataBoard,
   data,
@@ -183,6 +185,7 @@ const BaseProductTotals = ({
   useEffect(() => {
     console.log('BaseProductTotals: base quantity totals changed on clicked', clicked);
     getBaseTotals();
+    setUpdating(false);
   }, [clicked]);
 
   /* useEffect(() => {
@@ -211,7 +214,8 @@ const BaseProductTotals = ({
   return (
     <Spin indicator={null} spinning={isLoading}>
       <Form.Item name="base_totals">
-        <DataTable 
+        <DataTable
+          isLoading={updating}
           minimal={true}
           data={data} 
           height="70vh" 
