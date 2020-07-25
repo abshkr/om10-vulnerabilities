@@ -506,6 +506,10 @@ const DrawerProductTransfers = ({
     const option = selected;
     await setSelected(null);
     await setSelected(option);
+    notification.success({
+      message: t('messages.restoreSuccess'),
+      description: t('descriptions.tankDensityRestoreSuccess'),
+    });
   };
 
   const toggleCalcButton = () => {
