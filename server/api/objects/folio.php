@@ -505,7 +505,6 @@ class Folio extends CommonClass
         if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             $freezetime = $row["NEXT_MANUAL_FREEZE_DATETIME"];
-           	write_log("freezetime:" . $freezetime, __FILE__, __LINE__);
             if ($freezetime)
             {
               $result["records"] = FALSE;
