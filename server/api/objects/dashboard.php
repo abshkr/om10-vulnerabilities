@@ -200,7 +200,8 @@ class Dashboard extends CommonClass
             FROM TRANSACTIONS TRSA, TRANSFERS TRSF 
             WHERE TRSA.TRSA_ID = TRSF.TRSFTRID_TRSA_ID 
                 AND TRSA_ED_DMY >= (SELECT TRUNC(SYSDATE-6) FROM DUAL)
-            GROUP BY TRUNC(TRSA_ED_DMY)";
+            GROUP BY TRUNC(TRSA_ED_DMY)
+            ORDER BY TRUNC(TRSA_ED_DMY)";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
