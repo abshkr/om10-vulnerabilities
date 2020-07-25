@@ -37,6 +37,19 @@ const FormSwitch = ({ config, onChange }) => {
         </Select>
       );
 
+    case 'SHLS_SEAL_FMT':
+      return (
+        <Select 
+          // dropdownMatchSelectWidth={false}
+          defaultValue={config.config_value} 
+          style={{ width: 280 }} 
+          onChange={(value) => onChange(config, value)}
+        >
+          <Option value="RANGE">RANGE</Option>
+          <Option value="COMMA">COMMA-SEPERATED</Option>
+        </Select>
+      );
+
     case 'SITE_SEAL_MODE':
       return (
         <Select 
