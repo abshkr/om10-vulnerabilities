@@ -57,7 +57,12 @@ export default class DrawerProducts extends Component {
   };
 
   render() {
-    const { values, sourceType } = this.props;
+    const { values, t } = this.props;
+
+    _.forEach(values, (item) => (
+      // `${item.prod_desc} (Planned: ${sourceType==='SCHEDULE' ? item.qty_scheduled : item.schp_specqty} | Loaded: ${item.qty_loaded||0} | ${item.unit_name})`
+      item.prod_text = `${item.prod_desc} (${t('fields.planned')}: ${item.qty_planned||0} | ${t('fields.loaded')}: ${item.qty_loaded||0} | ${item.unit_name})`
+    ));
 
     return (
       <div style={{ display: 'flex' }}>
@@ -72,10 +77,9 @@ export default class DrawerProducts extends Component {
             <Select.Option 
               key={item.prod_code} 
               value={item.prod_desc} 
-              // value={`${item.prod_desc} (Planned: ${sourceType==='SCHEDULE' ? item.qty_scheduled : item.schp_specqty} | Loaded: ${item.qty_loaded||0} | ${item.unit_name})`}
               item={item}
             >
-              {`${item.prod_desc} (Planned: ${sourceType==='SCHEDULE' ? item.qty_scheduled : item.schp_specqty} | Loaded: ${item.qty_loaded||0} | ${item.unit_name})`}
+              {item.prod_text}
             </Select.Option>
           ))}
         </Select>

@@ -775,6 +775,7 @@ class ManualTrans extends CommonClass
                 P.PROD_CLASS as SUPP_PROD_CLASS, 
                 OPD.OSPROD_PRODCMPY SUPP_PROD_CMPY, 
                 OPD.ORDER_PROD_QTY as SCHP_SPECQTY, 
+                OPD.ORDER_PROD_QTY as QTY_PLANNED, 
                 OPD.ORDER_PROD_UNIT as UNIT_CODE,
                 decode(OPD.ORDER_PROD_UNIT,'5','l(amb)','11','l(cor)','17','kg','unknown') as UNIT_NAME, 
                 NVL(OO_QTY.QTY_SCHEDULED,0) as QTY_SCHEDULED, 
@@ -1368,6 +1369,7 @@ class ManualTrans extends CommonClass
         $query = "
         SELECT UNIT_CODE,
             QTY_SCHEDULED,
+            QTY_SCHEDULED as QTY_PLANNED,
             NVL(PRODUCTS.PROD_CODE, LOADED.PROD_CODE) PROD_CODE,
             NVL(PRODUCTS.PROD_NAME, LOADED.PROD_NAME) PROD_NAME,
             NVL(PRODUCTS.PROD_CODE, LOADED.PROD_CODE)||' - '||NVL(PRODUCTS.PROD_NAME, LOADED.PROD_NAME) as PROD_DESC,

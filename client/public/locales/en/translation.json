@@ -642,6 +642,7 @@
 		"loadType": "Load Type",
 		"loaded": "Loaded",
 		"loadedQuantity": "Loaded Quantity",
+		"planned": "Planned",
 		"local_recv_time": "Local Recv Time",
 		"locale": "Locale",
 		"location": "Location",
