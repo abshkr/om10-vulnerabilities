@@ -53,7 +53,8 @@ const SpecialMovements = () => {
       !values.mlitm_status && 
       !values.mlitm_type && 
       !values.mlitm_prodcmpy && 
-      !values.mlitm_reason_code) {
+      !values.mlitm_reason_code &&
+      !values.use_date_range) {
       return;
     }
 

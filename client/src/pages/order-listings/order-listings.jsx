@@ -135,7 +135,8 @@ const OrderListings = ({popup, params}) => {
       (!supplier && !values?.order_supp_code) && 
       (!customer && !values?.order_cust_acnt) &&
       !values?.order_stat_id &&
-      !values?.order_ref_code) {
+      !values?.order_ref_code &&
+      !values.use_date_range) {
       return;
     }
 

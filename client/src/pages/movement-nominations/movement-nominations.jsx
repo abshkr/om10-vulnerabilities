@@ -122,7 +122,8 @@ const MovementNominations = () => {
       !values?.mv_status &&
       !values?.mv_srctype &&
       !values?.mv_terminal &&
-      !values?.mv_number
+      !values?.mv_number &&
+      !values.use_date_range
     ) {
       revalidate();
       return;

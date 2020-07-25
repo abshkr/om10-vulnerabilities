@@ -57,7 +57,8 @@ const LoadSchedules = () => {
       !values.supplier_code &&
       !values.tnkr_code && 
       !values.carrier_code && 
-      !values.trip_status) {
+      !values.trip_status &&
+      !values.use_date_range) {
       return;
     }
 
