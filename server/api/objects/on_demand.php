@@ -79,7 +79,11 @@ class OndemandReport extends CommonClass
         write_log(__METHOD__ . " START." . __FILE__, __LINE__);
 
         if (!isset($this->company)) {
-            $this->company = "";
+            if (isset($this->supplier)) {
+                $this->company = $this->supplier;
+            } else {
+                $this->company = "";
+            }
         }
         
         $query_string = "output=" . $this->output . "&company=" . $this->company .
