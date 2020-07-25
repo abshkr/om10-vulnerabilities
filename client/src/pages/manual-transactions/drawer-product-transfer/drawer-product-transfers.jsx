@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { UndoOutlined, DeleteOutlined } from '@ant-design/icons';
+import { UndoOutlined, DeleteOutlined, CopyOutlined, ClearOutlined, CalculatorOutlined } from '@ant-design/icons';
 import { Button, Form, Tabs, Divider, Card, Row, Col, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -99,6 +99,7 @@ const DrawerProductTransfers = ({
   const [clicked, setClicked] = useState(null);
   const [tableAPI, setTableAPI] = useState(null);
   const [tableBaseTransfersAPI, setTableBaseTransfersAPI] = useState(null);
+  const [canCopy, setCanCopy] = useState(false);
   const [canCalc, setCanCalc] = useState(false);
   const [canRestore, setCanRestore] = useState(false);
   const [loadingArms, setLoadingArms] = useState(false);
@@ -512,6 +513,63 @@ const DrawerProductTransfers = ({
     });
   };
 
+  const onClear = async () => {
+    console.log('DrawerProductTransfers: onClear');
+    
+    const payload = form.getFieldValue('transfers');
+    _.forEach(payload, (item) => {
+      if (!clicked) {
+        item.trsf_qty_amb = null;
+        item.trsf_qty_cor = null;
+        item.trsf_load_kg = null;
+        item.trsf_temp = null;
+        tableAPI.updateRowData({ update: [item] });
+      } else {
+        if (clicked?.trsf_cmpt_no === item.trsf_cmpt_no) {
+          item.trsf_qty_amb = null;
+          item.trsf_qty_cor = null;
+          item.trsf_load_kg = null;
+          item.trsf_temp = null;
+          tableAPI.updateRowData({ update: [item] });
+        }
+      }
+    });
+    setPayload(payload);
+    console.log('DrawerProductTransfers: onClear', payload);
+
+    notification.success({
+      message: t('messages.clearTransferSuccess'),
+      description: t('descriptions.clearTransferSuccess'),
+    });
+  };
+
+  const onCopy = async () => {
+    console.log('DrawerProductTransfers: onCopy');
+    
+    const payload = form.getFieldValue('transfers');
+    _.forEach(payload, (item) => {
+      console.log('DrawerProductTransfers: onCopy in loop before', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
+      if (item.trsf_qty_plan) {
+        item.trsf_qty_amb = item.trsf_qty_plan;
+        console.log('DrawerProductTransfers: onCopy in loop after1', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
+        tableAPI.updateRowData({ update: [item] });
+      } else {
+        if (item.trsf_cmpt_capacit) {
+          item.trsf_qty_amb = item.trsf_cmpt_capacit;
+          console.log('DrawerProductTransfers: onCopy in loop after2', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
+          tableAPI.updateRowData({ update: [item] });
+        }
+      }
+    });
+    setPayload(payload);
+    console.log('DrawerProductTransfers: onCopy', payload);
+
+    notification.success({
+      message: t('messages.copyQuantitySuccess'),
+      description: t('descriptions.copyQuantitySuccess'),
+    });
+  };
+
   const toggleCalcButton = () => {
     console.log('DrawerProductTransfers: toggle button Calculate Drawer ', canCalc);
     const payload = form.getFieldValue('transfers');
@@ -545,6 +603,23 @@ const DrawerProductTransfers = ({
     }
   }
 
+  const toggleCopyButton = () => {
+    console.log('DrawerProductTransfers: toggle button Copy ', canCopy);
+    const payload = form.getFieldValue('transfers');
+    console.log('DrawerProductTransfers: toggle button Copy ', payload);
+
+    if (payload) {
+      const item = _.find(payload, (o) => (o?.trsf_cmpt_capacit || o?.trsf_qty_plan));
+      if (item) {
+        setCanCopy(true);
+      } else {
+        setCanCopy(false);
+      }
+    } else {
+      setCanCopy(false);
+    }
+  }
+
   const onCellUpdate = (value) => {
     console.log('DrawerProductTransfers: onCellUpdate', value);
     console.log('DrawerProductTransfers: onCellUpdate2', value?.colDef?.field, value?.colDef?.headerName, value?.value, value?.newValue, value?.data.trsf_cmpt_capacit);
@@ -571,6 +646,7 @@ const DrawerProductTransfers = ({
 
     toggleCalcButton();
     toggleRestoreButton();
+    toggleCopyButton();
   };
 
   const adjustProduct = (cmpt, bases) => {
@@ -722,6 +798,7 @@ const DrawerProductTransfers = ({
 
       toggleCalcButton();
       toggleRestoreButton();
+      toggleCopyButton();
     }
   }, [payload]);
 
@@ -749,58 +826,79 @@ const DrawerProductTransfers = ({
 
   const modifiers = (
     <>
-      <Button
-        type="danger"
-        icon={<DeleteOutlined />}
-        style={{ marginRight: 5 }}
-        onClick={onDelete}
-        disabled={!clicked || updating}
-      >
-        {t('operations.deleteTransfer')}
-      </Button>
-
-      <Button
-        type="primary"
-        icon={<UndoOutlined />}
-        onClick={onCalculate}
-        style={{ marginRight: 5 }}
-        disabled={!canCalc || updating}
-        /* disabled={
-          !clicked || 
-          !clicked?.trsf_temp || 
-          !clicked?.trsf_density || 
-          (!clicked?.trsf_qty_amb && !clicked?.trsf_qty_cor && !clicked?.trsf_load_kg)
-        } */
-      >
-        {t('operations.calculateDrawer')}
-      </Button>
-
-      <Button 
-        type="primary" 
-        icon={<UndoOutlined />} 
-        onClick={onRestore}
-        style={{ marginRight: 5 }} 
-        disabled={!canRestore || updating}>
-        {t('operations.getTankDensities')}
-      </Button>
     </>
   );
 
   return (
     <>
-      <Row gutter={[1,8]}>
-        <Col span={24}>
-        </Col>
-      </Row>
       <Card size="small" title={t('divider.drawerProductTransfer')}>
+        <Row gutter={[1,8]}>
+          <Col span={24}>
+            <Button
+              type="danger"
+              icon={<DeleteOutlined />}
+              style={{ marginRight: 5 }}
+              onClick={onDelete}
+              disabled={!clicked || updating}
+            >
+              {t('operations.deleteTransfer')}
+            </Button>
+
+            <Button
+              type="danger"
+              icon={<ClearOutlined />}
+              style={{ marginRight: 5 }}
+              onClick={onClear}
+              disabled={updating}
+            >
+              {t('operations.clearTransfer')}
+            </Button>
+
+            <Button 
+              type="primary" 
+              icon={<UndoOutlined />} 
+              onClick={onRestore}
+              style={{ float: 'right', marginRight: 5 }} 
+              disabled={!canRestore || updating}>
+              {t('operations.getTankDensities')}
+            </Button>
+
+            <Button
+              type="primary"
+              icon={<CalculatorOutlined />}
+              onClick={onCalculate}
+              style={{ float: 'right', marginRight: 5 }}
+              disabled={!canCalc || updating}
+              /* disabled={
+                !clicked || 
+                !clicked?.trsf_temp || 
+                !clicked?.trsf_density || 
+                (!clicked?.trsf_qty_amb && !clicked?.trsf_qty_cor && !clicked?.trsf_load_kg)
+              } */
+            >
+              {t('operations.calculateDrawer')}
+            </Button>
+
+            <Button
+              type="normal"
+              icon={<CopyOutlined />}
+              style={{ float: 'right', marginRight: 5 }}
+              onClick={onCopy}
+              disabled={!canCopy || updating}
+            >
+              {t('operations.copyQuantity')}
+            </Button>
+          </Col>
+        </Row>
+
         <Form.Item name="transfers" noStyle>
           <DataTable
             isLoading={updating}
-            minimal={false}
+            minimal={true}
             // parentHeight="200px"
             parentHeight={!!payload ? `${payload.length*25+90}px`:"200px"}
             data={payload}
-            extra={modifiers}
+            // extra={modifiers}
             columns={fields}
             components={components}
             apiContext={setTableAPI}
