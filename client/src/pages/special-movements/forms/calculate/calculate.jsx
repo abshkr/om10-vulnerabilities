@@ -16,8 +16,10 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
   const [limit, setLimit] = useState(null);
   const [tempDecimals, setTempDecimals] = useState(2);
   const [densDecimals, setDensDecimals] = useState(3);
+  const [minDens, setMinDens] = useState(0);
+  const [maxDens, setMaxDens] = useState(2000);
 
-  const { setFieldsValue } = form;
+  const { setFieldsValue, validateFields } = form;
 
   const IS_DISALBED = disabled || !type || isLoading;
 
@@ -33,10 +35,17 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
       .then((response) => {
         if (response?.data?.records?.length > 0) {
           setLimit(response.data.records[0]);
+          const prod = response.data.records[0];
+          const densL = prod ? _.round(_.toNumber(prod?.density_lo), config.precisionDensity) : prod?.density_lo;
+          const densH = prod ? _.round(_.toNumber(prod?.density_hi), config.precisionDensity) : prod?.density_hi;
+          setMinDens(densL);
+          setMaxDens(densH);
           setFieldsValue({
             mlitm_dens_cor: response.data.records[0].tank_density,
           });
           setLoading(false);
+          //console.log('validateFields([mlitm_dens_cor]);222');
+          //validateFields(['mlitm_dens_cor']);
         }
 
         setLoading(false);
@@ -45,6 +54,13 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    if (limit) {
+      console.log('validateFields([mlitm_dens_cor]);');
+      validateFields(['mlitm_dens_cor']);
+    }
+  }, [limit, minDens, maxDens, validateFields]);
 
   useEffect(() => {
     if (value) {
@@ -87,6 +103,7 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
 
   useEffect(() => {
     if (tank) {
+      setLimit(null);
       getLimit(tank);
     }
   }, [getLimit, tank]);
@@ -117,6 +134,30 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
   const handleTemperatureChange = (value) => {
     const decimals = _.toString(value).split('.')[1]?.length;
     setTempDecimals(decimals);
+  };
+
+  const validateDensity = (rule, input) => {
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.set')} ─ ${t('fields.standardDensity')}`);
+      }
+    }
+
+    if (input && input.length > 100) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 100 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    const number = _.toNumber(input);
+    const invalid = _.isNaN(number);
+    if (limit && maxDens !== undefined && input !== '' && !invalid && number > _.toNumber(maxDens)) {
+      return Promise.reject(`${t('validate.outOfRangeMax')} ${maxDens} ─ ${t('descriptions.maxNumber')}`);
+    }
+
+    if (limit && minDens !== undefined && input !== '' && !invalid && number < _.toNumber(minDens)) {
+      return Promise.reject(`${t('validate.outOfRangeMin')} ${minDens} ─ ${t('descriptions.minNumber')}`);
+    }
+
+    return Promise.resolve();
   };
 
   return (
@@ -170,11 +211,12 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
           <Form.Item
             name="mlitm_dens_cor"
             label={`${t('fields.standardDensity')} ${limit ? `[${limit.density_lo} - ${limit.density_hi}]` : ''}` + '(' + t('fields.nomtranStdDensUnit') + ')'}
+            rules={[{ required: false, validator: validateDensity }]}
           >
             <InputNumber
               precision={densDecimals>config.precisionDensity ? config.precisionDensity : densDecimals}
-              min={limit ? _.round(_.toNumber(limit?.density_lo), config.precisionDensity) : limit?.density_lo}
-              max={limit ? _.round(_.toNumber(limit?.density_hi), config.precisionDensity) : limit?.density_hi}
+              // min={limit ? _.round(_.toNumber(limit?.density_lo), config.precisionDensity) : limit?.density_lo}
+              // max={limit ? _.round(_.toNumber(limit?.density_hi), config.precisionDensity) : limit?.density_hi}
               disabled={IS_DISALBED}
               style={{ width: '100%' }}
               onChange={handleDensityChange}
