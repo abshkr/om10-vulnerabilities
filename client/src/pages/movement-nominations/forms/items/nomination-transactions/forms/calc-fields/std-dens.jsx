@@ -11,7 +11,7 @@ const StdDensity = ({ form, value, tank, pageState, config }) => {
   console.log('in StdDensity', tank);
   const { t } = useTranslation();
 
-  const { setFieldsValue } = form;
+  const { setFieldsValue, validateFields } = form;
 
   const validate = (rule, input) => {
     if (rule.required) {
@@ -24,6 +24,16 @@ const StdDensity = ({ form, value, tank, pageState, config }) => {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 100 ─ ${t('descriptions.maxCharacters')}`);
     }
 
+    const number = _.toNumber(input);
+    const invalid = _.isNaN(number);
+    if (maxDens !== undefined && input !== '' && !invalid && number > _.toNumber(maxDens)) {
+      return Promise.reject(`${t('validate.outOfRangeMax')} ${maxDens} ─ ${t('descriptions.maxNumber')}`);
+    }
+
+    if (minDens !== undefined && input !== '' && !invalid && number < _.toNumber(minDens)) {
+      return Promise.reject(`${t('validate.outOfRangeMin')} ${minDens} ─ ${t('descriptions.minNumber')}`);
+    }
+
     return Promise.resolve();
   };
 
@@ -34,6 +44,11 @@ const StdDensity = ({ form, value, tank, pageState, config }) => {
       });
     }
   }, [value, setFieldsValue]);
+
+  useEffect(() => {
+    // console.log('validateFields([mlitm_dens_cor]);');
+    validateFields(['mlitm_dens_cor']);
+  }, [minDens, maxDens, validateFields]);
 
   useEffect(() => {
     if (tank && tank.length > 0) {
@@ -49,7 +64,9 @@ const StdDensity = ({ form, value, tank, pageState, config }) => {
       setMinDens(0);
       setMaxDens(2000);
     }
-  }, [tank, setFieldsValue, setMinDens, setMaxDens]);
+    // console.log('validateFields([mlitm_dens_cor]);222');
+    validateFields(['mlitm_dens_cor']);
+}, [tank, setFieldsValue, setMinDens, setMaxDens, validateFields]);
 
   return (
     <Form.Item
@@ -61,8 +78,8 @@ const StdDensity = ({ form, value, tank, pageState, config }) => {
         style={{ width: '100%' }}
         disabled={pageState === 'transfer' ? false : false}
         placeholder={String(minDens) + ' ~ ' + String(maxDens)}
-        min={_.toNumber(minDens)}
-        max={_.toNumber(maxDens)}
+        // min={_.toNumber(minDens)}
+        // max={_.toNumber(maxDens)}
         precision={config.precisionDensity}
         //step={0.01}
       />
