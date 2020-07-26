@@ -578,7 +578,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             htmlType="submit"
             style={{ float: 'right', marginRight: 5 }}
             onClick={onFinish}
-            // disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
+            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
