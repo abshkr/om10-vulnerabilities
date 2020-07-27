@@ -117,7 +117,7 @@ const Compartments = ({ form, value, tanker, drawer }) => {
         parentHeight="350px" 
         components={components} 
         minimal 
-        editType='fullRow'
+        // editType='fullRow'
         rowEditingStopped={rowEditingStopped}
       />
     </Form.Item>
