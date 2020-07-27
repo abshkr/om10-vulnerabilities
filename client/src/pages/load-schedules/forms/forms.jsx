@@ -777,7 +777,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             <LoadReport value={value} />
           </TabPane>
 
-          <TabPane tab={t('tabColumns.seals')} disabled={IS_CREATING || !showSeals} key="5">
+          <TabPane tab={t('tabColumns.seals')} disabled={IS_CREATING || !showSeals || value.shls_ld_type === '6'} key="5">
             <Seals value={value} sealUpated={onSealUpdate} />
           </TabPane>
 
