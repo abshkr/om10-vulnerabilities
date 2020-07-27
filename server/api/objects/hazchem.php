@@ -28,7 +28,8 @@ class Hazchem extends CommonClass
 
     public function read_brief()
     {
-        $query = "SELECT HZCF_UN_NUM,
+        $query = "SELECT HZCF_ID, 
+                    HZCF_UN_NUM,
                     HZCF_NAME,
                     HZCF_UN_NUM || ' - ' || HZCF_NAME HZCF_DETAIL
                 FROM HAZCHEM

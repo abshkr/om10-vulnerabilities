@@ -44,7 +44,7 @@ const Hazchem = ({ form, value }) => {
         }
       >
         {options?.records.map((item, index) => (
-          <Select.Option key={index} value={item.hzcf_un_num}>
+          <Select.Option key={index} value={item.hzcf_id}>
             {item.hzcf_detail}
           </Select.Option>
         ))}
