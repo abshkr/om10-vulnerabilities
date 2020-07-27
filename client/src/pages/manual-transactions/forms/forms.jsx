@@ -47,11 +47,7 @@ const Forms = ({
   dataLoaded,
   setDataLoaded,
   setProductArms,
-  setDataDrawTransfers,
-  setDataBaseTransfers,
-  setDataBaseTotals,
-  setDataMeterTransfers,
-  setDataMeterTotals,
+  resetFormGrids,
 }) => {
   const { setFieldsValue, resetFields } = form;
 
@@ -122,12 +118,18 @@ const Forms = ({
   };
 
   const handleTripSelect = async (trip) => {
-
-    setDataDrawTransfers([]);
-    setDataBaseTransfers([]);
-    setDataBaseTotals([]);
-    setDataMeterTransfers([]);
-    setDataMeterTotals([]);
+    resetFormGrids();
+    setFieldsValue({
+      tanker: undefined,
+      carrier: undefined,
+      driver: undefined,
+      seal_range: '',
+      load_security: '',
+      mt_mngr_oo: '',
+      mt_cust_code: '',
+      mt_delv_loc: '',
+      mt_delv_num: '',
+    });
 
     const results = await getTripBasicsByTrip(trip);
 
@@ -156,11 +158,18 @@ const Forms = ({
   };
 
   const handleOrderSelect = async (order) => {
-    setDataDrawTransfers([]);
-    setDataBaseTransfers([]);
-    setDataBaseTotals([]);
-    setDataMeterTransfers([]);
-    setDataMeterTotals([]);
+    resetFormGrids();
+    setFieldsValue({
+      tanker: undefined,
+      carrier: undefined,
+      driver: undefined,
+      seal_range: '',
+      load_security: '',
+      mt_mngr_oo: '',
+      mt_cust_code: '',
+      mt_delv_loc: '',
+      mt_delv_num: '',
+    });
 
     const results = await getOrderBasicsByOrder(order);
 
@@ -173,9 +182,11 @@ const Forms = ({
 
     setTankers(tankerResults);
     setSelectedOrder(order);
+    setSelectedTanker(null);
     setProductArms(undefined);
 
     setFieldsValue({
+      // tanker: null,
       carrier: value?.order_carrier,
       driver: drivers?.records?.[0]?.per_code,
       mt_cust_code: value?.customer_code,
@@ -184,6 +195,7 @@ const Forms = ({
   };
 
   const handleSupplierSelect = async (supplier) => {
+    // resetFormGrids();
     setFieldsValue({
       trip_no: undefined,
       tanker: undefined,
@@ -191,6 +203,12 @@ const Forms = ({
       driver: undefined,
       customer: undefined,
       order_no: undefined,
+      seal_range: '',
+      load_security: '',
+      mt_mngr_oo: '',
+      mt_cust_code: '',
+      mt_delv_loc: '',
+      mt_delv_num: '',
     });
 
     console.log('handleSupplierSelect', sourceType);
@@ -213,6 +231,20 @@ const Forms = ({
   };
 
   const handleCustomerSelect = async (customer) => {
+    // resetFormGrids();
+    setFieldsValue({
+      tanker: undefined,
+      carrier: undefined,
+      driver: undefined,
+      order_no: undefined,
+      seal_range: '',
+      load_security: '',
+      mt_mngr_oo: '',
+      mt_cust_code: '',
+      mt_delv_loc: '',
+      mt_delv_num: '',
+    });
+
     const orders = await getOrdersByCustomer(customer);
 
     setOrders(orders);
@@ -229,6 +261,10 @@ const Forms = ({
   };
 
   const handleCarrierSelect = async (carrier) => {
+    /* setFieldsValue({
+      tanker: undefined,
+    }); */
+
     // get tanker list of the carrier
     const tankers = await getTankersByCarrier(carrier);
     setSelectedTanker(null);
@@ -271,11 +307,7 @@ const Forms = ({
     setSelectedOrder(null);
     setSelectedTanker(null);
 
-    setDataDrawTransfers([]);
-    setDataBaseTransfers([]);
-    setDataBaseTotals([]);
-    setDataMeterTransfers([]);
-    setDataMeterTotals([]);
+    resetFormGrids();
     //resetFields();
   };
 

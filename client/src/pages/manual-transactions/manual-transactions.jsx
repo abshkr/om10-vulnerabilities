@@ -7,9 +7,8 @@ import {
   SaveOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
-import { Button, Form, Radio, Modal, notification, message } from 'antd';
+import { Button, Form, Modal, notification, message } from 'antd';
 import { useTranslation } from 'react-i18next';
-import moment from 'moment';
 
 import _ from 'lodash';
 import jwtDecode from 'jwt-decode';
@@ -20,7 +19,6 @@ import DataManager from './data-manager';
 import DataColumns from './data-manager/columns';
 import DrawerProductTransfers from './drawer-product-transfer';
 import Forms from './forms';
-import { SETTINGS } from '../../constants';
 import api, { MANUAL_TRANSACTIONS } from '../../api';
 import useAuth from 'hooks/use-auth';
 
@@ -459,7 +457,7 @@ const ManualTransactions = ({ popup, params }) => {
 
   const modifiers = (
     <>
-      <Button type="primary" icon={<SyncOutlined />} onClick={onLoad} disabled={!access.canCreate}>
+      <Button type="primary" icon={<SyncOutlined />} onClick={onLoad} disabled={!access.canCreate || popup}>
         {t('operations.load')}
       </Button>
 
@@ -523,11 +521,7 @@ const ManualTransactions = ({ popup, params }) => {
           dataLoaded={dataLoaded}
           setDataLoaded={setDataLoaded}
           setProductArms={setProductArms}
-          setDataDrawTransfers={setDataDrawTransfers}
-          setDataBaseTransfers={setDataBaseTransfers}
-          setDataBaseTotals={setDataBaseTotals}
-          setDataMeterTransfers={setDataMeterTransfers}
-          setDataMeterTotals={setDataMeterTotals}
+          resetFormGrids={resetFormGrids}
         />
 
         <DrawerProductTransfers
