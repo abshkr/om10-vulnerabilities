@@ -256,22 +256,28 @@ const Seals = ({ value, sealUpated }) => {
     <>
       <Row gutter={[8, 10]}>
         <Col span={12}>
-          <Search
-            placeholder={next}
-            enterButton={t('operations.update')}
-            onSearch={(value) => onSealUpdate(value)}
-            disabled={!next}
-          />
+          <Form.Item label={t('fields.nextSeal')} >
+            <Search
+              type="number"
+              min={next}
+              placeholder={next}
+              enterButton={t('operations.update')}
+              onSearch={(value) => onSealUpdate(value)}
+              disabled={!next}
+            />
+          </Form.Item>
         </Col>
 
         <Col span={12}>
-          <Search
-            placeholder={payload?.records?.length}
-            enterButton={payload?.records?.length === 0 ? t('operations.allocation') : t('operations.add')}
-            disabled={value?.status !== 'A' && value?.status !== 'F'}
-            onSearch={(value) => onAllocation(value)}
-            readOnly={!payload || payload?.records?.length > 0}
-          />
+          <Form.Item label={t('fields.numOfSeals')} >
+            <Search
+              placeholder={payload?.records?.length}
+              enterButton={payload?.records?.length === 0 ? t('operations.allocation') : t('operations.add')}
+              disabled={value?.status !== 'A' && value?.status !== 'F'}
+              onSearch={(value) => onAllocation(value)}
+              readOnly={!payload || payload?.records?.length > 0}
+            />
+          </Form.Item>
         </Col>
       </Row>
 
