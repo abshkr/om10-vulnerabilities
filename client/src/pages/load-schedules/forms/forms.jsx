@@ -65,6 +65,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const [tab, setTab] = useState('0');
 
   const [mode, setMode] = useState('3');
+  const [unload, setUnload] = useState(false);
   const [supplier, setSupplier] = useState(undefined);
   const [drawer, setDrawer] = useState(undefined);
   const [carrier, setCarrier] = useState(undefined);
@@ -134,7 +135,6 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
   const onFinish = async () => {
     const record = await form.validateFields();
-    
     if (record?.shls_ld_type === "3" /* Preorder*/) {
       let findResult = _.find(record.products, (item) => {
         return item.qty_scheduled > 0;
@@ -194,6 +194,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
         });
         return;
       }
+    }
+
+    if (record.unload) {
+      record.shls_ld_type = '6';
     }
 
     const values = {
@@ -425,6 +429,18 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
     }
   }
 
+  //Unload is preorder only, confirmed with old flash screen
+  const onUnload = (v) => {
+    if (v.target.checked) {
+      setMode('3');
+      setFieldsValue({
+        shls_ld_type: '3',
+      });
+    }
+
+    setUnload(v.target.checked);
+  }
+
   useEffect(() => {
     if (!value) {
       setTab('0');
@@ -443,8 +459,9 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
       setFieldsValue({
         shls_ld_type: value.shls_ld_type? value.shls_ld_type : "4",
+        unload: value?.shls_ld_type === "6",
       });
-      setMode(value.shls_ld_type);
+      setMode(value.shls_ld_type === '6'? '3': value.shls_ld_type);
     }
   }, [setFieldsValue, value]);
 
@@ -459,6 +476,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       resetFields();
 
       setMode('2');   //By default, set preschedule
+      setUnload(false);
       setFieldsValue({
         shls_ld_type: '2',
       });
@@ -592,25 +610,31 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
             <Row gutter={[8, 8]}>
               <Col span={12}>
-                    <Form.Item name="shls_ld_type" style={{display: "inline-block"}}>
-                      <Radio.Group
-                        buttonStyle="solid"
-                        style={{ marginBottom: 10 }}
-                        onChange={(event) => setMode(event.target.value)}
-                        disabled={!!value}
-                      >
-                        {(IS_CREATING || value?.shls_ld_type === '3') && <Radio.Button value="3">{t('operations.preOrder')}</Radio.Button>}
-                        {(IS_CREATING || value?.shls_ld_type === '2') && <Radio.Button value="2">{t('operations.preSchedule')}</Radio.Button>}
-                        {/* {(IS_CREATING || value?.shls_ld_type === '6') && <Radio.Button value="6">{t('fields.unload')}</Radio.Button>} */}
-                        {(!IS_CREATING && !['2', '3'].includes(value?.shls_ld_type)) && 
-                          <Radio.Button value="4">{t('operations.openOrder')}</Radio.Button>}
-                        {/* <Radio.Button value="3">{t('operations.preOrder')}</Radio.Button>
-                        <Radio.Button value="2">{t('operations.preSchedule')}</Radio.Button> */}
-                      </Radio.Group>
-                    </Form.Item>
-                    <Form.Item name="unload" style={{marginLeft: 20, display: "inline-block"}}>
-                      <Checkbox>{t('fields.unload')}</Checkbox>
-                    </Form.Item>
+                <Form.Item name="shls_ld_type" style={{display: "inline-block"}}>
+                  <Radio.Group
+                    buttonStyle="solid"
+                    style={{ marginBottom: 10 }}
+                    onChange={(event) => setMode(event.target.value)}
+                    disabled={!!value}
+                  >
+                    {
+                      (IS_CREATING || (value?.shls_ld_type === '3' || value?.shls_ld_type === '6')) &&
+                      <Radio.Button value="3">{t('operations.preOrder')}</Radio.Button>
+                    }
+                    {
+                      (IS_CREATING || value?.shls_ld_type === '2') && !unload && <Radio.Button value="2">
+                      {t('operations.preSchedule')}</Radio.Button>
+                    }
+                    {/* {(IS_CREATING || value?.shls_ld_type === '6') && <Radio.Button value="6">{t('fields.unload')}</Radio.Button>} */}
+                    {(!IS_CREATING && !['2', '3', '6'].includes(value?.shls_ld_type)) && 
+                      <Radio.Button value="4">{t('operations.openOrder')}</Radio.Button>}
+                    {/* <Radio.Button value="3">{t('operations.preOrder')}</Radio.Button>
+                    <Radio.Button value="2">{t('operations.preSchedule')}</Radio.Button> */}
+                  </Radio.Group>
+                </Form.Item>
+                <Form.Item name="unload" style={{marginLeft: 20, display: "inline-block"}} valuePropName="checked">
+                  <Checkbox disabled={!IS_CREATING} onChange={onUnload}>{t('fields.unload')}</Checkbox>
+                </Form.Item>
               </Col>
 
               <Col span={12}>
