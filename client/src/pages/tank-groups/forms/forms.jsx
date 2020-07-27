@@ -238,7 +238,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               htmlType="button"
               icon={<CheckOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={IS_CREATING || selected.length <= 0 || selected[0].tank_code == old_active}
+              disabled={IS_CREATING || selected.length <= 0 || selected[0].tank_code == old_active || !access.canUpdate}
               onClick={onActivate}
             >
               {t('operations.activate')}
