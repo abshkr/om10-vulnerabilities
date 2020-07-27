@@ -23,7 +23,7 @@ const buildPayloadToSubmit = (values, sourceType, orderSeals, t) => {
     for (tidx = 0; tidx < values?.transfers?.length; tidx++) {
       const titem = values?.transfers?.[tidx];
 
-      if (titem.trsf_arm_cd === t('placeholder.selectArmCode')) {
+      if (titem.trsf_arm_cd === t('placeholder.selectArmCode') || titem.trsf_arm_cd === t('placeholder.noArmAvailable')) {
         continue;
       }
 

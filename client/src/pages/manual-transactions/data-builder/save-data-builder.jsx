@@ -86,7 +86,8 @@ const buildPayloadToSave = (values, customers, sourceType, repost, user_code, sa
       */
       transfer.NR_IN_TKR = titem.trsf_cmpt_no;
       transfer.DELV_NUM = titem.trsf_delv_num;
-      transfer.ARM_CODE = titem.trsf_arm_cd === t('placeholder.selectArmCode') ? '' : titem.trsf_arm_cd;
+      transfer.ARM_CODE = 
+        (titem.trsf_arm_cd === t('placeholder.selectArmCode') || titem.trsf_arm_cd === t('placeholder.noArmAvailable')) ? '' : titem.trsf_arm_cd;
       transfer.DRAWER_CODE = titem.trsf_drwr_cd;
       transfer.PRODUCT_CODE =
         titem.trsf_prod_code === t('placeholder.selectDrawerProduct') ? '' : titem.trsf_prod_code;
