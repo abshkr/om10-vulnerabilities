@@ -33,6 +33,7 @@ import {
   SoldTo,
   ShipTo,
   LoadSecurityInformation,
+  Terminal,
 } from './fields';
 
 import { SelectInput, PartnershipManager } from '../../../components';
@@ -588,22 +589,34 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
         >
           <TabPane tab={t('tabColumns.general')} key="0">
             <Form.Item name="supermode" noStyle />
-            <Form.Item name="shls_ld_type">
-              <Radio.Group
-                buttonStyle="solid"
-                style={{ marginBottom: 10 }}
-                onChange={(event) => setMode(event.target.value)}
-                disabled={!!value}
-              >
-                {(IS_CREATING || value?.shls_ld_type === '3') && <Radio.Button value="3">{t('operations.preOrder')}</Radio.Button>}
-                {(IS_CREATING || value?.shls_ld_type === '2') && <Radio.Button value="2">{t('operations.preSchedule')}</Radio.Button>}
-                {/* {(IS_CREATING || value?.shls_ld_type === '6') && <Radio.Button value="6">{t('fields.unload')}</Radio.Button>} */}
-                {(!IS_CREATING && !['2', '3'].includes(value?.shls_ld_type)) && 
-                  <Radio.Button value="4">{t('operations.openOrder')}</Radio.Button>}
-                {/* <Radio.Button value="3">{t('operations.preOrder')}</Radio.Button>
-                <Radio.Button value="2">{t('operations.preSchedule')}</Radio.Button> */}
-              </Radio.Group>
-            </Form.Item>
+
+            <Row gutter={[8, 8]}>
+              <Col span={12}>
+                    <Form.Item name="shls_ld_type" style={{display: "inline-block"}}>
+                      <Radio.Group
+                        buttonStyle="solid"
+                        style={{ marginBottom: 10 }}
+                        onChange={(event) => setMode(event.target.value)}
+                        disabled={!!value}
+                      >
+                        {(IS_CREATING || value?.shls_ld_type === '3') && <Radio.Button value="3">{t('operations.preOrder')}</Radio.Button>}
+                        {(IS_CREATING || value?.shls_ld_type === '2') && <Radio.Button value="2">{t('operations.preSchedule')}</Radio.Button>}
+                        {/* {(IS_CREATING || value?.shls_ld_type === '6') && <Radio.Button value="6">{t('fields.unload')}</Radio.Button>} */}
+                        {(!IS_CREATING && !['2', '3'].includes(value?.shls_ld_type)) && 
+                          <Radio.Button value="4">{t('operations.openOrder')}</Radio.Button>}
+                        {/* <Radio.Button value="3">{t('operations.preOrder')}</Radio.Button>
+                        <Radio.Button value="2">{t('operations.preSchedule')}</Radio.Button> */}
+                      </Radio.Group>
+                    </Form.Item>
+                    <Form.Item name="unload" style={{marginLeft: 20, display: "inline-block"}}>
+                      <Checkbox>{t('fields.unload')}</Checkbox>
+                    </Form.Item>
+              </Col>
+
+              <Col span={12}>
+                <Terminal form={form} value={value} />
+              </Col>
+            </Row>
 
             <Row gutter={[8, 8]}>
               <Col span={12}>

@@ -145,9 +145,12 @@ class Schedule extends CommonClass
             return;
         }
 
-        $serv = new SiteService($this->conn);
-        $site_code = $serv->site_code();
-        $query_string = "tankTerm=" . $site_code . "&supp=" . $this->supplier .
+        if (!isset($this->shls_terminal)) {
+            $serv = new SiteService($this->conn);
+            $this->shls_terminal = $serv->site_code();
+        }
+        
+        $query_string = "tankTerm=" . $this->shls_terminal . "&supp=" . $this->supplier .
             "&tripNo=" . $this->trip_no . "&rpt_type=0&ftsize=16&forms=1&rows=1";
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/drv_instr_popup.cgi", $query_string);
@@ -214,9 +217,12 @@ class Schedule extends CommonClass
             return;
         }
 
-        $serv = new SiteService($this->conn);
-        $site_code = $serv->site_code();
-        $query_string = "tankTerm=" . $site_code . "&supp=" . $this->supplier .
+        if (!isset($this->shls_terminal)) {
+            $serv = new SiteService($this->conn);
+            $this->shls_terminal = $serv->site_code();
+        }
+        
+        $query_string = "tankTerm=" . $this->shls_terminal . "&supp=" . $this->supplier .
             "&tripNo=" . $this->trip_no . "&op=18";
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/drv_instr.cgi", $query_string);
@@ -438,9 +444,12 @@ class Schedule extends CommonClass
             $op = 17;
         }
 
-        $serv = new SiteService($this->conn);
-        $site_code = $serv->site_code();
-        $query_string = "tankTerm=" . rawurlencode(strip_tags($site_code)) . 
+        if (!isset($this->shls_terminal)) {
+            $serv = new SiteService($this->conn);
+            $this->shls_terminal = $serv->site_code();
+        }
+
+        $query_string = "tankTerm=" . rawurlencode(strip_tags($this->shls_terminal)) . 
             "&sched_type=" . rawurlencode(strip_tags($this->shls_ld_type)) .
             "&tripNo=" . rawurlencode(strip_tags($this->shls_trip_no)) . 
             "&carr=" . rawurlencode(strip_tags($this->carrier_code)) . 
@@ -504,7 +513,7 @@ class Schedule extends CommonClass
                     }
                 }
 
-                $query_string = "tankTerm=" . rawurlencode(strip_tags($site_code)) . 
+                $query_string = "tankTerm=" . rawurlencode(strip_tags($this->shls_terminal)) . 
                     "&sched_type=" . rawurlencode(strip_tags($this->shls_ld_type)) .
                     "&prod=" . rawurlencode(strip_tags($compartment->prod_code)) . 
                     "&unit=" . rawurlencode(strip_tags($compartment->unit_code)) . 
@@ -560,7 +569,7 @@ class Schedule extends CommonClass
                     }
                 }
 
-                $query_string = "tankTerm=" . rawurlencode(strip_tags($site_code)) . 
+                $query_string = "tankTerm=" . rawurlencode(strip_tags($this->shls_terminal)) . 
                     "&sched_type=" . rawurlencode(strip_tags($this->shls_ld_type)) .
                     "&prod=" . rawurlencode(strip_tags($product->prod_code)) . 
                     "&unit=" . rawurlencode(strip_tags($product->unit_code)) . 
@@ -581,7 +590,7 @@ class Schedule extends CommonClass
                 } else {
                     if (strpos($res, "var op=27;") === false) {
                         //If does not success, very likely this is a new product, try add
-                        $query_string = "tankTerm=" . rawurlencode(strip_tags($site_code)) . 
+                        $query_string = "tankTerm=" . rawurlencode(strip_tags($this->shls_terminal)) . 
                             "&sched_type=" . rawurlencode(strip_tags($this->shls_ld_type)) .
                             "&prod=" . rawurlencode(strip_tags($product->prod_code)) . 
                             "&unit=" . rawurlencode(strip_tags($product->unit_code)) . 

@@ -10,6 +10,7 @@ import Dates from './dates';
 import SoldTo from './sold-to';
 import ShipTo from './ship-to';
 import LoadSecurityInformation from './load-security-instructions';
+import Terminal from './terminal';
 
 export {
   Supplier,
@@ -24,4 +25,5 @@ export {
   SoldTo,
   ShipTo,
   LoadSecurityInformation,
+  Terminal,
 };
