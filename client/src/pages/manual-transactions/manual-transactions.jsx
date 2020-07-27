@@ -328,7 +328,14 @@ const ManualTransactions = ({ popup, params }) => {
       console.log('MTmain: dataLoadFlagForm', dataLoadFlagForm);
       setDataLoadFlagForm(3);
       //setDataLoadFlagDrawTransfers(1);
-      console.log('MT 1 - set form fields done! start to set Drawer Transfers');
+      console.log('MT 1 - set form fields done! start to set Drawer Transfers', 
+        dataLoadFlagForm, 
+        dataLoadFlagDrawTransfers, 
+        dataLoadFlagBaseTransfers, 
+        dataLoadFlagBaseTotals, 
+        dataLoadFlagMeterTransfers, 
+        dataLoadFlagMeterTotals
+      );
       setDataLoadFlagDrawTransfers(1);
       setDataLoadFlagBaseTransfers(1);
       setDataLoadFlagBaseTotals(1);
@@ -342,16 +349,23 @@ const ManualTransactions = ({ popup, params }) => {
       console.log('MTmain: dataLoadFlagDrawTransfers', dataLoadFlagDrawTransfers);
       setDataLoadFlagDrawTransfers(3);
       //setDataLoadFlagBaseTransfers(1);
-      console.log('MT 2 - set Drawer Transfers done! start to set Base Transfers');
-      if (dataLoadFlagForm === 3 &&
-        dataLoadFlagDrawTransfers == 3 &&
-        dataLoadFlagBaseTransfers == 3 &&
-        dataLoadFlagBaseTotals == 3 &&
-        dataLoadFlagMeterTransfers == 3 &&
-        dataLoadFlagMeterTotals == 3
+      console.log('MT 2 - set Drawer Transfers done! start to set Base Transfers', 
+        dataLoadFlagForm, 
+        dataLoadFlagDrawTransfers, 
+        dataLoadFlagBaseTransfers, 
+        dataLoadFlagBaseTotals, 
+        dataLoadFlagMeterTransfers, 
+        dataLoadFlagMeterTotals
+      );
+      /* if (dataLoadFlagForm === 3 &&
+        dataLoadFlagDrawTransfers === 3 &&
+        dataLoadFlagBaseTransfers === 3 &&
+        dataLoadFlagBaseTotals === 3 &&
+        dataLoadFlagMeterTransfers === 3 &&
+        dataLoadFlagMeterTotals === 3
       ) {
         resetLoadData();
-      }
+      } */
     }
   }, [dataLoadFlagDrawTransfers]);
 
@@ -360,16 +374,23 @@ const ManualTransactions = ({ popup, params }) => {
       console.log('MTmain: dataLoadFlagBaseTransfers', dataLoadFlagBaseTransfers);
       setDataLoadFlagBaseTransfers(3);
       //setDataLoadFlagBaseTotals(1);
-      console.log('MT 3 - set Base Transfers done! start to set Base Totals');
-      if (dataLoadFlagForm === 3 &&
-        dataLoadFlagDrawTransfers == 3 &&
-        dataLoadFlagBaseTransfers == 3 &&
-        dataLoadFlagBaseTotals == 3 &&
-        dataLoadFlagMeterTransfers == 3 &&
-        dataLoadFlagMeterTotals == 3
+      console.log('MT 3 - set Base Transfers done! start to set Base Totals', 
+        dataLoadFlagForm, 
+        dataLoadFlagDrawTransfers, 
+        dataLoadFlagBaseTransfers, 
+        dataLoadFlagBaseTotals, 
+        dataLoadFlagMeterTransfers, 
+        dataLoadFlagMeterTotals
+      );
+      /* if (dataLoadFlagForm === 3 &&
+        dataLoadFlagDrawTransfers === 3 &&
+        dataLoadFlagBaseTransfers === 3 &&
+        dataLoadFlagBaseTotals === 3 &&
+        dataLoadFlagMeterTransfers === 3 &&
+        dataLoadFlagMeterTotals === 3
       ) {
         resetLoadData();
-      }
+      } */
     }
   }, [dataLoadFlagBaseTransfers]);
 
@@ -378,16 +399,23 @@ const ManualTransactions = ({ popup, params }) => {
       console.log('MTmain: dataLoadFlagBaseTotals', dataLoadFlagBaseTotals);
       setDataLoadFlagBaseTotals(3);
       //setDataLoadFlagMeterTransfers(1);
-      console.log('MT 4 - set Base Totals done! start to set Meter Transfers');
-      if (dataLoadFlagForm === 3 &&
-        dataLoadFlagDrawTransfers == 3 &&
-        dataLoadFlagBaseTransfers == 3 &&
-        dataLoadFlagBaseTotals == 3 &&
-        dataLoadFlagMeterTransfers == 3 &&
-        dataLoadFlagMeterTotals == 3
+      console.log('MT 4 - set Base Totals done! start to set Meter Transfers', 
+        dataLoadFlagForm, 
+        dataLoadFlagDrawTransfers, 
+        dataLoadFlagBaseTransfers, 
+        dataLoadFlagBaseTotals, 
+        dataLoadFlagMeterTransfers, 
+        dataLoadFlagMeterTotals
+      );
+      /* if (dataLoadFlagForm === 3 &&
+        dataLoadFlagDrawTransfers === 3 &&
+        dataLoadFlagBaseTransfers === 3 &&
+        dataLoadFlagBaseTotals === 3 &&
+        dataLoadFlagMeterTransfers === 3 &&
+        dataLoadFlagMeterTotals === 3
       ) {
         resetLoadData();
-      }
+      } */
     }
   }, [dataLoadFlagBaseTotals]);
 
@@ -396,16 +424,23 @@ const ManualTransactions = ({ popup, params }) => {
       console.log('MTmain: dataLoadFlagMeterTransfers', dataLoadFlagMeterTransfers);
       setDataLoadFlagMeterTransfers(3);
       //setDataLoadFlagMeterTotals(1);
-      console.log('MT 5 - set Meter Transfers done! start to set Meter Totals');
-      if (dataLoadFlagForm === 3 &&
-        dataLoadFlagDrawTransfers == 3 &&
-        dataLoadFlagBaseTransfers == 3 &&
-        dataLoadFlagBaseTotals == 3 &&
-        dataLoadFlagMeterTransfers == 3 &&
-        dataLoadFlagMeterTotals == 3
+      console.log('MT 5 - set Meter Transfers done! start to set Meter Totals', 
+        dataLoadFlagForm, 
+        dataLoadFlagDrawTransfers, 
+        dataLoadFlagBaseTransfers, 
+        dataLoadFlagBaseTotals, 
+        dataLoadFlagMeterTransfers, 
+        dataLoadFlagMeterTotals
+      );
+      /* if (dataLoadFlagForm === 3 &&
+        dataLoadFlagDrawTransfers === 3 &&
+        dataLoadFlagBaseTransfers === 3 &&
+        dataLoadFlagBaseTotals === 3 &&
+        dataLoadFlagMeterTransfers === 3 &&
+        dataLoadFlagMeterTotals === 3
       ) {
         resetLoadData();
-      }
+      } */
     }
   }, [dataLoadFlagMeterTransfers]);
 
@@ -413,18 +448,55 @@ const ManualTransactions = ({ popup, params }) => {
     if (dataLoadFlagMeterTotals === 2) {
       console.log('MTmain: dataLoadFlagMeterTotals', dataLoadFlagMeterTotals);
       setDataLoadFlagMeterTotals(3);
-      console.log('MT 6 - set Meter Totals done! All data loaded! Clean the dataLoaded!');
-      if (dataLoadFlagForm === 3 &&
-        dataLoadFlagDrawTransfers == 3 &&
-        dataLoadFlagBaseTransfers == 3 &&
-        dataLoadFlagBaseTotals == 3 &&
-        dataLoadFlagMeterTransfers == 3 &&
-        dataLoadFlagMeterTotals == 3
+      console.log('MT 6 - set Meter Totals done! All data loaded! Clean the dataLoaded!', 
+        dataLoadFlagForm, 
+        dataLoadFlagDrawTransfers, 
+        dataLoadFlagBaseTransfers, 
+        dataLoadFlagBaseTotals, 
+        dataLoadFlagMeterTransfers, 
+        dataLoadFlagMeterTotals
+      );
+      /* if (dataLoadFlagForm === 3 &&
+        dataLoadFlagDrawTransfers === 3 &&
+        dataLoadFlagBaseTransfers === 3 &&
+        dataLoadFlagBaseTotals === 3 &&
+        dataLoadFlagMeterTransfers === 3 &&
+        dataLoadFlagMeterTotals === 3
       ) {
         resetLoadData();
-      }
+      } */
     }
   }, [dataLoadFlagMeterTotals]);
+
+  useEffect(() => {
+    console.log('MT 7 - All data loaded! Clean the dataLoaded!', 
+      dataLoadFlagForm, 
+      dataLoadFlagDrawTransfers, 
+      dataLoadFlagBaseTransfers, 
+      dataLoadFlagBaseTotals, 
+      dataLoadFlagMeterTransfers, 
+      dataLoadFlagMeterTotals
+    );
+    if (dataLoadFlagForm === 3 &&
+      dataLoadFlagDrawTransfers === 3 &&
+      dataLoadFlagBaseTransfers === 3 &&
+      dataLoadFlagBaseTotals === 3 &&
+      dataLoadFlagMeterTransfers === 3 &&
+      dataLoadFlagMeterTotals === 3
+    ) {
+      notification.success({
+        message: t('messages.loadSuccess'),
+        description: t('descriptions.loadSuccess'),
+      });
+      // resetLoadData();
+      /* setDataLoadFlagForm(0);
+      setDataLoadFlagDrawTransfers(0);
+      setDataLoadFlagBaseTransfers(0);
+      setDataLoadFlagBaseTotals(0);
+      setDataLoadFlagMeterTransfers(0);
+      setDataLoadFlagMeterTotals(0); */
+    }
+  }, [dataLoadFlagForm, dataLoadFlagDrawTransfers, dataLoadFlagBaseTransfers, dataLoadFlagBaseTotals, dataLoadFlagMeterTransfers, dataLoadFlagMeterTotals]);
 
   /* // this may conflict with data retrieval
   useEffect(() => {

@@ -151,7 +151,7 @@ const BaseProductTotals = ({
     //if (dataLoadFlag === 0) {
       getBaseTotals();
     //}
-  }, [selected, transfers, productArms]);
+  }, [selected, transfers, productArms, dataLoadFlag, dataLoaded]);
 
   useEffect(() => {
     if (data) {
@@ -215,6 +215,7 @@ const BaseProductTotals = ({
     <Spin indicator={null} spinning={isLoading}>
       <Form.Item name="base_totals">
         <DataTable
+//          isLoading={updating || dataLoadFlag!==0}
           isLoading={updating}
           minimal={true}
           data={data} 

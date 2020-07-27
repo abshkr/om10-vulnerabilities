@@ -893,6 +893,7 @@ const DrawerProductTransfers = ({
 
         <Form.Item name="transfers" noStyle>
           <DataTable
+            // isLoading={updating || dataLoadFlagDrawTransfers!==0}
             isLoading={updating}
             minimal={true}
             // parentHeight="200px"

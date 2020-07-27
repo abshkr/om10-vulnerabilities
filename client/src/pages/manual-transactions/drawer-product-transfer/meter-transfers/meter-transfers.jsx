@@ -89,7 +89,7 @@ const MeterTransfers = ({
     //if (dataLoadFlag === 0) {
       getMeters();
     //}
-  }, [selected, transfers, productArms]);
+  }, [selected, transfers, productArms, dataLoadFlag, dataLoaded]);
 
   useEffect(() => {
     if (data) {

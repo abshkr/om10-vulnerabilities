@@ -39,6 +39,15 @@ const BaseProductTransfers = ({
 
   const fields = columns(t);
 
+  const sumBaseTotals = (tranbases, selected) => {
+    const obs = _.sumBy(tranbases.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_qty_amb');
+    const std = _.sumBy(tranbases.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_qty_cor');
+    const mass = _.sumBy(tranbases.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_load_kg');
+    setObsTotal(obs);
+    setStdTotal(std);
+    setMassTotal(mass);
+  };
+
   const getBaseTransfers = (selected) => {
     // const pre = [];
     //const transfers = form.getFieldValue('transfers');
@@ -97,31 +106,37 @@ const BaseProductTransfers = ({
 
     setLoading(false);
 
-    let tranbases = undefined;
-    if (dataLoadFlag === 1) {
-      tranbases = _.clone(dataLoaded.base_transfers);
-      setDataLoadFlag(2);
-      console.log('MT 3 - BaseProductTransfers: data are loaded!', dataLoadFlag);
-    } else {
-      tranbases = _.clone(pre);
+    // let tranbases = [];
+    if (dataLoadFlag === 0) {
+      // tranbases = _.clone(pre);
+      setData(pre);
+      sumBaseTotals(pre, selected);
       console.log('MT 3 - BaseProductTransfers: normal data!', dataLoadFlag);
+    } else {
+      if (dataLoadFlag === 1) {
+        // tranbases = _.clone(dataLoaded.base_transfers);
+        setData(dataLoaded.base_transfers);
+        sumBaseTotals(dataLoaded.base_transfers, selected);
+        setDataLoadFlag(2);
+        console.log('MT 3 - BaseProductTransfers: data are loaded!', dataLoadFlag);
+      }
     }
 
-    const obs = _.sumBy(tranbases.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_qty_amb');
+    /* const obs = _.sumBy(tranbases.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_qty_amb');
     const std = _.sumBy(tranbases.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_qty_cor');
     const mass = _.sumBy(tranbases.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_load_kg');
     setObsTotal(obs);
     setStdTotal(std);
     setMassTotal(mass);
 
-    setData(tranbases);
+    setData(tranbases); */
   };
 
   useEffect(() => {
     //if (dataLoadFlag === 0) {
       getBaseTransfers(selected);
     //}
-  }, [selected, transfers, productArms]);
+  }, [selected, transfers, productArms, dataLoadFlag, dataLoaded]);
 
   useEffect(() => {
     if (data) {
@@ -223,6 +238,7 @@ const BaseProductTransfers = ({
     <Spin indicator={null} spinning={isLoading}>
       <Form.Item name="base_transfers">
         <DataTable 
+          // isLoading={updating || dataLoadFlag!==0}
           isLoading={updating}
           minimal={true}
           data={data.filter((o)=>(o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no))} 
