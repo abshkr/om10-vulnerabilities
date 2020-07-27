@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Select } from 'antd';
 import _ from 'lodash';
 
-import {getAvailableArms} from '../../../../utils'
+import {calcBaseRatios, calcArmDensity, getAvailableArms} from '../../../../utils'
 
 export default class DrawerProducts extends Component {
   constructor(props) {
@@ -16,6 +16,13 @@ export default class DrawerProducts extends Component {
   getValue() {
     return this.state.value;
   }
+
+  calcDensity = (stream, values) => {
+    const prodDens = calcArmDensity(stream, values);
+    console.log('DrawerProducts: prod density - ', prodDens);
+
+    return prodDens;
+  };
 
   onClick = (value, record) => {
     const { form, arms, payload, setPayload, t } = this.props;
@@ -33,10 +40,11 @@ export default class DrawerProducts extends Component {
     current[index].trsf_prod_name = record.children;
     // current[index].trsf_prod_name = record?.item?.prod_desc;
     current[index].trsf_prod_cmpy = record?.item?.prod_cmpy;
-    current[index].trsf_arm_cd = items?.length>0 ? t('placeholder.selectArmCode') : t('placeholder.noArmAvailable');
+    // current[index].trsf_arm_cd = items?.length>0 ? t('placeholder.selectArmCode') : t('placeholder.noArmAvailable');
+    current[index].trsf_arm_cd = items?.length>0 ? items?.[0]?.stream_armcode : t('placeholder.noArmAvailable');
     // current[index].trsf_qty_plan = null;
     // current[index].trsf_qty_left = null;
-    current[index].trsf_density = null;
+    current[index].trsf_density = items?.length>0 ? this.calcDensity(items?.[0]?.stream_index, arms) : null;
     current[index].trsf_temp = null;
     current[index].trsf_qty_cor = null;
     current[index].trsf_qty_amb = null;

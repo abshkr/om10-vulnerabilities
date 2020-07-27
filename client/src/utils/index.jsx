@@ -7,6 +7,7 @@ import getDateRangeOffset from './get-date-range-offset';
 import adjustProductArms from './adjust-product-arms';
 import getAvailableArms from './get-available-arms';
 import calcBaseRatios from './calculate-base-ratios';
+import calcArmDensity from './calculate-arm-density';
 import csvToJSON from './csv-to-json';
 import fetcher from './fetcher';
 import hexToRGB from './hex-to-rbg';
@@ -26,6 +27,7 @@ export {
   adjustProductArms,
   getAvailableArms,
   calcBaseRatios,
+  calcArmDensity,
   csvToJSON,
   fetcher,
   hexToRGB,

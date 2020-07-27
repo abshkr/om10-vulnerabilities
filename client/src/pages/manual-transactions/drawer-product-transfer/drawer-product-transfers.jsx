@@ -10,7 +10,7 @@ import columns from './columns';
 import useSWR from 'swr';
 
 import api, { MANUAL_TRANSACTIONS } from '../../../api';
-import {calcBaseRatios, getAvailableArms} from '../../../utils'
+import {calcBaseRatios, calcArmDensity, getAvailableArms} from '../../../utils'
 
 import BaseProductTransfers from './base-product-transfers';
 import BaseProductTotals from './base-product-totals';
@@ -739,11 +739,16 @@ const DrawerProductTransfers = ({
         //console.log('watch data, supplier, trip, order, tanker in loop', record?.shls_supp);
         if (record.shls_supp !== '') {
           // console.log('watch data, supplier, trip, order, tanker in if supplier', record, record?.shls_supp, record?.prod_code);
-          let armClnTitle = t('placeholder.selectArmCode');
+          let armClnValue = t('placeholder.selectArmCode');
+          let densClnValue = null;
           if (record?.prod_name !== '' && record?.prod_name !== undefined) {
             const items = getAvailableArms(productArms, record?.shls_supp, record?.prod_code);
             if (items?.length === 0) {
-              armClnTitle = t('placeholder.noArmAvailable');
+              armClnValue = t('placeholder.noArmAvailable');
+            }
+            if (items?.length > 0) {
+              armClnValue = items?.[0]?.stream_armcode;
+              densClnValue = calcArmDensity(items?.[0]?.stream_index, productArms);
             }
           }
           const object = {
@@ -757,11 +762,11 @@ const DrawerProductTransfers = ({
             trsf_prod_code: record?.prod_code,
             trsf_prod_name: record?.prod_name === '' ? t('placeholder.selectDrawerProduct') : record?.prod_desc,
             trsf_prod_cmpy: record?.shls_supp,
-            trsf_arm_cd: armClnTitle,
+            trsf_arm_cd: armClnValue,
             trsf_qty_plan: record?.allowed_qty==='' ? null : record?.allowed_qty,
             //trsf_qty_left: record?.allowed_qty==='' ? null : String(_.toNumber(record?.allowed_qty) - _.toNumber(record?.load_qty)),
             trsf_qty_left: record?.load_qty==='' ? null : record?.load_qty,
-            trsf_density: null,
+            trsf_density: densClnValue,
             trsf_temp: null,
             trsf_qty_amb: null,
             trsf_qty_cor: null,

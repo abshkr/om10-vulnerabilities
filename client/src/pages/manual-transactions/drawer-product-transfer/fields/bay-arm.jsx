@@ -3,7 +3,7 @@ import { Select } from 'antd';
 import _ from 'lodash';
 
 import api, { MANUAL_TRANSACTIONS } from '../../../../api';
-import {calcBaseRatios, adjustProductArms} from '../../../../utils'
+import {calcBaseRatios, calcArmDensity, adjustProductArms} from '../../../../utils'
 
 export default class BayArm extends Component {
   constructor(props) {
@@ -22,8 +22,9 @@ export default class BayArm extends Component {
 
   calcDensity = (stream) => {
     const { values } = this.state;
+    const prodDens = calcArmDensity(stream, values);
 
-    let index = undefined;
+    /* let index = undefined;
     let prodDens = 0.0;
     const sum_ratios = _.sumBy(values, (o)=>{
       if (o.stream_index === stream) {
@@ -41,7 +42,7 @@ export default class BayArm extends Component {
         }
         prodDens = prodDens + calcBaseRatios(item?.stream_tankden, item?.ratio_value, ratio_total);
       }
-    }
+    } */
     console.log('BayArm: prod density - ', prodDens);
 
     return prodDens;
