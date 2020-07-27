@@ -120,6 +120,24 @@ const ManualTransactions = ({ popup, params }) => {
   };
 
   const onSubmit = () => {
+    // check to see if all compartments have blank quantities
+    const dptrsf = form.getFieldsValue(['transfers']);
+    let found = false;
+    for (let tidx = 0; tidx < dptrsf.length; tidx++) {
+      const titem = dptrsf?.[tidx];
+      if (titem.trsf_density && titem.trsf_temp && titem.trsf_qty_amb && titem.trsf_qty_cor && titem.trsf_load_kg) {
+        found = true;
+        break;
+      }
+    }
+    if (found === false) {
+      notification.warning({
+        message: t('messages.submitFailed'),
+        description: t('descriptions.noTransferDetails'),
+      });
+      return;
+    }
+
     Modal.confirm({
       title: t('prompts.submit'),
       okText: t('operations.yes'),
