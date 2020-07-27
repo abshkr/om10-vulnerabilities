@@ -168,6 +168,7 @@ const Seals = ({ value, sealUpated }) => {
         refreshSeals();
         refreshNextSeal();
         sealUpated();
+        setSelected(null);
 
         notification.success({
           message: t('messages.updateSuccess'),
