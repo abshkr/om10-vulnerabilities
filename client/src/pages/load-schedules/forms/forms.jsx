@@ -801,7 +801,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
           <TabPane 
             tab={t('tabColumns.createTripTransactions')} 
-            disabled={IS_CREATING || !CAN_MAKE_TRANSACTIONS || !access.canCreate} 
+            disabled={IS_CREATING || !CAN_MAKE_TRANSACTIONS || !access.canCreate || value.shls_ld_type === '6'} 
             key="8"
           >
             <ManualTransactionsPopup 
