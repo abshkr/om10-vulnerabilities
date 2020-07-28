@@ -15,7 +15,8 @@ class MovementReason extends CommonClass
     );
 
     public $BOOLEAN_FIELDS = array(
-        "MR_FLAG" => 1
+        "MR_FLAG" => 1,
+        "MR_SHOW_COMMENT" => 0
     );
 
     public function types()
@@ -39,7 +40,8 @@ class MovementReason extends CommonClass
                 DECODE(MR_FLAG, 0, 'Active, Do not send to host',
                     1, 'Active, Send to host',
                     2, 'Active, Read only, Send to host',
-                    'Unknown') MR_FLAG_DESC
+                    'Unknown') MR_FLAG_DESC,
+                MR_SHOW_COMMENT
             FROM MOV_REASONS,
                 (SELECT MOVITEM_TYPE_ID, 
                 DECODE(MOVITEM_TYPE_ID, 0, 'R', 1, 'D', 2, 'T', 'R') MOVITEM_TYPE_CODE, 

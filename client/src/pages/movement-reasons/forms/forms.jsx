@@ -8,11 +8,11 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import _ from 'lodash';
-import { Type, BusinessProcess, SendToHost, MovementReason } from './fields';
+import { Type, BusinessProcess, SendToHost, ShowComment, MovementReason } from './fields';
 import api, { MOVEMENT_REASONS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
@@ -23,6 +23,7 @@ const FormModal = ({ value, length, visible, handleFormState, access }) => {
   const { resetFields } = form;
 
   const [send, setSend] = useState(false);
+  const [showComment, setShowComment] = useState(value?.mr_show_comment);
 
   const IS_CREATING = !value;
 
@@ -110,6 +111,7 @@ const FormModal = ({ value, length, visible, handleFormState, access }) => {
     }
   }, [value, visible]);
 
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -161,7 +163,12 @@ const FormModal = ({ value, length, visible, handleFormState, access }) => {
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
             <p>ID: {value ? value?.mr_id : length + 1}</p>
-            <SendToHost form={form} onChange={setSend} value={value} />
+
+            <Row>
+              <Col><SendToHost form={form} onChange={setSend} value={value} /></Col>
+              <Col><ShowComment form={form} onChange={setShowComment} value={value} /></Col>
+            </Row>
+
             <Type form={form} value={value} />
             <BusinessProcess form={form} value={value} />
             <MovementReason form={form} value={value} send={send} />

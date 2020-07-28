@@ -42,6 +42,14 @@ const columns = t => [
     resizable: true
   },
   {
+    headerName: t('fields.showComment'),
+    field: 'mr_show_comment',
+    filter: 'FuzzyFilter',
+    cellRenderer: 'BooleanRenderer',
+    sortable: true,
+    resizable: true
+  },
+  {
     headerName: t('fields.status'),
     field: 'mr_flag_desc',
     filter: 'FuzzyFilter',
