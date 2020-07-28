@@ -10,7 +10,7 @@ import columns from './columns';
 import useSWR from 'swr';
 
 import api, { MANUAL_TRANSACTIONS } from '../../../api';
-import {calcBaseRatios, calcArmDensity, getAvailableArms} from '../../../utils'
+import {calcBaseRatios, calcArmDensity, getAvailableArms, adjustProductArms} from '../../../utils'
 
 import BaseProductTransfers from './base-product-transfers';
 import BaseProductTotals from './base-product-totals';
@@ -748,7 +748,8 @@ const DrawerProductTransfers = ({
             }
             if (items?.length > 0) {
               armClnValue = items?.[0]?.stream_armcode;
-              densClnValue = calcArmDensity(items?.[0]?.stream_index, productArms);
+              const prodArms = adjustProductArms(productArms, record?.shls_supp, record?.prod_code);
+              densClnValue = calcArmDensity(items?.[0]?.stream_index, prodArms);
             }
           }
           const object = {
