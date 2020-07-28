@@ -112,6 +112,17 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
 
   const onFinish = async () => {
     const values = await form.validateFields();
+    let found = false;
+    if (values?.mlitm_qty_amb && values?.mlitm_qty_cor && values?.mlitm_qty_kg && values?.mlitm_temp_amb && values?.mlitm_dens_cor) {
+      found = true;
+    }
+    if (found === false) {
+      notification.warning({
+        message: t('messages.submitFailed'),
+        description: t('descriptions.noTransferDetailsSpec'),
+      });
+      return;
+    }
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),

@@ -106,6 +106,10 @@ const From = ({
     setProduct(undefined);
     getProducts(value);
 
+    setFieldsValue({
+      mlitm_dens_cor: undefined,
+    });
+
     // onChange(value);
   };
 

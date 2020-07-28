@@ -18,8 +18,9 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
   const [densDecimals, setDensDecimals] = useState(3);
   const [minDens, setMinDens] = useState(0);
   const [maxDens, setMaxDens] = useState(2000);
+  const [inited, setInited] = useState(false);
 
-  const { setFieldsValue, validateFields } = form;
+  const { setFieldsValue, validateFields, getFieldValue } = form;
 
   const IS_DISALBED = disabled || !type || isLoading;
 
@@ -40,9 +41,14 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
           const densH = prod ? _.round(_.toNumber(prod?.density_hi), config.precisionDensity) : prod?.density_hi;
           setMinDens(densL);
           setMaxDens(densH);
-          setFieldsValue({
-            mlitm_dens_cor: response.data.records[0].tank_density,
-          });
+          console.log('I am here 111');
+          const temp_dens = getFieldValue('mlitm_dens_cor');
+          if (!temp_dens) {
+            console.log('I am here 222');
+            setFieldsValue({
+              mlitm_dens_cor: response.data.records[0].tank_density,
+            });
+          }
           setLoading(false);
           //console.log('validateFields([mlitm_dens_cor]);222');
           //validateFields(['mlitm_dens_cor']);
@@ -89,7 +95,7 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
       }
 
       handleTemperatureChange(value?.mlitm_temp_amb);
-      handleDensityChange(value?.mlitm_dens_cor);     
+      handleDensityChange(value?.mlitm_dens_cor);
     }
   }, [value, setFieldsValue]);
 

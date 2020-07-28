@@ -102,6 +102,7 @@
 		"submitFailed": "Failed to submit",
 		"submitSuccess": "You have submitted the record",
 		"noTransferDetails": "Transfer details are not complete. The values of density, temperature and quantities are required in at least one compartment.",
+		"noTransferDetailsSpec": "Transfer details are not complete. The values of density, temperature and quantities are required.",
 		"tankLevelCannotNegative": "Tank level cannot be negative",
 		"tankLevelInLine": "The tank level in line ",
 		"tankLevelMustBeInteger": "Tank level must be an integer",
