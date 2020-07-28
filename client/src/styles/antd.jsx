@@ -327,7 +327,7 @@ const AntdStyleProvider = createGlobalStyle`
   
   .ant-select-item-option-content {
     text-overflow: unset;
-    width: 300px;
+    // width: 300px;
   }
 
 
