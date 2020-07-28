@@ -68,4 +68,32 @@ class CurSession extends CommonClass
         $result["records"] = $feature_array;
         echo json_encode($result, JSON_PRETTY_PRINT);
     }
+
+    public function killSessions()
+    {
+        // write_log(json_encode($this), __FILE__, __LINE__);
+
+        if (!isset($this->sess_id) || !isset($this->per_code)) {
+            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $query = "DELETE FROM HTTP_SESSION_TRACE
+            WHERE SESS_ID != :sess_id AND PER_CODE = :per_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':sess_id', $this->sess_id);
+        oci_bind_by_name($stmt, ':per_code', $this->per_code);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(500, response("__SESSIONS_KILL_FAILED__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $error = new EchoSchema(200, response("__SESSIONS_KILLED__"));
+        echo json_encode($error, JSON_PRETTY_PRINT);
+        return;
+    }
 }

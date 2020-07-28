@@ -14,6 +14,11 @@ https://{{server_ip}}/api/session/change_cur_dep.php
     "per_code": "9999",
     "per_department": "DEP2"
 }
+https://{{server_ip}}/api/session/kill_sessions.php
+{
+    "per_code": "9999",
+    "sess_id": "adf2adXAw"
+}
 https://{{server_ip}}/api/session/check_password.php
 {
     "per_code": "9999",

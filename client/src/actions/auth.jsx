@@ -13,6 +13,11 @@ export const login = (values, callback) => async (dispatch) => {
         const token = response.data.token;
 
         if (token) {
+          if (parseInt(response.data.http_session_trace_count) >= parseInt(response.data.max_http_session_allowed)) {
+            response.data.killsession = true;
+            callback(response, dispatch);
+            return;
+          }
           sessionStorage.setItem('token', response.data.token);
 
           dispatch({ type: AUTHORIZED, payload: response.data.token });

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Icon, { SmileOutlined, FrownOutlined, IdcardOutlined, LockOutlined } from '@ant-design/icons';
+import Icon, { SmileOutlined, FrownOutlined, IdcardOutlined, LockOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Form, Input, Button, notification, Divider, Carousel, Modal, Select, Row, Col } from 'antd';
 
 import { useHistory } from 'react-router-dom';
@@ -7,6 +7,9 @@ import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import _ from 'lodash';
+import { COMMON } from 'api';
+import api from 'api';
+import { AUTHORIZED, UNAUTHORIZED } from 'actions/types';
 
 import { ReactComponent as LoginIcon } from './login.svg';
 
@@ -49,16 +52,57 @@ const Login = ({ handleLogin, auth }) => {
   const handleSubmit = (values) => {
     setLoading(true);
 
-    handleLogin(values, (response) => {
+    handleLogin(values, (response, dispatch) => {
       if (response?.data?.token) {
-        history.push(ROUTES.HOME);
+        if (response.data.killsession) {
+          Modal.confirm({
+            title: t('prompts.killSessions'),
+            okText: t('operations.yes'),
+            okType: 'primary',
+            icon: <QuestionCircleOutlined />,
+            cancelText: t('operations.no'),
+            centered: true,
+            onOk: async () => {
+              sessionStorage.setItem('token', response.data.token);
+              dispatch({ type: AUTHORIZED, payload: response.data.token });
+                  
+              await api
+                .post(COMMON.KILL_SESSIONS, {
+                  per_code: values?.code,
+                  sess_id: response?.data.sess_id,
+                })
+                .then(() => {
+                  console.log("Succeed")
+                  history.push(ROUTES.HOME);
+                  
+                  notification.success({
+                    placement: 'bottomRight',
+                    message: t('messages.loginSuccess'),
+                    description: `${t('descriptions.loginSuccess')} ${values.code}`,
+                    icon: <SmileOutlined style={{ color: '#0054A4' }} />,
+                  });
+                })
+                .catch((errors) => {
+                  _.forEach(errors.response.data.errors, (error) => {
+                    console.log(error.message);
+                  });
+                });
+              },
+            onCancel() {
+              sessionStorage.setItem('token', response.data.token); //So log out can delete session from db
+              history.push(ROUTES.LOG_OUT);
+            },
+          });
+        } else {
+          history.push(ROUTES.HOME);
 
-        notification.success({
-          placement: 'bottomRight',
-          message: t('messages.loginSuccess'),
-          description: `${t('descriptions.loginSuccess')} ${values.code}`,
-          icon: <SmileOutlined style={{ color: '#0054A4' }} />,
-        });
+          notification.success({
+            placement: 'bottomRight',
+            message: t('messages.loginSuccess'),
+            description: `${t('descriptions.loginSuccess')} ${values.code}`,
+            icon: <SmileOutlined style={{ color: '#0054A4' }} />,
+          });
+        }
       } else {
         setLoading(false);
         const attempt =
@@ -74,6 +118,8 @@ const Login = ({ handleLogin, auth }) => {
           icon: <FrownOutlined style={{ color: '#ec6e68' }} />,
         });
       }
+
+      return true;
     });
   };
 

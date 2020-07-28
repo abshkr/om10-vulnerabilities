@@ -130,6 +130,9 @@ if ($array['MSG_CODE'] === "0") {
         $array['USER_DETAIL']['SITE_CODE'], $array['USER_DETAIL']['SITE_NAME'], $array['USER_DETAIL']['USER_LANG'], $exp_min * 60);
     $login_result['expiresIn'] = $exp_min * 60;
     $login_result['user_status_flag'] = $array['USER_DETAIL']['USER_STATUS_FLAG'];
+    $login_result['http_session_trace_count'] = $array['USER_DETAIL']['HTTP_SESSION_TRACE_COUNT'];
+    $login_result['max_http_session_allowed'] = $array['USER_DETAIL']['MAX_HTTP_SESSION_ALLOWED'];
+    $login_result['sess_id'] = $array['USER_DETAIL']['USER_SESSION'];
 
     //Some old screens like bay view still need session
     if (!isset($_SESSION)) {
