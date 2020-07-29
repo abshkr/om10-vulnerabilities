@@ -366,6 +366,24 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
                 });
                 return;
               });
+          } else {
+            values.mlitm_dtim_start = values?.mlitm_dtim_start?.format(SETTINGS.DATE_TIME_FORMAT);
+            await api
+              .post(SPECIAL_MOVEMENTS.UPDATE, values)
+              .then(
+                () => {
+                  // console.log("Created");
+                }
+              )
+              .catch((errors) => {
+                _.forEach(errors.response.data.errors, (error) => {
+                  notification.error({
+                    message: error.type,
+                    description: error.message,
+                  });
+                });
+                return;
+              });
           }
   
           await api
