@@ -42,7 +42,8 @@ class Movement extends CommonClass
         "MVITM_STATUS",
         "MVITM_PACK_SIZE",
         "MVITM_PRICE_TYPE",
-        "MVITM_PRICE"
+        "MVITM_PRICE",
+        "MV_ID"
     );
 
     public $BOOLEAN_FIELDS = array(
@@ -1165,7 +1166,7 @@ class Movement extends CommonClass
             $lineno = 1;
             foreach ($this->items as $value) {
                 // write_log(json_encode($value), __FILE__, __LINE__);
-                $mvitm_item_id = $this->mv_id * 100 + $lineno;
+                $mvitm_item_id = $this->mv_id * 1000 + $lineno;
                 $query = "INSERT INTO MOVEMENT_ITEMS (
                     MVITM_MOVE_ID,
                     MVITM_LINE_ID,
