@@ -223,7 +223,7 @@ const Login = ({ handleLogin, auth }) => {
             </Form.Item>
 
             <div style={{ textAlign: 'center', color: 'red', marginBottom: 10 }}>
-              {attempts !== null && status !== -1 ? `You have ${attempts} attempts left.` : ``}
+              {attempts !== null && !isNaN(attempts) && status !== -1 ? `You have ${attempts} attempts left.` : ``}
             </div>
 
             <Row gutter={[12, 12]}>
