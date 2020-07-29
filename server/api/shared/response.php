@@ -381,6 +381,10 @@ function response($case_name, $default = null, $params = null)
             "ENG" => "Cannnot kill other seesions",
             "CHN" => "不能删除其他会话"
         ),
+        "__LOGIN_USER_LOCKED__" => array(
+            "ENG" => "Current user is locked, cannot log in",
+            "CHN" => "当前用户被锁定，不能登录"
+        ),
     );
 
     $lang = Utilities::getCurrLang();

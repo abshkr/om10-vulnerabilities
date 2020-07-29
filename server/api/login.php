@@ -43,6 +43,7 @@ header("Content-Type: application/json; charset=UTF-8");
 // include database and object files
 include_once './config/database.php';
 include_once './shared/log.php';
+include_once './shared/response.php';
 include_once './objects/personnel.php';
 include_once './config/setups.php';
 include_once './config/jwt.php';
@@ -153,9 +154,13 @@ if ($array['MSG_CODE'] === "0") {
     echo json_encode($login_result, JSON_PRETTY_PRINT);
 } else {
     http_response_code(400);
+    $msg_desc = $array['MSG_DESC'];
+    if ($array['USER_DETAIL']['USER_STATUS_FLAG'] === '2') {
+        $msg_desc = response("__LOGIN_USER_LOCKED__");
+    }
     $login_result = array(
         'msg_code' => $array['MSG_CODE'],
-        'msg_desc' => $array['MSG_DESC'],
+        'msg_desc' => $msg_desc,
         'attempt_left' => (isset($array['USER_DETAIL']['USER_ATTEMPT_LEFT']) ? $array['USER_DETAIL']['USER_ATTEMPT_LEFT'] : 0),
         // 'attempt_left' => $array['USER_DETAIL']['USER_ATTEMPT_LEFT'],
         'user_status_flag' => $array['USER_DETAIL']['USER_STATUS_FLAG']);
