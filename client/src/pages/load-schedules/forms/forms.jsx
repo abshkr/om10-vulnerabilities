@@ -148,6 +148,17 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       }
 
       findResult = _.find(record.products, (item) => {
+        return item.qty_scheduled > 99999999;
+      });
+      if (findResult) {
+        notification.error({
+          message: t("messages.validationFailed"),
+          description: t("descriptions.scheduledTooHigh") + ": " + findResult.qty_scheduled,
+        });
+        return;
+      }
+
+      findResult = _.find(record.products, (item) => {
         return item.qty_scheduled > 0 && item.unit_code === "";
       });
       
