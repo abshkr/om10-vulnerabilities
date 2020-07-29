@@ -30,35 +30,35 @@ const columns = t => [
   {
     headerName: t('fields.class'),
     field: 'hzcf_class',
-    filter: 'MultiFilter',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.emergencyActionCode'),
     field: 'hzcf_hz_code',
-    filter: 'MultiFilter',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.emergencyProcedureGuide'),
     field: 'hzcf_emrg',
-    filter: 'MultiFilter',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.packagingGroup'),
     field: 'hzcf_pack_group',
-    filter: 'MultiFilter',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
     headerName: t('fields.packagingMethod'),
     field: 'hzcf_pack_method',
-    filter: 'MultiFilter',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   }
