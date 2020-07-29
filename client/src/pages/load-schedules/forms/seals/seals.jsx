@@ -246,6 +246,7 @@ const Seals = ({ value, sealUpated }) => {
         style={{ marginRight: 5 }} 
         type="primary" 
         onClick={onDellocateAll}
+        disabled={value?.status !== 'A' && value?.status !== 'F'}
       >
         {t('operations.deallocateAll')}
       </Button>
