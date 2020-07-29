@@ -121,7 +121,7 @@ const ManualTransactions = ({ popup, params }) => {
 
   const onSubmit = () => {
     // check to see if all compartments have blank quantities
-    const dptrsf = form.getFieldsValue(['transfers']);
+    const dptrsf = form.getFieldValue('transfers');
     let found = false;
     for (let tidx = 0; tidx < dptrsf.length; tidx++) {
       const titem = dptrsf?.[tidx];
