@@ -44,7 +44,7 @@ const columns = t => [
   {
     headerName: t('fields.lockId'),
     field: 'alloc_lock',
-    filter: 'MultiFilter',
+    // filter: 'MultiFilter',
     sortable: true,
     resizable: true,
   },
@@ -64,6 +64,7 @@ const columns = t => [
   {
     headerName: t('fields.period'),
     field: 'alloc_periodname',
+    filter: 'MultiFilter',
     sortable: true,
     resizable: true,
   },
