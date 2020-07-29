@@ -168,10 +168,10 @@ const Login = ({ handleLogin, auth }) => {
 
           <Divider />
           <h3>{t('generic.help')}</h3>
-          <a href="/om5000/docs/manual.pdf">{t('operations.clickHere')}</a>
+          <a href="/manual.pdf" target="_blank">{t('operations.clickHere')}</a>
           <Divider />
           <h3>{t('generic.about')}</h3>
-          <a href="/om5000/docs/eula.pdf">{t('operations.clickHere')}</a>
+          <a href="/eula.pdf" target="_blank">{t('operations.clickHere')}</a>
         </div>
       ),
     });
