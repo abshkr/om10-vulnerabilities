@@ -336,28 +336,74 @@ class Schedule extends CommonClass
         return true;
     }
 
+    //sess_id=hvufDCYgiNhz&tankTerm=CNS&supp=7640102&tripNo=900097&op=19&cmd=DEL&callerTyp=flex
     public function delete()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
-        $result = null;
-        $query = "
-            BEGIN
-                CLEAN_RUSTY_TRIP_R21(:o_trip_no, :o_supp_code, :o_exec_result);
-            END;";
+        $query = "DELETE FROM SEAL WHERE SEALSPEC_SHLSTRIP = :trip_no AND SEALSPEC_SHLSSUPP = :supplier";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':o_supp_code', $this->supplier_code);
-        oci_bind_by_name($stmt, ':o_trip_no', $this->shls_trip_no);
-        oci_bind_by_name($stmt, ':o_exec_result', $result);
-        if (oci_execute($stmt, $this->commit_mode)) {
-            return true;
-        } else {
+        oci_bind_by_name($stmt, ':trip_no', $this->shls_trip_no);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier_code);
+        if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
+            $error = new EchoSchema(400, response("__SAVE_FAILED__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
         }
+
+        $query = "UPDATE SCHEDULE SET SHLS_SEAL_NO = NULL WHERE SHLS_TRIP_NO = :trip_no AND SHLS_SUPP = :supplier";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':trip_no', $this->shls_trip_no);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier_code);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(400, response("__SAVE_FAILED__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        if (!isset($this->shls_terminal)) {
+            $serv = new SiteService($this->conn);
+            $this->shls_terminal = $serv->site_code();
+        }
+
+        $query_string = "tankTerm=" . rawurlencode(strip_tags($this->shls_terminal)) . 
+            "&tripNo=" . rawurlencode(strip_tags($this->shls_trip_no)) . 
+            "&supp=" . rawurlencode(strip_tags($this->supplier_code)) . 
+            "&op=19&cmd=DEL";
+
+        $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/load_scheds.cgi", $query_string);
+        write_log($res, __FILE__, __LINE__);
+
+        if (strpos($res, "Successfully Deleted") === false) {
+            // throw new DatabaseException("load_scheds CGI error");
+            write_log("load_scheds CGI error", __FILE__, __LINE__, LogLevel::ERROR);
+            throw new DatabaseException(response("__CGI_FAILED__"));
+        }
+
+        return true;
+
+        // $result = null;
+        // $query = "
+        //     BEGIN
+        //         CLEAN_RUSTY_TRIP_R21(:o_trip_no, :o_supp_code, :o_exec_result);
+        //     END;";
+        // $stmt = oci_parse($this->conn, $query);
+        // oci_bind_by_name($stmt, ':o_supp_code', $this->supplier_code);
+        // oci_bind_by_name($stmt, ':o_trip_no', $this->shls_trip_no);
+        // oci_bind_by_name($stmt, ':o_exec_result', $result);
+        // if (oci_execute($stmt, $this->commit_mode)) {
+        //     return true;
+        // } else {
+        //     $e = oci_error($stmt);
+        //     write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
     }
 
     private function update_cmpt_delvinfo($compartment)
