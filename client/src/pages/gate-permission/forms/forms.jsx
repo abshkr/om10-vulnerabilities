@@ -136,7 +136,7 @@ const GatePermForm = ({ value, visible, handleFormState, access }) => {
         rule_etypname: values.rule_etypname,
         rule_auth: values.rule_auth,
         rule_authname: values.rule_authname,
-        rule_first: rules.length === 1,
+        rule_first: rules.length === 0,
         rule_parent: prmssn_k,
         rule_expiry_check: values.rule_expiry_check,
         is_new: true,
