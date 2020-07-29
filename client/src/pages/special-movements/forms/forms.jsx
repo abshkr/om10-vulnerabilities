@@ -236,6 +236,14 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       return;
     }
 
+    if (!payload?.mlitm_qty_amb && !payload?.mlitm_qty_cor && !payload?.mlitm_qty_kg) {
+      notification.error({
+        message: t('validate.set'),
+        description: t('fields.observedQuantity')+' or '+t('fields.standardQuantity')+' or '+t('fields.observedMass'),
+      });
+      return;
+    }
+
 
     if (!quantitySource || String(quantitySource?.qty).trim().length === 0) {
       notification.error({
