@@ -541,6 +541,10 @@ const DrawerProductTransfers = ({
       message: t('messages.clearTransferSuccess'),
       description: t('descriptions.clearTransferSuccess'),
     });
+
+    toggleCalcButton();
+    // toggleRestoreButton();
+    // toggleCopyButton();
   };
 
   const onCopy = async () => {
@@ -568,6 +572,10 @@ const DrawerProductTransfers = ({
       message: t('messages.copyQuantitySuccess'),
       description: t('descriptions.copyQuantitySuccess'),
     });
+
+    toggleCalcButton();
+    // toggleRestoreButton();
+    // toggleCopyButton();
   };
 
   const toggleCalcButton = () => {
@@ -575,7 +583,9 @@ const DrawerProductTransfers = ({
     const payload = form.getFieldValue('transfers');
 
     if (payload) {
-      const item = _.find(payload, (o) => (o?.trsf_temp && o?.trsf_density && (o?.trsf_qty_amb || o?.trsf_qty_cor || o?.trsf_load_kg)));
+      const item = _.find(payload, (o) => (
+        (o?.trsf_temp===0 || o?.trsf_temp) && o?.trsf_density && (o?.trsf_qty_amb || o?.trsf_qty_cor || o?.trsf_load_kg)
+      ));
       if (item) {
         setCanCalc(true);
       } else {
