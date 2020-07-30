@@ -8,13 +8,14 @@ import {
   LockOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Button, Drawer, Form } from 'antd';
+import { Button, Drawer, Form, Card } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
 
 import { DataTable } from '../../../../components';
 import { ORDER_LISTINGS } from '../../../../api';
 import Transactions from '../../../../pages/load-schedules/forms/transactions';
+import Schedules from './schedules';
 
 import columns from './columns';
 
@@ -53,7 +54,7 @@ const OrderTrips = ({ value, orderNo }) => {
         {t('operations.viewTransaction')}
       </Button>
 
-      {/* <Button
+      <Button
         type="primary"
         icon={<EyeOutlined />}
         style={{ float: 'right', marginRight: 5 }}
@@ -61,7 +62,7 @@ const OrderTrips = ({ value, orderNo }) => {
         onClick={() => setScheduleVisible(true)}
       >
         {t('operations.viewSchedule')}
-      </Button> */}
+      </Button>
     </>
   );
 
@@ -76,12 +77,34 @@ const OrderTrips = ({ value, orderNo }) => {
           visible={transactionVisible}
           width="100vw"
         >
-          <Transactions 
-            value={{
-              supplier_code: selected?.[0]?.schd_supp_code,
-              shls_trip_no: selected?.[0]?.schd_trip_no
-            }}
-          />
+          <Card size="small" title={t('tabColumns.transactions')}>
+            <Transactions 
+              value={{
+                supplier_code: selected?.[0]?.schd_supp_code,
+                shls_trip_no: selected?.[0]?.schd_trip_no
+              }}
+            />
+          </Card>
+        </Drawer>
+      )}
+
+      {scheduleVisible && (
+        <Drawer
+          placement="right"
+          bodyStyle={{ paddingTop: 5 }}
+          onClose={() => setScheduleVisible(false)}
+          visible={scheduleVisible}
+          width="100vw"
+        >
+          <Card size="small" title={t('tabColumns.loadSchedulesForOpenOrder')}>
+            <Schedules
+              popup={true}
+              params={{
+                supplier_code: selected?.[0]?.schd_supp_code,
+                shls_trip_no: selected?.[0]?.schd_trip_no
+              }}
+            />
+          </Card>
         </Drawer>
       )}
 
