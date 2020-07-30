@@ -9,6 +9,22 @@ const ExpiredAfter = ({ form, value }) => {
 
   const { t } = useTranslation();
 
+  const validate = (rule, input) => {
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.select')} ─ ${t('fields.expiredAfter')}`);
+      }
+    }
+
+    // compare EffectiveFrom with ExpiredAfter
+    const effectiveFrom = form.getFieldValue('mv_dtim_effect');
+    if (effectiveFrom.isAfter(input)) {
+      return Promise.reject(`${t('validate.expiryDateEarlierThanEffectiveDate')}`);
+    }
+
+    return Promise.resolve();
+  };
+
   useEffect(() => {
     if (value) {
       setFieldsValue({
@@ -25,7 +41,11 @@ const ExpiredAfter = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="mv_dtim_expiry" label={t('fields.expiredAfter')}>
+    <Form.Item
+      name="mv_dtim_expiry"
+      label={t('fields.expiredAfter')}
+      rules={[{ required: false, validator: validate }]}
+    >
       <DatePicker showTime style={{ width: '100%' }} />
     </Form.Item>
   );

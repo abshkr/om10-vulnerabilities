@@ -1836,6 +1836,8 @@
 		"prodMoveSrcAndDst": "Source and/or destination must be a tank and specified",
 		"select": "This field is required",
 		"set": "This field is required",
-		"wrongType": "Incorrect type"
+		"wrongType": "Incorrect type",
+		"expiryDateEarlierThanEffectiveDate": "The Expiry Date Time should be later than Effective Date Time",
+		"effectiveDateLaterThanExpiryDate": "The Effective Date Time should be earlier than Expiry Date Time"
 	}
 }
