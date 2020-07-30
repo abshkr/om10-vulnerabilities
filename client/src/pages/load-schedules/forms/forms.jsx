@@ -820,6 +820,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               params={{
                 supplier: value?.supplier_code,
                 trip_no: value?.shls_trip_no,
+                carrier: value?.carrier_code,
+                tanker: value?.tnkr_code,
                 trans_type: 'SCHEDULE',
                 repost: false,
                 title: t('tabColumns.createTripTransactions'),
