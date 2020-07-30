@@ -60,14 +60,14 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
           errors.push({
             key: String(item.db_addrline_no)+':'+t('fields.addressLineType'),
             field: t('fields.addressLineType'),
-            message: `Please Fill This Field on Line Item ${item.db_addrline_no}`
+            message: `${t('descriptions.pleaseFillLineField')}${item.db_addrline_no}`
           });
         }
         if (!item.db_addr_line || item.db_addr_line === t('placeholder.enterAddressLineText')) {
           errors.push({
             key: String(item.db_addrline_no)+':'+t('fields.addressLineText'),
             field: t('fields.addressLineText'),
-            message: `Please Fill This Field on Line Item ${item.db_addrline_no}`
+            message: `${t('descriptions.pleaseFillLineField')}${item.db_addrline_no}`
           });
         }
         else {

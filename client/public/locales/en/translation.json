@@ -128,7 +128,8 @@
 		"validationFailed": "Make sure all the fields meet the requirements",
 		"valueTooHigh": "Value too high",
 		"valueTooLow": "Value too low",
-		"zeroCompartmentCount": "The compartment count cannot be zero"
+		"zeroCompartmentCount": "The compartment count cannot be zero",
+		"pleaseFillLineField": "Please Fill This Field on Line Item "
 	},
 	"divider": {
 		"baseProducts": "Base Products",
