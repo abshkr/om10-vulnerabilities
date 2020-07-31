@@ -129,7 +129,12 @@
 		"valueTooHigh": "Value too high",
 		"valueTooLow": "Value too low",
 		"zeroCompartmentCount": "The compartment count cannot be zero",
-		"pleaseFillLineField": "Please Fill This Field on Line Item "
+		"pleaseFillLineField": "Please fill this field in line item ",
+		"requiredAndCannotBeZeroLineField": "This field is required and cannot be zero in line item ",
+		"pleaseFillCmptField": "Please fill this field in compartment ",
+		"requiredAndCannotBeZeroCmptField": "This field is required and cannot be zero in compartment ",
+		"requiredCmptField": "This field is required in compartment ",
+		"CmptField": "This field cannot be zero in compartment "
 	},
 	"divider": {
 		"baseProducts": "Base Products",
@@ -1840,6 +1845,8 @@
 		"select": "This field is required",
 		"set": "This field is required",
 		"wrongType": "Incorrect type",
+		"warnings": "warning(s)",
+		"errors": "error(s)", 
 		"expiryDateEarlierThanEffectiveDate": "The Expiry Date Time should be later than Effective Date Time",
 		"effectiveDateLaterThanExpiryDate": "The Effective Date Time should be earlier than Expiry Date Time"
 	}

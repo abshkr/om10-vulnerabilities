@@ -68,7 +68,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
       ) {
         errors.push({
           field: t('fields.productQuantity'),
-          message: `${t('descriptions.pleaseFillLineField')}${values[0]}`,
+          message: `${t('descriptions.requiredAndCannotBeZeroLineField')}${values[0]}`,
           key: `${'mvitm_prod_qty'}${values[0]}`,
         });
       }
