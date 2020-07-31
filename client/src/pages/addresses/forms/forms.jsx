@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
-import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
@@ -87,13 +87,32 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     });
 
     if (errors.length > 0) {
-      _.forEach(errors, error => {
+      const lines = (
+        <>
+        {errors?.map((error, index) => (
+          <Card size="small" title={error.field}>
+            {error.message}
+          </Card>
+        ))}      
+        </>
+      );
+
+      notification.error({
+        message: t('validate.lineItemValidation'),
+        description: lines,
+        duration: 0,
+        style: {
+          height: '500px',
+          overflowY: 'scroll',
+        },
+      });
+      /* _.forEach(errors, error => {
         notification.error({
           message: error.field,
           description: error.message,
           key: error.key
         });
-      });
+      }); */
     }
 
     return errors;

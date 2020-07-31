@@ -1560,7 +1560,7 @@
 	},
 	"placeholder": {
 		"emailInvalid": "This Email is Invalid",
-		"enterAddressLineText": "Double click to enter the line text",
+		"enterAddressLineText": "Click to enter the line text",
 		"incorrectFormat": "Incorrect Format",
 		"limit": "Limit",
 		"maxCharacters": "Max Characters",
@@ -1571,7 +1571,7 @@
 		"noArmAvailable": "No Arm Available",
 		"noArmSelection": "No Arm Selection",
 		"selectAddress": "Select Address",
-		"selectAddressLineType": "Double click to select type",
+		"selectAddressLineType": "Click to select type",
 		"selectArea": "Select Area",
 		"selectAreaLocation": "Select Area Location",
 		"selectArmCode": "Select Arm Code",
@@ -1828,6 +1828,7 @@
 		"volume": "Volume"
 	},
 	"validate": {
+		"lineItemValidation": "Line Items Validation",
 		"decimalPlacesExceeded": "Decimal places exceeded",
 		"invalidInput": "Invalid input",
 		"mustBeBetween": "Must be between",
