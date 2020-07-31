@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import useSWR from 'swr';
 import moment from 'moment';
-import { Button } from 'antd';
+import { Button, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
 
@@ -16,12 +16,14 @@ import auth from '../../auth';
 import Forms from './forms';
 import api from 'api';
 import SourceRender from './source-render';
+import _ from 'lodash';
 
 const LoadSchedules = () => {
   const { scheduleDateRange } = useConfig();
   
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [isSearching, setSearching] = useState(false);
 
   const { t } = useTranslation();
 
@@ -33,7 +35,7 @@ const LoadSchedules = () => {
   const url = `${LOAD_SCHEDULES.READ}?start_date=${start}&end_date=${end}`;
 
   const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
-
+  
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
     setSelected(value);
@@ -62,6 +64,8 @@ const LoadSchedules = () => {
       return;
     }
 
+    setSearching(true);
+
     api
       .get(LOAD_SCHEDULES.SEARCH, {
         params: {
@@ -78,6 +82,16 @@ const LoadSchedules = () => {
       .then((res) => {
         // setCompartments(res.data.records);
         setData(res.data.records);
+        setSearching(false);
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
+        });
+        setSearching(false);
       });
   };
 
@@ -89,6 +103,7 @@ const LoadSchedules = () => {
   // const data = payload?.records;
   const [data, setData] = useState(payload?.records);
   const isLoading = isValidating || !data;
+  // const [isLoading, setLoading] = useState(isValidating || !data);
 
   const page = t('pageMenu.operations');
   const name = t('pageNames.loadSchedules');
@@ -96,6 +111,7 @@ const LoadSchedules = () => {
   useEffect(() => {
     if (payload?.records) {
       setData(payload?.records);
+      // setLoading(false);
       payload.records = null;
     } 
     
@@ -157,7 +173,7 @@ const LoadSchedules = () => {
       <DataTable
         data={data}
         columns={fields}
-        isLoading={isLoading}
+        isLoading={isLoading || isSearching}
         selectionMode="single"
         components={components}
         onClick={(payload) => handleFormState(true, payload)}
