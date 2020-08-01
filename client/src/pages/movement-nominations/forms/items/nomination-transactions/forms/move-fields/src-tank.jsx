@@ -88,7 +88,7 @@ const SourceTank = ({ form, value, onChange, arm, pageState }) => {
       >
         {options?.records.map((item, index) => (
           <Select.Option key={index} value={item.tank_code}>
-            {item.tank_name}
+            {item.tank_desc}
           </Select.Option>
         ))}
       </Select>
