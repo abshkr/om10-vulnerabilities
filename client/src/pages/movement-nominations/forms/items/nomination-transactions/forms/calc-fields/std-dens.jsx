@@ -5,8 +5,8 @@ import { Form, InputNumber } from 'antd';
 import _ from 'lodash';
 
 const StdDensity = ({ form, value, tank, pageState, config }) => {
-  const [minDens, setMinDens] = useState(0);
-  const [maxDens, setMaxDens] = useState(2000);
+  const [minDens, setMinDens] = useState(config.minDensity);
+  const [maxDens, setMaxDens] = useState(config.maxDensity);
 
   console.log('in StdDensity', tank);
   const { t } = useTranslation();
@@ -61,8 +61,8 @@ const StdDensity = ({ form, value, tank, pageState, config }) => {
       setFieldsValue({
         mlitm_dens_cor: null,
       });
-      setMinDens(0);
-      setMaxDens(2000);
+      setMinDens(config.minDensity);
+      setMaxDens(config.maxDensity);
     }
     // console.log('validateFields([mlitm_dens_cor]);222');
     validateFields(['mlitm_dens_cor']);

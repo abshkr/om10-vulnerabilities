@@ -14,8 +14,8 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
   const { setFieldsValue } = form;
 
   const [tempBounds, setTempBounds] = useState({
-    min: value?.tank_bclass_temp_lo || -50,
-    max: value?.tank_bclass_temp_hi || 150,
+    min: value?.tank_bclass_temp_lo || config.minTemperature,
+    max: value?.tank_bclass_temp_hi || config.maxTemperature,
     type: 'ºC',
   });
 

@@ -78,6 +78,10 @@ const useConfig = () => {
     precisionMass: 0,
     precisionAdditive: 3,
     precisionSG: 6,
+    minTemperature: -18,
+    maxTemperature: 150,
+    minDensity: 0,
+    maxDensity: 2000,
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });

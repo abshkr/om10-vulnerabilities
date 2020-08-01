@@ -16,8 +16,8 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
   const [limit, setLimit] = useState(null);
   const [tempDecimals, setTempDecimals] = useState(2);
   const [densDecimals, setDensDecimals] = useState(3);
-  const [minDens, setMinDens] = useState(0);
-  const [maxDens, setMaxDens] = useState(2000);
+  const [minDens, setMinDens] = useState(config.minDensity);
+  const [maxDens, setMaxDens] = useState(config.maxDensity);
   const [inited, setInited] = useState(false);
 
   const { setFieldsValue, validateFields, getFieldValue } = form;
