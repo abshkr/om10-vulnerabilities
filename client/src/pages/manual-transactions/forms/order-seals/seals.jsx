@@ -255,7 +255,7 @@ const OrderSeals = ({ value, onClose }) => {
         <Col span={12}>
           <Search
             placeholder={sealList?.length}
-            enterButton={sealList?.length === 0 ? t('operations.allocation') : t('operations.add')}
+            enterButton={sealList?.length === 0 ? t('operations.allocation') : t('operations.addOne')}
             onSearch={sealList?.length === 0 
               ? (value) => onAllocation(value) 
               : (value) => onAllocateOneSeal(value)

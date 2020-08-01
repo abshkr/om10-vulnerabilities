@@ -268,7 +268,7 @@ const TripSeals = ({ value, onClose }) => {
         <Col span={12}>
           <Search
             placeholder={payload?.records?.length}
-            enterButton={payload?.records?.length === 0 ? t('operations.allocation') : t('operations.add')}
+            enterButton={payload?.records?.length === 0 ? t('operations.allocation') : t('operations.addOne')}
             onSearch={(value) => onAllocation(value)}
             readOnly={!payload || payload?.records?.length > 0}
           />

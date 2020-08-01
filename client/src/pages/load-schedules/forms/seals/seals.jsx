@@ -273,7 +273,7 @@ const Seals = ({ value, sealUpated }) => {
           <Form.Item label={t('fields.numOfSeals')} >
             <Search
               placeholder={payload?.records?.length}
-              enterButton={payload?.records?.length === 0 ? t('operations.allocation') : t('operations.add')}
+              enterButton={payload?.records?.length === 0 ? t('operations.allocation') : t('operations.addOne')}
               disabled={value?.status !== 'A' && value?.status !== 'F'}
               onSearch={(value) => onAllocation(value)}
               readOnly={!payload || payload?.records?.length > 0}
