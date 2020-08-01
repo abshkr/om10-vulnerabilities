@@ -434,7 +434,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   }
 
   const onTabChange = (v) => {
-    if (v === '3') {
+    if (v === '3' || v === '4') {
       if (value?.status === 'A') {
         Modal.confirm({
           title: t('prompts.completeTrip'),

@@ -1690,7 +1690,7 @@
 		"cancel": "Are you sure you want to cancel?",
 		"closeCloseout": "Are you sure you want to close first frozen folio?",
 		"closeTransaction": "Are you sure you want to close this transaction?",
-		"completeTrip": "View BOL will complete this trip, do you want to continue?",
+		"completeTrip": "View BOL or load report will complete this trip, do you want to continue?",
 		"confirmArchive": "Confirm schedule is to be archived?",
 		"confirmReverse": "Confirm schedule reversal?",
 		"create": "Are you sure you want to create this record?",
