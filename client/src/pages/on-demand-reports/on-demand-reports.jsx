@@ -30,12 +30,6 @@ const OnDemandReports = () => {
 
   const { data: suppliers, isValidating: suppliersLoading } = useSWR(ON_DEMAND_REPORTS.SUPPLIERS);
 
-  // const { data: payload, isValidating: reportsLoading } = useSWR(
-  //   `${ON_DEMAND_REPORTS.REPORTS}?cmpy_code=${supplier}`
-  // );
-
-  // setReports(payload?.records);
-
   const { data: closeouts, isValidating: closeOutsLoading } = useSWR(
     `${ON_DEMAND_REPORTS.CLOSE_OUTS}?start_date=${start}&end_date=${end}`
   );
@@ -111,10 +105,12 @@ const OnDemandReports = () => {
     form.setFieldsValue({
       close_out_from: list[list.length - 1]?.closeout_nr,
       close_out_to: list[0]?.closeout_nr,
-
-      start_date: list[list.length - 1]?.start_date,
-      end_date: list[0]?.end_date,
     });
+
+    if (!usefolioRange) {
+      setStart(list[list.length - 1]?.start_date);
+      setEnd(list[0]?.end_date);
+    }
   };
 
   const isLoading = suppliersLoading || closeOutsLoading || loading;
@@ -183,6 +179,7 @@ const OnDemandReports = () => {
         <Form.Item
           name="dateRange"
           label={t('fields.dateRange')}
+          // rules={!usefolioRange && [{ required: true }]}
         > 
           <Calendar handleChange={onRangeSelect} start={start} end={end} />
         </Form.Item>
@@ -199,25 +196,27 @@ const OnDemandReports = () => {
           />
         </Form.Item>
 
-        <Form.Item noStyle>
-          <Form.Item 
-            name="close_out_from" 
-            label={t('fields.fromCloseOutId')}
-            style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}
-            rules={usefolioRange && [{ required: true, message: `${t('validate.select')} ─ ${t('fields.fromCloseOutId')}` }]}
-          >
-            <InputNumber min={0} placeholder={t('fields.fromCloseOutId')} style={{ width: '100%' }} />
-          </Form.Item>
+        {usefolioRange && 
+          <Form.Item noStyle>
+            <Form.Item 
+              name="close_out_from" 
+              label={t('fields.fromCloseOutId')}
+              style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}
+              rules={usefolioRange && [{ required: true, message: `${t('validate.select')} ─ ${t('fields.fromCloseOutId')}` }]}
+            >
+              <InputNumber min={0} placeholder={t('fields.fromCloseOutId')} style={{ width: '100%' }} />
+            </Form.Item>
 
-          <Form.Item
-            name="close_out_to"
-            label={t('fields.toCloseOutId')}
-            style={{ display: 'inline-block', width: 'calc(50% - 8px)', margin: '0 8px' }}
-            rules={usefolioRange && [{ required: true, message: `${t('validate.select')} ─ ${t('fields.toCloseOutId')}` }]}
-          >
-            <InputNumber min={0} placeholder={t('fields.toCloseOutId')} style={{ width: '100%' }} />
+            <Form.Item
+              name="close_out_to"
+              label={t('fields.toCloseOutId')}
+              style={{ display: 'inline-block', width: 'calc(50% - 8px)', margin: '0 8px' }}
+              rules={usefolioRange && [{ required: true, message: `${t('validate.select')} ─ ${t('fields.toCloseOutId')}` }]}
+            >
+              <InputNumber min={0} placeholder={t('fields.toCloseOutId')} style={{ width: '100%' }} />
+            </Form.Item>
           </Form.Item>
-        </Form.Item>
+        }
 
         <Form.Item
           name="output"
