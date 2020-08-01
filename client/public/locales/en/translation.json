@@ -1721,7 +1721,8 @@
 		"update": "Are you sure you want to update this record?",
 		"upload": "Are you sure you want to upload this data?",
 		"killSessions": "You have exceeded your session limit, do you want previous sessions cleared?",
-		"zeroEquipmentSelected": "You have not selected equipment for some tankers. If you do not want to choose an existing one, OMEGA will create a new one for you automatically. Continue?"
+		"zeroEquipmentSelected": "You have not selected equipment for some tankers. If you do not want to choose an existing one, OMEGA will create a new one for you automatically. Continue?",
+		"saveBeforeSeal": "Unsaved data will lose, are you sure you want to continue?"
 	},
 	"tabColumns": {
 		"adaptiveFlow": "Adaptive Flow Control",

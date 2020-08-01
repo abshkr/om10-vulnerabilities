@@ -364,7 +364,7 @@ https://10.1.10.66/api/pages/schedule/delete_seal.php?seal_nr=420114-420264   //
 https://10.1.10.66/api/pages/schedule/reallocate.php?supplier=7640114&trip_no=246829219&seal_nr=420114-420262&cmpt_nr=1    //Reallcate selected 
 https://10.1.10.66/api/pages/schedule/deallocate_all.php?supplier=7640114&trip_no=246829219  //Deallocate all 
 https://10.1.10.66/api/pages/schedule/set_prefix.php?seal_nr=335&prefix=NEWPRE
-https://10.1.10.66/api/pages/schedule/set_suffix.php?seal_nr=335&prefix=NEWSUF
+https://10.1.10.66/api/pages/schedule/set_suffix.php?seal_nr=335&suffix=NEWSUF
 
 //Delivery details related 
 https://10.1.10.66/api/pages/delivery_detail/read.php?dd_supp_code=7640113&dd_tripord_no=900000004&dd_ld_type=2
