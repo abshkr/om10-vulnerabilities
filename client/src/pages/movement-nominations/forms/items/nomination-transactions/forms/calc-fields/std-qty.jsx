@@ -38,7 +38,7 @@ const StdQty = ({ form, value, onChange, pageState, config }) => {
   return (
     <Form.Item
       name="mlitm_qty_cor"
-      label={t('fields.nomtranStdQty') + '(' + t('fields.nomtranStdQtyUnit') + ')'}
+      label={t('fields.nomtranStdQty') + '(' + t('units.ltr') + ')'}
       rules={[{ required: false, validator: validate }]}
     >
       <InputNumber
