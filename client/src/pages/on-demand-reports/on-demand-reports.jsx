@@ -22,15 +22,19 @@ const OnDemandReports = () => {
 
   const [loading, setLoading] = useState(false);
   const [supplier, setSupplier] = useState(null);
+  const [reports, setReports] = useState(null);
+  const [usefolioRange, setUseFolio] = useState(false);
 
   const [start, setStart] = useState(moment().subtract(15, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
 
   const { data: suppliers, isValidating: suppliersLoading } = useSWR(ON_DEMAND_REPORTS.SUPPLIERS);
 
-  const { data: reports, isValidating: reportsLoading } = useSWR(
-    `${ON_DEMAND_REPORTS.REPORTS}?cmpy_code=${supplier}`
-  );
+  // const { data: payload, isValidating: reportsLoading } = useSWR(
+  //   `${ON_DEMAND_REPORTS.REPORTS}?cmpy_code=${supplier}`
+  // );
+
+  // setReports(payload?.records);
 
   const { data: closeouts, isValidating: closeOutsLoading } = useSWR(
     `${ON_DEMAND_REPORTS.CLOSE_OUTS}?start_date=${start}&end_date=${end}`
@@ -38,15 +42,40 @@ const OnDemandReports = () => {
 
   const onSupplier = (value) => {
     setSupplier(value);
+    api.get(ON_DEMAND_REPORTS.REPORTS, {
+      params: {
+        cmpy_code: value,
+      },
+    })
+    .then((res) => {
+      setReports(res.data.records);
+    });
   };
 
-  const onFinish = (values) => {
-    const payload = {
-      ...values,
-      start_date: start,
-      end_date: end,
-    };
+  const onReport = (value) => {
+    const find = _.find(reports, (item) => {
+      return item.rpt_file === value;
+    });
 
+    setUseFolio(find?.folio_number_parameters);
+  }
+
+  const onFinish = (values) => {
+    let payload = null;
+    if (usefolioRange) {
+      payload = {
+        ...values,
+        start_date: values.close_out_from,
+        end_date: values.close_out_to,
+      };
+    } else {
+      payload = {
+        ...values,
+        start_date: start,
+        end_date: end,
+      };
+    }
+    
     setLoading(true);
 
     api
@@ -88,10 +117,8 @@ const OnDemandReports = () => {
     });
   };
 
-  const isLoading = suppliersLoading || reportsLoading || closeOutsLoading || loading;
+  const isLoading = suppliersLoading || closeOutsLoading || loading;
   const fields = columns(t);
-
-  const extra = <Calendar handleChange={onRangeSelect} start={start} end={end} />;
 
   return (
     <Page page={t('pageMenu.reports')} name={t('pageNames.onDemandReports')} access={access}>
@@ -136,6 +163,7 @@ const OnDemandReports = () => {
             dropdownMatchSelectWidth={false}
             loading={isLoading}
             showSearch
+            onChange={onReport}
             disabled={!supplier}
             style={{ width: '100%', marginBottom: 10, marginTop: 10 }}
             optionFilterProp="children"
@@ -144,7 +172,7 @@ const OnDemandReports = () => {
               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
             }
           >
-            {reports?.records.map((item, index) => (
+            {reports?.map((item, index) => (
               <Select.Option key={index} value={item.rpt_file}>
                 {item.ondemand_title}
               </Select.Option>
@@ -152,25 +180,40 @@ const OnDemandReports = () => {
           </Select>
         </Form.Item>
 
+        <Form.Item
+          name="dateRange"
+          label={t('fields.dateRange')}
+        > 
+          <Calendar handleChange={onRangeSelect} start={start} end={end} />
+        </Form.Item>
+
         <Form.Item label={t('fields.closeOutDetails')}>
           <DataTable
             columns={fields}
             data={closeouts?.records}
             isLoading={false}
-            height="80vh"
-            extra={extra}
+            height="70vh"
+            minimal
+            // extra={extra}
             handleSelect={onCloseOutSelect}
           />
         </Form.Item>
 
-        <Form.Item label={t('fields.closeOutRange')} style={{ width: '100%' }}>
-          <Form.Item name="close_out_from" style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}>
+        <Form.Item noStyle>
+          <Form.Item 
+            name="close_out_from" 
+            label={t('fields.fromCloseOutId')}
+            style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}
+            rules={usefolioRange && [{ required: true, message: `${t('validate.select')} ─ ${t('fields.fromCloseOutId')}` }]}
+          >
             <InputNumber min={0} placeholder={t('fields.fromCloseOutId')} style={{ width: '100%' }} />
           </Form.Item>
 
           <Form.Item
             name="close_out_to"
+            label={t('fields.toCloseOutId')}
             style={{ display: 'inline-block', width: 'calc(50% - 8px)', margin: '0 8px' }}
+            rules={usefolioRange && [{ required: true, message: `${t('validate.select')} ─ ${t('fields.toCloseOutId')}` }]}
           >
             <InputNumber min={0} placeholder={t('fields.toCloseOutId')} style={{ width: '100%' }} />
           </Form.Item>
@@ -183,9 +226,9 @@ const OnDemandReports = () => {
         >
           <Radio.Group buttonStyle="solid" style={{ marginTop: 10, marginBottom: 10 }}>
             <Radio.Button value="csv">CSV</Radio.Button>
-            <Radio.Button value="excel">Excel</Radio.Button>
+            <Radio.Button value="xlsx">Excel</Radio.Button>
             <Radio.Button value="pdf">PDF</Radio.Button>
-            <Radio.Button value="word">Word</Radio.Button>
+            <Radio.Button value="docx">Word</Radio.Button>
             <Radio.Button value="html">HTML</Radio.Button>
           </Radio.Group>
         </Form.Item>

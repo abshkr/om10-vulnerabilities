@@ -134,7 +134,8 @@
 		"pleaseFillCmptField": "Please fill this field in compartment ",
 		"requiredAndCannotBeZeroCmptField": "This field is required and cannot be zero in compartment ",
 		"requiredCmptField": "This field is required in compartment ",
-		"CmptField": "This field cannot be zero in compartment "
+		"CmptField": "This field cannot be zero in compartment ",
+		"reportFolioRange": "Please enter folio range"
 	},
 	"divider": {
 		"baseProducts": "Base Products",
@@ -1235,7 +1236,8 @@
 		"weightInAir": "Weight In Air",
 		"weightInVacuum": "Weight In Vacuum",
 		"weightTolerance": "Tolerance % of the total load vehicle weight (0-20)",
-		"window": "Window"
+		"window": "Window",
+		"dateRange": "Date Range"
 	},
 	"generic": {
 		"about": "About (EULA)",
