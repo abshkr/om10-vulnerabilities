@@ -67,7 +67,7 @@ const columns = (t, form, products, soldTo, shipTo, units) => [
 
   {
     headerName: t('fields.orderNumber'),
-    field: 'shls_srctype',
+    field: 'order_cust_ordno',
     resizable: true,
     width: 90,
     suppressSizeToFit: true,
