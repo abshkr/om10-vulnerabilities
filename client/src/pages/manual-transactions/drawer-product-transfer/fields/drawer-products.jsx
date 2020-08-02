@@ -25,7 +25,7 @@ export default class DrawerProducts extends Component {
   };
 
   onClick = (value, record) => {
-    const { form, arms, payload, setPayload, t } = this.props;
+    const { form, arms, sourceType, loadType, payload, setPayload, t } = this.props;
 
     // let current = payload;
     let current = form.getFieldValue('transfers');
@@ -43,8 +43,10 @@ export default class DrawerProducts extends Component {
     current[index].trsf_prod_cmpy = record?.item?.prod_cmpy;
     // current[index].trsf_arm_cd = items?.length>0 ? t('placeholder.selectArmCode') : t('placeholder.noArmAvailable');
     current[index].trsf_arm_cd = items?.length>0 ? items?.[0]?.stream_armcode : t('placeholder.noArmAvailable');
-    // current[index].trsf_qty_plan = null;
-    // current[index].trsf_qty_left = null;
+    if (sourceType === 'OPENORDER' || (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT')) {
+      current[index].trsf_qty_plan = record?.item?.qty_planned;
+      current[index].trsf_qty_left = record?.item?.qty_loaded;
+    }
     current[index].trsf_density = items?.length>0 ? this.calcDensity(items?.[0]?.stream_index, prodArms) : null;
     current[index].trsf_temp = null;
     current[index].trsf_qty_cor = null;

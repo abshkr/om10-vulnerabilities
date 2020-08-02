@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import buildMeterTransfers from './meter-transfer-builder';
+import {buildMeterTransfers} from './meter-transfer-builder';
 
 const buildMeterTotals = (prodArms, transfers) => {
   const items = buildMeterTransfers(prodArms, transfers);

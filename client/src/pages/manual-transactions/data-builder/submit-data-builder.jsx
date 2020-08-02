@@ -27,6 +27,10 @@ const buildPayloadToSubmit = (values, sourceType, orderSeals, t) => {
         continue;
       }
 
+      if ((!titem.trsf_qty_amb && titem.trsf_qty_amb!==0) || !titem.trsf_density || !titem.trsf_qty_amb || !titem.trsf_qty_cor || !titem.trsf_load_kg) {
+        // continue;
+      }
+
       const transfer = {};
       transfer.nr_in_tkr = titem.trsf_cmpt_no;
       transfer.arm_code = titem.trsf_arm_cd;

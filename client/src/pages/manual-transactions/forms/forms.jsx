@@ -8,6 +8,7 @@ import api, { MANUAL_TRANSACTIONS } from '../../../api';
 import { getDateTimeFormat } from '../../../utils';
 import TripSealManager from './trip-seals';
 import OrderSealManager from './order-seals';
+import { useState } from 'react';
 
 const { Option } = Select;
 
@@ -40,12 +41,6 @@ const Forms = ({
   params,
   popup,
   setOrderSeals,
-  dataBoard,
-  setDataBoard,
-  dataLoadFlag,
-  setDataLoadFlag,
-  dataLoaded,
-  setDataLoaded,
   setProductArms,
   resetFormGrids,
 }) => {
@@ -53,11 +48,39 @@ const Forms = ({
 
   const { t } = useTranslation();
 
-  const { data: suppliers, isValidating: suppliersLoading } = useSWR(
-    sourceType === 'SCHEDULE' ? MANUAL_TRANSACTIONS.SCHEDULE_SUPPLIERS : MANUAL_TRANSACTIONS.ORDER_SUPPLIERS
-  );
+  const [suppliers, setSuppliers] = useState(null);
+  const [suppliersLoading, setSuppliersLoading] = useState(false);
+  const [customersLoading, setCustomersLoading] = useState(false);
+  const [tripsLoading, setTripsLoading] = useState(false);
+  const [ordersLoading, setOrdersLoading] = useState(false);
+  const [tankersLoading, setTankersLoading] = useState(false);
+  const [selectedDriver, setSelectedDriver] = useState(null);
+
+  /* const { data: suppliers, isValidating: suppliersLoading } = useSWR(
+    // sourceType === 'SCHEDULE' ? MANUAL_TRANSACTIONS.SCHEDULE_SUPPLIERS : MANUAL_TRANSACTIONS.ORDER_SUPPLIERS
+    sourceType === 'SCHEDULE' 
+      ? MANUAL_TRANSACTIONS.SCHEDULE_SUPPLIERS 
+      : (sourceType === 'OPENORDER' ? MANUAL_TRANSACTIONS.ORDER_SUPPLIERS : null)
+  ); */
   const { data: drivers, isValidating: driversLoading } = useSWR(MANUAL_TRANSACTIONS.DRIVERS);
   const { data: carriers, isValidating: carriersLoading } = useSWR(MANUAL_TRANSACTIONS.CARRIERS);
+
+  const getSuppliersByType = async (type) => {
+    let url = null;
+    if (type === 'SCHEDULE') {
+      url = MANUAL_TRANSACTIONS.SCHEDULE_SUPPLIERS;
+    }
+    if (type === 'OPENORDER') {
+      url = MANUAL_TRANSACTIONS.ORDER_SUPPLIERS;
+    }
+    if (url) {
+      const results = await api.get(url);
+      return results?.data;
+    } else {
+      return [];
+    }
+
+  };
 
   const getTripsBySupplier = async (supplier) => {
     const results = await api.get(`${MANUAL_TRANSACTIONS.TRIPS}?supplier=${supplier}`);
@@ -77,41 +100,41 @@ const Forms = ({
     return results?.data;
   };
 
-  const getOrdersByCustomer = async (customer) => {
+  const getOrdersByCustomer = async (supplier, customer) => {
     const results = await api.get(
-      `${MANUAL_TRANSACTIONS.ORDERS}?supplier=${selectedSupplier}&customer=${customer}`
+      `${MANUAL_TRANSACTIONS.ORDERS}?supplier=${supplier}&customer=${customer}`
     );
 
     return results?.data;
   };
 
-  const getTripTypeByTrip = async (trip) => {
+  const getTripTypeByTrip = async (supplier, trip) => {
     const results = await api.get(
-      `${MANUAL_TRANSACTIONS.TRIP_TYPE}?supplier=${selectedSupplier}&trip_no=${trip}`
+      `${MANUAL_TRANSACTIONS.TRIP_TYPE}?supplier=${supplier}&trip_no=${trip}`
     );
 
     return results?.data;
   };
 
-  const getTripSealByTrip = async (trip) => {
+  const getTripSealByTrip = async (supplier, trip) => {
     const results = await api.get(
-      `${MANUAL_TRANSACTIONS.GET_TRIP_SEAL}?supplier=${selectedSupplier}&trip_no=${trip}`
+      `${MANUAL_TRANSACTIONS.GET_TRIP_SEAL}?supplier=${supplier}&trip_no=${trip}`
     );
 
     return results?.data;
   };
 
-  const getTripBasicsByTrip = async (trip) => {
+  const getTripBasicsByTrip = async (supplier, trip) => {
     const results = await api.get(
-      `${MANUAL_TRANSACTIONS.TRIP_BASICS}?supplier=${selectedSupplier}&trip_no=${trip}`
+      `${MANUAL_TRANSACTIONS.TRIP_BASICS}?supplier=${supplier}&trip_no=${trip}`
     );
 
     return results?.data;
   };
 
-  const getOrderBasicsByOrder = async (order) => {
+  const getOrderBasicsByOrder = async (supplier, order) => {
     const results = await api.get(
-      `${MANUAL_TRANSACTIONS.ORDER_BASICS}?supplier=${selectedSupplier}&order_cust_no=${order}`
+      `${MANUAL_TRANSACTIONS.ORDER_BASICS}?supplier=${supplier}&order_cust_no=${order}`
     );
 
     return results?.data;
@@ -131,15 +154,17 @@ const Forms = ({
       mt_delv_num: '',
     });
 
-    const results = await getTripBasicsByTrip(trip);
+    const results = await getTripBasicsByTrip(selectedSupplier, trip);
 
     const value = results?.records?.[0];
 
+    setTankersLoading(true);
     const tankerResults = await getTankersByCarrier(value?.carrier);
+    setTankersLoading(false);
 
-    const typeResults = await getTripTypeByTrip(trip);
+    const typeResults = await getTripTypeByTrip(selectedSupplier, trip);
 
-    const sealResults = await getTripSealByTrip(trip);
+    const sealResults = await getTripSealByTrip(selectedSupplier, trip);
 
     setLoadType(typeResults?.records?.[0]?.schd_type);
     setLoadNumber(trip);
@@ -171,11 +196,13 @@ const Forms = ({
       mt_delv_num: '',
     });
 
-    const results = await getOrderBasicsByOrder(order);
+    const results = await getOrderBasicsByOrder(selectedSupplier, order);
 
     const value = results?.records?.[0];
 
+    setTankersLoading(true);
     const tankerResults = await getTankersByCarrier(value?.order_carrier);
+    setTankersLoading(false);
 
     setLoadType('BY_PRODUCT');
     setLoadNumber(order);
@@ -214,13 +241,17 @@ const Forms = ({
     console.log('handleSupplierSelect', sourceType);
 
     if (sourceType === 'SCHEDULE') {
+      setTripsLoading(true);
       const trips = await getTripsBySupplier(supplier);
       setTrips(trips);
+      setTripsLoading(false);
     } else {
       setTrips(null);
     }
 
+    setCustomersLoading(true);
     const customers = await getCustomersBySupplier(supplier);
+    setCustomersLoading(false);
 
     setCustomers(customers);
     setSelectedSupplier(supplier);
@@ -245,7 +276,9 @@ const Forms = ({
       mt_delv_num: '',
     });
 
-    const orders = await getOrdersByCustomer(customer);
+    setOrdersLoading(true);
+    const orders = await getOrdersByCustomer(selectedSupplier, customer);
+    setOrdersLoading(false);
 
     setOrders(orders);
     setSelectedCustomer(customer);
@@ -266,17 +299,23 @@ const Forms = ({
     }); */
 
     // get tanker list of the carrier
+    setTankersLoading(true);
     const tankers = await getTankersByCarrier(carrier);
     setSelectedTanker(null);
     setTankers(tankers);
+    setTankersLoading(false);
   };
 
-  const handleDriverSelect = (tanker) => {
-    // get tanker equipment and compartments
-    console.log('Forms: Testing Types', sourceType, loadType, loadNumber);
+  const handleDriverSelect = (driver) => {
+    setSelectedDriver(driver);
   };
 
-  const handleTypeSelect = (type) => {
+  const handleTypeSelect = async (type) => {
+    setSuppliersLoading(true);
+    const suppliers = await getSuppliersByType(type);
+    setSuppliers(suppliers);
+    setSuppliersLoading(false);
+    
     setSourceType(type);
 
     setFieldsValue({
@@ -312,7 +351,7 @@ const Forms = ({
   };
 
   const loadTripSeal = async () => {
-    const sealResults = await getTripSealByTrip(selectedTrip);
+    const sealResults = await getTripSealByTrip(selectedSupplier, selectedTrip);
 
     setFieldsValue({
       seal_range: sealResults?.records?.[0]?.shls_seal_no,
@@ -353,52 +392,174 @@ const Forms = ({
     );
   };
 
+  const getFormLists = async (params) => {
+    handleTypeSelect(params?.trans_type);
+    
+    if (params?.trans_type === 'SCHEDULE') {
+      setTripsLoading(true);
+      const trips = await getTripsBySupplier(params?.supplier);
+      setTrips(trips);
+      setTripsLoading(false);
+    } else {
+      setTrips(null);
+    }
+
+    if (params?.trans_type === 'OPENORDER') {
+      setCustomersLoading(true);
+      const customers = await getCustomersBySupplier(params?.supplier);
+      setCustomers(customers);
+      setCustomersLoading(false);
+    } else {
+      setCustomers(null);
+    }
+
+    if (params?.trans_type === 'OPENORDER') {
+      setOrdersLoading(true);
+      const orders = await getOrdersByCustomer(params?.supplier, params?.customer);
+      setOrders(orders);
+      setOrdersLoading(false);
+    } else {
+      setOrders(null);
+    }
+    
+    setTankersLoading(true);
+    const tankers = await getTankersByCarrier(params?.carrier);
+    setTankers(tankers);
+    setTankersLoading(false);
+    setProductArms(undefined);
+
+    // setSourceType(params?.trans_type);
+    setSelectedSupplier(params?.supplier);
+
+    if (params?.trans_type === 'SCHEDULE') {
+      const results = await getTripBasicsByTrip(params?.supplier, params?.trip_no);
+      const value = results?.records?.[0];
+
+      const typeResults = await getTripTypeByTrip(params?.supplier, params?.trip_no);
+      const sealResults = await getTripSealByTrip(params?.supplier, params?.trip_no);
+
+      setLoadType(typeResults?.records?.[0]?.schd_type);
+      setLoadNumber(params?.trip_no);
+      setSelectedTrip(params?.trip_no);
+      setSelectedTanker(params?.tanker ? params?.tanker : value?.tnkr_code);
+      setSelectedDriver(params?.driver ? params?.driver : value?.driver);
+
+      setFieldsValue({
+        source_type: params?.trans_type,
+        supplier: params?.supplier,
+        trip_no: params?.trip_no,
+        tanker: params?.tanker ? params?.tanker : value?.tnkr_code,
+        carrier: params?.carrier ? params?.carrier : value?.carrier,
+        driver: params?.driver ? params?.driver : (!value?.driver ? drivers?.records?.[0]?.per_code : value?.driver),
+        seal_range: params?.seal_range ? params?.seal_range : sealResults?.records?.[0]?.shls_seal_no,
+      });
+    }
+
+    if (params?.trans_type === 'OPENORDER') {
+      const results = await getOrderBasicsByOrder(params?.supplier, params?.order_cust_no);
+      const value = results?.records?.[0];
+
+      setLoadType('BY_PRODUCT');
+      setLoadNumber(params?.order_cust_no);
+      setSelectedCustomer(params?.customer);
+      setSelectedOrder(params?.order_cust_no);
+      setSelectedTanker(params?.tanker ? params?.tanker : null);
+      setSelectedDriver(params?.driver);
+
+      setFieldsValue({
+        source_type: params?.trans_type,
+        supplier: params?.supplier,
+        customer: params?.customer,
+        order_no: params?.order_cust_no,
+        tanker: params?.tanker ? params?.tanker : null,
+        carrier: params?.carrier ? params?.carrier : value?.order_carrier,
+        driver: params?.driver ? params?.driver : drivers?.records?.[0]?.per_code,
+        mt_cust_code: params?.mt_cust_code ? params?.mt_cust_code : value?.customer_code,
+        mt_delv_loc: params?.mt_delv_loc ? params?.mt_delv_loc : value?.delivery_location,
+      });
+    }
+
+  };
+
+  // get all the list in one place
   useEffect(() => {
-    if (params && popup && !sourceType) {
+    if (params && 
+      !sourceType &&
+      !loadType &&
+      !selectedSupplier &&
+      !selectedCustomer &&
+      !selectedTrip &&
+      !selectedOrder &&
+      !selectedTanker
+    ) {
+      getFormLists(params);
+    }
+  }, [params, sourceType, loadType, selectedSupplier, selectedCustomer, selectedTrip, selectedOrder, selectedTanker]);
+
+  // get all the list in one place
+  useEffect(() => {
+    console.log('---------------------drivers are ready!')
+    if (selectedTrip || selectedOrder) {
+      if (!selectedDriver) {
+        setFieldsValue({
+          driver: drivers?.records?.[0]?.per_code,
+        });
+        setSelectedDriver(drivers?.records?.[0]?.per_code);
+      } else {
+        setFieldsValue({
+          driver: selectedDriver,
+        });
+      }
+    }
+  }, [drivers, selectedDriver, selectedTrip, selectedOrder, setSelectedDriver]);
+
+
+  /* useEffect(() => {
+    if (params && !sourceType) {
       form.setFieldsValue({
         source_type: params?.trans_type,
       });
       handleTypeSelect(params?.trans_type);
     }
-  }, [popup, params, sourceType]);
+  }, [params, sourceType]);
 
   useEffect(() => {
-    // if (params && popup && (sourceType === 'SCHEDULE' || sourceType === 'OPENORDER') && !selectedSupplier) {
-    if (params && popup && !selectedSupplier) {
+    // if (params && (sourceType === 'SCHEDULE' || sourceType === 'OPENORDER') && !selectedSupplier) {
+    if (params && !selectedSupplier) {
       form.setFieldsValue({
         supplier: params?.supplier,
       });
       handleSupplierSelect(params?.supplier);
     }
-  }, [popup, params, selectedSupplier]);
-  // }, [popup, params, sourceType, selectedSupplier]);
+  }, [params, selectedSupplier]);
+  // }, [params, sourceType, selectedSupplier]);
 
   useEffect(() => {
-    if (params && popup && sourceType === 'OPENORDER' && selectedSupplier && !selectedCustomer) {
+    if (params && sourceType === 'OPENORDER' && selectedSupplier && !selectedCustomer) {
       form.setFieldsValue({
         customer: params?.customer,
       });
       handleCustomerSelect(params?.customer);
     }
-  }, [popup, params, sourceType, selectedSupplier, selectedCustomer]);
+  }, [params, sourceType, selectedSupplier, selectedCustomer]);
 
   useEffect(() => {
-    if (params && popup && sourceType === 'OPENORDER' && selectedSupplier && !selectedOrder) {
+    if (params && sourceType === 'OPENORDER' && selectedSupplier && !selectedOrder) {
       form.setFieldsValue({
         order_no: params?.order_cust_no,
       });
       handleOrderSelect(params?.order_cust_no);
     }
-  }, [popup, params, sourceType, selectedSupplier, selectedOrder]);
+  }, [params, sourceType, selectedSupplier, selectedOrder]);
 
   useEffect(() => {
-    if (params && popup && sourceType === 'SCHEDULE' && selectedSupplier && !selectedTrip) {
+    if (params && sourceType === 'SCHEDULE' && selectedSupplier && !selectedTrip) {
       form.setFieldsValue({
         trip_no: params?.trip_no,
       });
       handleTripSelect(params?.trip_no);
     }
-  }, [popup, params, sourceType, selectedSupplier, selectedTrip]);
+  }, [params, sourceType, selectedSupplier, selectedTrip]); */
 
   useEffect(() => {
     setFieldsValue({
@@ -408,97 +569,6 @@ const Forms = ({
   }, [setFieldsValue]);
 
   const format = getDateTimeFormat();
-
-  useEffect(() => {
-    if (dataLoadFlag === 1 && dataLoaded && !sourceType) {
-      form.setFieldsValue({
-        source_type: dataLoaded?.source_type,
-      });
-      handleTypeSelect(dataLoaded?.source_type);
-      console.log('MT 1 - Forms: data loading - sourceType selected!', dataLoadFlag);
-    }
-  }, [dataLoadFlag, dataLoaded, sourceType]);
-
-  useEffect(() => {
-    if (dataLoadFlag === 1 && dataLoaded && sourceType && !selectedSupplier) {
-      form.setFieldsValue({
-        supplier: dataLoaded?.supplier,
-      });
-      handleSupplierSelect(dataLoaded?.supplier);
-      console.log('MT 1 - Forms: data loading - supplier selected!', dataLoadFlag);
-    }
-  }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier]);
-
-  useEffect(() => {
-    if (dataLoadFlag === 1 && dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && !selectedCustomer) {
-      form.setFieldsValue({
-        customer: dataLoaded?.customer,
-      });
-      handleCustomerSelect(dataLoaded?.customer);
-      console.log('MT 1 - Forms: data loading - customer selected for order!', dataLoadFlag);
-    }
-  }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedCustomer]);
-
-  useEffect(() => {
-    if (dataLoadFlag === 1 && dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && !selectedOrder) {
-      form.setFieldsValue({
-        order_no: dataLoaded?.order_no,
-      });
-      handleOrderSelect(dataLoaded?.order_no);
-
-      setFieldsValue({
-        carrier: dataLoaded?.carrier,
-        driver: dataLoaded?.driver,
-        seal_range: dataLoaded?.seal_range,
-        mt_cust_code: dataLoaded?.customer_code,
-        mt_delv_loc: dataLoaded?.delivery_location,
-      });
-      console.log('MT 1 - Forms: data loading - order selected! plus carrier, driver, seal_range, mt...', dataLoadFlag);
-    }
-  }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedOrder]);
-
-  useEffect(() => {
-    if (dataLoadFlag === 1 && dataLoaded && sourceType === 'SCHEDULE' && selectedSupplier && !selectedTrip) {
-      form.setFieldsValue({
-        trip_no: dataLoaded?.trip_no,
-      });
-      handleTripSelect(dataLoaded?.trip_no);
-
-      setFieldsValue({
-        carrier: dataLoaded?.carrier,
-        driver: dataLoaded?.driver,
-        seal_range: dataLoaded?.seal_range,
-      });
-      console.log('MT 1 - Forms: data loading - trip selected! plus carrier, driver, seal_range', dataLoadFlag);
-    }
-  }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedTrip]);
-
-  useEffect(() => {
-    if (dataLoadFlag === 1 && dataLoaded && sourceType === 'SCHEDULE' && selectedSupplier && selectedTrip && !selectedTanker) {
-      form.setFieldsValue({
-        tanker: dataLoaded?.tanker,
-      });
-      setSelectedTanker(dataLoaded?.tanker);
-      console.log('MT 1 - Forms: data loading - tanker selected for trip!', dataLoadFlag);
-    }
-  }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedTrip, selectedTanker]);
-
-  useEffect(() => {
-    if (dataLoadFlag === 1 && dataLoaded && sourceType === 'OPENORDER' && selectedSupplier && selectedOrder && !selectedTanker) {
-      form.setFieldsValue({
-        tanker: dataLoaded?.tanker,
-      });
-      setSelectedTanker(dataLoaded?.tanker);
-      console.log('MT 1 - Forms: data loading - tanker selected for order!', dataLoadFlag);
-    }
-  }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedOrder, selectedTanker]);
-
-  useEffect(() => {
-    if (dataLoadFlag === 1 && dataLoaded && sourceType && selectedSupplier && selectedTanker) {
-      setDataLoadFlag(2);
-      console.log('MT 1 - Forms: data loading - fields are set!', dataLoadFlag);
-    }
-  }, [dataLoadFlag, dataLoaded, sourceType, selectedSupplier, selectedTanker]);
 
   return (
     <>
@@ -520,6 +590,7 @@ const Forms = ({
         <Col span={8}>
           <Form.Item name="carrier" label={t('fields.mtDataCarrier')} rules={[{ required: true }]}>
             <Select
+              dropdownMatchSelectWidth={false}
               allowClear
               showSearch
               disabled={sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT'}
@@ -579,6 +650,7 @@ const Forms = ({
               allowClear
               showSearch
               disabled={sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT'}
+              loading={tankersLoading}
               onChange={handleTankerSelect}
               optionFilterProp="children"
               placeholder={t('placeholder.selectTanker')}
@@ -605,15 +677,16 @@ const Forms = ({
       <Row gutter={24}>
         <Col span={8}>
           <Form.Item
-            dropdownMatchSelectWidth={false}
             name="customer"
             label={t('fields.customer')}
             rules={[{ required: sourceType === 'OPENORDER' }]}
           >
             <Select
+              dropdownMatchSelectWidth={false}
               allowClear
               showSearch
               disabled={sourceType !== 'OPENORDER' || !selectedSupplier || popup}
+              loading={customersLoading}
               optionFilterProp="children"
               placeholder={t('placeholder.selectCustomer')}
               onChange={handleCustomerSelect}
@@ -670,6 +743,7 @@ const Forms = ({
           >
             <Select
               dropdownMatchSelectWidth={false}
+              loading={tripsLoading}
               allowClear
               showSearch
               optionFilterProp="children"
@@ -723,7 +797,7 @@ const Forms = ({
           >
             <Select
               dropdownMatchSelectWidth={false}
-              //loading={driversLoading}
+              loading={ordersLoading}
               allowClear
               showSearch
               disabled={!orders || sourceType !== 'OPENORDER' || popup}
