@@ -32,6 +32,26 @@ class FolioSetting extends CommonClass
         }
     }
 
+    public function read_ex()
+    {
+        $query = "SELECT SITE_LD_RETN_NEWLDS, 
+                SITE_LD_RETNPRD, 
+                SITE_EXP_MONTHS, 
+                NEXT_MANUAL_FREEZE_DATETIME, 
+                NEXT_MANUAL_CLOSE, 
+                SITE_LD_RETNPRD_NEW_MOV, 
+                SITE_LD_RETNPRD_USED_MOV  
+            FROM SITE";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     protected function post_update()
     {
         $query = "UPDATE CLOSEOUT_DATE_SETTINGS

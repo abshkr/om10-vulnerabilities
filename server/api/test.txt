@@ -1488,6 +1488,7 @@ https://{{server_ip}}/api/pages/folio_schedule/delete_override.php
     "repeat_interval": "27_4_2020"
 }
 https://10.1.10.66/api/pages/folio_schedule/folio_settings.php
+https://10.1.10.66/api/pages/folio_schedule/folio_settings_ex.php
 https://{{server_ip}}/api/pages/folio_schedule/update_settings.php
 {
     "param_key": "NEXT_REPORT_TIME",

@@ -7,6 +7,7 @@ export const CREATE_OVERRIDE = '/api/pages/folio_schedule/create_override.php';
 export const DELETE_OVERRIDE = '/api/pages/folio_schedule/delete_override.php';
 export const OVERRIDES = '/api/pages/folio_schedule/overrides.php';
 export const SETTINGS = '/api/pages/folio_schedule/folio_settings.php';
+export const SETTINGS_EX = '/api/pages/folio_schedule/folio_settings_ex.php';
 export const UPDATE_SETTINGS = '/api/pages/folio_schedule/update_settings.php';
 
 export const FREEZE_CLOSEOUT = '/api/pages/folio_schedule/run_closeout.php';

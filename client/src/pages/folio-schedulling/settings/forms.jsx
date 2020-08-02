@@ -29,6 +29,7 @@ import api, { FOLIO_SCHEDULING } from '../../../api';
 
 const Settings = ({ value, access }) => {
   const { data: payload } = useSWR(FOLIO_SCHEDULING.SETTINGS);
+  const { data: manualDates, revalidate } = useSWR(FOLIO_SCHEDULING.SETTINGS_EX);
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -123,6 +124,7 @@ const Settings = ({ value, access }) => {
           .post(FOLIO_SCHEDULING.FREEZE_CLOSEOUT)
           .then(() => {
             onComplete();
+            revalidate();
 
             notification.success({
               message: t('messages.closeFolioSuccess'),
@@ -151,9 +153,10 @@ const Settings = ({ value, access }) => {
       centered: true,
       onOk: async () => {
         await api
-          .post(FOLIO_SCHEDULING.FREEZE_CLOSEOUT)
+          .post(FOLIO_SCHEDULING.CLOSE_CLOSEOUT)
           .then(() => {
             onComplete();
+            revalidate();
 
             notification.success({
               message: t('messages.submitSuccess'),
@@ -602,7 +605,7 @@ const Settings = ({ value, access }) => {
             icon={<SafetyCertificateOutlined />}
             style={{ float: 'right', marginRight: 5 }}
             onClick={closeCloseout}
-            disabled={!access?.extra}
+            disabled={!access?.extra || manualDates?.records[0].next_manual_close !== ""}
           >
             {t('operations.closeCloseout')}
           </Button>
@@ -612,7 +615,7 @@ const Settings = ({ value, access }) => {
             icon={<SafetyCertificateOutlined />}
             style={{ float: 'right', marginRight: 5 }}
             onClick={freezeCloseout}
-            disabled={!access?.extra || !freezeCloseoutFlag}
+            disabled={!access?.extra || manualDates?.records[0].next_manual_freeze_datetime !== ""}
           >
             {t('operations.freezeCloseout')}
           </Button>
