@@ -50,7 +50,7 @@ import {
 
 import { DataTable } from '../../../../../../components';
 import { SETTINGS } from '../../../../../../constants';
-import api, { NOMINATION_TRANSACTIONS } from '../../../../../../api';
+import api, { NOMINATION_TRANSACTIONS, MOVEMENT_NOMIATIONS } from '../../../../../../api';
 import BaseDetails from './base-details/base-details';
 import MeterDetails from './meter-details/meter-details';
 
@@ -85,6 +85,7 @@ const FormModal = ({
   console.log('value', value);
 
   const { data: units } = useSWR(NOMINATION_TRANSACTIONS.UNIT_TYPES);
+  const { data: products } = useSWR(MOVEMENT_NOMIATIONS.NOM_PRODUCTS, { revalidateOnFocus: false });
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -96,6 +97,8 @@ const FormModal = ({
   const [tankTo, setTankTo] = useState([]); //value?.mvitm_tank_to);
   const [tank, setTank] = useState([]); //value?.mvitm_tank_to);
   const [arm, setArm] = useState(value?.mvitm_arm);
+  const [productItemFrom, setProductItemFrom] = useState(null);
+  const [productItemTo, setProductItemTo] = useState(null);
   const [calcSource, setCalcSource] = useState(null);
   const [altQty, setAltQty] = useState(null);
 
@@ -381,6 +384,59 @@ const FormModal = ({
     }
   }, [defaultTanker, value, tanker, setTanker]);
 
+  useEffect(() => {
+    if (products && value && !productItemFrom && pageState !== 'receipt') {
+      // console.log('products && value && !productItemFrom && pageState', products, value);
+      const item = _.find(products?.records, (o) => (
+        o.prod_cmpy === value?.mvitm_prodcmpy_from && o.prod_code === value?.mvitm_prodcode_from
+      ));
+      console.log('products && value && !productItemFrom && pageState', item);
+      setProductItemFrom(item);
+    }
+  }, [products, value, productItemFrom, setProductItemFrom, pageState]);
+
+  useEffect(() => {
+    if (products && value && !productItemTo && pageState !== 'disposal') {
+      const item = _.find(products?.records, (o) => (
+        o.prod_cmpy === value?.mvitm_prodcmpy_to && o.prod_code === value?.mvitm_prodcode_to
+      ));
+      setProductItemTo(item);
+    }
+  }, [products, value, productItemTo, setProductItemTo, pageState]);
+
+  useEffect(() => {
+    if (productItemTo && pageState !== 'disposal') {
+      if (_.toNumber(productItemTo?.rat_count) > 1) {
+        notification.error({
+          message: _.capitalize(pageState) + ': ' 
+            + productItemTo.prod_cmpy + ' - ' 
+            + productItemTo.prod_code + ' - ' 
+            + productItemTo.prod_name + ' ['
+            + productItemTo.rat_count + ']',
+          description: t('descriptions.toProductNotBase'),
+        });
+        onComplete();
+      }
+    }
+  }, [productItemTo, pageState]);
+
+  useEffect(() => {
+    // console.log('productItemFrom && pageState === \'transfer\'', productItemFrom, pageState);
+    if (productItemFrom && pageState === 'transfer') {
+      if (_.toNumber(productItemFrom?.rat_count) > 1) {
+        notification.error({
+          message: _.capitalize(pageState) + ': ' 
+            + productItemFrom.prod_cmpy + ' - ' 
+            + productItemFrom.prod_code + ' - ' 
+            + productItemFrom.prod_name + ' ['
+            + productItemFrom.rat_count + ']',
+          description:  t('descriptions.fromProductNotBase'),
+        });
+        onComplete();
+      }
+    }
+  }, [productItemFrom, pageState]);
+
   return (
     <Tabs defaultActiveKey="1" animated={false}>
       <Tabs.TabPane tab={t('tabColumns.transactionForNomination')} forceRender={true} key="1">
@@ -512,7 +568,7 @@ const FormModal = ({
 
                     <Row gutter={[8, 1]}>
                       <Col span={24}>
-                        <SourceTank form={form} value={value} onChange={setTank} arm={arm} pageState={pageState} />
+                        <SourceTank form={form} value={value} onChange={setTank} arm={arm} product={productItemFrom} pageState={pageState} />
                       </Col>
                     </Row>
                   </Card>

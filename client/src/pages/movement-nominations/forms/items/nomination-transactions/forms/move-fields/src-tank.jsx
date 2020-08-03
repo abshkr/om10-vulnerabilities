@@ -7,7 +7,7 @@ import _ from 'lodash';
 
 import { NOMINATION_TRANSACTIONS } from '../../../../../../../api';
 
-const SourceTank = ({ form, value, onChange, arm, pageState }) => {
+const SourceTank = ({ form, value, onChange, arm, product, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -35,7 +35,7 @@ const SourceTank = ({ form, value, onChange, arm, pageState }) => {
     let tank_item = _.filter(list, (item) => {
       return item.tank_code === code;
     });
-
+    console.log('src tank, getTankItem', code, list, tank_item);
     return tank_item;
   };
 
@@ -55,6 +55,7 @@ const SourceTank = ({ form, value, onChange, arm, pageState }) => {
   }, [value, options, setFieldsValue, onChange]);
 
   useEffect(() => {
+    // if (arm && arm.length > 0 && _.toNumber(product?.rat_count) <= 1) {
     if (arm && arm.length > 0) {
       setFieldsValue({
         mvitm_tank_from: arm?.[0]?.stream_tankcode,
@@ -79,7 +80,13 @@ const SourceTank = ({ form, value, onChange, arm, pageState }) => {
         onChange={onTankChange}
         // disabled={pageState === 'receipt' ? true : (arm?.length > 0 ? true : false)}
         // disabled={!(!(pageState==='disposal' && arm?.length > 0) && (arm?.[0]?.rat_count <= 1) && (pageState!=='receipt'))}
-        disabled={(pageState==='disposal' && arm?.length > 0) || (arm?.[0]?.rat_count > 1) || (pageState==='receipt')}
+        /* {!(currentState=='disposal' && fromArm.selectedIndex>-1) && _.toNumber(product?.rat_count) <= 1 && (currentState!='receipt')}
+        {!(pageState==='disposal' && arm?.length !== 0) && _.toNumber(product?.rat_count) <= 1 && (pageState!=='receipt')}
+        {(pageState!=='disposal' || arm?.length === 0) && _.toNumber(product?.rat_count) <= 1 && (pageState!=='receipt')}
+        {!((pageState!=='disposal' || arm?.length === 0) && _.toNumber(product?.rat_count) <= 1 && (pageState!=='receipt'))}
+        {(pageState==='disposal' && arm?.length !== 0) || _.toNumber(product?.rat_count) > 1 || (pageState==='receipt')} */
+        // disabled={(pageState==='disposal' && arm?.length > 0) || (arm?.[0]?.rat_count > 1) || (pageState==='receipt')}
+        disabled={(pageState==='disposal' && arm?.length !== 0) || _.toNumber(product?.rat_count) > 1 || (pageState==='receipt')}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectFromTank') : null}
         filterOption={(value, option) =>

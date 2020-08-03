@@ -246,10 +246,13 @@ class Movement extends CommonClass
     public function nomination_products()
     {
         $query = "
-            SELECT *
-            FROM PRODUCTS
+            SELECT DISTINCT DP.*, PR.RAT_COUNT, PR.RAT_TOTAL
+            FROM PRODUCTS DP, RPTOBJ_PROD_RATIOS_VW PR 
             WHERE 1=1
-            ORDER BY PROD_CODE";
+                AND DP.PROD_CMPY = PR.RAT_PROD_PRODCMPY
+                AND DP.PROD_CODE = PR.RAT_PROD_PRODCODE
+            ORDER BY PROD_CODE
+        ";
         // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {

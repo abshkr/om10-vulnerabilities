@@ -147,6 +147,8 @@
 		"requiredAndCannotBeZeroCmptField": "This field is required and cannot be zero in compartment ",
 		"requiredCmptField": "This field is required in compartment ",
 		"cannotBeZeroCmptField": "This field cannot be zero in compartment ",
+		"fromProductNotBase": "Scheduled from-product is made of multiple base products.",
+		"toProductNotBase": "Scheduled to-product is made of multiple base products.",
 		"reportFolioRange": "Please enter folio range"
 	},
 	"divider": {
