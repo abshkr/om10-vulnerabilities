@@ -17,6 +17,9 @@ export const login = (values, callback) => async (dispatch) => {
             response.data.killsession = true;
             callback(response, dispatch);
             return;
+          } else if (response.data.user_status_flag ==='0') {
+            callback(response, dispatch);
+            return;
           }
           sessionStorage.setItem('token', response.data.token);
 
