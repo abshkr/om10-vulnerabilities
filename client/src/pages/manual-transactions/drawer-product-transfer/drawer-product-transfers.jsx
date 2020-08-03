@@ -99,6 +99,7 @@ const DrawerProductTransfers = ({
   const [clicked, setClicked] = useState(null);
   const [tableAPI, setTableAPI] = useState(null);
   const [tableBaseTransfersAPI, setTableBaseTransfersAPI] = useState(null);
+  const [tableBaseTotalsAPI, setTableBaseTotalsAPI] = useState(null);
   const [canCopy, setCanCopy] = useState(false);
   const [canCalc, setCanCalc] = useState(false);
   const [canRestore, setCanRestore] = useState(false);
@@ -460,6 +461,31 @@ const DrawerProductTransfers = ({
   };
 
   const onCalculate = async () => {
+    // check to see if at least one compartment has temperature and one of three quantities
+    const payload = form.getFieldValue('transfers');
+    let found = false;
+    for (let tidx = 0; tidx < payload.length; tidx++) {
+      const titem = payload?.[tidx];
+      if ((titem.trsf_arm_cd !== t('placeholder.selectArmCode') && 
+        titem.trsf_arm_cd !== t('placeholder.noArmAvailable') &&
+        titem.trsf_prod_name !== t('placeholder.selectDrawerProduct')) &&
+        (titem.trsf_density && String(titem.trsf_density).trim() !== '') &&
+        ((titem.trsf_temp===0 || titem.trsf_temp) && String(titem.trsf_temp).trim() !=='') &&
+        ((titem.trsf_qty_amb && String(titem.trsf_qty_amb).trim() !== '') ||
+        (titem.trsf_qty_cor && String(titem.trsf_qty_cor).trim() !== '') ||
+        (titem.trsf_load_kg && String(titem.trsf_load_kg).trim() !== '') ) ) {
+        found = true;
+        break;
+      }
+    }
+    if (found === false) {
+      notification.warning({
+        message: '',
+        description: t('descriptions.cannotCalcQuantity'),
+      });
+      return;
+    }
+
     setUpdating(true);
     //const items = form.getFieldsValue(['transfers', 'base_transfers', 'base_totals', 'meter_totals'])    
     //console.log('DrawerProductTransfers: onCalculate', items);
@@ -521,7 +547,7 @@ const DrawerProductTransfers = ({
     setClicked(option);
   };
 
-  const onRestoreNew = async () => {
+  const onRestore = async () => {
     console.log('DrawerProductTransfers: onRestore');
 
     const bases = form.getFieldValue('base_transfers');
@@ -537,11 +563,15 @@ const DrawerProductTransfers = ({
     );
 
     // console.log('onRestore tanks', tanks);
+    // setDataBaseTransfers([]);
+    // setDataBaseTotals([]);
+
     _.forEach(bases, (item) => {
       const arm = _.find(tanks, (o) => (
         o.base_code === item.trsf_bs_prodcd && o.tank_code === item.trsf_bs_tk_cd
       ));
       item.trsf_bs_den = arm?.tank_density;
+      tableBaseTransfersAPI.updateRowData({ update: [item] });
     });
 
     _.forEach(totals, (item) => {
@@ -549,12 +579,15 @@ const DrawerProductTransfers = ({
         o.base_code === item.trsf_bs_prodcd_tot && o.tank_code === item.trsf_bs_tk_cd_tot
       ));
       item.trsf_bs_den_tot = arm?.tank_density;
+      tableBaseTotalsAPI.updateRowData({ update: [item] });
     });
 
-    setDataBaseTransfers([]);
-    setDataBaseTotals([]);
     setDataBaseTransfers(bases);
     setDataBaseTotals(totals);
+
+    // const option = clicked;
+    // await setClicked(null);
+    // await setClicked(option);
 
     notification.success({
       message: t('messages.restoreSuccess'),
@@ -562,7 +595,7 @@ const DrawerProductTransfers = ({
     });
   };
 
-  const onRestore = async () => {
+  const onRestoreOld = async () => {
     console.log('DrawerProductTransfers: onRestore');
     const option = selected;
     await setSelected(null);
@@ -574,7 +607,7 @@ const DrawerProductTransfers = ({
   };
 
   const onClear = async () => {
-    // check to see if at least compartment has temperature or three quantities
+    // check to see if at least one compartment has temperature or three quantities
     const payload = form.getFieldValue('transfers');
     let found = false;
     if (clicked) {
@@ -953,7 +986,7 @@ const DrawerProductTransfers = ({
               icon={<CalculatorOutlined />}
               onClick={onCalculate}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={!canCalc || updating}
+              disabled={false} // !canCalc || updating}
               /* disabled={
                 !clicked || 
                 !clicked?.trsf_temp || 
@@ -1030,6 +1063,7 @@ const DrawerProductTransfers = ({
               clicked={clicked}
               updating={updating}
               setUpdating={setUpdating}
+              setChildTableAPI={setTableBaseTotalsAPI}
               dataBoard={dataBoard}
               setDataBoard={setDataBoard}
               data={dataBaseTotals}

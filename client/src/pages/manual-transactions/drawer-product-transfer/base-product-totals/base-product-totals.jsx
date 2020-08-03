@@ -19,6 +19,7 @@ const BaseProductTotals = ({
   clicked,
   updating,
   setUpdating,
+  setChildTableAPI,
   dataBoard,
   setDataBoard,
   data,
@@ -64,6 +65,7 @@ const BaseProductTotals = ({
         }
       }
       if (!itemExisted) {
+        item.trsf_bs_temp_tot = null;
         totals.push(item);
       }
     });
@@ -126,6 +128,47 @@ const BaseProductTotals = ({
     }
   }, [sourceType]);
 
+  const onCellUpdate = (value) => {
+    console.log('BaseProductTotals: onCellUpdate', value);
+
+    const bases = _.clone(data);
+    let index=0;
+    for (index=0; index<bases.length; index++) {
+      const base = bases[index];
+      if (base.trsf_bs_prodcd_tot === value?.data?.trsf_bs_prodcd_tot &&
+        base.trsf_bs_tk_cd_tot === value?.data?.trsf_bs_tk_cd_tot 
+        ) {
+        if (
+          value?.colDef?.field === 'trsf_bs_den_tot' || 
+          value?.colDef?.field === 'trsf_bs_qty_amb_tot'
+        ) {
+          bases[index] = value?.data;
+          setData(bases);
+        }
+        break;
+      }
+    }
+    //setChildTableAPI.updateRowData({ update: [base] });
+
+    /* console.log('DrawerProductTransfers: onCellUpdate2', value?.colDef?.field, value?.colDef?.headerName, value?.value, value?.newValue, value?.data.trsf_cmpt_capacit);
+    if (
+      value?.colDef?.field === 'trsf_qty_amb' || 
+      value?.colDef?.field === 'trsf_qty_cor' ||
+      value?.colDef?.field === 'trsf_load_kg' 
+    ) {
+      if (_.toNumber(value?.newValue) > _.toNumber(value?.data.trsf_cmpt_capacit)) {
+        notification.error({
+          message: t('validate.outOfRange'),
+          description: value?.colDef?.headerName + ': ' + value?.newValue + ', ' + 
+          t('fields.compartment') + ' ' + t('fields.capacity') + ': ' + value?.data.trsf_cmpt_capacit,
+        });
+      }
+    }
+    setSelected({
+      ...value?.data,
+    }); */
+  };
+
   return (
     <Spin indicator={null} spinning={isLoading}>
       <Form.Item name="base_totals">
@@ -136,6 +179,8 @@ const BaseProductTotals = ({
           data={data} 
           height="70vh" 
           columns={fields} 
+          apiContext={setChildTableAPI}
+          onCellUpdate={(value) => onCellUpdate(value)}
           editType={false}
         />
       </Form.Item>

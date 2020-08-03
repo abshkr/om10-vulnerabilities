@@ -98,6 +98,7 @@ const adjustBaseTotals = (prodArms, transfers) => {
       }
     }
     if (!itemExisted) {
+      item.trsf_bs_temp_tot = null;
       totals.push(item);
     }
   });
