@@ -661,11 +661,11 @@ const FormModal = ({
 
                 <Row gutter={[8, 1]}>
                   <Col span={12}>
-                    <ObsTemp form={form} value={value} tank={tank} pageState={pageState} config={config} />
+                    <ObsTemp form={form} value={value} tank={tank} arm={arm} pageState={pageState} config={config} />
                   </Col>
 
                   <Col span={12}>
-                    <StdDensity form={form} value={value} tank={tank} pageState={pageState} config={config} />
+                    <StdDensity form={form} value={value} tank={tank} arm={arm} pageState={pageState} config={config} />
                   </Col>
                 </Row>
               </Card>

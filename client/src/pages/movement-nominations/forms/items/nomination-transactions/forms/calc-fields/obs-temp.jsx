@@ -4,7 +4,7 @@ import { Form, InputNumber } from 'antd';
 
 import _ from 'lodash';
 
-const ObsTemp = ({ form, value, tank, pageState, config }) => {
+const ObsTemp = ({ form, value, tank, arm, pageState, config }) => {
   const [minTemp, setMinTemp] = useState(config.minTemperature);
   const [maxTemp, setMaxTemp] = useState(config.maxTemperature);
 
@@ -60,7 +60,7 @@ const ObsTemp = ({ form, value, tank, pageState, config }) => {
       <InputNumber
         style={{ width: '100%' }}
         disabled={pageState === 'transfer' ? false : false}
-        placeholder={String(minTemp) + ' ~ ' + String(maxTemp)}
+        // placeholder={String(minTemp) + ' ~ ' + String(maxTemp)}
         min={_.toNumber(minTemp)}
         max={_.toNumber(maxTemp)}
         precision={config.precisionTemperature}

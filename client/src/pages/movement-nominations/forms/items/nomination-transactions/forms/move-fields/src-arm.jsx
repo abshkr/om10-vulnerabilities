@@ -32,8 +32,10 @@ const SourceArm = ({ form, value, onChange, tank, pageState }) => {
 
   const getArmItem = (code, list) => {
     // find the item having a particular stream_armcode
+    const values = _.split(code, ' - ');
     let arm_item = _.filter(list, (item) => {
-      return code === (item.stream_tankcode + ' - ' + item.stream_baycode + ' - ' + item.stream_armcode);
+      return (values?.[1] === item.stream_baycode && values?.[2] === item.stream_armcode);
+      // return code === (item.stream_tankcode + ' - ' + item.stream_baycode + ' - ' + item.stream_armcode);
     });
     console.log('src arm, getArmItem', code, list, arm_item);
     return arm_item;

@@ -54,9 +54,10 @@ const SourceTank = ({ form, value, onChange, arm, product, pageState }) => {
     }
   }, [value, options, setFieldsValue, onChange]);
 
-  useEffect(() => {
+  /* useEffect(() => {
     // if (arm && arm.length > 0 && _.toNumber(product?.rat_count) <= 1) {
-    if (arm && arm.length > 0) {
+    // if (arm && arm.length > 0) {
+    if (arm && arm.length === 1) {
       setFieldsValue({
         mvitm_tank_from: arm?.[0]?.stream_tankcode,
       });
@@ -64,7 +65,7 @@ const SourceTank = ({ form, value, onChange, arm, product, pageState }) => {
       //onChange(value.mvitm_tank_from);
       onChange(getTankItem(arm?.[0]?.stream_tankcode, options?.records));
     }
-  }, [arm, setFieldsValue, onChange]);
+  }, [arm, setFieldsValue, onChange]); */
 
   return (
     <Form.Item

@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
 
 import _ from 'lodash';
+import { calcArmDensity } from '../../../../../../../utils'
 
-const StdDensity = ({ form, value, tank, pageState, config }) => {
+const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
   const [minDens, setMinDens] = useState(config.minDensity);
   const [maxDens, setMaxDens] = useState(config.maxDensity);
 
@@ -58,15 +59,37 @@ const StdDensity = ({ form, value, tank, pageState, config }) => {
       setMinDens(tank?.[0]?.bclass_dens_lo);
       setMaxDens(tank?.[0]?.bclass_dens_hi);
     } else {
-      setFieldsValue({
-        mlitm_dens_cor: null,
-      });
-      setMinDens(config.minDensity);
-      setMaxDens(config.maxDensity);
-    }
+      if (arm) {
+        if (arm.length <= 1) {
+          setFieldsValue({
+            mlitm_dens_cor: arm?.[0]?.stream_tankden,
+          });
+          // setMinDens(tank?.[0]?.bclass_dens_lo);
+          // setMaxDens(tank?.[0]?.bclass_dens_hi);
+          setMinDens(config.minDensity);
+          setMaxDens(config.maxDensity);
+        } else {
+          const armDens = calcArmDensity(arm?.[0]?.stream_index, arm);
+          setFieldsValue({
+            mlitm_dens_cor: armDens,
+          });
+          // setMinDens(tank?.[0]?.bclass_dens_lo);
+          // setMaxDens(tank?.[0]?.bclass_dens_hi);
+          setMinDens(config.minDensity);
+          setMaxDens(config.maxDensity);
+        }    
+      } else {
+        setFieldsValue({
+          mlitm_dens_cor: null,
+        });
+        setMinDens(config.minDensity);
+        setMaxDens(config.maxDensity);
+      }
+    } 
+    
     // console.log('validateFields([mlitm_dens_cor]);222');
     validateFields(['mlitm_dens_cor']);
-}, [tank, setFieldsValue, setMinDens, setMaxDens, validateFields]);
+}, [tank, arm, setFieldsValue, setMinDens, setMaxDens, validateFields]);
 
   return (
     <Form.Item
@@ -77,7 +100,7 @@ const StdDensity = ({ form, value, tank, pageState, config }) => {
       <InputNumber
         style={{ width: '100%' }}
         disabled={pageState === 'transfer' ? false : false}
-        placeholder={String(minDens) + ' ~ ' + String(maxDens)}
+        // placeholder={String(minDens) + ' ~ ' + String(maxDens)}
         // min={_.toNumber(minDens)}
         // max={_.toNumber(maxDens)}
         precision={config.precisionDensity}
