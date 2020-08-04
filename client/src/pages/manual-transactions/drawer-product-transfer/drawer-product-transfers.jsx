@@ -631,6 +631,69 @@ const DrawerProductTransfers = ({
       return;
     }
 
+    notification.warning({
+      message: '',
+      description: !clicked ? t('descriptions.clearAllTransfer') : t('descriptions.clearLineTransfer'),
+    });
+
+    console.log('DrawerProductTransfers: onClear');
+    // const payload = form.getFieldValue('transfers');
+    _.forEach(payload, (item) => {
+      if (!clicked) {
+        item.trsf_qty_amb = null;
+        item.trsf_qty_cor = null;
+        item.trsf_load_kg = null;
+        item.trsf_temp = null;
+        tableAPI.updateRowData({ update: [item] });
+      } else {
+        if (clicked?.trsf_cmpt_no === item.trsf_cmpt_no) {
+          item.trsf_qty_amb = null;
+          item.trsf_qty_cor = null;
+          item.trsf_load_kg = null;
+          item.trsf_temp = null;
+          tableAPI.updateRowData({ update: [item] });
+        }
+      }
+    });
+    setPayload(payload);
+    console.log('DrawerProductTransfers: onClear', payload);
+
+    notification.success({
+      message: t('messages.clearTransferSuccess'),
+      description: t('descriptions.clearTransferSuccess'),
+    });
+
+    toggleCalcButton();
+    // toggleRestoreButton();
+    toggleCopyButton();
+    
+  };
+
+  const onClearOld = async () => {
+    // check to see if at least one compartment has temperature or three quantities
+    const payload = form.getFieldValue('transfers');
+    let found = false;
+    if (clicked) {
+      if ( (clicked.trsf_temp===0 || clicked.trsf_temp) || clicked.trsf_qty_amb || clicked.trsf_qty_cor || clicked.trsf_load_kg) {
+        found = true;
+      }
+    } else {
+      for (let tidx = 0; tidx < payload.length; tidx++) {
+        const titem = payload?.[tidx];
+        if ( (titem.trsf_temp===0 || titem.trsf_temp) || titem.trsf_qty_amb || titem.trsf_qty_cor || titem.trsf_load_kg) {
+          found = true;
+          break;
+        }
+      }
+    }
+    if (found === false) {
+      notification.warning({
+        message: '',
+        description: !clicked ? t('descriptions.cannotClearTransfer') : t('descriptions.cannotClearOneTransfer'),
+      });
+      return;
+    }
+
     confirm({
       title: !clicked ? t('descriptions.clearAllTransfer') : t('descriptions.clearLineTransfer'),
       icon: <ExclamationCircleOutlined />,
@@ -675,6 +738,70 @@ const DrawerProductTransfers = ({
   };
 
   const onCopy = async () => {
+    // check to see if at least compartment has temperature or three quantities
+    const payload = form.getFieldValue('transfers');
+    let found = false;
+    for (let tidx = 0; tidx < payload.length; tidx++) {
+      const item = payload?.[tidx];
+      if (!(item.trsf_arm_cd === t('placeholder.selectArmCode') || 
+        item.trsf_arm_cd === t('placeholder.noArmAvailable') ||
+        item.trsf_prod_name === t('placeholder.selectDrawerProduct')) && 
+        !(!item.trsf_density || String(item.trsf_density).trim()==='')) {
+        found = true;
+        break;
+      }
+    }
+    if (found === false) {
+      notification.warning({
+        message: '',
+        description: t('descriptions.cannotCopyQuantity'),
+      });
+      return;
+    }
+
+    notification.warning({
+      message: '',
+      description: (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') 
+        ? t('descriptions.copyScheduledQuantity') : t('descriptions.copyCompartmentCapacity'),
+    });
+  
+    console.log('DrawerProductTransfers: onCopy');
+    
+    // const payload = form.getFieldValue('transfers');
+    _.forEach(payload, (item) => {
+      console.log('DrawerProductTransfers: onCopy in loop before', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
+      if (!(item.trsf_arm_cd === t('placeholder.selectArmCode') || 
+        item.trsf_arm_cd === t('placeholder.noArmAvailable') ||
+        item.trsf_prod_name === t('placeholder.selectDrawerProduct')) && 
+        !(!item.trsf_density || String(item.trsf_density).trim()==='')) {
+        if (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') {
+          item.trsf_qty_amb = item.trsf_qty_plan;
+          console.log('DrawerProductTransfers: onCopy in loop after1', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
+          tableAPI.updateRowData({ update: [item] });
+        } else {
+          if (item.trsf_cmpt_capacit) {
+            item.trsf_qty_amb = item.trsf_cmpt_capacit;
+            console.log('DrawerProductTransfers: onCopy in loop after2', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
+            tableAPI.updateRowData({ update: [item] });
+          }
+        }
+      }
+    });
+    setPayload(payload);
+    console.log('DrawerProductTransfers: onCopy', payload);
+
+    notification.success({
+      message: t('messages.copyQuantitySuccess'),
+      description: (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') 
+        ? t('descriptions.copyScheduledQuantitySuccess') : t('descriptions.copyCompartmentCapacitySuccess'),
+    });
+
+    toggleCalcButton();
+    // toggleRestoreButton();
+    // toggleCopyButton();
+  };
+
+  const onCopyOld = async () => {
     // check to see if at least compartment has temperature or three quantities
     const payload = form.getFieldValue('transfers');
     let found = false;
