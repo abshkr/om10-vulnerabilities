@@ -373,6 +373,18 @@ function response($case_name, $default = null, $params = null)
             "ENG" => "Tank strap imported",
             "CHN" => "油罐数据已经导入"
         ),
+        "__SESSIONS_KILLED__" => array(
+            "ENG" => "All seesions killed",
+            "CHN" => "其余会话已经删除"
+        ),
+        "__SESSIONS_KILL_FAILED__" => array(
+            "ENG" => "Cannnot kill other seesions",
+            "CHN" => "不能删除其他会话"
+        ),
+        "__LOGIN_USER_LOCKED__" => array(
+            "ENG" => "Current user is locked, cannot log in",
+            "CHN" => "当前用户被锁定，不能登录"
+        ),
     );
 
     $lang = Utilities::getCurrLang();

@@ -31,9 +31,9 @@ const FormSwitch = ({ config, onChange }) => {
           style={{ width: 280 }} 
           onChange={(value) => onChange(config, value)}
         >
-          <Option value="1">Simple (Alpha and Numeric)</Option>
-          <Option value="2">Medium (Upper, Lower and Numeric)</Option>
-          <Option value="3">Complex (Upper, Lower, Numberic and Symbol)</Option>
+          <Option value="6">Simple (Alpha and Numeric)</Option>
+          <Option value="7">Medium (Upper, Lower and Numeric)</Option>
+          <Option value="15">Complex (Upper, Lower, Numberic and Symbol)</Option>
         </Select>
       );
 

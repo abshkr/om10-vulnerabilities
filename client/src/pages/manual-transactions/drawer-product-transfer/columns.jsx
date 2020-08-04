@@ -105,6 +105,8 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     cellEditorParams: {
       values: products?.records || [],
       arms: productArms || [],
+      sourceType,
+      loadType,
       form,
       payload,
       setPayload,

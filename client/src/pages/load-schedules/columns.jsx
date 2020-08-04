@@ -12,6 +12,7 @@ const columns = (IS_NOMINATION, t) => [
   {
     headerName: t('fields.tripNumber'),
     field: 'shls_trip_no',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     width: 120,
@@ -31,7 +32,7 @@ const columns = (IS_NOMINATION, t) => [
   {
     headerName: t('fields.source'),
     field: 'shls_srctype_desc',
-    filter: 'FuzzyFilter',
+    filter: 'MultiFilter',
     sortable: true,
     resizable: true,
     width: 130,
@@ -60,7 +61,7 @@ const columns = (IS_NOMINATION, t) => [
   {
     headerName: t('fields.carrierCode'),
     field: 'carrier_code',
-    filter: 'MultiFilter',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     width: 140,
@@ -70,7 +71,7 @@ const columns = (IS_NOMINATION, t) => [
   {
     headerName: t('fields.carrier'),
     field: 'carrier',
-    filter: 'FuzzyFilter',
+    filter: 'MultiFilter',
     sortable: true,
     resizable: true,
     width: 120,
@@ -90,6 +91,7 @@ const columns = (IS_NOMINATION, t) => [
   {
     headerName: t('fields.tankerCode'),
     field: 'tnkr_code',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     hide: IS_NOMINATION,
@@ -99,6 +101,7 @@ const columns = (IS_NOMINATION, t) => [
   {
     headerName: t('fields.tankerName'),
     field: 'tnkr_name',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     hide: IS_NOMINATION,
@@ -108,6 +111,7 @@ const columns = (IS_NOMINATION, t) => [
   {
     headerName: t('fields.supplierCode'),
     field: 'supplier_code',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     hide: IS_NOMINATION,
@@ -117,6 +121,7 @@ const columns = (IS_NOMINATION, t) => [
   {
     headerName: t('fields.supplier'),
     field: 'supplier',
+    filter: 'MultiFilter',
     sortable: true,
     resizable: true,
     width: 140,
@@ -153,6 +158,7 @@ const columns = (IS_NOMINATION, t) => [
   {
     headerName: t('fields.orderNumber'),
     field: 'order_cust_ordno',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     hide: IS_NOMINATION,
@@ -162,6 +168,7 @@ const columns = (IS_NOMINATION, t) => [
   {
     headerName: t('fields.customerCode'),
     field: 'order_cust_cmpy_code',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     hide: IS_NOMINATION,
@@ -171,6 +178,7 @@ const columns = (IS_NOMINATION, t) => [
   {
     headerName: t('fields.customerName'),
     field: 'order_cust_cmpy_name',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     hide: IS_NOMINATION,

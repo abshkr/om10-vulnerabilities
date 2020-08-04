@@ -42,7 +42,8 @@ class Movement extends CommonClass
         "MVITM_STATUS",
         "MVITM_PACK_SIZE",
         "MVITM_PRICE_TYPE",
-        "MVITM_PRICE"
+        "MVITM_PRICE",
+        "MV_ID"
     );
 
     public $BOOLEAN_FIELDS = array(
@@ -139,6 +140,7 @@ class Movement extends CommonClass
             TK.TANK_DENSITY, 
             TK.TANK_TEMP, 
             TK.TANK_NAME, 
+            TK.TANK_CODE||' - '||TK.TANK_NAME as TANK_DESC,
             TL.TERM_CODE,  
             TL.TERM_NAME,
             DP.PROD_CMPY, 
@@ -204,6 +206,7 @@ class Movement extends CommonClass
             TK.TANK_DENSITY, 
             TK.TANK_TEMP, 
             TK.TANK_NAME, 
+            TK.TANK_CODE||' - '||TK.TANK_NAME as TANK_DESC,
             TL.TERM_CODE,  
             TL.TERM_NAME,
             DP.PROD_CMPY, 
@@ -243,10 +246,13 @@ class Movement extends CommonClass
     public function nomination_products()
     {
         $query = "
-            SELECT *
-            FROM PRODUCTS
+            SELECT DISTINCT DP.*, PR.RAT_COUNT, PR.RAT_TOTAL
+            FROM PRODUCTS DP, RPTOBJ_PROD_RATIOS_VW PR 
             WHERE 1=1
-            ORDER BY PROD_CODE";
+                AND DP.PROD_CMPY = PR.RAT_PROD_PRODCMPY
+                AND DP.PROD_CODE = PR.RAT_PROD_PRODCODE
+            ORDER BY PROD_CODE
+        ";
         // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
@@ -1165,7 +1171,7 @@ class Movement extends CommonClass
             $lineno = 1;
             foreach ($this->items as $value) {
                 // write_log(json_encode($value), __FILE__, __LINE__);
-                $mvitm_item_id = $this->mv_id * 100 + $lineno;
+                $mvitm_item_id = $this->mv_id * 1000 + $lineno;
                 $query = "INSERT INTO MOVEMENT_ITEMS (
                     MVITM_MOVE_ID,
                     MVITM_LINE_ID,

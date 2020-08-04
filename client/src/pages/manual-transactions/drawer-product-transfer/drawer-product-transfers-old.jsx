@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { UndoOutlined, DeleteOutlined, CopyOutlined, ClearOutlined, CalculatorOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Button, Form, Tabs, Divider, Card, Row, Col, notification, Modal } from 'antd';
+import { UndoOutlined, DeleteOutlined, CopyOutlined, ClearOutlined, CalculatorOutlined } from '@ant-design/icons';
+import { Button, Form, Tabs, Divider, Card, Row, Col, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -10,21 +10,14 @@ import columns from './columns';
 import useSWR from 'swr';
 
 import api, { MANUAL_TRANSACTIONS } from '../../../api';
-import {calcBaseRatios, calcArmDensity, getAvailableArms} from '../../../utils'
+import {calcBaseRatios, calcArmDensity, getAvailableArms, adjustProductArms} from '../../../utils'
 
 import BaseProductTransfers from './base-product-transfers';
 import BaseProductTotals from './base-product-totals';
 import MeterTransfers from './meter-transfers';
 import MeterTotals from './meter-totals';
 
-import {
-  buildDrawTransfers,
-  buildBaseTransfers,
-  buildBaseTotals,
-  adjustBaseTotals,
-  buildMeterTransfers, 
-  buildMeterTotals
-} from '../data-builder';
+// import {buildMeterTransfers, buildMeterTotals} from '../data-builder';
 
 const components = {
   BayArmEditor: BayArm,
@@ -37,8 +30,6 @@ const components = {
 };
 
 const { TabPane } = Tabs;
-
-const { confirm } = Modal;
 
 const DrawerProductTransfers = ({
   form, 
@@ -62,12 +53,21 @@ const DrawerProductTransfers = ({
   setDataMeterTransfers,
   dataMeterTotals,
   setDataMeterTotals,
+  dataLoadFlagDrawTransfers,
+  setDataLoadFlagDrawTransfers,
+  dataLoadFlagBaseTransfers,
+  setDataLoadFlagBaseTransfers,
+  dataLoadFlagBaseTotals,
+  setDataLoadFlagBaseTotals,
+  dataLoadFlagMeterTransfers,
+  setDataLoadFlagMeterTransfers,
+  dataLoadFlagMeterTotals,
+  setDataLoadFlagMeterTotals,
   dataLoaded,
   setDataLoaded,
   productArms,
   setProductArms,
 }) => {
-  console.log('--------------------------', sourceType, supplier, trip, order, tanker);
   const { data } = useSWR((
       sourceType === 'SCHEDULE' && supplier && trip && 
       `${MANUAL_TRANSACTIONS.TRIP_DETAILS}?supplier=${supplier}&trip_no=${trip}`
@@ -99,7 +99,6 @@ const DrawerProductTransfers = ({
   const [clicked, setClicked] = useState(null);
   const [tableAPI, setTableAPI] = useState(null);
   const [tableBaseTransfersAPI, setTableBaseTransfersAPI] = useState(null);
-  const [tableBaseTotalsAPI, setTableBaseTotalsAPI] = useState(null);
   const [canCopy, setCanCopy] = useState(false);
   const [canCalc, setCanCalc] = useState(false);
   const [canRestore, setCanRestore] = useState(false);
@@ -410,25 +409,6 @@ const DrawerProductTransfers = ({
 
     for (tidx = 0; tidx < draws.length; tidx++) {
       const transfer = draws[tidx];
-
-      if (transfer.trsf_arm_cd === t('placeholder.selectArmCode') || 
-        transfer.trsf_arm_cd === t('placeholder.noArmAvailable') ||
-        transfer.trsf_prod_name === t('placeholder.selectDrawerProduct')
-      ) {
-        continue;
-      }
-      if (!transfer.trsf_density || String(transfer.trsf_density).trim()==='') {
-        continue;
-      }
-      if ((transfer.trsf_temp!==0 && !transfer.trsf_temp) || String(transfer.trsf_temp).trim()==='') {
-        continue;
-      }
-      if ((!transfer.trsf_qty_amb || String(transfer.trsf_qty_amb).trim()==='') &&
-        (!transfer.trsf_qty_cor || String(transfer.trsf_qty_cor).trim()==='') &&
-        (!transfer.trsf_load_kg || String(transfer.trsf_load_kg).trim()==='') ) {
-        continue;
-      }
-
       const cmpt = transfer.trsf_cmpt_no;
       const qtys = {amb: 0, cor: 0, kg: 0};
       let matched = false;
@@ -461,31 +441,6 @@ const DrawerProductTransfers = ({
   };
 
   const onCalculate = async () => {
-    // check to see if at least one compartment has temperature and one of three quantities
-    const payload = form.getFieldValue('transfers');
-    let found = false;
-    for (let tidx = 0; tidx < payload.length; tidx++) {
-      const titem = payload?.[tidx];
-      if ((titem.trsf_arm_cd !== t('placeholder.selectArmCode') && 
-        titem.trsf_arm_cd !== t('placeholder.noArmAvailable') &&
-        titem.trsf_prod_name !== t('placeholder.selectDrawerProduct')) &&
-        (titem.trsf_density && String(titem.trsf_density).trim() !== '') &&
-        ((titem.trsf_temp===0 || titem.trsf_temp) && String(titem.trsf_temp).trim() !=='') &&
-        ((titem.trsf_qty_amb && String(titem.trsf_qty_amb).trim() !== '') ||
-        (titem.trsf_qty_cor && String(titem.trsf_qty_cor).trim() !== '') ||
-        (titem.trsf_load_kg && String(titem.trsf_load_kg).trim() !== '') ) ) {
-        found = true;
-        break;
-      }
-    }
-    if (found === false) {
-      notification.warning({
-        message: '',
-        description: t('descriptions.cannotCalcQuantity'),
-      });
-      return;
-    }
-
     setUpdating(true);
     //const items = form.getFieldsValue(['transfers', 'base_transfers', 'base_totals', 'meter_totals'])    
     //console.log('DrawerProductTransfers: onCalculate', items);
@@ -549,54 +504,6 @@ const DrawerProductTransfers = ({
 
   const onRestore = async () => {
     console.log('DrawerProductTransfers: onRestore');
-
-    const bases = form.getFieldValue('base_transfers');
-    const totals = form.getFieldValue('base_totals');
-    const tanks = _.uniq(
-      _.map(productArms, (item) => {
-        return {
-          tank_code: item.stream_tankcode,
-          base_code: item.stream_basecode,
-          tank_density: item.stream_tankden,
-        };
-      })
-    );
-
-    // console.log('onRestore tanks', tanks);
-    // setDataBaseTransfers([]);
-    // setDataBaseTotals([]);
-
-    _.forEach(bases, (item) => {
-      const arm = _.find(tanks, (o) => (
-        o.base_code === item.trsf_bs_prodcd && o.tank_code === item.trsf_bs_tk_cd
-      ));
-      item.trsf_bs_den = arm?.tank_density;
-      tableBaseTransfersAPI.updateRowData({ update: [item] });
-    });
-
-    _.forEach(totals, (item) => {
-      const arm = _.find(tanks, (o) => (
-        o.base_code === item.trsf_bs_prodcd_tot && o.tank_code === item.trsf_bs_tk_cd_tot
-      ));
-      item.trsf_bs_den_tot = arm?.tank_density;
-      tableBaseTotalsAPI.updateRowData({ update: [item] });
-    });
-
-    setDataBaseTransfers(bases);
-    setDataBaseTotals(totals);
-
-    // const option = clicked;
-    // await setClicked(null);
-    // await setClicked(option);
-
-    notification.success({
-      message: t('messages.restoreSuccess'),
-      description: t('descriptions.tankDensityRestoreSuccess'),
-    });
-  };
-
-  const onRestoreOld = async () => {
-    console.log('DrawerProductTransfers: onRestore');
     const option = selected;
     await setSelected(null);
     await setSelected(option);
@@ -607,140 +514,68 @@ const DrawerProductTransfers = ({
   };
 
   const onClear = async () => {
-    // check to see if at least one compartment has temperature or three quantities
+    console.log('DrawerProductTransfers: onClear');
+    
     const payload = form.getFieldValue('transfers');
-    let found = false;
-    if (clicked) {
-      if ( (clicked.trsf_temp===0 || clicked.trsf_temp) || clicked.trsf_qty_amb || clicked.trsf_qty_cor || clicked.trsf_load_kg) {
-        found = true;
-      }
-    } else {
-      for (let tidx = 0; tidx < payload.length; tidx++) {
-        const titem = payload?.[tidx];
-        if ( (titem.trsf_temp===0 || titem.trsf_temp) || titem.trsf_qty_amb || titem.trsf_qty_cor || titem.trsf_load_kg) {
-          found = true;
-          break;
+    _.forEach(payload, (item) => {
+      if (!clicked) {
+        item.trsf_qty_amb = null;
+        item.trsf_qty_cor = null;
+        item.trsf_load_kg = null;
+        item.trsf_temp = null;
+        tableAPI.updateRowData({ update: [item] });
+      } else {
+        if (clicked?.trsf_cmpt_no === item.trsf_cmpt_no) {
+          item.trsf_qty_amb = null;
+          item.trsf_qty_cor = null;
+          item.trsf_load_kg = null;
+          item.trsf_temp = null;
+          tableAPI.updateRowData({ update: [item] });
         }
       }
-    }
-    if (found === false) {
-      notification.warning({
-        message: '',
-        description: !clicked ? t('descriptions.cannotClearTransfer') : t('descriptions.cannotClearOneTransfer'),
-      });
-      return;
-    }
-
-    confirm({
-      title: !clicked ? t('descriptions.clearAllTransfer') : t('descriptions.clearLineTransfer'),
-      icon: <ExclamationCircleOutlined />,
-      okText: t('operations.yes'),
-      okType: 'danger',
-      centered: true,
-      cancelText: 'No',
-      onOk: async () => {
-        console.log('DrawerProductTransfers: onClear');
-        // const payload = form.getFieldValue('transfers');
-        _.forEach(payload, (item) => {
-          if (!clicked) {
-            item.trsf_qty_amb = null;
-            item.trsf_qty_cor = null;
-            item.trsf_load_kg = null;
-            item.trsf_temp = null;
-            tableAPI.updateRowData({ update: [item] });
-          } else {
-            if (clicked?.trsf_cmpt_no === item.trsf_cmpt_no) {
-              item.trsf_qty_amb = null;
-              item.trsf_qty_cor = null;
-              item.trsf_load_kg = null;
-              item.trsf_temp = null;
-              tableAPI.updateRowData({ update: [item] });
-            }
-          }
-        });
-        setPayload(payload);
-        console.log('DrawerProductTransfers: onClear', payload);
-
-        notification.success({
-          message: t('messages.clearTransferSuccess'),
-          description: t('descriptions.clearTransferSuccess'),
-        });
-
-        toggleCalcButton();
-        // toggleRestoreButton();
-        toggleCopyButton();
-      },
     });
-    
+    setPayload(payload);
+    console.log('DrawerProductTransfers: onClear', payload);
+
+    notification.success({
+      message: t('messages.clearTransferSuccess'),
+      description: t('descriptions.clearTransferSuccess'),
+    });
+
+    toggleCalcButton();
+    // toggleRestoreButton();
+    // toggleCopyButton();
   };
 
   const onCopy = async () => {
-    // check to see if at least compartment has temperature or three quantities
-    const payload = form.getFieldValue('transfers');
-    let found = false;
-    for (let tidx = 0; tidx < payload.length; tidx++) {
-      const item = payload?.[tidx];
-      if (!(item.trsf_arm_cd === t('placeholder.selectArmCode') || 
-        item.trsf_arm_cd === t('placeholder.noArmAvailable') ||
-        item.trsf_prod_name === t('placeholder.selectDrawerProduct')) && 
-        !(!item.trsf_density || String(item.trsf_density).trim()==='')) {
-        found = true;
-        break;
-      }
-    }
-    if (found === false) {
-      notification.warning({
-        message: '',
-        description: t('descriptions.cannotCopyQuantity'),
-      });
-      return;
-    }
+    console.log('DrawerProductTransfers: onCopy');
     
-    confirm({
-      title: (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') 
-        ? t('descriptions.copyScheduledQuantity') : t('descriptions.copyCompartmentCapacity'),
-      icon: <ExclamationCircleOutlined />,
-      okText: t('operations.yes'),
-      okType: 'danger',
-      centered: true,
-      cancelText: 'No',
-      onOk: async () => {
-        console.log('DrawerProductTransfers: onCopy');
-        
-        // const payload = form.getFieldValue('transfers');
-        _.forEach(payload, (item) => {
-          console.log('DrawerProductTransfers: onCopy in loop before', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
-          if (!(item.trsf_arm_cd === t('placeholder.selectArmCode') || 
-            item.trsf_arm_cd === t('placeholder.noArmAvailable') ||
-            item.trsf_prod_name === t('placeholder.selectDrawerProduct')) && 
-            !(!item.trsf_density || String(item.trsf_density).trim()==='')) {
-            if (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') {
-              item.trsf_qty_amb = item.trsf_qty_plan;
-              console.log('DrawerProductTransfers: onCopy in loop after1', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
-              tableAPI.updateRowData({ update: [item] });
-            } else {
-              if (item.trsf_cmpt_capacit) {
-                item.trsf_qty_amb = item.trsf_cmpt_capacit;
-                console.log('DrawerProductTransfers: onCopy in loop after2', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
-                tableAPI.updateRowData({ update: [item] });
-              }
-            }
-          }
-        });
-        setPayload(payload);
-        console.log('DrawerProductTransfers: onCopy', payload);
-
-        notification.success({
-          message: t('messages.copyQuantitySuccess'),
-          description: (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') 
-            ? t('descriptions.copyScheduledQuantitySuccess') : t('descriptions.copyCompartmentCapacitySuccess'),
-        });
-
-        toggleCalcButton();
-        // toggleRestoreButton();
-        // toggleCopyButton();
-      },
+    const payload = form.getFieldValue('transfers');
+    _.forEach(payload, (item) => {
+      console.log('DrawerProductTransfers: onCopy in loop before', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
+      if (item.trsf_qty_plan) {
+        item.trsf_qty_amb = item.trsf_qty_plan;
+        console.log('DrawerProductTransfers: onCopy in loop after1', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
+        tableAPI.updateRowData({ update: [item] });
+      } else {
+        if (item.trsf_cmpt_capacit) {
+          item.trsf_qty_amb = item.trsf_cmpt_capacit;
+          console.log('DrawerProductTransfers: onCopy in loop after2', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
+          tableAPI.updateRowData({ update: [item] });
+        }
+      }
     });
+    setPayload(payload);
+    console.log('DrawerProductTransfers: onCopy', payload);
+
+    notification.success({
+      message: t('messages.copyQuantitySuccess'),
+      description: t('descriptions.copyQuantitySuccess'),
+    });
+
+    toggleCalcButton();
+    // toggleRestoreButton();
+    // toggleCopyButton();
   };
 
   const toggleCalcButton = () => {
@@ -784,13 +619,7 @@ const DrawerProductTransfers = ({
     console.log('DrawerProductTransfers: toggle button Copy ', payload);
 
     if (payload) {
-      const item = _.find(payload, (o) => (
-        !(o.trsf_arm_cd === t('placeholder.selectArmCode') || 
-        o.trsf_arm_cd === t('placeholder.noArmAvailable') ||
-        o.trsf_prod_name === t('placeholder.selectDrawerProduct')) && 
-        !(!o.trsf_density || String(o.trsf_density).trim()==='')
-      ));
-      console.log('DrawerProductTransfers: toggle button Copy item', item);
+      const item = _.find(payload, (o) => (o?.trsf_cmpt_capacit || o?.trsf_qty_plan));
       if (item) {
         setCanCopy(true);
       } else {
@@ -896,11 +725,16 @@ const DrawerProductTransfers = ({
 
   useEffect(() => {
     const values = columns(t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms);
-    console.log('!!!!!!!!!!!!!!!!!!!!!!!I am here !!!!!', sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms);
+
     setFields(values);
   }, [t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms]);
 
   useEffect(() => {
+    if (dataLoadFlagDrawTransfers !== 0) {
+      console.log("DrawerProductTransfers: data loading from DB, don't need build the transfers from scratch.");
+      //return;
+    }
+
     setLoading(true);
     setPayload([]);
 
@@ -908,20 +742,67 @@ const DrawerProductTransfers = ({
 
     // NOTE: this data is form get_order_details or get_sched_details, not the products
     if (data && productArms) {
+      const transformed = [];
       console.log('DrawerProductTransfers: Watch data, supplier, trip, order, tanker! Data not null', data);
-      const transformed = buildDrawTransfers(data?.records, productArms, t);
+
+      _.forEach(data?.records, (record) => {
+        //console.log('watch data, supplier, trip, order, tanker in loop', record?.shls_supp);
+        if (record.shls_supp !== '') {
+          // console.log('watch data, supplier, trip, order, tanker in if supplier', record, record?.shls_supp, record?.prod_code);
+          let armClnValue = t('placeholder.selectArmCode');
+          let densClnValue = null;
+          if (record?.prod_name !== '' && record?.prod_name !== undefined) {
+            const items = getAvailableArms(productArms, record?.shls_supp, record?.prod_code);
+            if (items?.length === 0) {
+              armClnValue = t('placeholder.noArmAvailable');
+            }
+            if (items?.length > 0) {
+              armClnValue = items?.[0]?.stream_armcode;
+              const prodArms = adjustProductArms(productArms, record?.shls_supp, record?.prod_code);
+              densClnValue = calcArmDensity(items?.[0]?.stream_index, prodArms);
+            }
+          }
+          const object = {
+            trsf_sold_to: record?.customer_code,
+            trsf_delv_num: record?.delivery_number,
+            trsf_delv_loc: record?.delivery_location,
+            trsf_equip_id: record?.eqpt_code,
+            trsf_cmpt_no: record?.tnkr_cmpt_no,
+            trsf_cmpt_capacit: record?.cmpt_capacit,
+            trsf_drwr_cd: record?.shls_supp,
+            trsf_prod_code: record?.prod_code,
+            trsf_prod_name: record?.prod_name === '' ? t('placeholder.selectDrawerProduct') : record?.prod_desc,
+            trsf_prod_cmpy: record?.shls_supp,
+            trsf_arm_cd: armClnValue,
+            trsf_qty_plan: record?.allowed_qty==='' ? null : record?.allowed_qty,
+            //trsf_qty_left: record?.allowed_qty==='' ? null : String(_.toNumber(record?.allowed_qty) - _.toNumber(record?.load_qty)),
+            trsf_qty_left: record?.load_qty==='' ? null : record?.load_qty,
+            trsf_density: densClnValue,
+            trsf_temp: null,
+            trsf_qty_amb: null,
+            trsf_qty_cor: null,
+            trsf_load_kg: null,
+          };
+
+          transformed.push(object);
+        }
+      });
+
       console.log('DrawerProductTransfers: Watch data, supplier, trip, order, tanker - transformed', transformed);
 
-      if (!dataLoaded || !dataLoaded?.transfers || dataLoaded?.transfers?.length === 0) {
+      if (dataLoadFlagDrawTransfers === 0) {
         setPayload(transformed);
       } else {
-        setPayload(dataLoaded?.transfers);
-        console.log('MT 2 - DrawProductTransfers: data are loaded!');
-        setSelected(dataLoaded?.transfers?.[0]);
+        if (dataLoadFlagDrawTransfers === 1) {
+          setPayload(dataLoaded?.transfers);
+          setDataLoadFlagDrawTransfers(2);
+          console.log('MT 2 - DrawProductTransfers: data are loaded!', dataLoadFlagDrawTransfers);
+          setSelected(dataLoaded?.transfers?.[0]);
+        }
       }
       setLoading(false);
     }
-  }, [data, productArms, supplier, trip, order, tanker, dataLoaded]);
+  }, [data, productArms, supplier, trip, order, tanker]);
 
   useEffect(() => {
     if (payload) {
@@ -937,6 +818,19 @@ const DrawerProductTransfers = ({
     }
   }, [payload]);
 
+  /* useEffect(() => {
+    if (dataLoadFlagDrawTransfers === 1 && dataLoaded && dataRendered===true) {
+      console.log('DrawerProductTransfers: Load data by setPayload. dataLoadFlagDrawTransfers', dataLoadFlagDrawTransfers);
+      // setPayload(dataLoaded?.transfers);
+      form.setFieldsValue({
+        transfers: dataLoaded?.transfers,
+      });
+      setDataLoadFlagDrawTransfers(2);
+      setDataRendered(false);
+      console.log('MT 2 - DrawerProductTransfers: data are loaded!', dataLoadFlagDrawTransfers);
+    }
+  }, [dataLoadFlagDrawTransfers, dataLoaded, dataRendered]);
+ */
   useEffect(() => {
     let board = dataBoard;
     if (!board) {
@@ -946,6 +840,10 @@ const DrawerProductTransfers = ({
     setDataBoard(board);
   }, [payload]);
 
+  const modifiers = (
+    <>
+    </>
+  );
 
   return (
     <>
@@ -967,7 +865,7 @@ const DrawerProductTransfers = ({
               icon={<ClearOutlined />}
               style={{ marginRight: 5 }}
               onClick={onClear}
-              disabled={updating || !payload || payload?.length===0}
+              disabled={updating}
             >
               {t('operations.clearTransfer')}
             </Button>
@@ -986,7 +884,7 @@ const DrawerProductTransfers = ({
               icon={<CalculatorOutlined />}
               onClick={onCalculate}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={false} // !canCalc || updating}
+              disabled={!canCalc || updating}
               /* disabled={
                 !clicked || 
                 !clicked?.trsf_temp || 
@@ -1011,7 +909,7 @@ const DrawerProductTransfers = ({
 
         <Form.Item name="transfers" noStyle>
           <DataTable
-            // isLoading={updating}
+            // isLoading={updating || dataLoadFlagDrawTransfers!==0}
             isLoading={updating}
             minimal={true}
             // parentHeight="200px"
@@ -1049,6 +947,8 @@ const DrawerProductTransfers = ({
               setDataBoard={setDataBoard}
               data={dataBaseTransfers}
               setData={setDataBaseTransfers}
+              dataLoadFlag={dataLoadFlagBaseTransfers}
+              setDataLoadFlag={setDataLoadFlagBaseTransfers}
               dataLoaded={dataLoaded}
               setDataLoaded={setDataLoaded}
             />
@@ -1063,11 +963,12 @@ const DrawerProductTransfers = ({
               clicked={clicked}
               updating={updating}
               setUpdating={setUpdating}
-              setChildTableAPI={setTableBaseTotalsAPI}
               dataBoard={dataBoard}
               setDataBoard={setDataBoard}
               data={dataBaseTotals}
               setData={setDataBaseTotals}
+              dataLoadFlag={dataLoadFlagBaseTotals}
+              setDataLoadFlag={setDataLoadFlagBaseTotals}
               dataLoaded={dataLoaded}
               setDataLoaded={setDataLoaded}
             />
@@ -1092,6 +993,8 @@ const DrawerProductTransfers = ({
               setDataBoard={setDataBoard}
               data={dataMeterTransfers}
               setData={setDataMeterTransfers}
+              dataLoadFlag={dataLoadFlagMeterTransfers}
+              setDataLoadFlag={setDataLoadFlagMeterTransfers}
               dataLoaded={dataLoaded}
               setDataLoaded={setDataLoaded}
             />
@@ -1107,6 +1010,8 @@ const DrawerProductTransfers = ({
               setDataBoard={setDataBoard}
               data={dataMeterTotals}
               setData={setDataMeterTotals}
+              dataLoadFlag={dataLoadFlagMeterTotals}
+              setDataLoadFlag={setDataLoadFlagMeterTotals}
               dataLoaded={dataLoaded}
               setDataLoaded={setDataLoaded}
             />

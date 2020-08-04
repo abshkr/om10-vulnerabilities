@@ -415,10 +415,10 @@ class Utilities
                 else if (isset($object->NUMBER_FIELDS) &&
                     (array_key_exists($key, $object->NUMBER_FIELDS) || 
                     in_array($key, $object->NUMBER_FIELDS, true))) {
-                    if (array_key_exists($key, $object->NUMBER_FIELDS)) {
+                    if (array_key_exists($key, $object->NUMBER_FIELDS) && !is_null($value)) {
                         $base_item[$lower_key] = round((float) $value, $object->NUMBER_FIELDS[$key]);
                     }
-                    if (in_array($key, $object->NUMBER_FIELDS, true)) {
+                    if (in_array($key, $object->NUMBER_FIELDS, true) && !is_null($value)) {
                         $base_item[$lower_key] = (float) $value;
                     }
                 }

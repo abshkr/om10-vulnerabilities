@@ -6,7 +6,11 @@ const overrideCols = t => [
     filter: 'FuzzyFilter',
     resizable: true,
     valueGetter: function(params) {
-      return t("generic.overriderun") + params.data.repeat_interval;
+      let data = params.data.repeat_interval.split("_");
+      return t("generic.overriderun") + " " + data[2] + " " + 
+        ["January","February","March","April","May","June","July",
+        "August","September","October","November","December"][data[1] - 1] + 
+        " " + data[0];
     }
   },
   {

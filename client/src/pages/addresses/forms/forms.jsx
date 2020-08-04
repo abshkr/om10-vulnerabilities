@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
-import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
@@ -60,14 +60,14 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
           errors.push({
             key: String(item.db_addrline_no)+':'+t('fields.addressLineType'),
             field: t('fields.addressLineType'),
-            message: `Please Fill This Field on Line Item ${item.db_addrline_no}`
+            message: `${t('descriptions.pleaseFillLineField')}${item.db_addrline_no}`
           });
         }
         if (!item.db_addr_line || item.db_addr_line === t('placeholder.enterAddressLineText')) {
           errors.push({
             key: String(item.db_addrline_no)+':'+t('fields.addressLineText'),
             field: t('fields.addressLineText'),
-            message: `Please Fill This Field on Line Item ${item.db_addrline_no}`
+            message: `${t('descriptions.pleaseFillLineField')}${item.db_addrline_no}`
           });
         }
         else {
@@ -87,13 +87,32 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     });
 
     if (errors.length > 0) {
-      _.forEach(errors, error => {
+      const lines = (
+        <>
+        {errors?.map((error, index) => (
+          <Card size="small" title={error.field}>
+            {error.message}
+          </Card>
+        ))}      
+        </>
+      );
+
+      notification.error({
+        message: t('validate.lineItemValidation'),
+        description: lines,
+        duration: 0,
+        style: {
+          height: '500px',
+          overflowY: 'scroll',
+        },
+      });
+      /* _.forEach(errors, error => {
         notification.error({
           message: error.field,
           description: error.message,
           key: error.key
         });
-      });
+      }); */
     }
 
     return errors;

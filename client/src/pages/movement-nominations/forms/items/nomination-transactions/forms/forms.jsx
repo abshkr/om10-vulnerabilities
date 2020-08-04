@@ -50,7 +50,7 @@ import {
 
 import { DataTable } from '../../../../../../components';
 import { SETTINGS } from '../../../../../../constants';
-import api, { NOMINATION_TRANSACTIONS } from '../../../../../../api';
+import api, { NOMINATION_TRANSACTIONS, MOVEMENT_NOMIATIONS } from '../../../../../../api';
 import BaseDetails from './base-details/base-details';
 import MeterDetails from './meter-details/meter-details';
 
@@ -85,6 +85,7 @@ const FormModal = ({
   console.log('value', value);
 
   const { data: units } = useSWR(NOMINATION_TRANSACTIONS.UNIT_TYPES);
+  const { data: products } = useSWR(MOVEMENT_NOMIATIONS.NOM_PRODUCTS, { revalidateOnFocus: false });
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -96,6 +97,8 @@ const FormModal = ({
   const [tankTo, setTankTo] = useState([]); //value?.mvitm_tank_to);
   const [tank, setTank] = useState([]); //value?.mvitm_tank_to);
   const [arm, setArm] = useState(value?.mvitm_arm);
+  const [productItemFrom, setProductItemFrom] = useState(null);
+  const [productItemTo, setProductItemTo] = useState(null);
   const [calcSource, setCalcSource] = useState(null);
   const [altQty, setAltQty] = useState(null);
 
@@ -169,7 +172,24 @@ const FormModal = ({
     return payload;
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
+    const values = await form.validateFields();
+    let found = false;
+    if (values?.mlitm_qty_amb && 
+      values?.mlitm_qty_cor && 
+      values?.mlitm_qty_kg && 
+      (values?.mlitm_temp_amb===0 || values?.mlitm_temp_amb) && 
+      values?.mlitm_dens_cor) {
+      found = true;
+    }
+    if (found === false) {
+      notification.warning({
+        message: t('messages.submitFailed'),
+        description: t('descriptions.noTransferDetailsSpec'),
+      });
+      return;
+    }
+
     Modal.confirm({
       title: t('prompts.submit'),
       okText: t('operations.yes'),
@@ -217,6 +237,78 @@ const FormModal = ({
   };
 
   const onCalculate = () => {
+    const payload = form.getFieldsValue([
+      'mlitm_qty_amb',
+      'mlitm_qty_cor',
+      'mlitm_qty_kg',
+      'mlitm_temp_amb',
+      'mlitm_dens_cor',
+    ]);
+
+    if (String(payload?.mlitm_qty_amb).trim().length === 0 && 
+      String(payload?.mlitm_qty_cor).trim().length === 0 && 
+      String(payload?.mlitm_qty_kg).trim().length === 0) {
+      notification.error({
+        message: t('validate.set'),
+        description: t('fields.observedQuantity')+' or '+t('fields.standardQuantity')+' or '+t('fields.observedMass'),
+      });
+      return;
+    }
+
+    if (!payload?.mlitm_qty_amb && !payload?.mlitm_qty_cor && !payload?.mlitm_qty_kg) {
+      notification.error({
+        message: t('validate.set'),
+        description: t('fields.observedQuantity')+' or '+t('fields.standardQuantity')+' or '+t('fields.observedMass'),
+      });
+      return;
+    }
+
+
+    if (!calcSource || String(calcSource?.qty).trim().length === 0) {
+      notification.error({
+        message: t('validate.set'),
+        description: !calcSource 
+          ? (t('fields.observedQuantity')+' or '+t('fields.standardQuantity')+' or '+t('fields.observedMass'))
+          : calcSource?.title,
+      });
+      return;
+    }
+    if (_.toNumber(calcSource?.qty) < 0) {
+      notification.error({
+        message: t('descriptions.CannotBeNegative'),
+        description: calcSource?.title,
+      });
+      return;
+    }
+    if ((!payload?.mlitm_temp_amb && payload?.mlitm_temp_amb !== 0) || String(payload?.mlitm_temp_amb).trim().length === 0) {
+      notification.error({
+        message: t('validate.set'),
+        description: t('fields.observedTemperature'),
+      });
+      return;
+    }
+    /* if (_.toNumber(payload?.mlitm_temp_amb) < 0) {
+      notification.error({
+        message: t('descriptions.CannotBeNegative'),
+        description: t('fields.observedTemperature'),
+      });
+      return;
+    } */
+    if (!payload?.mlitm_dens_cor || String(payload?.mlitm_dens_cor).trim().length === 0) {
+      notification.error({
+        message: t('validate.set'),
+        description: t('fields.standardDensity'),
+      });
+      return;
+    }
+    if (_.toNumber(payload?.mlitm_dens_cor) < 0) {
+      notification.error({
+        message: t('descriptions.CannotBeNegative'),
+        description: t('fields.standardDensity'),
+      });
+      return;
+    }
+
     Modal.confirm({
       title: t('prompts.calculate'),
       title:
@@ -249,13 +341,13 @@ const FormModal = ({
                 mlitm_qty_cor: response?.data?.real_litre15,
                 mlitm_qty_kg: response?.data?.real_kg,
               });
-              console.log('before change vaalue', value);
+              console.log('before change value', value);
               /* value.mlitm_qty_amb = response?.data?.real_litre;
               value.mlitm_qty_cor = response?.data?.real_litre15;
               value.mlitm_qty_kg = response?.data?.real_kg;
               value.mlitm_temp_amb = values?.mlitm_temp_amb;
               value.mlitm_dens_cor = values?.mlitm_dens_cor; */
-              console.log('after change vaalue', value);
+              console.log('after change value', value);
             });
         } catch (error) {
           message.error({
@@ -291,6 +383,59 @@ const FormModal = ({
       }
     }
   }, [defaultTanker, value, tanker, setTanker]);
+
+  useEffect(() => {
+    if (products && value && !productItemFrom && pageState !== 'receipt') {
+      // console.log('products && value && !productItemFrom && pageState', products, value);
+      const item = _.find(products?.records, (o) => (
+        o.prod_cmpy === value?.mvitm_prodcmpy_from && o.prod_code === value?.mvitm_prodcode_from
+      ));
+      console.log('products && value && !productItemFrom && pageState', item);
+      setProductItemFrom(item);
+    }
+  }, [products, value, productItemFrom, setProductItemFrom, pageState]);
+
+  useEffect(() => {
+    if (products && value && !productItemTo && pageState !== 'disposal') {
+      const item = _.find(products?.records, (o) => (
+        o.prod_cmpy === value?.mvitm_prodcmpy_to && o.prod_code === value?.mvitm_prodcode_to
+      ));
+      setProductItemTo(item);
+    }
+  }, [products, value, productItemTo, setProductItemTo, pageState]);
+
+  useEffect(() => {
+    if (productItemTo && pageState !== 'disposal') {
+      if (_.toNumber(productItemTo?.rat_count) > 1) {
+        notification.error({
+          message: _.capitalize(pageState) + ': ' 
+            + productItemTo.prod_cmpy + ' - ' 
+            + productItemTo.prod_code + ' - ' 
+            + productItemTo.prod_name + ' ['
+            + productItemTo.rat_count + ']',
+          description: t('descriptions.toProductNotBase'),
+        });
+        onComplete();
+      }
+    }
+  }, [productItemTo, pageState]);
+
+  useEffect(() => {
+    // console.log('productItemFrom && pageState === \'transfer\'', productItemFrom, pageState);
+    if (productItemFrom && pageState === 'transfer') {
+      if (_.toNumber(productItemFrom?.rat_count) > 1) {
+        notification.error({
+          message: _.capitalize(pageState) + ': ' 
+            + productItemFrom.prod_cmpy + ' - ' 
+            + productItemFrom.prod_code + ' - ' 
+            + productItemFrom.prod_name + ' ['
+            + productItemFrom.rat_count + ']',
+          description:  t('descriptions.fromProductNotBase'),
+        });
+        onComplete();
+      }
+    }
+  }, [productItemFrom, pageState]);
 
   return (
     <Tabs defaultActiveKey="1" animated={false}>
@@ -423,7 +568,7 @@ const FormModal = ({
 
                     <Row gutter={[8, 1]}>
                       <Col span={24}>
-                        <SourceTank form={form} value={value} onChange={setTank} arm={arm} pageState={pageState} />
+                        <SourceTank form={form} value={value} onChange={setTank} arm={arm} product={productItemFrom} pageState={pageState} />
                       </Col>
                     </Row>
                   </Card>

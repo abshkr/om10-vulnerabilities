@@ -5,8 +5,8 @@ import { Form, InputNumber } from 'antd';
 import _ from 'lodash';
 
 const ObsTemp = ({ form, value, tank, pageState, config }) => {
-  const [minTemp, setMinTemp] = useState(-273);
-  const [maxTemp, setMaxTemp] = useState(500);
+  const [minTemp, setMinTemp] = useState(config.minTemperature);
+  const [maxTemp, setMaxTemp] = useState(config.maxTemperature);
 
   console.log('in ObsTemp', tank);
   const { t } = useTranslation();
@@ -46,8 +46,8 @@ const ObsTemp = ({ form, value, tank, pageState, config }) => {
       setFieldsValue({
         mlitm_temp_amb: null,
       });
-      setMinTemp(-273);
-      setMaxTemp(500);
+      setMinTemp(config.minTemperature);
+      setMaxTemp(config.maxTemperature);
     }
   }, [tank, setFieldsValue, setMinTemp, setMaxTemp]);
 

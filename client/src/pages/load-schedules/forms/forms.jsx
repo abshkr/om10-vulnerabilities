@@ -12,7 +12,7 @@ import {
   CaretDownOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col, Radio, Checkbox } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col, Radio, Checkbox, InputNumber } from 'antd';
 
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
@@ -25,7 +25,6 @@ import {
   Drawer as DrawerForm,
   Carrier,
   Tanker,
-  TripNumber,
   Priority,
   Shift,
   HostData,
@@ -70,7 +69,6 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const [drawer, setDrawer] = useState(undefined);
   const [carrier, setCarrier] = useState(undefined);
   const [tanker, setTanker] = useState(undefined);
-  const [trip, setTrip] = useState(undefined);
   const [redoBOL, setRedoBOL] = useState(0);
   const [redoDLI, setRedoDLI] = useState(false);
   const [shipTo, setShipTo] = useState(value?.shls_ship_to_num);
@@ -126,6 +124,22 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   };
 
   const changeSupplier = (supplier) => {
+    if (IS_CREATING) {
+      api
+        .get(LOAD_SCHEDULES.NEXT_TRIP, {
+          params: {
+            supplier_code: supplier,
+          },
+        })
+        .then((res) => {
+          const trip = res.data?.records[0]?.next_trip_no;
+
+          setFieldsValue({
+            shls_trip_no: trip,
+          });
+        });
+    }
+
     setSupplier(supplier);
     setDrawer(supplier);
     setFieldsValue({
@@ -143,6 +157,17 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
         notification.error({
           message: t("messages.validationFailed"),
           description: t("descriptions.preOrderReady"),
+        });
+        return;
+      }
+
+      findResult = _.find(record.products, (item) => {
+        return item.qty_scheduled > 99999999;
+      });
+      if (findResult) {
+        notification.error({
+          message: t("messages.validationFailed"),
+          description: t("descriptions.scheduledTooHigh") + ": " + findResult.qty_scheduled,
         });
         return;
       }
@@ -409,7 +434,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   }
 
   const onTabChange = (v) => {
-    if (v === '3') {
+    if (v === '3' || v === '4') {
       if (value?.status === 'A') {
         Modal.confirm({
           title: t('prompts.completeTrip'),
@@ -460,6 +485,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       setFieldsValue({
         shls_ld_type: value.shls_ld_type? value.shls_ld_type : "4",
         unload: value?.shls_ld_type === "6",
+        shls_trip_no: value?.shls_trip_no,
       });
       setMode(value.shls_ld_type === '6'? '3': value.shls_ld_type);
     }
@@ -471,7 +497,6 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       setDrawer(undefined);
       setCarrier(undefined);
       setTanker(undefined);
-      setTrip(undefined);
 
       resetFields();
 
@@ -720,7 +745,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
             <Row gutter={[8, 8]}>
               <Col span={6}>
-                <TripNumber form={form} value={value} supplier={supplier} onChange={setTrip} />
+                {/* <TripNumber form={form} value={value} supplier={supplier} onChange={setTrip} /> */}
+                <Form.Item name="shls_trip_no" label={t('fields.tripNumber')}>
+                  <InputNumber min={1} style={{ width: '100%' }} disabled={!supplier || !!value} />
+                </Form.Item>
               </Col>
 
               <Col span={6}>
@@ -809,6 +837,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               params={{
                 supplier: value?.supplier_code,
                 trip_no: value?.shls_trip_no,
+                carrier: value?.carrier_code,
+                tanker: value?.tnkr_code,
                 trans_type: 'SCHEDULE',
                 repost: false,
                 title: t('tabColumns.createTripTransactions'),

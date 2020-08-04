@@ -88,6 +88,17 @@ const columns = (t) => [
     hide: false,
     editable: false,
     width: 100,
+    hide: true,
+  },
+  {
+    headerName: t('fields.schdProdQty'),
+    field: 'qty_loaded',
+    filter: 'MultiFilter',
+    sortable: true,
+    resizable: true,
+    hide: false,
+    editable: false,
+    width: 100,
   },
   {
     headerName: t('fields.schdProdUnit'),
@@ -108,6 +119,30 @@ const columns = (t) => [
     hide: false,
     editable: false,
     width: 100,
+  },
+  {
+    headerName: t('fields.observedQuantity') + ' (' + t('units.ltr') + ')',
+    field: 'qty_amb',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+  },
+  {
+    headerName: t('fields.standardQuantity') + ' (' + t('units.ltr') + ')',
+    field: 'qty_std',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+  },
+  {
+    headerName: t('fields.massQuantity') + ' (' + t('units.kg') + ')',
+    field: 'qty_kg',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
   },
 ];
 

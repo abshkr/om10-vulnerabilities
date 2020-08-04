@@ -110,6 +110,9 @@ export default class Temperature extends Component {
         value,
       });
     } else {
+      if (value === '-') {
+        return;
+      }
       notification.error({
         key: 'temp',
         message: colDef.headerName + ' ' + txt('validate.mustBeBetween') + ' (' + min + 'C ~ ' + max + 'C)',

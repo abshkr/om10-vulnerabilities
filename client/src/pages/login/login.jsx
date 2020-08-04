@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import Icon, { SmileOutlined, FrownOutlined, IdcardOutlined, LockOutlined } from '@ant-design/icons';
+import Icon, { SmileOutlined, 
+  FrownOutlined, 
+  IdcardOutlined, 
+  LockOutlined, 
+  QuestionCircleOutlined, 
+  SafetyCertificateOutlined 
+} from '@ant-design/icons';
 import { Form, Input, Button, notification, Divider, Carousel, Modal, Select, Row, Col } from 'antd';
 
 import { useHistory } from 'react-router-dom';
@@ -7,6 +13,9 @@ import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 import _ from 'lodash';
+import api, { COMMON, AUTH } from 'api';
+import hash from 'utils/hash';
+import { AUTHORIZED, UNAUTHORIZED } from 'actions/types';
 
 import { ReactComponent as LoginIcon } from './login.svg';
 
@@ -28,6 +37,8 @@ import * as actions from '../../actions/auth';
 
 import { ROUTES, SETTINGS } from '../../constants';
 import { Icons } from '../../components/';
+import ChangePassword from './change-password';
+
 
 const LoginOutlined = (props) => (
   <Icon className="key-icon" style={{ transform: 'scale(1.8)' }} component={LoginIcon} {...props} />
@@ -46,19 +57,132 @@ const Login = ({ handleLogin, auth }) => {
     i18n.changeLanguage(value);
   };
 
+  const onChangePassword = (ret) => {
+    if (ret.ret_code === "cancel") {
+      history.push(ROUTES.LOG_OUT);
+    } else {
+      const {dispatch} = ret;
+      const payload = hash(ret.language, ret.user_code, ret.new_password);
+      const payload2 = hash(ret.language, ret.user_code, ret.old_password);
+      api
+        .post(AUTH.ACTIVATE, {
+          per_code: ret.user_code,
+          old_password: payload2.psw,
+          password: payload.psw,
+          refresh_token: false,
+        })
+        .then(() => {
+          const token = sessionStorage.getItem('token');
+          dispatch({ type: AUTHORIZED, payload: token});
+          history.push(ROUTES.HOME);
+          
+          notification.success({
+            placement: 'bottomRight',
+            message: t('messages.loginSuccess'),
+            description: `${t('descriptions.loginSuccess')} ${ret.user_code}`,
+            icon: <SmileOutlined style={{ color: '#0054A4' }} />,
+          });
+        })
+        .catch((errors) => {
+          _.forEach(errors.response.data.errors, (error) => {
+            console.log(error.message);
+            notification.error({
+              message: error.message,
+              description: t('messages.loginFailed'),
+            });
+          });
+          history.push(ROUTES.LOG_OUT);
+        });
+    }
+  }
+
+  const changePwd = (
+    language,
+    user_code,
+    password,
+    dispatch
+  ) => {
+    Modal.info({
+      className: 'form-container',
+      title: t("operations.changePassword"),
+      centered: true,
+      width: '25vw',
+      icon: <SafetyCertificateOutlined />,
+      keyboard: false,
+      content: (
+      // <SWRConfig
+      //     value={{
+      //     refreshInterval: 0,
+      //     fetcher,
+      //     }}
+      // >
+        <ChangePassword language={language} user_code={user_code} old={password} dispatch={dispatch} onReturn={onChangePassword} />
+      // </SWRConfig>
+      ),
+      okButtonProps: {
+      style: { display: 'none' },
+      },
+    });
+
+    return null;
+  };
+
   const handleSubmit = (values) => {
     setLoading(true);
 
-    handleLogin(values, (response) => {
+    handleLogin(values, (response, dispatch) => {
       if (response?.data?.token) {
-        history.push(ROUTES.HOME);
+        if (response.data.killsession) {
+          Modal.confirm({
+            title: t('prompts.killSessions'),
+            okText: t('operations.yes'),
+            okType: 'primary',
+            icon: <QuestionCircleOutlined />,
+            cancelText: t('operations.no'),
+            centered: true,
+            onOk: async () => {
+              sessionStorage.setItem('token', response.data.token);
+              dispatch({ type: AUTHORIZED, payload: response.data.token });
+                  
+              await api
+                .post(COMMON.KILL_SESSIONS, {
+                  per_code: values?.code,
+                  sess_id: response?.data.sess_id,
+                })
+                .then(() => {
+                  history.push(ROUTES.HOME);
+                  
+                  notification.success({
+                    placement: 'bottomRight',
+                    message: t('messages.loginSuccess'),
+                    description: `${t('descriptions.loginSuccess')} ${values.code}`,
+                    icon: <SmileOutlined style={{ color: '#0054A4' }} />,
+                  });
+                })
+                .catch((errors) => {
+                  _.forEach(errors.response.data.errors, (error) => {
+                    console.log(error.message);
+                  });
+                });
+              },
+            onCancel() {
+              sessionStorage.setItem('token', response.data.token); //So log out can delete session from db
+              history.push(ROUTES.LOG_OUT);
+            },
+          });
+        } else if (response.data.user_status_flag ==='0') {
+          sessionStorage.setItem('token', response.data.token);
+          changePwd(values.language, response.data.userid, values.password, dispatch);
+        } else {
+          history.push(ROUTES.HOME);
 
-        notification.success({
-          placement: 'bottomRight',
-          message: t('messages.loginSuccess'),
-          description: `${t('descriptions.loginSuccess')} ${values.code}`,
-          icon: <SmileOutlined style={{ color: '#0054A4' }} />,
-        });
+          notification.success({
+            placement: 'bottomRight',
+            message: t('messages.loginSuccess'),
+            description: `${t('descriptions.loginSuccess')} ${values.code}`,
+            icon: <SmileOutlined style={{ color: '#0054A4' }} />,
+          });
+        }
       } else {
         setLoading(false);
         const attempt =
@@ -74,6 +198,8 @@ const Login = ({ handleLogin, auth }) => {
           icon: <FrownOutlined style={{ color: '#ec6e68' }} />,
         });
       }
+
+      return true;
     });
   };
 
@@ -122,10 +248,10 @@ const Login = ({ handleLogin, auth }) => {
 
           <Divider />
           <h3>{t('generic.help')}</h3>
-          <a href="/om5000/docs/manual.pdf">{t('operations.clickHere')}</a>
+          <a href="/manual.pdf" target="_blank">{t('operations.clickHere')}</a>
           <Divider />
           <h3>{t('generic.about')}</h3>
-          <a href="/om5000/docs/eula.pdf">{t('operations.clickHere')}</a>
+          <a href="/eula.pdf" target="_blank">{t('operations.clickHere')}</a>
         </div>
       ),
     });
@@ -177,7 +303,7 @@ const Login = ({ handleLogin, auth }) => {
             </Form.Item>
 
             <div style={{ textAlign: 'center', color: 'red', marginBottom: 10 }}>
-              {attempts !== null && status !== -1 ? `You have ${attempts} attempts left.` : ``}
+              {attempts !== null && !isNaN(attempts) && status !== -1 ? `You have ${attempts} attempts left.` : ``}
             </div>
 
             <Row gutter={[12, 12]}>

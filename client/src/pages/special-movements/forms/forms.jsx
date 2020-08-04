@@ -113,7 +113,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
   const onFinish = async () => {
     const values = await form.validateFields();
     let found = false;
-    if (values?.mlitm_qty_amb && values?.mlitm_qty_cor && values?.mlitm_qty_kg && values?.mlitm_temp_amb && values?.mlitm_dens_cor) {
+    if (values?.mlitm_qty_amb && 
+      values?.mlitm_qty_cor && 
+      values?.mlitm_qty_kg && 
+      (values?.mlitm_temp_amb===0 || values?.mlitm_temp_amb) && 
+      values?.mlitm_dens_cor) {
       found = true;
     }
     if (found === false) {
@@ -232,6 +236,14 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       return;
     }
 
+    if (!payload?.mlitm_qty_amb && !payload?.mlitm_qty_cor && !payload?.mlitm_qty_kg) {
+      notification.error({
+        message: t('validate.set'),
+        description: t('fields.observedQuantity')+' or '+t('fields.standardQuantity')+' or '+t('fields.observedMass'),
+      });
+      return;
+    }
+
 
     if (!quantitySource || String(quantitySource?.qty).trim().length === 0) {
       notification.error({
@@ -320,7 +332,24 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
     });
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
+    const values = await form.validateFields();
+    let found = false;
+    if (values?.mlitm_qty_amb && 
+      values?.mlitm_qty_cor && 
+      values?.mlitm_qty_kg && 
+      (values?.mlitm_temp_amb===0 || values?.mlitm_temp_amb) && 
+      values?.mlitm_dens_cor) {
+      found = true;
+    }
+    if (found === false) {
+      notification.warning({
+        message: t('messages.submitFailed'),
+        description: t('descriptions.noTransferDetailsSpec'),
+      });
+      return;
+    }
+
     Modal.confirm({
       title: t('prompts.submit'),
       okText: t('operations.yes'),
@@ -352,6 +381,24 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
             values.mlitm_dtim_start = values?.mlitm_dtim_start?.format(SETTINGS.DATE_TIME_FORMAT);
             await api
               .post(SPECIAL_MOVEMENTS.CREATE, values)
+              .then(
+                () => {
+                  // console.log("Created");
+                }
+              )
+              .catch((errors) => {
+                _.forEach(errors.response.data.errors, (error) => {
+                  notification.error({
+                    message: error.type,
+                    description: error.message,
+                  });
+                });
+                return;
+              });
+          } else {
+            values.mlitm_dtim_start = values?.mlitm_dtim_start?.format(SETTINGS.DATE_TIME_FORMAT);
+            await api
+              .post(SPECIAL_MOVEMENTS.UPDATE, values)
               .then(
                 () => {
                   // console.log("Created");

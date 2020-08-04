@@ -16,6 +16,10 @@ const useColumns = (value, selected) => {
 
   //const [type, setType] = useState('Receipt');
   const [type, setType] = useState(0);
+  const [plantsFrom, setPlantsFrom] = useState([]);
+  const [plantsTo, setPlantsTo] = useState([]);
+  const [suppliersFrom, setSuppliersFrom] = useState([]);
+  const [suppliersTo, setSuppliersTo] = useState([]);
   const [productsFrom, setProductsFrom] = useState([]);
   const [productsTo, setProductsTo] = useState([]);
   const [tanksFrom, setTanksFrom] = useState([]);
@@ -23,12 +27,12 @@ const useColumns = (value, selected) => {
 
   const { t } = useTranslation();
 
-  const { data: types } = useSWR(MOVEMENT_NOMIATIONS.TYPES, { refreshInterval: 0 });
-  const { data: units } = useSWR(MOVEMENT_NOMIATIONS.UNITS, { refreshInterval: 0 });
-  const { data: plants } = useSWR(MOVEMENT_NOMIATIONS.PLANTS, { refreshInterval: 0 });
-  const { data: suppliers } = useSWR(MOVEMENT_NOMIATIONS.SUPPLIERS, { refreshInterval: 0 });
-  const { data: products } = useSWR(MOVEMENT_NOMIATIONS.NOM_PRODUCTS, { refreshInterval: 0 });
-  const { data: tanks } = useSWR(MOVEMENT_NOMIATIONS.NOM_TANKS, { refreshInterval: 0 });
+  const { data: types } = useSWR(MOVEMENT_NOMIATIONS.TYPES, { revalidateOnFocus: false });
+  const { data: units } = useSWR(MOVEMENT_NOMIATIONS.UNITS, { revalidateOnFocus: false });
+  const { data: plants } = useSWR(MOVEMENT_NOMIATIONS.PLANTS, { revalidateOnFocus: false });
+  const { data: suppliers } = useSWR(MOVEMENT_NOMIATIONS.SUPPLIERS, { revalidateOnFocus: false });
+  const { data: products } = useSWR(MOVEMENT_NOMIATIONS.NOM_PRODUCTS, { revalidateOnFocus: false });
+  const { data: tanks } = useSWR(MOVEMENT_NOMIATIONS.NOM_TANKS, { revalidateOnFocus: false });
   /* const { data: productsFrom } = useSWR(MOVEMENT_NOMIATIONS.NOM_PRODUCTS, { refreshInterval: 0 });
   const { data: tanksFrom } = useSWR(MOVEMENT_NOMIATIONS.NOM_TANKS, { refreshInterval: 0 });
   const { data: productsTo } = useSWR(MOVEMENT_NOMIATIONS.NOM_PRODUCTS, { refreshInterval: 0 });
@@ -36,7 +40,7 @@ const useColumns = (value, selected) => {
 
   useEffect(() => {
     //if (!!products) {
-    console.log('useEffect, setProducts...', products);
+    //console.log('useEffect, setProducts...', products);
     setProductsFrom(products);
     setProductsTo(products);
     //}
@@ -44,11 +48,23 @@ const useColumns = (value, selected) => {
 
   useEffect(() => {
     //if (!!tanks) {
-    console.log('useEffect, setTanks...', tanks);
+    //console.log('useEffect, setTanks...', tanks);
     setTanksFrom(tanks);
     setTanksTo(tanks);
     //}
   }, [tanks, setTanksFrom, setTanksTo]);
+
+  useEffect(() => {
+    //console.log('useEffect, setPlants...', plants);
+    setPlantsFrom(plants);
+    setPlantsTo(plants);
+  }, [plants, setPlantsFrom, setPlantsTo]);
+
+  useEffect(() => {
+    console.log('useEffect, setSuppliers...', suppliers);
+    setSuppliersFrom(suppliers);
+    setSuppliersTo(suppliers);
+  }, [suppliers, setSuppliersFrom, setSuppliersTo]);
 
   /*
   const getProductsFromBySupplier = useCallback((supplier) => {
@@ -297,7 +313,7 @@ const useColumns = (value, selected) => {
           : '',
       cellEditor: 'SelectEditor',
       cellEditorParams: {
-        values: _.uniq(_.map(plants?.records, 'cmpy_plant')),
+        values: _.uniq(_.map(plantsFrom?.records, 'cmpy_plant')),
       },
     },
     {
@@ -317,15 +333,15 @@ const useColumns = (value, selected) => {
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
-          _.map(suppliers?.records, (item) => {
-            return { code: item.cmpy_code, name: item.cmpy_name };
+          _.map(suppliersFrom?.records, (item) => {
+            return { code: item.cmpy_code, name: item.cmpy_code + ' - ' + item.cmpy_name };
           })
         ),
       },
       cellEditor: 'ListEditor',
       cellEditorParams: {
         values: _.uniq(
-          _.map(suppliers?.records, (item) => {
+          _.map(suppliersFrom?.records, (item) => {
             return { code: item.cmpy_code, name: item.cmpy_code + ' - ' + item.cmpy_name };
           })
         ),
@@ -348,12 +364,15 @@ const useColumns = (value, selected) => {
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
-          _.map(
+          _.map(productsFrom?.records, (item) => {
+            return { code: item.prod_code, name: item.prod_code + ' - ' + item.prod_name };
+          })
+          /* _.map(
             productsFrom?.records?.filter((item) => item.prod_cmpy === selected?.[0]?.mvitm_prodcmpy_from),
             (item) => {
-              return { code: item.prod_code, name: item.prod_name };
+              return { code: item.prod_code, name: item.prod_code + ' - ' + item.prod_name };
             }
-          )
+          ) */
         ),
       },
       cellEditor: 'ListEditor',
@@ -395,16 +414,24 @@ const useColumns = (value, selected) => {
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
-          _.map(
+          _.map(tanksFrom?.records, (item) => {
+            return { code: item.tank_code, name: item.tank_code + ' - ' + item.tank_name };
+          })
+          /* _.map(
             tanksFrom?.records?.filter(
               (item) =>
                 item.prod_cmpy === selected?.[0]?.mvitm_prodcmpy_from &&
                 item.prod_code === selected?.[0]?.mvitm_prodcode_from
             ),
             (item) => {
-              return { code: item.tank_code, name: item.tank_name };
+              return { 
+                code: item.tank_code, 
+                // name: item.tank_code, 
+                // name: item.tank_code + ' - ' + item.tank_name + ' [' + item.base_code + ' - ' + item.base_name + ']'
+                name: item.tank_code + ' - ' + item.tank_name
+              };
             }
-          )
+          ) */
         ),
       },
       cellEditor: 'ListEditor',
@@ -420,7 +447,8 @@ const useColumns = (value, selected) => {
               return { 
                 code: item.tank_code, 
                 // name: item.tank_code, 
-                name: item.tank_code + ' - ' + item.tank_name + ' [' + item.base_code + ' - ' + item.base_name + ']'
+                // name: item.tank_code + ' - ' + item.tank_name + ' [' + item.base_code + ' - ' + item.base_name + ']'
+                name: item.tank_code + ' - ' + item.tank_name
               };
             }
           )
@@ -467,7 +495,7 @@ const useColumns = (value, selected) => {
 
       cellEditor: 'SelectEditor',
       cellEditorParams: {
-        values: _.uniq(_.map(plants?.records, 'cmpy_plant')),
+        values: _.uniq(_.map(plantsTo?.records, 'cmpy_plant')),
       },
     },
     {
@@ -487,15 +515,15 @@ const useColumns = (value, selected) => {
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
-          _.map(suppliers?.records, (item) => {
-            return { code: item.cmpy_code, name: item.cmpy_name };
+          _.map(suppliersTo?.records, (item) => {
+            return { code: item.cmpy_code, name: item.cmpy_code + ' - ' + item.cmpy_name };
           })
         ),
       },
       cellEditor: 'ListEditor',
       cellEditorParams: {
         values: _.uniq(
-          _.map(suppliers?.records, (item) => {
+          _.map(suppliersTo?.records, (item) => {
             return { code: item.cmpy_code, name: item.cmpy_code + ' - ' + item.cmpy_name };
           })
         ),
@@ -518,12 +546,15 @@ const useColumns = (value, selected) => {
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
-          _.map(
+          _.map(productsTo?.records, (item) => {
+            return { code: item.prod_code, name: item.prod_code + ' - ' + item.prod_name };
+          })
+          /* _.map(
             productsTo?.records?.filter((item) => item.prod_cmpy === selected?.[0]?.mvitm_prodcmpy_to),
             (item) => {
-              return { code: item.prod_code, name: item.prod_name };
+              return { code: item.prod_code, name: item.prod_code + ' - ' + item.prod_name };
             }
-          )
+          ) */
         ),
       },
       cellEditor: 'ListEditor',
@@ -565,16 +596,24 @@ const useColumns = (value, selected) => {
       cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
-          _.map(
+          _.map(tanksTo?.records, (item) => {
+            return { code: item.tank_code, name: item.tank_code + ' - ' + item.tank_name };
+          })
+          /* _.map(
             tanksTo?.records?.filter(
               (item) =>
                 item.prod_cmpy === selected?.[0]?.mvitm_prodcmpy_to &&
                 item.prod_code === selected?.[0]?.mvitm_prodcode_to
             ),
             (item) => {
-              return { code: item.tank_code, name: item.tank_name };
+              return { 
+                code: item.tank_code, 
+                // name: item.tank_code 
+                // name: item.tank_code + ' - ' + item.tank_name + ' [' + item.base_code + ' - ' + item.base_name + ']'
+                name: item.tank_code + ' - ' + item.tank_name
+              };
             }
-          )
+          ) */
         ),
       },
       cellEditor: 'ListEditor',
@@ -590,7 +629,8 @@ const useColumns = (value, selected) => {
               return { 
                 code: item.tank_code, 
                 // name: item.tank_code 
-                name: item.tank_code + ' - ' + item.tank_name + ' [' + item.base_code + ' - ' + item.base_name + ']'
+                // name: item.tank_code + ' - ' + item.tank_name + ' [' + item.base_code + ' - ' + item.base_name + ']'
+                name: item.tank_code + ' - ' + item.tank_name
               };
             }
           )

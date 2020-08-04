@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Select } from 'antd';
 import _ from 'lodash';
 
-import {calcBaseRatios, calcArmDensity, getAvailableArms} from '../../../../utils'
+import {calcBaseRatios, calcArmDensity, getAvailableArms, adjustProductArms} from '../../../../utils'
 
 export default class DrawerProducts extends Component {
   constructor(props) {
@@ -25,7 +25,7 @@ export default class DrawerProducts extends Component {
   };
 
   onClick = (value, record) => {
-    const { form, arms, payload, setPayload, t } = this.props;
+    const { form, arms, sourceType, loadType, payload, setPayload, t } = this.props;
 
     // let current = payload;
     let current = form.getFieldValue('transfers');
@@ -35,6 +35,7 @@ export default class DrawerProducts extends Component {
     console.log('DrawerProducts, onClick', key, index, record, this.props);
 
     const items = getAvailableArms(arms, record?.item?.prod_cmpy, record?.item?.prod_code);
+    const prodArms = adjustProductArms(arms, record?.item?.prod_cmpy, record?.item?.prod_code);
 
     current[index].trsf_prod_code = record?.item?.prod_code;
     current[index].trsf_prod_name = record.children;
@@ -42,9 +43,11 @@ export default class DrawerProducts extends Component {
     current[index].trsf_prod_cmpy = record?.item?.prod_cmpy;
     // current[index].trsf_arm_cd = items?.length>0 ? t('placeholder.selectArmCode') : t('placeholder.noArmAvailable');
     current[index].trsf_arm_cd = items?.length>0 ? items?.[0]?.stream_armcode : t('placeholder.noArmAvailable');
-    // current[index].trsf_qty_plan = null;
-    // current[index].trsf_qty_left = null;
-    current[index].trsf_density = items?.length>0 ? this.calcDensity(items?.[0]?.stream_index, arms) : null;
+    if (sourceType === 'OPENORDER' || (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT')) {
+      current[index].trsf_qty_plan = record?.item?.qty_planned;
+      current[index].trsf_qty_left = record?.item?.qty_loaded;
+    }
+    current[index].trsf_density = items?.length>0 ? this.calcDensity(items?.[0]?.stream_index, prodArms) : null;
     current[index].trsf_temp = null;
     current[index].trsf_qty_cor = null;
     current[index].trsf_qty_amb = null;

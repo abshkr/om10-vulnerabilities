@@ -11,7 +11,7 @@ header("Content-Type: application/json; charset=UTF-8");
 
 // include database and object files
 include_once './config/database.php';
-include_once './config/log.php';
+include_once './shared/log.php';
 include_once './objects/personnel.php';
 include_once './config/setups.php';
 include_once './config/jwt.php';

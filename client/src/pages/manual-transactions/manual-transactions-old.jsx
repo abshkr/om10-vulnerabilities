@@ -7,7 +7,7 @@ import {
   SaveOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
-import { Button, Form, Modal, notification, message, Card } from 'antd';
+import { Button, Form, Modal, notification, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import _ from 'lodash';
@@ -37,6 +37,17 @@ const ManualTransactions = ({ popup, params }) => {
   const user_code = decoded?.per_code;
 
   const [dataLoaded, setDataLoaded] = useState(null);
+  // dataLoadFlagXYZ values:
+  // 0: no data loading from database, manual operations by user 
+  // 1: start data loading
+  // 2: data loading is done
+  // 3: data loading idle
+  const [dataLoadFlagForm, setDataLoadFlagForm] = useState(0);
+  const [dataLoadFlagDrawTransfers, setDataLoadFlagDrawTransfers] = useState(0);
+  const [dataLoadFlagBaseTransfers, setDataLoadFlagBaseTransfers] = useState(0);
+  const [dataLoadFlagBaseTotals, setDataLoadFlagBaseTotals] = useState(0);
+  const [dataLoadFlagMeterTransfers, setDataLoadFlagMeterTransfers] = useState(0);
+  const [dataLoadFlagMeterTotals, setDataLoadFlagMeterTotals] = useState(0);
   const [dataSaved, setDataSaved] = useState(null);
   const [dataBoard, setDataBoard] = useState({});
   const [dataDrawTransfers, setDataDrawTransfers] = useState([]);
@@ -54,20 +65,20 @@ const ManualTransactions = ({ popup, params }) => {
   const [loadType, setLoadType] = useState(undefined);
   // Store the trip number or open order number
   const [loadNumber, setLoadNumber] = useState(undefined);
-  // store the information of source for manual transaction
+
+  const [trips, setTrips] = useState(null);
+  const [tankers, setTankers] = useState(null);
+  const [orders, setOrders] = useState(null);
+  const [productArms, setProductArms] = useState(undefined);
+
+  const [customers, setCustomers] = useState(null);
   const [selectedSupplier, setSelectedSupplier] = useState(null);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [selectedTrip, setSelectedTrip] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [selectedTanker, setSelectedTanker] = useState(null);
 
-  const [trips, setTrips] = useState(null);
-  const [tankers, setTankers] = useState(null);
-  const [customers, setCustomers] = useState(null);
-  const [orders, setOrders] = useState(null);
   const [orderSeals, setOrderSeals] = useState([]);
-  const [productArms, setProductArms] = useState(undefined);
-
 
   const resetFormGrids = () => {
     setDataDrawTransfers([]);
@@ -79,6 +90,12 @@ const ManualTransactions = ({ popup, params }) => {
 
   const resetLoadData = () => {
     setDataLoaded(null);
+    setDataLoadFlagForm(0);
+    setDataLoadFlagDrawTransfers(0);
+    setDataLoadFlagBaseTransfers(0);
+    setDataLoadFlagBaseTotals(0);
+    setDataLoadFlagMeterTransfers(0);
+    setDataLoadFlagMeterTotals(0);
   };
 
   const resetFormData = () => {
@@ -102,170 +119,27 @@ const ManualTransactions = ({ popup, params }) => {
     return payload;
   };
 
-  const onItemValidation = (items) => {
-    const errors = [];
-
-    // _.forEach(items, (item) => {
-    for (let tidx = 0; tidx < items?.length; tidx++) {
-      const item = items?.[tidx];
-      if (item.trsf_arm_cd === t('placeholder.selectArmCode') || 
-        item.trsf_arm_cd === t('placeholder.noArmAvailable') ||
-        item.trsf_prod_name === t('placeholder.selectDrawerProduct')
-      ) {
-        continue;
-      }
-
-      // The density must be filled
-      if (!item.trsf_density || String(item.trsf_density).trim()==='') {
-        errors.push({
-          field: `${t('fields.density')} (${t('units.kg/m3')})`,
-          message: `${t('descriptions.requiredAndCannotBeZeroCmptField')}${item.trsf_cmpt_no}`,
-          key: `${'trsf_density'}${item.trsf_cmpt_no}`,
-          line: item.trsf_cmpt_no,
-        });
-      }
-
-      // The temperature must be filled and can be zero
-      if ((item.trsf_temp!==0 && !item.trsf_temp) || String(item.trsf_temp).trim()==='') {
-        errors.push({
-          field: `${t('fields.temperature')} (${t('units.degC')})`,
-          message: `${t('descriptions.requiredCmptField')}${item.trsf_cmpt_no}`,
-          key: `${'trsf_temp'}${item.trsf_cmpt_no}`,
-          line: item.trsf_cmpt_no,
-        });
-      }
-
-      // The observed quantity must be filled and cannot be zero
-      if (!item.trsf_qty_amb || String(item.trsf_qty_amb).trim()==='') {
-        errors.push({
-          field: `${t('fields.observedQuantity')} (${t('units.ltr')})`,
-          message: `${t('descriptions.requiredAndCannotBeZeroCmptField')}${item.trsf_cmpt_no}`,
-          key: `${'trsf_qty_amb'}${item.trsf_cmpt_no}`,
-          line: item.trsf_cmpt_no,
-        });
-      } else {
-        // Compare the observed quantity with scheduled quantity or compartment capacity
-        if (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') {
-          // Compare with scheduled quantity for Pre-Schedule
-          if (_.toNumber(item.trsf_qty_amb) > (_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left))) {
-            errors.push({
-              field: `${t('fields.observedQuantity')} (${t('units.ltr')})`,
-              message: `${t('fields.compartment')} ${item.trsf_cmpt_no}: ${t('fields.observedQuantity')} ${item.trsf_qty_amb} > ${t('fields.scheduled')} ${_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left)}`,
-              key: `${'trsf_qty_amb'}${item.trsf_cmpt_no}`,
-              line: item.trsf_cmpt_no,
-            });
-          }
-        }
-        if (sourceType === 'OPENORDER' || (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT')) {
-          // Compare with planned quantity and compartment capacity for Pre-Order and Open Order
-          if (_.toNumber(item.trsf_qty_amb) > (_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left))) {
-            errors.push({
-              field: `${t('fields.observedQuantity')} (${t('units.ltr')})`,
-              message: `${t('fields.compartment')} ${item.trsf_cmpt_no}: ${t('fields.observedQuantity')} ${item.trsf_qty_amb} > ${t('fields.planned')} ${_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left)}`,
-              key: `${'trsf_qty_amb'}${item.trsf_cmpt_no}`,
-              line: item.trsf_cmpt_no,
-            });
-          } else {
-            if (_.toNumber(item.trsf_qty_amb) > _.toNumber(item.trsf_cmpt_capacit)) {
-              errors.push({
-                field: `${t('fields.observedQuantity')} (${t('units.ltr')})`,
-                message: `${t('fields.compartment')} ${item.trsf_cmpt_no}: ${t('fields.observedQuantity')} ${item.trsf_qty_amb} > ${t('fields.capacity')} ${_.toNumber(item.trsf_cmpt_capacit)}`,
-                key: `${'trsf_qty_amb'}${item.trsf_cmpt_no}`,
-                line: item.trsf_cmpt_no,
-              });
-            }
-          }
-        }
-      }
-
-      // The standard quantity must be filled and cannot be zero
-      if (!item.trsf_qty_cor || String(item.trsf_qty_cor).trim()==='') {
-        errors.push({
-          field: `${t('fields.standardQuantity')} (${t('units.ltr')})`,
-          message: `${t('descriptions.requiredAndCannotBeZeroCmptField')}${item.trsf_cmpt_no}`,
-          key: `${'trsf_qty_cor'}${item.trsf_cmpt_no}`,
-          line: item.trsf_cmpt_no,
-        });
-      }
-
-      // The mass quantity must be filled and cannot be zero
-      if (!item.trsf_load_kg || String(item.trsf_load_kg).trim()==='') {
-        errors.push({
-          field: `${t('fields.massQuantity')} (${t('units.kg')})`,
-          message: `${t('descriptions.requiredAndCannotBeZeroCmptField')}${item.trsf_cmpt_no}`,
-          key: `${'trsf_load_kg'}${item.trsf_cmpt_no}`,
-          line: item.trsf_cmpt_no,
-        });
-      }
-    };
-
-    if (errors.length > 0) {
-      const lines = (
-        <>
-        {errors?.map((error, index) => (
-          <Card size="small" title={error.field}>
-            {error.message}
-          </Card>
-        ))}      
-        </>
-      );
-
-      notification.error({
-        message: t('validate.lineItemValidation'),
-        description: lines,
-        duration: 0,
-        placement: 'topLeft',
-        style: {
-          width: 600,
-          height: '500px',
-          overflowY: 'scroll',
-        },
-      });
-      /* _.forEach(errors, (error) => {
-        notification.error({
-          message: error.field,
-          description: error.message,
-          key: error.key,
-        });
-      }); */
-    }
-    return errors;
-  };
-
   const onSubmit = () => {
     // check to see if all compartments have blank quantities
     const dptrsf = form.getFieldValue('transfers');
-    // console.log('---------------onSubmit0', dptrsf);
     let found = false;
     for (let tidx = 0; tidx < dptrsf.length; tidx++) {
       const titem = dptrsf?.[tidx];
-      // console.log('---------------onSubmit', titem.trsf_density, titem.trsf_temp, titem.trsf_qty_amb, titem.trsf_qty_cor, titem.trsf_load_kg);
       if (titem.trsf_density && (titem.trsf_temp===0 || titem.trsf_temp) && titem.trsf_qty_amb && titem.trsf_qty_cor && titem.trsf_load_kg) {
         found = true;
         break;
       }
     }
-    let errors = [];
     if (found === false) {
       notification.warning({
         message: t('messages.submitFailed'),
         description: t('descriptions.noTransferDetails'),
       });
       return;
-    } else {
-      errors = onItemValidation(dptrsf);
-      if (errors.length > 0) {
-        //return;
-      }
-    }
-
-    let submitPrompt = t('prompts.submit');
-    if (errors.length>0) {
-      submitPrompt += ' (' + String(errors.length) + ' ' + t('validate.warnings') + ')';
     }
 
     Modal.confirm({
-      title: submitPrompt,
+      title: t('prompts.submit'),
       okText: t('operations.yes'),
       okType: 'primary',
       cancelText: t('operations.no'),
@@ -278,10 +152,10 @@ const ManualTransactions = ({ popup, params }) => {
           await api
             .post(MANUAL_TRANSACTIONS.SUBMIT, preparePayloadToSubmit(values))
             .then((response) => {
-              resetLoadData();
               setSourceType(null);
               resetFormData();
               // resetFormGrids();
+              resetLoadData();
 
               if (sourceType === 'SCHEDULE') {
                 !!params.onComplete && params.onComplete({
@@ -320,19 +194,19 @@ const ManualTransactions = ({ popup, params }) => {
 
   const onReset = () => {
     confirm({
-      title:  t('prompts.reset'),
+      title: 'Are you sure reset this Transaction?',
       icon: <ExclamationCircleOutlined />,
-      okText: t('operations.reset'),
+      okText: 'Reset',
       okType: 'danger',
       centered: true,
       cancelText: 'No',
       onOk: async () => {
         await form.resetFields();
 
-        resetLoadData();
         setSourceType(null);
         resetFormData();
         // resetFormGrids();
+        resetLoadData();
       },
     });
   };
@@ -350,10 +224,10 @@ const ManualTransactions = ({ popup, params }) => {
         },
       })
       .then((res) => {
-        resetLoadData();
         setSourceType(null);
         resetFormData();
         // resetFormGrids();
+        // resetLoadData();
 
         console.log('MTmain: loadMTData', res.data?.records);
         const record = res.data?.records?.[0];
@@ -371,12 +245,26 @@ const ManualTransactions = ({ popup, params }) => {
         console.log('MTmain: loadMTData - prepareValuesToLoad', values);
 
         setDataLoaded(values);
+        setDataLoadFlagForm(1);
+        setDataLoadFlagDrawTransfers(0);
+        setDataLoadFlagBaseTransfers(0);
+        setDataLoadFlagBaseTotals(0);
+        setDataLoadFlagMeterTransfers(0);
+        setDataLoadFlagMeterTotals(0);
     
         // setDataDrawTransfers(values?.transfers);
         // setDataBaseTransfers(values?.base_transfers);
         // setDataBaseTotals(values?.base_totals);
         // setDataMeterTransfers(values?.meter_transfers);
         // setDataMeterTotals(values?.meter_totals);
+
+        /* form.setFieldsValue({
+        transfers: values?.transfers,
+        base_transfers: values?.base_transfers,
+        base_totals: values?.base_totals,
+        meter_transfers: values?.meter_transfers,
+        meter_totals: values?.meter_totals,
+      }) */
 
         console.log('MTmain: loadMTData - start to set form fields by loading data!');
       });
@@ -452,17 +340,210 @@ const ManualTransactions = ({ popup, params }) => {
     resetFormData();
   }, [sourceType]);
 
+  // following is the sequential data loading
+  useEffect(() => {
+    if (dataLoadFlagForm === 2) {
+      console.log('MTmain: dataLoadFlagForm', dataLoadFlagForm);
+      setDataLoadFlagForm(3);
+      //setDataLoadFlagDrawTransfers(1);
+      console.log('MT 1 - set form fields done! start to set Drawer Transfers', 
+        dataLoadFlagForm, 
+        dataLoadFlagDrawTransfers, 
+        dataLoadFlagBaseTransfers, 
+        dataLoadFlagBaseTotals, 
+        dataLoadFlagMeterTransfers, 
+        dataLoadFlagMeterTotals
+      );
+      setDataLoadFlagDrawTransfers(1);
+      setDataLoadFlagBaseTransfers(1);
+      setDataLoadFlagBaseTotals(1);
+      setDataLoadFlagMeterTransfers(1);
+      setDataLoadFlagMeterTotals(1);
+  }
+  }, [dataLoadFlagForm]);
+
+  useEffect(() => {
+    if (dataLoadFlagDrawTransfers === 2) {
+      console.log('MTmain: dataLoadFlagDrawTransfers', dataLoadFlagDrawTransfers);
+      setDataLoadFlagDrawTransfers(3);
+      //setDataLoadFlagBaseTransfers(1);
+      console.log('MT 2 - set Drawer Transfers done! start to set Base Transfers', 
+        dataLoadFlagForm, 
+        dataLoadFlagDrawTransfers, 
+        dataLoadFlagBaseTransfers, 
+        dataLoadFlagBaseTotals, 
+        dataLoadFlagMeterTransfers, 
+        dataLoadFlagMeterTotals
+      );
+      /* if (dataLoadFlagForm === 3 &&
+        dataLoadFlagDrawTransfers === 3 &&
+        dataLoadFlagBaseTransfers === 3 &&
+        dataLoadFlagBaseTotals === 3 &&
+        dataLoadFlagMeterTransfers === 3 &&
+        dataLoadFlagMeterTotals === 3
+      ) {
+        resetLoadData();
+      } */
+    }
+  }, [dataLoadFlagDrawTransfers]);
+
+  useEffect(() => {
+    if (dataLoadFlagBaseTransfers === 2) {
+      console.log('MTmain: dataLoadFlagBaseTransfers', dataLoadFlagBaseTransfers);
+      setDataLoadFlagBaseTransfers(3);
+      //setDataLoadFlagBaseTotals(1);
+      console.log('MT 3 - set Base Transfers done! start to set Base Totals', 
+        dataLoadFlagForm, 
+        dataLoadFlagDrawTransfers, 
+        dataLoadFlagBaseTransfers, 
+        dataLoadFlagBaseTotals, 
+        dataLoadFlagMeterTransfers, 
+        dataLoadFlagMeterTotals
+      );
+      /* if (dataLoadFlagForm === 3 &&
+        dataLoadFlagDrawTransfers === 3 &&
+        dataLoadFlagBaseTransfers === 3 &&
+        dataLoadFlagBaseTotals === 3 &&
+        dataLoadFlagMeterTransfers === 3 &&
+        dataLoadFlagMeterTotals === 3
+      ) {
+        resetLoadData();
+      } */
+    }
+  }, [dataLoadFlagBaseTransfers]);
+
+  useEffect(() => {
+    if (dataLoadFlagBaseTotals === 2) {
+      console.log('MTmain: dataLoadFlagBaseTotals', dataLoadFlagBaseTotals);
+      setDataLoadFlagBaseTotals(3);
+      //setDataLoadFlagMeterTransfers(1);
+      console.log('MT 4 - set Base Totals done! start to set Meter Transfers', 
+        dataLoadFlagForm, 
+        dataLoadFlagDrawTransfers, 
+        dataLoadFlagBaseTransfers, 
+        dataLoadFlagBaseTotals, 
+        dataLoadFlagMeterTransfers, 
+        dataLoadFlagMeterTotals
+      );
+      /* if (dataLoadFlagForm === 3 &&
+        dataLoadFlagDrawTransfers === 3 &&
+        dataLoadFlagBaseTransfers === 3 &&
+        dataLoadFlagBaseTotals === 3 &&
+        dataLoadFlagMeterTransfers === 3 &&
+        dataLoadFlagMeterTotals === 3
+      ) {
+        resetLoadData();
+      } */
+    }
+  }, [dataLoadFlagBaseTotals]);
+
+  useEffect(() => {
+    if (dataLoadFlagMeterTransfers === 2) {
+      console.log('MTmain: dataLoadFlagMeterTransfers', dataLoadFlagMeterTransfers);
+      setDataLoadFlagMeterTransfers(3);
+      //setDataLoadFlagMeterTotals(1);
+      console.log('MT 5 - set Meter Transfers done! start to set Meter Totals', 
+        dataLoadFlagForm, 
+        dataLoadFlagDrawTransfers, 
+        dataLoadFlagBaseTransfers, 
+        dataLoadFlagBaseTotals, 
+        dataLoadFlagMeterTransfers, 
+        dataLoadFlagMeterTotals
+      );
+      /* if (dataLoadFlagForm === 3 &&
+        dataLoadFlagDrawTransfers === 3 &&
+        dataLoadFlagBaseTransfers === 3 &&
+        dataLoadFlagBaseTotals === 3 &&
+        dataLoadFlagMeterTransfers === 3 &&
+        dataLoadFlagMeterTotals === 3
+      ) {
+        resetLoadData();
+      } */
+    }
+  }, [dataLoadFlagMeterTransfers]);
+
+  useEffect(() => {
+    if (dataLoadFlagMeterTotals === 2) {
+      console.log('MTmain: dataLoadFlagMeterTotals', dataLoadFlagMeterTotals);
+      setDataLoadFlagMeterTotals(3);
+      console.log('MT 6 - set Meter Totals done! All data loaded! Clean the dataLoaded!', 
+        dataLoadFlagForm, 
+        dataLoadFlagDrawTransfers, 
+        dataLoadFlagBaseTransfers, 
+        dataLoadFlagBaseTotals, 
+        dataLoadFlagMeterTransfers, 
+        dataLoadFlagMeterTotals
+      );
+      /* if (dataLoadFlagForm === 3 &&
+        dataLoadFlagDrawTransfers === 3 &&
+        dataLoadFlagBaseTransfers === 3 &&
+        dataLoadFlagBaseTotals === 3 &&
+        dataLoadFlagMeterTransfers === 3 &&
+        dataLoadFlagMeterTotals === 3
+      ) {
+        resetLoadData();
+      } */
+    }
+  }, [dataLoadFlagMeterTotals]);
+
+  useEffect(() => {
+    console.log('MT 7 - All data loaded! Clean the dataLoaded!', 
+      dataLoadFlagForm, 
+      dataLoadFlagDrawTransfers, 
+      dataLoadFlagBaseTransfers, 
+      dataLoadFlagBaseTotals, 
+      dataLoadFlagMeterTransfers, 
+      dataLoadFlagMeterTotals
+    );
+    if (dataLoadFlagForm === 3 &&
+      dataLoadFlagDrawTransfers === 3 &&
+      dataLoadFlagBaseTransfers === 3 &&
+      dataLoadFlagBaseTotals === 3 &&
+      dataLoadFlagMeterTransfers === 3 &&
+      dataLoadFlagMeterTotals === 3
+    ) {
+      notification.success({
+        message: t('messages.loadSuccess'),
+        description: t('descriptions.loadSuccess'),
+      });
+      // resetLoadData();
+      /* setDataLoadFlagForm(0);
+      setDataLoadFlagDrawTransfers(0);
+      setDataLoadFlagBaseTransfers(0);
+      setDataLoadFlagBaseTotals(0);
+      setDataLoadFlagMeterTransfers(0);
+      setDataLoadFlagMeterTotals(0); */
+    }
+  }, [dataLoadFlagForm, dataLoadFlagDrawTransfers, dataLoadFlagBaseTransfers, dataLoadFlagBaseTotals, dataLoadFlagMeterTransfers, dataLoadFlagMeterTotals]);
+
+  /* // this may conflict with data retrieval
+  useEffect(() => {
+    console.log('MT selectedTrip, selectedOrder, selectedTanker', selectedTrip, selectedOrder, selectedTanker);
+    resetFormGrids();
+  }, [selectedTrip, selectedOrder, selectedTanker]); */
+
   useEffect(() => {
     if (params && popup && !repost) {
       setRepost(params?.repost);
     }
   }, [popup, params, repost]);
 
-  useEffect(() => {
-    if (params && popup && !dataLoaded) {
-      setDataLoaded(params);
+  /* useEffect(() => {
+    if (params && popup) {
+      form.setFieldsValue({
+        source_type: params?.trans_type,
+        supplier: params?.supplier,
+        customer: params?.customer,
+        order_no: params?.order_cust_no,
+        trip_no: params?.trip_no,
+      });
+      setSourceType(params?.trans_type);
+      setSelectedSupplier(params?.supplier);
+      setSelectedCustomer(params?.customer);
+      setSelectedOrder(params?.order_cust_no);
+      setSelectedTrip(params?.trip_no);
     }
-  }, [popup, params]);
+  }, [popup, params]); */
 
   const modifiers = (
     <>
@@ -519,9 +600,16 @@ const ManualTransactions = ({ popup, params }) => {
           setSelectedOrder={setSelectedOrder}
           selectedTanker={selectedTanker}
           setSelectedTanker={setSelectedTanker}
-          params={dataLoaded}
+          params={params}
           popup={popup}
+          dataLoaded={dataLoaded}
           setOrderSeals={setOrderSeals}
+          dataBoard={dataBoard}
+          setDataBoard={setDataBoard}
+          dataLoadFlag={dataLoadFlagForm}
+          setDataLoadFlag={setDataLoadFlagForm}
+          dataLoaded={dataLoaded}
+          setDataLoaded={setDataLoaded}
           setProductArms={setProductArms}
           resetFormGrids={resetFormGrids}
         />
@@ -548,6 +636,16 @@ const ManualTransactions = ({ popup, params }) => {
           setDataMeterTransfers={setDataMeterTransfers}
           dataMeterTotals={dataMeterTotals}
           setDataMeterTotals={setDataMeterTotals}
+          dataLoadFlagDrawTransfers={dataLoadFlagDrawTransfers}
+          setDataLoadFlagDrawTransfers={setDataLoadFlagDrawTransfers}
+          dataLoadFlagBaseTransfers={dataLoadFlagBaseTransfers}
+          setDataLoadFlagBaseTransfers={setDataLoadFlagBaseTransfers}
+          dataLoadFlagBaseTotals={dataLoadFlagBaseTotals}
+          setDataLoadFlagBaseTotals={setDataLoadFlagBaseTotals}
+          dataLoadFlagMeterTransfers={dataLoadFlagMeterTransfers}
+          setDataLoadFlagMeterTransfers={setDataLoadFlagMeterTransfers}
+          dataLoadFlagMeterTotals={dataLoadFlagMeterTotals}
+          setDataLoadFlagMeterTotals={setDataLoadFlagMeterTotals}
           dataLoaded={dataLoaded}
           setDataLoaded={setDataLoaded}
           productArms={productArms}

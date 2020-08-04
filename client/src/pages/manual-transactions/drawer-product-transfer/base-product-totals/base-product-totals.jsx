@@ -19,12 +19,11 @@ const BaseProductTotals = ({
   clicked,
   updating,
   setUpdating,
+  setChildTableAPI,
   dataBoard,
   setDataBoard,
   data,
   setData,
-  dataLoadFlag,
-  setDataLoadFlag,
   dataLoaded,
   setDataLoaded,
 }) => {
@@ -66,6 +65,7 @@ const BaseProductTotals = ({
         }
       }
       if (!itemExisted) {
+        item.trsf_bs_temp_tot = null;
         totals.push(item);
       }
     });
@@ -73,85 +73,28 @@ const BaseProductTotals = ({
 
     // adjust sum totals
     sumBaseTotals(totals);
-    /* const obs = _.sumBy(totals, 'trsf_bs_qty_amb_tot');
-    const std = _.sumBy(totals, 'trsf_bs_qty_cor_tot');
-    const mass = _.sumBy(totals, 'trsf_bs_load_kg_tot');
-    setObsTotal(obs);
-    setStdTotal(std);
-    setMassTotal(mass); */
 
     return totals;
   }
 
   const getBaseTotals = () => {
-    // const pre = [];
-    //const transfers = form.getFieldValue('transfers');
     setLoading(true);
 
     const pre = buildBaseTotals(productArms, transfers);
 
-    /* for (let index = 0; index < transfers?.length; index++) {
-      const transfer = transfers[index];
-
-      if (!transfer?.trsf_arm_cd.includes(' ')) {
-        await api
-          .get(MANUAL_TRANSACTIONS.BASE_DETAILS, {
-            params: {
-              prod_cmpy: transfer?.trsf_prod_cmpy,
-              prod_code: transfer?.trsf_prod_code,
-              //arm_code: [transfer?.trsf_arm_cd],
-              arm_code: transfer?.trsf_arm_cd,
-              id: 'bpttl',
-            },
-          })
-          .then((res) => {
-            if (res.data?.records?.length > 0) {
-              const sum_ratios = _.sumBy(res?.data?.records, (o)=>{return _.toNumber(o.ratio_value)});
-              _.forEach(res?.data?.records, (product) => {
-                let ratio_total = product?.ratio_total;
-                if (_.toNumber(ratio_total) > sum_ratios) {
-                  ratio_total = String(sum_ratios);
-                }
-                pre.push({
-                  trsf_bs_prodcd_tot: product?.stream_basecode,
-                  trsf_bs_prodname_tot: `${product?.stream_basecode} - ${product.stream_basename}`,
-                  trsf_bs_tk_cd_tot: product?.stream_tankcode,
-                  trsf_bs_prodcls_tot: product.stream_bclass_nmae,
-                  trsf_bs_den_tot: product?.stream_tankden,
-                  trsf_bs_temp_tot: transfer?.trsf_temp,
-                  trsf_bs_qty_amb_tot: calcBaseRatios(transfer?.trsf_qty_amb, product?.ratio_value, ratio_total),
-                  trsf_bs_qty_cor_tot: calcBaseRatios(transfer?.trsf_qty_cor, product?.ratio_value, ratio_total),
-                  trsf_bs_load_kg_tot: calcBaseRatios(transfer?.trsf_load_kg, product?.ratio_value, ratio_total),
-                  trsf_bs_adtv_flag_tot: product?.adtv_flag,
-                  trsf_bs_ratio_value_tot: product?.ratio_value,
-                  trsf_bs_ratio_total_tot: ratio_total,
-                  trsf_bs_ratio_total2_tot: product?.ratio_total,
-                  is_updated: false,
-                });
-              });
-            }
-          });
-      }
-    } */
-
     setLoading(false);
-    if (dataLoadFlag === 0) {
+    if (!dataLoaded || !dataLoaded?.base_totals || dataLoaded?.base_totals?.length === 0) {
       setData(adjustBaseTotals(pre));
     } else {
-      if (dataLoadFlag === 1) {
-        setData(dataLoaded.base_totals);
-        sumBaseTotals(dataLoaded.base_totals);
-        setDataLoadFlag(2);
-        console.log('MT 4 - BaseTotals: data are loaded!', dataLoadFlag);
-      }
+      setData(dataLoaded.base_totals);
+      sumBaseTotals(dataLoaded.base_totals);
+      console.log('MT 4 - BaseTotals: data are loaded!');
     }
   };
 
   useEffect(() => {
-    //if (dataLoadFlag === 0) {
-      getBaseTotals();
-    //}
-  }, [selected, transfers, productArms, dataLoadFlag, dataLoaded]);
+    getBaseTotals();
+  }, [selected, transfers, productArms, dataLoaded]);
 
   useEffect(() => {
     if (data) {
@@ -162,16 +105,6 @@ const BaseProductTotals = ({
       setDataRendered(true);
     }
   }, [data]);
-
-  /* useEffect(() => {
-    if (dataLoadFlag === 1 && dataLoaded && dataRendered===true) {
-      console.log('BaseProductTotals: Load data by setData. dataLoadFlag:', dataLoadFlag);
-      setData(dataLoaded?.base_totals);
-      setDataLoadFlag(2);
-      setDataRendered(false);
-      console.log('MT 4 - BaseProductTotals: data are loaded!', dataLoadFlag);
-    }
-  }, [dataLoadFlag, dataLoaded, dataRendered]); */
 
   useEffect(() => {
     let board = dataBoard;
@@ -188,22 +121,6 @@ const BaseProductTotals = ({
     setUpdating(false);
   }, [clicked]);
 
-  /* useEffect(() => {
-    console.log('BaseProductTotals: base quantity totals changed on data and clicked', clicked);
-    if (data) {
-      const obs = _.sumBy(data, 'trsf_bs_qty_amb_tot');
-      const std = _.sumBy(data, 'trsf_bs_qty_cor_tot');
-      const mass = _.sumBy(data, 'trsf_bs_load_kg_tot');
-      setObsTotal(obs);
-      setStdTotal(std);
-      setMassTotal(mass);
-    } else {
-      setObsTotal(0);
-      setStdTotal(0);
-      setMassTotal(0);
-    }
-  }, [data, clicked]); */
-
   useEffect(() => {
     if (data?.length > 0) {
       console.log("BaseProductTotals: sourceType changed", sourceType);
@@ -211,16 +128,59 @@ const BaseProductTotals = ({
     }
   }, [sourceType]);
 
+  const onCellUpdate = (value) => {
+    console.log('BaseProductTotals: onCellUpdate', value);
+
+    const bases = _.clone(data);
+    let index=0;
+    for (index=0; index<bases.length; index++) {
+      const base = bases[index];
+      if (base.trsf_bs_prodcd_tot === value?.data?.trsf_bs_prodcd_tot &&
+        base.trsf_bs_tk_cd_tot === value?.data?.trsf_bs_tk_cd_tot 
+        ) {
+        if (
+          value?.colDef?.field === 'trsf_bs_den_tot' || 
+          value?.colDef?.field === 'trsf_bs_qty_amb_tot'
+        ) {
+          bases[index] = value?.data;
+          setData(bases);
+        }
+        break;
+      }
+    }
+    //setChildTableAPI.updateRowData({ update: [base] });
+
+    /* console.log('DrawerProductTransfers: onCellUpdate2', value?.colDef?.field, value?.colDef?.headerName, value?.value, value?.newValue, value?.data.trsf_cmpt_capacit);
+    if (
+      value?.colDef?.field === 'trsf_qty_amb' || 
+      value?.colDef?.field === 'trsf_qty_cor' ||
+      value?.colDef?.field === 'trsf_load_kg' 
+    ) {
+      if (_.toNumber(value?.newValue) > _.toNumber(value?.data.trsf_cmpt_capacit)) {
+        notification.error({
+          message: t('validate.outOfRange'),
+          description: value?.colDef?.headerName + ': ' + value?.newValue + ', ' + 
+          t('fields.compartment') + ' ' + t('fields.capacity') + ': ' + value?.data.trsf_cmpt_capacit,
+        });
+      }
+    }
+    setSelected({
+      ...value?.data,
+    }); */
+  };
+
   return (
     <Spin indicator={null} spinning={isLoading}>
       <Form.Item name="base_totals">
         <DataTable
-//          isLoading={updating || dataLoadFlag!==0}
+          // isLoading={updating}
           isLoading={updating}
           minimal={true}
           data={data} 
           height="70vh" 
           columns={fields} 
+          apiContext={setChildTableAPI}
+          onCellUpdate={(value) => onCellUpdate(value)}
           editType={false}
         />
       </Form.Item>

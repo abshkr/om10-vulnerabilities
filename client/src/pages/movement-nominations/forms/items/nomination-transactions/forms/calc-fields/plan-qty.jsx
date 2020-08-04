@@ -32,7 +32,7 @@ const PlanQty = ({ form, value, pageState, config }) => {
   return (
     <Form.Item
       name="mvitm_prod_qty"
-      label={t('fields.nomtranPlanQty') + '(' + value?.mvitm_prod_unit + ')'}
+      label={t('fields.nomtranPlanQty') + '(' + value?.mvitm_prod_unit_str + ')'}
       rules={[{ required: false, validator: validate }]}
     >
       <InputNumber 

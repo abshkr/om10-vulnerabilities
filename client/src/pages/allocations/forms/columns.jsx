@@ -2,7 +2,7 @@ const columns = (t, isCreating, form, units) => [
   {
     headerName: t('fields.productCode'),
     field: 'aitem_prodcode',
-    filter: 'MultiFilter',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     suppressSizeToFit: true,
@@ -20,7 +20,7 @@ const columns = (t, isCreating, form, units) => [
   {
     headerName: t('fields.quantityAllocated'),
     field: 'aitem_qtylimit',
-    filter: 'FuzzyFilter',
+    // filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     editable: true,
@@ -31,7 +31,7 @@ const columns = (t, isCreating, form, units) => [
   {
     headerName: t('fields.quantityDelivered'),
     field: 'aitem_qtyused',
-    filter: 'MultiFilter',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     suppressSizeToFit: true,

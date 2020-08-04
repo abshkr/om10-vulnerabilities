@@ -43,6 +43,7 @@ header("Content-Type: application/json; charset=UTF-8");
 // include database and object files
 include_once './config/database.php';
 include_once './shared/log.php';
+include_once './shared/response.php';
 include_once './objects/personnel.php';
 include_once './config/setups.php';
 include_once './config/jwt.php';
@@ -130,6 +131,9 @@ if ($array['MSG_CODE'] === "0") {
         $array['USER_DETAIL']['SITE_CODE'], $array['USER_DETAIL']['SITE_NAME'], $array['USER_DETAIL']['USER_LANG'], $exp_min * 60);
     $login_result['expiresIn'] = $exp_min * 60;
     $login_result['user_status_flag'] = $array['USER_DETAIL']['USER_STATUS_FLAG'];
+    $login_result['http_session_trace_count'] = $array['USER_DETAIL']['HTTP_SESSION_TRACE_COUNT'];
+    $login_result['max_http_session_allowed'] = $array['USER_DETAIL']['MAX_HTTP_SESSION_ALLOWED'];
+    $login_result['sess_id'] = $array['USER_DETAIL']['USER_SESSION'];
 
     //Some old screens like bay view still need session
     if (!isset($_SESSION)) {
@@ -150,9 +154,13 @@ if ($array['MSG_CODE'] === "0") {
     echo json_encode($login_result, JSON_PRETTY_PRINT);
 } else {
     http_response_code(400);
+    $msg_desc = $array['MSG_DESC'];
+    if ($array['USER_DETAIL']['USER_STATUS_FLAG'] === '2') {
+        $msg_desc = response("__LOGIN_USER_LOCKED__");
+    }
     $login_result = array(
         'msg_code' => $array['MSG_CODE'],
-        'msg_desc' => $array['MSG_DESC'],
+        'msg_desc' => $msg_desc,
         'attempt_left' => (isset($array['USER_DETAIL']['USER_ATTEMPT_LEFT']) ? $array['USER_DETAIL']['USER_ATTEMPT_LEFT'] : 0),
         // 'attempt_left' => $array['USER_DETAIL']['USER_ATTEMPT_LEFT'],
         'user_status_flag' => $array['USER_DETAIL']['USER_STATUS_FLAG']);

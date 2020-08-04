@@ -1112,11 +1112,40 @@ class OpenOrder extends CommonClass
                     , sc.SCHD_SPECQTY as SCHD_PROD_QTY 
                     , sc.SCHD_UNITS as SCHD_PROD_UNIT 
                     , un.DESCRIPTION as SCHD_UNIT_NAME 
+                    , DECODE(sc.SCHD_UNITS, 5, TRSF.TRIP_QTY_AMB, 11, TRSF.TRIP_QTY_STD, 17, TRSF.TRIP_QTY_KG, TRSF.TRIP_QTY_DELIVERED) 
+                        AS QTY_LOADED 
+                    , TRSF.TRIP_QTY_AMB QTY_AMB
+                    , TRSF.TRIP_QTY_STD QTY_STD
+                    , TRSF.TRIP_QTY_KG QTY_KG        
                 from 
                     SPECDETS sc 
                     , COMPANYS sp 
                     , PRODUCTS pd 
                     , UNIT_SCALE_VW un 
+                    , (
+                        SELECT SCHEDULE.SHLS_SUPP AS TRIP_SUPPLIER,
+                            PRODUCTS.PROD_CLASS AS PROD_CLASS,
+                            SCHEDULE.SHLS_TRIP_NO AS TRIP_NO,
+                            TRANSFERS.TRSF_DES AS TRIP_COMPARTMENT,
+                            TRANSFERS.TRSFPROD_PRODCMPY AS TRIP_PRODCMPY,
+                            TRANSFERS.TRSFPROD_PRODCODE AS TRIP_PRODCODE,
+                            SUM(TRANSFERS.TRSF_QTY_AMB) AS TRIP_QTY_AMB,
+                            SUM(TRANSFERS.TRSF_QTY_COR) AS TRIP_QTY_STD,
+                            SUM(TRANSFERS.TRSF_LOAD_KG) AS TRIP_QTY_KG,
+                            SUM(TRANSFERS.TRSF_RETURNS) AS TRIP_QTY_RTN,
+                            SUM(TRANSFERS.TRSF_PRELOAD_KG) AS TRIP_QTY_PKG,
+                            SUM(TRANSFERS.TRSF_DELIVERED) AS TRIP_QTY_DELIVERED
+                        FROM SCHEDULE, LOADS, TRANSACTIONS, TRANSFERS, PRODUCTS
+                        WHERE SCHEDULE.SHLSLOAD_LD_TRM = LOADS.LD_TERMINAL
+                            AND SCHEDULE.SHLSLOAD_LOAD_ID = LOADS.LOAD_ID
+                            AND LOADS.LOAD_ID = TRANSACTIONS.TRSALDID_LOAD_ID
+                            AND LOADS.LD_TERMINAL = TRANSACTIONS.TRSALDID_LD_TRM
+                            AND TRANSACTIONS.TRSA_ID = TRANSFERS.TRSFTRID_TRSA_ID
+                            AND TRANSACTIONS.TRSA_TERMINAL = TRANSFERS.TRSFTRID_TRSA_TRM
+                            AND TRSFPROD_PRODCMPY = PRODUCTS.PROD_CMPY AND TRSFPROD_PRODCODE = PRODUCTS.PROD_CODE
+                        GROUP BY SCHEDULE.SHLS_SUPP, SCHEDULE.SHLS_TRIP_NO, TRANSFERS.TRSF_DES, 
+                            TRANSFERS.TRSFPROD_PRODCMPY, TRANSFERS.TRSFPROD_PRODCODE, PROD_CLASS
+                    ) TRSF
                 where 
                     sc.SCHD_ORDER = :order_id 
                     and sc.SCHDPROD_PRODCODE = :order_prod_code 
@@ -1125,6 +1154,10 @@ class OpenOrder extends CommonClass
                     and sc.SCHDPROD_PRODCODE = pd.PROD_CODE  
                     and sc.SCHDPROD_PRODCMPY = pd.PROD_CMPY  
                     and sc.SCHD_UNITS = un.UNIT_ID 
+                    and sc.SCHDSPEC_SHLSSUPP = TRSF.TRIP_SUPPLIER (+)
+                    AND sc.SCHDSPEC_SHLSTRIP = TRSF.TRIP_NO (+)
+                    AND sc.SCHD_COMP_ID = TRSF.TRIP_COMPARTMENT (+)
+                    AND pd.PROD_CLASS = TRSF.PROD_CLASS (+)
                 order by
                     sc.SCHDSPEC_SHLSSUPP, sc.SCHDSPEC_SHLSTRIP, sc.SCHD_COMP_ID 
             ";

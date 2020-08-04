@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
-import { Form, Button, Tabs, notification, Modal, Divider, Drawer, Row, Col } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Divider, Drawer, Row, Col, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import _ from 'lodash';
@@ -63,6 +63,16 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
       const keys = Object.keys(item);
       const values = Object.values(item);
 
+      if ( item.hasOwnProperty('mvitm_prod_qty') &&
+        (!item['mvitm_prod_qty'] || String(item['mvitm_prod_qty']).trim() === '' || String(item['mvitm_prod_qty']) === '0')
+      ) {
+        errors.push({
+          field: t('fields.productQuantity'),
+          message: `${t('descriptions.requiredAndCannotBeZeroLineField')}${values[0]}`,
+          key: `${'mvitm_prod_qty'}${values[0]}`,
+        });
+      }
+
       _.forEach(values, (value, index) => {
         if (value === t('placeholder.selectPlease')) {
           if (!_.find(fields, ['field', keys[index]])) {
@@ -71,22 +81,41 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
 
           errors.push({
             field: _.find(fields, ['field', keys[index]])?.headerName,
-            message: `Please Fill This Field on Line Item ${values[0]}`,
+            message: `${t('descriptions.pleaseFillLineField')}${values[0]}`,
+            key: `${keys[index]}${values[0]}`,
           });
         }
       });
     });
 
     if (errors.length > 0) {
-      _.forEach(errors, (error) => {
+      const lines = (
+        <>
+        {errors?.map((error, index) => (
+          <Card size="small" title={error.field}>
+            {error.message}
+          </Card>
+        ))}      
+        </>
+      );
+
+      notification.error({
+        message: t('validate.lineItemValidation'),
+        description: lines,
+        duration: 0,
+        style: {
+          height: '500px',
+          overflowY: 'scroll',
+        },
+      });
+      /* _.forEach(errors, (error) => {
         notification.error({
           message: error.field,
           description: error.message,
-          key: error.field,
+          key: error.key,
         });
-      });
+      }); */
     }
-
     return errors;
   };
 

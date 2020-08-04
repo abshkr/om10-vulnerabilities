@@ -75,7 +75,7 @@ const Products = ({ value, form, drawer, access }) => {
       <DataTable 
         data={data} 
         columns={fields} 
-        parentHeight="350px" 
+        parentHeight="320px" 
         components={components} 
         minimal
         editType='fullRow'

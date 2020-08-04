@@ -38,7 +38,7 @@ const ObsQty = ({ form, value, onChange, pageState, config }) => {
   return (
     <Form.Item
       name="mlitm_qty_amb"
-      label={t('fields.nomtranObsQty') + '(' + t('fields.nomtranObsQtyUnit') + ')'}
+      label={t('fields.nomtranObsQty') + '(' + t('units.ltr') + ')'}
       rules={[{ required: false, validator: validate }]}
     >
       <InputNumber

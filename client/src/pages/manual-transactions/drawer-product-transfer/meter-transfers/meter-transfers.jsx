@@ -19,8 +19,6 @@ const MeterTransfers = ({
   setDataBoard,
   data,
   setData,
-  dataLoadFlag,
-  setDataLoadFlag,
   dataLoaded,
   setDataLoaded,
 }) => {
@@ -33,63 +31,21 @@ const MeterTransfers = ({
 
   useEffect(() => {
     function getMeters() {
-      // const meters = [];
-
       setLoading(true);
 
       const meters = buildMeterTransfers(productArms, transfers);
 
-      /* for (let index = 0; index < transfers.length; index++) {
-        const transfer = transfers[index];
-
-        if (!transfer?.trsf_arm_cd.includes(' ')) {
-          await api
-            .get(MANUAL_TRANSACTIONS.BASE_DETAILS, {
-              params: {
-                prod_cmpy: transfer?.trsf_prod_cmpy,
-                prod_code: transfer?.trsf_prod_code,
-                //arm_code: [transfer?.trsf_arm_cd],
-                arm_code: transfer?.trsf_arm_cd,
-                id: 'mtrtrsf'
-              },
-            })
-            .then((res) => {
-              if (res.data?.records?.length > 0) {
-                _.forEach(res?.data?.records, (arm) => {
-                  meters.push({
-                    trsf_mtr_opn_amb: null,
-                    trsf_mtr_opn_cor: null,
-                    trsf_mtr_open_kg: null,
-                    trsf_mtr_cls_amb: null,
-                    trsf_mtr_cls_cor: null,
-                    trsf_mtr_close_kg: null,
-                    injector_or_meter: arm?.meter_type_code,
-                    trsf_mtr_cd: arm.stream_mtrcode,
-                    trsf_mtr_typ: `${arm.meter_type_code} - ${arm?.meter_type_desc}`,
-                    trsf_cmpt_no: transfer.trsf_cmpt_no,  //????
-                  });
-                });
-              }
-            });
-        }
-      } */
-
       setLoading(false);
-      if (dataLoadFlag === 0) {
+      if (!dataLoaded || !dataLoaded?.meter_transfers || dataLoaded?.meter_transfers?.length === 0) {
         setData(meters);
       } else {
-        if (dataLoadFlag === 1) {
-          setData(dataLoaded.meter_transfers);
-          setDataLoadFlag(2);
-          console.log('MT 5 - MeterTransfers: data are loaded!', dataLoadFlag);
-        }
+        setData(dataLoaded.meter_transfers);
+        console.log('MT 5 - MeterTransfers: data are loaded!');
       }
     }
 
-    //if (dataLoadFlag === 0) {
-      getMeters();
-    //}
-  }, [selected, transfers, productArms, dataLoadFlag, dataLoaded]);
+    getMeters();
+  }, [selected, transfers, productArms, dataLoaded]);
 
   useEffect(() => {
     if (data) {
@@ -100,16 +56,6 @@ const MeterTransfers = ({
       setDataRendered(true);
     }
   }, [data]);
-
-  /* useEffect(() => {
-    if (dataLoadFlag === 1 && dataLoaded && dataRendered===true) {
-      console.log('MeterTransfers: Load data by setData. dataLoadFlag', dataLoadFlag);
-      setData(dataLoaded?.meter_transfers);
-      setDataLoadFlag(2);
-      setDataRendered(false);
-      console.log('MT 5 - MeterTransfers: Data are loaded!', dataLoadFlag);
-    }
-  }, [dataLoadFlag, dataLoaded, dataRendered]); */
 
   useEffect(() => {
     let board = dataBoard;

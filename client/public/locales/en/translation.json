@@ -23,6 +23,8 @@
 		"createFailed": "Failed to create the record",
 		"createSuccess": "You have created the record",
 		"copyQuantitySuccess": "You have copied quantity scheduled or compartment capacity to observed quantitiy",
+		"copyScheduledQuantitySuccess": "You have copied scheduled quantity to observed quantitiy successfully",
+		"copyCompartmentCapacitySuccess": "You have copied compartment capacity to observed quantitiy successfully",
 		"clearTransferSuccess": "You have cleared the transfer(s)",
 		"cuztomizeLanding": "With OMEGA you can manage and create Equipment with a few clicks",
 		"dateOfMonth": "Date of Month",
@@ -74,6 +76,7 @@
 		"pmvBatchCompleted": "You have completed the batch",
 		"preOrderProdUnit": "Select unit for product",
 		"preOrderReady": "Input quantity for at least one product",
+		"scheduledTooHigh": "Scheduled quantity is too high",
 		"preSchedProd": "Select product for compartment",
 		"preSchedProdUnit": "Select unit for compartment",
 		"prescheduleReady": "Select product in at least one compartment",
@@ -127,7 +130,26 @@
 		"validationFailed": "Make sure all the fields meet the requirements",
 		"valueTooHigh": "Value too high",
 		"valueTooLow": "Value too low",
-		"zeroCompartmentCount": "The compartment count cannot be zero"
+		"zeroCompartmentCount": "The compartment count cannot be zero",
+		"cannotCalcQuantity": "Need the temperature, density and one of the observed, standard or mass quantity in at least one compartment to start the calculation",
+		"cannotCopyQuantity": "Need the product, arm and density in at least one compartment to copy the quantity",
+		"copyScheduledQuantity": "The scheduled quantity will be copied to the observered quantity in all compartments having products. Please confirm to proceed.",
+		"copyCompartmentCapacity": "The compartment capacity will be copied to observered quantity in all compartments having products. Please confirm to proceed.",
+		"cannotClearTransfer": "No temperature(s) or quantities found in compartment(s) therefore no need to clear",
+		"cannotClearOneTransfer": "No temperature or quantities found in selected compartment therefore no need to clear",
+		"clearLineTransfer": "The temperature and three quantities will be cleared in the selected compartment. Please confirm to proceed.",
+		"clearAllTransfer": "The temperatures and three quantities will be cleared in all compartments. Please confirm to proceed.",
+		"pleaseFillLineField": "Please fill this field in line item ",
+		"requiredAndCannotBeZeroLineField": "This field is required and cannot be zero in line item ",
+		"requiredLineField": "This field is required in line item ",
+		"cannotBeZeroLineField": "This field cannot be zero in line item ",
+		"pleaseFillCmptField": "Please fill this field in compartment ",
+		"requiredAndCannotBeZeroCmptField": "This field is required and cannot be zero in compartment ",
+		"requiredCmptField": "This field is required in compartment ",
+		"cannotBeZeroCmptField": "This field cannot be zero in compartment ",
+		"fromProductNotBase": "Scheduled from-product is made of multiple base products.",
+		"toProductNotBase": "Scheduled to-product is made of multiple base products.",
+		"reportFolioRange": "Please enter folio range"
 	},
 	"divider": {
 		"baseProducts": "Base Products",
@@ -1228,7 +1250,8 @@
 		"weightInAir": "Weight In Air",
 		"weightInVacuum": "Weight In Vacuum",
 		"weightTolerance": "Tolerance % of the total load vehicle weight (0-20)",
-		"window": "Window"
+		"window": "Window",
+		"dateRange": "Date Range"
 	},
 	"generic": {
 		"about": "About (EULA)",
@@ -1558,7 +1581,7 @@
 	},
 	"placeholder": {
 		"emailInvalid": "This Email is Invalid",
-		"enterAddressLineText": "Double click to enter the line text",
+		"enterAddressLineText": "Click to enter the line text",
 		"incorrectFormat": "Incorrect Format",
 		"limit": "Limit",
 		"maxCharacters": "Max Characters",
@@ -1569,7 +1592,7 @@
 		"noArmAvailable": "No Arm Available",
 		"noArmSelection": "No Arm Selection",
 		"selectAddress": "Select Address",
-		"selectAddressLineType": "Double click to select type",
+		"selectAddressLineType": "Click to select type",
 		"selectArea": "Select Area",
 		"selectAreaLocation": "Select Area Location",
 		"selectArmCode": "Select Arm Code",
@@ -1681,7 +1704,7 @@
 		"cancel": "Are you sure you want to cancel?",
 		"closeCloseout": "Are you sure you want to close first frozen folio?",
 		"closeTransaction": "Are you sure you want to close this transaction?",
-		"completeTrip": "View BOL will complete this trip, do you want to continue?",
+		"completeTrip": "View BOL or load report will complete this trip, do you want to continue?",
 		"confirmArchive": "Confirm schedule is to be archived?",
 		"confirmReverse": "Confirm schedule reversal?",
 		"create": "Are you sure you want to create this record?",
@@ -1711,7 +1734,9 @@
 		"unlockAll": "Are you sure you want to unlock all compartments?",
 		"update": "Are you sure you want to update this record?",
 		"upload": "Are you sure you want to upload this data?",
-		"zeroEquipmentSelected": "You have not selected equipment for some tankers. If you do not want to choose an existing one, OMEGA will create a new one for you automatically. Continue?"
+		"killSessions": "You have exceeded your session limit, do you want previous sessions cleared?",
+		"zeroEquipmentSelected": "You have not selected equipment for some tankers. If you do not want to choose an existing one, OMEGA will create a new one for you automatically. Continue?",
+		"saveBeforeSeal": "Unsaved data will lose, are you sure you want to continue?"
 	},
 	"tabColumns": {
 		"adaptiveFlow": "Adaptive Flow Control",
@@ -1766,6 +1791,7 @@
 		"liveJournal": "Live Journal",
 		"loadReport": "Load Report",
 		"loadSchedulesForNomination": "Schedules For Nomination",
+		"loadSchedulesForOpenOrder": "Schedules For Open Order",
 		"messageGroups": "Message Groups",
 		"messages": "Messages",
 		"meterDetail": "Meter Detail",
@@ -1815,6 +1841,9 @@
 		"litres": "Litres",
 		"litre": "Litre",
 		"ltr": "L",
+		"lamb": "L(amb)",
+		"lcor": "L(cor)",
+		"lstd": "L(std)",
 		"obsLitre": "Obs Litre",
 		"stdLitre": "Std Litre",
 		"lpm": "LPM",
@@ -1824,6 +1853,7 @@
 		"volume": "Volume"
 	},
 	"validate": {
+		"lineItemValidation": "Line Items Validation",
 		"decimalPlacesExceeded": "Decimal places exceeded",
 		"invalidInput": "Invalid input",
 		"mustBeBetween": "Must be between",
@@ -1834,6 +1864,10 @@
 		"prodMoveSrcAndDst": "Source and/or destination must be a tank and specified",
 		"select": "This field is required",
 		"set": "This field is required",
-		"wrongType": "Incorrect type"
+		"wrongType": "Incorrect type",
+		"warnings": "warning(s)",
+		"errors": "error(s)", 
+		"expiryDateEarlierThanEffectiveDate": "The Expiry Date Time should be later than Effective Date Time",
+		"effectiveDateLaterThanExpiryDate": "The Effective Date Time should be earlier than Expiry Date Time"
 	}
 }

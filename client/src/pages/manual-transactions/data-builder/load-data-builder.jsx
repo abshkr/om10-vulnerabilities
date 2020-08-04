@@ -5,8 +5,9 @@ const buildPayloadToLoad = (payload, setRepost, t) => {
 
     const mthead = payload.gud_head_data;
 
-    values.source_type = mthead?.TRANSACTION_TYPE === 'S' ? 'SCHEDULE' : 'OPENORDER';
+    values.trans_type = mthead?.TRANSACTION_TYPE === 'S' ? 'SCHEDULE' : 'OPENORDER';
     values.order_no = mthead?.ORDER_TRIP_IND;
+    values.order_cust_no = mthead?.ORDER_TRIP_IND;
     values.trip_no = mthead?.LOAD_NUMBER;
     values.supplier = mthead?.SUPPLIER;
     values.carrier = mthead?.CARRIER;
@@ -83,6 +84,7 @@ const buildPayloadToLoad = (payload, setRepost, t) => {
       transfer.trsf_delv_num = titem?.DELV_NUM;
       transfer.trsf_arm_cd = titem?.ARM_CODE === '' ? t('placeholder.selectArmCode') : titem?.ARM_CODE;
       transfer.trsf_drwr_cd = titem?.DRAWER_CODE;
+      transfer.trsf_prod_cmpy = titem?.DRAWER_CODE;
       transfer.trsf_prod_code =
         titem?.PRODUCT_CODE === '' ? t('placeholder.selectDrawerProduct') : titem?.PRODUCT_CODE;
       transfer.trsf_density = titem?.DENS;

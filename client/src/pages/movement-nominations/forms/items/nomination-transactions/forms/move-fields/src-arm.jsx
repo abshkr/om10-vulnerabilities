@@ -35,6 +35,7 @@ const SourceArm = ({ form, value, onChange, tank, pageState }) => {
     let arm_item = _.filter(list, (item) => {
       return code === (item.stream_tankcode + ' - ' + item.stream_baycode + ' - ' + item.stream_armcode);
     });
+    console.log('src arm, getArmItem', code, list, arm_item);
     return arm_item;
   };
 
@@ -67,14 +68,20 @@ const SourceArm = ({ form, value, onChange, tank, pageState }) => {
         onChange={onArmChange}
         // disabled={pageState !== 'disposal' ? true : (tank?.length > 0 ? true : false)}
         // disabled={!(!(pageState==='disposal' && (tank?.length > 0)) && (pageState!=='transfer') && (pageState !== 'receipt'))}
-        disabled={(pageState==='disposal' && (tank?.length > 0)) || (pageState==='transfer') || (pageState === 'receipt')}
+        /* {!(currentState=='Disposal' && fromTank.selectedIndex>-1) && (currentState!=='Transfer') && (currentState!='Receipt')}
+        {!(pageState=='disposal' && tank?.length !== 0) && (pageState!=='transfer') && (pageState!=='receipt')}
+        {(pageState!=='disposal' || tank?.length === 0) && (pageState!=='transfer') && (pageState!=='receipt')}
+        {!((pageState!=='disposal' || tank?.length === 0) && (pageState!=='transfer') && (pageState!=='receipt'))}
+        {(!(pageState!=='disposal' || tank?.length === 0) || (pageState==='transfer') || (pageState==='receipt'))}
+        {(pageState==='disposal' && tank?.length !== 0) || (pageState==='transfer') || (pageState==='receipt')} */
+        disabled={(pageState==='disposal' && tank?.length !== 0) || (pageState==='transfer') || (pageState==='receipt')}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectFromArm') : null}
         filterOption={(value, option) =>
           option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
         }
       >
-        {options?.records.map((item, index) => (
+        {_.filter(options?.records, (o) => (o.stream_bclass_code!=='6' && o.ratio_seq === '1'))?.map((item, index) => (
           /* <Select.Option key={index} value={item.stream_armcode}>
             {item.stream_armcode}
           </Select.Option> */
@@ -83,7 +90,8 @@ const SourceArm = ({ form, value, onChange, tank, pageState }) => {
             value={`${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
             item={item}
           >
-            {`${item.ratio_seq}: ${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
+            {`${item.stream_baycode} - ${item.stream_armcode}`}
+            {/* {`${item.ratio_seq}: ${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`} */}
           </Select.Option>
         ))}
       </Select>

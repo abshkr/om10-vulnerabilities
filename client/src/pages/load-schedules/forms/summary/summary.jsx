@@ -40,11 +40,11 @@ const Summary = ({ value }) => {
         {/* <div style={{display:'block'}}> */}
         
         {!hideProd && <div style={{ width: '50%', marginRight: 10 }}>
-          <DataTable data={products?.records} columns={productFields} parentHeight="340px" minimal />
+          <DataTable data={products?.records} columns={productFields} parentHeight="300px" minimal />
         </div>
         }
         <div div style={{ width: hideProd ? '100%' : '50%' }}>
-          <DataTable data={compartments?.records} columns={compartmentFields} parentHeight="340px" minimal />
+          <DataTable data={compartments?.records} columns={compartmentFields} parentHeight="300px" minimal />
         </div>
       </div>
     </div>

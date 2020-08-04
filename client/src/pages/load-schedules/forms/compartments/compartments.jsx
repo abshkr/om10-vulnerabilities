@@ -114,7 +114,7 @@ const Compartments = ({ form, value, tanker, drawer }) => {
       <DataTable 
         data={compartments} 
         columns={fields} 
-        parentHeight="350px" 
+        parentHeight="320px" 
         components={components} 
         minimal 
         // editType='fullRow'
