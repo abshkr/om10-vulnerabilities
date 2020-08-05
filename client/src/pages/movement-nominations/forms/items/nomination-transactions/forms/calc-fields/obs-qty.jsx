@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
 
-const ObsQty = ({ form, value, onChange, pageState, config }) => {
+const ObsQty = ({ form, value, onChange, setValue, pageState, config }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -28,11 +28,13 @@ const ObsQty = ({ form, value, onChange, pageState, config }) => {
       });
 
       onChange({ qty: value.mlitm_qty_amb, type: 'LT', title: t('fields.nomtranObsQty') });
+      setValue(value.mlitm_qty_amb);
     }
-  }, [value, setFieldsValue, onChange]);
+  }, [value, setFieldsValue, onChange, setValue]);
 
   const handleFieldChange = (value) => {
     onChange({ qty: value, type: 'LT', title: t('fields.nomtranObsQty') });
+    setValue(value);
   };
 
   return (

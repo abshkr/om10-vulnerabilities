@@ -4,7 +4,7 @@ import { Form, InputNumber } from 'antd';
 
 import _ from 'lodash';
 
-const ObsTemp = ({ form, value, tank, arm, pageState, config }) => {
+const ObsTemp = ({ form, value, setValue, tank, arm, pageState, config }) => {
   const [minTemp, setMinTemp] = useState(config.minTemperature);
   const [maxTemp, setMaxTemp] = useState(config.maxTemperature);
 
@@ -32,8 +32,10 @@ const ObsTemp = ({ form, value, tank, arm, pageState, config }) => {
       setFieldsValue({
         mlitm_temp_amb: value.mlitm_temp_amb,
       });
+
+      setValue(value.mlitm_temp_amb);
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, setValue]);
 
   useEffect(() => {
     if (tank && tank.length > 0) {
@@ -42,14 +44,16 @@ const ObsTemp = ({ form, value, tank, arm, pageState, config }) => {
       });
       setMinTemp(tank?.[0]?.bclass_temp_lo);
       setMaxTemp(tank?.[0]?.bclass_temp_hi);
+      setValue(tank?.[0]?.tank_temp);
     } else {
       setFieldsValue({
         mlitm_temp_amb: null,
       });
       setMinTemp(config.minTemperature);
       setMaxTemp(config.maxTemperature);
+      setValue(null);
     }
-  }, [tank, setFieldsValue, setMinTemp, setMaxTemp]);
+  }, [tank, setFieldsValue, setMinTemp, setMaxTemp, setValue]);
 
   return (
     <Form.Item
@@ -64,6 +68,7 @@ const ObsTemp = ({ form, value, tank, arm, pageState, config }) => {
         min={_.toNumber(minTemp)}
         max={_.toNumber(maxTemp)}
         precision={config.precisionTemperature}
+        onChange={setValue}
       />
     </Form.Item>
   );

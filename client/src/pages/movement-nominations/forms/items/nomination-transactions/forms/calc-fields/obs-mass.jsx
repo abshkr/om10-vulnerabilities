@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
 
-const ObsMass = ({ form, value, onChange, pageState, config }) => {
+const ObsMass = ({ form, value, onChange, setValue, pageState, config }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -28,11 +28,13 @@ const ObsMass = ({ form, value, onChange, pageState, config }) => {
       });
 
       onChange({ qty: value.mlitm_qty_kg, type: 'KG', title: t('fields.nomtranMass') });
+      setValue(value.mlitm_qty_kg);
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, onChange, setValue]);
 
   const handleFieldChange = (value) => {
     onChange({ qty: value, type: 'KG', title: t('fields.nomtranMass') });
+    setValue(value);
   };
 
   return (

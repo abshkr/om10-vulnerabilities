@@ -1,5 +1,5 @@
 const columns = (t, pageState, form, arm) => [
-  {
+  /* {
     headerName: t('fields.nomtranBaseGui'),
     field: 'trsf_bs_prodcd',
     //field: 'trsb_bs',
@@ -73,7 +73,147 @@ const columns = (t, pageState, form, arm) => [
     resizable: true,
     editable: pageState === 'disposal' && !!arm ? true : false,
     cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
+  }, */
+
+
+  {
+    headerName: t('fields.compartmentNumber'),
+    field: 'trsf_bs_cmpt_no',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+    width: 50,
   },
+  {
+    headerName: t('fields.productCode'),
+    field: 'trsf_bs_prodcd',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+  },
+  {
+    headerName: t('fields.nomtranBaseGui'),
+    // headerName: t('fields.product'),
+    field: 'trsf_bs_prodname',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+  },
+  {
+    headerName: t('fields.tankCode'),
+    field: 'trsf_bs_tk_cd',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+  },
+  {
+    headerName: t('fields.productClass'),
+    field: 'trsf_bs_prodcls',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+  },
+  {
+    headerName: t('fields.density') + ' (' + t('units.kg/m3') + ')',
+    field: 'trsf_bs_den',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    editable: pageState === 'disposal' && !!arm ? true : false,
+    cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
+    cellRenderer: 'DensityRenderer',
+    cellRendererParams: {
+      digits: '1',
+    },
+  },
+  {
+    headerName: t('fields.temperature') + ' (' + t('units.degC') + ')',
+    field: 'trsf_bs_temp',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'TemperatureRenderer',
+    cellRendererParams: {
+      digits: '1',
+    },
+  },
+  {
+    headerName: t('fields.observedQuantity') + ' (' + t('units.ltr') + ')',
+    field: 'trsf_bs_qty_amb',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    editable: pageState === 'disposal' && !!arm ? true : false,
+    cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: '0',
+      min: '100',
+    },
+  },
+  {
+    headerName: t('fields.standardQuantity') + ' (' + t('units.ltr') + ')',
+    field: 'trsf_bs_qty_cor',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    editable: pageState === 'disposal' && !!arm ? true : false,
+    cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: '0',
+      min: '100',
+    },
+  },
+  {
+    headerName: t('fields.massQuantity') + ' (' + t('units.kg') + ')',
+    field: 'trsf_bs_load_kg',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    editable: pageState === 'disposal' && !!arm ? true : false,
+    cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: '0',
+      min: '100',
+    },
+  },
+  {
+    headerName: 'Additive?',
+    field: 'trsf_bs_adtv_flag',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+  },
+  {
+    headerName: 'Base Ratio Value',
+    field: 'trsf_bs_ratio_value',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+  },
+  {
+    headerName: 'Base Ratio Total',
+    field: 'trsf_bs_ratio_total',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+  },
+  {
+    headerName: 'Base Ratio Total',
+    field: 'trsf_bs_ratio_total2',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+  },
+
 ];
 
 export default columns;

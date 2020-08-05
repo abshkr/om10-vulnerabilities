@@ -101,6 +101,13 @@ const FormModal = ({
   const [productItemTo, setProductItemTo] = useState(null);
   const [calcSource, setCalcSource] = useState(null);
   const [altQty, setAltQty] = useState(null);
+  const [transfer, setTransfer] = useState({});
+  const [productArms, setProductArms] = useState(undefined);
+
+  const [temperature, setTemperature] = useState(null);
+  const [ambient, setAmbient] = useState(null);
+  const [corrected, setCorrected] = useState(null);
+  const [mass, setMass] = useState(null);
 
   const [selected, setSelected] = useState(null);
 
@@ -175,9 +182,9 @@ const FormModal = ({
   const onSubmit = async () => {
     const values = await form.validateFields();
     let found = false;
-    if (values?.mlitm_qty_amb && 
-      values?.mlitm_qty_cor && 
-      values?.mlitm_qty_kg && 
+    if (values?.mlitm_qty_amb && _.toNumber(values?.mlitm_qty_amb) > 0 &&
+      values?.mlitm_qty_cor && _.toNumber(values?.mlitm_qty_cor) > 0 && 
+      values?.mlitm_qty_kg && _.toNumber(values?.mlitm_qty_kg) > 0 && 
       (values?.mlitm_temp_amb===0 || values?.mlitm_temp_amb) && 
       values?.mlitm_dens_cor) {
       found = true;
@@ -264,7 +271,7 @@ const FormModal = ({
     }
 
 
-    if (!calcSource || String(calcSource?.qty).trim().length === 0) {
+    if (!calcSource || String(calcSource?.qty).trim().length === 0 || _.toNumber(calcSource?.qty) === 0) {
       notification.error({
         message: t('validate.set'),
         description: !calcSource 
@@ -341,6 +348,9 @@ const FormModal = ({
                 mlitm_qty_cor: response?.data?.real_litre15,
                 mlitm_qty_kg: response?.data?.real_kg,
               });
+              setAmbient(response?.data?.real_litre);
+              setCorrected(response?.data?.real_litre15);
+              setMass(response?.data?.real_kg);
               console.log('before change value', value);
               /* value.mlitm_qty_amb = response?.data?.real_litre;
               value.mlitm_qty_cor = response?.data?.real_litre15;
@@ -562,7 +572,7 @@ const FormModal = ({
 
                     <Row gutter={[8, 1]}>
                       <Col span={24}>
-                        <SourceArm form={form} value={value} onChange={setArm} tank={tank} pageState={pageState} />
+                        <SourceArm form={form} value={value} setArms={setProductArms} onChange={setArm} tank={tank} pageState={pageState} />
                       </Col>
                     </Row>
 
@@ -622,7 +632,7 @@ const FormModal = ({
 
                 <Row gutter={[8, 1]}>
                   <Col span={12}>
-                    <ObsQty form={form} value={value} onChange={setCalcSource} pageState={pageState} config={config} />
+                    <ObsQty form={form} value={value} onChange={setCalcSource} setValue={setAmbient} pageState={pageState} config={config} />
                   </Col>
 
                   <Col span={12}>
@@ -651,17 +661,17 @@ const FormModal = ({
 
                 <Row gutter={[8, 1]}>
                   <Col span={12}>
-                    <StdQty form={form} value={value} onChange={setCalcSource} pageState={pageState} config={config} />
+                    <StdQty form={form} value={value} onChange={setCalcSource} setValue={setCorrected} pageState={pageState} config={config} />
                   </Col>
 
                   <Col span={12}>
-                    <ObsMass form={form} value={value} onChange={setCalcSource} pageState={pageState} config={config} />
+                    <ObsMass form={form} value={value} onChange={setCalcSource} setValue={setMass} pageState={pageState} config={config} />
                   </Col>
                 </Row>
 
                 <Row gutter={[8, 1]}>
                   <Col span={12}>
-                    <ObsTemp form={form} value={value} tank={tank} arm={arm} pageState={pageState} config={config} />
+                    <ObsTemp form={form} value={value} setValue={setTemperature} tank={tank} arm={arm} pageState={pageState} config={config} />
                   </Col>
 
                   <Col span={12}>
@@ -685,7 +695,16 @@ const FormModal = ({
           <Card size="small" title={t('divider.baseProducts')}>
             <Row gutter={[8, 1]}>
               <Col span={24}>
-                <BaseDetails form={form} value={value} pageState={pageState} arm={arm} />
+                <BaseDetails
+                  form={form}
+                  value={value}
+                  pageState={pageState}
+                  arm={arm}
+                  temperature={temperature}
+                  amb={ambient}
+                  cor={corrected}
+                  mass={mass}
+                />
               </Col>
             </Row>
           </Card>
@@ -693,7 +712,16 @@ const FormModal = ({
           <Card size="small" title={t('divider.meters')}>
             <Row gutter={[8, 1]}>
               <Col span={24}>
-                <MeterDetails form={form} value={value} pageState={pageState} arm={arm} />
+                <MeterDetails
+                  form={form}
+                  value={value}
+                  pageState={pageState}
+                  arm={arm}
+                  temperature={temperature}
+                  amb={ambient}
+                  cor={corrected}
+                  mass={mass}
+                />
               </Col>
             </Row>
           </Card>

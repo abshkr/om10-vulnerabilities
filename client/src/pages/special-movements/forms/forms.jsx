@@ -113,16 +113,17 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
   const onFinish = async () => {
     const values = await form.validateFields();
     let found = false;
-    if (values?.mlitm_qty_amb && 
-      values?.mlitm_qty_cor && 
-      values?.mlitm_qty_kg && 
+    console.log('spec onFinish', values);
+    if (values?.mlitm_qty_amb && _.toNumber(values?.mlitm_qty_amb) > 0 &&
+      values?.mlitm_qty_cor && _.toNumber(values?.mlitm_qty_cor) > 0 && 
+      values?.mlitm_qty_kg && _.toNumber(values?.mlitm_qty_kg) > 0 && 
       (values?.mlitm_temp_amb===0 || values?.mlitm_temp_amb) && 
       values?.mlitm_dens_cor) {
       found = true;
     }
     if (found === false) {
       notification.warning({
-        message: t('messages.submitFailed'),
+        message: IS_CREATING ? t('descriptions.createFailed') :  t('descriptions.updateFailed'),
         description: t('descriptions.noTransferDetailsSpec'),
       });
       return;
@@ -226,6 +227,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       'mlitm_prodcode_to',
     ]);
 
+    console.log('spec onCalculate', payload, quantitySource);
+
     if (String(payload?.mlitm_qty_amb).trim().length === 0 && 
       String(payload?.mlitm_qty_cor).trim().length === 0 && 
       String(payload?.mlitm_qty_kg).trim().length === 0) {
@@ -245,7 +248,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
     }
 
 
-    if (!quantitySource || String(quantitySource?.qty).trim().length === 0) {
+    if (!quantitySource || String(quantitySource?.qty).trim().length === 0 || _.toNumber(quantitySource?.qty) === 0) {
       notification.error({
         message: t('validate.set'),
         description: !quantitySource 
@@ -335,9 +338,9 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
   const onSubmit = async () => {
     const values = await form.validateFields();
     let found = false;
-    if (values?.mlitm_qty_amb && 
-      values?.mlitm_qty_cor && 
-      values?.mlitm_qty_kg && 
+    if (values?.mlitm_qty_amb && _.toNumber(values?.mlitm_qty_amb) > 0 &&
+      values?.mlitm_qty_cor && _.toNumber(values?.mlitm_qty_cor) > 0 && 
+      values?.mlitm_qty_kg && _.toNumber(values?.mlitm_qty_kg) > 0 && 
       (values?.mlitm_temp_amb===0 || values?.mlitm_temp_amb) && 
       values?.mlitm_dens_cor) {
       found = true;

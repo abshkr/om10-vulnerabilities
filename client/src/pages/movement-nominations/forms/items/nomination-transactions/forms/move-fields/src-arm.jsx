@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
 import _ from 'lodash';
 
-import { NOMINATION_TRANSACTIONS } from '../../../../../../../api';
+import { NOMINATION_TRANSACTIONS, MANUAL_TRANSACTIONS } from '../../../../../../../api';
 
-const SourceArm = ({ form, value, onChange, tank, pageState }) => {
+const SourceArm = ({ form, value, setArms, onChange, tank, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -16,7 +16,8 @@ const SourceArm = ({ form, value, onChange, tank, pageState }) => {
     data: options,
     isValidating,
   } = useSWR(
-    `${NOMINATION_TRANSACTIONS.ARMS}?prod_code=${value?.mvitm_prodcode_from}&prod_cmpy=${value?.mvitm_prodcmpy_from}`,
+    // `${NOMINATION_TRANSACTIONS.ARMS}?prod_code=${value?.mvitm_prodcode_from}&prod_cmpy=${value?.mvitm_prodcmpy_from}`,
+    `${MANUAL_TRANSACTIONS.GET_PROD_ARMS}?prod_code=${value?.mvitm_prodcode_from}&prod_cmpy=${value?.mvitm_prodcmpy_from}`,
     { refreshInterval: 0 }
   );
 
@@ -56,6 +57,12 @@ const SourceArm = ({ form, value, onChange, tank, pageState }) => {
     }
   }, [value, options, setFieldsValue, onChange]);
 
+  useEffect(() => {
+    if (options) {
+      setArms(options?.records);
+    }
+  }, [options, setArms]);
+
   return (
     <Form.Item
       name="mvitm_arm"
@@ -83,7 +90,7 @@ const SourceArm = ({ form, value, onChange, tank, pageState }) => {
           option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
         }
       >
-        {_.filter(options?.records, (o) => (o.stream_bclass_code!=='6' && o.ratio_seq === '1'))?.map((item, index) => (
+        {_.filter(options?.records, (o) => (o.stream_bclass_code!=='6' && o.rat_seq === '1'))?.map((item, index) => (
           /* <Select.Option key={index} value={item.stream_armcode}>
             {item.stream_armcode}
           </Select.Option> */
