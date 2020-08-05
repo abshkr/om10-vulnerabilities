@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import useSWR from 'swr';
 import { ReloadOutlined } from '@ant-design/icons';
@@ -24,15 +24,30 @@ const OnDemandReports = () => {
   const [supplier, setSupplier] = useState(null);
   const [reports, setReports] = useState(null);
   const [usefolioRange, setUseFolio] = useState(false);
+  const [closeouts, setCloseouts] = useState([]);
+  const [fromDatePicker, setFromDatePicker] = useState(true);
 
   const [start, setStart] = useState(moment().subtract(15, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
 
   const { data: suppliers, isValidating: suppliersLoading } = useSWR(ON_DEMAND_REPORTS.SUPPLIERS);
 
-  const { data: closeouts, isValidating: closeOutsLoading } = useSWR(
-    `${ON_DEMAND_REPORTS.CLOSE_OUTS}?start_date=${start}&end_date=${end}`
-  );
+  const onRetrieveCloseouts = () => {
+    api
+      .get(`${ON_DEMAND_REPORTS.CLOSE_OUTS}?start_date=${start}&end_date=${end}`)
+      .then((response) => {
+        const payload = response.data?.records || [];
+        setCloseouts(payload);
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
+        });
+      });
+  }
 
   const onSupplier = (value) => {
     setSupplier(value);
@@ -97,6 +112,7 @@ const OnDemandReports = () => {
   };
 
   const onRangeSelect = (start, end) => {
+    setFromDatePicker(true);
     setStart(start);
     setEnd(end);
   };
@@ -107,14 +123,20 @@ const OnDemandReports = () => {
       close_out_to: list[0]?.closeout_nr,
     });
 
-    if (!usefolioRange) {
-      setStart(list[list.length - 1]?.start_date);
-      setEnd(list[0]?.end_date);
-    }
+    setFromDatePicker(false);
+
+    setStart(list[list.length - 1]?.start_date);
+    setEnd(list[0]?.end_date);
   };
 
-  const isLoading = suppliersLoading || closeOutsLoading || loading;
+  const isLoading = suppliersLoading || loading;
   const fields = columns(t);
+
+  useEffect(() => {
+    if ((start || end) && fromDatePicker) {
+      onRetrieveCloseouts();
+    }
+  }, [start, end]);
 
   return (
     <Page page={t('pageMenu.reports')} name={t('pageNames.onDemandReports')} access={access}>
@@ -187,7 +209,7 @@ const OnDemandReports = () => {
         <Form.Item label={t('fields.closeOutDetails')}>
           <DataTable
             columns={fields}
-            data={closeouts?.records}
+            data={closeouts}
             isLoading={false}
             height="70vh"
             minimal
