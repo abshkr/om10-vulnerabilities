@@ -10,6 +10,7 @@ import api, { PERSONNEL } from '../../api';
 import auth from '../../auth';
 import useSWR from 'swr';
 import { useConfig, useAuth } from '../../hooks';
+import { pwdComplexity, complexityDesc } from 'utils'
 
 const Settings = ({ user }) => {
   const config = useConfig();
@@ -111,6 +112,14 @@ const Settings = ({ user }) => {
   };
 
   const onPasswordChange = (values) => {
+    if (!pwdComplexity(values.password, values.confirm_password, config.passwordComplexity)) {
+      notification.error({
+        message: t('messages.validationFailed'),
+        description: t('descriptions.pwdComplexity') + ": " + complexityDesc(config.passwordComplexity, t),
+      });
+      return;
+    }
+    
     Modal.confirm({
       title: t('prompts.update'),
       okText: t('operations.update'),

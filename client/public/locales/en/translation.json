@@ -149,7 +149,11 @@
 		"cannotBeZeroCmptField": "This field cannot be zero in compartment ",
 		"fromProductNotBase": "Scheduled from-product is made of multiple base products.",
 		"toProductNotBase": "Scheduled to-product is made of multiple base products.",
-		"reportFolioRange": "Please enter folio range"
+		"reportFolioRange": "Please enter folio range",
+		"pwdComplexity": "Password complexity does not meet requirements",
+		"complexitySimple": "Simple (Alpha and Numeric)",
+		"complexityMedium": "Medium (Upper, Lower and Numeric)",
+		"complexityComplex": "Complex (Upper, Lower, Numberic and Symbol)"
 	},
 	"divider": {
 		"baseProducts": "Base Products",

@@ -13,11 +13,14 @@ import { ConfigurationContainer } from './styles';
 import api, { SITE_CONFIGURATION } from '../../api';
 import { Page } from '../../components';
 import auth from '../../auth';
+import { complexityDesc } from 'utils'
 
 const { TabPane } = Tabs;
 const { Option } = Select;
 
 const FormSwitch = ({ config, onChange }) => {
+  const { t } = useTranslation();
+
   if (config.config_value === 'N' || config.config_value === 'Y') {
     return null;
   }
@@ -31,9 +34,9 @@ const FormSwitch = ({ config, onChange }) => {
           style={{ width: 280 }} 
           onChange={(value) => onChange(config, value)}
         >
-          <Option value="6">Simple (Alpha and Numeric)</Option>
-          <Option value="7">Medium (Upper, Lower and Numeric)</Option>
-          <Option value="15">Complex (Upper, Lower, Numberic and Symbol)</Option>
+          <Option value="6">{complexityDesc('6', t)}</Option>
+          <Option value="7">{complexityDesc('7', t)}</Option>
+          <Option value="15">{complexityDesc('15', t)}</Option>
         </Select>
       );
 

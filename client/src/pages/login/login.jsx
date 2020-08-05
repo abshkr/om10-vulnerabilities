@@ -16,7 +16,7 @@ import _ from 'lodash';
 import api, { COMMON, AUTH } from 'api';
 import hash from 'utils/hash';
 import { AUTHORIZED, UNAUTHORIZED } from 'actions/types';
-
+import { useConfig } from '../../hooks';
 import { ReactComponent as LoginIcon } from './login.svg';
 
 import {
@@ -46,6 +46,7 @@ const LoginOutlined = (props) => (
 
 const Login = ({ handleLogin, auth }) => {
   const { i18n, t } = useTranslation();
+  const config = useConfig();
 
   const [isLoading, setLoading] = useState(false);
   const [attempts, setAttempts] = useState(null);
@@ -116,7 +117,15 @@ const Login = ({ handleLogin, auth }) => {
       //     fetcher,
       //     }}
       // >
-        <ChangePassword language={language} user_code={user_code} old={password} dispatch={dispatch} onReturn={onChangePassword} />
+        <ChangePassword 
+          language={language} 
+          user_code={user_code} 
+          old={password} 
+          dispatch={dispatch} 
+          onReturn={onChangePassword} 
+          config={config}
+          t={t}
+        />
       // </SWRConfig>
       ),
       okButtonProps: {
