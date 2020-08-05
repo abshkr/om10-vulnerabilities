@@ -133,7 +133,7 @@ const TransactionList = () => {
       avatar="transactionList"
       access={access}
     >
-      <DataTable columns={fields} data={data} isLoading={isLoading} onClick={handleClick} />
+      <DataTable columns={fields} data={data} isLoading={isLoading} onClick={handleClick} clearFilterPlus={revalidate}/>
     </Page>
   );
 };

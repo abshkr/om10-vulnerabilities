@@ -285,6 +285,7 @@ const MovementNominations = () => {
           selectionMode="single"
           onClick={(payload) => handleFormState(true, payload)}
           handleSelect={(payload) => handleFormState(true, payload[0])}
+          clearFilterPlus={revalidate}
         />
 
         {visible && (

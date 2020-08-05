@@ -179,6 +179,7 @@ const LoadSchedules = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
         autoColWidth
+        clearFilterPlus={revalidate}
       />
 
       <Forms 

@@ -92,7 +92,8 @@ const Table = ({
   stopEditingWhenGridLosesFocus,
   clearSelection,
   editType,
-  rowEditingStopped
+  rowEditingStopped,
+  clearFilterPlus,
 }) => {
   const { windowWidth } = useWindowSize();
 
@@ -127,6 +128,9 @@ const Table = ({
     api.onFilterChanged();
     api.setSortModel(null);
     setValue('');
+    if (clearFilterPlus) {
+      clearFilterPlus();
+    }
   };
 
   const handleFirstDataRendered = (params) => {
