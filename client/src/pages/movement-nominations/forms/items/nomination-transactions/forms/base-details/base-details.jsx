@@ -26,9 +26,12 @@ const BaseDetails = ({ form, value, pageState, arm, temperature, amb, cor, mass 
       trsf_prod_cmpy: value?.mvitm_prodcmpy_from,
       trsf_prod_code: value?.mvitm_prodcode_from,
       trsf_temp: temperature,
-      trsf_qty_amb: !amb ? 0 : amb,
-      trsf_qty_cor: !cor ? 0 : cor,
-      trsf_load_kg: !mass ? 0 : mass,
+      trsf_qty_amb: amb,
+      trsf_qty_cor: cor,
+      trsf_load_kg: mass,
+      // trsf_qty_amb: !amb ? 0 : amb,
+      // trsf_qty_cor: !cor ? 0 : cor,
+      // trsf_load_kg: !mass ? 0 : mass,
     };
 
     const pre = buildBaseTransfersByArm(arm, transfer);

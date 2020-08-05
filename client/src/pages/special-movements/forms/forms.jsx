@@ -532,7 +532,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
             style={{ float: 'right', marginRight: 5 }}
             disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate || value.mlitm_status !== '0'}
           >
-            {IS_CREATING ? t('operations.create') : t('operations.update')}
+            {IS_CREATING ? t('operations.save') : t('operations.update')}
           </Button>
 
           <Button

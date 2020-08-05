@@ -53,6 +53,7 @@ import { SETTINGS } from '../../../../../../constants';
 import api, { NOMINATION_TRANSACTIONS, MOVEMENT_NOMIATIONS } from '../../../../../../api';
 import BaseDetails from './base-details/base-details';
 import MeterDetails from './meter-details/meter-details';
+import { calcArmQuantity } from '../../../../../../utils';
 
 const TabPane = Tabs.TabPane;
 
@@ -332,41 +333,107 @@ const FormModal = ({
       width: '30vw',
       centered: true,
       onOk: async () => {
-        try {
-          const values = await form.validateFields();
-          await api
-            .post(NOMINATION_TRANSACTIONS.CALCULATE, {
-              frm_baseCd: pageState === 'receipt' ? value?.mvitm_prodcode_to : value?.mvitm_prodcode_from,
-              frm_which_type: calcSource?.type, //'LT',
-              frm_real_amount: calcSource?.qty, //values.mlitm_qty_amb,
-              frm_real_temp: values?.mlitm_temp_amb,
-              frm_real_dens: values?.mlitm_dens_cor,
-            })
-            .then((response) => {
-              form.setFieldsValue({
-                mlitm_qty_amb: response?.data?.real_litre,
-                mlitm_qty_cor: response?.data?.real_litre15,
-                mlitm_qty_kg: response?.data?.real_kg,
-              });
-              setAmbient(response?.data?.real_litre);
-              setCorrected(response?.data?.real_litre15);
-              setMass(response?.data?.real_kg);
-              console.log('before change value', value);
-              /* value.mlitm_qty_amb = response?.data?.real_litre;
-              value.mlitm_qty_cor = response?.data?.real_litre15;
-              value.mlitm_qty_kg = response?.data?.real_kg;
-              value.mlitm_temp_amb = values?.mlitm_temp_amb;
-              value.mlitm_dens_cor = values?.mlitm_dens_cor; */
-              console.log('after change value', value);
-            });
-        } catch (error) {
-          message.error({
-            key: 'calc',
-            content: t('descriptions.validationFailed'),
-          });
+        if (pageState !== 'disposal') {
+          await onCalculateByOneBase();
+        } else {
+          if (arm && arm?.length > 1) {
+            await onCalculateByMultiBases();
+          }
+          else {
+            await onCalculateByOneBase();
+          }
         }
       },
     });
+  };
+
+  const onCalculateByOneBase = async () => {
+    try {
+      const values = await form.validateFields();
+      await api
+        .post(NOMINATION_TRANSACTIONS.CALCULATE, {
+          frm_baseCd: pageState === 'receipt' ? value?.mvitm_prodcode_to : value?.mvitm_prodcode_from,
+          frm_which_type: calcSource?.type, //'LT',
+          frm_real_amount: calcSource?.qty, //values.mlitm_qty_amb,
+          frm_real_temp: values?.mlitm_temp_amb,
+          frm_real_dens: values?.mlitm_dens_cor,
+        })
+        .then((response) => {
+          if (!response?.data?.real_litre) {
+            notification.error({
+              message: t('descriptions.calculateFailed') + ': ' 
+                + (pageState === 'receipt' ? value?.mvitm_prodcode_to : value?.mvitm_prodcode_from),
+              description: response?.data?.msg_code + ': ' + response?.data?.msg_desc,
+            });
+          } else {
+            form.setFieldsValue({
+              mlitm_qty_amb: response?.data?.real_litre,
+              mlitm_qty_cor: response?.data?.real_litre15,
+              mlitm_qty_kg: response?.data?.real_kg,
+            });
+            setAmbient(response?.data?.real_litre);
+            setCorrected(response?.data?.real_litre15);
+            setMass(response?.data?.real_kg);
+            /* console.log('before change value', value);
+            value.mlitm_qty_amb = response?.data?.real_litre;
+            value.mlitm_qty_cor = response?.data?.real_litre15;
+            value.mlitm_qty_kg = response?.data?.real_kg;
+            value.mlitm_temp_amb = values?.mlitm_temp_amb;
+            value.mlitm_dens_cor = values?.mlitm_dens_cor;
+            console.log('after change value', value); */
+          }
+
+          notification.success({
+            message: t('messages.calculateSuccess'),
+            description: t('descriptions.calculateSuccess'),
+          });
+        });
+    } catch (error) {
+      message.error({
+        key: 'calc',
+        content: t('descriptions.validationFailed'),
+      });
+    }
+
+  };
+
+  const onCalculateByMultiBases = async () => {
+    try {
+      const values = await form.validateFields();
+      const response = await calcArmQuantity(
+        arm?.[0]?.stream_index, 
+        arm, 
+        calcSource?.qty, 
+        calcSource?.type, 
+        values?.mlitm_temp_amb
+      );
+      if (response?.result === false) {
+        notification.error({
+          message: t('descriptions.calculateFailed'),
+          description: response?.message,
+        });
+      } else {
+        form.setFieldsValue({
+          mlitm_qty_amb: response?.qty_amb,
+          mlitm_qty_cor: response?.qty_cor,
+          mlitm_qty_kg: response?.load_kg,
+        });
+        setAmbient(response?.qty_amb);
+        setCorrected(response?.qty_cor);
+        setMass(response?.load_kg);
+
+        notification.success({
+          message: t('messages.calculateSuccess'),
+          description: t('descriptions.calculateSuccess'),
+        });
+      }
+    } catch (error) {
+      message.error({
+        key: 'calc',
+        content: t('descriptions.validationFailed'),
+      });
+    }
+
   };
 
   useEffect(() => {

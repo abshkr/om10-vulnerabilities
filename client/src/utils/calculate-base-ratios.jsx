@@ -9,7 +9,7 @@ const calcBaseRatios = (prodQty, baseRatio, totalRatio) => {
     // console.log('calcBaseQuantity2', qty, ratio, total);
     // console.log('calcBaseQuantity3', (qty * ratio / total));
 
-    if (total !== 0 && qty !== NaN) {
+    if (total !== 0 && _.isNaN(qty) === false && _.isNaN(ratio) === false) {
       return (qty * ratio / total);
     }
     else {
