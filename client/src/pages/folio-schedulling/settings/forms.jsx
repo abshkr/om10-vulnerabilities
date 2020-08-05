@@ -127,8 +127,8 @@ const Settings = ({ value, access }) => {
             revalidate();
 
             notification.success({
-              message: t('messages.closeFolioSuccess'),
-              description: t('descriptions.closeFolioSuccess'),
+              message: t('messages.submitSuccess'),
+              description: t('descriptions.submitSuccess'),
             });
           })
           .catch((errors) => {
