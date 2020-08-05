@@ -8,6 +8,8 @@ import adjustProductArms from './adjust-product-arms';
 import getAvailableArms from './get-available-arms';
 import calcBaseRatios from './calculate-base-ratios';
 import calcArmDensity from './calculate-arm-density';
+import calcBaseQuantity from './calculate-base-quantity';
+import calcArmQuantity from './calculate-arm-quantity';
 import { pwdComplexity, complexityDesc } from './pwd-complexity';
 import csvToJSON from './csv-to-json';
 import fetcher from './fetcher';
@@ -29,6 +31,8 @@ export {
   getAvailableArms,
   calcBaseRatios,
   calcArmDensity,
+  calcBaseQuantity,
+  calcArmQuantity,
   csvToJSON,
   fetcher,
   hexToRGB,
