@@ -16,7 +16,7 @@
 		"characterMustStart": "Character must start with a ",
 		"closeFailed": "You have closed the transaction",
 		"closeFolioFailed": "Failed to close the first frozen folio",
-		"closeFolioSuccess": "First frozen folio successfully closed",
+		"closeFolioSuccess": "Successfully submit to close first frozen folio",
 		"closeFolioTriggered": "Successfully triggered close first frozen folio",
 		"closeSuccess": "You have closed the transaction",
 		"compartmentCopy": "Note: Select from above to copy its compartment settings",
