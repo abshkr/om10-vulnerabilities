@@ -456,6 +456,39 @@ class Schedule extends CommonClass
         return;
     }
 
+    //In old php, it is LoadSchedules.class.php::updateSchedule
+    private function update_sold_to_ship_to() 
+    {
+        if (!isset($this->shls_sold_to_num) && !isset($this->shls_ship_to_num)) {
+            return;
+        }
+
+        if (!isset($this->shls_sold_to_num)) {
+            $this->shls_sold_to_num = null;
+        }
+
+        if (!isset($this->shls_ship_to_num)) {
+            $this->shls_ship_to_num = null;
+        }
+
+        $query = "UPDATE SCHEDULE SET SHLS_SOLD_TO_NUM = :shls_sold_to_num,
+                SHLS_SHIP_TO_NUM = :shls_ship_to_num
+            WHERE SHLS_TRIP_NO = :trip and SHLS_SUPP = :supplier";
+        $stmt = oci_parse($this->conn, $query);
+        // oci_bind_by_name($stmt, ':default', $default);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier_code);
+        oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+        oci_bind_by_name($stmt, ':shls_sold_to_num', $this->shls_sold_to_num);
+        oci_bind_by_name($stmt, ':shls_ship_to_num', $this->shls_ship_to_num);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            throw new DatabaseException($e['message']);;
+        }
+
+        return;
+    }
+
     private function clean_up_zero_products()
     {
         $query = "DELETE FROM SPECPROD
@@ -660,6 +693,7 @@ class Schedule extends CommonClass
 
         $this->clean_up_zero_products();
         $this->update_host_data();
+        $this->update_sold_to_ship_to();
 
         return true;
     }
