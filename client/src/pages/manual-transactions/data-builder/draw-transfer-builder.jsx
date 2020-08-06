@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import {calcArmDensity, getAvailableArms, adjustProductArms} from '../../../utils'
 
-const buildDrawTransfersByArm = (record, productArms, t) => {
+const buildDrawTransfersByArm = (record, productArms, t, sourceType, loadType, repost) => {
     let prodClnValue = t('placeholder.selectDrawerProduct');
     let armClnValue = t('placeholder.selectArmCode');
     let densClnValue = null;
@@ -16,6 +16,15 @@ const buildDrawTransfersByArm = (record, productArms, t) => {
         const prodArms = adjustProductArms(productArms, record?.shls_supp, record?.prod_code);
         console.log('....................buildDrawTransfersByArm', items?.[0]?.stream_index, items?.[0]?.stream_armcode, prodArms);
         densClnValue = calcArmDensity(items?.[0]?.stream_index, prodArms);
+      }
+    }
+
+    let ambDefault = null;
+    if (repost){
+      if (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') {
+        ambDefault = record?.allowed_qty;
+      } else {
+        ambDefault = record?.cmpt_capacit;
       }
     }
 
@@ -36,7 +45,7 @@ const buildDrawTransfersByArm = (record, productArms, t) => {
       trsf_qty_left: record?.load_qty === '' ? null : record?.load_qty,
       trsf_density: densClnValue,
       trsf_temp: null,
-      trsf_qty_amb: null,
+      trsf_qty_amb: ambDefault,
       trsf_qty_cor: null,
       trsf_load_kg: null,
     };
@@ -44,14 +53,14 @@ const buildDrawTransfersByArm = (record, productArms, t) => {
     return transfer;
 };
 
-const buildDrawTransfers = (records, productArms, t) => {
+const buildDrawTransfers = (records, productArms, t, sourceType, loadType, repost) => {
     const transfers = [];
 
     _.forEach(records, (record) => {
       // console.log('buildDrawTransfers', record?.shls_supp);
       if (record.shls_supp !== '') {
-        // console.log('buildDrawTransfers', record, record?.shls_supp, record?.prod_code);
-        const transfer = buildDrawTransfersByArm(record, productArms, t);
+        console.log('************* buildDrawTransfers', record, record?.shls_supp, record?.prod_code);
+        const transfer = buildDrawTransfersByArm(record, productArms, t, sourceType, loadType, repost);
 
         transfers.push(transfer);
       }

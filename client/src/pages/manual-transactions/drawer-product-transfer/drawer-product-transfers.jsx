@@ -1036,7 +1036,7 @@ const DrawerProductTransfers = ({
     // NOTE: this data is form get_order_details or get_sched_details, not the products
     if (data && productArms) {
       console.log('DrawerProductTransfers: Watch data, supplier, trip, order, tanker! Data not null', data);
-      const transformed = buildDrawTransfers(data?.records, productArms, t);
+      const transformed = buildDrawTransfers(data?.records, productArms, t, sourceType, loadType, repost);
       console.log('DrawerProductTransfers: Watch data, supplier, trip, order, tanker - transformed', transformed);
 
       if (!dataLoaded || !dataLoaded?.transfers || dataLoaded?.transfers?.length === 0) {
@@ -1127,15 +1127,17 @@ const DrawerProductTransfers = ({
               {t('operations.calculateDrawer')}
             </Button>
 
-            <Button
-              type="normal"
-              icon={<CopyOutlined />}
-              style={{ float: 'right', marginRight: 5 }}
-              onClick={onCopy}
-              disabled={!canCopy || updating}
-            >
-              {t('operations.copyQuantity')}
-            </Button>
+            {!repost && (
+              <Button
+                type="normal"
+                icon={<CopyOutlined />}
+                style={{ float: 'right', marginRight: 5 }}
+                onClick={onCopy}
+                disabled={!canCopy || updating}
+              >
+                {t('operations.copyQuantity')}
+              </Button>
+            )}
           </Col>
         </Row>
 
