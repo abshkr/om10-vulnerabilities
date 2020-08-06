@@ -1045,6 +1045,9 @@ const DrawerProductTransfers = ({
         setPayload(dataLoaded?.transfers);
         console.log('MT 2 - DrawProductTransfers: data are loaded!');
         setSelected(dataLoaded?.transfers?.[0]);
+        // const loaded = _.clone(dataLoaded);
+        // loaded.transfers = [];
+        // setDataLoaded(loaded);
       }
       setLoading(false);
     }

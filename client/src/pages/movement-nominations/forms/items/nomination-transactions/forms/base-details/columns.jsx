@@ -121,8 +121,8 @@ const columns = (t, pageState, form, arm) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    editable: pageState === 'disposal' && !!arm ? true : false,
-    cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
+    // editable: pageState === 'disposal' && !!arm ? true : false,
+    // cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
       digits: '1',
@@ -145,8 +145,8 @@ const columns = (t, pageState, form, arm) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    editable: pageState === 'disposal' && !!arm ? true : false,
-    cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
+    // editable: pageState === 'disposal' && !!arm ? true : false,
+    // cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
       digits: '0',
@@ -159,8 +159,8 @@ const columns = (t, pageState, form, arm) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    editable: pageState === 'disposal' && !!arm ? true : false,
-    cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
+    // editable: pageState === 'disposal' && !!arm ? true : false,
+    // cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
       digits: '0',
@@ -173,8 +173,8 @@ const columns = (t, pageState, form, arm) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    editable: pageState === 'disposal' && !!arm ? true : false,
-    cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
+    // editable: pageState === 'disposal' && !!arm ? true : false,
+    // cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
       digits: '0',
