@@ -135,6 +135,7 @@ const SpecialMovements = () => {
         isLoading={isValidating}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
+        clearFilterPlus={revalidate}
       />
       <Forms 
         value={selected} 
