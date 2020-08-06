@@ -63,6 +63,9 @@ const BaseProductTransfers = ({
       // tranbases = _.clone(dataLoaded.base_transfers);
       setData(dataLoaded.base_transfers);
       sumBaseTotals(dataLoaded.base_transfers, selected);
+      const loaded = _.clone(dataLoaded);
+      loaded.base_transfers = [];
+      setDataLoaded(loaded);
       console.log('MT 3 - BaseProductTransfers: data are loaded!');
     }
   };

@@ -40,6 +40,9 @@ const MeterTransfers = ({
         setData(meters);
       } else {
         setData(dataLoaded.meter_transfers);
+        const loaded = _.clone(dataLoaded);
+        loaded.meter_transfers = [];
+        setDataLoaded(loaded);
         console.log('MT 5 - MeterTransfers: data are loaded!');
       }
     }
