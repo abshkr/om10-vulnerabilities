@@ -10,7 +10,7 @@ import columns from './columns';
 import useSWR from 'swr';
 
 import api, { MANUAL_TRANSACTIONS } from '../../../api';
-import {calcBaseRatios, calcArmDensity, getAvailableArms} from '../../../utils'
+import {calcBaseRatios, calcArmDensity, getAvailableArms, adjustProductArms, calcArmQuantity} from '../../../utils'
 
 import BaseProductTransfers from './base-product-transfers';
 import BaseProductTotals from './base-product-totals';
@@ -89,7 +89,7 @@ const DrawerProductTransfers = ({
   const { data: composition } = useSWR(tanker && `${MANUAL_TRANSACTIONS.COMPOSITION}?tnkr_code=${tanker}`);
 
   const { t } = useTranslation();
-  //const { setFieldsValue } = form;
+  const { setFieldsValue } = form;
 
   const [isLoading, setLoading] = useState(true);
   const [dataRendered, setDataRendered] = useState(false);
@@ -127,6 +127,90 @@ const DrawerProductTransfers = ({
       setProductArms(res.data?.records);
       setLoadingArms(false);
     });
+  };
+
+  const updateTransferRow = (item) => {
+    const payload = [];
+    tableAPI.forEachNode((rowNode) => {
+      if (rowNode.data.trsf_cmpt_no === item.trsf_cmpt_no) {
+        const selected = rowNode.data;
+        Object.keys(item).forEach((key) => {
+          if (selected.hasOwnProperty(key)) {
+            selected[key] = item[key];
+          }
+        });
+        payload.push(selected);
+      }
+    });
+    if (payload.length > 0) {
+      tableAPI.updateRowData({ update: payload });
+    }
+  };
+
+  const updateBaseTransferRow = (item) => {
+    const payload = [];
+    tableBaseTransfersAPI.forEachNode((rowNode) => {
+      if (rowNode.data.trsf_bs_cmpt_no === item.trsf_bs_cmpt_no &&
+        rowNode.data.trsf_bs_prodcd === item.trsf_bs_prodcd &&
+        rowNode.data.trsf_bs_tk_cd === item.trsf_bs_tk_cd) {
+        const selected = rowNode.data;
+        Object.keys(item).forEach((key) => {
+          if (selected.hasOwnProperty(key)) {
+            selected[key] = item[key];
+          }
+        });
+        payload.push(selected);
+      }
+    });
+    if (payload.length > 0) {
+      tableBaseTransfersAPI.updateRowData({ update: payload });
+    }
+  };
+
+  const updateBaseTotalRow = (item) => {
+    const payload = [];
+    tableBaseTotalsAPI.forEachNode((rowNode) => {
+      if (rowNode.data.trsf_bs_prodcd_tot === item.trsf_bs_prodcd_tot &&
+        rowNode.data.trsf_bs_tk_cd_tot === item.trsf_bs_tk_cd_tot) {
+        const selected = rowNode.data;
+        Object.keys(item).forEach((key) => {
+          if (selected.hasOwnProperty(key)) {
+            selected[key] = item[key];
+          }
+        });
+        payload.push(selected);
+      }
+    });
+    if (payload.length > 0) {
+      tableBaseTotalsAPI.updateRowData({ update: payload });
+    }
+  };
+
+  const retrieveTransfers = () => {
+    const payload = [];
+    tableAPI.forEachNode((rowNode) => {
+      const selected = rowNode.data;
+      payload.push(selected);
+    });
+    return payload;
+  };
+
+  const retrieveBaseTransfers = () => {
+    const payload = [];
+    tableBaseTransfersAPI.forEachNode((rowNode) => {
+      const selected = rowNode.data;
+      payload.push(selected);
+    });
+    return payload;
+  };
+
+  const retrieveBaseTotals = () => {
+    const payload = [];
+    tableBaseTotalsAPI.forEachNode((rowNode) => {
+      const selected = rowNode.data;
+      payload.push(selected);
+    });
+    return payload;
   };
 
   const onDelete = () => {
@@ -196,43 +280,6 @@ const DrawerProductTransfers = ({
 
   }
 
-  const CalcDrawQuantityByCompartment = async (cmpt) => {
-    //const items = form.getFieldsValue(['transfers', 'base_transfers', 'base_totals', 'meter_totals'])    
-    //console.log('DrawerProductTransfers: onCalculate', items);
-
-    const qtys = {amb: 0, cor: 0, kg: 0};
-    // const bases = form.getFieldValue('base_transfers');
-    const bases = _.clone(dataBaseTransfers);
-    let index=0;
-    for (index=0; index<bases.length; index++) {
-      const base = bases[index];
-      if (base.trsf_bs_cmpt_no === cmpt) {
-        await calcBaseQuantity(base);
-        bases[index] = base;
-        qtys.amb += _.toNumber(base?.trsf_bs_qty_amb);
-        qtys.cor += _.toNumber(base?.trsf_bs_qty_cor);
-        qtys.kg += _.toNumber(base?.trsf_bs_load_kg);
-        // tableBaseTransfersAPI.updateRowData({ update: [base] });
-      }
-    }
-    setDataBaseTransfers(bases);
-
-    const payload2 = _.clone(payload);
-    for (index = 0; index < payload2.length; index++) {
-      const transfer = payload2[index];
-      if (transfer.trsf_cmpt_no === cmpt) {
-        transfer.trsf_qty_amb = qtys.amb;
-        transfer.trsf_qty_cor = qtys.cor;
-        transfer.trsf_load_kg = qtys.kg;
-        payload2[index] = transfer;
-        tableAPI.updateRowData({ update: [transfer] });
-        break;
-      }
-    }
-
-    setPayload(payload2);
-  };
-
   const checkQtySource = async (transfer) => {
     // decide the calc type: LT, L15, KG
     let type = 'LT';
@@ -255,46 +302,6 @@ const DrawerProductTransfers = ({
     }
 
     return {type: type, amount: amount};
-  }
-
-  const verifySourceQuantity2 = (bases, draws) => {
-    let tidx = 0;
-    let bidx = 0;
-
-    for (tidx = 0; tidx < draws.length; tidx++) {
-      const transfer = draws[tidx];
-      const cmpt = transfer.trsf_cmpt_no;
-      const source = checkQtySource(transfer);
-      for (bidx=0; bidx<bases.length; bidx++) {
-        const base = bases[bidx];
-        if (base.trsf_bs_cmpt_no === cmpt) {
-          let changed = false;
-          if (transfer?.trsf_qty_amb && _.toNumber(transfer?.trsf_qty_amb) > 0 && source?.type === 'LT') {
-            // if (!base?.trsf_bs_qty_amb || (base?.trsf_bs_qty_amb && _.toNumber(base?.trsf_bs_qty_amb) === 0)) {
-              base.trsf_bs_qty_amb = calcBaseRatios(transfer?.trsf_qty_amb, base?.trsf_bs_ratio_value, base?.trsf_bs_ratio_total);
-              changed = true;
-            // }
-          }
-          if (transfer?.trsf_qty_cor && _.toNumber(transfer?.trsf_qty_cor) > 0 && source?.type === 'L15') {
-            // if (!base?.trsf_bs_qty_cor || (base?.trsf_bs_qty_cor && _.toNumber(base?.trsf_bs_qty_cor) === 0)) {
-              base.trsf_bs_qty_cor = calcBaseRatios(transfer?.trsf_qty_cor, base?.trsf_bs_ratio_value, base?.trsf_bs_ratio_total);
-              changed = true;
-            // }
-          }
-          if (transfer?.trsf_load_kg && _.toNumber(transfer?.trsf_load_kg) > 0 && source?.type === 'KG') {
-            // if (!base?.trsf_bs_load_kg || (base?.trsf_bs_load_kg && _.toNumber(base?.trsf_bs_load_kg) === 0)) {
-              base.trsf_bs_load_kg = calcBaseRatios(transfer?.trsf_load_kg, base?.trsf_bs_ratio_value, base?.trsf_bs_ratio_total);
-              changed = true;
-            // }
-          }
-          if (changed) {
-            bases[bidx] = base;
-          }
-        }
-      }
-    }
-
-    return bases;
   }
 
   const verifySourceQuantity = (bases, draws) => {
@@ -441,7 +448,8 @@ const DrawerProductTransfers = ({
           qtys.cor += _.toNumber(base?.trsf_bs_qty_cor);
           qtys.kg += _.toNumber(base?.trsf_bs_load_kg);
           matched = true;
-          tableBaseTransfersAPI.updateRowData({ update: [base] });
+          // tableBaseTransfersAPI.updateRowData({ update: [base] });
+          updateBaseTransferRow(base);
         }
       }
       if (matched === true) {
@@ -449,7 +457,8 @@ const DrawerProductTransfers = ({
         transfer.trsf_qty_cor = qtys.cor;
         transfer.trsf_load_kg = qtys.kg;
         draws[tidx] = transfer;
-        tableAPI.updateRowData({ update: [transfer] });
+        // tableAPI.updateRowData({ update: [transfer] });
+        updateTransferRow(transfer);
       }
     }
 
@@ -460,9 +469,94 @@ const DrawerProductTransfers = ({
     setPayload(draws);
   };
 
+  const calcCompartmentQuantity = async (transfer, arms) => {
+    // get arms for a particular product
+    const prodArms = adjustProductArms(arms, transfer?.trsf_prod_cmpy, transfer?.trsf_prod_code);
+    // get source of quantity
+    let type = 'LT';
+    let amount = 0;
+    if (transfer?.trsf_qty_amb) {
+      type = 'LT';
+      amount = transfer?.trsf_qty_amb;
+    }
+    else if (transfer?.trsf_qty_cor) {
+      type = 'L15';
+      amount = transfer?.trsf_qty_cor;
+    }
+    else if (transfer?.trsf_load_kg) {
+      type = 'KG';
+      amount = transfer?.trsf_load_kg;
+    }
+    else {
+      type = 'LT';
+      amount = transfer?.trsf_qty_amb;
+    }
+
+    const response = await calcArmQuantity(
+      transfer?.trsf_arm_cd, 
+      prodArms, 
+      amount, 
+      type, 
+      transfer?.trsf_temp
+    );
+    if (response?.result === false) {
+      notification.error({
+        message: t('descriptions.calculateFailed'),
+        description: response?.message,
+      });
+    } else {
+      transfer.trsf_qty_amb = response?.qty_amb;
+      transfer.trsf_qty_cor = response?.qty_cor;
+      transfer.trsf_load_kg = response?.load_kg;
+    }
+    return transfer;
+  };
+
+  const calcTankerQuantity = async () => {
+    let tidx = 0;
+    let bidx = 0;
+
+    // const draws = form.getFieldValue('transfers');
+    const draws = _.clone(payload);
+
+    for (tidx = 0; tidx < draws.length; tidx++) {
+      const transfer = draws[tidx];
+
+      if (transfer.trsf_arm_cd === t('placeholder.selectArmCode') || 
+        transfer.trsf_arm_cd === t('placeholder.noArmAvailable') ||
+        transfer.trsf_prod_name === t('placeholder.selectDrawerProduct') ) {
+        continue;
+      }
+      if (!transfer.trsf_density || String(transfer.trsf_density).trim()==='') {
+        continue;
+      }
+      if ((transfer.trsf_temp!==0 && !transfer.trsf_temp) || String(transfer.trsf_temp).trim()==='') {
+        continue;
+      }
+      if ((!transfer.trsf_qty_amb || String(transfer.trsf_qty_amb).trim()==='') &&
+        (!transfer.trsf_qty_cor || String(transfer.trsf_qty_cor).trim()==='') &&
+        (!transfer.trsf_load_kg || String(transfer.trsf_load_kg).trim()==='') ) {
+        continue;
+      }
+
+      await calcCompartmentQuantity(transfer, productArms);
+      draws[tidx] = transfer;
+      // tableAPI.updateRowData({ update: [transfer] });
+      updateTransferRow(transfer);
+    }
+
+    /* const baseTotals = makeBaseTotals(initBaseTotals(bases));
+
+    setDataBaseTransfers(bases);
+    setDataBaseTotals(baseTotals); */
+    setPayload(draws);
+  };
+
   const onCalculate = async () => {
     // check to see if at least one compartment has temperature and one of three quantities
     const payload = form.getFieldValue('transfers');
+    console.log('????????????????', form, payload);
+    // const payload = retrieveTransfers();
     let found = false;
     for (let tidx = 0; tidx < payload.length; tidx++) {
       const titem = payload?.[tidx];
@@ -490,7 +584,8 @@ const DrawerProductTransfers = ({
     //const items = form.getFieldsValue(['transfers', 'base_transfers', 'base_totals', 'meter_totals'])    
     //console.log('DrawerProductTransfers: onCalculate', items);
 
-    await CalcDrawQuantity();
+    await calcTankerQuantity();
+    // await CalcDrawQuantity();
     //CalcDrawQuantityByCompartment(clicked?.trsf_cmpt_no);
 
     // trigger the changes in child components caused by clicked
@@ -534,7 +629,8 @@ const DrawerProductTransfers = ({
         transfer.trsf_qty_cor = qtys.cor;
         transfer.trsf_load_kg = qtys.kg;
         payload2[index] = transfer;
-        tableAPI.updateRowData({ update: [transfer] });
+        // tableAPI.updateRowData({ update: [transfer] });
+        updateTransferRow(transfer);
         break;
       }
     }
@@ -571,7 +667,8 @@ const DrawerProductTransfers = ({
         o.base_code === item.trsf_bs_prodcd && o.tank_code === item.trsf_bs_tk_cd
       ));
       item.trsf_bs_den = arm?.tank_density;
-      tableBaseTransfersAPI.updateRowData({ update: [item] });
+      // tableBaseTransfersAPI.updateRowData({ update: [item] });
+      updateBaseTransferRow(item);
     });
 
     _.forEach(totals, (item) => {
@@ -579,7 +676,8 @@ const DrawerProductTransfers = ({
         o.base_code === item.trsf_bs_prodcd_tot && o.tank_code === item.trsf_bs_tk_cd_tot
       ));
       item.trsf_bs_den_tot = arm?.tank_density;
-      tableBaseTotalsAPI.updateRowData({ update: [item] });
+      // tableBaseTotalsAPI.updateRowData({ update: [item] });
+      updateBaseTotalRow(item);
     });
 
     setDataBaseTransfers(bases);
@@ -644,14 +742,16 @@ const DrawerProductTransfers = ({
         item.trsf_qty_cor = null;
         item.trsf_load_kg = null;
         item.trsf_temp = null;
-        tableAPI.updateRowData({ update: [item] });
+        // tableAPI.updateRowData({ update: [item] });
+        updateTransferRow(item);
       } else {
         if (clicked?.trsf_cmpt_no === item.trsf_cmpt_no) {
           item.trsf_qty_amb = null;
           item.trsf_qty_cor = null;
           item.trsf_load_kg = null;
           item.trsf_temp = null;
-          tableAPI.updateRowData({ update: [item] });
+          // tableAPI.updateRowData({ update: [item] });
+          updateTransferRow(item);
         }
       }
     });
@@ -710,14 +810,16 @@ const DrawerProductTransfers = ({
             item.trsf_qty_cor = null;
             item.trsf_load_kg = null;
             item.trsf_temp = null;
-            tableAPI.updateRowData({ update: [item] });
+            // tableAPI.updateRowData({ update: [item] });
+            updateTransferRow(item);
           } else {
             if (clicked?.trsf_cmpt_no === item.trsf_cmpt_no) {
               item.trsf_qty_amb = null;
               item.trsf_qty_cor = null;
               item.trsf_load_kg = null;
               item.trsf_temp = null;
-              tableAPI.updateRowData({ update: [item] });
+              // tableAPI.updateRowData({ update: [item] });
+              updateTransferRow(item);
             }
           }
         });
@@ -777,12 +879,14 @@ const DrawerProductTransfers = ({
         if (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') {
           item.trsf_qty_amb = item.trsf_qty_plan;
           console.log('DrawerProductTransfers: onCopy in loop after1', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
-          tableAPI.updateRowData({ update: [item] });
+          // tableAPI.updateRowData({ update: [item] });
+          updateTransferRow(item);
         } else {
           if (item.trsf_cmpt_capacit) {
             item.trsf_qty_amb = item.trsf_cmpt_capacit;
             console.log('DrawerProductTransfers: onCopy in loop after2', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
-            tableAPI.updateRowData({ update: [item] });
+            // tableAPI.updateRowData({ update: [item] });
+            updateTransferRow(item);
           }
         }
       }
@@ -844,12 +948,14 @@ const DrawerProductTransfers = ({
             if (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') {
               item.trsf_qty_amb = item.trsf_qty_plan;
               console.log('DrawerProductTransfers: onCopy in loop after1', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
-              tableAPI.updateRowData({ update: [item] });
+              // tableAPI.updateRowData({ update: [item] });
+              updateTransferRow(item);
             } else {
               if (item.trsf_cmpt_capacit) {
                 item.trsf_qty_amb = item.trsf_cmpt_capacit;
                 console.log('DrawerProductTransfers: onCopy in loop after2', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
-                tableAPI.updateRowData({ update: [item] });
+                // tableAPI.updateRowData({ update: [item] });
+                updateTransferRow(item);
               }
             }
           }
@@ -957,38 +1063,6 @@ const DrawerProductTransfers = ({
     toggleCopyButton();
   };
 
-  const adjustProduct = (cmpt, bases) => {
-    if (!bases || !cmpt) {
-      return;
-    }
-    console.log('DrawerProductTransfers: adjustProdcut', cmpt, bases);
-
-    let index = undefined;
-    let prodDens = 0.0;
-
-    // calculate drawer product density
-    for (index = 0; index < bases.length; index++) {
-      const item = bases[index];
-      if (item.trsf_bs_cmpt_no === cmpt) {
-        prodDens = prodDens + calcBaseRatios(item?.trsf_bs_den, item?.trsf_bs_ratio_value, item?.trsf_bs_ratio_total);
-      }
-    }
-    console.log('DrawerProductTransfers: prod dens', prodDens);
-
-    for (index = 0; index < payload.length; index++) {
-      const transfer = payload[index];
-      if (transfer.trsf_cmpt_no === cmpt && prodDens > 0) {
-        transfer.trsf_density = prodDens;
-        payload[index] = transfer;
-        break;
-      }
-    }
-
-    setPayload(payload);
-    //tableAPI.updateRowData({ update: [payload[index]] });
-
-  };
-
   useEffect(() => {
     if (selected) {
       console.log("DrawerProductTransfers: line selected", selected);
@@ -1056,7 +1130,7 @@ const DrawerProductTransfers = ({
   useEffect(() => {
     if (payload) {
       console.log('DrawerProductTransfers: Payload changed and do setFieldsValue. payload:', payload);
-      form.setFieldsValue({
+      setFieldsValue({
         transfers: payload,
       });
       setDataRendered(true);
@@ -1065,7 +1139,7 @@ const DrawerProductTransfers = ({
       toggleRestoreButton();
       toggleCopyButton();
     }
-  }, [payload]);
+  }, [payload, setFieldsValue]);
 
   useEffect(() => {
     let board = dataBoard;
@@ -1127,7 +1201,7 @@ const DrawerProductTransfers = ({
               {t('operations.calculateDrawer')}
             </Button>
 
-            {!repost && (
+            {true && (
               <Button
                 type="normal"
                 icon={<CopyOutlined />}

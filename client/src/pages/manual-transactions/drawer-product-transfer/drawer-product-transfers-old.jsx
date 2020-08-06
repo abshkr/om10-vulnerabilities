@@ -759,7 +759,7 @@ const DrawerProductTransfers = ({
             if (items?.length > 0) {
               armClnValue = items?.[0]?.stream_armcode;
               const prodArms = adjustProductArms(productArms, record?.shls_supp, record?.prod_code);
-              densClnValue = calcArmDensity(items?.[0]?.stream_index, prodArms);
+              densClnValue = calcArmDensity(items?.[0]?.stream_armcode, prodArms);
             }
           }
           const object = {

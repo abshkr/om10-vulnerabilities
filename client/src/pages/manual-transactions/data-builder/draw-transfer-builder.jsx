@@ -15,7 +15,7 @@ const buildDrawTransfersByArm = (record, productArms, t, sourceType, loadType, r
         armClnValue = items?.[0]?.stream_armcode;
         const prodArms = adjustProductArms(productArms, record?.shls_supp, record?.prod_code);
         console.log('....................buildDrawTransfersByArm', items?.[0]?.stream_index, items?.[0]?.stream_armcode, prodArms);
-        densClnValue = calcArmDensity(items?.[0]?.stream_index, prodArms);
+        densClnValue = calcArmDensity(items?.[0]?.stream_armcode, prodArms);
       }
     }
 

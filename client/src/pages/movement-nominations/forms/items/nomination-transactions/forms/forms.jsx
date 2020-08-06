@@ -401,7 +401,7 @@ const FormModal = ({
     try {
       const values = await form.validateFields();
       const response = await calcArmQuantity(
-        arm?.[0]?.stream_index, 
+        arm?.[0]?.stream_armcode, 
         arm, 
         calcSource?.qty, 
         calcSource?.type, 

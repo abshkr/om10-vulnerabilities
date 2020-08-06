@@ -69,7 +69,7 @@ const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
           setMinDens(config.minDensity);
           setMaxDens(config.maxDensity);
         } else {
-          const armDens = calcArmDensity(arm?.[0]?.stream_index, arm);
+          const armDens = calcArmDensity(arm?.[0]?.stream_armcode, arm);
           setFieldsValue({
             mlitm_dens_cor: armDens,
           });

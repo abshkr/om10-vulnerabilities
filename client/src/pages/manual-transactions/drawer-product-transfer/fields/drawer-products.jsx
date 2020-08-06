@@ -17,8 +17,8 @@ export default class DrawerProducts extends Component {
     return this.state.value;
   }
 
-  calcDensity = (stream, values) => {
-    const prodDens = calcArmDensity(stream, values);
+  calcDensity = (armcode, values) => {
+    const prodDens = calcArmDensity(armcode, values);
     console.log('DrawerProducts: prod density - ', prodDens);
 
     return prodDens;
@@ -47,7 +47,7 @@ export default class DrawerProducts extends Component {
       current[index].trsf_qty_plan = record?.item?.qty_planned;
       current[index].trsf_qty_left = record?.item?.qty_loaded;
     }
-    current[index].trsf_density = items?.length>0 ? this.calcDensity(items?.[0]?.stream_index, prodArms) : null;
+    current[index].trsf_density = items?.length>0 ? this.calcDensity(items?.[0]?.stream_armcode, prodArms) : null;
     current[index].trsf_temp = null;
     current[index].trsf_qty_cor = null;
     current[index].trsf_qty_amb = null;
