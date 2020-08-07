@@ -6,6 +6,7 @@ import _ from 'lodash';
 
 import { MOVEMENT_NOMIATIONS } from '../../../../api';
 
+const groupAll = [2];
 const groupFrom = [2, 1];
 const groupTo = [2, 0];
 //const from = ['Transfer', 'Disposal'];
@@ -404,10 +405,10 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 100,
       suppressSizeToFit: true,
-      editable: selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type),
+      editable: selected?.[0]?.editable && groupAll.includes(selected?.[0]?.mvitm_type),
 
       cellClass:
-        selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type)
+        selected?.[0]?.editable && groupAll.includes(selected?.[0]?.mvitm_type)
           ? 'selected-editable-ag-grid-cell'
           : '',
 
