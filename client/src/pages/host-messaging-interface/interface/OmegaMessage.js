@@ -69,20 +69,19 @@ const OmegaMessages = ({handleClick}) => {
   const setRange = (start, end) => {
     setStart(start);
     setEnd(end);
-
-		// TODO: is this really working?
-		revalidate();
   };
 
   const reset = () => {
     setStart(initStart);
     setEnd(initEnd);
-
-		// TODO: is this really working?
-		revalidate();
   };
 
-
+  const refresh = () => {
+		const startDate = moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT);
+		const endDate = moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT);
+    setStart(startDate);
+    setEnd(endDate);
+	};
 
   useEffect(() => {
 		getData();
@@ -104,8 +103,9 @@ const OmegaMessages = ({handleClick}) => {
 
   const extras = (
     <>
-      <Calendar handleChange={setRange} handleClear={reset} start={start} end={end} enableClear={true} />
       <Download data={messages} isLoading={isValidating} columns={fields} />
+      <Calendar handleChange={setRange} handleClear={reset} start={start} end={end} enableClear={true} />
+			<Button onClick={refresh} > {t('operations.refresh')} </Button>
     </>
   );
 
