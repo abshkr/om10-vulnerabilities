@@ -61,7 +61,7 @@ const OmegaMessages = ({handleClick}) => {
 	const action = 'view';
 	const cformat = 1;
 	const initStart = moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT);
-	const initEnd = moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT);
+	const initEnd = moment().format(SETTINGS.DATE_TIME_FORMAT);
 
   const [start, setStart] = useState(initStart);
   const [end, setEnd] = useState(initEnd);
@@ -78,7 +78,7 @@ const OmegaMessages = ({handleClick}) => {
 
   const refresh = () => {
 		const startDate = moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT);
-		const endDate = moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT);
+		const endDate = moment().format(SETTINGS.DATE_TIME_FORMAT);
     setStart(startDate);
     setEnd(endDate);
 	};
