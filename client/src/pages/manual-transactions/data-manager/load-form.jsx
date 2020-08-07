@@ -11,7 +11,7 @@ import { SETTINGS } from '../../../constants';
 import { DataTable } from '../../../components';
 import api, { MANUAL_TRANSACTIONS } from '../../../api';
 
-const LoadForm = ({onLoad, fields, url, height}) => {
+const LoadForm = ({onLoad, params, fields, url, height}) => {
   const [data, setData] = useState(null);
   const [records, setRecords] = useState(null);
   const [selected, setSelected] = useState(null);
@@ -108,10 +108,23 @@ const LoadForm = ({onLoad, fields, url, height}) => {
     if (payload) {
       setRecords(payload?.records);
       const data = prepareData(payload?.records);
-      setData(data);
+      if (params?.popup) {
+        if (params?.type === 'SCHEDULE') {
+          setData(_.filter(data, (item) => (
+            item.mt_supplier === params?.supplier && item.mt_trip_no === String(params?.trip)
+          )));
+        } else {
+          setData(_.filter(data, (item) => (
+            item.mt_supplier === params?.supplier && item.mt_order_no === String(params?.order)
+          )));
+        }
+      } else {
+        setData(data);
+      }
+
       payload.records = null;
     }
-  }, [payload]);
+  }, [payload, params]);
 
   return (
     <Form 
@@ -123,7 +136,8 @@ const LoadForm = ({onLoad, fields, url, height}) => {
       <DataTable
         data={data}
         columns={fields}
-        isLoading={isValidating && url}
+        // isLoading={isValidating && url}
+        isLoading={isValidating}
         selectionMode="single"
         onClick={(payload) => onDoubleClick(payload)}
         handleSelect={(payload) => setSelected(payload[0])}

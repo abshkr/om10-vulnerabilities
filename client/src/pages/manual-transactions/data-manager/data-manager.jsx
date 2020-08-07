@@ -13,6 +13,7 @@ const DataManager = (
     fields,
     url,
     onLoad, 
+    params,
     width,
     height,
   ) => {
@@ -30,7 +31,7 @@ const DataManager = (
         fetcher,
         }}
     >
-      <LoadForm onLoad={onLoad} fields={fields} url={url} height={height} />
+      <LoadForm onLoad={onLoad} params={params} fields={fields} url={url} height={height} />
     </SWRConfig>
     ),
     okButtonProps: {
