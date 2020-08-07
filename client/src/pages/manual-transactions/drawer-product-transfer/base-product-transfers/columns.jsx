@@ -43,7 +43,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     editable: false,
-    cellClass: 'editable-ag-grid-cell',
+    // cellClass: 'editable-ag-grid-cell',
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
       digits: '1',
@@ -67,7 +67,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     editable: false,
-    cellClass: 'editable-ag-grid-cell',
+    // cellClass: 'editable-ag-grid-cell',
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
       digits: '0',

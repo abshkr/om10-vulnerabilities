@@ -128,6 +128,29 @@ const DrawerProductTransfers = ({
       setLoadingArms(false);
     });
   };
+  
+  const refreshProductArms = async (supplier, products) => {
+    setLoadingArms(true);
+    const prod_codes = [];
+    _.forEach(products, (o) => {
+      if (o.prod_cmpy === supplier) {
+        prod_codes.push(o.prod_code);
+      }
+    });
+
+    const results = await api
+    .get(MANUAL_TRANSACTIONS.GET_PROD_ARMS, {
+      params: {
+        prod_cmpy: supplier,
+        prod_code: prod_codes,
+      },
+    });
+
+    // setProductArms(results?.data?.records);
+    setLoadingArms(false);
+
+    return results?.data?.records;
+  };
 
   const updateTransferRow = (item) => {
     const payload = [];
@@ -645,9 +668,30 @@ const DrawerProductTransfers = ({
 
   const onRestore = async () => {
     console.log('DrawerProductTransfers: onRestore');
+    const arms = await refreshProductArms(supplier, products?.records);
 
-    const bases = form.getFieldValue('base_transfers');
-    const totals = form.getFieldValue('base_totals');
+    _.forEach(productArms, (o) => {
+      const item = _.find(arms, (arm) => (
+        arm.rat_prod_prodcmpy === o.rat_prod_prodcmpy &&
+        arm.rat_prod_prodcode === o.rat_prod_prodcode &&
+        arm.stream_baycode === o.stream_baycode &&
+        arm.stream_armcode === o.stream_armcode &&
+        arm.stream_tankcode === o.stream_tankcode &&
+        arm.stream_basecode === o.stream_basecode
+      ));
+      o.stream_tankden = item?.stream_tankden;
+    });
+
+    const transfers = form.getFieldValue('transfers');
+    _.forEach(transfers, (item) => {
+      const prodArms = adjustProductArms(productArms, item?.trsf_prod_cmpy, item?.trsf_prod_code);;
+      item.trsf_density = calcArmDensity(item?.trsf_arm_cd, prodArms);
+      // tableAPI.updateRowData({ update: [item] });
+      updateTransferRow(item);
+    });
+
+    setPayload(transfers);
+
     const tanks = _.uniq(
       _.map(productArms, (item) => {
         return {
@@ -658,6 +702,8 @@ const DrawerProductTransfers = ({
       })
     );
 
+    const bases = form.getFieldValue('base_transfers');
+    const totals = form.getFieldValue('base_totals');
     // console.log('onRestore tanks', tanks);
     // setDataBaseTransfers([]);
     // setDataBaseTotals([]);

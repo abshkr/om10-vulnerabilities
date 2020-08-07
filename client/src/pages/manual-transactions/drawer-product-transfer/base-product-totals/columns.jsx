@@ -33,8 +33,8 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    editable: true,
-    cellClass: 'editable-ag-grid-cell',
+    editable: false,
+    // cellClass: 'editable-ag-grid-cell',
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
       digits: '1',
@@ -57,8 +57,8 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    editable: true,
-    cellClass: 'editable-ag-grid-cell',
+    editable: false,
+    // cellClass: 'editable-ag-grid-cell',
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
       digits: '0',
