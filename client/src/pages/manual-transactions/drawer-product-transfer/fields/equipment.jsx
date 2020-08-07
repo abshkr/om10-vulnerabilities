@@ -15,6 +15,16 @@ export default class Equipment extends Component {
   }
 
   onClick = (value, record) => {
+    const { form, rowIndex, colDef } = this.props;
+
+    let current = form.getFieldValue('transfers');
+
+    current[rowIndex][colDef.field] = value;
+
+    form.setFieldsValue({
+      transfers: current,
+    });
+
     this.setState(
       {
         value,
