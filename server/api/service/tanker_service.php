@@ -18,7 +18,38 @@ class TankerService
         }
     }
 
+    // will return tnkr_name as null for quick fix as Shell customers want to see tanker code only
+    // will add a setting in SITE_CONFIG to control
     public function tankers_by_carrier($carrier = null)
+    {
+        if (isset($carrier)) {
+            $query = "
+                SELECT TNKR_CODE, NULL as TNKR_NAME
+                FROM GUI_TANKERS
+                WHERE TNKR_CARRIER = :carrier
+                ORDER BY TNKR_CODE ASC";
+            // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':carrier', $carrier);
+        } else {
+            $query = "
+                SELECT TNKR_CODE, NULL as TNKR_NAME
+                FROM GUI_TANKERS
+                ORDER BY TNKR_CODE ASC";
+            // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+            $stmt = oci_parse($this->conn, $query);
+        }
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    // backup for future use
+    public function tankers_by_carrier_withname($carrier = null)
     {
         if (isset($carrier)) {
             $query = "

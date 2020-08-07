@@ -59,7 +59,7 @@ const Tanker = ({ form, value, carrier, onChange, pageState }) => {
       >
         {options?.records.map((item, index) => (
           <Select.Option key={index} value={item.tnkr_code}>
-            {item.tnkr_name}
+            {item.tnkr_code + (!item.tnkr_name ? '' : ' - ' + item.tnkr_name)}
           </Select.Option>
         ))}
       </Select>
