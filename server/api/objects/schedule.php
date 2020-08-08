@@ -1120,8 +1120,12 @@ class Schedule extends CommonClass
                 SPEC_PROD.ORDER_CUST_ORDNO,
                 SPEC_PROD.SCHD_DELIV_NUM, 
                 SPEC_PROD.PROD_CLASS, 
-                DECODE(SPEC_PROD.UNIT_CODE, 5, TRSF.TRIP_QTY_AMB, 11, TRSF.TRIP_QTY_STD, 17, TRSF.TRIP_QTY_KG, TRSF.TRIP_QTY_DELIVERED) 
-                    AS QTY_LOADED, 
+                DECODE(SPEC_PROD.UNIT_CODE, 
+                    5, TRSF.TRIP_QTY_AMB, 
+                    11, TRSF.TRIP_QTY_STD, 
+                    28, TRSF.TRIP_QTY_STD, 
+                    17, TRSF.TRIP_QTY_KG, 
+                    TRSF.TRIP_QTY_DELIVERED) AS QTY_LOADED, 
                 TRSF.TRIP_QTY_AMB QTY_AMB, 
                 TRSF.TRIP_QTY_STD QTY_STD, 
                 TRSF.TRIP_QTY_KG QTY_KG        
