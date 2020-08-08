@@ -17,7 +17,7 @@ import ExpiryCheck from './fields/expiry-check';
 
 const TabPane = Tabs.TabPane;
 
-const RuleForm = ({ value, handleCallBack }) => {
+const RuleForm = ({ value, handleCallBack, deleteRule }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { setFieldsValue } = form;
@@ -28,6 +28,11 @@ const RuleForm = ({ value, handleCallBack }) => {
 
   const onCaseChange = (v) => {
     setRuleCase(v)
+  }
+
+  const onDelete = () => {
+    Modal.destroyAll();
+    deleteRule();
   }
   
   const onFinish = values => {
@@ -91,7 +96,7 @@ const RuleForm = ({ value, handleCallBack }) => {
             type="danger"
             icon={<DeleteOutlined />}
             style={{ float: 'right', marginRight: 5 }}
-            // onClick={onDelete}
+            onClick={onDelete}
           >
             {t('operations.delete')}
           </Button>

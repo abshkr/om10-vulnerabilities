@@ -195,7 +195,7 @@ const GatePermForm = ({ value, visible, handleFormState, access }) => {
     FormModal({
       width: '50vh',
       value: v,
-      form: <RuleForm value={v} handleCallBack={handleCallBack} />,
+      form: <RuleForm value={v} handleCallBack={handleCallBack} deleteRule={deleteRule} />,
       id: v?.rule_id,
       name: '',
       t,
