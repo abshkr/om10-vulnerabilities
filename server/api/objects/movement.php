@@ -1141,6 +1141,46 @@ class Movement extends CommonClass
         $this->mv_id = $row['NEXT_ID'];
     }
 
+    
+    protected function post_create()
+    {
+        $oper = Utilities::getCurrPsn();
+        $query = "UPDATE MOVEMENTS
+            SET MV_DTIM_CREATE = SYSDATE, 
+                MV_DTIM_CHANGE = SYSDATE,
+                MV_OPER_CHANGE = :oper
+            WHERE MV_KEY = :mv_key";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':mv_key', $this->mv_key);
+        oci_bind_by_name($stmt, ':oper', $oper);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function post_update()
+    {
+        $oper = Utilities::getCurrPsn();
+        $query = "UPDATE MOVEMENTS
+            SET MV_DTIM_CHANGE = SYSDATE,
+                MV_OPER_CHANGE = :oper
+            WHERE MV_KEY = :mv_key";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':mv_key', $this->mv_key);
+        oci_bind_by_name($stmt, ':oper', $oper);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        return true;
+    }
+
     protected function delete_children()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
