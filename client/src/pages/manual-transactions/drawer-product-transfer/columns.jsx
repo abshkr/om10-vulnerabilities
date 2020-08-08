@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms) => [
   {
     headerName: t('fields.compartmentNumber'),
@@ -65,7 +67,18 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     editable: true,
     cellClass: 'editable-ag-grid-cell',
     cellEditorParams: {
-      values: composition?.records?.filter((o)=>(o.cmpt_count>0)) || [],
+      // values: composition?.records?.filter((o)=>(o.cmpt_count>0)) || [],
+      values: _.uniqBy(
+        _.map(composition?.records, (item) => {
+          return { 
+            tc_eqpt: item.tc_eqpt,
+            tc_seqno: item.tc_seqno,
+            eqpt_code: item.eqpt_code,
+            eqpt_title: item.eqpt_title,
+            eqpt_etyp: item.eqpt_etp
+          };
+        }), 'tc_eqpt'
+      ) || [],
       form,
     },
   },

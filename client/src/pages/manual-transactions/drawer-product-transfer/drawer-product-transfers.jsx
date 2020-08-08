@@ -86,7 +86,13 @@ const DrawerProductTransfers = ({
     )
   );
 
-  const { data: composition } = useSWR(tanker && `${MANUAL_TRANSACTIONS.COMPOSITION}?tnkr_code=${tanker}`);
+  const { data: transactions } = useSWR((
+    sourceType === 'SCHEDULE' && supplier && trip && repost &&
+    `${MANUAL_TRANSACTIONS.TRANSACTIONS}?supplier=${supplier}&trip_no=${trip}`
+  ));
+
+  // const { data: composition } = useSWR(tanker && `${MANUAL_TRANSACTIONS.COMPOSITION}?tnkr_code=${tanker}`);
+  const { data: composition } = useSWR(tanker && `${MANUAL_TRANSACTIONS.TANKER_DETAILS}?tanker=${tanker}`);
 
   const { t } = useTranslation();
   const { setFieldsValue } = form;
@@ -234,6 +240,74 @@ const DrawerProductTransfers = ({
       payload.push(selected);
     });
     return payload;
+  };
+
+  const getPrevTransactionsForRepost = (transactions) => {
+    const notReversed = _.filter(transactions, (o) => (o.trsa_reverse_flag === false));
+    if (notReversed?.length === 0) {
+      return null;
+    } else if (notReversed?.length === 1) {
+      return notReversed?.[0];
+    } else {
+      // The trip has been reversed and reposted for multiple times
+      // find the last non-reversed transaction which must have the maximium transaction ID
+      const sorted = _.sortBy(notReversed, (o) => (o.trsa_id));
+      return sorted?.[sorted?.length-1];
+    } 
+  };
+
+  const getPrevTransaction = (transactions, composition) => {
+    const transaction = getPrevTransactionsForRepost(transactions?.records);
+    // get tanker compartment number
+    _.forEach(transaction?.transfers, (item) => {
+      const cmpt = _.find(composition?.records, (o) => (
+        o.eqpt_code === item.eqpt_code && o.cmpt_no === item.trsf_trailercomp
+      ));
+      if (cmpt !== undefined) {
+        item.trsf_cmpt_no = cmpt.tnkr_cmpt;
+        item.trsf_cmpt_capacit = cmpt.adj_capacity > cmpt.adj_safefill ? cmpt.adj_safefill : cmpt.adj_capacity;
+      }
+      // console.log('---------- check repost transactions0', cmpt, item);
+    });
+    // console.log('---------- check repost transactions', transaction);
+    return transaction;
+  };
+
+  const updateDrawerProductTransfers = (transfers, transaction) => {
+    _.forEach(transfers, (item) => {
+      const cmpt = _.find(transaction?.transfers, (o) => (
+        o.eqpt_code === item.trsf_equip_id && 
+        o.trsf_cmpt_no === item.trsf_cmpt_no
+      ));
+      if (cmpt !== undefined) {
+        // item.trsf_equip_id = cmpt.eqpt_code;
+        // item.trsf_cmpt_no = cmpt.trsf_cmpt_no;
+        // item.trsf_cmpt_capacit = cmpt.trsf_cmpt_capacit;
+        item.trsf_drwr_cd = transaction.trsa_drawer;
+        item.trsf_prod_code = cmpt.trsfprod_prodcode;
+        item.trsf_prod_name = cmpt.prod_name;
+        item.trsf_prod_cmpy = transaction.trsa_supplier;
+        item.trsf_arm_cd = cmpt.trsf_baa_code;
+        // item.trsf_qty_plan = cmpt.;
+        // item.trsf_qty_left = cmpt.;
+        item.trsf_density = cmpt.trsf_density;
+        item.trsf_temp = cmpt.trsf_temp;
+        item.trsf_qty_amb = cmpt.trsf_qty_amb;
+        item.trsf_qty_cor = cmpt.trsf_qty_cor;
+        item.trsf_load_kg = cmpt.trsf_load_kg;
+      }
+      console.log('---------- updateDrawerProductTransfers', cmpt, item);
+    });
+  
+    return transfers;
+  };
+
+  const updateBaseProductTransfers = (bases, transaction) => {
+
+  };
+
+  const updateMeterTransfers = (bases, transaction) => {
+
   };
 
   const onDelete = () => {
@@ -1141,6 +1215,12 @@ const DrawerProductTransfers = ({
     }
   }, [supplier, products, productArms, loadingArms, getProductArms]);
 
+  /* useEffect(() => {
+    if (supplier && trip && repost && transactions && composition) {
+      const transaction = getPrevTransaction(transactions, composition);
+    }
+  }, [supplier, trip, repost, transactions, composition]); */
+
   useEffect(() => {
     const values = columns(t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms);
     console.log('!!!!!!!!!!!!!!!!!!!!!!!I am here !!!!!', sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms);
@@ -1154,10 +1234,16 @@ const DrawerProductTransfers = ({
     // console.log('DrawerProductTransfers: Watch - data, supplier, trip, order, tanker!', data, supplier, trip, order, tanker);
 
     // NOTE: this data is form get_order_details or get_sched_details, not the products
-    if (data && productArms) {
+    if (data && productArms && composition && (!repost || (repost && transactions))) {
       console.log('DrawerProductTransfers: Watch data, supplier, trip, order, tanker! Data not null', data);
-      const transformed = buildDrawTransfers(data?.records, productArms, t, sourceType, loadType, repost);
+      let transformed = buildDrawTransfers(data?.records, productArms, t, sourceType, loadType, repost);
       console.log('DrawerProductTransfers: Watch data, supplier, trip, order, tanker - transformed', transformed);
+
+      // adjust transfers if it is a repost transaction
+      if (repost) {
+        const transaction = getPrevTransaction(transactions, composition);
+        transformed = updateDrawerProductTransfers(transformed, transaction);
+      }
 
       if (!dataLoaded || !dataLoaded?.transfers || dataLoaded?.transfers?.length === 0) {
         setPayload(transformed);
@@ -1171,7 +1257,7 @@ const DrawerProductTransfers = ({
       }
       setLoading(false);
     }
-  }, [data, productArms, supplier, trip, order, tanker, dataLoaded]);
+  }, [data, productArms, supplier, trip, order, tanker, dataLoaded, repost, transactions, composition]);
 
   useEffect(() => {
     if (payload) {
