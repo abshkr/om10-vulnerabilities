@@ -78,6 +78,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+		width: 80,
     suppressSizeToFit: true
   },
   {
@@ -86,6 +87,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+		width: 100,
     suppressSizeToFit: true
   },
   {
@@ -133,6 +135,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+		width: 80,
     suppressSizeToFit: true
   },
   {
@@ -141,6 +144,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+		width: 80,
     suppressSizeToFit: true
   },
   {
@@ -173,6 +177,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+		width: 80,
     suppressSizeToFit: true
   }
 ];

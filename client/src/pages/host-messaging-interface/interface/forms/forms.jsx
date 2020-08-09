@@ -15,6 +15,7 @@ import {
 import DetailsArea from '../DetailsArea';
 import ContentsArea from '../ContentsArea';
 import MessageArea from '../MessageArea';
+import SubmissionArea from '../SubmissionArea';
 
 const TabPane = Tabs.TabPane;
 
@@ -186,7 +187,7 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
     >
 			<div>
 				<Tabs defaultActiveKey="1" size="small" type="line">
-					<TabPane key="1" tab={'Details'}>
+					<TabPane key="1" tab={t('fields.details')}>
 						<DetailsArea
 							from={ifrom}
 							action={iaction}
@@ -195,12 +196,19 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 						/>
 					</TabPane>
 
-					<TabPane key="2" tab={'Contents'}>
+					<TabPane key="2" tab={t('fields.contents')}>
 						<ContentsArea
 							from={ifrom}
 							action={iaction}
 							message={imsg}
 							content_format={icontent_format}
+						/>
+					</TabPane>
+
+					<TabPane key="3" tab={t('fields.submissions')}>
+						<SubmissionArea
+							from={ifrom}
+							message={imsg}
 						/>
 					</TabPane>
 				</Tabs>
