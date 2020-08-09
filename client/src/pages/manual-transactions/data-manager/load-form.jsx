@@ -81,8 +81,9 @@ const LoadForm = ({onLoad, params, fields, url, height}) => {
         item.mt_type          = (header?.TRANSACTION_TYPE == 'S') 
                                 ? t('fields.mtTypeSchedule') 
                                 : ((header?.TRANSACTION_TYPE == 'O') ? t('fields.mtTypeOrder') : '');
+        item.mt_type_code     = String(header?.TRANSACTION_TYPE);
         item.mt_supplier      = String(header?.SUPPLIER);
-        item.mt_customer      = String(header?.CUSTOMER);
+        item.mt_customer      = !header?.CUSTOMER ? '' : String(header?.CUSTOMER);
         item.mt_trip_no       = String(header?.LOAD_NUMBER);
         item.mt_order_no      = String(header?.ORDER_TRIP_IND);
         item.mt_carrier       = String(header?.CARRIER);
@@ -111,11 +112,13 @@ const LoadForm = ({onLoad, params, fields, url, height}) => {
       if (params?.popup) {
         if (params?.type === 'SCHEDULE') {
           setData(_.filter(data, (item) => (
-            item.mt_supplier === params?.supplier && item.mt_trip_no === String(params?.trip)
+            // item.mt_supplier === params?.supplier && item.mt_trip_no === String(params?.trip)
+            item.mt_supplier === params?.supplier && item.mt_type_code === 'S'
           )));
         } else {
           setData(_.filter(data, (item) => (
-            item.mt_supplier === params?.supplier && item.mt_order_no === String(params?.order)
+            // item.mt_supplier === params?.supplier && item.mt_order_no === String(params?.order)
+            item.mt_supplier === params?.supplier && item.mt_type_code === 'O'
           )));
         }
       } else {

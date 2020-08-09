@@ -275,6 +275,7 @@ const DrawerProductTransfers = ({
 
   const updateDrawerProductTransfers = (transfers, transaction) => {
     _.forEach(transfers, (item) => {
+      // get the matched transfer from transaction
       const cmpt = _.find(transaction?.transfers, (o) => (
         o.eqpt_code === item.trsf_equip_id && 
         o.trsf_cmpt_no === item.trsf_cmpt_no
@@ -285,7 +286,7 @@ const DrawerProductTransfers = ({
         // item.trsf_cmpt_capacit = cmpt.trsf_cmpt_capacit;
         item.trsf_drwr_cd = transaction.trsa_drawer;
         item.trsf_prod_code = cmpt.trsfprod_prodcode;
-        item.trsf_prod_name = cmpt.prod_name;
+        item.trsf_prod_name = cmpt.trsfprod_prodcode + ' - ' + cmpt.prod_name;
         item.trsf_prod_cmpy = transaction.trsa_supplier;
         item.trsf_arm_cd = cmpt.trsf_baa_code;
         // item.trsf_qty_plan = cmpt.;
@@ -302,12 +303,109 @@ const DrawerProductTransfers = ({
     return transfers;
   };
 
-  const updateBaseProductTransfers = (bases, transaction) => {
+  const updateProductArms = (arms, transaction) => {
+    // get all bases from transaction
+    const repostBases = [];
+    _.forEach(transaction?.transfers, (transfer) => {
+      _.forEach(transfer?.base_prods, (o) => {
+        o.trsf_bs_cmpt_no = transfer?.trsf_cmpt_no;
+        repostBases.push(o);
+      });
+    });
 
+    _.forEach(arms, (arm) => {
+      // get the matched base product from repost bases
+      const repostBase = _.find(repostBases, (o) => (
+        o.trsb_tk_tankcode === arm?.stream_tankcode &&
+        o.base_cat === arm?.stream_bclass_code &&
+        o.base_code === arm?.stream_basecode
+      ));
+
+      if (repostBase !== undefined) {
+        arm.stream_tankden = repostBase?.trsb_dns;
+      }
+      console.log('---------- updateBaseProductTransfers', arm, repostBase);
+    });
+  
+    return arms;
   };
 
-  const updateMeterTransfers = (bases, transaction) => {
+  const updateBaseProductTransfers = (bases, transaction) => {
+    // get all bases from transaction
+    const repostBases = [];
+    _.forEach(transaction?.transfers, (transfer) => {
+      _.forEach(transfer?.base_prods, (o) => {
+        o.trsf_bs_cmpt_no = transfer?.trsf_cmpt_no;
+        repostBases.push(o);
+      });
+    });
 
+    _.forEach(bases, (base) => {
+      // get the matched base product from repost bases
+      const repostBase = _.find(repostBases, (o) => (
+        o.trsf_bs_cmpt_no === base?.trsf_bs_cmpt_no &&
+        o.base_code === base?.trsf_bs_prodcd
+      ));
+      if (repostBase !== undefined) {
+        // base.trsf_bs_cmpt_no = repostBase.trsf_bs_cmpt_no;
+        // base.trsf_bs_prodcd = repostBase.base_code;
+        // base.trsf_bs_prodname = repostBase.base_code + ' - ' + repostBase.base_name;
+        base.trsf_bs_tk_cd = repostBase.trsb_tk_tankcode;
+        // base.trsf_bs_prodcls = repostBase.;
+        base.trsf_bs_den = repostBase.trsb_dns;
+        base.trsf_bs_temp = repostBase.trsb_tmp;
+        base.trsf_bs_qty_amb = repostBase.trsb_avl;
+        base.trsf_bs_qty_cor = repostBase.trsb_cvl;
+        base.trsf_bs_load_kg = repostBase.trsb_kg;
+        base.trsf_bs_adtv_flag = repostBase.base_cat === '6' ? true : false;
+        // base.trsf_bs_ratio_value = repostBase.;
+        // base.trsf_bs_ratio_total = repostBase.;
+        // base.trsf_bs_ratio_total2 = repostBase.;
+      }
+      console.log('---------- updateBaseProductTransfers', base, repostBase);
+    });
+  
+    return bases;
+  };
+
+  const updateMeterTransfers = (meters, transaction) => {
+    // get all meters from transaction
+    const repostMeters = [];
+    _.forEach(transaction?.transfers, (transfer) => {
+      _.forEach(transfer?.meters, (o) => {
+        o.trsf_cmpt_no = transfer?.trsf_cmpt_no;
+        repostMeters.push(o);
+      });
+    });
+
+    // TODO 
+
+    /* _.forEach(meters, (meter) => {
+      // get the matched meter product from repost meters
+      const repostMeter = _.find(repostMeters, (o) => (
+        o.trsf_cmpt_no === meter?.trsf_cmpt_no &&
+        o.trsb_meter === meter?.trsf_bs_prodcd
+      ));
+      if (repostMeter !== undefined) {
+        // meter.trsf_bs_cmpt_no = repostMeter.trsf_bs_cmpt_no;
+        // meter.trsf_bs_prodcd = repostMeter.meter_code;
+        // meter.trsf_bs_prodname = repostMeter.meter_code + ' - ' + repostMeter.meter_name;
+        meter.trsf_bs_tk_cd = repostMeter.trsb_tk_tankcode;
+        // meter.trsf_bs_prodcls = repostMeter.;
+        meter.trsf_bs_den = repostMeter.trsb_dns;
+        meter.trsf_bs_temp = repostMeter.trsb_tmp;
+        meter.trsf_bs_qty_amb = repostMeter.trsb_avl;
+        meter.trsf_bs_qty_cor = repostMeter.trsb_cvl;
+        meter.trsf_bs_load_kg = repostMeter.trsb_kg;
+        meter.trsf_bs_adtv_flag = repostMeter.meter_cat === '6' ? true : false;
+        // meter.trsf_bs_ratio_value = repostMeter.;
+        // meter.trsf_bs_ratio_total = repostMeter.;
+        // meter.trsf_bs_ratio_total2 = repostMeter.;
+      }
+      console.log('---------- updateMeterProductTransfers', meter, repostMeter);
+    }); */
+  
+    return meters;
   };
 
   const onDelete = () => {
@@ -1236,12 +1334,19 @@ const DrawerProductTransfers = ({
     // NOTE: this data is form get_order_details or get_sched_details, not the products
     if (data && productArms && composition && (!repost || (repost && transactions))) {
       console.log('DrawerProductTransfers: Watch data, supplier, trip, order, tanker! Data not null', data);
+      // adjust productArms if it is a repost transaction
+      let transaction = {};
+      if (repost) {
+        transaction = getPrevTransaction(transactions, composition);
+      }
+      if (repost) {
+        updateProductArms(productArms, transaction);
+      }
       let transformed = buildDrawTransfers(data?.records, productArms, t, sourceType, loadType, repost);
       console.log('DrawerProductTransfers: Watch data, supplier, trip, order, tanker - transformed', transformed);
 
       // adjust transfers if it is a repost transaction
       if (repost) {
-        const transaction = getPrevTransaction(transactions, composition);
         transformed = updateDrawerProductTransfers(transformed, transaction);
       }
 
