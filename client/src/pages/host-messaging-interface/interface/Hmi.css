@@ -128,7 +128,8 @@ thead {
 }
 
 .detailsAreaFilledByHostMsg,
-.contentsAreaFilledByHostMsg {
+.contentsAreaFilledByHostMsg,
+.submissionAreaFilledByHostMsg {
   display: block;
   height: 200px;
   width: 100%;
@@ -143,7 +144,8 @@ thead {
 }
 
 .detailsAreaFilledByOmMsg,
-.contentsAreaFilledByOmMsg {
+.contentsAreaFilledByOmMsg,
+.submissionAreaFilledByOmMsg {
   display: block;
   height: 200px;
   width: 100%;
