@@ -830,7 +830,11 @@ class Schedule extends CommonClass
                 SPEC_PR.PROD_CODE, 
                 SPEC_PR.PROD_NAME, 
                 SPEC_PR.PROD_CMPY, 
-                DECODE(SPEC_PR.SCHP_UNITS, 5, TRSF.TRIP_QTY_AMB, 11, TRSF.TRIP_QTY_STD, 17, TRSF.TRIP_QTY_KG, TRSF.TRIP_QTY_DELIVERED) 
+                DECODE(SPEC_PR.SCHP_UNITS, 
+                    5, TRSF.TRIP_QTY_AMB, 
+                    28, TRSF.TRIP_QTY_AMB, 
+                    11, TRSF.TRIP_QTY_STD, 17, 
+                    TRSF.TRIP_QTY_KG, TRSF.TRIP_QTY_DELIVERED) 
                     AS QTY_LOADED, 
                 UV.DESCRIPTION AS UNIT_NAME, 
                 CMPT.TRIP_QTY_PRELOAD QTY_PRELOADED, 
@@ -1122,8 +1126,8 @@ class Schedule extends CommonClass
                 SPEC_PROD.PROD_CLASS, 
                 DECODE(SPEC_PROD.UNIT_CODE, 
                     5, TRSF.TRIP_QTY_AMB, 
+                    28, TRSF.TRIP_QTY_AMB, 
                     11, TRSF.TRIP_QTY_STD, 
-                    28, TRSF.TRIP_QTY_STD, 
                     17, TRSF.TRIP_QTY_KG, 
                     TRSF.TRIP_QTY_DELIVERED) AS QTY_LOADED, 
                 TRSF.TRIP_QTY_AMB QTY_AMB, 
