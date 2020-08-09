@@ -12,3 +12,4 @@ export const TIME_CODES = '/api/pages/personnel/time_codes.php';
 export const AREA_ACCESS = '/api/pages/personnel/area_accesses.php';
 export const EXPIRY_TYPES = '/api/pages/personnel/expiry_types.php';
 export const AREAS = '/api/pages/personnel/areas.php';
+export const USER_STATUS = '/api/pages/personnel/user_status.php';
