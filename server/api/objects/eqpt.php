@@ -56,6 +56,7 @@ class Equipment extends CommonClass
             SELECT EQPT_CODE,
                 EQPT_ETP,
                 CMPT_NO,
+                CMPT_UNITS CMPT_UNITS_CODE,
                 DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS,
                 DECODE(ADJ_AMNT, NULL, CMPT_CAPACIT, CMPT_CAPACIT + ADJ_AMNT) SAFEFILL,
                 DECODE(ADJ_CAPACITY, NULL, CMPT_CAPACIT, ADJ_CAPACITY) SFL,

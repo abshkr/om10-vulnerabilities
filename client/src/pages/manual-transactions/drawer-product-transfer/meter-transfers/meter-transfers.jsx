@@ -82,6 +82,7 @@ const MeterTransfers = ({
         <DataTable 
           minimal={true}
           data={data} 
+          // data={data.filter((o)=>(o?.trsf_cmpt_no === selected?.trsf_cmpt_no))} 
           height="70vh" 
           columns={fields} 
           editType={false}
