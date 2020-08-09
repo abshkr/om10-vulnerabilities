@@ -1090,7 +1090,7 @@ class Schedule extends CommonClass
                 SELECT TC_SEQNO, EQPT_CODE,
                     EQPT_ETP,
                     CMPT_NO,
-                    CMPT_UNITS, 
+                    DECODE(CMPT_UNITS, 11, 11, 17, 17, 5) CMPT_UNITS,
                     DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS_NAME,
                     DECODE(ADJ_AMNT, NULL, CMPT_CAPACIT, CMPT_CAPACIT + ADJ_AMNT) SAFEFILL,
                     DECODE(ADJ_CAPACITY, NULL, CMPT_CAPACIT, ADJ_CAPACITY) SFL,
