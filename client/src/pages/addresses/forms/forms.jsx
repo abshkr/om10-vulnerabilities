@@ -203,10 +203,17 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
           })
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
-              notification.error({
-                message: error.type,
-                description: error.message,
-              });
+              if (error.message.indexOf('child record found') >= 0) {
+                notification.error({
+                  message: t('descriptions.deleteFailed'),
+                  description: t('descriptions.childRecordFound'),
+                });
+              } else {
+                notification.error({
+                  message: error.type,
+                  description: error.message,
+                });
+              }
             });
           });
       },

@@ -44,6 +44,7 @@
 		"dateOfYear": "Date of Year",
 		"dayOfWeek": "Day of Week",
 		"dayOfYear": "Day of Year",
+		"childRecordFound": "This address has been used by other record(s)",
 		"deleteFailed": "Failed to delete the record",
 		"deleteSuccess": "You have deleted the record",
 		"deliveredBeingZero": "Delivered volume is 0, reset is not required",
