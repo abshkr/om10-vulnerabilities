@@ -43,6 +43,7 @@ const Forms = ({
   setOrderSeals,
   setProductArms,
   resetFormGrids,
+  setFormLoading,
 }) => {
   const { setFieldsValue, resetFields } = form;
 
@@ -393,6 +394,8 @@ const Forms = ({
   };
 
   const getFormLists = async (params) => {
+    setFormLoading(true);
+
     handleTypeSelect(params?.trans_type);
     
     if (params?.trans_type === 'SCHEDULE') {
@@ -479,6 +482,7 @@ const Forms = ({
       });
     }
 
+    setFormLoading(false);
   };
 
   // get all the list in one place

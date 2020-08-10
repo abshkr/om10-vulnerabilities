@@ -7,7 +7,7 @@ import {
   SaveOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
-import { Button, Form, Modal, notification, message, Card } from 'antd';
+import { Button, Form, Modal, notification, message, Card, Spin } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import _ from 'lodash';
@@ -67,6 +67,8 @@ const ManualTransactions = ({ popup, params }) => {
   const [orders, setOrders] = useState(null);
   const [orderSeals, setOrderSeals] = useState([]);
   const [productArms, setProductArms] = useState(undefined);
+
+  const [isFormLoading, setFormLoading] = useState(false);
 
 
   const resetFormGrids = () => {
@@ -493,6 +495,7 @@ const ManualTransactions = ({ popup, params }) => {
   );
 
   return (
+    <Spin spinning={isFormLoading}>
     <Page
       page={t('pageMenu.operations')}
       name={t('pageNames.manualTransactions')}
@@ -532,6 +535,7 @@ const ManualTransactions = ({ popup, params }) => {
           setOrderSeals={setOrderSeals}
           setProductArms={setProductArms}
           resetFormGrids={resetFormGrids}
+          setFormLoading={setFormLoading}
         />
 
         <DrawerProductTransfers
@@ -563,6 +567,7 @@ const ManualTransactions = ({ popup, params }) => {
         />
       </Form>
     </Page>
+    </Spin>
   );
 };
 
