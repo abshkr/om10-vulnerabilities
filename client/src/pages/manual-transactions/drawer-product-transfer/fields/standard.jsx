@@ -102,7 +102,7 @@ export default class Standard extends Component {
   }
 
   handleChange(value) {
-    const { min, max, txt, data, colDef } = this.props;
+    const { min, max, txt, data, colDef, form, rowIndex } = this.props;
     
     let capacity=max;
     // do not need to limit the quantity to compartment capacity in manual transactions
@@ -111,6 +111,14 @@ export default class Standard extends Component {
     // }
 
     if (min <= value && capacity >= value) {
+      let current = form.getFieldValue('transfers');
+
+      current[rowIndex][colDef.field] = value;
+
+      form.setFieldsValue({
+        transfers: current,
+      });
+
       this.setState({
         value,
       });

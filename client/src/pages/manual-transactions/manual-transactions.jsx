@@ -383,7 +383,15 @@ const ManualTransactions = ({ popup, params }) => {
   };
 
   const onLoad = () => {
-    DataManager(t('fields.mtDataTitle'), DataColumns(t), null, loadMTData, '80vw', '40vh');
+    DataManager(
+      t('fields.mtDataTitle'), 
+      DataColumns(t), 
+      null, 
+      loadMTData, 
+      {popup: popup, type: sourceType, supplier: selectedSupplier, trip: selectedTrip, order: selectedOrder},
+      '80vw', 
+      '40vh'
+    );
   };
 
   const preparePayloadToSave = (values, save_format) => {

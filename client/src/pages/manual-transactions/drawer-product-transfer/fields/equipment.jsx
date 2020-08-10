@@ -15,6 +15,16 @@ export default class Equipment extends Component {
   }
 
   onClick = (value, record) => {
+    const { form, rowIndex, colDef } = this.props;
+
+    let current = form.getFieldValue('transfers');
+
+    current[rowIndex][colDef.field] = value;
+
+    form.setFieldsValue({
+      transfers: current,
+    });
+
     this.setState(
       {
         value,
@@ -25,7 +35,7 @@ export default class Equipment extends Component {
 
   render() {
     const { values } = this.props;
-    // console.log('MT Equipment Column', values, this.props);
+    console.log('MT Equipment Column', values, this.props);
 
     return (
       <div style={{ display: 'flex' }}>

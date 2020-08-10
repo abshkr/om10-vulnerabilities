@@ -663,7 +663,11 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_TANKVIEW" label={t('pageNames.tankView')}>
+            {/* <Form.Item name="M_TANKVIEW" label={t('pageNames.tankView')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item> */}
+
+            <Form.Item name="M_ADAPTIVEFLOWCONTROL" label={t('pageNames.adaptiveFlow')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 

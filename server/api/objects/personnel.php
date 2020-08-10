@@ -71,6 +71,18 @@ class Personnel extends CommonClass
         }
     }
 
+    public function user_status() 
+    {
+        $query = "SELECT * FROM USER_STATUS_TYP ORDER BY USER_STATUS_FLAG";
+
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            return null;
+        }
+    }
+
     public function read_dep()
     {
         if (!isset($this->per_code)) {

@@ -11,7 +11,7 @@ import { SETTINGS } from '../../../constants';
 import { DataTable } from '../../../components';
 import api, { MANUAL_TRANSACTIONS } from '../../../api';
 
-const LoadForm = ({onLoad, fields, url, height}) => {
+const LoadForm = ({onLoad, params, fields, url, height}) => {
   const [data, setData] = useState(null);
   const [records, setRecords] = useState(null);
   const [selected, setSelected] = useState(null);
@@ -81,8 +81,9 @@ const LoadForm = ({onLoad, fields, url, height}) => {
         item.mt_type          = (header?.TRANSACTION_TYPE == 'S') 
                                 ? t('fields.mtTypeSchedule') 
                                 : ((header?.TRANSACTION_TYPE == 'O') ? t('fields.mtTypeOrder') : '');
+        item.mt_type_code     = String(header?.TRANSACTION_TYPE);
         item.mt_supplier      = String(header?.SUPPLIER);
-        item.mt_customer      = String(header?.CUSTOMER);
+        item.mt_customer      = !header?.CUSTOMER ? '' : String(header?.CUSTOMER);
         item.mt_trip_no       = String(header?.LOAD_NUMBER);
         item.mt_order_no      = String(header?.ORDER_TRIP_IND);
         item.mt_carrier       = String(header?.CARRIER);
@@ -108,10 +109,25 @@ const LoadForm = ({onLoad, fields, url, height}) => {
     if (payload) {
       setRecords(payload?.records);
       const data = prepareData(payload?.records);
-      setData(data);
+      if (params?.popup) {
+        if (params?.type === 'SCHEDULE') {
+          setData(_.filter(data, (item) => (
+            // item.mt_supplier === params?.supplier && item.mt_trip_no === String(params?.trip)
+            item.mt_supplier === params?.supplier && item.mt_type_code === 'S'
+          )));
+        } else {
+          setData(_.filter(data, (item) => (
+            // item.mt_supplier === params?.supplier && item.mt_order_no === String(params?.order)
+            item.mt_supplier === params?.supplier && item.mt_type_code === 'O'
+          )));
+        }
+      } else {
+        setData(data);
+      }
+
       payload.records = null;
     }
-  }, [payload]);
+  }, [payload, params]);
 
   return (
     <Form 
@@ -123,7 +139,8 @@ const LoadForm = ({onLoad, fields, url, height}) => {
       <DataTable
         data={data}
         columns={fields}
-        isLoading={isValidating && url}
+        // isLoading={isValidating && url}
+        isLoading={isValidating}
         selectionMode="single"
         onClick={(payload) => onDoubleClick(payload)}
         handleSelect={(payload) => setSelected(payload[0])}

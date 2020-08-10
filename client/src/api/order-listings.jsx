@@ -17,6 +17,7 @@ export const TRANSPORT_TYPES = '/api/pages/open_order/transport_types.php';
 export const ORDSTAT_TYPES = '/api/pages/open_order/ordstat_types.php';
 export const UNIT_TYPES = '/api/pages/open_order/unit_types.php';
 export const INSTRUCTIONS = '/api/pages/open_order/order_instructions.php';
+export const CHECK_CUST_ORDER = '/api/pages/open_order/check_cust_order.php';
 
 export const CREATE = '/api/pages/open_order/create.php';
 export const UPDATE = '/api/pages/open_order/update.php';

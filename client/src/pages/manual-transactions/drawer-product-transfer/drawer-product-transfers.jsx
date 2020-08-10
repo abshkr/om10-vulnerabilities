@@ -86,7 +86,13 @@ const DrawerProductTransfers = ({
     )
   );
 
-  const { data: composition } = useSWR(tanker && `${MANUAL_TRANSACTIONS.COMPOSITION}?tnkr_code=${tanker}`);
+  const { data: transactions } = useSWR((
+    sourceType === 'SCHEDULE' && supplier && trip && repost &&
+    `${MANUAL_TRANSACTIONS.TRANSACTIONS}?supplier=${supplier}&trip_no=${trip}`
+  ));
+
+  // const { data: composition } = useSWR(tanker && `${MANUAL_TRANSACTIONS.COMPOSITION}?tnkr_code=${tanker}`);
+  const { data: composition } = useSWR(tanker && `${MANUAL_TRANSACTIONS.TANKER_DETAILS}?tanker=${tanker}`);
 
   const { t } = useTranslation();
   const { setFieldsValue } = form;
@@ -234,6 +240,172 @@ const DrawerProductTransfers = ({
       payload.push(selected);
     });
     return payload;
+  };
+
+  const getPrevTransactionsForRepost = (transactions) => {
+    const notReversed = _.filter(transactions, (o) => (o.trsa_reverse_flag === false));
+    if (notReversed?.length === 0) {
+      return null;
+    } else if (notReversed?.length === 1) {
+      return notReversed?.[0];
+    } else {
+      // The trip has been reversed and reposted for multiple times
+      // find the last non-reversed transaction which must have the maximium transaction ID
+      const sorted = _.sortBy(notReversed, (o) => (o.trsa_id));
+      return sorted?.[sorted?.length-1];
+    } 
+  };
+
+  const getPrevTransaction = (transactions, composition) => {
+    const transaction = getPrevTransactionsForRepost(transactions?.records);
+    // get tanker compartment number
+    _.forEach(transaction?.transfers, (item) => {
+      const cmpt = _.find(composition?.records, (o) => (
+        o.eqpt_code === item.eqpt_code && o.cmpt_no === item.trsf_trailercomp
+      ));
+      if (cmpt !== undefined) {
+        item.trsf_cmpt_no = cmpt.tnkr_cmpt;
+        item.trsf_cmpt_capacit = cmpt.adj_capacity > cmpt.adj_safefill ? cmpt.adj_safefill : cmpt.adj_capacity;
+      }
+      // console.log('---------- check repost transactions0', cmpt, item);
+    });
+    // console.log('---------- check repost transactions', transaction);
+    return transaction;
+  };
+
+  const updateDrawerProductTransfers = (transfers, transaction) => {
+    _.forEach(transfers, (item) => {
+      // get the matched transfer from transaction
+      const cmpt = _.find(transaction?.transfers, (o) => (
+        o.eqpt_code === item.trsf_equip_id && 
+        o.trsf_cmpt_no === item.trsf_cmpt_no
+      ));
+      if (cmpt !== undefined) {
+        // item.trsf_equip_id = cmpt.eqpt_code;
+        // item.trsf_cmpt_no = cmpt.trsf_cmpt_no;
+        // item.trsf_cmpt_capacit = cmpt.trsf_cmpt_capacit;
+        item.trsf_drwr_cd = transaction.trsa_drawer;
+        item.trsf_prod_code = cmpt.trsfprod_prodcode;
+        item.trsf_prod_name = cmpt.trsfprod_prodcode + ' - ' + cmpt.prod_name;
+        item.trsf_prod_cmpy = transaction.trsa_supplier;
+        item.trsf_arm_cd = cmpt.trsf_baa_code;
+        // item.trsf_qty_plan = cmpt.;
+        // item.trsf_qty_left = cmpt.;
+        item.trsf_density = cmpt.trsf_density;
+        item.trsf_temp = cmpt.trsf_temp;
+        item.trsf_qty_amb = cmpt.trsf_qty_amb;
+        item.trsf_qty_cor = cmpt.trsf_qty_cor;
+        item.trsf_load_kg = cmpt.trsf_load_kg;
+      }
+      console.log('---------- updateDrawerProductTransfers', cmpt, item);
+    });
+  
+    return transfers;
+  };
+
+  const updateProductArms = (arms, transaction) => {
+    // get all bases from transaction
+    const repostBases = [];
+    _.forEach(transaction?.transfers, (transfer) => {
+      _.forEach(transfer?.base_prods, (o) => {
+        o.trsf_bs_cmpt_no = transfer?.trsf_cmpt_no;
+        repostBases.push(o);
+      });
+    });
+
+    _.forEach(arms, (arm) => {
+      // get the matched base product from repost bases
+      const repostBase = _.find(repostBases, (o) => (
+        o.trsb_tk_tankcode === arm?.stream_tankcode &&
+        o.base_cat === arm?.stream_bclass_code &&
+        o.base_code === arm?.stream_basecode
+      ));
+
+      if (repostBase !== undefined) {
+        arm.stream_tankden = repostBase?.trsb_dns;
+      }
+      console.log('---------- updateBaseProductTransfers', arm, repostBase);
+    });
+  
+    return arms;
+  };
+
+  const updateBaseProductTransfers = (bases, transaction) => {
+    // get all bases from transaction
+    const repostBases = [];
+    _.forEach(transaction?.transfers, (transfer) => {
+      _.forEach(transfer?.base_prods, (o) => {
+        o.trsf_bs_cmpt_no = transfer?.trsf_cmpt_no;
+        repostBases.push(o);
+      });
+    });
+
+    _.forEach(bases, (base) => {
+      // get the matched base product from repost bases
+      const repostBase = _.find(repostBases, (o) => (
+        o.trsf_bs_cmpt_no === base?.trsf_bs_cmpt_no &&
+        o.base_code === base?.trsf_bs_prodcd
+      ));
+      if (repostBase !== undefined) {
+        // base.trsf_bs_cmpt_no = repostBase.trsf_bs_cmpt_no;
+        // base.trsf_bs_prodcd = repostBase.base_code;
+        // base.trsf_bs_prodname = repostBase.base_code + ' - ' + repostBase.base_name;
+        base.trsf_bs_tk_cd = repostBase.trsb_tk_tankcode;
+        // base.trsf_bs_prodcls = repostBase.;
+        base.trsf_bs_den = repostBase.trsb_dns;
+        base.trsf_bs_temp = repostBase.trsb_tmp;
+        base.trsf_bs_qty_amb = repostBase.trsb_avl;
+        base.trsf_bs_qty_cor = repostBase.trsb_cvl;
+        base.trsf_bs_load_kg = repostBase.trsb_kg;
+        base.trsf_bs_adtv_flag = repostBase.base_cat === '6' ? true : false;
+        // base.trsf_bs_ratio_value = repostBase.;
+        // base.trsf_bs_ratio_total = repostBase.;
+        // base.trsf_bs_ratio_total2 = repostBase.;
+      }
+      console.log('---------- updateBaseProductTransfers', base, repostBase);
+    });
+  
+    return bases;
+  };
+
+  const updateMeterTransfers = (meters, transaction) => {
+    // get all meters from transaction
+    const repostMeters = [];
+    _.forEach(transaction?.transfers, (transfer) => {
+      _.forEach(transfer?.meters, (o) => {
+        o.trsf_cmpt_no = transfer?.trsf_cmpt_no;
+        repostMeters.push(o);
+      });
+    });
+
+    // TODO 
+
+    /* _.forEach(meters, (meter) => {
+      // get the matched meter product from repost meters
+      const repostMeter = _.find(repostMeters, (o) => (
+        o.trsf_cmpt_no === meter?.trsf_cmpt_no &&
+        o.trsb_meter === meter?.trsf_bs_prodcd
+      ));
+      if (repostMeter !== undefined) {
+        // meter.trsf_bs_cmpt_no = repostMeter.trsf_bs_cmpt_no;
+        // meter.trsf_bs_prodcd = repostMeter.meter_code;
+        // meter.trsf_bs_prodname = repostMeter.meter_code + ' - ' + repostMeter.meter_name;
+        meter.trsf_bs_tk_cd = repostMeter.trsb_tk_tankcode;
+        // meter.trsf_bs_prodcls = repostMeter.;
+        meter.trsf_bs_den = repostMeter.trsb_dns;
+        meter.trsf_bs_temp = repostMeter.trsb_tmp;
+        meter.trsf_bs_qty_amb = repostMeter.trsb_avl;
+        meter.trsf_bs_qty_cor = repostMeter.trsb_cvl;
+        meter.trsf_bs_load_kg = repostMeter.trsb_kg;
+        meter.trsf_bs_adtv_flag = repostMeter.meter_cat === '6' ? true : false;
+        // meter.trsf_bs_ratio_value = repostMeter.;
+        // meter.trsf_bs_ratio_total = repostMeter.;
+        // meter.trsf_bs_ratio_total2 = repostMeter.;
+      }
+      console.log('---------- updateMeterProductTransfers', meter, repostMeter);
+    }); */
+  
+    return meters;
   };
 
   const onDelete = () => {
@@ -1141,6 +1313,12 @@ const DrawerProductTransfers = ({
     }
   }, [supplier, products, productArms, loadingArms, getProductArms]);
 
+  /* useEffect(() => {
+    if (supplier && trip && repost && transactions && composition) {
+      const transaction = getPrevTransaction(transactions, composition);
+    }
+  }, [supplier, trip, repost, transactions, composition]); */
+
   useEffect(() => {
     const values = columns(t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms);
     console.log('!!!!!!!!!!!!!!!!!!!!!!!I am here !!!!!', sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms);
@@ -1154,10 +1332,23 @@ const DrawerProductTransfers = ({
     // console.log('DrawerProductTransfers: Watch - data, supplier, trip, order, tanker!', data, supplier, trip, order, tanker);
 
     // NOTE: this data is form get_order_details or get_sched_details, not the products
-    if (data && productArms) {
+    if (data && productArms && composition && (!repost || (repost && transactions))) {
       console.log('DrawerProductTransfers: Watch data, supplier, trip, order, tanker! Data not null', data);
-      const transformed = buildDrawTransfers(data?.records, productArms, t, sourceType, loadType, repost);
+      // adjust productArms if it is a repost transaction
+      let transaction = {};
+      if (repost) {
+        transaction = getPrevTransaction(transactions, composition);
+      }
+      if (repost) {
+        updateProductArms(productArms, transaction);
+      }
+      let transformed = buildDrawTransfers(data?.records, productArms, t, sourceType, loadType, repost);
       console.log('DrawerProductTransfers: Watch data, supplier, trip, order, tanker - transformed', transformed);
+
+      // adjust transfers if it is a repost transaction
+      if (repost) {
+        transformed = updateDrawerProductTransfers(transformed, transaction);
+      }
 
       if (!dataLoaded || !dataLoaded?.transfers || dataLoaded?.transfers?.length === 0) {
         setPayload(transformed);
@@ -1171,7 +1362,7 @@ const DrawerProductTransfers = ({
       }
       setLoading(false);
     }
-  }, [data, productArms, supplier, trip, order, tanker, dataLoaded]);
+  }, [data, productArms, supplier, trip, order, tanker, dataLoaded, repost, transactions, composition]);
 
   useEffect(() => {
     if (payload) {

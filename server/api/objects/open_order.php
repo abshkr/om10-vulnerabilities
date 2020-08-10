@@ -380,6 +380,22 @@ class OpenOrder extends CommonClass
         }
     }
 
+    public function check_cust_order()
+    {
+        $order_service = new OrderService($this->conn, $order_no = 0, $auto_commit = false);
+        $is_valid = !$order_service->is_cust_order_used($this->order_cust_no);
+        $result = array();
+        $result["records"] = array();
+        $item = array(
+            "is_valid" => $is_valid,
+        );
+
+        array_push($result["records"], $item);
+
+        http_response_code(200);
+        echo json_encode($result, JSON_PRETTY_PRINT);
+    }
+
     public function next_cust_order()
     {
         $company_service = new CompanyService($this->conn, $this->order_supp_code, $auto_commit = true);

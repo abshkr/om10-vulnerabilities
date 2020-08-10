@@ -489,11 +489,30 @@ class GatePermission extends CommonClass
         //     UNION 
         //     SELECT 'PRM_EQPT' CASE_CODE, 'Default Equip' CASE_NAME FROM DUAL
         //     ";
+        // $query = "
+        //     select 
+        //         DECODE( MSG_ID, 147, 1, 183, 2, 0 )									as PERMISSION_CLASS_ID
+        //         , DECODE( MSG_ID, 147, 'PERSONNEL|DEFAULT_PERSONNEL|PRM_PRSSNL', 183, 'EQUIPMENT|DEFAULT_EQUIP|PRM_EQPT', ' ' )			
+        //                                                                             as PERMISSION_CLASS_CODE
+        //         , MESSAGE 															as PERMISSION_CLASS_NAME 
+        //     from 
+        //         MSG_LOOKUP 
+        //     where 
+        //         (MSG_ID=147 or MSG_ID=183 )  
+        //         and (LANG_ID=SYS_CONTEXT('CONN_CONTEXT','LANG') OR (SYS_CONTEXT('CONN_CONTEXT','LANG') IS NULL AND LANG_ID = 'ENG')) 
+        // ";
+
         $query = "
-            SELECT 'PRM_PRSSNL' CASE_CODE, 'Personnel' CASE_NAME FROM DUAL
-            UNION 
-            SELECT 'PRM_EQPT' CASE_CODE, 'Equip' CASE_NAME FROM DUAL
-            ";
+            select 
+                DECODE( MSG_ID, 147, 1, 183, 2, 0 )									as CASE_ID
+                , DECODE( MSG_ID, 147, 'PRM_PRSSNL', 183, 'PRM_EQPT', ' ' )			as CASE_CODE
+                , MESSAGE 															as CASE_NAME 
+            from 
+                MSG_LOOKUP 
+            where 
+                (MSG_ID=147 or MSG_ID=183 )  
+                and (LANG_ID=SYS_CONTEXT('CONN_CONTEXT','LANG') OR (SYS_CONTEXT('CONN_CONTEXT','LANG') IS NULL AND LANG_ID = 'ENG')) 
+        ";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;

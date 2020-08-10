@@ -1628,6 +1628,7 @@ https://10.1.10.66/api/pages/personnel/update_password.php
     "password": "23456"
 }
 https://10.1.10.66/api/pages/personnel/read_one.php?per_code=cw3
+https://10.1.10.66/api/pages/personnel/user_status.php
 https://10.1.10.66/api/pages/personnel/search.php?s=cw
 https://10.1.10.66/api/pages/personnel/read_page.php?page=2
 https://10.1.10.66/api/pages/personnel/roles.php
@@ -2063,6 +2064,7 @@ https://10.1.10.66/api/pages/open_order/order_items.php?order_sys_no=22
 https://10.1.10.66/api/pages/open_order/approve.php?order_sys_no=24
 https://10.1.10.66/api/pages/open_order/unapprove.php?order_sys_no=24
 https://10.1.10.66/api/pages/open_order/next_cust_order.php?order_supp_code=3440213
+https://10.1.10.66/api/pages/open_order/check_cust_order.php?order_cust_no=3002
 https://10.1.10.66/api/pages/open_order/create.php
 {
 	"order_cust_no": 2468,

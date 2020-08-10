@@ -13,6 +13,7 @@ include_once 'common_class.php';
 class Movement extends CommonClass
 {
     protected $TABLE_NAME = 'MOVEMENTS';
+    protected $del_n_ins_children = false;
     
     public $NUMBER_FIELDS = array(
         "MVITM_PROD_QTY",
@@ -1140,6 +1141,46 @@ class Movement extends CommonClass
         $this->mv_id = $row['NEXT_ID'];
     }
 
+    
+    protected function post_create()
+    {
+        $oper = Utilities::getCurrPsn();
+        $query = "UPDATE MOVEMENTS
+            SET MV_DTIM_CREATE = SYSDATE, 
+                MV_DTIM_CHANGE = SYSDATE,
+                MV_OPER_CHANGE = :oper
+            WHERE MV_KEY = :mv_key";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':mv_key', $this->mv_key);
+        oci_bind_by_name($stmt, ':oper', $oper);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function post_update()
+    {
+        $oper = Utilities::getCurrPsn();
+        $query = "UPDATE MOVEMENTS
+            SET MV_DTIM_CHANGE = SYSDATE,
+                MV_OPER_CHANGE = :oper
+            WHERE MV_KEY = :mv_key";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':mv_key', $this->mv_key);
+        oci_bind_by_name($stmt, ':oper', $oper);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        return true;
+    }
+
     protected function delete_children()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
@@ -1407,6 +1448,282 @@ class Movement extends CommonClass
 
         // write_log(json_encode($tank_max_flows), __FILE__, __LINE__);
         return $tank_max_flows;
+    }
+
+    protected function update_children($old_children = null)
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+        
+        foreach ($old_children as $product => $item_array) {
+            // write_log(json_encode($item_array), __FILE__, __LINE__);
+            // write_log($item_array['MVITM_MOVE_ID'], __FILE__, __LINE__);
+            
+            $still_exist = false;
+            foreach ($this->items as $item) {
+                if ($item->mvitm_item_key == $product) {
+                    $still_exist = true;
+
+                    $set_string = "";
+                    $set_array = array();
+                    foreach ($item_array as $item_key => $item_value) {
+                        $low_key = strtolower($item_key);
+                        if (isset($item->$low_key) && $item->$low_key != $item_value) {
+                            $set_string .= strtoupper($item_key) . " = :" . strtolower($item_key) . ", ";
+                            array_push($set_array, strtolower($item_key));
+                        }
+                    }
+
+                    // write_log($set_string, __FILE__, __LINE__);
+                    // write_log(count($set_array), __FILE__, __LINE__);
+                    if (count($set_array) <= 0) {
+                        continue;
+                    } 
+
+                    $set_string = substr($set_string, 0, strlen($set_string) - 2);
+                    $query = "UPDATE MOVEMENT_ITEMS SET " . $set_string . 
+                        " WHERE MVITM_MOVE_ID = :mvitm_move_id
+                            AND MVITM_LINE_ID = :mvitm_line_id";
+                    // write_log($query, __FILE__, __LINE__);
+                    $stmt = oci_parse($this->conn, $query);
+                    oci_bind_by_name($stmt, ':mvitm_move_id', $this->mv_id);
+                    oci_bind_by_name($stmt, ':mvitm_line_id', $item->mvitm_line_id);
+                    
+                    foreach ($set_array as $set_item) {
+                        oci_bind_by_name($stmt, ':' . $set_item, $item->$set_item);
+                    }
+        
+                    if (!oci_execute($stmt, $this->commit_mode)) {
+                        $e = oci_error($stmt);
+                        write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                        return false;
+                    }
+                    
+                    break;
+                }
+            }
+            
+            if ($still_exist === false) {
+                write_log(sprintf("Delete movement item. move_id:%d, line_id:%d", $this->mv_id, $item->mvitm_line_id), 
+                    __FILE__, __LINE__);
+
+                $query = "DELETE FROM MOVEMENT_ITEMS 
+                    WHERE MVITM_MOVE_ID = :mvitm_move_id
+                        AND MVITM_LINE_ID = :mvitm_line_id";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':mvitm_move_id', $this->mv_id);
+                    oci_bind_by_name($stmt, ':mvitm_line_id', $item->mvitm_line_id);
+                if (!oci_execute($stmt, $this->commit_mode)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    return false;
+                }
+            }
+        }
+
+        //In new but not in old.
+        foreach ($this->items as $item) {
+            if (isset($old_children[$item->mvitm_item_key])) {
+                continue;
+            }
+
+            write_log(sprintf("Insert movement item. move_id:%d, line_id:%d", $this->mv_id, $item->mvitm_item_key), 
+                    __FILE__, __LINE__);
+
+            $lineno = intval($item->mvitm_item_key);
+            $mvitm_item_id = $this->mv_id * 1000 + $lineno;
+            $query = "INSERT INTO MOVEMENT_ITEMS (
+                MVITM_MOVE_ID,
+                MVITM_LINE_ID,
+                MVITM_ITEM_ID,
+                MVITM_PERIOD_ID,
+                MVITM_ITEM_KEY,
+                MVITM_IDOC_NUM,
+                MVITM_CATEGORY,
+                MVITM_TYPE,
+                MVITM_DTIM_EFFECT,
+                MVITM_OPER_EFFECT,
+                MVITM_DTIM_EXPIRY,
+                MVITM_DTIM_CHANGE,
+                MVITM_OPER_CHANGE,
+                MVITM_PLANT_FROM,
+                MVITM_TANK_FROM,
+                MVITM_PRODCMPY_FROM,
+                MVITM_PRODCODE_FROM,
+                MVITM_PRODNAME_FROM,
+                MVITM_SHIPCODE_FROM,
+                MVITM_SHIPTEXT_FROM,
+                MVITM_SHIPLOC_FROM,
+                MVITM_PLANT_TO,
+                MVITM_TANK_TO,
+                MVITM_PRODCMPY_TO,
+                MVITM_PRODCODE_TO,
+                MVITM_PRODNAME_TO,
+                MVITM_SHIPCODE_TO,
+                MVITM_SHIPTEXT_TO,
+                MVITM_SHIPLOC_TO,
+                MVITM_PROD_QTY,
+                MVITM_PROD_UNIT,
+                MVITM_RAT_UPTOL,
+                MVITM_QTY_UPTOL,
+                MVITM_UNIT_UPTOL,
+                MVITM_RAT_DNTOL,
+                MVITM_QTY_DNTOL,
+                MVITM_UNIT_DNTOL,
+                MVITM_QTY_SCHD,
+                MVITM_UNIT_SCHD,
+                MVITM_QTY_MOVE,
+                MVITM_UNIT_MOVE,
+                MVITM_QTY_DELV,
+                MVITM_UNIT_DELV,
+                MVITM_COMMENTS,
+                MVITM_TERMINAL,
+                MVITM_NUMBER,
+                MVITM_KEY,
+                MVITM_STATUS,
+                MVITM_FOLIO,
+                MVITM_LOCIT_PLANT,
+                MVITM_LOCIT_STORE,
+                MVITM_BY_PACKS,
+                MVITM_PACK_SIZE,
+                MVITM_EXEMPT_NO,
+                MVITM_EXEMPT_OFF,
+                MVITM_PRICE_TYPE,
+                MVITM_FIXEDPRI,
+                MVITM_PRICE,
+                MVITM_COMPLETED,
+                MVITM_SHIPTEXT_FROM2)
+            VALUES (
+                :mv_id,
+                :lineno,
+                :mvitm_item_id,
+                :mvitm_period_id,
+                :mvitm_item_key,
+                :mvitm_idoc_num,
+                :mvitm_category,
+                :mvitm_type,
+                :mvitm_dtim_effect,
+                :mvitm_oper_effect,
+                :mvitm_dtim_expiry,
+                :mvitm_dtim_change,
+                :mvitm_oper_change,
+                :mvitm_plant_from,
+                :mvitm_tank_from,
+                :mvitm_prodcmpy_from,
+                :mvitm_prodcode_from,
+                :mvitm_prodname_from,
+                :mvitm_shipcode_from,
+                :mvitm_shiptext_from,
+                :mvitm_shiploc_from,
+                :mvitm_plant_to,
+                :mvitm_tank_to,
+                :mvitm_prodcmpy_to,
+                :mvitm_prodcode_to,
+                :mvitm_prodname_to,
+                :mvitm_shipcode_to,
+                :mvitm_shiptext_to,
+                :mvitm_shiploc_to,
+                :mvitm_prod_qty,
+                :mvitm_prod_unit,
+                :mvitm_rat_uptol,
+                :mvitm_qty_uptol,
+                :mvitm_unit_uptol,
+                :mvitm_rat_dntol,
+                :mvitm_qty_dntol,
+                :mvitm_unit_dntol,
+                :mvitm_qty_schd,
+                :mvitm_unit_schd,
+                :mvitm_qty_move,
+                :mvitm_unit_move,
+                :mvitm_qty_delv,
+                :mvitm_unit_delv,
+                :mvitm_comments,
+                :mvitm_terminal,
+                :mvitm_number,
+                :mvitm_key,
+                0,
+                :mvitm_folio,
+                :mvitm_locit_plant,
+                :mvitm_locit_store,
+                :mvitm_by_packs,
+                :mvitm_pack_size,
+                :mvitm_exempt_no,
+                :mvitm_exempt_off,
+                :mvitm_price_type,
+                :mvitm_fixedpri,
+                :mvitm_price,
+                :mvitm_completed,
+                :mvitm_shiptext_from2
+            )";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':mv_id', $this->mv_id);
+            oci_bind_by_name($stmt, ':lineno', $lineno);
+            oci_bind_by_name($stmt, ':mvitm_item_id', $mvitm_item_id);
+            oci_bind_by_name($stmt, ':mvitm_period_id', $item->mvitm_period_id);
+            oci_bind_by_name($stmt, ':mvitm_item_key', $item->mvitm_item_key);
+            oci_bind_by_name($stmt, ':mvitm_idoc_num', $item->mvitm_idoc_num);
+            oci_bind_by_name($stmt, ':mvitm_category', $item->mvitm_category);
+            oci_bind_by_name($stmt, ':mvitm_type', $item->mvitm_type);
+            oci_bind_by_name($stmt, ':mvitm_dtim_effect', $item->mvitm_dtim_effect);
+            oci_bind_by_name($stmt, ':mvitm_oper_effect', $item->mvitm_oper_effect);
+            oci_bind_by_name($stmt, ':mvitm_dtim_expiry', $item->mvitm_dtim_expiry);
+            oci_bind_by_name($stmt, ':mvitm_dtim_change', $item->mvitm_dtim_change);
+            oci_bind_by_name($stmt, ':mvitm_oper_change', $item->mvitm_oper_change);
+            oci_bind_by_name($stmt, ':mvitm_plant_from', $item->mvitm_plant_from);
+            oci_bind_by_name($stmt, ':mvitm_tank_from', $item->mvitm_tank_from);
+            oci_bind_by_name($stmt, ':mvitm_prodcmpy_from', $item->mvitm_prodcmpy_from);
+            oci_bind_by_name($stmt, ':mvitm_prodcode_from', $item->mvitm_prodcode_from);
+            oci_bind_by_name($stmt, ':mvitm_prodname_from', $item->mvitm_prodname_from);
+            oci_bind_by_name($stmt, ':mvitm_shipcode_from', $item->mvitm_shipcode_from);
+            oci_bind_by_name($stmt, ':mvitm_shiptext_from', $item->mvitm_shiptext_from);
+            oci_bind_by_name($stmt, ':mvitm_shiploc_from', $item->mvitm_shiploc_from);
+            oci_bind_by_name($stmt, ':mvitm_plant_to', $item->mvitm_plant_to);
+            oci_bind_by_name($stmt, ':mvitm_tank_to', $item->mvitm_tank_to);
+            oci_bind_by_name($stmt, ':mvitm_prodcmpy_to', $item->mvitm_prodcmpy_to);
+            oci_bind_by_name($stmt, ':mvitm_prodcode_to', $item->mvitm_prodcode_to);
+            oci_bind_by_name($stmt, ':mvitm_prodname_to', $item->mvitm_prodname_to);
+            oci_bind_by_name($stmt, ':mvitm_shipcode_to', $item->mvitm_shipcode_to);
+            oci_bind_by_name($stmt, ':mvitm_shiptext_to', $item->mvitm_shiptext_to);
+            oci_bind_by_name($stmt, ':mvitm_shiploc_to', $item->mvitm_shiploc_to);
+            oci_bind_by_name($stmt, ':mvitm_prod_qty', $item->mvitm_prod_qty);
+            oci_bind_by_name($stmt, ':mvitm_prod_unit', $item->mvitm_prod_unit);
+            oci_bind_by_name($stmt, ':mvitm_rat_uptol', $item->mvitm_rat_uptol);
+            oci_bind_by_name($stmt, ':mvitm_qty_uptol', $item->mvitm_qty_uptol);
+            oci_bind_by_name($stmt, ':mvitm_unit_uptol', $item->mvitm_unit_uptol);
+            oci_bind_by_name($stmt, ':mvitm_rat_dntol', $item->mvitm_rat_dntol);
+            oci_bind_by_name($stmt, ':mvitm_qty_dntol', $item->mvitm_qty_dntol);
+            oci_bind_by_name($stmt, ':mvitm_unit_dntol', $item->mvitm_unit_dntol);
+            oci_bind_by_name($stmt, ':mvitm_qty_schd', $item->mvitm_qty_schd);
+            oci_bind_by_name($stmt, ':mvitm_unit_schd', $item->mvitm_unit_schd);
+            oci_bind_by_name($stmt, ':mvitm_qty_move', $item->mvitm_qty_move);
+            oci_bind_by_name($stmt, ':mvitm_unit_move', $item->mvitm_unit_move);
+            oci_bind_by_name($stmt, ':mvitm_qty_delv', $item->mvitm_qty_delv);
+            oci_bind_by_name($stmt, ':mvitm_unit_delv', $item->mvitm_unit_delv);
+            oci_bind_by_name($stmt, ':mvitm_comments', $item->mvitm_comments);
+            oci_bind_by_name($stmt, ':mvitm_terminal', $item->mvitm_terminal);
+            oci_bind_by_name($stmt, ':mvitm_number', $item->mvitm_number);
+            oci_bind_by_name($stmt, ':mvitm_key', $item->mvitm_key);
+            oci_bind_by_name($stmt, ':mvitm_folio', $item->mvitm_folio);
+            oci_bind_by_name($stmt, ':mvitm_locit_plant', $item->mvitm_locit_plant);
+            oci_bind_by_name($stmt, ':mvitm_locit_store', $item->mvitm_locit_store);
+            oci_bind_by_name($stmt, ':mvitm_by_packs', $item->mvitm_by_packs);
+            oci_bind_by_name($stmt, ':mvitm_pack_size', $item->mvitm_pack_size);
+            oci_bind_by_name($stmt, ':mvitm_exempt_no', $item->mvitm_exempt_no);
+            oci_bind_by_name($stmt, ':mvitm_exempt_off', $item->mvitm_exempt_off);
+            oci_bind_by_name($stmt, ':mvitm_price_type', $item->mvitm_price_type);
+            oci_bind_by_name($stmt, ':mvitm_fixedpri', $item->mvitm_fixedpri);
+            oci_bind_by_name($stmt, ':mvitm_price', $item->mvitm_price);
+            oci_bind_by_name($stmt, ':mvitm_completed', $item->mvitm_completed);
+            oci_bind_by_name($stmt, ':mvitm_shiptext_from2', $item->mvitm_shiptext_from2);
+            // oci_bind_by_name($stmt, ':oprd_line_itemno', $lineno);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+        }
+
+        return true;
     }
 
     protected function journal_children_change($journal, $old, $new)

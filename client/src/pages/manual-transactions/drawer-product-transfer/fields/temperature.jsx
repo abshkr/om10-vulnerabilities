@@ -102,10 +102,18 @@ export default class Temperature extends Component {
   }
 
   handleChange(value) {
-    const { min, max, txt, colDef } = this.props;
+    const { min, max, txt, colDef, form, rowIndex } = this.props;
     //console.log('this.props', this.props);
 
     if (min <= value && max >= value) {
+      let current = form.getFieldValue('transfers');
+
+      current[rowIndex][colDef.field] = value;
+
+      form.setFieldsValue({
+        transfers: current,
+      });
+
       this.setState({
         value,
       });

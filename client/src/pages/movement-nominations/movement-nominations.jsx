@@ -216,7 +216,7 @@ const MovementNominations = () => {
 
       {rangeSetting !== '-1~~-1' && (
         <div style={{ float: 'left', width: '420px' }}>
-          <Calendar handleChange={setRange} start={start} end={end} />
+          <Calendar handleChange={setRange} start={start} end={end} max={2000} />
         </div>
       )}
 
