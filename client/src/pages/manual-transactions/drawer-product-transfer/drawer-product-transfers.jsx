@@ -1338,6 +1338,7 @@ const DrawerProductTransfers = ({
         // const loaded = _.clone(dataLoaded);
         // loaded.transfers = [];
         // setDataLoaded(loaded);
+        dataLoaded.transfers=[];
       }
       setLoading(false);
     }

@@ -305,6 +305,9 @@ const Forms = ({
     setSelectedTanker(null);
     setTankers(tankers);
     setTankersLoading(false);
+    setFieldsValue({
+      tanker: undefined,
+    });
   };
 
   const handleDriverSelect = (driver) => {
