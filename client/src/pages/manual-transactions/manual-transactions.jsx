@@ -149,10 +149,10 @@ const ManualTransactions = ({ popup, params }) => {
         // Compare the observed quantity with scheduled quantity or compartment capacity
         if (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') {
           // Compare with scheduled quantity for Pre-Schedule
-          if (_.toNumber(item.trsf_qty_amb) > (_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left))) {
+          if ( _.round(_.toNumber(item.trsf_qty_amb), 0) > _.round((_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left)), 0) ) {
             errors.push({
               field: `${t('fields.observedQuantity')} (${t('units.ltr')})`,
-              message: `${t('fields.compartment')} ${item.trsf_cmpt_no}: ${t('fields.observedQuantity')} ${item.trsf_qty_amb} > ${t('fields.scheduled')} ${_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left)}`,
+              message: `${t('fields.compartment')} ${item.trsf_cmpt_no}: ${t('fields.observedQuantity')} ${_.round(_.toNumber(item.trsf_qty_amb), 0)} > ${t('fields.scheduled')} ${_.round((_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left)), 0)}`,
               key: `${'trsf_qty_amb'}${item.trsf_cmpt_no}`,
               line: item.trsf_cmpt_no,
             });
@@ -160,18 +160,18 @@ const ManualTransactions = ({ popup, params }) => {
         }
         if (sourceType === 'OPENORDER' || (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT')) {
           // Compare with planned quantity and compartment capacity for Pre-Order and Open Order
-          if (_.toNumber(item.trsf_qty_amb) > (_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left))) {
+          if ( _.round(_.toNumber(item.trsf_qty_amb), 0) > _.round((_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left)), 0) ) {
             errors.push({
               field: `${t('fields.observedQuantity')} (${t('units.ltr')})`,
-              message: `${t('fields.compartment')} ${item.trsf_cmpt_no}: ${t('fields.observedQuantity')} ${item.trsf_qty_amb} > ${t('fields.planned')} ${_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left)}`,
+              message: `${t('fields.compartment')} ${item.trsf_cmpt_no}: ${t('fields.observedQuantity')} ${_.round(_.toNumber(item.trsf_qty_amb), 0)} > ${t('fields.planned')} ${_.round((_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left)), 0)}`,
               key: `${'trsf_qty_amb'}${item.trsf_cmpt_no}`,
               line: item.trsf_cmpt_no,
             });
           } else {
-            if (_.toNumber(item.trsf_qty_amb) > _.toNumber(item.trsf_cmpt_capacit)) {
+            if ( _.round(_.toNumber(item.trsf_qty_amb), 0) > _.round(_.toNumber(item.trsf_cmpt_capacit), 0) ) {
               errors.push({
                 field: `${t('fields.observedQuantity')} (${t('units.ltr')})`,
-                message: `${t('fields.compartment')} ${item.trsf_cmpt_no}: ${t('fields.observedQuantity')} ${item.trsf_qty_amb} > ${t('fields.capacity')} ${_.toNumber(item.trsf_cmpt_capacit)}`,
+                message: `${t('fields.compartment')} ${item.trsf_cmpt_no}: ${t('fields.observedQuantity')} ${_.round(_.toNumber(item.trsf_qty_amb), 0)} > ${t('fields.capacity')} ${_.round(_.toNumber(item.trsf_cmpt_capacit), 0)}`,
                 key: `${'trsf_qty_amb'}${item.trsf_cmpt_no}`,
                 line: item.trsf_cmpt_no,
               });
