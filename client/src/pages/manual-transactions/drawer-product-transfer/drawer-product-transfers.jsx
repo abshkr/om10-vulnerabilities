@@ -352,6 +352,7 @@ const DrawerProductTransfers = ({
         // base.trsf_bs_prodname = repostBase.base_code + ' - ' + repostBase.base_name;
         base.trsf_bs_tk_cd = repostBase.trsb_tk_tankcode;
         // base.trsf_bs_prodcls = repostBase.;
+        base.trsf_bs_prodcls_code = repostBase.base_cat;
         base.trsf_bs_den = repostBase.trsb_dns;
         base.trsf_bs_temp = repostBase.trsb_tmp;
         base.trsf_bs_qty_amb = repostBase.trsb_avl;
@@ -380,30 +381,6 @@ const DrawerProductTransfers = ({
 
     // TODO 
 
-    /* _.forEach(meters, (meter) => {
-      // get the matched meter product from repost meters
-      const repostMeter = _.find(repostMeters, (o) => (
-        o.trsf_cmpt_no === meter?.trsf_cmpt_no &&
-        o.trsb_meter === meter?.trsf_bs_prodcd
-      ));
-      if (repostMeter !== undefined) {
-        // meter.trsf_bs_cmpt_no = repostMeter.trsf_bs_cmpt_no;
-        // meter.trsf_bs_prodcd = repostMeter.meter_code;
-        // meter.trsf_bs_prodname = repostMeter.meter_code + ' - ' + repostMeter.meter_name;
-        meter.trsf_bs_tk_cd = repostMeter.trsb_tk_tankcode;
-        // meter.trsf_bs_prodcls = repostMeter.;
-        meter.trsf_bs_den = repostMeter.trsb_dns;
-        meter.trsf_bs_temp = repostMeter.trsb_tmp;
-        meter.trsf_bs_qty_amb = repostMeter.trsb_avl;
-        meter.trsf_bs_qty_cor = repostMeter.trsb_cvl;
-        meter.trsf_bs_load_kg = repostMeter.trsb_kg;
-        meter.trsf_bs_adtv_flag = repostMeter.meter_cat === '6' ? true : false;
-        // meter.trsf_bs_ratio_value = repostMeter.;
-        // meter.trsf_bs_ratio_total = repostMeter.;
-        // meter.trsf_bs_ratio_total2 = repostMeter.;
-      }
-      console.log('---------- updateMeterProductTransfers', meter, repostMeter);
-    }); */
   
     return meters;
   };
@@ -548,6 +525,8 @@ const DrawerProductTransfers = ({
         trsf_bs_prodname_tot: item.trsf_bs_prodname,
         trsf_bs_tk_cd_tot: item.trsf_bs_tk_cd,
         trsf_bs_prodcls_tot: item.trsf_bs_prodcls,
+        trsf_bs_prodcls_code_tot: item.trsf_bs_prodcls_code,
+        trsf_bs_tank_temp_tot: item.trsf_bs_tank_temp,
         trsf_bs_den_tot: item.trsf_bs_den,
         trsf_bs_temp_tot: item.trsf_bs_temp,
         trsf_bs_qty_amb_tot: item.trsf_bs_qty_amb,

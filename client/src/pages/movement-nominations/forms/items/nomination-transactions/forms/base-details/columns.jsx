@@ -116,6 +116,22 @@ const columns = (t, pageState, form, arm) => [
     resizable: true,
   },
   {
+    headerName: t('fields.productClass'),
+    field: 'trsf_bs_prodcls_code',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+  },
+  {
+    headerName: t('fields.temperature'),
+    field: 'trsf_bs_tank_temp',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+  },
+  {
     headerName: t('fields.density') + ' (' + t('units.kg/m3') + ')',
     field: 'trsf_bs_den',
     filter: 'FuzzyFilter',

@@ -68,6 +68,7 @@ const buildPayloadToSubmit = (values, sourceType, orderSeals, t) => {
           base.tank_code = bitem.trsf_bs_tk_cd;
           base.base_code = bitem.trsf_bs_prodcd;
           base.base_class = bitem.trsf_bs_prodcls;
+          base.base_class_code = bitem.trsf_bs_prodcls_code;
           base.dens = bitem.trsf_bs_den;
           base.temperature = bitem.trsf_bs_temp;
           base.amb_vol = bitem.trsf_bs_qty_amb;

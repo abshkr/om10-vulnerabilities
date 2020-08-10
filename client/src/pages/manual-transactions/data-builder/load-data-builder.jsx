@@ -117,6 +117,8 @@ const buildPayloadToLoad = (payload, setRepost, t) => {
           field: 'trsf_bs_prodname',
           field: 'trsf_bs_tk_cd',
           field: 'trsf_bs_prodcls',
+          field: 'trsf_bs_prodcls_code',
+          field: 'trsf_bs_tank_temp',
           field: 'trsf_bs_den',
           field: 'trsf_bs_temp',
           field: 'trsf_bs_qty_amb',
@@ -130,6 +132,8 @@ const buildPayloadToLoad = (payload, setRepost, t) => {
         base.trsf_bs_tk_cd = bitem?.TANK_CODE;
         base.trsf_bs_prodcd = bitem?.PRODUCT_CODE;
         base.trsf_bs_prodcls = bitem?.PROD_CLASS;
+        base.trsf_bs_prodcls_code = bitem?.PROD_CLASS;
+        base.trsf_bs_tank_temp = bitem?.TEMPERATURE;
         base.trsf_bs_den = bitem?.DENS;
         base.trsf_bs_temp = bitem?.TEMPERATURE;
         base.trsf_bs_qty_amb = bitem?.AMB_VOL;
@@ -195,6 +199,8 @@ const buildPayloadToLoad = (payload, setRepost, t) => {
         field: 'trsf_bs_prodname_tot',
         field: 'trsf_bs_tk_cd_tot',
         field: 'trsf_bs_prodcls_tot',
+        field: 'trsf_bs_prodcls_code_tot',
+        field: 'trsf_bs_tank_temp_tot',
         field: 'trsf_bs_den_tot',
         field: 'trsf_bs_temp_tot',
         field: 'trsf_bs_qty_amb_tot',
@@ -208,6 +214,8 @@ const buildPayloadToLoad = (payload, setRepost, t) => {
       base.trsf_bs_tk_cd_tot = bitem?.TANK_CODE;
       base.trsf_bs_prodcd_tot = bitem?.PRODUCT_CODE;
       base.trsf_bs_prodcls_tot = bitem?.PROD_CLASS;
+      base.trsf_bs_prodcls_code_tot = bitem?.PROD_CLASS;
+      base.trsf_bs_tank_temp_tot = bitem?.TEMPERATURE;
       base.trsf_bs_den_tot = bitem?.DENS;
       base.trsf_bs_temp_tot = bitem?.TEMPERATURE;
       base.trsf_bs_qty_amb_tot = bitem?.AMB_VOL;

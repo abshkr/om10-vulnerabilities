@@ -28,6 +28,22 @@ const columns = (t) => [
     resizable: true,
   },
   {
+    headerName: t('fields.productClass'),
+    field: 'trsf_bs_prodcls_code_tot',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+  },
+  {
+    headerName: t('fields.temperature'),
+    field: 'trsf_bs_tank_temp_tot',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+  },
+  {
     headerName: t('fields.density') + ' (' + t('units.kg/m3') + ')',
     field: 'trsf_bs_den_tot',
     filter: 'FuzzyFilter',

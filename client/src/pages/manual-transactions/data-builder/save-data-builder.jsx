@@ -123,6 +123,8 @@ const buildPayloadToSave = (values, customers, sourceType, repost, user_code, sa
               field: 'trsf_bs_prodname',
               field: 'trsf_bs_tk_cd',
               field: 'trsf_bs_prodcls',
+              field: 'trsf_bs_prodcls_code',
+              field: 'trsf_bs_tank_temp',
               field: 'trsf_bs_den',
               field: 'trsf_bs_temp',
               field: 'trsf_bs_qty_amb',
@@ -136,6 +138,8 @@ const buildPayloadToSave = (values, customers, sourceType, repost, user_code, sa
             base.TANK_CODE = bitem.trsf_bs_tk_cd;
             base.PRODUCT_CODE = bitem.trsf_bs_prodcd;
             base.PROD_CLASS = bitem.trsf_bs_prodcls;
+            base.PROD_CLASS_CODE = bitem.trsf_bs_prodcls_code;
+            base.TANK_TEMP = bitem.trsf_bs_tank_temp;
             base.DENS = bitem.trsf_bs_den;
             base.TEMPERATURE = bitem.trsf_bs_temp;
             base.AMB_VOL = bitem.trsf_bs_qty_amb;
@@ -203,6 +207,8 @@ const buildPayloadToSave = (values, customers, sourceType, repost, user_code, sa
         field: 'trsf_bs_prodname_tot',
         field: 'trsf_bs_tk_cd_tot',
         field: 'trsf_bs_prodcls_tot',
+        field: 'trsf_bs_prodcls_code_tot',
+        field: 'trsf_bs_tank_temp_tot',
         field: 'trsf_bs_den_tot',
         field: 'trsf_bs_temp_tot',
         field: 'trsf_bs_qty_amb_tot',
@@ -216,6 +222,8 @@ const buildPayloadToSave = (values, customers, sourceType, repost, user_code, sa
       base.TANK_CODE = bitem.trsf_bs_tk_cd_tot;
       base.PRODUCT_CODE = bitem.trsf_bs_prodcd_tot;
       base.PROD_CLASS = bitem.trsf_bs_prodcls_tot;
+      base.PROD_CLASS_CODE = bitem.trsf_bs_prodcls_code_tot;
+      base.TANK_TEMP = bitem.trsf_bs_tank_temp_tot;
       base.DENS = bitem.trsf_bs_den_tot;
       base.TEMPERATURE = bitem.trsf_bs_temp_tot;
       base.AMB_VOL = bitem.trsf_bs_qty_amb_tot;
