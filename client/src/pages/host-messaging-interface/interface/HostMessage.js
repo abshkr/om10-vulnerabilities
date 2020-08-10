@@ -62,7 +62,6 @@ const HostMessages = ({handleClick}) => {
 	const action = 'view';
 	const cformat = 1;
 	const initStart = moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT);
-	//const initEnd = moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT);
 	const initEnd = moment().format(SETTINGS.DATE_TIME_FORMAT);
 
   const [start, setStart] = useState(initStart);

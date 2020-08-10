@@ -79,7 +79,7 @@ const columns = (t) => [
   },
   {
     headerName: t('fields.recv_time'),
-    field: 'LOCAL_RECV_TIME',
+    field: 'RECV_TIME',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
