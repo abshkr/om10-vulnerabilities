@@ -1261,7 +1261,8 @@
 		"weightInAir": "Weight In Air",
 		"weightInVacuum": "Weight In Vacuum",
 		"weightTolerance": "Tolerance % of the total load vehicle weight (0-20)",
-		"window": "Window"
+		"window": "Window",
+		"copyToRole": "Copy To Role"
 	},
 	"generic": {
 		"about": "About (EULA)",
@@ -1378,6 +1379,7 @@
 		"copy": "Copy",
 		"copyQuantity": "Copy Quantities",
 		"copyToClipboard": "Copy to Clipboard",
+		"copyPriv": "Copy Privilege",
 		"create": "Create",
 		"createFolioException": "New Exception",
 		"createPDSFile": "Create PDS File",

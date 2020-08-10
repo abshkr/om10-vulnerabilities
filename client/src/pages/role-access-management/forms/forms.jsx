@@ -5,6 +5,7 @@ import {
   PlusOutlined,
   CloseOutlined,
   DeleteOutlined,
+  CopyOutlined,
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 
@@ -17,6 +18,7 @@ import { setter, generator } from './generator';
 
 import api, { ROLE_ACCESS_MANAGEMENT } from '../../../api';
 import { ALPHANUMERIC } from 'constants/regex';
+import CopyTo from './copy-to';
 
 const TabPane = Tabs.TabPane;
 
@@ -234,6 +236,49 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
   //   );
   // }
 
+  const onCopy = () => {
+    const targets = new Array();
+    for (let i = 0; i < data.length; i ++) {
+      if (data[i].role_id === value.role_id) {
+        continue;
+      }
+
+      targets.push({
+        role_code: data[i].role_code,
+        role_id: data[i].role_id,
+        auth_level_name: data[i].auth_level_name,
+      })
+    }
+
+    Modal.info({
+      className: 'form-container',
+      title: t("operations.copyPriv"),
+      centered: true,
+      width: '25vw',
+      icon: <CopyOutlined />,
+      keyboard: false,
+      content: (
+      // <SWRConfig
+      //     value={{
+      //     refreshInterval: 0,
+      //     fetcher,
+      //     }}
+      // >
+        <CopyTo 
+          current={value}
+          targets={targets}
+          onCopyReturn={onComplete}
+        />
+      // </SWRConfig>
+      ),
+      okButtonProps: {
+      style: { display: 'none' },
+      },
+    });
+
+    return null;
+  };
+
   return (
     <Drawer
       closable={false}
@@ -266,6 +311,18 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
+
+          {!IS_CREATING && (
+            <Button
+              type="primary"
+              icon={<CopyOutlined />}
+              style={{ float: 'right', marginRight: 5 }}
+              onClick={onCopy}
+              disabled={!access?.canUpdate }
+            >
+              {t('operations.copyPriv')}
+            </Button>
+          )}
 
           {!IS_CREATING && (
             <Button
