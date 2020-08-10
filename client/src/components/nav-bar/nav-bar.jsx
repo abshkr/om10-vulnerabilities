@@ -47,12 +47,12 @@ const NavBar = () => {
 
   const onLogOut = () => {
     Modal.confirm({
-      title: 'Are you sure want to Log Out?',
+      title: t('prompts.logOut'), // 'Are you sure want to Log Out?',
       icon: <ExclamationCircleOutlined />,
-      okText: 'Log Out',
+      okText: t('operations.logOut'),
       centered: true,
       okType: 'danger',
-      cancelText: 'Cancel',
+      cancelText: t('operations.cancel'),
       onOk: () => history.push(ROUTES.LOG_OUT),
     });
   };
@@ -74,7 +74,7 @@ const NavBar = () => {
           onSelect={(value, option) => onSelect(option)}
           style={{ width: 420, marginLeft: 10 }}
         >
-          <Input.Search enterButton={<SearchIconOutlined />} placeholder="Search OMEGA" />
+          <Input.Search enterButton={<SearchIconOutlined />} placeholder={t("placeholder.searchOmega")} />
         </AutoComplete>
 
         <div>

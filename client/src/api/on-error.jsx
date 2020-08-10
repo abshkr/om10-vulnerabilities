@@ -1,6 +1,6 @@
 import { message } from 'antd';
 import _ from 'lodash';
-
+import i18n from 'i18next';
 import { LOG_OUT } from 'constants/routes';
 
 const onTimeOut = () => {
@@ -11,14 +11,16 @@ const onTimeOut = () => {
       .loading({
         key: 'loading',
         duration: 2,
-        content: 'Session Expired. Safely Logging Out',
+        content: i18n.t("messages.sessionExpired"),
+        //content: 'Session Expired. Safely Logging Out',
       })
 
       .then(() => {
         message
           .warning({
             key: 'warn',
-            content: 'User Logged Out Safely. Please login again to continue.',
+            content: i18n.t("messages.loggedOut"),
+            //content: 'User Logged Out Safely. Please login again to continue.',
             duration: 1,
           })
           .then(() => {

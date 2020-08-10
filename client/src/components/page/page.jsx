@@ -143,7 +143,7 @@ const Page = ({ name, page, children, modifiers, minimal, transparent, access, a
           )}
 
           <Helmet>
-            <title>{name ? `${name} ─ ${page} ─ OMEGA 5000` : `${page} ─ OMEGA 5000`}</title>
+            <title>{name ? `${name} ─ ${page} ─ ${t('descriptions.applicationName')}` : `${page} ─ ${t('descriptions.applicationName')}`}</title>
           </Helmet>
 
           <PageInjector minimal={minimal} transparent={transparent}>

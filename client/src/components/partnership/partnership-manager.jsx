@@ -15,9 +15,10 @@ const PartnershipManager = (
     width,
     height,
   ) => {
+  const { t } = useTranslation();
   Modal.info({
     className: 'form-container',
-    title: title? title: 'Partnership',
+    title: title? title: t('pageNames.partnership'),
     centered: true,
     closable: true,
     width: width,
