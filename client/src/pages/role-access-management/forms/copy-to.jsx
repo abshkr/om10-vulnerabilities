@@ -44,10 +44,6 @@ const CopyTo = ({current, targets, onCopyReturn}) => {
 
   const onComplete = () => {
     Modal.destroyAll();
-    // onReturn({
-    //   ret_code: "cancel",
-    //   new_password: null,
-    // });
   }
 
   return (
@@ -57,12 +53,8 @@ const CopyTo = ({current, targets, onCopyReturn}) => {
       >
         <Select
           dropdownMatchSelectWidth={false}
-          // loading={isValidating}
           showSearch
-          // disabled={IS_DISABLED}
-          // onChange={handleChange}
           optionFilterProp="children"
-          placeholder={t('placeholder.selectMovementType')}
           filterOption={(input, option) =>
               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
