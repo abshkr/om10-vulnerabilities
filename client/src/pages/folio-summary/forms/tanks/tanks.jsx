@@ -46,9 +46,7 @@ const Tanks = ({ id, enabled, access, handleFormState }) => {
       content: t('descriptions.saveToFolioWarning'),
       onOk: async () => {
         await api
-          .post(FOLIO_SUMMARY.SAVE_TANKS, {
-            folio_tanks: data
-          })
+          .post(FOLIO_SUMMARY.UPDATE_TANKS, data)
           .then((response) => {
             fetch();
 
@@ -136,7 +134,7 @@ const Tanks = ({ id, enabled, access, handleFormState }) => {
     });
   };
 
-  const save = () => {
+  const saveToTanks = () => {
     Modal.confirm({
       title: t('prompts.save'),
       okText: t('operations.yes'),
@@ -146,7 +144,9 @@ const Tanks = ({ id, enabled, access, handleFormState }) => {
       content: t('descriptions.saveToTanksWarning'),
       onOk: async () => {
         await api
-          .post(FOLIO_SUMMARY.UPDATE_TANKS, data)
+          .post(FOLIO_SUMMARY.SAVE_TO_TANKS, {
+            folio_tanks: data
+          })
           .then((response) => {
             notification.success({
               message: t('messages.saveSuccess'),
@@ -215,7 +215,7 @@ const Tanks = ({ id, enabled, access, handleFormState }) => {
           type="primary"
           icon={<SaveOutlined />}
           style={{ float: 'right', marginRight: 5 }}
-          onClick={save}
+          onClick={saveToTanks}
           disabled={!enabled || !access.canUpdate}
         >
           {t('operations.saveToTanks')}
