@@ -426,6 +426,19 @@ const Settings = ({ value, access }) => {
     return true;
   };
 
+	const closeoutIsBusy = () => {
+		return (  manualDates?.records[0].next_manual_close !== ""
+            || manualDates?.records[0].next_manual_freeze_datetime !== ""
+		);
+	};
+
+  const showCloseoutStatus = () => {
+		if (closeoutIsBusy())
+    {
+      return t('descriptions.closeoutIsBusy');
+    }
+  };
+
   useEffect(() => {
     setFields(payload?.records);
   });
@@ -480,8 +493,9 @@ const Settings = ({ value, access }) => {
         <Col span={12} />
         <Col span={12} style={{ textAlign: 'center' }}>
           <Button
+          	title={showCloseoutStatus()}
             type="primary"
-            disabled={!runAndOverrideFlag}
+            disabled={!runAndOverrideFlag || closeoutIsBusy}
             icon={<CodeOutlined />}
             onClick={runAndOverride}
           >
@@ -601,21 +615,27 @@ const Settings = ({ value, access }) => {
           }}
         >
           <Button
+          	title={showCloseoutStatus()}
             type="primary"
             icon={<SafetyCertificateOutlined />}
             style={{ float: 'right', marginRight: 5 }}
             onClick={closeCloseout}
-            disabled={!access?.extra || manualDates?.records[0].next_manual_close !== ""}
+            disabled={   !access?.extra
+											|| manualDates?.records[0].next_manual_close !== ""
+            					|| manualDates?.records[0].next_manual_freeze_datetime !== ""}
           >
             {t('operations.closeCloseout')}
           </Button>
 
           <Button
+          	title={showCloseoutStatus()}
             type="primary"
             icon={<SafetyCertificateOutlined />}
             style={{ float: 'right', marginRight: 5 }}
             onClick={freezeCloseout}
-            disabled={!access?.extra || manualDates?.records[0].next_manual_freeze_datetime !== ""}
+            disabled={   !access?.extra
+											|| manualDates?.records[0].next_manual_close !== ""
+            					|| manualDates?.records[0].next_manual_freeze_datetime !== ""}
           >
             {t('operations.freezeCloseout')}
           </Button>

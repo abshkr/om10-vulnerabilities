@@ -26,7 +26,7 @@ const Reports = ({ id, enabled, handleFormState }) => {
   const showCloseoutStatus = () => {
     if (!closeoutIsIdle)
     {
-      return "Closeout is busy. Please try again later.";
+      return t('descriptions.closeoutIsBusy');
     }
   };
 

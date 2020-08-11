@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
@@ -25,6 +25,7 @@ const FolioSummary = () => {
 
   const [selected, setSelected] = useState(null);
   const [visible, setVisible] = useState(false);
+  const [closeoutIsIdle, setCloseoutIsIdle] = useState(false);
 
   const fields = columns(t);
 
@@ -53,6 +54,19 @@ const FolioSummary = () => {
       });
   }, [t]);
 
+  const getCloseoutStatus = useCallback(() => {
+    api.post(FOLIO_SUMMARY.CLOSEOUT_IS_IDLE).then((response) => {
+      setCloseoutIsIdle(response.data.records);
+    });
+  });
+
+  const showCloseoutStatus = () => {
+    if (!closeoutIsIdle)
+    {
+      return t('descriptions.closeoutIsBusy');
+    }
+  };
+
   const closeFolio = useCallback(() => {
     api
       .post(FOLIO_SUMMARY.MANUAL_CLOSE)
@@ -80,10 +94,12 @@ const FolioSummary = () => {
       </Button>
 
       <Button
+				title={showCloseoutStatus()}
         type="primary"
         icon={<SafetyCertificateOutlined />}
         onClick={() => closeFolio(null)}
         style={{ float: 'right', marginRight: 5 }}
+				disabled={!closeoutIsIdle}
       >
         {t('operations.closeFirstFolio')}
       </Button>
@@ -98,6 +114,10 @@ const FolioSummary = () => {
       </Button>
     </>
   );
+
+  useEffect(() => {
+    getCloseoutStatus();
+  });
 
   return (
     <Page
