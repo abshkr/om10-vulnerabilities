@@ -308,17 +308,38 @@ const SupplierForm = ({ value, form }) => {
       <Divider orientation="left">{t('fields.autoTripNumbers')}</Divider>
       <Row justify="center">
         <Col span={7}>
-          <Form.Item name="cmpy_trip_strt" label={t('fields.startAt')} rules={[{ required: true }]}>
+          <Form.Item 
+            name="cmpy_trip_strt" 
+            label={t('fields.startAt')} 
+            rules={[{ 
+              required: true,
+              message: `${t('validate.select')} ─ ${t('fields.startAt')}`,
+            }]}
+          >
             <InputNumber min={1} max={999999999} style={{ width: '11vh' }} />
           </Form.Item>
         </Col>
         <Col span={7}>
-          <Form.Item name="cmpy_trip_end" label={t('fields.endAt')} rules={[{ required: true }]}>
+          <Form.Item 
+            name="cmpy_trip_end" 
+            label={t('fields.endAt')} 
+            rules={[{ 
+              required: true,
+              message: `${t('validate.select')} ─ ${t('fields.endAt')}`,
+            }]}
+          >
             <InputNumber min={1} max={999999999} style={{ width: '11vh' }} />
           </Form.Item>
         </Col>
         <Col span={7}>
-          <Form.Item name="cmpy_trip_last" label={t('fields.lastUsed')} rules={[{ required: true }]}>
+          <Form.Item 
+            name="cmpy_trip_last" 
+            label={t('fields.lastUsed')} 
+            rules={[{ 
+              required: true,
+              message: `${t('validate.select')} ─ ${t('fields.lastUsed')}`,
+            }]}
+          >
             <InputNumber min={1} max={999999999} style={{ width: '11vh' }} />
           </Form.Item>
         </Col>
