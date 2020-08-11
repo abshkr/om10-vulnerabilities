@@ -89,12 +89,8 @@ const columns = (t) => [
     resizable: true,
     width: 100,
     editable: true,
+    cellEditor: 'NumericEditor',
     cellClass: 'editable-ag-grid-cell',
-    cellEditor: 'SelectEditor',
-    cellEditorParams: {
-      values: ['123', '555', 'test'],
-    },
-    suppressSizeToFit: true,
   },
 
   {
