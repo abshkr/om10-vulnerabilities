@@ -34,9 +34,30 @@ class DorHistory extends CommonClass
         }
     }
 
+    public function check_trip_cmpt_dor( $trip, $supp, $cmpt )
+	{
+        $query = "
+            SELECT COUNT(*) AS CNT 
+            FROM DOR_HISTORY 
+            WHERE DH_SHLSTRIP=:trip_no and DH_SHLSSUPP=:supp_code and DH_SHLSCMPT=:cmpt_num
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':trip_no', $this->trip_no);
+        oci_bind_by_name($stmt, ':supp_code', $this->supplier);
+        oci_bind_by_name($stmt, ':cmpt_num', $this->cmpt_num);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function read()
     {
-        $query = "SELECT 
+        $query = "
+            SELECT 
                 SD.SCHDSPEC_SHLSTRIP DH_SHLSTRIP,
                 SD.SCHDSPEC_SHLSSUPP DH_SHLSSUPP,
                 CM.CMPY_NAME DH_SUPP_NAME,
@@ -46,18 +67,21 @@ class DorHistory extends CommonClass
                 DH.DH_DOR_NUMBER,
                 DH.DH_CHG_DATE,
                 DH.DH_PER_CODE,
-                DH.DH_PER_NAME
+                NVL(DH.DH_PER_NAME, PSNL.PER_NAME) AS DH_PER_NAME
             FROM 
                 DOR_HISTORY DH,
                 SPECDETS SD,
-                COMPANYS CM
+                COMPANYS CM, 
+                PERSONNEL PSNL
             WHERE SCHDSPEC_SHLSTRIP = :trip_no
                 AND SCHDSPEC_SHLSSUPP = :supplier
                 AND SD.SCHDSPEC_SHLSTRIP = DH.DH_SHLSTRIP(+)
                 AND SD.SCHDSPEC_SHLSSUPP = DH.DH_SHLSSUPP(+)
                 AND SD.SCHD_COMP_ID = DH.DH_SHLSCMPT(+)
                 AND SD.SCHDSPEC_SHLSSUPP = CM.CMPY_CODE(+)
-            ORDER BY SCHD_COMP_ID";
+                AND DH.DH_PER_CODE = PSNL.PER_CODE(+)
+            ORDER BY SCHD_COMP_ID
+        ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':trip_no', $this->trip_no);
         oci_bind_by_name($stmt, ':supplier', $this->supplier);

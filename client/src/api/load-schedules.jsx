@@ -31,6 +31,7 @@ export const ARCHIVE = '/api/pages/schedule/archive.php';
 
 export const HOST_DATA = '/api/pages/schedule/host_data.php';
 export const HOST_DATA_TYPES = '/api/pages/schedule/host_data_types.php';
+export const HOST_DATA_CHECK = '/api/pages/schedule/check_trip_cmpt_dor.php';
 export const HOST_DATA_CREATE = '/api/pages/schedule/host_data_create.php';
 export const HOST_DATA_UPDATE = '/api/pages/schedule/host_data_update.php';
 export const HOST_DATA_DELETE = '/api/pages/schedule/host_data_delete.php';

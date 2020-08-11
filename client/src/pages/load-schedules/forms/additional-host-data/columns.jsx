@@ -1,5 +1,32 @@
 const columns = (t) => [
   {
+    headerName: t('fields.tripNumber'),
+    field: 'dh_shlstrip',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+    width: 140,
+  },
+  {
+    headerName: t('fields.supplierCode'),
+    field: 'dh_shlssupp',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+    width: 140,
+  },
+  {
+    headerName: t('fields.schdSupplier'),
+    field: 'dh_supp_name',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+    width: 140,
+  },
+  {
     headerName: t('fields.compartment'),
     field: 'dh_shlscmpt',
     filter: 'FuzzyFilter',
@@ -9,7 +36,7 @@ const columns = (t) => [
   },
   {
     headerName: t('fields.delvNo'),
-    field: 'dh_dor_number',
+    field: 'dh_dor_origin',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
@@ -24,7 +51,7 @@ const columns = (t) => [
   },
   {
     headerName: t('fields.additionalHostData'),
-    field: 'dh_dor_origin',
+    field: 'dh_dor_number',
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,

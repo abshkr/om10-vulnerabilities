@@ -4,9 +4,12 @@ import { Spin, Button, Drawer, Tabs, Form, Select, InputNumber, Modal, notificat
 import { useTranslation } from 'react-i18next';
 
 import useSWR, { mutate } from 'swr';
+import moment from 'moment';
+import jwtDecode from 'jwt-decode';
 import _ from 'lodash';
 
 import { DataTable } from '../../../../components';
+import { SETTINGS } from '../../../../constants';
 import columns from './columns';
 
 import api, { LOAD_SCHEDULES } from '../../../../api';
@@ -26,14 +29,35 @@ const AdditionalHostData = ({ value }) => {
   const [form] = useForm();
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [isUpdating, setUpdating] = useState(undefined);
 
   const { setFieldsValue } = form;
 
   const fields = columns(t);
 
+  const token = sessionStorage.getItem('token');
+  const decoded = jwtDecode(token);
+  const user_code = decoded?.per_code;
+  // const user_name = decoded?.per_name;
+
+  // console.log('decoded...........', decoded);
+
   const handleFormState = (visibility, record) => {
     setVisible(visibility);
     setSelected(record);
+    if (!record) {
+      setUpdating(undefined);
+    } else {
+      if (!record?.dh_dor_type &&
+        !record?.dh_dor_number &&
+        !record?.dh_chg_date &&
+        !record?.dh_per_code &&
+        !record?.dh_per_name) {
+        setUpdating(false);
+      } else {
+        setUpdating(true);
+      }
+    }
   };
 
   const onComplete = () => {
@@ -43,6 +67,10 @@ const AdditionalHostData = ({ value }) => {
 
   const onFinish = async () => {
     const values = await form.validateFields();
+    values.dh_dor_number = values?.dh_dor_type + String(values.dh_dor_number);
+    values.dh_chg_date = moment().format(SETTINGS.DATE_TIME_FORMAT);
+    values.dh_per_code = user_code;
+    // values.dh_per_name = user_name;
 
     const record = {
       ...selected,
@@ -50,20 +78,20 @@ const AdditionalHostData = ({ value }) => {
     };
 
     Modal.confirm({
-      title: t('prompts.update'),
-      okText: t('operations.update'),
+      title: !isUpdating ? t('prompts.create') : t('prompts.update'),
+      okText: !isUpdating ? t('operations.save') : t('operations.update'),
       okType: 'primary',
       icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
         await api
-          .post(LOAD_SCHEDULES.HOST_DATA_UPDATE, record)
+          .post(!isUpdating ? LOAD_SCHEDULES.HOST_DATA_CREATE : LOAD_SCHEDULES.HOST_DATA_UPDATE, record)
           .then(() => {
             onComplete();
 
             notification.success({
-              message: t('messages.updateSuccess'),
+              message: !isUpdating ? t('messages.createSuccess') : t('messages.updateSuccess'),
             });
           })
           .catch((errors) => {
@@ -113,7 +141,7 @@ const AdditionalHostData = ({ value }) => {
     if (selected) {
       setFieldsValue({
         dh_dor_type: selected?.dh_dor_type,
-        dh_dor_origin: selected?.dh_dor_origin,
+        dh_dor_number: selected?.dh_dor_number?.substring(selected?.dh_dor_type?.length),
       });
     }
   }, [selected]);
@@ -139,7 +167,7 @@ const AdditionalHostData = ({ value }) => {
               style={{ float: 'right', marginRight: 5 }}
               onClick={onFinish}
             >
-              {t('operations.update')}
+              {!isUpdating ? t('operations.save') : t('operations.update')}
             </Button>
 
             <Button
@@ -154,7 +182,7 @@ const AdditionalHostData = ({ value }) => {
         }
       >
         <Tabs defaultActiveKey="1">
-          <Tabs.TabPane key="1" tab={t('tabCoumns.hostData')}>
+          <Tabs.TabPane key="1" tab={t('tabColumns.additionalHostData')}>
             <Form layout="vertical" form={form}>
               <Form.Item name="dh_dor_type" label={t('fields.additionalHostDataType')}>
                 <Select
@@ -175,8 +203,8 @@ const AdditionalHostData = ({ value }) => {
                 </Select>
               </Form.Item>
 
-              <Form.Item name="dh_dor_origin" label={t('fields.additionalHostData')}>
-                <InputNumber min={0} style={{ width: '100%' }} />
+              <Form.Item name="dh_dor_number" label={t('fields.additionalHostData')}>
+                <InputNumber min={0} maxLength={6} precision={0} style={{ width: '100%' }} />
               </Form.Item>
             </Form>
           </Tabs.TabPane>
