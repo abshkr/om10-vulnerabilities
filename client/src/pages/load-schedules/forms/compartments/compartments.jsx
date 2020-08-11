@@ -64,13 +64,15 @@ const Compartments = ({ form, value, tanker, drawer }) => {
   }, [value, setFieldsValue]);
 
   useEffect(() => {
-    api
+    if (IS_CREATING) {
+      api
       .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
         params: {
           drawer_code: drawer,
         },
       })
       .then((res) => setProducts(res.data.records));
+    }
   }, [drawer, tanker]);
 
   useEffect(() => {
@@ -91,6 +93,16 @@ const Compartments = ({ form, value, tanker, drawer }) => {
             compartments: res.data.records,
           });
         });
+    }
+
+    if (!IS_CREATING) {
+      api
+      .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
+        params: {
+          drawer_code: value.drawer_code,
+        },
+      })
+      .then((res) => setProducts(res.data.records));
     }
   }, [value, tanker, setFieldsValue]);
 
