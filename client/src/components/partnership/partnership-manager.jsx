@@ -4,7 +4,7 @@ import { SWRConfig } from 'swr';
 import { fetcher } from 'utils';
 
 import { Modal } from 'antd';
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next';
 
 import Partnership from './partnership';
 
@@ -14,8 +14,9 @@ const PartnershipManager = (
     onClose, 
     width,
     height,
+    t,
   ) => {
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
   Modal.info({
     className: 'form-container',
     title: title? title: t('pageNames.partnership'),

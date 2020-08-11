@@ -46,6 +46,7 @@ const SelectInput = ({
       popupCallBack,
       '60vw',
       '50vh',
+      t,
     );
   };
 
