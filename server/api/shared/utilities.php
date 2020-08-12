@@ -530,7 +530,7 @@ class Utilities
                 // $error = new EchoSchema(500, 
                 // sprintf("Unable to create %s . Check logs/php_rest_*.log file for details.", $desc));
                 $error = new EchoSchema(500, response("__CREATE_FAILED__", 
-                    sprintf("Unable to create %s . Please check journal for details.", $desc)));
+                    sprintf("Unable to create %s . Internal server error.", $desc)));
                 echo json_encode($error, JSON_PRETTY_PRINT);
             }
         } catch (DatabaseException $e) {
@@ -802,7 +802,7 @@ class Utilities
             } else {
                 if (!isset($itemData)) {
                     $error = new EchoSchema(500, response("__UPDATE_FAILED__",
-                        sprintf("Unable to update %s . Please check journal for details.", $desc)));
+                        sprintf("Unable to update %s . Internal server error.", $desc)));
                     echo json_encode($error, JSON_PRETTY_PRINT);
                     return;
                 }
@@ -890,7 +890,7 @@ class Utilities
                 echo '}';
             } else {
                 $error = new EchoSchema(500, response("__DELETE_FAILED__", 
-                    sprintf("Unable to delete %s . Please check journal for details.", $desc)));
+                    sprintf("Unable to delete %s . Internal server error.", $desc)));
                 echo json_encode($error, JSON_PRETTY_PRINT);
             }
         } catch (DatabaseException $e) {
