@@ -28,11 +28,13 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
 
   const IS_CREATING = !value;
 
-  const onComplete = (report_jasper_file) => {
+  const onComplete = (report_name) => {
     handleFormState(false, null);
     mutate(REPORT_PROFILE.READ);
-    if (report_jasper_file) {
-      setFilterValue("" + report_jasper_file);
+    if (report_name) {
+      setFilterValue("" + report_name);
+    } else {
+      setFilterValue(" ");
     }
   };
 
@@ -54,7 +56,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
         await api
           .post(IS_CREATING ? REPORT_PROFILE.CREATE : REPORT_PROFILE.UPDATE, values)
           .then((response) => {
-            onComplete(values.report_jasper_file);
+            onComplete(values.report_name);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
