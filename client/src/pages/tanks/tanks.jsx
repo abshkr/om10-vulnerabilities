@@ -38,6 +38,7 @@ const Tanks = () => {
   const [payload, setPayload] = useState([]);
   const [visible, setVisible] = useState(false);
   const [listSelected, setlistSelected] = useState(null);
+  const [currTank, setCurrTank] = useState(null);
 
   const [mode, setMode] = useState('1');
 
@@ -50,6 +51,7 @@ const Tanks = () => {
   // const name = simple ? t('pageNames.tanks') : t('pageNames.tankStatus');
 
   const onSelect = (value) => {
+    setCurrTank(value);
     setSelected(value);
   };
 
@@ -100,7 +102,16 @@ const Tanks = () => {
 
       if (!selected || mode === '2') {
         setSelected(null);
-        setSelected(records[0]);
+        if (!currTank) {
+          setSelected(records[0]);
+          setCurrTank(records[0]);
+        } else {
+          // get the current value of tank
+          const newTank = _.find(records, (o) => (o.tank_code === currTank?.tank_code));
+          if (newTank) {
+           setSelected(newTank);
+          }
+        }
       }
     }
   }, [read]);
