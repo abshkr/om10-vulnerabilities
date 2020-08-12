@@ -108,11 +108,11 @@ const FolioSummary = () => {
           <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
         </TabPane>
 
-        <TabPane tab={t('tabColumns.closetCalendar')} key="2" style={{ height: '72vh' }}>
+        <TabPane tab={t('tabColumns.closetCalendar')} key="2" style={{ height: '72vh', overflowY: 'auto' }}>
           <FolioCalendar access={access} value={payload?.records} />
         </TabPane>
 
-        <TabPane tab={t('tabColumns.closetSettings')} key="3" style={{ height: '72vh' }}>
+        <TabPane tab={t('tabColumns.closetSettings')} key="3" style={{ height: '72vh', overflowY: 'auto' }}>
           <Settings access={access} value={payload?.records}></Settings>
         </TabPane>
       </Tabs>
