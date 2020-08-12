@@ -160,7 +160,7 @@ const Compartments = ({ form, value, equipment }) => {
         }}
       >
         <div style={{ display: 'flex' }}>
-          {[...data, ...data].map((item, index) => (
+          {[...data].map((item, index) => (
             <div key={index} style={{ marginRight: 10 }}>
               <Equipment image={_.toLower(item.image)} isLoading={isLoading} showName={item.etyp_title} />
               {/* <div style={{ textAlign: 'center' }}>
