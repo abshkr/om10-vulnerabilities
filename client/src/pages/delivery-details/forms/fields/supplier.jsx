@@ -6,7 +6,7 @@ import { Form, Select } from 'antd';
 
 import { DELIVERY_DETAILS } from '../../../../api';
 
-const Supplier = ({ form, value, onChange, pageState }) => {
+const Supplier = ({ form, value, defValue, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -28,10 +28,12 @@ const Supplier = ({ form, value, onChange, pageState }) => {
       setFieldsValue({
         dd_supp_code: value.dd_supp_code,
       });
-
-      onChange(value.dd_supp_code);
+    } else {
+      setFieldsValue({
+        dd_supp_code: defValue,
+      });
     }
-  }, [value, setFieldsValue, onChange]);
+  }, [value, setFieldsValue, defValue]);
 
   return (
     <Form.Item
@@ -43,7 +45,6 @@ const Supplier = ({ form, value, onChange, pageState }) => {
         dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
-        onChange={onChange}
         disabled={(pageState==='create')? true : true}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectSupplier') : null}
@@ -53,7 +54,7 @@ const Supplier = ({ form, value, onChange, pageState }) => {
       >
         {options?.records.map((item, index) => (
           <Select.Option key={index} value={item.cmpy_code}>
-            {item.cmpy_name}
+            {item.cmpy_code + ' - ' + item.cmpy_name}
           </Select.Option>
         ))}
       </Select>

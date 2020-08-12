@@ -652,11 +652,11 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
           </TabPane>
           <TabPane tab={t('tabColumns.deliveryDetails')} disabled={IS_CREATING} key="4">
             <DeliveryDetails
-              // access={access}
+              access={access}
               params={{
                 dd_supp_code: value?.order_supp_code,
                 dd_tripord_no: value?.order_cust_no,
-                dd_ld_type: 3,
+                dd_ld_type: '3',
               }}
             />
           </TabPane>

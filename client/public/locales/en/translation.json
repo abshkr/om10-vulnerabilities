@@ -165,6 +165,9 @@
 		"dateTime": "Date Time",
 		"directions": "Directions",
 		"drawerProductTransfer": "Drawer product transfer details",
+		"ddiTitle": "Delivery Details Items",
+		"dddTitle": "DN Templates",
+		"ddbTitle": "BOL Templates",
 		"flags": "Flags",
 		"meters": "Meters",
 		"variances": "Variances"
@@ -1711,6 +1714,9 @@
 		"setTransportMode": "Set Transport Mode",
 		"setTransportModeDescription": "Set Transport Mode Description",
 		"setTransportSystem": "Set Transport System",
+		"selectDdiProduct": "Select Delivery Detail Item", 
+		"selectDnTemplate": "Select DN Template",
+		"selectBolTemplate": "Select BOL Template",
 		"wrongType": "Incorrect Type"
 	},
 	"prompts": {

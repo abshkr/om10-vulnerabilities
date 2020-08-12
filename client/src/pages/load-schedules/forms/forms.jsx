@@ -811,10 +811,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
           <TabPane tab={t('tabColumns.deliveryDetails')} disabled={IS_CREATING} key="6">
             <DeliveryDetails
+              access={access}
               params={{
                 dd_supp_code: value?.supplier_code,
                 dd_tripord_no: value?.shls_trip_no,
-                dd_ld_type: value?.shls_ld_type,
+                dd_ld_type: mode === '3' ? '1' : '2',
               }}
             />
           </TabPane>

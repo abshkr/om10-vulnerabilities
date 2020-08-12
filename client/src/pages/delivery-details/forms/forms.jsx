@@ -9,7 +9,7 @@ import {
   CaretDownOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import _ from 'lodash';
@@ -23,8 +23,6 @@ import {
   DeliveryNumber,
   DeliveryType,
   VehicleArrvTime,
-  SoldTo,
-  ShipTo,
   Instruction,
   LpgRemark,
   Phone,
@@ -54,18 +52,42 @@ import OrderItemTrips from './item-trips'; */
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, pageState, revalidate, params }) => {
+const FormModal = ({
+  value,
+  visible,
+  handleFormState,
+  access,
+  pageState,
+  revalidate,
+  supplier,
+  loadNumber,
+  loadType,
+}) => {
   const [drawerWidth, setDrawerWidth] = useState('80vw');
   const [mainTabOn, setMainTabOn] = useState(true);
 
-  const { data: units } = useSWR(DELIVERY_DETAILS.UNIT_TYPES);
+  // const { data: units } = useSWR(DELIVERY_DETAILS.UNIT_TYPES);
+  const { data: templates } = useSWR(DELIVERY_DETAILS.TEMPLATES);
+
+  // 1: PREORDER; 2: PRESCHEDULE; 3: OPENORDER
+  const productUrl = ( loadType === '1' 
+    ? `${DELIVERY_DETAILS.TRIP_PRODUCTS}?supp_code=${supplier}&trip_no=${loadNumber}`
+    : ( loadType === '2' 
+      ? `${DELIVERY_DETAILS.TRIP_COMPARTMENTS}?supp_code=${supplier}&trip_no=${loadNumber}`
+      : ( loadType === '3'
+        ? `${DELIVERY_DETAILS.ORDER_PRODUCTS}?supp_code=${supplier}&order_no=${loadNumber}`
+        : null
+      )
+    )
+  );
+  const { data: products } = useSWR(productUrl);
+
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { setFieldsValue, resetFields, validateFields } = form;
 
   const [orderNo, setOrderNo] = useState(value?.order_sys_no);
-  const [supplier, setSupplier] = useState(params?.dd_supp_code);
   const [selected, setSelected] = useState(null);
   const [shipTo, setShipTo] = useState(value?.dd_ship_to);
   const [soldTo, setSoldTo] = useState(value?.dd_sold_to);
@@ -102,7 +124,6 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
     setDrawerWidth('80vw');
     setMainTabOn(true);
     revalidate();
-    setSupplier(undefined);
     setSelected(null);
     console.log('end of onComplete');
   };
@@ -216,10 +237,9 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
     if (!value && !visible) {
       resetFields();
       setDdiItems([]);
-      setSupplier(undefined);
       setSelected(null);
     }
-  }, [value, visible, resetFields, setDdiItems, setSupplier, setSelected]);
+  }, [value, visible, resetFields, setDdiItems, setSelected]);
 
   return (
     <Drawer
@@ -270,25 +290,20 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
         layout="vertical"
         form={form}
         scrollToFirstError
-        initialValues={{
-          dd_supp_code: params?.dd_supp_code,
-          dd_tripord_no: params?.dd_tripord_no,
-          dd_ld_type: String(params?.dd_ld_type),
-        }}
       >
         <Tabs defaultActiveKey="1" onChange={doTabChanges}>
           <TabPane tab={t('tabColumns.general')} key="1">
             <Row gutter={[8, 2]}>
               <Col span={6}>
-                <Supplier form={form} value={value} onChange={setSupplier} pageState={pageState} />
+                <Supplier form={form} value={value} defValue={supplier} pageState={pageState} />
               </Col>
 
               <Col span={6}>
-                <TripOrderNo form={form} value={value} pageState={pageState} />
+                <TripOrderNo form={form} value={value} defValue={loadNumber} pageState={pageState} />
               </Col>
 
               <Col span={6}>
-                <LoadType form={form} value={value} pageState={pageState} />
+                <LoadType form={form} value={value} defValue={loadType} pageState={pageState} />
               </Col>
 
               <Col span={6}>
@@ -422,17 +437,47 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
 
             <Row gutter={[8, 2]}>
               <Col span={24}>
-                <DeliveryDetailItems form={form} value={value} pageState={pageState} />
+                <Card size="small" title={t('divider.ddiTitle')}>
+                  <DeliveryDetailItems
+                    form={form}
+                    value={value}
+                    supplier={supplier}
+                    loadNumber={loadNumber}
+                    loadType={loadType}
+                    products={products}
+                    pageState={pageState}
+                  />
+                </Card>
               </Col>
             </Row>
 
             <Row gutter={[8, 2]}>
               <Col span={12}>
-                <DeliveryNoteTemplates form={form} value={value} pageState={pageState} />
+                <Card size="small" title={t('divider.dddTitle')}>
+                  <DeliveryNoteTemplates
+                    form={form}
+                    value={value}
+                    supplier={supplier}
+                    loadNumber={loadNumber}
+                    loadType={loadType}
+                    templates={templates}
+                    pageState={pageState}
+                  />
+                </Card>
               </Col>
 
               <Col span={12}>
-                <DeliveryBolTemplates form={form} value={value} pageState={pageState} />
+                <Card size="small" title={t('divider.ddbTitle')}>
+                  <DeliveryBolTemplates
+                    form={form}
+                    value={value}
+                    supplier={supplier}
+                    loadNumber={loadNumber}
+                    loadType={loadType}
+                    templates={templates}
+                    pageState={pageState}
+                  />
+                </Card>
               </Col>
             </Row>
           </TabPane>

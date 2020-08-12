@@ -8,7 +8,7 @@ import {
   LockOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Button, Form } from 'antd';
+import { Button, Form, Select } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
 
@@ -17,7 +17,15 @@ import { DELIVERY_DETAILS } from '../../../../api';
 
 import columns from './columns';
 
-const DeliveryBolTemplates = ({ form, value, pageState }) => {
+const DeliveryBolTemplates = ({
+  form,
+  value,
+  supplier,
+  loadNumber,
+  loadType,
+  templates,
+  pageState 
+}) => {
   const [selected, setSelected] = useState(null);
 
   console.log("values: ", value);
@@ -39,6 +47,28 @@ const DeliveryBolTemplates = ({ form, value, pageState }) => {
 
   return (
     <>
+      <Form.Item
+        name="ddb_templates"
+        label=''
+      >
+        <Select
+          dropdownMatchSelectWidth={false}
+          loading={isValidating}
+          showSearch
+          disabled={false}
+          optionFilterProp="children"
+          placeholder={!value ? t('placeholder.selectBolTemplate') : null}
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          {templates?.records.filter((o)=>(o.template_type==='1')).map((item, index) => (
+            <Select.Option key={index} value={item.template_code}>
+              {item.template_name}
+            </Select.Option>
+          ))}
+        </Select>
+      </Form.Item>
 
       <Form.Item name="ddb_items">
         <DataTable

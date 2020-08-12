@@ -12,22 +12,21 @@ import columns from './columns';
 
 import Forms from './forms';
 
-const DeliveryDetails = ({ params }) => {
-  const access = useAuth('M_DELIVERYLOCATIONS');
+const DeliveryDetails = ({ access, params }) => {
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [pageState, setPageState] = useState('view');
+  const [supplier, setSupplier] = useState(undefined);
+  const [loadNumber, setLoadNumber] = useState(undefined);
+  const [loadType, setLoadType] = useState(undefined);
 
   const { t } = useTranslation();
 
-  const supplier = params?.dd_supp_code;
-  const trip = params?.dd_tripord_no;
-  const type = params?.dd_ld_type;
-
-  const { data: payload, isValidating, revalidate } = useSWR(
-    `${DELIVERY_DETAILS.READ}?dd_supp_code=${supplier}&dd_tripord_no=${trip}&dd_ld_type=${type}`
-  );
+  const url = supplier && loadNumber && loadType
+    ? `${DELIVERY_DETAILS.READ}?dd_supp_code=${supplier}&dd_tripord_no=${loadNumber}&dd_ld_type=${loadType}`
+    : null;
+  const { data: payload, isValidating, revalidate } = useSWR(url);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -39,7 +38,7 @@ const DeliveryDetails = ({ params }) => {
   const data = payload?.records;
   const isLoading = isValidating || !data;
 
-  const page = t('pageMenu.customers');
+  const page = t('pageMenu.operations');
   const name = t('pageNames.deliveryDetails');
 
   useEffect(() => {
@@ -53,6 +52,14 @@ const DeliveryDetails = ({ params }) => {
       setPageState('view');
     }
   }, [visible, selected]);
+
+  useEffect(() => {
+    if (params) {
+      setSupplier(params?.dd_supp_code);
+      setLoadNumber(params?.dd_tripord_no);
+      setLoadType(params?.dd_ld_type);
+    }
+  }, [params, setSupplier, setLoadNumber, setLoadType]);
 
   const modifiers = (
     <>
@@ -93,7 +100,9 @@ const DeliveryDetails = ({ params }) => {
         access={access}
         pageState={pageState}
         revalidate={revalidate}
-        params={params}
+        supplier={supplier}
+        loadNumber={loadNumber}
+        loadType={loadType}
       />
     </Page>
   );

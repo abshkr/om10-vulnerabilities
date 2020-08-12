@@ -8,7 +8,7 @@ import {
   LockOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Button, Form } from 'antd';
+import { Button, Form, Select } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
 
@@ -17,7 +17,15 @@ import { DELIVERY_DETAILS } from '../../../../api';
 
 import columns from './columns';
 
-const DeliveryNoteTemplates = ({ form, value, pageState }) => {
+const DeliveryNoteTemplates = ({
+  form,
+  value,
+  supplier,
+  loadNumber,
+  loadType,
+  templates,
+  pageState 
+}) => {
   const [selected, setSelected] = useState(null);
 
   console.log("values: ", value);
@@ -39,6 +47,28 @@ const DeliveryNoteTemplates = ({ form, value, pageState }) => {
 
   return (
     <>
+      <Form.Item
+        name="ddd_templates"
+        label=''
+      >
+        <Select
+          dropdownMatchSelectWidth={false}
+          loading={isValidating}
+          showSearch
+          disabled={false}
+          optionFilterProp="children"
+          placeholder={!value ? t('placeholder.selectDnTemplate') : null}
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          {templates?.records.filter((o)=>(o.template_type==='2')).map((item, index) => (
+            <Select.Option key={index} value={item.template_code}>
+              {item.template_name}
+            </Select.Option>
+          ))}
+        </Select>
+      </Form.Item>
 
       <Form.Item name="ddd_items">
         <DataTable

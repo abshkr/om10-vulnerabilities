@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { DELIVERY_DETAILS } from '../../../../api';
 import { Form, Select } from 'antd';
 
-const LoadType = ({ form, value, pageState }) => {
+const LoadType = ({ form, value, defValue, pageState }) => {
   const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(DELIVERY_DETAILS.LOAD_TYPES);
@@ -28,8 +28,12 @@ const LoadType = ({ form, value, pageState }) => {
       setFieldsValue({
         dd_ld_type: String(value.dd_ld_type),
       });
+    } else {
+      setFieldsValue({
+        dd_ld_type: String(defValue),
+      });
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, defValue]);
 
   return (
     <Form.Item

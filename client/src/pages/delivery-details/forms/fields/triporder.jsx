@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
 
-const TripOrderNo = ({ form, value, pageState }) => {
+const TripOrderNo = ({ form, value, defValue, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -26,8 +26,12 @@ const TripOrderNo = ({ form, value, pageState }) => {
       setFieldsValue({
         dd_tripord_no: value.dd_tripord_no,
       });
+    } else {
+      setFieldsValue({
+        dd_tripord_no: defValue,
+      });
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, defValue]);
 
   return (
     <Form.Item
