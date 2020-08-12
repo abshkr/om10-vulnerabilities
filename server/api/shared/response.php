@@ -46,7 +46,7 @@ function response($case_name, $default = null, $params = null)
             "CHN" => "文件上传失败"
         ),
         "__CREATE_FAILED__" => array(
-            "ENG" => "Unable to create. Check logs/php_rest_*.log file for details",
+            "ENG" => "Unable to create. Internal server error",
             "CHN" => "创建失败，请检查日志文件获取详情"
         ),
         "__CREATE_SUCCEEDED__" => array(
@@ -54,7 +54,7 @@ function response($case_name, $default = null, $params = null)
             "CHN" => "创建成功"
         ),
         "__ADD_FAILED__" => array(
-            "ENG" => "Unable to add. Check logs/php_rest_*.log file for details",
+            "ENG" => "Unable to add. Internal server error",
             "CHN" => "创建失败，请检查日志文件获取详情"
         ),
         "__ADD_SUCCEEDED__" => array(
@@ -62,7 +62,7 @@ function response($case_name, $default = null, $params = null)
             "CHN" => "创建成功"
         ),
         "__UPDATE_FAILED__" => array(
-            "ENG" => "Unable to update. Check logs/php_rest_*.log file for details",
+            "ENG" => "Unable to update. Internal server error",
             "CHN" => "修改失败，请检查日志文件获取详情"
         ),
         "__UPDATE_SUCCEEDED__" => array(
@@ -70,7 +70,7 @@ function response($case_name, $default = null, $params = null)
             "CHN" => "修改成功"
         ),
         "__DELETE_FAILED__" => array(
-            "ENG" => "Unable to delete. Check logs/php_rest_*.log file for details",
+            "ENG" => "Unable to delete. Internal server error",
             "CHN" => "删除失败，请检查日志文件获取详情"
         ),
         "__DELETE_SUCCEEDED__" => array(
@@ -78,7 +78,7 @@ function response($case_name, $default = null, $params = null)
             "CHN" => "删除成功"
         ),
         "__SAVE_FAILED__" => array(
-            "ENG" => "Unable to save. Check logs/php_rest_*.log file for details",
+            "ENG" => "Unable to save. Internal server error",
             "CHN" => "保存失败，请检查日志文件获取详情"
         ),
         "__SAVE_SUCCEEDED__" => array(
@@ -270,7 +270,7 @@ function response($case_name, $default = null, $params = null)
             "CHN" => "VCF计算错误. 油罐:%s"
         ),
         "__CGI_FAILED__" => array(
-            "ENG" => "CGI invocation error, check logs/php_rest_*.log file for details",
+            "ENG" => "CGI invocation error. Internal server error",
             "CHN" => "内部CGI异常，请检查日志文件获取详情"
         ),
         "__GENERAL_EXCEPTION__" => array(
@@ -278,7 +278,7 @@ function response($case_name, $default = null, $params = null)
             "CHN" => "内部异常，请检查日志文件获取详情"
         ),
         "__DATABASE_EXCEPTION__" => array(
-            "ENG" => "Database exception caught, check logs/php_rest_*.log file for details",
+            "ENG" => "Database exception caught. Internal server error",
             "CHN" => "数据库异常，请检查日志文件获取详情"
         ),
         "__PARAMETER_EXCEPTION__" => array(
@@ -322,7 +322,7 @@ function response($case_name, $default = null, $params = null)
             "CHN" => "密封号后缀已经设置"
         ),
         "__INTERNAL_ERROR__" => array(
-            "ENG" => "Internal error, check logs/php_rest_*.log file for details",
+            "ENG" => "Internal server error",
             "CHN" => "内部错误，请检查日志文件获取详情"
         ),
         "__SITE_NEXT_SEAL__" => array(
