@@ -123,7 +123,7 @@ const Compartments = ({ form, value, equipment }) => {
         payload.splice(index, 1, compartment);
         setdata(payload);
       }
-      
+
       setFieldsValue({
         tnkr_equips: _.map(payload, (value) => {
           return _.omit(value, ['eqpt_list']);
@@ -156,11 +156,11 @@ const Compartments = ({ form, value, equipment }) => {
         style={{
           width: '100%',
           padding: 5,
-          height: '70vh',
+          height: 'calc(60vh - 100px)',
         }}
       >
         <div style={{ display: 'flex' }}>
-          {[...data].map((item, index) => (
+          {[...data, ...data].map((item, index) => (
             <div key={index} style={{ marginRight: 10 }}>
               <Equipment image={_.toLower(item.image)} isLoading={isLoading} showName={item.etyp_title} />
               {/* <div style={{ textAlign: 'center' }}>
@@ -171,7 +171,11 @@ const Compartments = ({ form, value, equipment }) => {
                 onChange={(value) => changeType(item, value)}
                 // value={item.tc_eqpt || undefined}
                 // placeholder={t('placeholder.selectEquipment')}
-                placeholder={!item?.tc_eqpt ? t('placeholder.selectEquipment') : (item.eqpt_code + '[' + item.eqpt_title + ']')}
+                placeholder={
+                  !item?.tc_eqpt
+                    ? t('placeholder.selectEquipment')
+                    : item.eqpt_code + '[' + item.eqpt_title + ']'
+                }
                 style={{ marginBottom: 10, marginTop: 30 }}
                 disabled={item.eqpt_list.length === 0}
                 showSearch
