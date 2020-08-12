@@ -17,7 +17,7 @@ import columns from './columns';
 import auth from '../../auth';
 
 const AdaptiveFlowControl = () => {
-  const access = useAuth('M_ADAPTIVEFLOWCONTROL');
+  const access = useAuth('M_ADAPTIVEFLOW');
 
   const { t } = useTranslation();
 
