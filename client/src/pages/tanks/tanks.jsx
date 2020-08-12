@@ -168,7 +168,7 @@ const Tanks = () => {
               </TabPane>
             )}
 
-            <TabPane key="8" tab={t('tabColumns.adaptiveFlowControl')} disabled />
+            {/* <TabPane key="8" tab={t('tabColumns.adaptiveFlowControl')} disabled /> */}
           </Tabs>
         </ListView>
       ) : (
