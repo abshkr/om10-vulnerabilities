@@ -174,6 +174,7 @@ const Tanks = () => {
       ) : (
         <Table
           data={read?.records}
+          access={access}
           visible={visible}
           setVisible={setVisible}
           selected={listSelected}
