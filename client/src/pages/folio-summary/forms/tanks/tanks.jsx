@@ -1,16 +1,15 @@
 import React, { useEffect, useState, useCallback } from 'react';
 
 import _ from 'lodash';
-import { Modal, Button, notification } from 'antd';
+import { Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { EditOutlined, SaveOutlined, RedoOutlined, CloseOutlined } from '@ant-design/icons';
 import api, { FOLIO_SUMMARY } from '../../../../api';
 import { DataTable } from '../../../../components';
 
 import generator from './generator';
 import columns from './columns';
 
-const Tanks = ({ id, enabled, access, handleFormState }) => {
+const Tanks = ({ id, saveToFolioTrigger, saveToTanksTrigger, calculateTrigger }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
@@ -177,6 +176,24 @@ const Tanks = ({ id, enabled, access, handleFormState }) => {
     fetch();
   }, [fetch]);
 
+  useEffect(() => {
+    if (calculateTrigger > 0) {
+      calculate();
+    }
+  }, [calculateTrigger]);
+
+  useEffect(() => {
+    if (saveToFolioTrigger > 0) {
+      saveToFolio();
+    }
+  }, [saveToFolioTrigger]);
+
+  useEffect(() => {
+    if (saveToTanksTrigger > 0) {
+      saveToTanks();
+    }
+  }, [saveToTanksTrigger]);
+
   return (
     <div>
       <DataTable
@@ -192,45 +209,6 @@ const Tanks = ({ id, enabled, access, handleFormState }) => {
         apiContext={setTableAPI}
         autoColWidth
       />
-      <div className="operations">
-        <Button
-          icon={<CloseOutlined />}
-          style={{ float: 'right' }}
-          onClick={() => handleFormState(false, null)}
-        >
-          {t('operations.cancel')}
-        </Button>
-
-        <Button
-          type="primary"
-          icon={<RedoOutlined />}
-          style={{ float: 'right', marginRight: 5 }}
-          onClick={calculate}
-          disabled={!enabled || selected.length <= 0}
-        >
-          {t('operations.calculate')}
-        </Button>
-
-        <Button
-          type="primary"
-          icon={<SaveOutlined />}
-          style={{ float: 'right', marginRight: 5 }}
-          onClick={saveToTanks}
-          disabled={!enabled || !access.canUpdate}
-        >
-          {t('operations.saveToTanks')}
-        </Button>
-
-        <Button
-          type="primary"
-          icon={<EditOutlined />}
-          style={{ float: 'right', marginRight: 5 }}
-          onClick={saveToFolio}
-          disabled={!enabled || !access.canUpdate}
-        >
-          {t('operations.saveToFolio')}
-        </Button>
-      </div>
     </div>
   );
 };
