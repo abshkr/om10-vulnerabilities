@@ -89,7 +89,7 @@ const columns = (t, form, products, soldTo, shipTo, units) => [
 
   {
     headerName: t('fields.prevProduct'),
-    field: 'shls_srctype',
+    field: 'prev_prod_name',
     resizable: true,
     width: 140,
     suppressSizeToFit: true,

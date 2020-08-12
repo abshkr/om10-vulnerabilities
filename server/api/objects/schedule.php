@@ -928,46 +928,77 @@ class Schedule extends CommonClass
     public function get_tnkr_cmpts()
     {
         $query = "
-            SELECT EQPT_CODE, 
-                ROWNUM COMPARTMENT,
-                EQPT_CMPT, 
-                NULL PROD_CODE,
-                NULL PROD_NAME,
-                NULL PROD_CMPY,
-                UNIT_CODE,
-                UNIT_NAME, 
-                SAFEFILL, 
-                0 QTY_SCHEDULED,
-                0 QTY_PRELOAD,
-                NULL SCHDSPEC_SHLSTRIP,
-                NULL SCHDSPEC_SHLSSUPP,
-                NULL SCHD_SOLD_TO_NUM,
-                NULL SCHD_SHIP_TO_NUM,
-                NULL SCHD_DELIV_NUM,
-                NULL PROD_CLASS,
-                0 QTY_LOADED,
-                0 QTY_AMB,
-                0 QTY_STD,
-                0 QTY_KG
-            FROM
+            SELECT BASIC.*,
+                PREV.TRSFPROD_PRODCODE PREV_PROD_CODE,
+                PREV.PROD_NAME PREV_PROD_NAME
+                FROM
+                (
+                SELECT EQPT_CODE, 
+                    ROWNUM COMPARTMENT,
+                    EQPT_CMPT, 
+                    NULL PROD_CODE,
+                    NULL PROD_NAME,
+                    NULL PROD_CMPY,
+                    UNIT_CODE,
+                    UNIT_NAME, 
+                    SAFEFILL, 
+                    0 QTY_SCHEDULED,
+                    0 QTY_PRELOAD,
+                    NULL SCHDSPEC_SHLSTRIP,
+                    NULL SCHDSPEC_SHLSSUPP,
+                    NULL SCHD_SOLD_TO_NUM,
+                    NULL SCHD_SHIP_TO_NUM,
+                    NULL SCHD_DELIV_NUM,
+                    NULL PROD_CLASS,
+                    0 QTY_LOADED,
+                    0 QTY_AMB,
+                    0 QTY_STD,
+                    0 QTY_KG
+                FROM
+                (
+                    SELECT TC_SEQNO, EQPT_CODE,
+                        EQPT_ETP,
+                        CMPT_NO EQPT_CMPT,
+                        DECODE(CMPT_UNITS, 28, 5, CMPT_UNITS) UNIT_CODE,
+                        DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') UNIT_NAME,
+                        DECODE(ADJ_AMNT, NULL, CMPT_CAPACIT, CMPT_CAPACIT + ADJ_AMNT) SAFEFILL,
+                        DECODE(ADJ_CAPACITY, NULL, CMPT_CAPACIT, ADJ_CAPACITY) SFL,
+                        NVL(ADJ_CMPT_LOCK, 0) ADJ_CMPT_LOCK
+                    FROM TRANSP_EQUIP, COMPARTMENT, SFILL_ADJUST, TNKR_EQUIP
+                    WHERE COMPARTMENT.CMPT_ETYP = TRANSP_EQUIP.EQPT_ETP
+                        AND EQPT_ID = TC_EQPT
+                        AND TC_TANKER = :tnkr_code
+                        AND EQPT_ID = SFILL_ADJUST.ADJ_EQP(+)
+                        AND CMPT_NO(+) = SFILL_ADJUST.ADJ_CMPT
+                    ORDER BY TC_SEQNO, CMPT_NO
+                ) TMP
+                ORDER BY COMPARTMENT
+            ) BASIC,
             (
-                SELECT TC_SEQNO, EQPT_CODE,
-                    EQPT_ETP,
-                    CMPT_NO EQPT_CMPT,
-                    DECODE(CMPT_UNITS, 28, 5, CMPT_UNITS) UNIT_CODE,
-                    DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') UNIT_NAME,
-                    DECODE(ADJ_AMNT, NULL, CMPT_CAPACIT, CMPT_CAPACIT + ADJ_AMNT) SAFEFILL,
-                    DECODE(ADJ_CAPACITY, NULL, CMPT_CAPACIT, ADJ_CAPACITY) SFL,
-                    NVL(ADJ_CMPT_LOCK, 0) ADJ_CMPT_LOCK
-                FROM TRANSP_EQUIP, COMPARTMENT, SFILL_ADJUST, TNKR_EQUIP
-                WHERE COMPARTMENT.CMPT_ETYP = TRANSP_EQUIP.EQPT_ETP
-                    AND EQPT_ID = TC_EQPT
-                    AND TC_TANKER = :tnkr_code
-                    AND EQPT_ID = SFILL_ADJUST.ADJ_EQP(+)
-                    AND CMPT_NO(+) = SFILL_ADJUST.ADJ_CMPT
-                ORDER BY TC_SEQNO, CMPT_NO
-            ) TMP
-            ORDER BY COMPARTMENT
+                SELECT DISTINCT TRSF_DES, TRSFPROD_PRODCODE, TRSFPROD_PRODCMPY, PROD_NAME
+                FROM
+                (
+                    SELECT LOAD_ID, LD_TERMINAL
+                    FROM
+                        (
+                            SELECT LOAD_ID, LD_TERMINAL
+                            FROM LOADS
+                            WHERE
+                                LOADS.LOAD_DMY < SYSDATE
+                                AND LOADS.LOAD_DMY IS NOT NULL
+                                AND LOADS.LOAD_TANKER = :tnkr_code
+                            ORDER BY LOADS.LOAD_DMY DESC
+                        )
+                        WHERE ROWNUM = 1
+                    ), PRODUCTS, TRANSFERS, TRANSACTIONS
+                    WHERE TRSFTRID_TRSA_ID = TRSA_ID 
+                    AND TRSALDID_LD_TRM = LD_TERMINAL
+                    AND TRSALDID_LOAD_ID = LOAD_ID
+                    AND TRSF_LOAD_KG > 0
+                    AND PROD_CODE = TRSFPROD_PRODCODE
+                    AND PROD_CMPY = TRSFPROD_PRODCMPY
+                ) PREV
+            WHERE BASIC.COMPARTMENT = PREV.TRSF_DES(+)
         ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
