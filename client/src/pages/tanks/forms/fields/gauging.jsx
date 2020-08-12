@@ -7,9 +7,13 @@ const Gauging = ({ form, value }) => {
 
   const { setFieldsValue } = form;
 
-  const validate = (rule, value) => {
-    if (value && value.length > 30) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 30 ─ ${t('descriptions.maxCharacters')}`);
+  const validate = (rule, input) => {
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.identifierForGauge')}`);
+    }
+
+    if (input && input.length > 40) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();
@@ -34,24 +38,24 @@ const Gauging = ({ form, value }) => {
 
   return (
     <>
-      <Form.Item name="tank_identifier" label={t('fields.identifierForGauge')} rules={[{ required: true }]}>
-        <Input />
+      <Form.Item name="tank_identifier" label={t('fields.identifierForGauge')} rules={[{ required: true, validator: validate }]}>
+        <Input maxLength={40} />
       </Form.Item>
 
       <Form.Item
         name="tank_drv_type"
         label={t('fields.interfaceType')}
-        rules={[{ required: false, validator: validate }]}
+        rules={[{ required: false }]}
       >
-        <Input />
+        <Input maxLength={6} />
       </Form.Item>
 
       <Form.Item
         name="tank_drv_aux"
         label={t('fields.auxilary')}
-        rules={[{ required: false, validator: validate }]}
+        rules={[{ required: false }]}
       >
-        <Input />
+        <Input maxLength={40} />
       </Form.Item>
 
       <Form.Item name="tank_channel" label={t('fields.channel')}>
