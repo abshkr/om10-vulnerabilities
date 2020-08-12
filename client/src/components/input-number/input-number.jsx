@@ -30,8 +30,7 @@ const InputNumber = ({
     const invalid = _.isNaN(number);
 
     const decimals = _.toString(number).split('.')[1]?.length || 0;
-    console.log('Custom InputNumber Validation', decimals, precision, input);
-
+    
     if ((required && input === '') || (required && !input)) {
       return Promise.reject(`${t('validate.set')} ─ ${label}`);
     }
@@ -60,7 +59,6 @@ const InputNumber = ({
   };
 
   useEffect(() => {
-    console.log('handleValueChange in InputNumber', value);
 //    if (value && setFieldsValue) {
     if (value || value === 0) {
       let index = value;
@@ -72,11 +70,8 @@ const InputNumber = ({
       const invalid = index !== '' && _.isNaN(parsed);
 
       if (!invalid) {
-        console.log('need rounding', precision);
         if (precision !== undefined && parsed !== '') {
-          console.log('before rounding', parsed);
           parsed = _.round(parsed, precision);
-          console.log('after rounding', parsed);
         }
         form.setFieldsValue({
           [name]: parsed,
