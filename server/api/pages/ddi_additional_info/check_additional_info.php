@@ -1,0 +1,9 @@
+<?php
+// required headers
+include_once '../../shared/header.php';
+
+// include database and object files
+include_once '../../config/database.php';
+include_once '../../objects/ddi_additional_info.php';
+
+Utilities::read('DdiAdditionalInfo', $method = 'check_additional_info', $filter = true);
