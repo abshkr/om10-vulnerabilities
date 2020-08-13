@@ -27,7 +27,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   const [tanks, setTanks] = useState([]);
   const [selected, setSelected] = useState([]);
   const [pickups, setPicks] = useState([]);
-
+  
   const tgr_name = value?.tgr_name;
   const old_active = value?.tgr_tankcode;
 
@@ -207,6 +207,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       setFieldsValue({
         tgr_name: value.tgr_name,
       });
+      setSelected([]);
     } else {
       resetFields();
     }
