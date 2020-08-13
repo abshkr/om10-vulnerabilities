@@ -3045,6 +3045,24 @@ https://{{server_ip}}/api/pages/movement/submit.php  //Disposal
     "alternate_qty": 4000,
     "alternate_unit": "BB6"
 }
+https://{{server_ip}}/api/pages/movement/submit.php  //Disposal by arm
+{
+    "operator_code": "9999",
+    "tanker_code": "Generic Nom Vol",
+    "mvitm_item_id": 5292004,
+    "from_arm": "A03104",
+    "from_supplier": "7640102",
+    "from_product": "400004487",
+    "temperature": 12,
+    "amb_vol": 2300,
+    "cor_vol": 2302,
+    "liq_kg": 1700,
+    "density": 745,
+    "start_time": "2020-08-13 11:40:30",
+    "end_time": "2020-08-13 11:40:30",
+    "alternate_qty": 4000,
+    "alternate_unit": "BB6"
+}
 https://{{server_ip}}/api/pages/movement/submit.php  //Receipt
 {
     "operator_code": "9999",

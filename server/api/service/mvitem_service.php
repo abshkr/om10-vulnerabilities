@@ -116,7 +116,7 @@ class MvitemService
             $base_item['sum_value'] = $flow_row['SUM_VALUE'];
             array_push($bases, $base_item);
         }
-
+        
         return $bases;
     }
 
@@ -167,6 +167,70 @@ class MvitemService
         }
 
         return true;
+    }
+
+    private function explode_arm_tanks()
+    {
+        write_log(sprintf("%s::%s() START1", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        if (!isset($this->from_arm)) {
+            return arrary();
+        }
+
+        $query = "
+            SELECT 
+                R.RAT_PROD_PRODCMPY, 
+                R.RAT_PROD_PRODCODE, 
+                B.STREAM_INDEX,
+                B.STREAM_BAYCODE, 
+                B.STREAM_ARMCODE, 
+                B.STREAM_MTRCODE, 
+                B.STREAM_INJCODE, 
+                B.STREAM_BASECODE, 
+                B.STREAM_BASENAME, 
+                B.STREAM_BCLASS_CODE,
+                DECODE(B.STREAM_BCLASS_CODE, 6, 'T', 11,'T','F') METER_TYPE_CODE, 
+                DECODE(B.STREAM_BCLASS_CODE, 6, 'INJECT', 11,'INJECT','METER') METER_TYPE_DESC, 
+                B.STREAM_BCLASS_NMAE,
+                B.STREAM_TANKCODE, 
+                B.STREAM_TANKDEN, 
+                STREAM_TANKTEMP AS BASE_RPT_TEMP, 
+                BP.BASE_RPT_TEMP AS BASE_RPT_TEMP2, 
+                R.RATIO_VALUE,
+                R.ADTV_FLAG,
+                R.RAT_SUB_SEQ,
+                R.RAT_SEQ,
+                R.RAT_SUB_COUNT,
+                R.RAT_COUNT,
+                R.RAT_TOTAL as RATIO_TOTAL
+            FROM 
+                RPTOBJ_PROD_RATIOS_VW R,
+                GUI_PIPENODE B,
+                BASE_PRODS BP
+            WHERE 
+                B.STREAM_BASECODE = R.RATIO_BASE(+)
+                AND B.STREAM_BASECODE = BP.BASE_CODE(+) 
+                AND R.RAT_PROD_PRODCMPY = :prod_cmpy 
+                AND R.RAT_PROD_PRODCODE = :prod_code
+                AND STREAM_ARMCODE = :from_arm
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':prod_cmpy', $this->from_supplier);
+        oci_bind_by_name($stmt, ':prod_code', $this->from_product);
+        oci_bind_by_name($stmt, ':from_arm', $this->from_arm);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return array();
+        }
+
+        $tanks = array();
+        while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            $tanks[$row['STREAM_BASECODE']] = $row['STREAM_TANKCODE'];
+        }
+
+        return $tanks;
     }
 
     /**
@@ -233,8 +297,8 @@ class MvitemService
         // write_log(json_encode($serv), __FILE__, __LINE__);
 
         if ($mvitem_type == MV_DISPOSAL) {
-            if (!isset($this->from_tank)) {
-                $err_msg = "Missing data. Please check: from_tank, from_supplier, from_prod";
+            if (!isset($this->from_tank) && !isset($this->from_arm)) {
+                $err_msg = "Missing data. Please check: from_tank/from_arm, from_supplier, from_prod";
                 return false;
             }
             $serv->set_property('drawer_code', $this->from_supplier);
@@ -259,9 +323,16 @@ class MvitemService
             $transfers[0]->Number_of_Bases = 1;
             $bases = $this->initial_baseprod($transfers[0]->drawer_code, $transfers[0]->product_code);
             $transfers[0]->Number_of_Bases = count($bases);
+
+            $from_tanks = $this->explode_arm_tanks();
             for ($j = 0; $j < $transfers[0]->Number_of_Bases; ++$j) {
                 $transfers[0]->bases[$j] = new Transfer_Base();
-                $transfers[0]->bases[$j]->Tank_Code = $this->from_tank;
+                if ($this->from_arm) {
+                    $transfers[0]->bases[$j]->Tank_Code = $from_tanks[$bases[$j]['ratio_base']];
+                } else {
+                    $transfers[0]->bases[$j]->Tank_Code = $this->from_tank;
+                }
+                
                 $transfers[0]->bases[$j]->product_code = $bases[$j]['ratio_base'];
 
                 $transfers[0]->bases[$j]->prod_class = $bases[$j]['bclass_desc'];
@@ -333,7 +404,7 @@ class MvitemService
 
         if ($mvitem_type == MV_TRANSFER) {
             /* For transfer, there are 2 active trips, so do an extra populate_transa_det, the second one is disposal */
-            if (!isset($this->from_tank)) {
+            if (!isset($this->from_tank) && !isset($this->from_arm)) {
                 $err_msg = "Missing data. Please check: from_tank, from_supplier, from_prod";
                 return false;
             }
@@ -369,9 +440,14 @@ class MvitemService
             $transfers[0]->Number_of_Bases = 1;
             $bases = $this->initial_baseprod($transfers[0]->drawer_code, $transfers[0]->product_code);
             $transfers[0]->Number_of_Bases = count($bases);
+            $from_tanks = $this->explode_arm_tanks();
             for ($j = 0; $j < $transfers[0]->Number_of_Bases; ++$j) {
                 $transfers[0]->bases[$j] = new Transfer_Base();
-                $transfers[0]->bases[$j]->Tank_Code = $this->from_tank;
+                if ($this->from_arm) {
+                    $transfers[0]->bases[$j]->Tank_Code = $from_tanks[$bases[$j]['ratio_base']];
+                } else {
+                    $transfers[0]->bases[$j]->Tank_Code = $this->from_tank;
+                }
                 $transfers[0]->bases[$j]->product_code = $bases[$j]['ratio_base'];
 
                 $transfers[0]->bases[$j]->prod_class = $bases[$j]['bclass_desc'];

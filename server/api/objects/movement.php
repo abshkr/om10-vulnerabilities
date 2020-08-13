@@ -2208,6 +2208,12 @@ class Movement extends CommonClass
             $serv->from_product = $this->from_product;
         }
 
+        if (isset($this->from_arm)) {
+            $serv->from_arm = $this->from_arm;
+            $serv->from_supplier = $this->from_supplier;
+            $serv->from_product = $this->from_product;
+        }
+
         if (isset($this->to_tank)) {
             $serv->to_tank = $this->to_tank;
             $serv->to_supplier = $this->to_supplier;
