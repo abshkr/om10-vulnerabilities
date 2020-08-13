@@ -173,11 +173,11 @@ const FormModal = ({
     // console.log('..................payload', payload, arm);
     if (!!values?.mvitm_arm) {
       payload.from_arm = arm?.[0]?.stream_armcode; // values?.mvitm_arm;
-      payload.from_tank = getArmTankCodes(arm); // values?.mvitm_tank_from;
+      // payload.from_tank = getArmTankCodes(arm); // values?.mvitm_tank_from;
       payload.from_supplier = value?.mvitm_prodcmpy_from;
       payload.from_product = value?.mvitm_prodcode_from;
-      payload.bases = values?.base_transfers;
-      payload.meters = values?.meter_transfers;
+      // payload.bases = values?.base_transfers;
+      // payload.meters = values?.meter_transfers;
     }
 
     if (!!values?.mvitm_tank_from) {
