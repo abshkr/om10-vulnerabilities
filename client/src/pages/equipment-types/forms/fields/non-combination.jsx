@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { Form, Select, Radio, Row, Col, Input, Button } from 'antd';
+import { Form, Select, Radio, Row, Col, Input, Button, InputNumber } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
@@ -16,6 +16,7 @@ const NonCombination = ({ form, value }) => {
 
   const [selected, setSelected] = useState('p');
   const [unit, setUnit] = useState('l (amb)');
+  const [toAdd, setToAdd] = useState(1);
 
   const { t } = useTranslation();
 
@@ -117,17 +118,27 @@ const NonCombination = ({ form, value }) => {
             {(fields, { add, remove }) => {
               return (
                 <div>
-                  <div>
-                    <Button
+                  <div style={{display: "flex"}}>
+                  <Button
                       type="primary"
-                      style={{ marginTop: 10, marginBottom: 10 }}
+                      style={{ marginTop: 10, marginBottom: 10, flex: 4 }}
                       onClick={() => {
-                        add();
+                        for (let i = 1; i <= toAdd; i++) {
+                          add();
+                        }
                       }}
                       block
                     >
                       Add Compartment
                     </Button>
+                    
+                    <InputNumber 
+                      style={{ marginTop: 10, marginBottom: 10, marginLeft: 10, flex: 1 }}
+                      defaultValue={1}
+                      min={1} 
+                      max={10}
+                      onChange={(v)=>{setToAdd(v)}}
+                    />
                   </div>
 
                   <Scrollbars
