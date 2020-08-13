@@ -144,6 +144,18 @@ const FormModal = ({
     console.log('end of onComplete');
   };
 
+  const getArmTankCodes = (arms) => {
+    let codes = '';
+    _.forEach(arms, (arm) => {
+      if (codes.length > 0) {
+        codes = codes + ',';
+      }
+      codes = codes + arm?.stream_tankcode;
+    });
+
+    return codes;
+  };
+
   const preparePayload = (values) => {
     const payload = {};
 
@@ -157,6 +169,16 @@ const FormModal = ({
     payload.density = values?.mlitm_dens_cor;
     payload.start_time = values?.mvitm_dtim_effect?.format(SETTINGS.DATE_TIME_FORMAT);
     payload.end_time = values?.mvitm_dtim_expiry?.format(SETTINGS.DATE_TIME_FORMAT);
+
+    // console.log('..................payload', payload, arm);
+    if (!!values?.mvitm_arm) {
+      payload.from_arm = arm?.[0]?.stream_armcode; // values?.mvitm_arm;
+      payload.from_tank = getArmTankCodes(arm); // values?.mvitm_tank_from;
+      payload.from_supplier = value?.mvitm_prodcmpy_from;
+      payload.from_product = value?.mvitm_prodcode_from;
+      payload.bases = values?.base_transfers;
+      payload.meters = values?.meter_transfers;
+    }
 
     if (!!values?.mvitm_tank_from) {
       payload.from_tank = values?.mvitm_tank_from;
@@ -182,6 +204,7 @@ const FormModal = ({
 
   const onSubmit = async () => {
     const values = await form.validateFields();
+    console.log('..................onSubmit', values, arm);
     let found = false;
     if (values?.mlitm_qty_amb && _.toNumber(values?.mlitm_qty_amb) > 0 &&
       values?.mlitm_qty_cor && _.toNumber(values?.mlitm_qty_cor) > 0 && 
