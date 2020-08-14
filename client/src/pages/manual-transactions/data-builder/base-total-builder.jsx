@@ -25,6 +25,8 @@ const buildBaseTotal = (product, transfer, sum_ratios) => {
     is_updated: false,
   };
 
+  base.trsf_bs_temp_mass_tot = _.toNumber(base.trsf_bs_load_kg_tot) * _.toNumber(base.trsf_bs_temp_tot);
+
   return base;
 };
 
@@ -39,7 +41,7 @@ const buildBaseTotalsByArm = (prodArms, transfer) => {
   if (arms?.length > 0) {
     const sum_ratios = _.sumBy(arms, (o)=>{return _.toNumber(o.ratio_value)});
     _.forEach(arms, (product) => {
-      let ratio_total = product?.ratio_total;
+      /* let ratio_total = product?.ratio_total;
       if (_.toNumber(ratio_total) > sum_ratios) {
         ratio_total = String(sum_ratios);
       }
@@ -60,10 +62,14 @@ const buildBaseTotalsByArm = (prodArms, transfer) => {
         trsf_bs_ratio_total_tot: ratio_total,
         trsf_bs_ratio_total2_tot: product?.ratio_total,
         is_updated: false,
-      });
+      }); */
+      const base = buildBaseTotal(product, transfer, sum_ratios);
+      console.log('...................buildBaseTotalsByArm1: ', base?.trsf_bs_temp_tot, transfer?.trsf_temp);
+      console.log('...................buildBaseTotalsByArm2: ', base, transfer, product);
+      bases.push(base);
     });
   }
-
+  console.log('...................buildBaseTotalsByArm: ', bases, transfer);
   return bases;
 };
 
@@ -96,13 +102,16 @@ const adjustBaseTotals = (prodArms, transfers) => {
         total.trsf_bs_qty_amb_tot = _.toNumber(total.trsf_bs_qty_amb_tot) + _.toNumber(item.trsf_bs_qty_amb_tot);
         total.trsf_bs_qty_cor_tot = _.toNumber(total.trsf_bs_qty_cor_tot) + _.toNumber(item.trsf_bs_qty_cor_tot);
         total.trsf_bs_load_kg_tot = _.toNumber(total.trsf_bs_load_kg_tot) + _.toNumber(item.trsf_bs_load_kg_tot);
-        total.trsf_bs_temp_tot = null;
+        total.trsf_bs_temp_mass_tot = _.toNumber(total.trsf_bs_temp_mass_tot) + _.toNumber(item.trsf_bs_temp_mass_tot);
+        total.trsf_bs_temp_tot = _.toNumber(total.trsf_bs_load_kg_tot) > 0 
+        ? _.toNumber(total.trsf_bs_temp_mass_tot) / _.toNumber(total.trsf_bs_load_kg_tot) : null;
         totals[index] = total;
         itemExisted = true;
       }
     }
     if (!itemExisted) {
-      item.trsf_bs_temp_tot = null;
+      // item.trsf_bs_temp_tot = null;
+      // item.trsf_bs_temp_mass_tot = _.toNumber(item.trsf_bs_load_kg_tot) * _.toNumber(item.trsf_bs_temp_tot);
       totals.push(item);
     }
   });
