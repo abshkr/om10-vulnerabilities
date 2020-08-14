@@ -11,7 +11,16 @@ class Terminal extends CommonClass
 
     public function read()
     {
-        $query = "SELECT * FROM TERMINAL ORDER BY TERM_CODE";
+        $query = "SELECT TERMINAL.*, TERMINAL.TERM_ADDR || ' [' || NVL(DL.DB_ADDR_TEXT, ' ') || ']' ADDRESS_TEXT 
+            FROM TERMINAL,
+            (
+                SELECT DB_ADDR_LINE_ID, 
+                    NVL(LISTAGG(DB_ADDR_LINE, ', ') WITHIN GROUP (ORDER BY DB_ADDRLINE_NO), ' ') DB_ADDR_TEXT
+                FROM DB_ADDRESS_LINE
+                GROUP BY DB_ADDR_LINE_ID
+            ) DL
+            WHERE TERM_ADDR = DL.DB_ADDR_LINE_ID(+)
+            ORDER BY TERM_CODE";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;

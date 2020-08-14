@@ -26,7 +26,7 @@ const columns = (t) => [
 
   {
     headerName: t('fields.address'),
-    field: 'term_addr',
+    field: 'address_text',
     sortable: true,
     resizable: true,
     filter: 'FuzzyFilter',

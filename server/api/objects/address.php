@@ -137,7 +137,7 @@ class Address extends CommonClass
     {
         $query = "
             SELECT DB_ADDRESS.DB_ADDRESS_KEY,
-                DB_ADDRESS_KEY || '[' || NVL(DL.DB_ADDR_TEXT, ' ') || ']' ADDRESS_TEXT
+                DB_ADDRESS_KEY || ' [' || NVL(DL.DB_ADDR_TEXT, ' ') || ']' ADDRESS_TEXT
             FROM DB_ADDRESS,
                 (
                     SELECT DB_ADDR_LINE_ID, 
