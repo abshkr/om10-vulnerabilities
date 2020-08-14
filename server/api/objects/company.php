@@ -67,11 +67,17 @@ class Company extends CommonClass
         if (!isset($this->cmpy_trip_end)) {
             $this->cmpy_trip_end = 999999999;
         }
+        if (!isset($this->cmpy_trip_last)) {
+            $this->cmpy_trip_last = 0;
+        }
         if (!isset($this->cmpy_ord_strt)) {
             $this->cmpy_ord_strt = 1;
         }
         if (!isset($this->cmpy_ord_end)) {
             $this->cmpy_ord_end = 999999999;
+        }
+        if (!isset($this->cmpy_ord_last)) {
+            $this->cmpy_ord_last = 0;
         }
 
         $this->pre_update();

@@ -164,6 +164,14 @@ const FormModal = ({
       });
     } else {
       resetFields();
+      setManager(null);
+      setSupplier(null);
+      setCarrier(null);
+      setCustomer(null);
+      setDrawer(null);
+      setIssuer(null);
+      setEmployer(null);
+      setHost(null);
     }
   }, [value, setFieldsValue, resetFields]);
 

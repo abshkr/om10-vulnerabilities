@@ -340,7 +340,7 @@ const SupplierForm = ({ value, form }) => {
               message: `${t('validate.select')} ─ ${t('fields.lastUsed')}`,
             }]}
           >
-            <InputNumber min={1} max={999999999} style={{ width: '11vh' }} />
+            <InputNumber min={0} max={999999999} style={{ width: '11vh' }} />
           </Form.Item>
         </Col>
       </Row>

@@ -98,7 +98,10 @@ class CompanyService
 
     private function get_order_range()
     {
-        $query = "SELECT CMPY_ORD_STRT, CMPY_ORD_END, CMPY_ORD_LAST
+        $query = "
+            SELECT NVL(CMPY_ORD_STRT, 1) CMPY_ORD_STRT, 
+                NVL(CMPY_ORD_END, 999999999) CMPY_ORD_END, 
+                NVL(CMPY_ORD_LAST, 0) CMPY_ORD_LAST
             FROM COMPANYS
             WHERE CMPY_CODE = :cmpy_code";
         $stmt = oci_parse($this->conn, $query);
@@ -192,7 +195,10 @@ class CompanyService
 
     private function get_trip_range()
     {
-        $query = "SELECT CMPY_TRIP_STRT, CMPY_TRIP_END, CMPY_TRIP_LAST
+        $query = "
+            SELECT NVL(CMPY_TRIP_STRT, 1) CMPY_TRIP_STRT, 
+                NVL(CMPY_TRIP_END, 999999999) CMPY_TRIP_END, 
+                NVL(CMPY_TRIP_LAST, 0) CMPY_TRIP_LAST
             FROM COMPANYS
             WHERE CMPY_CODE = :cmpy_code";
         $stmt = oci_parse($this->conn, $query);
