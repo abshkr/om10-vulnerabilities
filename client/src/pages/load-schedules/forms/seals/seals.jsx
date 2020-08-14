@@ -207,6 +207,7 @@ const Seals = ({ value, sealUpated }) => {
             sealUpated();
             setModified([]);
             setSavable(false);
+            setSelected(null);
     
             notification.success({
               message: t('messages.updateSuccess'),
@@ -235,6 +236,7 @@ const Seals = ({ value, sealUpated }) => {
         sealUpated();
         setModified([]);
         setSavable(false);
+        setSelected(null);
 
         notification.success({
           message: t('messages.updateSuccess'),
@@ -270,6 +272,7 @@ const Seals = ({ value, sealUpated }) => {
             sealUpated();
             setModified([]);
             setSavable(false);
+            setSelected(null);
     
             notification.success({
               message: t('messages.updateSuccess'),
@@ -295,6 +298,7 @@ const Seals = ({ value, sealUpated }) => {
         sealUpated();
         setModified([]);
         setSavable(false);
+        setSelected(null);
 
         notification.success({
           message: t('messages.updateSuccess'),
