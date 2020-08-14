@@ -160,7 +160,7 @@ const OtherForm = ({ value, form }) => {
         </Col>
         <Col span={7}>
           <Form.Item name="cmpy_ord_last" label={t('fields.lastUsed')} rules={[{ required: true }]}>
-            <InputNumber min={1} max={999999999} style={{width:'11vh'}}/>
+            <InputNumber min={0} max={999999999} style={{width:'11vh'}}/>
           </Form.Item>
         </Col>
       </Row>
