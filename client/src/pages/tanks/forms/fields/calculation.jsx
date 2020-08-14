@@ -57,8 +57,8 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
   const handleTemperature = (selected) => {
     if (selected !== 'degC') {
       setTempBounds({
-        min: VCFManager.temperatureC2F(value?.tank_bclass_temp_lo),
-        max: VCFManager.temperatureC2F(value?.tank_bclass_temp_hi),
+        min: VCFManager.temperatureC2F(value?.tank_bclass_temp_lo || config.minTemperature),
+        max: VCFManager.temperatureC2F(value?.tank_bclass_temp_hi || config.maxTemperature),
         type: 'ºF',
       });
       setFieldsValue({
@@ -66,8 +66,8 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
       });
     } else {
       setTempBounds({
-        min: value?.tank_bclass_temp_lo,
-        max: value?.tank_bclass_temp_hi,
+        min: value?.tank_bclass_temp_lo || config.minTemperature,
+        max: value?.tank_bclass_temp_hi || config.maxTemperature,
         type: 'ºC',
       });
 

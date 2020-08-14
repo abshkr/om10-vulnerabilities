@@ -42,8 +42,8 @@ const ObsTemp = ({ form, value, setValue, tank, arm, pageState, config }) => {
       setFieldsValue({
         mlitm_temp_amb: tank?.[0]?.tank_temp,
       });
-      setMinTemp(tank?.[0]?.bclass_temp_lo);
-      setMaxTemp(tank?.[0]?.bclass_temp_hi);
+      setMinTemp(tank?.[0]?.bclass_temp_lo || config.minTemperature);
+      setMaxTemp(tank?.[0]?.bclass_temp_hi || config.maxTemperature);
       setValue(tank?.[0]?.tank_temp);
     } else {
       setFieldsValue({
