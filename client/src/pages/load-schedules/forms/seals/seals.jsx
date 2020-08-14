@@ -465,37 +465,6 @@ const Seals = ({ value, sealUpated }) => {
     }
   }, [nextSeal]);
 
-  const extra = (
-    <>
-      <Button 
-        style={{ marginRight: 10 }} 
-        type="primary" 
-        disabled={!selected || (value?.status !== 'A' && value?.status !== 'F')} 
-        onClick={onReallocateSelected}
-      >
-        {t('operations.reallocateSelected')}
-      </Button>
-
-      <Button
-        style={{ marginRight: 10 }}
-        type="primary"
-        disabled={!selected}
-        onClick={onDellocateAllSelected}
-      >
-        {t('operations.deallocateSelected')}
-      </Button>
-
-      <Button 
-        style={{ marginRight: 5 }} 
-        type="primary" 
-        onClick={onDellocateAll}
-        disabled={value?.status !== 'A' && value?.status !== 'F'}
-      >
-        {t('operations.deallocateAll')}
-      </Button>
-    </>
-  );
-
   return (
     <>
       <Row gutter={[8, 10]}>
@@ -548,7 +517,7 @@ const Seals = ({ value, sealUpated }) => {
           style={{ marginRight: 5 }} 
           type="primary" 
           onClick={onDellocateAll}
-          disabled={value?.status !== 'A' && value?.status !== 'F'}
+          disabled={value?.status !== 'A' && value?.status !== 'F' || payload?.records?.length === 0}
         >
           {t('operations.deallocateAll')}
         </Button>
