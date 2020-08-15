@@ -34,10 +34,18 @@ export const DELETE = '/api/pages/delivery_detail/delete.php';
 export const APPROVE = '/api/pages/delivery_detail/approve.php';
 export const UNAPPROVE = '/api/pages/delivery_detail/unapprove.php';
 
-// Order Period
+// Delivery Detail Item Additional Info
+export const DDI_ADDL_INFO_READ = '/api/pages/ddi_additional_info/read.php';
+export const DDI_ADDL_INFO_CREATE = '/api/pages/ddi_additional_info/create.php';
+export const DDI_ADDL_INFO_UPDATE = '/api/pages/ddi_additional_info/update.php';
+export const DDI_ADDL_INFO_DELETE = '/api/pages/ddi_additional_info/delete.php';
+export const DDI_ADDL_INFO_CHECK = '/api/pages/ddi_additional_info/check_additional_info.php';
+export const DDI_ADDL_LINE_CHECK = '/api/pages/ddi_additional_info/check_additional_line.php';
 
-export const PERIOD_READ = '/api/pages/delivery_detail/ordperiod_read.php';
-
-export const PERIOD_CREATE = '/api/pages/delivery_detail/ordperiod_create.php';
-export const PERIOD_UPDATE = '/api/pages/delivery_detail/ordperiod_update.php';
-export const PERIOD_DELETE = '/api/pages/delivery_detail/ordperiod_delete.php';
+// Delivery Detail DN Additional Info
+export const DDD_ADDL_INFO_READ = '/api/pages/ddd_additional_info/read.php';
+export const DDD_ADDL_INFO_CREATE = '/api/pages/ddd_additional_info/create.php';
+export const DDD_ADDL_INFO_UPDATE = '/api/pages/ddd_additional_info/update.php';
+export const DDD_ADDL_INFO_DELETE = '/api/pages/ddd_additional_info/delete.php';
+export const DDD_ADDL_INFO_CHECK = '/api/pages/ddd_additional_info/check_additional_info.php';
+export const DDD_ADDL_LINE_CHECK = '/api/pages/ddd_additional_info/check_additional_line.php';

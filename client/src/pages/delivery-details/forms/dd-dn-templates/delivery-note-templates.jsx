@@ -27,9 +27,13 @@ const DeliveryNoteTemplates = ({
   pageState 
 }) => {
   const [selected, setSelected] = useState(null);
+  const [tableAPI, setTableAPI] = useState(null);
+  const [size, setSize] = useState(0);
+  const [templateItem, setTemplateItem] = useState(undefined);
 
-  console.log("values: ", value);
+  // console.log("values: ", value);
 
+  const disabled = selected?.length === 0 || !selected;
   const { t } = useTranslation();
   const fields = columns(t, pageState, form);
 
@@ -40,35 +44,99 @@ const DeliveryNoteTemplates = ({
   const data = payload?.records;
   const isLoading = isValidating || !data;
 
-  const handleItemSelect = (options) => {
-    setSelected(options);
-    //adjustModifiers(options);
+  const handleItemAdd = () => {
+    const length = size + 1;
+
+    const line = {
+      ddd_action: '+',
+      ddd_dd_supp_code: supplier,
+      ddd_dd_supp_name: '', // TODO
+      ddd_dd_ld_type: loadType,
+      ddd_dd_load_typename: '', // TODO
+      ddd_dd_tripord_no: loadNumber,
+      ddd_dd_number: value?.dd_number,
+      ddd_templ_id: !templateItem?.template_code ? '' : templateItem?.template_code,
+      editable: false,
+      cellClass: 'editable-ag-grid-cell',
+    };
+
+    setSize(length);
+
+    tableAPI.updateRowData({ add: [line] });
+  };
+
+  const handleItemRemove = () => {
+    tableAPI.updateRowData({ remove: selected });
+  };
+
+  const handleItemSelect = (items) => {
+    // console.log('handleItemSelect', items);
+    if (items && items[0]) {
+      items[0].editable = false;
+      if (!items?.[0]?.ddd_dd_number) {
+        items[0].ddd_dd_number = value?.dd_number;
+      }
+    }
+    // console.log('handleItemSelect222', items);
+    setSelected(items);
+  };
+
+  const onEditingFinished = (value) => {
+    let payload = value.data;
+
+    console.log('onEditingFinished', value, value.colDef);
+
+    tableAPI.updateRowData({ update: [payload] });
+
+    //setSelected([payload]);
+    handleItemSelect([payload]);
+  };
+
+  const onClick = (value, record) => {
+    setTemplateItem(record?.item);
   };
 
   return (
     <>
-      <Form.Item
-        name="ddd_templates"
-        label=''
+      <Select
+        dropdownMatchSelectWidth={false}
+        loading={isValidating}
+        showSearch
+        disabled={false}
+        onChange={onClick}
+        style={{width: '50%'}}
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectDnTemplate') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
       >
-        <Select
-          dropdownMatchSelectWidth={false}
-          loading={isValidating}
-          showSearch
-          disabled={false}
-          optionFilterProp="children"
-          placeholder={!value ? t('placeholder.selectDnTemplate') : null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {templates?.records.filter((o)=>(o.template_type==='2')).map((item, index) => (
-            <Select.Option key={index} value={item.template_code}>
-              {item.template_name}
-            </Select.Option>
-          ))}
-        </Select>
-      </Form.Item>
+        {templates?.records.filter((o)=>(o.template_type==='1')).map((item, index) => (
+          <Select.Option key={index} value={item.template_code} item={item}>
+            {item.template_name}
+          </Select.Option>
+        ))}
+      </Select>
+
+      <Button 
+        type="primary" 
+        icon={<PlusOutlined />} 
+        disabled={!templateItem}
+        onClick={handleItemAdd} 
+        style={{ marginRight: 5 }}
+      >
+        {t('operations.addLineItem')}
+      </Button>
+
+      <Button
+        type="danger"
+        icon={<MinusOutlined />}
+        disabled={disabled}
+        onClick={handleItemRemove}
+        style={{ marginBottom: 10 }}
+      >
+        {t('operations.deleteLineItem')}
+      </Button>
 
       <Form.Item name="ddd_items">
         <DataTable
@@ -78,10 +146,10 @@ const DeliveryNoteTemplates = ({
           parentHeight="15vh"
           onClick={(payload) => handleItemSelect([payload])}
           handleSelect={(payload) => handleItemSelect(payload)}
-          //apiContext={setTableAPI}
+          apiContext={setTableAPI}
           selectionMode="single"
           minimal
-          //onEditingFinished={onEditingFinished}
+          onEditingFinished={onEditingFinished}
         />
       </Form.Item>
     </>

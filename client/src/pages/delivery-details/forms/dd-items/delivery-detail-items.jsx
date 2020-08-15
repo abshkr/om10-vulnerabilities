@@ -8,7 +8,7 @@ import {
   LockOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Button, Form, Select } from 'antd';
+import { Button, Form, Select, Drawer, Card, Tooltip } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
 
@@ -16,6 +16,7 @@ import { DataTable } from '../../../../components';
 import { DELIVERY_DETAILS } from '../../../../api';
 
 import columns from './columns';
+import DdiAdditionalInfo from '../ddi-addl-info';
 
 const DeliveryDetailItems = ({
   form,
@@ -30,8 +31,9 @@ const DeliveryDetailItems = ({
   const [tableAPI, setTableAPI] = useState(null);
   const [size, setSize] = useState(0);
   const [productItem, setProductItem] = useState(undefined);
+  const [ddiAddlInfoVisible, setDdiAddlInfoVisible] = useState(false);
 
-  console.log("values: ", value);
+  // console.log("values: ", value);
   // console.log('......................[]+1', ([]+1));
 
   const disabled = selected?.length === 0 || !selected;
@@ -108,14 +110,14 @@ const DeliveryDetailItems = ({
   };
 
   const handleItemSelect = (items) => {
-    console.log('handleItemSelect', items);
+    // console.log('handleItemSelect', items);
     if (items && items[0]) {
       items[0].editable = true; // items?.[0]?.mvitm_status === 0 && !items?.[0]?.mvitm_completed;
       if (!items?.[0]?.ddi_dd_number) {
         items[0].ddi_dd_number = value?.dd_number;
       }
     }
-    console.log('handleItemSelect222', items);
+    // console.log('handleItemSelect222', items);
     setSelected(items);
   };
 
@@ -176,6 +178,41 @@ const DeliveryDetailItems = ({
       >
         {t('operations.deleteLineItem')}
       </Button>
+
+      <Tooltip 
+        placement="topLeft" 
+        title={t('tabColumns.ddiAddlInfo')}
+      >
+        <Button
+          type="primary"
+          icon={<EditOutlined />}
+          style={{ float: 'right', marginRight: 5 }}
+          disabled={!selected}
+          onClick={() => setDdiAddlInfoVisible(true)}
+        >
+          {t('operations.additionalInfo')}
+        </Button>
+      </Tooltip>
+
+      {ddiAddlInfoVisible && (
+        <Drawer
+          title={t('tabColumns.ddiAddlInfo')}
+          placement="right"
+          bodyStyle={{ paddingTop: 40, paddingRight: 30 }}
+          onClose={() => setDdiAddlInfoVisible(false)}
+          visible={ddiAddlInfoVisible}
+          width="50vw"
+        >
+          <DdiAdditionalInfo
+            form={form}
+            value={selected?.[0]}
+            pageState={pageState}
+            supplier={supplier}
+            loadNumber={loadNumber}
+            loadType={loadType}
+          />
+        </Drawer>
+      )}
 
       <Form.Item name="ddi_items">
         <DataTable

@@ -1,7 +1,7 @@
 const columns = (t, pageState, form) => [
   {
     headerName: `${t('fields.addressAction')}`,
-    field: 'ddi_action',
+    field: 'db_action',
     width: 32,
     //checkboxSelection: true,
     cellRenderer: 'MarkRenderer',
