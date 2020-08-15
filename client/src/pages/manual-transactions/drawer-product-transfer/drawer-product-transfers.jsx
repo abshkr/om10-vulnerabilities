@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { UndoOutlined, DeleteOutlined, CopyOutlined, ClearOutlined, CalculatorOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { Button, Form, Tabs, Divider, Card, Row, Col, notification, Modal } from 'antd';
+import { Button, Form, Tabs, Divider, Card, Row, Col, notification, Modal, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -926,10 +926,10 @@ const DrawerProductTransfers = ({
       return;
     }
 
-    notification.warning({
+    /* notification.warning({
       message: '',
       description: !clicked ? t('descriptions.clearAllTransfer') : t('descriptions.clearLineTransfer'),
-    });
+    }); */
 
     console.log('DrawerProductTransfers: onClear');
     // const payload = form.getFieldValue('transfers');
@@ -1058,11 +1058,11 @@ const DrawerProductTransfers = ({
       return;
     }
 
-    notification.warning({
+    /* notification.warning({
       message: '',
       description: (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') 
         ? t('descriptions.copyScheduledQuantity') : t('descriptions.copyCompartmentCapacity'),
-    });
+    }); */
   
     console.log('DrawerProductTransfers: onCopy');
     
@@ -1383,15 +1383,24 @@ const DrawerProductTransfers = ({
               {t('operations.deleteTransfer')}
             </Button>
 
-            <Button
-              type="danger"
-              icon={<ClearOutlined />}
-              style={{ marginRight: 5 }}
-              onClick={onClear}
-              disabled={updating || !payload || payload?.length===0}
+            <Tooltip 
+              placement="topLeft" 
+              title={
+                !clicked 
+                ? t('descriptions.clearAllTransfer') 
+                : t('descriptions.clearLineTransfer')                  
+              }
             >
-              {t('operations.clearTransfer')}
-            </Button>
+              <Button
+                type="danger"
+                icon={<ClearOutlined />}
+                style={{ marginRight: 5 }}
+                onClick={onClear}
+                disabled={updating || !payload || payload?.length===0}
+              >
+                {t('operations.clearTransfer')}
+              </Button>
+            </Tooltip>
 
             <Button 
               type="primary" 
@@ -1419,15 +1428,24 @@ const DrawerProductTransfers = ({
             </Button>
 
             {true && (
-              <Button
-                type="normal"
-                icon={<CopyOutlined />}
-                style={{ float: 'right', marginRight: 5 }}
-                onClick={onCopy}
-                disabled={!canCopy || updating}
+              <Tooltip 
+                placement="topLeft" 
+                title={
+                  (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') 
+                  ? t('descriptions.copyScheduledQuantity') 
+                  : t('descriptions.copyCompartmentCapacity')                  
+                }
               >
-                {t('operations.copyQuantity')}
-              </Button>
+                <Button
+                  type="normal"
+                  icon={<CopyOutlined />}
+                  style={{ float: 'right', marginRight: 5 }}
+                  onClick={onCopy}
+                  disabled={!canCopy || updating}
+                >
+                  {t('operations.copyQuantity')}
+                </Button>
+              </Tooltip>
             )}
           </Col>
         </Row>

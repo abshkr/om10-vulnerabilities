@@ -7,6 +7,7 @@ import {
   SaveOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
+import { Scrollbars } from 'react-custom-scrollbars';
 import { Button, Form, Modal, notification, message, Card, Spin } from 'antd';
 import { useTranslation } from 'react-i18next';
 
@@ -201,7 +202,7 @@ const ManualTransactions = ({ popup, params }) => {
       }
     };
 
-    if (errors.length > 0) {
+    /* if (errors.length > 0) {
       const lines = (
         <>
         {errors?.map((error, index) => (
@@ -223,14 +224,7 @@ const ManualTransactions = ({ popup, params }) => {
           overflowY: 'scroll',
         },
       });
-      /* _.forEach(errors, (error) => {
-        notification.error({
-          message: error.field,
-          description: error.message,
-          key: error.key,
-        });
-      }); */
-    }
+    } */
     return errors;
   };
 
@@ -248,6 +242,7 @@ const ManualTransactions = ({ popup, params }) => {
       }
     }
     let errors = [];
+    let lines = null;
     if (found === false) {
       notification.warning({
         message: t('messages.submitFailed'),
@@ -257,6 +252,25 @@ const ManualTransactions = ({ popup, params }) => {
     } else {
       errors = onItemValidation(dptrsf);
       if (errors.length > 0) {
+        lines = (
+          <Scrollbars
+            style={{
+              height: '300px',
+              width: '25vw',
+              marginTop: 15,
+              padding: 5,
+              marginBottom: 15,
+            }}
+          >
+            <>
+            {errors?.map((error, index) => (
+              <Card size="small" title={error.field}>
+                {error.message}
+              </Card>
+            ))}
+            </>
+          </Scrollbars>
+        );
         //return;
       }
     }
@@ -273,6 +287,8 @@ const ManualTransactions = ({ popup, params }) => {
       cancelText: t('operations.no'),
       icon: <QuestionCircleOutlined />,
       centered: true,
+      width: '30vw',
+      content: lines,
       onOk: async () => {
         try {
           const values = await form.validateFields();
