@@ -34,6 +34,13 @@ export const DELETE = '/api/pages/delivery_detail/delete.php';
 export const APPROVE = '/api/pages/delivery_detail/approve.php';
 export const UNAPPROVE = '/api/pages/delivery_detail/unapprove.php';
 
+// Delivery Detail BOL Template
+export const DELV_BOL_READ = '/api/pages/delv_bol/read.php';
+export const DELV_BOL_CREATE = '/api/pages/delv_bol/create.php';
+export const DELV_BOL_UPDATE = '/api/pages/delv_bol/update.php';
+export const DELV_BOL_DELETE = '/api/pages/delv_bol/delete.php';
+export const DELV_BOL_CHECK = '/api/pages/delv_bol/check_delv_bol.php';
+
 // Delivery Detail Item Additional Info
 export const DDI_ADDL_INFO_READ = '/api/pages/ddi_additional_info/read.php';
 export const DDI_ADDL_INFO_CREATE = '/api/pages/ddi_additional_info/create.php';

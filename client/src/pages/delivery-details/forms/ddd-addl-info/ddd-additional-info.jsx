@@ -8,7 +8,7 @@ import {
   LockOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Button, Form, Input, notification } from 'antd';
+import { Button, Form, Input, notification, Row, Col } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
 
@@ -25,10 +25,11 @@ const DddAdditionalInfo = ({
   loadNumber,
   loadType,
 }) => {
+  // const [data, setData] = useState(undefined);
   const [selected, setSelected] = useState(null);
   const [tableAPI, setTableAPI] = useState(null);
   const [size, setSize] = useState(0);
-  const [additionalField, setAdditionalField] = useState(undefined);
+  const [additionalField, setAdditionalField] = useState('');
 
   // console.log("values in DddAdditionalInfo: ", value);
 
@@ -41,15 +42,18 @@ const DddAdditionalInfo = ({
     , { revalidateOnFocus: false }
   );
 
-  const data = payload?.records;
+  let data = payload?.records;
   const isLoading = isValidating || !data;
   
   const onCreate = async (line) => {
     await api
     .post(DELIVERY_DETAILS.DDD_ADDL_INFO_CREATE, line)
     .then((response) => {
-      // tableAPI.updateRowData({ add: [line] });
-      revalidate();
+      tableAPI.updateRowData({ add: [line] });
+      setAdditionalField('');
+      // revalidate();
+      // adjustPayload();
+      setDataSize();
 
       notification.success({
         message: t('messages.createSuccess'),
@@ -57,6 +61,7 @@ const DddAdditionalInfo = ({
       });
     })
     .catch((errors) => {
+      setDataSize();
       _.forEach(errors.response.data.errors, (error) => {
         notification.error({
           message: error.type,
@@ -70,8 +75,10 @@ const DddAdditionalInfo = ({
     await api
     .post(DELIVERY_DETAILS.DDD_ADDL_INFO_UPDATE, line)
     .then((response) => {
-      // tableAPI.updateRowData({ update: [line] });
-      revalidate();
+      tableAPI.updateRowData({ update: [line] });
+      // revalidate();
+      // adjustPayload();
+      setDataSize();
 
       notification.success({
         message: t('messages.updateSuccess'),
@@ -79,6 +86,7 @@ const DddAdditionalInfo = ({
       });
     })
     .catch((errors) => {
+      setDataSize();
       _.forEach(errors.response.data.errors, (error) => {
         notification.error({
           message: error.type,
@@ -92,8 +100,10 @@ const DddAdditionalInfo = ({
     await api
     .post(DELIVERY_DETAILS.DDD_ADDL_INFO_DELETE, line)
     .then((response) => {
-      // tableAPI.updateRowData({ remove: line });
-      revalidate();
+      tableAPI.updateRowData({ remove: [line] });
+      // revalidate();
+      // adjustPayload();
+      setDataSize();
 
       notification.success({
         message: t('messages.deleteSuccess'),
@@ -101,6 +111,7 @@ const DddAdditionalInfo = ({
       });
     })
     .catch((errors) => {
+      setDataSize();
       _.forEach(errors.response.data.errors, (error) => {
         notification.error({
           message: error.type,
@@ -110,8 +121,35 @@ const DddAdditionalInfo = ({
     });
   };
 
+  const adjustPayload = () => {
+    const payload = [];
+    tableAPI.forEachNode((rowNode, index) => {
+      payload.push(rowNode?.data);
+    });
+    data = payload; // setData(payload);
+  };
+
+  const getNextLineNo = () => {
+    let nextNo = 0;
+    tableAPI.forEachNode((rowNode, index) => {
+      if (nextNo < _.toNumber(rowNode?.data?.addi_fld_line_no)) {
+        nextNo = _.toNumber(rowNode?.data?.addi_fld_line_no);
+      }
+    });
+    return nextNo + 1;
+  };
+
+  const setDataSize = () => {
+    let size = 0;
+    
+    tableAPI.forEachNode((rowNode, index) => {
+      size = size + 1;
+    });
+    setSize(size);
+  };
+
   const handleItemAdd = () => {
-    const length = size + 1;
+    const length = getNextLineNo();
 
     const line = {
       ddd_addl_action: '+',
@@ -135,7 +173,14 @@ const DddAdditionalInfo = ({
   };
 
   const handleItemRemove = () => {
-    onDelete(selected);
+    onDelete(selected?.[0]);
+    // tableAPI.updateRowData({ remove: selected });
+  };
+
+  const handleItemRemoveAll = () => {
+    tableAPI.forEachNode((rowNode, index) => {
+      onDelete(rowNode?.data);
+    });
     // tableAPI.updateRowData({ remove: selected });
   };
 
@@ -151,7 +196,7 @@ const DddAdditionalInfo = ({
     setSelected(items);
   };
 
-  const onEditingFinished = (value) => {
+  /* const onEditingFinished = (value) => {
     let payload = value.data;
 
     console.log('onEditingFinished', value, value.colDef);
@@ -161,17 +206,62 @@ const DddAdditionalInfo = ({
 
     //setSelected([payload]);
     handleItemSelect([payload]);
+  }; */
+
+  const onCellUpdate = (value) => {
+    console.log('DdiAdditionalInfo: onCellUpdate', value);
+
+    let payload = value.data;
+
+    if (value?.newValue !== value?.oldValue) {
+      onUpdate(payload);
+      // tableAPI.updateRowData({ update: [payload] });
+    }
+
+    //setSelected([payload]);
+    handleItemSelect([payload]);
   };
 
   const handleValueChange = (event) => {
     setAdditionalField(event?.target?.value);
   }
 
+  useEffect(() => {
+    if (payload) {
+      setSize(payload?.records?.length);
+    }
+  }, [payload, setSize]);
+
   return (
     <>
+      <Row gutter={[8, 10]}>
+        <Col span={8}>
+          {t('fields.dddDdSuppCode') + ' : ' + value?.ddd_dd_supp_code}
+        </Col>
+        <Col span={8}>
+          {t('fields.dddDdSuppName') + ' : ' + value?.ddd_dd_supp_name}
+        </Col>
+        <Col span={8}>
+          {t('fields.dddDdLoadTypeName') + ' : ' + value?.ddd_dd_load_typename}
+        </Col>
+      </Row>
+      <Row gutter={[8, 10]}>
+        <Col span={8}>
+          {t('fields.dddDdTripOrdNo') + ' : ' + value?.ddd_dd_tripord_no}
+        </Col>
+        <Col span={8}>
+          {t('fields.dddDdNumber') + ' : ' + value?.ddd_dd_number}
+        </Col>
+        <Col span={8}>
+          {t('fields.dddTemplId') + ' : ' + value?.ddd_templ_id}
+        </Col>
+      </Row>
+
       <Input
-        placeholder={t('placeholder.dddAddiFldInfo')}
+        style={{width: '40%'}}
+        placeholder={t('fields.dddAddiFldInfo')}
         onChange={handleValueChange}
+        value={additionalField}
       />
 
       <Button 
@@ -194,18 +284,29 @@ const DddAdditionalInfo = ({
         {t('operations.deleteLineItem')}
       </Button>
 
+      <Button
+        type="danger"
+        icon={<MinusOutlined />}
+        disabled={size === 0 || !data}
+        onClick={handleItemRemoveAll}
+        style={{ marginBottom: 10 }}
+      >
+        {t('operations.removeAll')}
+      </Button>
+
       <Form.Item name="ddd_addl_items">
         <DataTable
           columns={fields}
           data={data}
           isLoading={isLoading}
-          parentHeight="50vh"
+          // parentHeight="15vh"
           onClick={(payload) => handleItemSelect([payload])}
           handleSelect={(payload) => handleItemSelect(payload)}
           apiContext={setTableAPI}
           selectionMode="single"
           minimal
-          onEditingFinished={onEditingFinished}
+          // onEditingFinished={onEditingFinished}
+          onCellUpdate={(value) => onCellUpdate(value)}
         />
       </Form.Item>
     </>

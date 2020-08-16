@@ -1,4 +1,4 @@
-const columns = (t, pageState, form) => [
+const columns = (t, pageState) => [
   {
     headerName: `${t('fields.addressAction')}`,
     field: 'db_action',
@@ -6,7 +6,8 @@ const columns = (t, pageState, form) => [
     //checkboxSelection: true,
     cellRenderer: 'MarkRenderer',
     suppressSizeToFit: true,
-    pinned: 'left'
+    pinned: 'left',
+    hide: true,
   },
   {
     headerName: t('fields.dbSuppCode'),
@@ -14,7 +15,7 @@ const columns = (t, pageState, form) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    hide: true,
+    hide: false,
     editable: false,
     width: 100,
     suppressSizeToFit: true,
@@ -25,7 +26,7 @@ const columns = (t, pageState, form) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    hide: true,
+    hide: false,
     editable: false,
     width: 150,
     suppressSizeToFit: true,
@@ -36,7 +37,7 @@ const columns = (t, pageState, form) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    hide: true,
+    hide: false,
     editable: false,
     width: 100,
     suppressSizeToFit: true,
@@ -47,7 +48,7 @@ const columns = (t, pageState, form) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    hide: true,
+    hide: false,
     editable: false,
     width: 100,
     suppressSizeToFit: true,
@@ -58,7 +59,7 @@ const columns = (t, pageState, form) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: true,
+    hide: false,
     editable: false,
     width: 120,
     suppressSizeToFit: true,

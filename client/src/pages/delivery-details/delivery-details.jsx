@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
 import useSWR from 'swr';
-import { Button } from 'antd';
+import { Button, Drawer, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
+import { SyncOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download } from '../../components';
 import { DELIVERY_DETAILS } from '../../api';
@@ -11,6 +11,7 @@ import { useAuth } from '../../hooks';
 import columns from './columns';
 
 import Forms from './forms';
+import DeliveryBolTemplates from './forms/dlv-bol-templates/delivery-bol-templates';
 
 const DeliveryDetails = ({ access, params }) => {
 
@@ -20,8 +21,11 @@ const DeliveryDetails = ({ access, params }) => {
   const [supplier, setSupplier] = useState(undefined);
   const [loadNumber, setLoadNumber] = useState(undefined);
   const [loadType, setLoadType] = useState(undefined);
+  const [delvBolVisible, setDelvBolVisible] = useState(false);
 
   const { t } = useTranslation();
+
+  const { data: templates } = useSWR(DELIVERY_DETAILS.TEMPLATES);
 
   const url = supplier && loadNumber && loadType
     ? `${DELIVERY_DETAILS.READ}?dd_supp_code=${supplier}&dd_tripord_no=${loadNumber}&dd_ld_type=${loadType}`
@@ -68,6 +72,42 @@ const DeliveryDetails = ({ access, params }) => {
       </Button>
 
       <Download data={data} isLoading={isLoading} columns={fields} />
+
+      <Tooltip 
+        placement="topLeft" 
+        title={t('tabColumns.delvBolTemplate')}
+      >
+        <Button
+          type="primary"
+          icon={<EditOutlined />}
+          style={{ float: 'right', marginRight: 5 }}
+          disabled={false}
+          onClick={() => setDelvBolVisible(true)}
+        >
+          {t('operations.delvBolTemplate')}
+        </Button>
+      </Tooltip>
+
+      {delvBolVisible && (
+        <Drawer
+          title={t('tabColumns.delvBolTemplate')}
+          placement="right"
+          bodyStyle={{ paddingTop: 40, paddingRight: 30 }}
+          onClose={() => setDelvBolVisible(false)}
+          visible={delvBolVisible}
+          width="60vw"
+        >
+          <DeliveryBolTemplates
+            // form={form}
+            // value={selected?.[0]}
+            pageState={pageState}
+            supplier={supplier}
+            loadNumber={loadNumber}
+            loadType={loadType}
+            templates={templates}
+          />
+        </Drawer>
+      )}
 
       <Button
         type="primary"

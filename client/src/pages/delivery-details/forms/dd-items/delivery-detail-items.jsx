@@ -8,7 +8,7 @@ import {
   LockOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Button, Form, Select, Drawer, Card, Tooltip } from 'antd';
+import { Button, Form, Select, Drawer, Tooltip } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
 
@@ -42,6 +42,7 @@ const DeliveryDetailItems = ({
 
   const { data: payload, isValidating } = useSWR(
     `${DELIVERY_DETAILS.DD_ITEMS}?dd_number=${value?.dd_number}&dd_supp_code=${value?.dd_supp_code}&dd_tripord_no=${value?.dd_tripord_no}&dd_ld_type=${value?.dd_ld_type}`
+    , { revalidateOnFocus: false }
   );
 
   const data = payload?.records;

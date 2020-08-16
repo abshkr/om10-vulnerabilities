@@ -61,6 +61,7 @@ const DdiAdditionalInfo = ({
       });
     })
     .catch((errors) => {
+      setDataSize();
       _.forEach(errors.response.data.errors, (error) => {
         notification.error({
           message: error.type,
@@ -85,6 +86,7 @@ const DdiAdditionalInfo = ({
       });
     })
     .catch((errors) => {
+      setDataSize();
       _.forEach(errors.response.data.errors, (error) => {
         notification.error({
           message: error.type,
@@ -109,6 +111,7 @@ const DdiAdditionalInfo = ({
       });
     })
     .catch((errors) => {
+      setDataSize();
       _.forEach(errors.response.data.errors, (error) => {
         notification.error({
           message: error.type,
@@ -206,8 +209,7 @@ const DdiAdditionalInfo = ({
   }; */
 
   const onCellUpdate = (value) => {
-    console.log('DrawerProductTransfers: onCellUpdate', value);
-    // console.log('DrawerProductTransfers: onCellUpdate2', value?.colDef?.field, value?.colDef?.headerName, value?.value, value?.newValue, value?.data);
+    console.log('DdiAdditionalInfo: onCellUpdate', value);
 
     let payload = value.data;
 
@@ -226,7 +228,7 @@ const DdiAdditionalInfo = ({
 
   useEffect(() => {
     if (payload) {
-      setSize(payload?.reocrds?.length);
+      setSize(payload?.records?.length);
     }
   }, [payload, setSize]);
 
@@ -285,7 +287,7 @@ const DdiAdditionalInfo = ({
       <Button
         type="danger"
         icon={<MinusOutlined />}
-        disabled={size === 0}
+        disabled={size === 0 || !data}
         onClick={handleItemRemoveAll}
         style={{ marginBottom: 10 }}
       >
