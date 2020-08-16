@@ -42,9 +42,9 @@ const Metering = () => {
   const extra = (
     <>
       <div style={{ float: 'left' }}>
-        <p style={{ float: 'left', fontSize: '0.7rem', marginRight: '0.2rem', paddingTop: '0.3rem' }}>
+        <span style={{ float: 'left', fontSize: '0.7rem', marginRight: '0.2rem', paddingTop: '0.3rem' }}>
           {t('fields.massUnit') + ':'}
-        </p>
+        </span>
         <Select 
           dropdownMatchSelectWidth={false}
           key="1" 
@@ -63,7 +63,7 @@ const Metering = () => {
       </div>
 
       <div style={{ float: 'left' }}>
-        <p
+        <span
           style={{
             float: 'left',
             fontSize: '0.7rem',
@@ -73,7 +73,7 @@ const Metering = () => {
           }}
         >
           {t('fields.volumeUnit') + ':'}
-        </p>
+        </span>
         <Select 
           dropdownMatchSelectWidth={false}
           key="1" 
