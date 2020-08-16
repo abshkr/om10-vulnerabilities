@@ -107,10 +107,10 @@ const ManualTransactions = ({ popup, params }) => {
   };
 
   const onItemValidation = (items) => {
-    // const errors = [];
-    const errors = drawerChanges;
+    const errors = [];
 
-    // _.forEach(items, (item) => {
+    _.forEach(drawerChanges, (o) => {errors.push(o);});
+
     for (let tidx = 0; tidx < items?.length; tidx++) {
       const item = items?.[tidx];
       if (item.trsf_arm_cd === t('placeholder.selectArmCode') || 
