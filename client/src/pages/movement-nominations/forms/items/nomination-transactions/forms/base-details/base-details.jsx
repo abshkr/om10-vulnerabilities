@@ -10,7 +10,7 @@ import _ from 'lodash';
 
 import { buildBaseTransfersByArm } from '../../../../../../../pages/manual-transactions/data-builder';
 
-const BaseDetails = ({ form, value, pageState, arm, temperature, amb, cor, mass }) => {
+const BaseDetails = ({ form, value, pageState, arm, temperature, amb, cor, mass, bases }) => {
   const { t } = useTranslation();
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(true);
@@ -29,6 +29,7 @@ const BaseDetails = ({ form, value, pageState, arm, temperature, amb, cor, mass 
       trsf_qty_amb: amb,
       trsf_qty_cor: cor,
       trsf_load_kg: mass,
+      trsf_bases: bases,
       // trsf_qty_amb: !amb ? 0 : amb,
       // trsf_qty_cor: !cor ? 0 : cor,
       // trsf_load_kg: !mass ? 0 : mass,
@@ -43,7 +44,7 @@ const BaseDetails = ({ form, value, pageState, arm, temperature, amb, cor, mass 
 
   useEffect(() => {
     getBaseTransfers();
-  }, [value, arm, temperature, amb, cor, mass]);
+  }, [value, arm, temperature, amb, cor, mass, bases]);
 
   useEffect(() => {
     if (data) {

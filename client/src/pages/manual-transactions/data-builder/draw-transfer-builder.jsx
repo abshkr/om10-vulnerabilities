@@ -48,6 +48,7 @@ const buildDrawTransfersByArm = (record, productArms, t, sourceType, loadType, r
       trsf_qty_amb: ambDefault,
       trsf_qty_cor: null,
       trsf_load_kg: null,
+      trsf_bases: [],
     };
 
     return transfer;

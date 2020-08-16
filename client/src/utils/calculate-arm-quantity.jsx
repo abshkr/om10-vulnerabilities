@@ -14,6 +14,7 @@ const calcArmQuantity = async (armcode, arms, amount, type, temperature) => {
     qty_amb: type === 'LT' ? amount : 0,
     qty_cor: type === 'L15' ? amount : 0,
     load_kg: type === 'KG' ? amount : 0,
+    bases: [],
     result: true,
   };
   // calculate base product quantity
@@ -29,6 +30,7 @@ const calcArmQuantity = async (armcode, arms, amount, type, temperature) => {
       const base_qty = calcBaseRatios(amount, item?.ratio_value, ratio_total);
 
       const base = {};
+      base.base_tank = item?.stream_tankcode;
       base.base_code = item?.stream_basecode;
       base.base_temp = temperature;
       base.base_dens = item?.stream_tankden;
@@ -40,6 +42,8 @@ const calcArmQuantity = async (armcode, arms, amount, type, temperature) => {
       bases.push(newbase);
     }
   }
+
+  transfer.bases = bases;
 
   // calculate drawer product quantity
   for (index = 0; index < bases.length; index++) {

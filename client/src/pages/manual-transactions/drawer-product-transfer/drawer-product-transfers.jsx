@@ -682,6 +682,7 @@ const DrawerProductTransfers = ({
       transfer.trsf_qty_amb = response?.qty_amb;
       transfer.trsf_qty_cor = response?.qty_cor;
       transfer.trsf_load_kg = response?.load_kg;
+      transfer.trsf_bases = response?.bases;
     }
     return transfer;
   };

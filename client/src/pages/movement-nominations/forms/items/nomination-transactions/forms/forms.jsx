@@ -109,6 +109,7 @@ const FormModal = ({
   const [ambient, setAmbient] = useState(null);
   const [corrected, setCorrected] = useState(null);
   const [mass, setMass] = useState(null);
+  const [armBases, setArmBases] = useState(null);
 
   const [selected, setSelected] = useState(null);
 
@@ -444,6 +445,7 @@ const FormModal = ({
         setAmbient(response?.qty_amb);
         setCorrected(response?.qty_cor);
         setMass(response?.load_kg);
+        setArmBases(response?.bases);
 
         notification.success({
           message: t('messages.calculateSuccess'),
@@ -794,6 +796,7 @@ const FormModal = ({
                   amb={ambient}
                   cor={corrected}
                   mass={mass}
+                  bases={armBases}
                 />
               </Col>
             </Row>

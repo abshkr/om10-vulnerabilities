@@ -6,6 +6,25 @@ const buildBaseTransfer = (product, transfer, sum_ratios) => {
   if (_.toNumber(ratio_total) > sum_ratios) {
     ratio_total = String(sum_ratios);
   }
+  const trsf_base = _.find(transfer?.trsf_bases, (o) => (
+    o.base_code === product?.stream_basecode &&
+    o.base_tank === product?.stream_tankcode
+  ));
+  let amb = 0;
+  let cor = 0;
+  let mass = 0;
+  // console.log('...............buildBaseTransfer', transfer, transfer?.trsf_bases, trsf_base,)
+  if (!trsf_base) {
+    // no base calc result found, use ratios
+    amb = calcBaseRatios(transfer?.trsf_qty_amb, product?.ratio_value, ratio_total);
+    cor = calcBaseRatios(transfer?.trsf_qty_cor, product?.ratio_value, ratio_total);
+    mass = calcBaseRatios(transfer?.trsf_load_kg, product?.ratio_value, ratio_total);
+  } else {
+    // base calc result found and use them directly
+    amb = trsf_base?.qty_amb;
+    cor = trsf_base?.qty_cor;
+    mass = trsf_base?.load_kg;
+  }
   const base = {
     trsf_bs_cmpt_no: transfer?.trsf_cmpt_no,
     trsf_bs_prodcd: product?.stream_basecode,
@@ -16,9 +35,9 @@ const buildBaseTransfer = (product, transfer, sum_ratios) => {
     trsf_bs_tank_temp: product?.base_rpt_temp,
     trsf_bs_den: product?.stream_tankden,
     trsf_bs_temp: transfer?.trsf_temp,
-    trsf_bs_qty_amb: calcBaseRatios(transfer?.trsf_qty_amb, product?.ratio_value, ratio_total),
-    trsf_bs_qty_cor: calcBaseRatios(transfer?.trsf_qty_cor, product?.ratio_value, ratio_total),
-    trsf_bs_load_kg: calcBaseRatios(transfer?.trsf_load_kg, product?.ratio_value, ratio_total),
+    trsf_bs_qty_amb: amb, // calcBaseRatios(transfer?.trsf_qty_amb, product?.ratio_value, ratio_total),
+    trsf_bs_qty_cor: cor, // calcBaseRatios(transfer?.trsf_qty_cor, product?.ratio_value, ratio_total),
+    trsf_bs_load_kg: mass, // calcBaseRatios(transfer?.trsf_load_kg, product?.ratio_value, ratio_total),
     trsf_bs_adtv_flag: product?.adtv_flag,
     trsf_bs_ratio_value: product?.ratio_value,
     trsf_bs_ratio_total: ratio_total,
@@ -40,7 +59,7 @@ const buildBaseTransfersByArm = (prodArms, transfer) => {
   if (arms?.length > 0) {
     const sum_ratios = _.sumBy(arms, (o)=>{return _.toNumber(o.ratio_value)});
     _.forEach(arms, (product) => {
-      let ratio_total = product?.ratio_total;
+      /* let ratio_total = product?.ratio_total;
       if (_.toNumber(ratio_total) > sum_ratios) {
         ratio_total = String(sum_ratios);
       }
@@ -62,7 +81,12 @@ const buildBaseTransfersByArm = (prodArms, transfer) => {
         trsf_bs_ratio_total: ratio_total,
         trsf_bs_ratio_total2: product?.ratio_total,
         is_updated: false,
-      });
+      }); */
+      const base = buildBaseTransfer(product, transfer, sum_ratios);
+      // console.log('...................buildBaseTransfersByArm1: ', base?.trsf_bs_temp_tot, transfer?.trsf_temp);
+      // console.log('...................buildBaseTransfersByArm2: ', base, transfer, product);
+      bases.push(base);
+
     });
   }
 
