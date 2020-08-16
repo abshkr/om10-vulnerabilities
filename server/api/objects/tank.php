@@ -16,6 +16,8 @@ class Tank extends CommonClass
         "TANK_MONTHLY_TOL_VOL" => "TANK_MTOL_VOLUME",
         "TANK_MONTHLY_TOL_PERCENT" => "TANK_MTOL_PERCENT",
     );
+
+    protected $del_n_ins_children = false;
     // protected $CHILD_OBJECTS = array(
     //     "TankMaxFlow" => 'TANK_MAX_FLOW');
 
@@ -307,6 +309,16 @@ class Tank extends CommonClass
                 }
             }
         }
+    }
+
+    protected function update_children($old_data = null)
+    {
+        if (!isset($this->tank_max_flow)) {
+            return;
+        }
+        
+        $this->delete_children();
+        $this->insert_children();
     }
 
     protected function delete_children()
