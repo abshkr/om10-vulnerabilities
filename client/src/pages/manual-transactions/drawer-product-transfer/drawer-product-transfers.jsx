@@ -66,6 +66,8 @@ const DrawerProductTransfers = ({
   setDataLoaded,
   productArms,
   setProductArms,
+  drawerChanges,
+  setDrawerChanges,
 }) => {
   console.log('--------------------------', sourceType, supplier, trip, order, tanker);
   const { data } = useSWR((
@@ -773,6 +775,7 @@ const DrawerProductTransfers = ({
       message: t('messages.calculateSuccess'),
       description: t('descriptions.calculateSuccess'),
     });
+    setDrawerChanges([]);
   };
 
   const onCalculateOld = async () => {
@@ -1234,23 +1237,23 @@ const DrawerProductTransfers = ({
 
   const onCellUpdate = (value) => {
     console.log('DrawerProductTransfers: onCellUpdate', value);
-    console.log('DrawerProductTransfers: onCellUpdate2', value?.colDef?.field, value?.colDef?.headerName, value?.value, value?.newValue, value?.data.trsf_cmpt_capacit);
-    /* if (
+    // console.log('DrawerProductTransfers: onCellUpdate2', value?.colDef?.field, value?.colDef?.headerName, value?.value, value?.newValue, value?.data.trsf_cmpt_capacit);
+    if (value?.colDef?.field === 'trsf_arm_cd' || 
+      value?.colDef?.field === 'trsf_temp' || 
       value?.colDef?.field === 'trsf_qty_amb' || 
       value?.colDef?.field === 'trsf_qty_cor' ||
-      value?.colDef?.field === 'trsf_load_kg' 
-    ) {
-      if (_.toNumber(value?.newValue) > _.toNumber(value?.data.trsf_cmpt_capacit)) {
-        notification.error({
-          message: t('validate.outOfRange'),
-          description: value?.colDef?.headerName + ': ' + value?.newValue + ', ' + 
-          t('fields.compartment') + ' ' + t('fields.capacity') + ': ' + value?.data.trsf_cmpt_capacit,
-        });
-      }
-    } */
-    if (value?.colDef?.field === 'trsf_arm_cd') {
-      // console.log('buildMeterTransfers', buildMeterTransfers(productArms, payload));
-      // console.log('buildMeterTotals', buildMeterTotals(productArms, payload));
+      value?.colDef?.field === 'trsf_load_kg') {
+      // user has changed something, remind that re-calc may be required
+      // if (value?.newValue !== value?.oldValue)
+      const changes = drawerChanges;
+      const id = `${value?.colDef?.field}${value?.data.trsf_cmpt_no}`;
+      _.remove(changes, (o) => (o.key === id));
+      changes.push({
+        field: value?.colDef?.headerName + ' [' + t('fields.compartment') + ' ' + value?.data.trsf_cmpt_no + ': ' + value?.newValue + ']',
+        message: t('prompts.valueChangeNeedRecalc'),
+        key: id,
+      });
+      setDrawerChanges(changes);
     }
     setSelected({
       ...value?.data,

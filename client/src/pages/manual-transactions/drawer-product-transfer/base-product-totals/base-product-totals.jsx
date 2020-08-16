@@ -62,7 +62,7 @@ const BaseProductTotals = ({
           total.trsf_bs_temp_mass_tot = _.toNumber(total.trsf_bs_temp_mass_tot) + _.toNumber(item.trsf_bs_temp_mass_tot);
           total.trsf_bs_temp_tot = _.toNumber(total.trsf_bs_load_kg_tot) > 0 
           ? _.toNumber(total.trsf_bs_temp_mass_tot) / _.toNumber(total.trsf_bs_load_kg_tot) : null;
-          console.log('.........basetotals calc: ', total.trsf_bs_temp_tot, total.trsf_bs_load_kg_tot, total.trsf_bs_temp_mass_tot)
+          // console.log('.........basetotals calc: ', total.trsf_bs_temp_tot, total.trsf_bs_load_kg_tot, total.trsf_bs_temp_mass_tot)
           totals[index] = total;
           itemExisted = true;
         }
@@ -70,7 +70,7 @@ const BaseProductTotals = ({
       if (!itemExisted) {
         // item.trsf_bs_temp_tot = null;
         item.trsf_bs_temp_mass_tot = _.toNumber(item.trsf_bs_load_kg_tot) * _.toNumber(item.trsf_bs_temp_tot);
-        console.log('.........basetotals init: ', item.trsf_bs_temp_tot, item.trsf_bs_load_kg_tot, item.trsf_bs_temp_mass_tot)
+        // console.log('.........basetotals init: ', item.trsf_bs_temp_tot, item.trsf_bs_load_kg_tot, item.trsf_bs_temp_mass_tot)
         totals.push(item);
       }
     });

@@ -1763,6 +1763,7 @@
 		"unlockAll": "Are you sure you want to unlock all compartments?",
 		"update": "Are you sure you want to update this record?",
 		"upload": "Are you sure you want to upload this data?",
+		"valueChangeNeedRecalc": "Value may have been changed and the Base Product quantities may need update. Please click 'Calc Drawer' button to re-calculate if necessary.",
 		"zeroEquipmentSelected": "You have not selected equipment for some tankers. If you do not want to choose an existing one, OMEGA will create a new one for you automatically. Continue?"
 	},
 	"tabColumns": {

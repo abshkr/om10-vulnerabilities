@@ -45,6 +45,7 @@ const ManualTransactions = ({ popup, params }) => {
   const [dataBaseTotals, setDataBaseTotals] = useState([]);
   const [dataMeterTransfers, setDataMeterTransfers] = useState([]);
   const [dataMeterTotals, setDataMeterTotals] = useState([]);
+  const [drawerChanges, setDrawerChanges] = useState([]);
 
   const [repost, setRepost] = useState(false);
   // SCHEDULE: doing manual transaction with Load Schedule
@@ -106,7 +107,8 @@ const ManualTransactions = ({ popup, params }) => {
   };
 
   const onItemValidation = (items) => {
-    const errors = [];
+    // const errors = [];
+    const errors = drawerChanges;
 
     // _.forEach(items, (item) => {
     for (let tidx = 0; tidx < items?.length; tidx++) {
@@ -225,6 +227,7 @@ const ManualTransactions = ({ popup, params }) => {
         },
       });
     } */
+
     return errors;
   };
 
@@ -290,6 +293,7 @@ const ManualTransactions = ({ popup, params }) => {
       width: '30vw',
       content: lines,
       onOk: async () => {
+        setDrawerChanges([]);
         try {
           const values = await form.validateFields();
           console.log('MTmain: onSubmit - await values', values);
@@ -580,6 +584,8 @@ const ManualTransactions = ({ popup, params }) => {
           setDataLoaded={setDataLoaded}
           productArms={productArms}
           setProductArms={setProductArms}
+          drawerChanges={drawerChanges}
+          setDrawerChanges={setDrawerChanges}
         />
       </Form>
     </Page>
