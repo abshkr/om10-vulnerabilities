@@ -1754,6 +1754,7 @@
 		"printBOL": "Are you sure you want to print this BOL?",
 		"printDriverInstruction": "Are you sure you want to print this Driver Instruction?",
 		"printLoadReport": "Are you sure you want to print this Load Report?",
+		"productFullyLoaded": "This product has been fully loaded!",
 		"reset": "Are you sure you want to reset this record?",
 		"reverseTransaction": "Are you sure you want to reverse this transaction?",
 		"runAndOverride": "Are you sure you want to run manual closeout and make today an exception?",

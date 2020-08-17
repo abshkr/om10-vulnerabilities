@@ -140,6 +140,18 @@ const ManualTransactions = ({ popup, params }) => {
         });
       }
 
+      // check the planned qty and loaded qty
+      const plan_qty = _.round(_.toNumber(item.trsf_qty_plan), 0);
+      const load_qty = _.round(_.toNumber(item.trsf_qty_left), 0);
+      if (plan_qty === load_qty) {
+        errors.push({
+          field: `${t('fields.drawerProduct')} (${t('fields.compartment')} ${item.trsf_cmpt_no})`,
+          message: `${t('prompts.productFullyLoaded')} [${t('fields.scheduled')}: ${plan_qty}, ${t('fields.loaded')}: ${load_qty}]`,
+          key: `${'trsf_prod_name'}${item.trsf_cmpt_no}`,
+          line: item.trsf_cmpt_no,
+        });
+      }
+
       // The observed quantity must be filled and cannot be zero
       if (!item.trsf_qty_amb || String(item.trsf_qty_amb).trim()==='') {
         errors.push({
