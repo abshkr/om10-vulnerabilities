@@ -291,6 +291,7 @@ const OrderListings = ({popup, params}) => {
           visible={visible}
           handleFormState={handleFormState}
           access={access}
+          config={config}
           pageState={pageState}
           revalidate={revalidate}
           locateOrder={locateOrder}
