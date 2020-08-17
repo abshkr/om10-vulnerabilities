@@ -24,6 +24,8 @@ const DeliveryDetailItems = ({
   supplier,
   loadNumber,
   loadType,
+  supplierName,
+  loadTypeName,
   products,
   pageState 
 }) => {
@@ -65,7 +67,7 @@ const DeliveryDetailItems = ({
       ddi_action: '+',
       ddi_line_item_num: String(length),
       ddi_dd_supp_code: supplier,
-      ddi_prod_cmpyname: '', // TODO
+      ddi_prod_cmpyname: supplierName, // TODO
       ddi_dd_ld_type: loadType,
       ddi_dd_tripord_no: loadNumber,
       ddi_dd_number: value?.dd_number,
@@ -211,6 +213,8 @@ const DeliveryDetailItems = ({
             supplier={supplier}
             loadNumber={loadNumber}
             loadType={loadType}
+            supplierName={supplierName}
+            loadTypeName={loadTypeName}
           />
         </Drawer>
       )}

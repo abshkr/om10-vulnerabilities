@@ -24,13 +24,15 @@ const DeliveryNoteTemplates = ({
   supplier,
   loadNumber,
   loadType,
-  templates,
+  supplierName,
+  loadTypeName,
   pageState 
 }) => {
   const [selected, setSelected] = useState(null);
   const [tableAPI, setTableAPI] = useState(null);
   const [size, setSize] = useState(0);
   const [templateItem, setTemplateItem] = useState(undefined);
+  const [templateList, setTemplateList] = useState([]);
   const [dddAddlInfoVisible, setDddAddlInfoVisible] = useState(false);
 
   // console.log("values: ", value);
@@ -38,6 +40,8 @@ const DeliveryNoteTemplates = ({
   const disabled = selected?.length === 0 || !selected;
   const { t } = useTranslation();
   const fields = columns(t, pageState, form);
+
+  const { data: templates } = useSWR(`${DELIVERY_DETAILS.TEMPLATES}?tmpl_type=1`);
 
   const { data: payload, isValidating } = useSWR(
     `${DELIVERY_DETAILS.DD_DN_TEMPLATES}?dd_number=${value?.dd_number}&dd_supp_code=${value?.dd_supp_code}&dd_tripord_no=${value?.dd_tripord_no}&dd_ld_type=${value?.dd_ld_type}`
@@ -47,15 +51,42 @@ const DeliveryNoteTemplates = ({
   const data = payload?.records;
   const isLoading = isValidating || !data;
 
+  const adjustTemplates = (templates, records) => {
+    const list = [];
+    _.forEach(templates, (item) => {
+      const found = _.find(records, (o) => (o.ddd_templ_id === item.template_code));
+      if (found !== undefined) {
+        item.template_used = true;
+      } else {
+        item.template_used = false;
+      }
+      list.push(item);
+    });
+    return list;
+  };
+
+  const adjustRecords = () => {
+    let size = 0;
+    const payload = [];
+    
+    tableAPI.forEachNode((rowNode, index) => {
+      size = size + 1;
+      payload.push(rowNode?.data);
+    });
+    setSize(size);
+    const list = adjustTemplates(templateList, payload);
+    setTemplateList(list);
+  };
+
   const handleItemAdd = () => {
     const length = size + 1;
 
     const line = {
       ddd_action: '+',
       ddd_dd_supp_code: supplier,
-      ddd_dd_supp_name: '', // TODO
+      ddd_dd_supp_name: supplierName,
       ddd_dd_ld_type: loadType,
-      ddd_dd_load_typename: '', // TODO
+      ddd_dd_load_typename: loadTypeName,
       ddd_dd_tripord_no: loadNumber,
       ddd_dd_number: value?.dd_number,
       ddd_templ_id: !templateItem?.template_code ? '' : templateItem?.template_code,
@@ -66,10 +97,13 @@ const DeliveryNoteTemplates = ({
     setSize(length);
 
     tableAPI.updateRowData({ add: [line] });
+    setTemplateItem(undefined);
+    adjustRecords();
   };
 
   const handleItemRemove = () => {
     tableAPI.updateRowData({ remove: selected });
+    adjustRecords();
   };
 
   const handleItemSelect = (items) => {
@@ -99,23 +133,41 @@ const DeliveryNoteTemplates = ({
     setTemplateItem(record?.item);
   };
 
+  useEffect(() => {
+    if (payload) {
+      setSize(payload?.records?.length);
+      if (templates) {
+        const list = adjustTemplates(templates?.records, payload?.records);
+        setTemplateList(list);
+      }
+    }
+  }, [payload, setSize, templates, setTemplateList]);
+
   return (
     <>
       <Select
         dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
+        allowClear
+        value={templateItem?.template_code}
         disabled={false}
         onChange={onClick}
         style={{width: '50%'}}
         optionFilterProp="children"
-        placeholder={!templateItem ? t('placeholder.selectDnTemplate') : null}
+        // placeholder={!templateItem ? t('placeholder.selectDnTemplate') : null}
+        placeholder={t('placeholder.selectDnTemplate')}
         filterOption={(input, option) =>
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
-        {templates?.records.filter((o)=>(o.template_type==='1')).map((item, index) => (
-          <Select.Option key={index} value={item.template_code} item={item}>
+        {templateList?.map((item, index) => (
+          <Select.Option
+            key={index}
+            value={item.template_code}
+            item={item}
+            disabled={item.template_used}
+          >
             {item.template_name}
           </Select.Option>
         ))}
@@ -172,6 +224,8 @@ const DeliveryNoteTemplates = ({
             supplier={supplier}
             loadNumber={loadNumber}
             loadType={loadType}
+            supplierName={supplierName}
+            loadTypeName={loadTypeName}
           />
         </Drawer>
       )}

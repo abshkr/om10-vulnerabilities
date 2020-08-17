@@ -24,6 +24,8 @@ const DdiAdditionalInfo = ({
   supplier,
   loadNumber,
   loadType,
+  supplierName,
+  loadTypeName,
 }) => {
   // const [data, setData] = useState(undefined);
   const [selected, setSelected] = useState(null);
@@ -153,10 +155,10 @@ const DdiAdditionalInfo = ({
 
     const line = {
       ddi_addl_action: '+',
-      ddi_dd_supp_code: value?.ddi_dd_supp_code, // supplier
-      ddi_dd_supp_name: value?.ddi_dd_supp_name,
+      ddi_dd_supp_code: value?.ddi_dd_supp_code, // supplier,
+      ddi_dd_supp_name: value?.ddi_dd_supp_name, // supplierName,
       ddi_dd_ld_type: value?.ddi_dd_ld_type, // loadType,
-      ddi_dd_load_typename: value?.ddi_dd_load_typename,
+      ddi_dd_load_typename: value?.ddi_dd_load_typename, // loadTypeName,
       ddi_dd_tripord_no: value?.ddi_dd_tripord_no, //loadNumber,
       ddi_dd_number: value?.ddi_dd_number,
       ddi_line_item_num: value?.ddi_line_item_num,

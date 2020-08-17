@@ -24,6 +24,8 @@ const DddAdditionalInfo = ({
   supplier,
   loadNumber,
   loadType,
+  supplierName,
+  loadTypeName,
 }) => {
   // const [data, setData] = useState(undefined);
   const [selected, setSelected] = useState(null);
@@ -153,10 +155,10 @@ const DddAdditionalInfo = ({
 
     const line = {
       ddd_addl_action: '+',
-      ddd_dd_supp_code: value?.ddd_dd_supp_code, // supplier
-      ddd_dd_supp_name: value?.ddd_dd_supp_name,
+      ddd_dd_supp_code: value?.ddd_dd_supp_code, // supplier,
+      ddd_dd_supp_name: value?.ddd_dd_supp_name, // supplierName,
       ddd_dd_ld_type: value?.ddd_dd_ld_type, // loadType,
-      ddd_dd_load_typename: value?.ddd_dd_load_typename,
+      ddd_dd_load_typename: value?.ddd_dd_load_typename, // loadTypeName,
       ddd_dd_tripord_no: value?.ddd_dd_tripord_no, //loadNumber,
       ddd_dd_number: value?.ddd_dd_number,
       ddd_templ_id: value?.ddd_templ_id,

@@ -62,12 +62,11 @@ const FormModal = ({
   supplier,
   loadNumber,
   loadType,
+  supplierName,
+  loadTypeName,
 }) => {
   const [drawerWidth, setDrawerWidth] = useState('80vw');
   const [mainTabOn, setMainTabOn] = useState(true);
-
-  // const { data: units } = useSWR(DELIVERY_DETAILS.UNIT_TYPES);
-  const { data: templates } = useSWR(DELIVERY_DETAILS.TEMPLATES);
 
   // 1: PREORDER; 2: PRESCHEDULE; 3: OPENORDER
   const productUrl = ( loadType === '1' 
@@ -444,6 +443,8 @@ const FormModal = ({
                     supplier={supplier}
                     loadNumber={loadNumber}
                     loadType={loadType}
+                    supplierName={supplierName}
+                    loadTypeName={loadTypeName}
                     products={products}
                     pageState={pageState}
                   />
@@ -460,7 +461,8 @@ const FormModal = ({
                     supplier={supplier}
                     loadNumber={loadNumber}
                     loadType={loadType}
-                    templates={templates}
+                    supplierName={supplierName}
+                    loadTypeName={loadTypeName}
                     pageState={pageState}
                   />
                 </Card>
@@ -474,7 +476,6 @@ const FormModal = ({
                     supplier={supplier}
                     loadNumber={loadNumber}
                     loadType={loadType}
-                    templates={templates}
                     pageState={pageState}
                   />
                 </Card>

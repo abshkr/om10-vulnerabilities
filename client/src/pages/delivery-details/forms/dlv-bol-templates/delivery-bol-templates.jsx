@@ -22,19 +22,23 @@ const DeliveryBolTemplates = ({
   supplier,
   loadNumber,
   loadType,
-  templates,
+  supplierName,
+  loadTypeName,
 }) => {
   // const [data, setData] = useState(undefined);
   const [selected, setSelected] = useState(null);
   const [tableAPI, setTableAPI] = useState(null);
   const [size, setSize] = useState(0);
   const [templateItem, setTemplateItem] = useState(undefined);
+  const [templateList, setTemplateList] = useState([]);
 
   // console.log("DeliveryBolTemplates - values: ", value);
 
   const disabled = selected?.length === 0 || !selected;
   const { t } = useTranslation();
   const fields = columns(t, pageState);
+
+  const { data: templates } = useSWR(`${DELIVERY_DETAILS.TEMPLATES}?tmpl_type=1`);
 
   const { data: payload, isValidating } = useSWR(
     `${DELIVERY_DETAILS.DLV_BOL_TEMPLATES}?dd_supp_code=${supplier}&dd_tripord_no=${loadNumber}&dd_ld_type=${loadType}`
@@ -52,7 +56,7 @@ const DeliveryBolTemplates = ({
       setTemplateItem(undefined);
       // revalidate();
       // adjustPayload();
-      setDataSize();
+      adjustRecords();
 
       notification.success({
         message: t('messages.createSuccess'),
@@ -60,7 +64,7 @@ const DeliveryBolTemplates = ({
       });
     })
     .catch((errors) => {
-      setDataSize();
+      adjustRecords();
       _.forEach(errors.response.data.errors, (error) => {
         notification.error({
           message: error.type,
@@ -77,7 +81,7 @@ const DeliveryBolTemplates = ({
       tableAPI.updateRowData({ update: [line] });
       // revalidate();
       // adjustPayload();
-      setDataSize();
+      adjustRecords();
 
       notification.success({
         message: t('messages.updateSuccess'),
@@ -85,7 +89,7 @@ const DeliveryBolTemplates = ({
       });
     })
     .catch((errors) => {
-      setDataSize();
+      adjustRecords();
       _.forEach(errors.response.data.errors, (error) => {
         notification.error({
           message: error.type,
@@ -102,7 +106,7 @@ const DeliveryBolTemplates = ({
       tableAPI.updateRowData({ remove: [line] });
       // revalidate();
       // adjustPayload();
-      setDataSize();
+      adjustRecords();
 
       notification.success({
         message: t('messages.deleteSuccess'),
@@ -110,7 +114,7 @@ const DeliveryBolTemplates = ({
       });
     })
     .catch((errors) => {
-      setDataSize();
+      adjustRecords();
       _.forEach(errors.response.data.errors, (error) => {
         notification.error({
           message: error.type,
@@ -136,13 +140,31 @@ const DeliveryBolTemplates = ({
     return nextNo + 1;
   };
 
-  const setDataSize = () => {
+  const adjustTemplates = (templates, records) => {
+    const list = [];
+    _.forEach(templates, (item) => {
+      const found = _.find(records, (o) => (o.db_templ_id === item.template_code));
+      if (found !== undefined) {
+        item.template_used = true;
+      } else {
+        item.template_used = false;
+      }
+      list.push(item);
+    });
+    return list;
+  };
+
+  const adjustRecords = () => {
     let size = 0;
+    const payload = [];
     
     tableAPI.forEachNode((rowNode, index) => {
       size = size + 1;
+      payload.push(rowNode?.data);
     });
     setSize(size);
+    const list = adjustTemplates(templateList, payload);
+    setTemplateList(list);
   };
 
   const handleItemAdd = () => {
@@ -151,9 +173,9 @@ const DeliveryBolTemplates = ({
     const line = {
       db_action: '+',
       db_supp_code: supplier,
-      db_supp_name: '', // TODO
+      db_supp_name: supplierName,
       db_ld_type: loadType,
-      db_load_typename: '', // TODO
+      db_load_typename: loadTypeName,
       db_tripord_no: loadNumber,
       db_templ_id: !templateItem?.template_code ? '' : templateItem?.template_code,
       editable: false,
@@ -220,8 +242,12 @@ const DeliveryBolTemplates = ({
   useEffect(() => {
     if (payload) {
       setSize(payload?.records?.length);
+      if (templates) {
+        const list = adjustTemplates(templates?.records, payload?.records);
+        setTemplateList(list);
+      }
     }
-  }, [payload, setSize]);
+  }, [payload, setSize, templates, setTemplateList]);
 
   return (
     <>
@@ -229,17 +255,25 @@ const DeliveryBolTemplates = ({
         dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
+        allowClear
+        value={templateItem?.template_code}
         disabled={false}
         onChange={onClick}
         style={{width: '50%'}}
         optionFilterProp="children"
-        placeholder={!templateItem ? t('placeholder.selectBolTemplate') : null}
+        // placeholder={!templateItem ? t('placeholder.selectBolTemplate') : null}
+        placeholder={t('placeholder.selectBolTemplate')}
         filterOption={(input, option) =>
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
-        {templates?.records.filter((o)=>(o.template_type==='1')).map((item, index) => (
-          <Select.Option key={index} value={item.template_code} item={item}>
+        {templateList?.map((item, index) => (
+          <Select.Option
+            key={index}
+            value={item.template_code}
+            item={item}
+            disabled={item.template_used}
+          >
             {item.template_name}
           </Select.Option>
         ))}
