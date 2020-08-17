@@ -53,7 +53,7 @@ import { ManualTransactionsPopup } from '../../manual-transactions';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, pageState, revalidate, locateOrder }) => {
+const FormModal = ({ value, visible, handleFormState, access, config, pageState, revalidate, locateOrder }) => {
   const [drawerWidth, setDrawerWidth] = useState('80vw');
   const [mainTabOn, setMainTabOn] = useState(true);
   const [tableAPI, setTableAPI] = useState(undefined);
@@ -80,12 +80,38 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
 
   //console.log("access in OO", access);
   //console.log('pageState in OO', pageState);
-
+  /*
+    6 - ORD_EXPIRED: order expired
+    0 - ORD_NEW: new order
+    5 - ORD_COMPLETED: fully delivered  !!!
+    8 - ORD_PARTIALLY_COMPLETED: fully loaded but partially delivered !!!
+    3 - ORD_DELIVERY: fully loaded but not delivered yet  !!!
+    1 - ORD_FILLING: partially scheduled
+    7 - ORD_PARTIALLY_DELIVERY: partially loaded but not all loaded
+    2 - ORD_SCHEDULED: fully scheduled  ??
+    4 - ORD_OUTSTANDING : other status
+  */
+  /*
+    { "ordstat_type_id": "0",         "ordstat_type_name": "NEW"  },
+    { "ordstat_type_id": "1",         "ordstat_type_name": "PARTIALLY SCHEDULED" },
+    { "ordstat_type_id": "2",         "ordstat_type_name": "FULLY SCHEDULED" },
+    { "ordstat_type_id": "3",         "ordstat_type_name": "FULLY LOADED" },
+    { "ordstat_type_id": "4",         "ordstat_type_name": "OUTSTANDING" },
+    { "ordstat_type_id": "5",         "ordstat_type_name": "FULLY DELIVERED" },
+    { "ordstat_type_id": "6",         "ordstat_type_name": "EXPIRED" },
+    { "ordstat_type_id": "7",         "ordstat_type_name": "PARTIALLY LOADED" },
+    { "ordstat_type_id": "8",         "ordstat_type_name": "PARTIALLY DELIVERED" }
+  */
   const IS_CREATING = !value;
+  const CAN_MAKE_TRANSACTIONS = 
+    access.canCreate && config.manageMakeManualTransaction && value?.order_approved && 
+    (value?.order_stat_id === '0' || value?.order_stat_id === '1' || value?.order_stat_id === '7' || value?.order_stat_id === '2');
+
   //const CAN_ORDER_PERIOD = !!selected && !!value;
   const CAN_ORDER_PERIOD =
     selected !== null && selected !== undefined && value !== null && value !== undefined;
-  const CAN_DELIVERY_DETAIL = value !== null && value !== undefined;
+  const CAN_DELIVERY_DETAIL = 
+    value !== null && value !== undefined && config.manageViewDeliveryDetails;
   const fields = columns(t, pageState, form, units);
 
   const token = sessionStorage.getItem('token');
@@ -650,7 +676,11 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
           <TabPane tab={t('tabColumns.orderItemTrips')} disabled={IS_CREATING || !selected} key="3">
             <OrderItemTrips value={value} orderItem={selected} />
           </TabPane>
-          <TabPane tab={t('tabColumns.deliveryDetails')} disabled={IS_CREATING} key="4">
+          <TabPane 
+            tab={t('tabColumns.deliveryDetails')} 
+            disabled={IS_CREATING || !CAN_DELIVERY_DETAIL} 
+            key="4"
+          >
             <DeliveryDetails
               access={access}
               params={{
@@ -660,7 +690,11 @@ const FormModal = ({ value, visible, handleFormState, access, pageState, revalid
               }}
             />
           </TabPane>
-          <TabPane tab={t('pageNames.manualTransactions')} disabled={IS_CREATING || !value?.order_approved} key="5">
+          <TabPane
+            tab={t('pageNames.manualTransactions')}
+            disabled={IS_CREATING || !CAN_MAKE_TRANSACTIONS}
+            key="5"
+          >
             <ManualTransactionsPopup 
               popup={true}
               params={{

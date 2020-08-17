@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Select } from 'antd';
+import { Select, notification } from 'antd';
 import _ from 'lodash';
 
 import {calcBaseRatios, calcArmDensity, getAvailableArms, adjustProductArms} from '../../../../utils'
@@ -46,6 +46,15 @@ export default class DrawerProducts extends Component {
     if (sourceType === 'OPENORDER' || (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT')) {
       current[index].trsf_qty_plan = record?.item?.qty_planned;
       current[index].trsf_qty_left = record?.item?.qty_loaded;
+      const plan_qty = _.round(_.toNumber(record?.item?.qty_planned), 0);
+      const load_qty = _.round(_.toNumber(record?.item?.qty_loaded), 0);
+      if (plan_qty === load_qty) {
+        notification.error({
+          key: 'prod_plan_load',
+          message: t('prompts.productFullyLoaded'),
+          description: t('fields.scheduled') + ': ' + plan_qty + ', ' + t('fields.loaded') + ': ' + load_qty,
+        });
+      }
     }
     current[index].trsf_density = items?.length>0 ? this.calcDensity(items?.[0]?.stream_armcode, prodArms) : null;
     current[index].trsf_temp = null;

@@ -452,7 +452,7 @@ const FormModal = ({
             </Row>
 
             <Row gutter={[8, 2]}>
-              <Col span={12}>
+              <Col span={24}>
                 <Card size="small" title={t('divider.dddTitle')}>
                   <DeliveryNoteTemplates
                     form={form}
@@ -466,7 +466,7 @@ const FormModal = ({
                 </Card>
               </Col>
 
-              <Col span={12}>
+              {/* <Col span={12}>
                 <Card size="small" title={t('divider.ddbTitle')}>
                   <DeliveryBolTemplates
                     form={form}
@@ -478,18 +478,11 @@ const FormModal = ({
                     pageState={pageState}
                   />
                 </Card>
-              </Col>
+              </Col> */}
             </Row>
           </TabPane>
-          {/* <TabPane tab={t('tabColumns.orderTrips')} disabled={IS_CREATING} key="2">
-          </TabPane>
-          <TabPane tab={t('tabColumns.orderItemTrips')} disabled={IS_CREATING||!selected} key="3">
-          </TabPane>
-          <TabPane tab={t('tabColumns.deliveryDetails')} disabled={IS_CREATING} key="4">
-          </TabPane> */}
         </Tabs>
       </Form>
-      {/* <Period visible={showPeriod && CAN_ORDER_PERIOD} setVisibility={setShowPeriod} selected={selected} order={value} form={form} /> */}
     </Drawer>
   );
 };

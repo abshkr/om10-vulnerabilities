@@ -8,7 +8,7 @@ import {
   LockOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Button, Form, Select } from 'antd';
+import { Button, Form, Select, Drawer, Tooltip } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
 
@@ -16,6 +16,7 @@ import { DataTable } from '../../../../components';
 import { DELIVERY_DETAILS } from '../../../../api';
 
 import columns from './columns';
+import DddAdditionalInfo from '../ddd-addl-info';
 
 const DeliveryNoteTemplates = ({
   form,
@@ -30,6 +31,7 @@ const DeliveryNoteTemplates = ({
   const [tableAPI, setTableAPI] = useState(null);
   const [size, setSize] = useState(0);
   const [templateItem, setTemplateItem] = useState(undefined);
+  const [dddAddlInfoVisible, setDddAddlInfoVisible] = useState(false);
 
   // console.log("values: ", value);
 
@@ -39,6 +41,7 @@ const DeliveryNoteTemplates = ({
 
   const { data: payload, isValidating } = useSWR(
     `${DELIVERY_DETAILS.DD_DN_TEMPLATES}?dd_number=${value?.dd_number}&dd_supp_code=${value?.dd_supp_code}&dd_tripord_no=${value?.dd_tripord_no}&dd_ld_type=${value?.dd_ld_type}`
+    , { revalidateOnFocus: false }
   );
 
   const data = payload?.records;
@@ -106,7 +109,7 @@ const DeliveryNoteTemplates = ({
         onChange={onClick}
         style={{width: '50%'}}
         optionFilterProp="children"
-        placeholder={!value ? t('placeholder.selectDnTemplate') : null}
+        placeholder={!templateItem ? t('placeholder.selectDnTemplate') : null}
         filterOption={(input, option) =>
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
@@ -137,6 +140,41 @@ const DeliveryNoteTemplates = ({
       >
         {t('operations.deleteLineItem')}
       </Button>
+
+      <Tooltip 
+        placement="topLeft" 
+        title={t('tabColumns.dddAddlInfo')}
+      >
+        <Button
+          type="primary"
+          icon={<EditOutlined />}
+          style={{ float: 'right', marginRight: 5 }}
+          disabled={!selected}
+          onClick={() => setDddAddlInfoVisible(true)}
+        >
+          {t('operations.additionalInfo')}
+        </Button>
+      </Tooltip>
+
+      {dddAddlInfoVisible && (
+        <Drawer
+          title={t('tabColumns.dddAddlInfo')}
+          placement="right"
+          bodyStyle={{ paddingTop: 40, paddingRight: 30 }}
+          onClose={() => setDddAddlInfoVisible(false)}
+          visible={dddAddlInfoVisible}
+          width="50vw"
+        >
+          <DddAdditionalInfo
+            form={form}
+            value={selected?.[0]}
+            pageState={pageState}
+            supplier={supplier}
+            loadNumber={loadNumber}
+            loadType={loadType}
+          />
+        </Drawer>
+      )}
 
       <Form.Item name="ddd_items">
         <DataTable
