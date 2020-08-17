@@ -79,7 +79,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
 
   const temperaturePostfix = (
     <Form.Item name="tank_temp_unit" noStyle>
-      <Select defaultValue={config?.temperatureUnit || 'degC'} onChange={handleTemperature}>
+      <Select style={{width:"120px"}} defaultValue={config?.temperatureUnit || 'degC'} onChange={handleTemperature}>
         <Option value="degC">Celcius</Option>
         <Option value="degF">Fahrenheit</Option>
       </Select>
