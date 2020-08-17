@@ -12,7 +12,13 @@ class Feature extends CommonClass
     
     public function read()
     {
-        $feature_array = json_decode(file_get_contents("../../config/FeatureSettings.json"));
+        $file = null;
+        if (file_exists("../../config/FeatureSettings.json")) {
+            $file = "../../config/FeatureSettings.json";
+        } else {
+            $file = "../../config/FeatureSettings.default";
+        }
+        $feature_array = json_decode(file_get_contents($file));
         foreach ($feature_array as $item) {
             foreach ($item as $key => $value) {
                 if ($key === "feature_gui" || $key === "feature_flag") {
