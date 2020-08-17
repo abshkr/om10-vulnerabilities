@@ -157,7 +157,7 @@ const RelationForm = ({ value, handleFormState }) => {
               onClick={onModify}
               disabled={!selected}
             >
-              {t('operations.update')}
+              {t('operations.edit')}
             </Button>
 
             <Button
