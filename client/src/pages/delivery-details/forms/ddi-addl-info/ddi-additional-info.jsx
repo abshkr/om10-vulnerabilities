@@ -279,7 +279,7 @@ const DdiAdditionalInfo = ({
         icon={<MinusOutlined />}
         disabled={disabled}
         onClick={handleItemRemove}
-        style={{ marginBottom: 10 }}
+        style={{ marginBottom: 10, marginRight: 5 }}
       >
         {t('operations.deleteLineItem')}
       </Button>

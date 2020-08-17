@@ -56,7 +56,7 @@ import { ManualTransactionsPopup } from '../../manual-transactions';
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, url, locateTrip }) => {
-  const { manageMakeManualTransaction, showSeals, manageAdditionalHostData } = useConfig();
+  const { manageMakeManualTransaction, showSeals, manageAdditionalHostData, manageViewDeliveryDetails } = useConfig();
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -88,6 +88,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const READ_ONLY = value?.status !== 'F' && !IS_CREATING;
   const CAN_VIEW_REPORTS = value?.shlsload_load_id !== '0';
   const CAN_VIEW_TRANSACTIONS = value?.status !== 'F';
+  const CAN_DELIVERY_DETAIL = 
+    value !== null && value !== undefined && manageViewDeliveryDetails;
 
   const CAN_REVERSE = 
     (value?.load_reverse_flag === '0' || value?.load_reverse_flag === '2') &&
@@ -809,7 +811,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             <Seals value={value} sealUpated={onSealUpdate} />
           </TabPane>
 
-          <TabPane tab={t('tabColumns.deliveryDetails')} disabled={IS_CREATING} key="6">
+          <TabPane 
+            tab={t('tabColumns.deliveryDetails')} 
+            disabled={IS_CREATING || !CAN_DELIVERY_DETAIL} 
+            key="6"
+          >
             <DeliveryDetails
               access={access}
               params={{

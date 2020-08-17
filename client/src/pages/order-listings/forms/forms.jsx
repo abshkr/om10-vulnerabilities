@@ -110,7 +110,8 @@ const FormModal = ({ value, visible, handleFormState, access, config, pageState,
   //const CAN_ORDER_PERIOD = !!selected && !!value;
   const CAN_ORDER_PERIOD =
     selected !== null && selected !== undefined && value !== null && value !== undefined;
-  const CAN_DELIVERY_DETAIL = value !== null && value !== undefined;
+  const CAN_DELIVERY_DETAIL = 
+    value !== null && value !== undefined && config.manageViewDeliveryDetails;
   const fields = columns(t, pageState, form, units);
 
   const token = sessionStorage.getItem('token');
@@ -675,7 +676,11 @@ const FormModal = ({ value, visible, handleFormState, access, config, pageState,
           <TabPane tab={t('tabColumns.orderItemTrips')} disabled={IS_CREATING || !selected} key="3">
             <OrderItemTrips value={value} orderItem={selected} />
           </TabPane>
-          <TabPane tab={t('tabColumns.deliveryDetails')} disabled={IS_CREATING} key="4">
+          <TabPane 
+            tab={t('tabColumns.deliveryDetails')} 
+            disabled={IS_CREATING || !CAN_DELIVERY_DETAIL} 
+            key="4"
+          >
             <DeliveryDetails
               access={access}
               params={{

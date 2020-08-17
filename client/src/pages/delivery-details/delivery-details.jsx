@@ -80,7 +80,7 @@ const DeliveryDetails = ({ access, params }) => {
         <Button
           type="primary"
           icon={<EditOutlined />}
-          style={{ float: 'right', marginRight: 5 }}
+          style={{ float: 'left', marginRight: 5 }}
           disabled={false}
           onClick={() => setDelvBolVisible(true)}
         >
