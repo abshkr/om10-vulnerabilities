@@ -26,10 +26,12 @@ const DeliveryNoteTemplates = ({
   loadType,
   supplierName,
   loadTypeName,
-  pageState 
+  pageState,
+  tableAPI,
+  setTableAPI,
 }) => {
   const [selected, setSelected] = useState(null);
-  const [tableAPI, setTableAPI] = useState(null);
+  // const [tableAPI, setTableAPI] = useState(null);
   const [size, setSize] = useState(0);
   const [templateItem, setTemplateItem] = useState(undefined);
   const [templateList, setTemplateList] = useState([]);

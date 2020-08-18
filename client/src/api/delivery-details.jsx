@@ -19,20 +19,16 @@ export const UNIT_TYPES = '/api/pages/delivery_detail/unit_types.php';
 export const SHIP_TO = '/api/pages/delivery_detail/ship_to.php';
 export const SOLD_TO = '/api/pages/delivery_detail/sold_to.php';
 
-export const NEXT_CUST_ORDER = '/api/pages/delivery_detail/next_cust_order.php';
 export const CARRIERS = '/api/pages/delivery_detail/carriers.php';
 export const SUPP_CUSTOMERS = '/api/pages/delivery_detail/supp_customers.php';
 export const DRAWERS = '/api/pages/delivery_detail/drawers.php';
 export const DELV_LOCATIONS = '/api/pages/delivery_detail/delv_locations.php';
 export const TERMINAL = '/api/pages/delivery_detail/terminals.php';
 export const SITE_CODE = '/api/pages/delivery_detail/site_code.php';
-export const INSTRUCTIONS = '/api/pages/delivery_detail/order_instructions.php';
 
 export const CREATE = '/api/pages/delivery_detail/create.php';
 export const UPDATE = '/api/pages/delivery_detail/update.php';
 export const DELETE = '/api/pages/delivery_detail/delete.php';
-export const APPROVE = '/api/pages/delivery_detail/approve.php';
-export const UNAPPROVE = '/api/pages/delivery_detail/unapprove.php';
 
 // Delivery Detail BOL Template
 export const DELV_BOL_READ = '/api/pages/delv_bol/read.php';

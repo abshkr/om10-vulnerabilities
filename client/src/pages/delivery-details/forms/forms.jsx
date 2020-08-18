@@ -67,6 +67,8 @@ const FormModal = ({
 }) => {
   const [drawerWidth, setDrawerWidth] = useState('80vw');
   const [mainTabOn, setMainTabOn] = useState(true);
+  const [ddiTableAPI, setDdiTableAPI] = useState(null);
+  const [dddTableAPI, setDddTableAPI] = useState(null);
 
   // 1: PREORDER; 2: PRESCHEDULE; 3: OPENORDER
   const productUrl = ( loadType === '1' 
@@ -129,47 +131,18 @@ const FormModal = ({
 
   const onFinish = async () => {
     const values = await validateFields();
-    const orderItems = [];
-    // // TODO
-    // return;
-
-    _.forEach(values?.order_items, (order_item) => {
-      if (order_item.oitem_prod_qty > 0) {
-        orderItems.push({
-          oitem_prod_cmpy: order_item.oitem_prod_cmpy,
-          oitem_prod_code: order_item.oitem_prod_code,
-          oitem_prod_qty: _.toNumber(order_item.oitem_prod_qty),
-          oitem_prod_unit: _.toNumber(order_item.oitem_prod_unit),
-          oitem_pack_size: _.toNumber(order_item.oitem_pack_size),
-          oitem_prod_price: _.toNumber(order_item.oitem_prod_price),
-          oitem_exempt_no: order_item.oitem_exempt_no,
-          oitem_padj_code: order_item.oitem_padj_code,
-        });
-      }
+    const ddi_items=[];
+    ddiTableAPI.forEachNode((rowNode, index) => {
+      rowNode.data.ddi_dd_number = values?.dd_number;
+      ddi_items.push(rowNode?.data);
     });
-
-    values.order_items = orderItems;
-    if (value?.order_sys_no === undefined) {
-      values.order_sys_no = -1;
-    } else {
-      values.order_sys_no = value?.order_sys_no;
-    }
-    console.log('values:', value?.order_sys_no, orderNo, values);
-    console.log('date before', values.order_ord_time, values.order_dlv_time, values.order_exp_time);
-    values.order_ord_time = values?.order_ord_time?.format(SETTINGS.DATE_TIME_FORMAT);
-    values.order_dlv_time = values?.order_dlv_time?.format(SETTINGS.DATE_TIME_FORMAT);
-    values.order_exp_time = values?.order_exp_time?.format(SETTINGS.DATE_TIME_FORMAT);
-    values.dd_veh_arr_time = values?.dd_veh_arr_time?.format(SETTINGS.DATE_TIME_FORMAT);
-
-    console.log('date after', values.order_ord_time, values.order_dlv_time, values.order_exp_time);
-
-    values.order_styp_id = 0;
-    values.order_totals = 0;
-    values.order_limit = 0;
-    values.order_src_id = 5;
-    if (user_code !== undefined) {
-      values.order_psnl_code = user_code;
-    }
+    const ddd_items=[];
+    dddTableAPI.forEachNode((rowNode, index) => {
+      rowNode.data.ddd_dd_number = values?.dd_number;
+      ddd_items.push(rowNode?.data);
+    });
+    values.ddi_items = ddi_items;
+    values.ddd_items = ddd_items;
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
@@ -447,6 +420,8 @@ const FormModal = ({
                     loadTypeName={loadTypeName}
                     products={products}
                     pageState={pageState}
+                    tableAPI={ddiTableAPI}
+                    setTableAPI={setDdiTableAPI}
                   />
                 </Card>
               </Col>
@@ -464,6 +439,8 @@ const FormModal = ({
                     supplierName={supplierName}
                     loadTypeName={loadTypeName}
                     pageState={pageState}
+                    tableAPI={dddTableAPI}
+                    setTableAPI={setDddTableAPI}
                   />
                 </Card>
               </Col>

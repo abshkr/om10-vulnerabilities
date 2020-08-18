@@ -27,10 +27,12 @@ const DeliveryDetailItems = ({
   supplierName,
   loadTypeName,
   products,
-  pageState 
+  pageState,
+  tableAPI,
+  setTableAPI,
 }) => {
   const [selected, setSelected] = useState(null);
-  const [tableAPI, setTableAPI] = useState(null);
+  // const [tableAPI, setTableAPI] = useState(null);
   const [size, setSize] = useState(0);
   const [productItem, setProductItem] = useState(undefined);
   const [ddiAddlInfoVisible, setDdiAddlInfoVisible] = useState(false);

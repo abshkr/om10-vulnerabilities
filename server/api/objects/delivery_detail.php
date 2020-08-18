@@ -10,14 +10,59 @@ include_once 'common_class.php';
 
 class DeliveryDetail extends CommonClass
 {
+    /*
+        DELV_DETAILS
+        dd_number	1
+        dd_supp_code	2
+        dd_tripord_no	3
+        dd_ld_type	4
+
+        DELV_DETAILS_DN
+        ddd_templ_id	1
+        ddd_dd_number	2
+        ddd_dd_supp_code	3
+        ddd_dd_tripord_no	4
+        ddd_dd_ld_type	5
+
+        DELV_DETAILS_DN_ADDL_INFO
+        ddd_templ_id	1
+        ddd_dd_number	2
+        ddd_dd_supp_code	3
+        ddd_dd_tripord_no	4
+        ddd_dd_ld_type	5
+        addi_fld_line_no	6
+
+        DELV_DETAILS_ITEM
+        ddi_line_item_num	1
+        ddi_dd_number	2
+        ddi_dd_supp_code	3
+        ddi_dd_tripord_no	4
+        ddi_dd_ld_type	5
+
+        DELV_DETAILS_ITEM_ADDL_INFO
+        ddi_line_item_num	1
+        ddi_dd_number	2
+        ddi_dd_supp_code	3
+        ddi_dd_tripord_no	4
+        ddi_dd_ld_type	5
+        addi_fld_line_no	6
+
+        DELV_BOL
+        db_templ_id	1
+        db_supp_code	2
+        db_tripord_no	3
+        db_ld_type	4
+    */
+
     protected $TABLE_NAME = 'DELV_DETAILS';
     //protected $VIEW_NAME = '';
     protected $primary_keys = array("dd_number", "dd_supp_code", "dd_tripord_no", "dd_ld_type");
     
-    protected $del_n_ins_children = false;   //Because OPRODMTD has child OPROD_CHILD
+    protected $del_n_ins_children = false;   //Because both DELV_DETAILS_ITEM and DELV_DETAILS_DN have children
 
     protected $table_view_map = array(
     );
+
     public $NUMBER_FIELDS = array(
         "DD_TRIPORD_NO",
         "DD_LD_TYPE",
@@ -828,160 +873,80 @@ class DeliveryDetail extends CommonClass
     }
 
 
-    
-    public function site_code()
+    /* public function pre_create()
     {
-        $query = "
-            SELECT * FROM SITE
-        ";
-        $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt, $this->commit_mode)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
-    }
-
-    public function next_cust_order()
-    {
-        $company_service = new CompanyService($this->conn, $this->order_supp_code, $auto_commit = true);
-        $new_cust_order = $company_service->next_cust_ordno();
-
-        $result = array();
-        $result["records"] = array();
-        $item = array(
-            "order_cust_no" => $new_cust_order,
-        );
-
-        array_push($result["records"], $item);
-
-        http_response_code(200);
-        echo json_encode($result, JSON_PRETTY_PRINT);
-    }
-
-    public function pre_create()
-    {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
-        $this->order_no = $this->next_order_no();
-        $this->order_sys_no = $this->order_no;
-        $this->order_stat = 0; // 0 -- NEW
-        $this->order_approved = 'N';
-        // write_log($this->order_no, __FILE__, __LINE__);
-        $site_service = new SiteService($this->conn, $auto_commit = false);
-        $site_code = $site_service->site_code();
-        $this->ord_supply_point = $site_code;
-        $this->order_terminal = $site_code;
     }
 
     protected function post_create()
     {
-        $company_service = new CompanyService($this->conn, $this->order_supp_code, $auto_commit = false);
-        $company_service->set_last_order($this->order_cust_no);
-    }
-
-	public function devide_text_into_array($txt, $step)
-	{
-		$arr = array();
-		$len = strlen($txt);
-		for($i=0; $i<$len; $i+=$step)
-		{
-			$msg = substr($txt, $i, $step);
-			$arr[] = $msg;
-		}
-		return $arr;
-	}
-
-    protected function insert_order_instructions($order_id, $instructions)
-    {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
-
-        if (isset($instructions)) {
-            $items = $this->devide_text_into_array($instructions, 80);
-            $lineno = 1;
-            foreach ($items as $value) {
-                // write_log(json_encode($value), __FILE__, __LINE__);
-                $query = "
-                    INSERT INTO ORD_INSTRUCT (
-                        OI_ORDER_NO, 
-                        OI_INSTR_COUNTER, 
-                        OI_INSTRUCTION
-                    )
-                    VALUES (
-                        :oi_order_no, 
-                        :oi_counter, 
-                        :oi_instruction
-                    )
-                ";
-                $stmt = oci_parse($this->conn, $query);
-                oci_bind_by_name($stmt, ':oi_order_no', $order_id);
-                oci_bind_by_name($stmt, ':oi_counter', $lineno);
-                oci_bind_by_name($stmt, ':oi_instruction', $value);
-
-                if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-                    $e = oci_error($stmt);
-                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-                    throw new DatabaseException($e['message']);
-                    return false;
-                }
-
-                $lineno += 1;
-            }
-        }
-
-        return true;
-    }
+    } */
 
     protected function insert_children()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
-        if (isset($this->order_items)) {
+        if (isset($this->ddi_items)) {
             $lineno = 1;
-            foreach ($this->order_items as $value) {
+            foreach ($this->ddi_items as $value) {
                 // write_log(json_encode($value), __FILE__, __LINE__);
-                $query = "INSERT INTO OPRODMTD (
-                    OPROD_SCHEDULED,
-                    OPROD_LOADED,
-                    OPROD_DELIVERED,
-                    OPROD_BY_PACKS,
-                    OPRD_PACK_SIZE,
-                    ORDER_PROD_QTY,
-                    ORDER_PROD_UNIT,
-                    PROD_PRICE_TYPE,
-                    OPROD_PRICE,
-                    ORDER_PROD_KEY,
-                    OSPROD_PRODCODE,
-                    OSPROD_PRODCMPY,
-                    OPROD_CH_NO,
-                    OPRD_LINE_ITEMNO)
-                VALUES (
-                    0,
-                    0,
-                    0,
-                    'N',
-                    1,
-                    :order_prod_qty,
-                    :order_prod_unit,
-                    0,
-                    0,
-                    :order_prod_key,
-                    :osprod_prodcode,
-                    :osprod_prodcmpy,
-                    0,
-                    :oprd_line_itemno
-                )";
+                $query = "
+                    INSERT INTO DELV_DETAILS_ITEM (
+                        DDI_DD_NUMBER
+                        , DDI_DD_SUPP_CODE
+                        , DDI_DD_TRIPORD_NO
+                        , DDI_DD_LD_TYPE
+                        , DDI_LINE_ITEM_NUM
+                        , DDI_ITEM_CAT
+                        , DDI_CMPT_NUM
+                        , DDI_PROD_CODE
+                        , DDI_CMPY_CODE
+                        , DDI_QTY
+                        , DDI_UNIT
+                        , DDI_ITEM_DESC
+                        , DDI_DUTY_CODE
+                        , DDI_EXCISE_LIC_NUM
+                        , DDI_REF_DOC_NUM
+                        , DDI_SITE_CAPACITY
+                        , DDI_TANK_CODE
+                    ) VALUES (
+                        :ddi_dd_number
+                        , :ddi_dd_supp_code
+                        , :ddi_dd_tripord_no
+                        , :ddi_dd_ld_type
+                        , :ddi_line_item_num
+                        , :ddi_item_cat
+                        , :ddi_cmpt_num
+                        , :ddi_prod_code
+                        , :ddi_cmpy_code
+                        , :ddi_qty
+                        , :ddi_unit
+                        , :ddi_item_desc
+                        , :ddi_duty_code
+                        , :ddi_excise_lic_num
+                        , :ddi_ref_doc_num
+                        , :ddi_site_capacity
+                        , :ddi_tank_code
+                    )
+                ";
                 $stmt = oci_parse($this->conn, $query);
-                oci_bind_by_name($stmt, ':order_prod_qty', $value->oitem_prod_qty);
-                oci_bind_by_name($stmt, ':order_prod_unit', $value->oitem_prod_unit);
-                oci_bind_by_name($stmt, ':order_prod_key', $this->order_sys_no);
-                oci_bind_by_name($stmt, ':osprod_prodcode', $value->oitem_prod_code);
-                oci_bind_by_name($stmt, ':osprod_prodcmpy', $value->oitem_prod_cmpy);
-                oci_bind_by_name($stmt, ':oprd_line_itemno', $lineno);
+                oci_bind_by_name($stmt, ':ddi_dd_number', $value->ddi_dd_number);
+                oci_bind_by_name($stmt, ':ddi_dd_supp_code', $value->ddi_dd_supp_code);
+                oci_bind_by_name($stmt, ':ddi_dd_tripord_no', $value->ddi_dd_tripord_no);
+                oci_bind_by_name($stmt, ':ddi_dd_ld_type', $value->ddi_dd_ld_type);
+                oci_bind_by_name($stmt, ':ddi_line_item_num', $value->ddi_line_item_num);
+                oci_bind_by_name($stmt, ':ddi_item_cat', $value->ddi_item_cat);
+                oci_bind_by_name($stmt, ':ddi_cmpt_num', $value->ddi_cmpt_num);
+                oci_bind_by_name($stmt, ':ddi_prod_code', $value->ddi_prod_code);
+                oci_bind_by_name($stmt, ':ddi_cmpy_code', $value->ddi_cmpy_code);
+                oci_bind_by_name($stmt, ':ddi_qty', $value->ddi_qty);
+                oci_bind_by_name($stmt, ':ddi_unit', $value->ddi_unit);
+                oci_bind_by_name($stmt, ':ddi_item_desc', $value->ddi_item_desc);
+                oci_bind_by_name($stmt, ':ddi_duty_code', $value->ddi_duty_code);
+                oci_bind_by_name($stmt, ':ddi_excise_lic_num', $value->ddi_excise_lic_num);
+                oci_bind_by_name($stmt, ':ddi_ref_doc_num', $value->ddi_ref_doc_num);
+                oci_bind_by_name($stmt, ':ddi_site_capacity', $value->ddi_site_capacity);
+                oci_bind_by_name($stmt, ':ddi_tank_code', $value->ddi_tank_code);
 
                 if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
                     $e = oci_error($stmt);
@@ -994,7 +959,42 @@ class DeliveryDetail extends CommonClass
             }
         }
 
-        $this->insert_order_instructions($this->order_sys_no, $this->order_instructions);
+        if (isset($this->ddd_items)) {
+            $lineno = 1;
+            foreach ($this->ddd_items as $value) {
+                // write_log(json_encode($value), __FILE__, __LINE__);
+                $query = "
+                    INSERT INTO DELV_DETAILS_ITEM (
+                        DDD_DD_NUMBER
+                        , DDD_DD_SUPP_CODE
+                        , DDD_DD_TRIPORD_NO
+                        , DDD_DD_LD_TYPE
+                        , DDD_TEMPL_ID
+                    ) VALUES (
+                        :ddd_dd_number
+                        , :ddd_dd_supp_code
+                        , :ddd_dd_tripord_no
+                        , :ddd_dd_ld_type
+                        , :ddd_templ_id
+                    )
+                ";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':ddd_dd_number', $value->ddd_dd_number);
+                oci_bind_by_name($stmt, ':ddd_dd_supp_code', $value->ddd_dd_supp_code);
+                oci_bind_by_name($stmt, ':ddd_dd_tripord_no', $value->ddd_dd_tripord_no);
+                oci_bind_by_name($stmt, ':ddd_dd_ld_type', $value->ddd_dd_ld_type);
+                oci_bind_by_name($stmt, ':ddd_templ_id', $value->ddd_templ_id);
+
+                if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    throw new DatabaseException($e['message']);
+                    return false;
+                }
+
+                $lineno += 1;
+            }
+        }
 
         return true;
     }
@@ -1004,11 +1004,27 @@ class DeliveryDetail extends CommonClass
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
+        /*
+            DELV_DETAILS_DN_ADDL_INFO
+            ddd_templ_id	1
+            ddd_dd_number	2
+            ddd_dd_supp_code	3
+            ddd_dd_tripord_no	4
+            ddd_dd_ld_type	5
+            addi_fld_line_no	6
+        */
         $query = "
-            DELETE FROM ORD_INSTRUCT
-            WHERE OI_ORDER_NO = :oi_order_no";
+            DELETE FROM DELV_DETAILS_DN_ADDL_INFO
+            WHERE DDD_DD_NUMBER = :ddd_dd_number
+                AND DDD_DD_SUPP_CODE = :ddd_dd_supp_code
+                AND DDD_DD_TRIPORD_NO = :ddd_dd_tripord_no
+                AND DDD_DD_LD_TYPE = :ddd_dd_ld_type
+        ";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':oi_order_no', $this->order_sys_no);
+        oci_bind_by_name($stmt, ':ddd_dd_number', $this->dd_number);
+        oci_bind_by_name($stmt, ':ddd_dd_supp_code', $this->dd_supp_code);
+        oci_bind_by_name($stmt, ':ddd_dd_tripord_no', $this->dd_tripord_no);
+        oci_bind_by_name($stmt, ':ddd_dd_ld_type', $this->dd_ld_type);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -1018,11 +1034,26 @@ class DeliveryDetail extends CommonClass
             return false;
         }
 
+        /*
+            DELV_DETAILS_DN
+            ddd_templ_id	1
+            ddd_dd_number	2
+            ddd_dd_supp_code	3
+            ddd_dd_tripord_no	4
+            ddd_dd_ld_type	5
+        */
         $query = "
-            DELETE FROM OPROD_CHILD
-            WHERE OPB_DAD_OPRODKEY = :oi_order_no";
+            DELETE FROM DELV_DETAILS_DN
+            WHERE DDD_DD_NUMBER = :ddd_dd_number
+                AND DDD_DD_SUPP_CODE = :ddd_dd_supp_code
+                AND DDD_DD_TRIPORD_NO = :ddd_dd_tripord_no
+                AND DDD_DD_LD_TYPE = :ddd_dd_ld_type
+        ";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':oi_order_no', $this->order_sys_no);
+        oci_bind_by_name($stmt, ':ddd_dd_number', $this->dd_number);
+        oci_bind_by_name($stmt, ':ddd_dd_supp_code', $this->dd_supp_code);
+        oci_bind_by_name($stmt, ':ddd_dd_tripord_no', $this->dd_tripord_no);
+        oci_bind_by_name($stmt, ':ddd_dd_ld_type', $this->dd_ld_type);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -1032,11 +1063,56 @@ class DeliveryDetail extends CommonClass
             return false;
         }
 
+        /*
+            DELV_DETAILS_ITEM_ADDL_INFO
+            ddi_line_item_num	1
+            ddi_dd_number	2
+            ddi_dd_supp_code	3
+            ddi_dd_tripord_no	4
+            ddi_dd_ld_type	5
+            addi_fld_line_no	6
+        */
         $query = "
-            DELETE FROM OPRODMTD
-            WHERE ORDER_PROD_KEY = :oi_order_no";
+            DELETE FROM DELV_DETAILS_ITEM_ADDL_INFO
+            WHERE DDI_DD_NUMBER = :ddi_dd_number
+                AND DDI_DD_SUPP_CODE = :ddi_dd_supp_code
+                AND DDI_DD_TRIPORD_NO = :ddi_dd_tripord_no
+                AND DDI_DD_LD_TYPE = :ddi_dd_ld_type
+        ";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':oi_order_no', $this->order_sys_no);
+        oci_bind_by_name($stmt, ':ddi_dd_number', $this->dd_number);
+        oci_bind_by_name($stmt, ':ddi_dd_supp_code', $this->dd_supp_code);
+        oci_bind_by_name($stmt, ':ddi_dd_tripord_no', $this->dd_tripord_no);
+        oci_bind_by_name($stmt, ':ddi_dd_ld_type', $this->dd_ld_type);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+
+            throw new DatabaseException($e['message']);
+            return false;
+        }
+
+        /*
+            DELV_DETAILS_ITEM
+            ddi_line_item_num	1
+            ddi_dd_number	2
+            ddi_dd_supp_code	3
+            ddi_dd_tripord_no	4
+            ddi_dd_ld_type	5
+        */
+        $query = "
+            DELETE FROM DELV_DETAILS_ITEM
+            WHERE DDI_DD_NUMBER = :ddi_dd_number
+                AND DDI_DD_SUPP_CODE = :ddi_dd_supp_code
+                AND DDI_DD_TRIPORD_NO = :ddi_dd_tripord_no
+                AND DDI_DD_LD_TYPE = :ddi_dd_ld_type
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':ddi_dd_number', $this->dd_number);
+        oci_bind_by_name($stmt, ':ddi_dd_supp_code', $this->dd_supp_code);
+        oci_bind_by_name($stmt, ':ddi_dd_tripord_no', $this->dd_tripord_no);
+        oci_bind_by_name($stmt, ':ddi_dd_ld_type', $this->dd_ld_type);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -1049,6 +1125,68 @@ class DeliveryDetail extends CommonClass
         return true;
     }
 
+    protected function retrieve_children_data()
+    {
+        $query = "
+            SELECT * 
+            FROM DELV_DETAILS_ITEM
+            WHERE DDI_DD_NUMBER = :ddi_dd_number
+                AND DDI_DD_SUPP_CODE = :ddi_dd_supp_code
+                AND DDI_DD_TRIPORD_NO = :ddi_dd_tripord_no
+                AND DDI_DD_LD_TYPE = :ddi_dd_ld_type
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':ddi_dd_number', $this->dd_number);
+        oci_bind_by_name($stmt, ':ddi_dd_supp_code', $this->dd_supp_code);
+        oci_bind_by_name($stmt, ':ddi_dd_tripord_no', $this->dd_tripord_no);
+        oci_bind_by_name($stmt, ':ddi_dd_ld_type', $this->dd_ld_type);
+        
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        $tank_max_flows = array();
+        while ($flow_row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            $tank_max_flows[$flow_row['DDI_LINE_ITEM_NUM']] = $flow_row;
+        }
+
+        // write_log(json_encode($tank_max_flows), __FILE__, __LINE__);
+        return $tank_max_flows;
+    }
+
+    protected function retrieve_ddd_items()
+    {
+        $query = "
+            SELECT * 
+            FROM DELV_DETAILS_DN
+            WHERE DDD_DD_NUMBER = :ddd_dd_number
+                AND DDD_DD_SUPP_CODE = :ddd_dd_supp_code
+                AND DDD_DD_TRIPORD_NO = :ddd_dd_tripord_no
+                AND DDD_DD_LD_TYPE = :ddd_dd_ld_type
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':ddd_dd_number', $this->dd_number);
+        oci_bind_by_name($stmt, ':ddd_dd_supp_code', $this->dd_supp_code);
+        oci_bind_by_name($stmt, ':ddd_dd_tripord_no', $this->dd_tripord_no);
+        oci_bind_by_name($stmt, ':ddd_dd_ld_type', $this->dd_ld_type);
+        
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        $tank_max_flows = array();
+        while ($flow_row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            $tank_max_flows[$flow_row['DDD_TEMPL_ID']] = $flow_row;
+        }
+
+        // write_log(json_encode($tank_max_flows), __FILE__, __LINE__);
+        return $tank_max_flows;
+    }
+
     protected function update_children($old_children = null)
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
@@ -1056,21 +1194,50 @@ class DeliveryDetail extends CommonClass
         
         foreach ($old_children as $product => $item_array) {
             $still_exist = false;
-            foreach ($this->order_items as $item) {
-                if ($item->oitem_prod_code == $product) {
-                    $query = "UPDATE OPRODMTD
-                        SET ORDER_PROD_QTY = :order_prod_qty,
-                            ORDER_PROD_UNIT = :order_prod_unit
-                        WHERE OSPROD_PRODCODE = :osprod_prodcode
-                            AND OSPROD_PRODCMPY = :osprod_prodcmpy
-                            AND ORDER_PROD_KEY = :order_prod_key";
+            foreach ($this->ddi_items as $item) {
+                // found existing record, do UPDATE
+                if ($item->ddi_line_item_num == $product) {
+                    $query = "
+                    UPDATE DELV_DETAILS_ITEM
+                    SET 
+                        DDI_ITEM_CAT = :ddi_item_cat
+                        , DDI_CMPT_NUM = :ddi_cmpt_num
+                        , DDI_PROD_CODE = :ddi_prod_code
+                        , DDI_CMPY_CODE = :ddi_cmpy_code
+                        , DDI_QTY = :ddi_qty
+                        , DDI_UNIT = :ddi_unit
+                        , DDI_ITEM_DESC = :ddi_item_desc
+                        , DDI_DUTY_CODE = :ddi_duty_code
+                        , DDI_EXCISE_LIC_NUM = :ddi_excise_lic_num
+                        , DDI_REF_DOC_NUM = :ddi_ref_doc_num
+                        , DDI_SITE_CAPACITY = :ddi_site_capacity
+                        , DDI_TANK_CODE = :ddi_tank_code
+                    WHERE
+                        DDI_DD_NUMBER = :ddi_dd_number
+                        AND DDI_DD_SUPP_CODE = :ddi_dd_supp_code
+                        AND DDI_DD_TRIPORD_NO = :ddi_dd_tripord_no
+                        AND DDI_DD_LD_TYPE = :ddi_dd_ld_type
+                        AND DDI_LINE_ITEM_NUM = :ddi_line_item_num
+                    ";
                     $stmt = oci_parse($this->conn, $query);
-                    oci_bind_by_name($stmt, ':order_prod_key', $this->order_sys_no);
-                    oci_bind_by_name($stmt, ':order_prod_unit', $item->oitem_prod_unit);
-                    oci_bind_by_name($stmt, ':order_prod_qty', $item->oitem_prod_qty);
-                    oci_bind_by_name($stmt, ':osprod_prodcmpy', $item->oitem_prod_cmpy);
-                    oci_bind_by_name($stmt, ':osprod_prodcode', $item->oitem_prod_code);
-        
+                    oci_bind_by_name($stmt, ':ddi_item_cat', $item->ddi_item_cat);
+                    oci_bind_by_name($stmt, ':ddi_cmpt_num', $item->ddi_cmpt_num);
+                    oci_bind_by_name($stmt, ':ddi_prod_code', $item->ddi_prod_code);
+                    oci_bind_by_name($stmt, ':ddi_cmpy_code', $item->ddi_cmpy_code);
+                    oci_bind_by_name($stmt, ':ddi_qty', $item->ddi_qty);
+                    oci_bind_by_name($stmt, ':ddi_unit', $item->ddi_unit);
+                    oci_bind_by_name($stmt, ':ddi_item_desc', $item->ddi_item_desc);
+                    oci_bind_by_name($stmt, ':ddi_duty_code', $item->ddi_duty_code);
+                    oci_bind_by_name($stmt, ':ddi_excise_lic_num', $item->ddi_excise_lic_num);
+                    oci_bind_by_name($stmt, ':ddi_ref_doc_num', $item->ddi_ref_doc_num);
+                    oci_bind_by_name($stmt, ':ddi_site_capacity', $item->ddi_site_capacity);
+                    oci_bind_by_name($stmt, ':ddi_tank_code', $item->ddi_tank_code);
+                    oci_bind_by_name($stmt, ':ddi_dd_number', $this->dd_number);
+                    oci_bind_by_name($stmt, ':ddi_dd_supp_code', $this->dd_supp_code);
+                    oci_bind_by_name($stmt, ':ddi_dd_tripord_no', $this->dd_tripord_no);
+                    oci_bind_by_name($stmt, ':ddi_dd_ld_type', $this->dd_ld_type);
+                    oci_bind_by_name($stmt, ':ddi_line_item_num', $item->ddi_line_item_num);
+            
                     if (!oci_execute($stmt, $this->commit_mode)) {
                         $e = oci_error($stmt);
                         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -1081,19 +1248,42 @@ class DeliveryDetail extends CommonClass
                 }
             }
             
+            // $product not found, need to remove it and its children
             if ($still_exist == false) {
-                $query = "DELETE FROM OPROD_CHILD WHERE OPB_DAD_OPRODKEY = :oi_order_no";
+                $query = "
+                    DELETE FROM DELV_DETAILS_ITEM_ADDL_INFO
+                    WHERE DDI_DD_NUMBER = :ddi_dd_number
+                        AND DDI_DD_SUPP_CODE = :ddi_dd_supp_code
+                        AND DDI_DD_TRIPORD_NO = :ddi_dd_tripord_no
+                        AND DDI_DD_LD_TYPE = :ddi_dd_ld_type
+                        AND DDI_LINE_ITEM_NUM = :ddi_line_item_num
+                ";
                 $stmt = oci_parse($this->conn, $query);
-                oci_bind_by_name($stmt, ':oi_order_no', $this->order_sys_no);
+                oci_bind_by_name($stmt, ':ddi_dd_number', $this->dd_number);
+                oci_bind_by_name($stmt, ':ddi_dd_supp_code', $this->dd_supp_code);
+                oci_bind_by_name($stmt, ':ddi_dd_tripord_no', $this->dd_tripord_no);
+                oci_bind_by_name($stmt, ':ddi_dd_ld_type', $this->dd_ld_type);
+                oci_bind_by_name($stmt, ':ddi_line_item_num', $product);
                 if (!oci_execute($stmt, $this->commit_mode)) {
                     $e = oci_error($stmt);
                     write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                     return false;
                 }
 
-                $query = "DELETE FROM OPRODMTD WHERE ORDER_PROD_KEY = :oi_order_no";
+                $query = "
+                    DELETE FROM DELV_DETAILS_ITEM
+                    WHERE DDI_DD_NUMBER = :ddi_dd_number
+                        AND DDI_DD_SUPP_CODE = :ddi_dd_supp_code
+                        AND DDI_DD_TRIPORD_NO = :ddi_dd_tripord_no
+                        AND DDI_DD_LD_TYPE = :ddi_dd_ld_type
+                        AND DDI_LINE_ITEM_NUM = :ddi_line_item_num
+                ";
                 $stmt = oci_parse($this->conn, $query);
-                oci_bind_by_name($stmt, ':oi_order_no', $this->order_sys_no);
+                oci_bind_by_name($stmt, ':ddi_dd_number', $this->dd_number);
+                oci_bind_by_name($stmt, ':ddi_dd_supp_code', $this->dd_supp_code);
+                oci_bind_by_name($stmt, ':ddi_dd_tripord_no', $this->dd_tripord_no);
+                oci_bind_by_name($stmt, ':ddi_dd_ld_type', $this->dd_ld_type);
+                oci_bind_by_name($stmt, ':ddi_line_item_num', $product);
                 if (!oci_execute($stmt, $this->commit_mode)) {
                     $e = oci_error($stmt);
                     write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -1103,49 +1293,69 @@ class DeliveryDetail extends CommonClass
         }
 
         //In new but not in old.
-        foreach ($this->order_items as $item) {
-            if (isset($old_children[$item->oitem_prod_code])) {
+        foreach ($this->ddi_items as $item) {
+            if (isset($old_children[$item->ddi_line_item_num])) {
                 continue;
             }
 
-            $query = "INSERT INTO OPRODMTD (
-                OPROD_SCHEDULED,
-                OPROD_LOADED,
-                OPROD_DELIVERED,
-                OPROD_BY_PACKS,
-                OPRD_PACK_SIZE,
-                ORDER_PROD_QTY,
-                ORDER_PROD_UNIT,
-                PROD_PRICE_TYPE,
-                OPROD_PRICE,
-                ORDER_PROD_KEY,
-                OSPROD_PRODCODE,
-                OSPROD_PRODCMPY,
-                OPROD_CH_NO,
-                OPRD_LINE_ITEMNO)
-            VALUES (
-                0,
-                0,
-                0,
-                'N',
-                1,
-                :order_prod_qty,
-                :order_prod_unit,
-                0,
-                0,
-                :order_prod_key,
-                :osprod_prodcode,
-                :osprod_prodcmpy,
-                0,
-                NULL
-            )";
+            $query = "
+                INSERT INTO DELV_DETAILS_ITEM (
+                    DDI_DD_NUMBER
+                    , DDI_DD_SUPP_CODE
+                    , DDI_DD_TRIPORD_NO
+                    , DDI_DD_LD_TYPE
+                    , DDI_LINE_ITEM_NUM
+                    , DDI_ITEM_CAT
+                    , DDI_CMPT_NUM
+                    , DDI_PROD_CODE
+                    , DDI_CMPY_CODE
+                    , DDI_QTY
+                    , DDI_UNIT
+                    , DDI_ITEM_DESC
+                    , DDI_DUTY_CODE
+                    , DDI_EXCISE_LIC_NUM
+                    , DDI_REF_DOC_NUM
+                    , DDI_SITE_CAPACITY
+                    , DDI_TANK_CODE
+                ) VALUES (
+                    :ddi_dd_number
+                    , :ddi_dd_supp_code
+                    , :ddi_dd_tripord_no
+                    , :ddi_dd_ld_type
+                    , :ddi_line_item_num
+                    , :ddi_item_cat
+                    , :ddi_cmpt_num
+                    , :ddi_prod_code
+                    , :ddi_cmpy_code
+                    , :ddi_qty
+                    , :ddi_unit
+                    , :ddi_item_desc
+                    , :ddi_duty_code
+                    , :ddi_excise_lic_num
+                    , :ddi_ref_doc_num
+                    , :ddi_site_capacity
+                    , :ddi_tank_code
+                )
+            ";
             $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':order_prod_qty', $item->oitem_prod_qty);
-            oci_bind_by_name($stmt, ':order_prod_unit', $item->oitem_prod_unit);
-            oci_bind_by_name($stmt, ':order_prod_key', $this->order_sys_no);
-            oci_bind_by_name($stmt, ':osprod_prodcode', $item->oitem_prod_code);
-            oci_bind_by_name($stmt, ':osprod_prodcmpy', $item->oitem_prod_cmpy);
-            // oci_bind_by_name($stmt, ':oprd_line_itemno', $lineno);
+            oci_bind_by_name($stmt, ':ddi_dd_number', $this->dd_number);
+            oci_bind_by_name($stmt, ':ddi_dd_supp_code', $this->dd_supp_code);
+            oci_bind_by_name($stmt, ':ddi_dd_tripord_no', $this->dd_tripord_no);
+            oci_bind_by_name($stmt, ':ddi_dd_ld_type', $this->dd_ld_type);
+            oci_bind_by_name($stmt, ':ddi_line_item_num', $item->ddi_line_item_num);
+            oci_bind_by_name($stmt, ':ddi_item_cat', $item->ddi_item_cat);
+            oci_bind_by_name($stmt, ':ddi_cmpt_num', $item->ddi_cmpt_num);
+            oci_bind_by_name($stmt, ':ddi_prod_code', $item->ddi_prod_code);
+            oci_bind_by_name($stmt, ':ddi_cmpy_code', $item->ddi_cmpy_code);
+            oci_bind_by_name($stmt, ':ddi_qty', $item->ddi_qty);
+            oci_bind_by_name($stmt, ':ddi_unit', $item->ddi_unit);
+            oci_bind_by_name($stmt, ':ddi_item_desc', $item->ddi_item_desc);
+            oci_bind_by_name($stmt, ':ddi_duty_code', $item->ddi_duty_code);
+            oci_bind_by_name($stmt, ':ddi_excise_lic_num', $item->ddi_excise_lic_num);
+            oci_bind_by_name($stmt, ':ddi_ref_doc_num', $item->ddi_ref_doc_num);
+            oci_bind_by_name($stmt, ':ddi_site_capacity', $item->ddi_site_capacity);
+            oci_bind_by_name($stmt, ':ddi_tank_code', $item->ddi_tank_code);
+
             if (!oci_execute($stmt, $this->commit_mode)) {
                 $e = oci_error($stmt);
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -1153,123 +1363,95 @@ class DeliveryDetail extends CommonClass
             }
         }
 
-        // update order instructions
-        // delete it first
-        $query = "
-            DELETE FROM ORD_INSTRUCT
-            WHERE OI_ORDER_NO = :oi_order_no";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':oi_order_no', $this->order_sys_no);
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
+        // update DN templates
+        // retrieve old records
+        $old_templates = $this->retrieve_ddd_items();
 
-            throw new DatabaseException($e['message']);
-            return false;
-        }
-        // then insert new again
-        $this->insert_order_instructions($this->order_sys_no, $this->order_instructions);
+        foreach ($old_templates as $product => $item_array) {
+            $still_exist = false;
+            foreach ($this->ddd_items as $item) {
+                // found existing record, do nothing
+                if ($item->ddd_templ_id == $product) {
+                    $still_exist = true;
+                    break;
+                }
+            }
+            
+            // $product not found, need to remove it and its children
+            if ($still_exist == false) {
+                $query = "
+                    DELETE FROM DELV_DETAILS_DN_ADDL_INFO
+                    WHERE DDD_DD_NUMBER = :ddd_dd_number
+                        AND DDD_DD_SUPP_CODE = :ddd_dd_supp_code
+                        AND DDD_DD_TRIPORD_NO = :ddd_dd_tripord_no
+                        AND DDD_DD_LD_TYPE = :ddd_dd_ld_type
+                        AND DDD_TEMPL_ID = :ddd_templ_id
+                ";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':ddd_dd_number', $this->dd_number);
+                oci_bind_by_name($stmt, ':ddd_dd_supp_code', $this->dd_supp_code);
+                oci_bind_by_name($stmt, ':ddd_dd_tripord_no', $this->dd_tripord_no);
+                oci_bind_by_name($stmt, ':ddd_dd_ld_type', $this->dd_ld_type);
+                oci_bind_by_name($stmt, ':ddd_templ_id', $product);
+                if (!oci_execute($stmt, $this->commit_mode)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    return false;
+                }
 
-        return true;
-    }
-
-    private function next_order_no()
-    {
-        $query = "SELECT MAX(ORDER_NO) + 1 NEXT_NO
-            FROM CUST_ORDER";
-        $stmt = oci_parse($this->conn, $query);
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return -1;
-        }
-
-        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-        return $row['NEXT_NO'];
-    }
-
-    private function partners($partner_type)
-    {
-        $query = "
-        SELECT PRTNR_SEQ,
-            PRTNR_TYPE,
-            PARTNER_TYPE_NAME,
-            PRTNR_CODE,
-            PRTNR_NAME1,
-            PRTNR_NAME2,
-            PRTNR_NAME3,
-            PRTNR_NAME4,
-            PRTNR_NAME5,
-            PRTNR_ADDR,
-            DB_ADDR_TEXT,
-            PRTNR_CMPY,
-            PART_CMPY.CMPY_NAME PARTNER_CMPY_NAME,
-            CUST_CODE,
-            CUST_CMPY.CMPY_NAME CUST_CMPY_NAME
-        FROM PARTNER, PARTNER_TYPES, COMPANYS PART_CMPY, CMPY_CUST_PRTNR, CUSTOMER, COMPANYS CUST_CMPY,
-            (SELECT DB_ADDR_LINE_ID, LISTAGG(DB_ADDR_LINE, ', ')
-            WITHIN GROUP (ORDER BY DB_ADDRLINE_NO) AS DB_ADDR_TEXT
-            FROM DB_ADDRESS_LINE
-            GROUP BY DB_ADDR_LINE_ID) DB_ADDRESS
-        WHERE PRTNR_TYPE = PARTNER_TYPE_CODE
-            AND PRTNR_TYPE = :partner_type
-            AND PRTNR_ADDR = DB_ADDRESS.DB_ADDR_LINE_ID(+)
-            AND PART_CMPY.CMPY_CODE = PRTNR_CMPY
-            AND PRTNR_CMPY = :supplier
-            AND CMPY_CUST_PRTNR.CCP_CMPY_CODE = PRTNR_CMPY AND CCP_CUST_ACCT = CUSTOMER.CUST_ACCT(+)
-            AND CUSTOMER.CUST_CODE = CUST_CMPY.CMPY_CODE(+)";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':supplier', $this->order_supp_code);
-        oci_bind_by_name($stmt, ':partner_type', $partner_type);
-        if (oci_execute($stmt, $this->commit_mode)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
-    }
-
-    public function approve()
-    {
-        $query = "
-            SELECT NVL(ORDER_APPROVED, 'N') ORDER_APPROVED
-            FROM CUST_ORDER
-            WHERE ORDER_NO = :order_sys_no";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':order_sys_no', $this->order_sys_no);
-        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $row2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-            $old = $row2['ORDER_APPROVED'];
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                $query = "
+                    DELETE FROM DELV_DETAILS_ITEM
+                    WHERE DDI_DD_NUMBER = :ddi_dd_number
+                        AND DDI_DD_SUPP_CODE = :ddi_dd_supp_code
+                        AND DDI_DD_TRIPORD_NO = :ddi_dd_tripord_no
+                        AND DDI_DD_LD_TYPE = :ddi_dd_ld_type
+                        AND DDI_LINE_ITEM_NUM = :ddi_line_item_num
+                        AND DDD_TEMPL_ID = :ddd_templ_id
+                ";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':ddd_dd_number', $this->dd_number);
+                oci_bind_by_name($stmt, ':ddd_dd_supp_code', $this->dd_supp_code);
+                oci_bind_by_name($stmt, ':ddd_dd_tripord_no', $this->dd_tripord_no);
+                oci_bind_by_name($stmt, ':ddd_dd_ld_type', $this->dd_ld_type);
+                oci_bind_by_name($stmt, ':ddd_templ_id', $product);
+                if (!oci_execute($stmt, $this->commit_mode)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    return false;
+                }
+            }
         }
 
-        $query = "
-            UPDATE CUST_ORDER
-            SET ORDER_APPROVED = 'Y',
-                ORDER_APPR_NO = CONCAT('AP', ORDER_CUST_ORDNO),
-                ORD_AP_DATE = SYSDATE
-            WHERE ORDER_NO = :order_sys_no";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':order_sys_no', $this->order_sys_no);
-        if (!oci_execute($stmt, $this->commit_mode)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return false;
-        }
+        //In new but not in old.
+        foreach ($this->ddd_items as $item) {
+            if (isset($old_templates[$item->ddd_templ_id])) {
+                continue;
+            }
 
-        if ($old == 'N') {
-            $journal = new Journal($this->conn);
-            $jnl_data[0] = sprintf("Open order %d approved by %s", $this->order_sys_no, Utilities::getCurrPsn());
-
-            if (!$journal->jnlLogEvent(
-                Lookup::TMM_TEXT_ONLY, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+            $query = "
+                INSERT INTO DELV_DETAILS_DN (
+                    DDD_DD_NUMBER
+                    , DDD_DD_SUPP_CODE
+                    , DDD_DD_TRIPORD_NO
+                    , DDD_DD_LD_TYPE
+                    , DDD_TEMPL_ID
+                ) VALUES (
+                    :ddd_dd_number
+                    , :ddd_dd_supp_code
+                    , :ddd_dd_tripord_no
+                    , :ddd_dd_ld_type
+                    , :ddd_templ_id
+                )
+            ";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':ddd_dd_number', $this->dd_number);
+            oci_bind_by_name($stmt, ':ddd_dd_supp_code', $this->dd_supp_code);
+            oci_bind_by_name($stmt, ':ddd_dd_tripord_no', $this->dd_tripord_no);
+            oci_bind_by_name($stmt, ':ddd_dd_ld_type', $this->dd_ld_type);
+            oci_bind_by_name($stmt, ':ddd_templ_id', $item->ddd_templ_id);
+            if (!oci_execute($stmt, $this->commit_mode)) {
                 $e = oci_error($stmt);
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-                oci_rollback($this->conn);
                 return false;
             }
         }
@@ -1277,358 +1459,59 @@ class DeliveryDetail extends CommonClass
         return true;
     }
 
-    public function unapprove()
+
+    /* protected function journal_children_change($journal, $old, $new)
     {
-        $query = "
-            SELECT NVL(ORDER_APPROVED, 'N') ORDER_APPROVED
-            FROM CUST_ORDER
-            WHERE ORDER_NO = :order_sys_no";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':order_sys_no', $this->order_sys_no);
-        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $row2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-            $old = $row2['ORDER_APPROVED'];
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-        }
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+            
+        // write_log(json_encode($old), __FILE__, __LINE__);
+        // write_log(json_encode($new), __FILE__, __LINE__);
+        $module = "movement item";
+        foreach ($old as $item_key => $item_array) {
+            // write_log($item_key, __FILE__, __LINE__);
+            // write_log($value, __FILE__, __LINE__);
+            if (isset($new[$item_key])) {
+                foreach ($item_array as $field => $value) {
+                    if ($new[$item_key][$field] != $value) {
+                        $record = sprintf("mv_id:%s, item key:%s", $this->mv_id, $item_key);
+                        $journal->valueChange($module, $record, $field, $value, $new[$item_key][$field]);
+                    }
+                }
+            } 
 
-        $query = "
-            UPDATE CUST_ORDER
-            SET ORDER_APPROVED = 'N'
-            WHERE ORDER_NO = :order_sys_no";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':order_sys_no', $this->order_sys_no);
-        if (!oci_execute($stmt, $this->commit_mode)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return false;
-        }
-
-        if ($old == 'Y') {
-            $journal = new Journal($this->conn);
-            $jnl_data[0] = sprintf("Open order %d unapproved by %s", $this->order_sys_no, Utilities::getCurrPsn());
-
-            if (!$journal->jnlLogEvent(
-                Lookup::TMM_TEXT_ONLY, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
-                $e = oci_error($stmt);
-                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-                oci_rollback($this->conn);
-                return false;
+            if (!isset($new[$item_key])) {
+                $jnl_data[0] = Utilities::getCurrPsn();
+                $jnl_data[1] = $module;
+                $jnl_data[2] = sprintf("mv_id:%s, item key:%s", $this->mv_id, $item_key);
+                if (!$journal->jnlLogEvent(
+                    Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'],
+                        __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
             }
         }
 
-        return true;
-    }
+        //In new but not in old.
+        foreach ($new as $item_key => $alloc_item) {
+            if (!isset($old[$item_key])) {
+                $jnl_data[0] = Utilities::getCurrPsn();
+                $jnl_data[1] = $module;
+                $jnl_data[2] = sprintf("mv_id:%s, item key:%s", $this->mv_id, $item_key);
 
-    public function items()
-    {
-        if (isset($this->page_state) && $this->page_state === 'create') {
-            return $this->init_items();
+                if (!$journal->jnlLogEvent(
+                    Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'],
+                        __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+            }
         }
-        else {
-            return $this->order_items();
-        }
-    }
+    } */
 
-    public function order_items()
-    {
-        $query = "
-        SELECT OITEM_ORDER_ID,
-            NVL(OITEM_PROD_CODE, PROD_CODE) OITEM_PROD_CODE,
-            NVL(OITEM_PROD_CMPY, PROD_CMPY) OITEM_PROD_CMPY,
-            NVL(OITEM_PROD_NAME, PROD_NAME) OITEM_PROD_NAME,
-            NVL(OITEM_DRWR_NAME, CMPY_NAME) OITEM_DRWR_NAME,
-            NVL(OITEM_PROD_QTY, 0) OITEM_PROD_QTY,
-            OITEM_PROD_UNIT,
-            OITEM_UNIT_NAME,
-            OITEM_BY_PACKS,
-            OITEM_PACK_SIZE,
-            NVL(OITEM_SCHD_QTY, 0) OITEM_SCHD_QTY,
-            NVL(OITEM_LOAD_QTY, 0) OITEM_LOAD_QTY,
-            NVL(OITEM_DELV_QTY, 0) OITEM_DELV_QTY,
-            OITEM_EXEMPT_NO,
-            OITEM_PADJ_CODE,
-            OITEM_PADJ_NAME,
-            OITEM_PRICE_TYPE,
-            OITEM_PRICE_NAME,
-            OITEM_PROD_PRICE,
-            OITEM_PERIOD_NO,
-            OITEM_LINE_NO
-        FROM
-            (
-            SELECT PROD_CODE,
-                PROD_CMPY,
-                PROD_NAME,
-                CMPY_NAME
-            FROM PRODUCTS, CUST_ORDER, COMPANYS
-            WHERE PROD_CMPY = CUST_ORDER.ORDER_DRAWER
-                AND PROD_CMPY = CMPY_CODE
-                AND ORDER_NO = :order_sys_no
-            ) ALL_PRODS,
-            GUI_ORDER_ITEMS
-        WHERE ALL_PRODS.PROD_CODE = GUI_ORDER_ITEMS.OITEM_PROD_CODE(+)
-            AND ALL_PRODS.PROD_CMPY = GUI_ORDER_ITEMS.OITEM_PROD_CMPY(+)
-            AND :order_sys_no = GUI_ORDER_ITEMS.OITEM_ORDER_ID(+)
-        ORDER BY OITEM_PROD_QTY DESC, PROD_CODE
-        ";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':order_sys_no', $this->order_sys_no);
-        if (oci_execute($stmt, $this->commit_mode)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
-    }
-
-    public function init_items()
-    {
-        $query = "
-            select
-                NULL as OITEM_ORDER_ID
-                , PROD_CODE as OITEM_PROD_CODE
-                , PROD_CMPY as OITEM_PROD_CMPY
-                , PROD_NAME as OITEM_PROD_NAME
-                , NULL as OITEM_DRWR_NAME
-                , 0 as OITEM_PROD_QTY
-                , 5 as OITEM_PROD_UNIT
-                , NULL as OITEM_UNIT_NAME
-                , 'N' as OITEM_BY_PACKS 
-                , 1 as OITEM_PACK_SIZE
-                , 0 as OITEM_SCHD_QTY
-                , 0 as OITEM_LOAD_QTY
-                , 0 as OITEM_DELV_QTY
-                , NULL as OITEM_EXEMPT_NO
-                , NULL as OITEM_PADJ_CODE
-                , NULL as OITEM_PADJ_NAME
-                , NULL as OITEM_PRICE_TYPE
-                , NULL as OITEM_PRICE_NAME
-                , NULL as OITEM_PROD_PRICE
-                , NULL as OITEM_PERIOD_NO
-                , NULL as OITEM_LINE_NO
-            from
-                PRODUCTS
-            where 
-                (PROD_CMPY=:drawer_code) 
-            order by
-                PROD_CMPY, PROD_CODE
-        ";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':drawer_code', $this->order_drwr_code);
-        if (oci_execute($stmt, $this->commit_mode)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
-    }
-
-    protected function retrieve_children_data()
-    {
-        $query = "SELECT * FROM GUI_ORDER_ITEMS
-            WHERE OITEM_ORDER_ID = :oitem_order_id";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':oitem_order_id', $this->order_sys_no);
-
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
-
-        $tank_max_flows = array();
-        while ($flow_row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
-            $tank_max_flows[$flow_row['OITEM_PROD_CODE']] = $flow_row;
-            // array_push($tank_max_flows, $base_item);
-        }
-
-        // write_log(json_encode($tank_max_flows), __FILE__, __LINE__);
-        return $tank_max_flows;
-    }
-
-    public function order_instructions()
-    {
-        $query = "
-            select
-                OI_ORDER_NO             as OINST_ORDER
-                , OI_INSTR_COUNTER         as OINST_COUNTER
-                , OI_INSTRUCTION         as OINST_TEXT
-            from
-                ORD_INSTRUCT
-            where 
-                OI_ORDER_NO=:order_id  
-                and (-1=:order_counter or OI_INSTR_COUNTER=:order_counter) 
-        ";
-        $stmt = oci_parse($this->conn, $query);
-        if (!isset($this->order_sys_no) || $this->order_sys_no === 'undefined') {
-            $this->order_sys_no = -1;
-        }
-        oci_bind_by_name($stmt, ':order_id', $this->order_sys_no);
-        if (!isset($this->order_instruct_counter)) {
-            $this->order_instruct_counter = -1;
-        }
-        oci_bind_by_name($stmt, ':order_counter', $this->order_instruct_counter);
-        if (oci_execute($stmt, $this->commit_mode)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
-    }
-
-    public function order_schedules()
-    {
-        $query = "
-            select
-                co.ORDER_NO as SCHD_ORDER_ID
-                , sd.SHLS_SUPP as SCHD_SUPP_CODE
-                , sp.CMPY_NAME as SCHD_SUPPLIER
-                , sd.SHLS_TRIP_NO as SCHD_TRIP_NO
-                , sd.SHL_TANKER as SCHD_TNKR_CODE
-                , tk.TNKR_NAME as SCHD_TANKER
-                , tk.TNKR_CARRIER as SCHD_CARR_CODE
-                , ca.CMPY_NAME as SCHD_CARRIER
-                , sd.SHLS_CALDATE as SCHD_DATE
-                , NVL (sd.STATS, 'F') as SCHD_STATUS_CODE
-                , DECODE(st.STATUS_TEXT, NULL, 'UNKNOWN', st.STATUS_TEXT) as SCHD_STATUS
-            from 
-                CUST_ORDER co
-                , ORD_SCHEDULE os
-                , SCHEDULE sd
-                , COMPANYS sp
-                , TANKERS tk
-                , COMPANYS ca
-                , SCHEDULE_STATUS_SHORT_LOOKUP st
-            where 
-                co.ORDER_NO = os.OS_ORDER_NO
-                and os.OS_SHL_SHLSTRIP =  sd.SHLS_TRIP_NO
-                and os.OS_SHL_SHLSSUPP =  sd.SHLS_SUPP
-                and sd.SHLS_SUPP = sp.CMPY_CODE
-                and sd.SHL_TANKER = tk.TNKR_CODE
-                and tk.TNKR_CARRIER = ca.CMPY_CODE
-                and NVL (sd.STATS, 'F') = st.STATUS_CODE(+)
-                and co.ORDER_NO=:order_id 
-            order by
-                sd.SHLS_SUPP, sd.SHLS_TRIP_NO
-        ";
-        $stmt = oci_parse($this->conn, $query);
-        if (!isset($this->order_sys_no) || $this->order_sys_no === 'undefined') {
-            $this->order_sys_no = -1;
-        }
-        oci_bind_by_name($stmt, ':order_id', $this->order_sys_no);
-        if (oci_execute($stmt, $this->commit_mode)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
-    }
-
-    private function order_assign_mode()
-    {
-        $query = "
-          select count(*) as CNT
-          from SITE_CONFIG 
-          where CONFIG_KEY='OO_TO_ONE_TRIP' 
-            and CONFIG_VALUE='S'
-        ";
-        $stmt = oci_parse($this->conn, $query);
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return -1;
-        }
-
-        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-        return $row['CNT'];
-    }
-
-    public function order_item_schedules()
-    {
-        $query = "";
-		$singleOO = $this->isSingleOrderToOneTripCmpt();
-		
-		if ( $singleOO === 1 ) { // assign single order to one trip compartment
-            $query = "
-                select 
-                    sc.SCHD_ORDER as SCHD_ORDER_ID 
-                    , sc.SCHDSPEC_SHLSSUPP as SCHD_SUPP_CODE 
-                    , sp.CMPY_NAME as SCHD_SUPPLIER 
-                    , sc.SCHDSPEC_SHLSTRIP as SCHD_TRIP_NO 
-                    , sc.SCHD_COMP_ID as SCHD_CMPT_NO 
-                    , sc.SCHDPROD_PRODCODE as SCHD_PROD_CODE 
-                    , sc.SCHDPROD_PRODCMPY as SCHD_PROD_CMPY  
-                    , pd.PROD_NAME as SCHD_PROD_NAME 
-                    , sc.SCHD_SPECQTY as SCHD_PROD_QTY 
-                    , sc.SCHD_UNITS as SCHD_PROD_UNIT 
-                    , un.DESCRIPTION as SCHD_UNIT_NAME 
-                from 
-                    SPECDETS sc 
-                    , COMPANYS sp 
-                    , PRODUCTS pd 
-                    , UNIT_SCALE_VW un 
-                where 
-                    sc.SCHD_ORDER = :order_id 
-                    and sc.SCHDPROD_PRODCODE = :order_prod_code 
-                    and sc.SCHDPROD_PRODCMPY = :order_prod_cmpy 
-                    and sc.SCHDSPEC_SHLSSUPP = sp.CMPY_CODE 
-                    and sc.SCHDPROD_PRODCODE = pd.PROD_CODE  
-                    and sc.SCHDPROD_PRODCMPY = pd.PROD_CMPY  
-                    and sc.SCHD_UNITS = un.UNIT_ID 
-                order by
-                    sc.SCHDSPEC_SHLSSUPP, sc.SCHDSPEC_SHLSTRIP, sc.SCHD_COMP_ID 
-            ";
-        }
-        else { // assign multiple order to one trip compartment
-            $query = "
-                select 
-                    so.SCHORDER_ORD as SCHD_ORDER_ID 
-                    , so.SCHO_DAD_SCHDSPEC_SHLSSUPP as SCHD_SUPP_CODE 
-                    , sp.CMPY_NAME as SCHD_SUPPLIER 
-                    , so.SCHO_DAD_SCHDSPEC_SHLSTRIP as SCHD_TRIP_NO 
-                    , so.SCHO_DAD_SCHDCMPT as SCHD_CMPT_NO 
-                    , sc.SCHDPROD_PRODCODE as SCHD_PROD_CODE 
-                    , sc.SCHDPROD_PRODCMPY as SCHD_PROD_CMPY  
-                    , pd.PROD_NAME as SCHD_PROD_NAME 
-                    , so.SCHORDER_QTY as SCHD_PROD_QTY 
-                    , sc.SCHD_UNITS as SCHD_PROD_UNIT 
-                    , un.DESCRIPTION as SCHD_UNIT_NAME 
-                from 
-                    SPECDETS sc 
-                    , SPEC_ORDERS so
-                    , COMPANYS sp 
-                    , PRODUCTS pd 
-                    , UNIT_SCALE_VW un 
-                where 
-                    so.SCHORDER_ORD = :order_id 
-                    and sc.SCHDPROD_PRODCODE = :order_prod_code 
-                    and sc.SCHDPROD_PRODCMPY = :order_prod_cmpy 
-                    and sc.SCHDSPEC_SHLSSUPP = sp.CMPY_CODE 
-                    and sc.SCHDPROD_PRODCODE = pd.PROD_CODE  
-                    and sc.SCHDPROD_PRODCMPY = pd.PROD_CMPY  
-                    and sc.SCHD_UNITS = un.UNIT_ID 
-                    and sc.SCHDSPEC_SHLSSUPP = so.SCHO_DAD_SCHDSPEC_SHLSSUPP 
-                    and sc.SCHDSPEC_SHLSTRIP = so.SCHO_DAD_SCHDSPEC_SHLSTRIP 
-                    and sc.SCHD_COMP_ID = so.SCHO_DAD_SCHDCMPT 
-                order by 
-                    so.SCHO_DAD_SCHDSPEC_SHLSSUPP, so.SCHO_DAD_SCHDSPEC_SHLSTRIP, so.SCHO_DAD_SCHDCMPT 
-            ";
-        }
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':order_id', $this->oitem_order_id);
-        oci_bind_by_name($stmt, ':order_prod_code', $this->oitem_prod_code);
-        oci_bind_by_name($stmt, ':order_prod_cmpy', $this->oitem_prod_cmpy);
-        if (oci_execute($stmt, $this->commit_mode)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
-    }
 }
