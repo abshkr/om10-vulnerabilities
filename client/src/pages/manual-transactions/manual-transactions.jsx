@@ -97,6 +97,24 @@ const ManualTransactions = ({ popup, params }) => {
     setSelectedTrip(null);
     setSelectedOrder(null);
     setSelectedTanker(null);
+
+    form.setFieldsValue({
+      supplier: undefined,
+      trip_no: undefined,
+      tanker: undefined,
+      carrier: undefined,
+      driver: undefined,
+      customer: undefined,
+      order_no: undefined,
+      user_comments: '',
+      seal_range: '',
+      load_security: '',
+      mt_mngr_oo: '',
+      mt_cust_code: '',
+      mt_delv_loc: '',
+      mt_delv_num: '',
+      // source_type: undefined,
+    });
     // resetFormGrids();
     // resetLoadData();
   };
@@ -317,15 +335,15 @@ const ManualTransactions = ({ popup, params }) => {
               resetFormData();
               // resetFormGrids();
 
-              if (sourceType === 'SCHEDULE') {
-                !!params.onComplete && params.onComplete({
+              if (sourceType === 'SCHEDULE' && params) {
+                !!params?.onComplete && params.onComplete({
                   supplier_code: params?.supplier,
                   shls_trip_no: params?.trip_no,
                 });
               }
 
-              if (sourceType === 'OPENORDER') {
-                !!params.onComplete && params.onComplete(params?.order_cust_no);
+              if (sourceType === 'OPENORDER' && params) {
+                !!params?.onComplete && params.onComplete(params?.order_cust_no);
               }
 
               notification.success({
@@ -335,7 +353,7 @@ const ManualTransactions = ({ popup, params }) => {
             })
             
             .catch((errors) => {
-              _.forEach(errors.response.data.errors, (error) => {
+              _.forEach(errors?.response?.data?.errors, (error) => {
                 notification.error({
                   message: error.type,
                   description: error.message,
@@ -343,6 +361,7 @@ const ManualTransactions = ({ popup, params }) => {
               });
             });
         } catch (error) {
+          console.log('................MT submit validation error:', error);
           message.error({
             key: 'submit',
             content: t('descriptions.validationFailed'),
