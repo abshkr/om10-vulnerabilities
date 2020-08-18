@@ -172,7 +172,7 @@ const columns = (t) => [
     suppressSizeToFit: true
   },
   {
-    headerName: t('fields.resubmitted'),
+    headerName: t('fields.submitted'),
     field: 'RESUBMITTED',
     filter: 'FuzzyFilter',
     sortable: true,

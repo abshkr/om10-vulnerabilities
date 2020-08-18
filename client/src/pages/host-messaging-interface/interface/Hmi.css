@@ -111,7 +111,7 @@ thead {
   border: 2px solid;
   border-color: lightgrey;
   border-radius: 10px;
-  background-color: #e5eaed;
+  background-color: #f1f1f1;
 }
 */
 
@@ -123,8 +123,9 @@ thead {
   text-align: left;
 	line-height: 1.1;
   overflow: unset;
-	font-size: 17px;
+	font-size: 16px;
 	font-family: monospace;
+	font-weight: bold;
 }
 
 .detailsAreaFilledByHostMsg,
@@ -137,7 +138,7 @@ thead {
   border: 4px solid;
   border-color: blue;
   border-radius: 10px;
-  background-color: #e5eaed;
+  background-color: #f1f1f1;
   padding: 6px;
 	resize: vertical;
   overflow: auto;
@@ -153,7 +154,7 @@ thead {
   border: 4px solid;
   border-color: coral;
   border-radius: 10px;
-  background-color: #e5eaed;
+  background-color: #f1f1f1;
   padding: 6px;
 	resize: vertical;
   overflow: auto;
@@ -167,7 +168,7 @@ thead {
   border: 2px solid;
   border-color: lightgrey;
   border-radius: 10px;
-  background-color: #e5eaed;
+  background-color: #f1f1f1;
 }
 
 .messageAreaPre {
@@ -177,8 +178,9 @@ thead {
   text-align: left;
 	line-height: 1.1;
   overflow: unset;
-	font-size: 17px;
+	font-size: 16px;
 	font-family: monospace;
+	font-weight: bold;
 }
 
 .messageAreaPreBody {
@@ -202,7 +204,7 @@ thead {
   border: 4px solid;
   border-color: blue;
   border-radius: 10px;
-  background-color: #e5eaed;
+  background-color: #f1f1f1;
   padding: 6px;
 	resize: vertical;
   overflow: auto;
@@ -216,7 +218,7 @@ thead {
   border: 4px solid;
   border-color: coral;
   border-radius: 10px;
-  background-color: #e5eaed;
+  background-color: #f1f1f1;
   padding: 6px;
 	resize: vertical;
   overflow: auto;
