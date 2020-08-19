@@ -999,6 +999,7 @@ class Schedule extends CommonClass
                     AND PROD_CMPY = TRSFPROD_PRODCMPY
                 ) PREV
             WHERE BASIC.COMPARTMENT = PREV.TRSF_DES(+)
+            ORDER BY BASIC.COMPARTMENT
         ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
