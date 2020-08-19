@@ -187,6 +187,40 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 		setNotice(result);
 	}
 
+	const showEditStatus = () => {
+		if (ifrom === 'host')
+		{
+			if (!ihostEditOn)
+			{
+      	return t('descriptions.hostEditOff');
+			}
+		}
+		else if (ifrom === 'omega')
+		{
+			if (!iomEditOn)
+    	{
+      	return t('descriptions.omEditOff');
+    	}
+		}
+	};
+
+	const showSubmitStatus = () => {
+		if (ifrom === 'host')
+		{
+			if (!ihostSubmitOn)
+			{
+      	return t('descriptions.hostSubmitOff');
+			}
+		}
+		else if (ifrom === 'omega')
+		{
+			if (!iomSubmitOn)
+    	{
+      	return t('descriptions.omSubmitOff');
+    	}
+		}
+  };
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -210,7 +244,7 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 					</Button>
 
 					<Button
-						//icon={notEdit ? <PlusOutlined /> : <EditOutlined />}
+						title={showEditStatus()}
 						icon={<EditOutlined />}
 						onClick={onEdit}
 						style={{ float: 'right', marginRight: 5 }}
@@ -221,6 +255,7 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 					</Button>
 
 					<Button
+						title={showSubmitStatus()}
 						icon={<EditOutlined />}
 						onClick={onSubmit}
 						style={{ float: 'right', marginRight: 5 }}
