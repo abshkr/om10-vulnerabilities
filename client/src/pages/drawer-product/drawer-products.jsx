@@ -153,6 +153,7 @@ const DrawerProduct = () => {
             visible={visible} 
             handleFormState={handleFormState} 
             access={access}
+            config={config}
             setFilterValue={setFilterValue}
           />
         </Tabs.TabPane>

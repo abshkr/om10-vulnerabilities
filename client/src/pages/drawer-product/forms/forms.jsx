@@ -13,7 +13,6 @@ import { mutate } from 'swr';
 
 import _ from 'lodash';
 import api, { DRAWER_PRODUCTS } from '../../../api';
-import { useConfig } from '../../../hooks';
 
 import {
   DrawerCompany,
@@ -33,10 +32,9 @@ import HotLitresForm from './hot-litres';
 
 const TabPane = Tabs.TabPane;
 
-const DrawerForm = ({ value, visible, handleFormState, access, setFilterValue }) => {
+const DrawerForm = ({ value, visible, handleFormState, access, config, setFilterValue }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const config = useConfig();
 
   const { TextArea } = Input;
 
@@ -262,7 +260,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, setFilterValue })
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="50vw"
+      width="60vw"
       visible={visible}
       footer={
         <>
