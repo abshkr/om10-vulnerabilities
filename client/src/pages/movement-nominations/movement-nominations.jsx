@@ -215,14 +215,14 @@ const MovementNominations = () => {
       )}
 
       {rangeSetting !== '-1~~-1' && (
-        <div style={{ float: 'left', width: '420px' }}>
+        <div style={{ float: 'left', width: '360px' }}>
           <Calendar handleChange={setRange} start={start} end={end} max={2000} />
         </div>
       )}
 
       <Button
         type="primary"
-        icon={<EyeOutlined />}
+        // icon={<EyeOutlined />}
         disabled={false}
         onClick={() => setScheduleOpen(true)}
       >

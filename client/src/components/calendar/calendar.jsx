@@ -58,7 +58,7 @@ const Calendar = ({ handleChange, handleClear, start, end, disabled, enableClear
       onOk={(dates) => onChange(dates)}
       onChange={(dates) => onRangeSelect(dates)}
       ranges={ranges}
-      style={{width: "380px"}}
+      style={{width: "360px"}}
     />
   );
 };
