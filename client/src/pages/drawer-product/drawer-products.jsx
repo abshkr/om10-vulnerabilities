@@ -12,6 +12,7 @@ import { DRAWER_PRODUCTS } from '../../api';
 import { useAuth } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
+import { useConfig } from '../../hooks';
 
 import Forms from './forms';
 import Assets from './assets/assets'
@@ -24,6 +25,7 @@ const DrawerProduct = () => {
   const [filterValue, setFilterValue] = useState('');
   
   const { t } = useTranslation();
+  const config = useConfig();
 
   const access = useAuth('M_DRAWERPRODUCTS');
   
@@ -80,7 +82,7 @@ const DrawerProduct = () => {
     });
   };
 
-  const fields = columns(t);
+  const fields = columns(t, config);
 
   const data = payload?.records;
   const isLoading = isValidating || !data;
