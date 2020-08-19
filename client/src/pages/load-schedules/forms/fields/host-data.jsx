@@ -20,7 +20,7 @@ const HostData = ({ form, value }) => {
     }
 
     const len = (new TextEncoder().encode(input)).length;
-    if (input && input.length > 40) {
+    if (input && len > 40) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
 

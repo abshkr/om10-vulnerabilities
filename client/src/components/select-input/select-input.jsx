@@ -57,7 +57,7 @@ const SelectInput = ({
     }
 
     const len = (new TextEncoder().encode(input)).length;
-    if (maxLength != undefined && input && input.length > maxLength) {
+    if (maxLength != undefined && input && len > maxLength) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: ${maxLength} ─ ${t('descriptions.maxCharacters')}`);
     }
 
