@@ -230,7 +230,7 @@ const To = ({
             >
               {tanks.map((item, index) => (
                 <Select.Option key={index} value={item.tank_code}>
-                  {item.tank_code} - {item.tank_name} [{item.base_code} - {item.prod_code} - {item.prod_name}]
+                  {item.tank_code} - {item.tank_name}{/*  [{item.base_code} - {item.prod_code} - {item.prod_name}] */}
                 </Select.Option>
               ))}
             </Select>
@@ -256,7 +256,7 @@ const To = ({
             >
               {products.map((item, index) => (
                 <Select.Option key={index} value={item.tank_base}>
-                  {item.tank_base} - {item.tank_base_name} [{item.tank_bclass_name}]
+                  {item.tank_base} - {item.tank_base_name}{/*  [{item.tank_bclass_name}] */}
                 </Select.Option>
               ))}
             </Select>
