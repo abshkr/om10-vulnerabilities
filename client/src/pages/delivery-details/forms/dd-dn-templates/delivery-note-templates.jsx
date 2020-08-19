@@ -26,6 +26,7 @@ const DeliveryNoteTemplates = ({
   loadType,
   supplierName,
   loadTypeName,
+  deliveryNumber,
   pageState,
   tableAPI,
   setTableAPI,
@@ -90,7 +91,7 @@ const DeliveryNoteTemplates = ({
       ddd_dd_ld_type: loadType,
       ddd_dd_load_typename: loadTypeName,
       ddd_dd_tripord_no: loadNumber,
-      ddd_dd_number: value?.dd_number,
+      ddd_dd_number: !value ? deliveryNumber : value?.dd_number,
       ddd_templ_id: !templateItem?.template_code ? '' : templateItem?.template_code,
       editable: false,
       cellClass: 'editable-ag-grid-cell',
@@ -113,7 +114,7 @@ const DeliveryNoteTemplates = ({
     if (items && items[0]) {
       items[0].editable = false;
       if (!items?.[0]?.ddd_dd_number) {
-        items[0].ddd_dd_number = value?.dd_number;
+        items[0].ddd_dd_number = !value ? deliveryNumber : value?.dd_number;
       }
     }
     // console.log('handleItemSelect222', items);

@@ -210,12 +210,45 @@ const DddAdditionalInfo = ({
     handleItemSelect([payload]);
   }; */
 
+  const validateString = (required, input, type, maxLength, label, line) => {
+    const errors = [];
+
+    if ((required && input === '') || (required && !input)) {
+      errors.push({
+        key: String(line) + ':' + label,
+        field: label + ' [' + t('fields.line') + ' ' + line + ']',
+        message: `${t('validate.set')} ─ ${label}`
+      });
+    }
+
+    const len = (new TextEncoder().encode(input)).length;
+    if (maxLength != undefined && input && len > maxLength) {
+      errors.push({
+        key: String(line) + ':' + label,
+        field: label + ' [' + t('fields.line') + ' ' + line + ']',
+        message: `${t('placeholder.maxCharacters')}: ${maxLength} ─ ${t('descriptions.maxCharacters')}`
+      });
+    }
+
+    _.forEach(errors, error => {
+      notification.error({
+        message: error.field,
+        description: error.message,
+        key: error.key
+      });
+    });
+
+    return errors;
+  };
+
   const onCellUpdate = (value) => {
     console.log('DdiAdditionalInfo: onCellUpdate', value);
 
     let payload = value.data;
 
-    if (value?.newValue !== value?.oldValue) {
+    const errors = validateString(true, value?.newValue, 'text', 420, t('fields.dddAddiFldInfo'), payload?.addi_fld_line_no);
+
+    if (value?.newValue !== value?.oldValue && errors.length === 0) {
       onUpdate(payload);
       // tableAPI.updateRowData({ update: [payload] });
     }

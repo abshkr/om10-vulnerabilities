@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
 
-const DeliveryNumber = ({ form, value, pageState }) => {
+const DeliveryNumber = ({ form, value, onChange, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -29,13 +29,21 @@ const DeliveryNumber = ({ form, value, pageState }) => {
     }
   }, [value, setFieldsValue]);
 
+  const handleValueChange = (event) => {
+    onChange(event?.target?.value);
+  }
+
   return (
     <Form.Item
       name="dd_number"
       label={t('fields.ddNumber')}
       rules={[{ required: true, validator: validate }]}
     >
-      <Input style={{ width: '100%' }} disabled={pageState === 'create' ? false : true} />
+      <Input
+        style={{ width: '100%' }}
+        disabled={pageState === 'create' ? false : true}
+        onChange={handleValueChange}
+      />
     </Form.Item>
   );
 };

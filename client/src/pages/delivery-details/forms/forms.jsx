@@ -69,6 +69,7 @@ const FormModal = ({
   const [mainTabOn, setMainTabOn] = useState(true);
   const [ddiTableAPI, setDdiTableAPI] = useState(null);
   const [dddTableAPI, setDddTableAPI] = useState(null);
+  const [deliveryNumber, setDeliveryNumber] = useState(undefined);
 
   // 1: PREORDER; 2: PRESCHEDULE; 3: OPENORDER
   const productUrl = ( loadType === '1' 
@@ -131,6 +132,8 @@ const FormModal = ({
 
   const onFinish = async () => {
     const values = await validateFields();
+    values.dd_veh_arr_time = values?.dd_veh_arr_time?.format(SETTINGS.DATE_TIME_FORMAT);
+
     const ddi_items=[];
     ddiTableAPI.forEachNode((rowNode, index) => {
       rowNode.data.ddi_dd_number = values?.dd_number;
@@ -279,7 +282,7 @@ const FormModal = ({
               </Col>
 
               <Col span={6}>
-                <DeliveryNumber form={form} value={value} pageState={pageState} />
+                <DeliveryNumber form={form} value={value} onChange={setDeliveryNumber} pageState={pageState} />
               </Col>
             </Row>
 
@@ -418,6 +421,7 @@ const FormModal = ({
                     loadType={loadType}
                     supplierName={supplierName}
                     loadTypeName={loadTypeName}
+                    deliveryNumber={deliveryNumber}
                     products={products}
                     pageState={pageState}
                     tableAPI={ddiTableAPI}
@@ -438,6 +442,7 @@ const FormModal = ({
                     loadType={loadType}
                     supplierName={supplierName}
                     loadTypeName={loadTypeName}
+                    deliveryNumber={deliveryNumber}
                     pageState={pageState}
                     tableAPI={dddTableAPI}
                     setTableAPI={setDddTableAPI}

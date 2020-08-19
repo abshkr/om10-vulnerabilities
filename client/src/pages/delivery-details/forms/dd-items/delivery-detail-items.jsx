@@ -26,6 +26,7 @@ const DeliveryDetailItems = ({
   loadType,
   supplierName,
   loadTypeName,
+  deliveryNumber,
   products,
   pageState,
   tableAPI,
@@ -72,7 +73,7 @@ const DeliveryDetailItems = ({
       ddi_prod_cmpyname: supplierName, // TODO
       ddi_dd_ld_type: loadType,
       ddi_dd_tripord_no: loadNumber,
-      ddi_dd_number: value?.dd_number,
+      ddi_dd_number: !value ? deliveryNumber : value?.dd_number,
       ddi_item_cat: '',
       ddi_cmpt_num: !productItem?.ddi_cmpt_num ? '' : productItem?.ddi_cmpt_num,
       ddi_cmpy_code: !productItem?.ddi_cmpy_code ? supplier: productItem?.ddi_cmpy_code,
@@ -119,7 +120,7 @@ const DeliveryDetailItems = ({
     if (items && items[0]) {
       items[0].editable = true; // items?.[0]?.mvitm_status === 0 && !items?.[0]?.mvitm_completed;
       if (!items?.[0]?.ddi_dd_number) {
-        items[0].ddi_dd_number = value?.dd_number;
+        items[0].ddi_dd_number = !value ? deliveryNumber : value?.dd_number;
       }
     }
     // console.log('handleItemSelect222', items);

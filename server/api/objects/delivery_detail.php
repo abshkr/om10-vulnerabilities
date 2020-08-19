@@ -964,7 +964,7 @@ class DeliveryDetail extends CommonClass
             foreach ($this->ddd_items as $value) {
                 // write_log(json_encode($value), __FILE__, __LINE__);
                 $query = "
-                    INSERT INTO DELV_DETAILS_ITEM (
+                    INSERT INTO DELV_DETAILS_DN (
                         DDD_DD_NUMBER
                         , DDD_DD_SUPP_CODE
                         , DDD_DD_TRIPORD_NO
@@ -1400,12 +1400,11 @@ class DeliveryDetail extends CommonClass
                 }
 
                 $query = "
-                    DELETE FROM DELV_DETAILS_ITEM
-                    WHERE DDI_DD_NUMBER = :ddi_dd_number
-                        AND DDI_DD_SUPP_CODE = :ddi_dd_supp_code
-                        AND DDI_DD_TRIPORD_NO = :ddi_dd_tripord_no
-                        AND DDI_DD_LD_TYPE = :ddi_dd_ld_type
-                        AND DDI_LINE_ITEM_NUM = :ddi_line_item_num
+                    DELETE FROM DELV_DETAILS_DN
+                    WHERE DDD_DD_NUMBER = :ddd_dd_number
+                        AND DDD_DD_SUPP_CODE = :ddd_dd_supp_code
+                        AND DDD_DD_TRIPORD_NO = :ddd_dd_tripord_no
+                        AND DDD_DD_LD_TYPE = :ddd_dd_ld_type
                         AND DDD_TEMPL_ID = :ddd_templ_id
                 ";
                 $stmt = oci_parse($this->conn, $query);
