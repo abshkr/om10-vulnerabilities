@@ -387,6 +387,40 @@ const FeatureItems = ({ data, onChange }) => (
   />
 );
 
+const HostMessagingItems = ({ data, onChange }) => (
+  <List
+    style={{ height: 'calc(100vh - 300px)', overflowY: 'auto', minHeight: 720 }}
+    itemLayout="horizontal"
+    size="small"
+    dataSource={data}
+    renderItem={(item) => {
+      return (
+        <List.Item style={{ background: '#f1f1f1', marginBottom: 0, marginRight: 0, borderRadius: 5 }}>
+          <List.Item.Meta
+            style={{ justifyContent: 'left', alignContent: 'left', alignItems: 'left' }}
+            avatar={
+              <Switch
+                checked={item.config_value === 'Y'}
+                style={{
+                  visibility: item.config_value === 'N' || item.config_value === 'Y' ? 'visible' : 'hidden',
+                }}
+                checkedChildren={<span>On</span>}
+                unCheckedChildren={<span>Off</span>}
+                onChange={(value) => onChange(item, value ? 'Y' : 'N')}
+              />
+            }
+            // eslint-disable-next-line
+            title={<a>{item.config_comment}</a>}
+          />
+          <FormSwitch config={item} onChange={onChange} />
+        </List.Item>
+      );
+    }}
+  />
+);
+
+
+
 const Configuration = ({ user, config }) => {
   const { data: configPayload } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
   const { data: featuresPayload } = useSWR(SITE_CONFIGURATION.FEATURES, { revalidateOnFocus: false });
@@ -598,6 +632,13 @@ const Configuration = ({ user, config }) => {
               <FeatureItems data={features} onChange={onFeatureEdit} />
             </TabPane>
           )}
+
+          <TabPane tab={t('tabColumns.hostMessaging')} key="8">
+            <HostMessagingItems
+              data={_.filter(configuration, ['config_required_by_gui', 'H'])}
+              onChange={onConfigurationEdit}
+            />
+          </TabPane>
         </Tabs>
       </Page>
     </ConfigurationContainer>

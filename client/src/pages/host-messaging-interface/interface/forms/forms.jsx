@@ -30,12 +30,58 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 	const [iaction, setAction] = useState(action);
 	const [icontent_format, setContentFormat] = useState(content_format);
 	const [imsg, setMessage] = useState(msg);
+	//const [ihmcfg, setHmConfig] = useState({});
+	const [ihostEditOn, setHostEditOn] = useState(false);
+	const [ihostSubmitOn, setHostSubmitOn] = useState(false);
+	const [iomEditOn, setOmEditOn] = useState(false);
+	const [iomSubmitOn, setOmSubmitOn] = useState(false);
 
+	var urlprefix = process.env.REACT_APP_API_URL || '';
+	var dbstr = process.env.REACT_APP_OMEGA_USER || '';
+	var url = urlprefix + '/hmi/site_config';
+	if (dbstr)
+	{
+		url = url + '?db=' + dbstr;
+	}
+
+	const getHostMessagingConfig = async () => {
+		fetch(url, {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			},
+			credentials: 'include',
+			body: JSON.stringify({'host_messaging_only': true})
+		}).then(response => {
+			response.json().then(body => {
+				if (response.ok)
+				{
+					//setHmConfig(body.message);
+					//setHostEditOn(body.
+					body.message.map((cfg)=> {
+						if (cfg.CONFIG_KEY === 'HOST_MESSAGING_IN_EDIT_ON') { setHostEditOn(cfg.CONFIG_VALUE === 'Y'); }
+						else if (cfg.CONFIG_KEY === 'HOST_MESSAGING_IN_SUBMIT_ON') { setHostSubmitOn(cfg.CONFIG_VALUE === 'Y'); }
+						else if (cfg.CONFIG_KEY === 'HOST_MESSAGING_OUT_EDIT_ON') { setOmEditOn(cfg.CONFIG_VALUE === 'Y'); }
+						else if (cfg.CONFIG_KEY === 'HOST_MESSAGING_OUT_SUBMIT_ON') { setOmSubmitOn(cfg.CONFIG_VALUE === 'Y'); }
+					});
+					return body;
+				}
+				else
+				{
+					//alert(body.message);
+					return {};
+				}
+			});
+		});
+	};
 
 
 	useEffect(() => {
 		if (from != ifrom)
 		{
+			getHostMessagingConfig();
+
 			if (from == 'host')
 			{
 				setNotice('');
@@ -141,7 +187,6 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 		setNotice(result);
 	}
 
-
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -169,16 +214,17 @@ const FormModal = ({ msg, visible, from, action, content_format, handleFormState
 						icon={<EditOutlined />}
 						onClick={onEdit}
 						style={{ float: 'right', marginRight: 5 }}
-						disabled={!notEdit || (from == 'omega')}
+						disabled={!notEdit || 
+											!(ifrom === 'host' && ihostEditOn) && !(ifrom === 'omega' && iomEditOn)}
 					>
-						{ label }
+						{ t('operations.edit') }
 					</Button>
 
 					<Button
 						icon={<EditOutlined />}
 						onClick={onSubmit}
 						style={{ float: 'right', marginRight: 5 }}
-						//disabled={!notEdit}
+						disabled={!(ifrom === 'host' && ihostSubmitOn) && !(ifrom === 'omega' && iomSubmitOn)}
 					>
 						{t('operations.submit')}
 					</Button>
