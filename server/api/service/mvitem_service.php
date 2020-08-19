@@ -171,11 +171,12 @@ class MvitemService
 
     private function explode_arm_tanks()
     {
-        write_log(sprintf("%s::%s() START1", __CLASS__, __FUNCTION__),
+        write_log(sprintf("%s::%s() START. from_arm:%s", 
+            __CLASS__, __FUNCTION__, isset($this->from_arm) ? $this->from_arm : null),
             __FILE__, __LINE__);
 
         if (!isset($this->from_arm)) {
-            return arrary();
+            return array();
         }
 
         $query = "
