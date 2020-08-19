@@ -43,8 +43,16 @@ const Page = ({ name, page, children, modifiers, minimal, transparent, access, a
 
   const filtered = name ? routes : _.reject(routes, ['path', 'second']);
 
+  const onCancel = async () => {
+    setViewable(false);
+    setAuthenticated(true);
+  }
+
   const onFinish = async () => {
     const values = await form.validateFields();
+    if (!values.password) {
+      return;
+    }
     const token = sessionStorage.getItem('token');
 
     setFetching(true);
@@ -112,9 +120,10 @@ const Page = ({ name, page, children, modifiers, minimal, transparent, access, a
         visible={isLocked}
         closable={false}
         centered
-        cancelButtonProps={{ style: { display: 'none' } }}
+        // cancelButtonProps={{ style: { display: 'none' } }}
         okText={t('operations.authenticate')}
         onOk={onFinish}
+        onCancel={onCancel}
         confirmLoading={isFetching}
       >
         <Form form={form} layout="vertical">
