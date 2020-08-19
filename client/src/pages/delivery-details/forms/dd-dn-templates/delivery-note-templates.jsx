@@ -44,7 +44,7 @@ const DeliveryNoteTemplates = ({
   const { t } = useTranslation();
   const fields = columns(t, pageState, form);
 
-  const { data: templates } = useSWR(`${DELIVERY_DETAILS.TEMPLATES}?tmpl_type=1`);
+  const { data: templates } = useSWR(`${DELIVERY_DETAILS.TEMPLATES}?tmpl_type=2`);
 
   const { data: payload, isValidating } = useSWR(
     `${DELIVERY_DETAILS.DD_DN_TEMPLATES}?dd_number=${value?.dd_number}&dd_supp_code=${value?.dd_supp_code}&dd_tripord_no=${value?.dd_tripord_no}&dd_ld_type=${value?.dd_ld_type}`
