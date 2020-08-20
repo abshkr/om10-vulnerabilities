@@ -52,6 +52,27 @@ class Feature extends CommonClass
         echo json_encode($error, JSON_PRETTY_PRINT);
     }
 
+    public function adjust()
+    {
+        $file = null;
+        if (file_exists("../../config/FeatureSettings.json")) {
+            $file = "../../config/FeatureSettings.json";
+        } else {
+            $file = "../../config/FeatureSettings.default";
+        }
+        $feature_array = json_decode(file_get_contents($file));
+
+        // adjust the features and related settings in SITE_CONFIG;
+        foreach( $feature_array as $item )
+        {
+            $funcName = $item->feature_func;
+            $this->$funcName( $item->feature_flag );
+        }
+
+        $error = new EchoSchema(200, response("__SAVE_SUCCEEDED__"));
+        echo json_encode($error, JSON_PRETTY_PRINT);
+    }
+
 	
 	
 	public function ManageBaseProductDensityRange($flag)
