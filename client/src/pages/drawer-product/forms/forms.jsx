@@ -50,6 +50,22 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
 
   const IS_CREATING = !value;
 
+  const adjustHotTempCheckFlag = (bases) => {
+    let hotFound=false;
+
+    for (let i=0; i<bases.length; i++) {
+      const base = bases[i];
+      if ( !!base && base?.pitem_hot_check && _.toNumber(base?.pitem_ratio_value) > 0 ) {
+        hotFound = true;
+        break;
+      }
+    }
+    
+    setFieldsValue({
+      prod_check_hot_volume: hotFound,
+    });
+  }
+
   const handleBaseCallBack = (values) => {
     if (values.to_delete) {
       return deleteBase();
@@ -57,7 +73,26 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
 
     let payload = null;
     if (!values.to_create) {
-      payload = [
+      // if the latest pitem_hot_main is true, other base's pitem_hot_main must be false
+      payload = [];
+      _.forEach(bases, (item) => {
+        if (item.pitem_base_code !== selected.pitem_base_code) {
+          if (values.pitem_hot_main === true) {
+            item.pitem_hot_main = false;
+          }
+        } else {
+          item.pitem_base_code = values.pitem_base_code;
+          item.pitem_bltol_ntol = values.pitem_bltol_ntol;
+          item.pitem_bltol_flag = values.pitem_bltol_flag;
+          item.pitem_bltol_ptol = values.pitem_bltol_ptol;
+          item.pitem_ratio_value = values.pitem_ratio_value;
+          item.pitem_base_name = values.pitem_base_name;
+          item.pitem_bclass_name = values.pitem_bclass_name;
+          item.pitem_hot_main = values.pitem_hot_main;
+        }
+        payload.push(item);
+      });
+      /* payload = [
         ..._.filter(bases, (item) => {
           return item.pitem_base_code !== selected.pitem_base_code;
         }),
@@ -71,7 +106,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
           pitem_bclass_name: values.pitem_bclass_name,
           pitem_hot_main: values.pitem_hot_main,
         },
-      ];
+      ]; */
       setSelected(null);
     } else {
       if (
@@ -86,19 +121,23 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
         return;
       }
 
-      payload = [
-        ...bases,
-        {
-          pitem_base_code: values.pitem_base_code,
-          pitem_bltol_ntol: values.pitem_bltol_ntol,
-          pitem_bltol_flag: values.pitem_bltol_flag,
-          pitem_bltol_ptol: values.pitem_bltol_ptol,
-          pitem_ratio_value: values.pitem_ratio_value,
-          pitem_base_name: values.pitem_base_name,
-          pitem_bclass_name: values.pitem_bclass_name,
-          pitem_hot_main: values.pitem_hot_main,
-        },
-      ];
+      payload = [];
+      _.forEach(bases, (item) => {
+        if (values.pitem_hot_main === true) {
+          item.pitem_hot_main = false;
+        }
+        payload.push(item);
+      });
+      payload.push({
+        pitem_base_code: values.pitem_base_code,
+        pitem_bltol_ntol: values.pitem_bltol_ntol,
+        pitem_bltol_flag: values.pitem_bltol_flag,
+        pitem_bltol_ptol: values.pitem_bltol_ptol,
+        pitem_ratio_value: values.pitem_ratio_value,
+        pitem_base_name: values.pitem_base_name,
+        pitem_bclass_name: values.pitem_bclass_name,
+        pitem_hot_main: values.pitem_hot_main,
+      });
     }
 
     form.setFieldsValue({
@@ -246,6 +285,10 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
     }
   }, [resetFields, value, visible]);
 
+  useEffect(() => {
+    adjustHotTempCheckFlag(bases);
+  }, [bases, adjustHotTempCheckFlag, setFieldsValue]);
+
   const layout = {
     labelCol: {
       span: 6,
@@ -254,25 +297,6 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
       span: 18,
     },
   };
-
-  /*
-			
-			protected function adjustHotTempCheckFlag():void
-			{
-				var hotFound:Boolean=false;
-				
-				for each ( var o:Object in this.drawerProductItemGrid.dataProvider )
-				{
-					if ( o != null && (o.hasOwnProperty("pitem_hot_check") && o["pitem_hot_check"] == 1) && (o.hasOwnProperty("pitem_ratio_value") && o["pitem_ratio_value"] > 0) )
-					{
-						hotFound = true;
-						break;
-					}
-				}
-				
-				this.prod_check_hot_volume.selected = hotFound;
-			}
-  */
 
   return (
     <Drawer
