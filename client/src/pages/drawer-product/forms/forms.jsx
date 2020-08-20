@@ -7,7 +7,7 @@ import {
   QuestionCircleOutlined,
   CloseOutlined,
 } from '@ant-design/icons';
-import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Checkbox, Col, Row, Input } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Checkbox, Col, Row, Input, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 
@@ -29,6 +29,7 @@ import { DataTable, FormModal } from '../../../components';
 import columns from './columns';
 import BaseProductForm from './base-form';
 import HotLitresForm from './hot-litres';
+import LinkedDrawerProducts from './linked-drawer-products';
 
 const TabPane = Tabs.TabPane;
 
@@ -68,6 +69,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
           pitem_ratio_value: values.pitem_ratio_value,
           pitem_base_name: values.pitem_base_name,
           pitem_bclass_name: values.pitem_bclass_name,
+          pitem_hot_main: values.pitem_hot_main,
         },
       ];
       setSelected(null);
@@ -94,6 +96,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
           pitem_ratio_value: values.pitem_ratio_value,
           pitem_base_name: values.pitem_base_name,
           pitem_bclass_name: values.pitem_bclass_name,
+          pitem_hot_main: values.pitem_hot_main,
         },
       ];
     }
@@ -121,7 +124,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
     FormModal({
       width: '30vw',
       value: v,
-      form: <BaseProductForm value={v} handleBaseCallBack={handleBaseCallBack} />,
+      form: <BaseProductForm value={v} handleBaseCallBack={handleBaseCallBack} config={config} />,
       id: v?.pitem_base_code,
       name: v?.pitem_base_name,
       t,
@@ -252,6 +255,25 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
     },
   };
 
+  /*
+			
+			protected function adjustHotTempCheckFlag():void
+			{
+				var hotFound:Boolean=false;
+				
+				for each ( var o:Object in this.drawerProductItemGrid.dataProvider )
+				{
+					if ( o != null && (o.hasOwnProperty("pitem_hot_check") && o["pitem_hot_check"] == 1) && (o.hasOwnProperty("pitem_ratio_value") && o["pitem_ratio_value"] > 0) )
+					{
+						hotFound = true;
+						break;
+					}
+				}
+				
+				this.prod_check_hot_volume.selected = hotFound;
+			}
+  */
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -296,98 +318,196 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
         </>
       }
     >
-      <Form {...layout} form={form} scrollToFirstError initialValues={value}>
+      <Form
+        // {...layout}
+        layout="vertical"
+        form={form}
+        scrollToFirstError
+        initialValues={value}
+      >
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-            <DrawerCompany form={form} value={value} />
-            <ProductCode form={form} value={value} />
-            <ProductName form={form} value={value} />
-            <Group form={form} value={value} />
-            <Hazchem form={form} value={value} />
-            <Generic form={form} value={value} />
+
+            <Row gutter={[8, 2]}>
+              <Col span={8}>
+                <DrawerCompany form={form} value={value} />
+              </Col>
+              <Col span={8}>
+                <ProductCode form={form} value={value} />
+              </Col>
+              <Col span={8}>
+                <ProductName form={form} value={value} />
+              </Col>
+            </Row>
+
+            <Row gutter={[8, 2]}>
+              <Col span={8}>
+                <Group form={form} value={value} />
+              </Col>
+              <Col span={8}>
+                <Hazchem form={form} value={value} />
+              </Col>
+              <Col span={8}>
+                <Generic form={form} value={value} />
+              </Col>
+            </Row>
+
             <LoadTolerance form={form} value={value} />
-            <Form.Item label={t('fields.prodCompliant')}>
-              <Row>
-                <Col span={4}>
-                  <Form.Item noStyle name="prod_is_compliant">
-                    <Checkbox
-                      valuePropName="checked"
-                      checked={prod_is_compliant}
-                      onChange={(v) => {
-                        setCompliant(v.target.checked);
-                        setFieldsValue({
-                          prod_is_compliant: v.target.checked,
-                        });
-                      }}
-                    ></Checkbox>
-                  </Form.Item>
-                </Col>
-                <Col span={20}>
-                  <Form.Item name="prod_is_locked" label={t('fields.locked')}>
-                    <Checkbox
-                      valuePropName="checked"
-                      checked={prod_is_locked}
-                      onChange={(v) => {
-                        setLocked(v.target.checked);
-                        setFieldsValue({
-                          prod_is_locked: v.target.checked,
-                        });
-                      }}
-                    ></Checkbox>
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Form.Item>
-            <DangerousGoods form={form} value={value} />
-            <Form.Item name="prod_desc" label={t('fields.description')}>
-              <TextArea rows={2} />
-            </Form.Item>
-            <Divider orientation="left">{t('fields.baseProducts')}</Divider>
-            <Form.Item name="bases" noStyle>
-              <DataTable
-                data={bases}
-                height="78vh"
-                minimal
-                columns={columns(t, config)}
-                handleSelect={(value) => setSelected(value[0])}
-              />
-            </Form.Item>
 
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              loading={baseLoading && !IS_CREATING}
-              onClick={() => handleBase(null)}
-              style={{ float: 'right', marginRight: 5, marginTop: 10 }}
-            >
-              {t('operations.addBase')}
-            </Button>
+            {config.manageHotProduct && (
+              <HotLitresForm value={value} form={form} />
+            )}
 
-            <Button
-              type="primary"
-              icon={<EditOutlined />}
-              onClick={() => handleBase(selected)}
-              style={{ float: 'right', marginRight: 5, marginTop: 10 }}
-              disabled={!selected}
-            >
-              {t('operations.editBase')}
-            </Button>
+            {config.manageDCS && (
+              <LinkedDrawerProducts value={value} form={form} />
+            )}
 
-            <Button
-              type="danger"
-              icon={<DeleteOutlined />}
-              onClick={deleteBase}
-              disabled={!selected}
-              style={{ float: 'right', marginRight: 5, marginTop: 10 }}
+            <Row gutter={[8, 0]}>
+              <Col span={8}>
+                <Row gutter={[8, 0]}>
+                  <Col span={24}>
+                    <DangerousGoods form={form} value={value} />
+                  </Col>
+                </Row>
+                <Row gutter={[8, 0]}>
+                  <Col span={12}>
+                    <Form.Item name="prod_is_compliant" label={t('fields.prodCompliant')}>
+                      <Checkbox
+                        valuePropName="checked"
+                        checked={prod_is_compliant}
+                        onChange={(v) => {
+                          setCompliant(v.target.checked);
+                          setFieldsValue({
+                            prod_is_compliant: v.target.checked,
+                          });
+                        }}
+                      ></Checkbox>
+                    </Form.Item>
+                  </Col>
+                  <Col span={12}>
+                    <Form.Item name="prod_is_locked" label={t('fields.locked')}>
+                      <Checkbox
+                        valuePropName="checked"
+                        checked={prod_is_locked}
+                        onChange={(v) => {
+                          setLocked(v.target.checked);
+                          setFieldsValue({
+                            prod_is_locked: v.target.checked,
+                          });
+                        }}
+                      ></Checkbox>
+                    </Form.Item>
+                  </Col>
+                </Row>
+              </Col>
+              <Col span={16}>
+                <Form.Item name="prod_desc" label={t('fields.description')}>
+                  <TextArea rows={3} />
+                </Form.Item>
+              </Col>
+            </Row>
+
+            {/* <Row gutter={[8, 2]}>
+              <Col span={8}>
+                <Form.Item name="prod_is_compliant" label={t('fields.prodCompliant')}>
+                  <Checkbox
+                    valuePropName="checked"
+                    checked={prod_is_compliant}
+                    onChange={(v) => {
+                      setCompliant(v.target.checked);
+                      setFieldsValue({
+                        prod_is_compliant: v.target.checked,
+                      });
+                    }}
+                  ></Checkbox>
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item name="prod_is_locked" label={t('fields.locked')}>
+                  <Checkbox
+                    valuePropName="checked"
+                    checked={prod_is_locked}
+                    onChange={(v) => {
+                      setLocked(v.target.checked);
+                      setFieldsValue({
+                        prod_is_locked: v.target.checked,
+                      });
+                    }}
+                  ></Checkbox>
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <DangerousGoods form={form} value={value} />
+              </Col>
+            </Row>
+
+            <Row gutter={[8, 2]}>
+              <Col span={3}>
+                <Form.Item name="prod_desc_title" label={t('fields.description')}>
+                </Form.Item>
+              </Col>
+              <Col span={21}>
+                <Form.Item name="prod_desc">
+                  <TextArea rows={2} />
+                </Form.Item>
+              </Col>
+            </Row> */}
+            
+            <Card
+              size="small"
+              title={t('fields.baseProducts')}
+              // bordered={false}
+              // style={{margin:0, padding:0}}
+              extra={
+                <>
+                  <Button
+                    type="primary"
+                    icon={<PlusOutlined />}
+                    loading={baseLoading && !IS_CREATING}
+                    onClick={() => handleBase(null)}
+                    style={{ float: 'right', marginRight: 5, marginTop: 10 }}
+                  >
+                    {t('operations.addBase')}
+                  </Button>
+
+                  <Button
+                    type="primary"
+                    icon={<EditOutlined />}
+                    onClick={() => handleBase(selected)}
+                    style={{ float: 'right', marginRight: 5, marginTop: 10 }}
+                    disabled={!selected}
+                  >
+                    {t('operations.editBase')}
+                  </Button>
+
+                  <Button
+                    type="danger"
+                    icon={<DeleteOutlined />}
+                    onClick={deleteBase}
+                    disabled={!selected}
+                    style={{ float: 'right', marginRight: 5, marginTop: 10 }}
+                  >
+                    {t('operations.deleteBase')}
+                  </Button>
+                </>
+              }
             >
-              {t('operations.deleteBase')}
-            </Button>
+              <Form.Item name="bases" noStyle>
+                <DataTable
+                  data={bases}
+                  height="78vh"
+                  minimal
+                  columns={columns(t, config)}
+                  handleSelect={(value) => setSelected(value[0])}
+                />
+              </Form.Item>
+            </Card>
           </TabPane>
-          {config.safefillCheckByHighTemp && (
+          {/* {config.safefillCheckByHighTemp && (
             <TabPane tab={t('tabColumns.companyHotLitres')} key="2">
               <HotLitresForm value={value} form={form}></HotLitresForm>
             </TabPane>
-          )}
+          )} */}
         </Tabs>
       </Form>
     </Drawer>

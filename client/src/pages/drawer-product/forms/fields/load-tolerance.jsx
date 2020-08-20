@@ -58,18 +58,22 @@ const LoadTolerance = ({ form, value }) => {
   };
 
   return (
-    <Form.Item label={t('fields.loadToleranceCheck')}>
-      <Row >
-        <Col span={4}>
-          <Form.Item name="prod_ldtol_flag" noStyle rules={[{ required: false, validator: validate }]}>
-            <Checkbox checked={prod_ldtol_flag} onChange={onCheck}></Checkbox>
+    <>
+      <Row gutter={[8, 2]}>
+        <Col span={8}>
+          <Form.Item name="prod_ldtol_flag" label={t('fields.prodLdtolFlag2')} rules={[{ required: false, validator: validate }]}>
+            <Checkbox 
+              checked={prod_ldtol_flag} 
+              onChange={onCheck}
+            ></Checkbox>
           </Form.Item>
         </Col>
 
-        <Col span={10}>
+        <Col span={8}>
           <Form.Item name="prod_ldtol_ntol" label={t('fields.lowerLimit')} rules={[{ required: false, validator: validate }]}>
             <InputNumber
               // defaultValue={-10}
+              style={{width:'100%'}}
               min={-200}
               max={0}
               formatter={value => `${value}%`}
@@ -80,10 +84,11 @@ const LoadTolerance = ({ form, value }) => {
           </Form.Item>
         </Col>
 
-        <Col span={10}>
+        <Col span={8}>
           <Form.Item name="prod_ldtol_ptol" label={t('fields.upperLimit')} rules={[{ required: false, validator: validate }]}>
             <InputNumber
               // defaultValue={10}
+              style={{width:'100%'}}
               min={0}
               max={200}
               formatter={value => `${value}%`}
@@ -94,7 +99,7 @@ const LoadTolerance = ({ form, value }) => {
           </Form.Item>
         </Col>
     </Row>
-    </Form.Item>
+    </>
   );
 };
 

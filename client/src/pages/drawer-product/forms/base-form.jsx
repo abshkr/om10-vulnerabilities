@@ -16,39 +16,46 @@ import { DRAWER_PRODUCTS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, handleBaseCallBack }) => {
+const FormModal = ({ value, handleBaseCallBack, config }) => {
   const { data: payload } = useSWR(`${DRAWER_PRODUCTS.AVAILABLE_BASES}`);
   let baseProducts = payload?.records;
   
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { setFieldsValue } = form;
-  const [ pitem_bltol_flag, setFlag ] = useState(value?.pitem_bltol_flag)
+  const [ pitem_bltol_flag, setFlag ] = useState(value?.pitem_bltol_flag);
 
   const IS_CREATING = !value;
   
   const onCheck = v => {
-    setFlag(v.target.checked)
+    setFlag(v.target.checked);
     setFieldsValue({
       pitem_bltol_flag: v.target.checked,
     });
   }
+  
+  const onCheckHotMain = v => {
+    setFlag(v.target.checked)
+    setFieldsValue({
+      pitem_hot_main: v.target.checked,
+    });
+  }
 
   const onFinish = values => {
-    values.to_create = IS_CREATING
+    values.to_create = IS_CREATING;
     const baseItem = _.find(baseProducts, (item) => {
       return item.base_code === values.pitem_base_code;
     });
     values.pitem_base_name = baseItem.base_name;
     values.pitem_bclass_name = baseItem.bclass_desc;
     
-    handleBaseCallBack(values)
+    handleBaseCallBack(values);
     Modal.destroyAll();
   };
 
   const onDelete = values => {
-    values.to_delete = true
-    handleBaseCallBack(values)
+    values.to_delete = true;
+    handleBaseCallBack(values);
     Modal.destroyAll();
   };
 
@@ -60,6 +67,7 @@ const FormModal = ({ value, handleBaseCallBack }) => {
         pitem_bltol_flag: value.pitem_bltol_flag,
         pitem_bltol_ptol: value.pitem_bltol_ptol,
         pitem_base_code: value.pitem_base_code,
+        pitem_hot_main: value.pitem_hot_main,
       })
     }
   }, [value]);
@@ -137,6 +145,15 @@ const FormModal = ({ value, handleBaseCallBack }) => {
                 </Form.Item>        
               </Col>
             </Row>
+
+            {config.manageHotProduct && (
+              <Form.Item name="pitem_hot_main" label={t('fields.pitemHotMain')} valuePropName="checked" >
+                <Checkbox 
+                  defaultChecked={value?.pitem_hot_main} 
+                  onChange={onCheckHotMain}
+                />
+              </Form.Item>
+            )}
             
           </TabPane>
         </Tabs>
