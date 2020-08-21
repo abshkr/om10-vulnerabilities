@@ -19,14 +19,14 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.color'),
+    headerName: t('fields.baseProdColor'),
     field: 'base_color',
     sortable: true,
     filter: 'FuzzyFilter',
     resizable: true,
-    cellRenderer: 'TagRenderer',
-    width: 120,
-    suppressSizeToFit: true,
+    cellRenderer: 'ColorRenderer',
+    width: 130,
+    // suppressSizeToFit: true,
   },
   {
     headerName: t('fields.classId'),

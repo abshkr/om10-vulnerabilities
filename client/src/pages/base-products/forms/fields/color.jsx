@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Form } from 'antd';
 import { CompactPicker } from 'react-color';
+import { useTranslation } from 'react-i18next';
 
 const BaseProductColor = ({ form, value }) => {
   const [visible, setVisible] = useState(false);
   const [color, setColor] = useState('#fff');
+
+  const { t } = useTranslation();
 
   const { setFieldsValue } = form;
 
@@ -24,7 +27,7 @@ const BaseProductColor = ({ form, value }) => {
 
   useEffect(() => {
     if (value) {
-      const color = value.base_color === '' ? '#fff' : value.base_color;
+      const color = value.base_color; // === '' ? '#fff' : value.base_color;
 
       setFieldsValue({
         base_color: color
@@ -36,9 +39,9 @@ const BaseProductColor = ({ form, value }) => {
 
   return (
     <div>
-      <Form.Item name="base_color" label="Base Product Color">
+      <Form.Item name="base_color" label={t('fields.baseProdColor')}>
         <Button color={color} onClick={handleVisiblity} style={{ background: color }} block>
-          Currently Set to {color}
+        {!color? t('fields.baseColorCurrentBlank') : t('fields.baseColorCurrentSet')} {color}
         </Button>
       </Form.Item>
 
