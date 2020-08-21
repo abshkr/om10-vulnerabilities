@@ -319,8 +319,19 @@ class Product extends CommonClass
     public function generic_prods()
     {
         $query = "
-            SELECT * FROM GENERIC_PROD 
-            ORDER BY GEN_PROD_CODE";
+			select 
+				gp.GEN_PROD_CODE
+				, decode( gu.PROD_COUNT, NULL, 0, gu.PROD_COUNT) 									as PROD_COUNT
+				, gp.GEN_PROD_CODE||' ('||decode( gu.PROD_COUNT, NULL, 0, gu.PROD_COUNT)||') ' 		as GEN_PROD_DESC
+			from 
+				GENERIC_PROD  gp
+				, (
+					select PROD_CLASS, count(PROD_CODE) as PROD_COUNT from PRODUCTS where 1=1 group by PROD_CLASS
+				) gu
+			where
+				gp.GEN_PROD_CODE = gu.PROD_CLASS(+) 
+			order by gp.GEN_PROD_CODE
+        ";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;

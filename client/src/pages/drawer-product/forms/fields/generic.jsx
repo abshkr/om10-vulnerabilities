@@ -49,7 +49,7 @@ const Generic = ({ form, value }) => {
       >
         {options?.records.map((item, index) => (
           <Select.Option key={index} value={item.gen_prod_code}>
-            {item.gen_prod_code}
+            {item.gen_prod_desc}
           </Select.Option>
         ))}
       </Select>
