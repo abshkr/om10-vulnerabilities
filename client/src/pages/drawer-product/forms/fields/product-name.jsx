@@ -10,7 +10,7 @@ const ProductName = ({ form, value }) => {
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('fields.productName')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.productName')}`);
     }
 
     if (input && input.length > 20) {

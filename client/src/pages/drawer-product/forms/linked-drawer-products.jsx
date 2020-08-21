@@ -34,7 +34,7 @@ const LinkedDrawerProducts = ({ value, form }) => {
         prod_2nd_product: value.prod_2nd_product,
         prod_check_2nd_drawer: value.prod_check_2nd_drawer,
       });
-      setFlag(value.prod_check_hot_volume);
+      setFlag(value.prod_check_2nd_drawer);
       setDrawer(value.prod_2nd_drawer);
     }
     
@@ -42,9 +42,9 @@ const LinkedDrawerProducts = ({ value, form }) => {
 
   const onCheck = v => {
     setFlag(v.target.checked)
-    /* setFieldsValue({
+    setFieldsValue({
       prod_check_2nd_drawer: v.target.checked,
-    }); */
+    });
   }
 
   const handleDrawerChange = (value) => {

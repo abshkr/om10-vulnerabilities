@@ -26,6 +26,22 @@ const FormModal = ({ value, handleBaseCallBack, config }) => {
   const [ pitem_bltol_flag, setFlag ] = useState(value?.pitem_bltol_flag);
 
   const IS_CREATING = !value;
+
+  const validateBase = (rule, input) => {
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.baseProduct')}`);
+    }
+
+    return Promise.resolve();
+  };
+
+  const validateRatio = (rule, input) => {
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.ratio')}`);
+    }
+
+    return Promise.resolve();
+  };
   
   const onCheck = v => {
     setFlag(v.target.checked);
@@ -48,6 +64,15 @@ const FormModal = ({ value, handleBaseCallBack, config }) => {
     });
     values.pitem_base_name = baseItem.base_name;
     values.pitem_bclass_name = baseItem.bclass_desc;
+
+    values.pitem_base_class = baseItem.bclass_no;
+    values.pitem_adtv_flag = baseItem.base_adtv==='0' ? false : true;
+    values.pitem_hot_check = baseItem.base_hot_check==='' ? null : (baseItem.base_hot_check==='0' ? false : true);
+    values.pitem_bclass_dens_lo = baseItem.bclass_dens_lo;
+    values.pitem_bclass_dens_hi = baseItem.bclass_dens_hi;
+    values.pitem_bclass_vcf_alg = baseItem.bclass_vcf_alg;
+    values.pitem_bclass_temp_lo = baseItem.bclass_temp_lo;
+    values.pitem_bclass_temp_hi = baseItem.bclass_temp_hi;
     
     handleBaseCallBack(values);
     Modal.destroyAll();
@@ -87,7 +112,7 @@ const FormModal = ({ value, handleBaseCallBack, config }) => {
       >
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1" style={{ height: '60vh' }}>
-            <Form.Item name="pitem_base_code" label={t('fields.baseProduct')} rules={[{ required: true }]}>
+            <Form.Item name="pitem_base_code" label={t('fields.baseProduct')} rules={[{ required: true, validator: validateBase }]}>
               <Select
                 dropdownMatchSelectWidth={false}
                 // loading={isValidating}
@@ -105,7 +130,7 @@ const FormModal = ({ value, handleBaseCallBack, config }) => {
                 )):null}
               </Select>
             </Form.Item>
-            <Form.Item name="pitem_ratio_value" label={t('fields.ratio')} rules={[{ required: true }]}>
+            <Form.Item name="pitem_ratio_value" label={t('fields.ratio')} rules={[{ required: true, validator: validateRatio }]}>
               <InputNumber min={1} style={{ width: '100%' }} />
             </Form.Item>
 

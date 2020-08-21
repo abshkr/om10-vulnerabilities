@@ -10,7 +10,7 @@ const ProductCode = ({ form, value }) => {
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('fields.productCode')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.productCode')}`);
     }
 
     if (input && input.length > 10) {

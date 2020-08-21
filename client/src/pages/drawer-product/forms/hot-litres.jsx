@@ -5,10 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import _ from 'lodash';
 
-const HotLitresForm = ({ value, form }) => {
+const HotLitresForm = ({ value, form, hotFlag }) => {
   const { t } = useTranslation();
   // const [form] = Form.useForm();
-  const [checked, setChecked] = useState(value?.prod_check_hot_volume)
+  const [flag, setFlag] = useState(hotFlag)
   const { resetFields, setFieldsValue } = form;
 
   useEffect(() => {
@@ -18,19 +18,17 @@ const HotLitresForm = ({ value, form }) => {
         prod_hot_temp: value.prod_hot_temp,
         prod_check_hot_volume: value.prod_check_hot_volume,
       });
-      setChecked(value.prod_check_hot_volume);
+      setFlag(value.prod_check_hot_volume);
     }
     
-  }, [resetFields, value]);
+  }, [value, setFieldsValue, setFlag]);
 
-  const layout = {
-    labelCol: {
-      span: 12,
-    },
-    wrapperCol: {
-      span: 24,
-    },
-  };
+  useEffect(() => {
+    setFieldsValue({
+      prod_check_hot_volume: hotFlag,
+    });
+    setFlag(hotFlag);
+  }, [hotFlag, setFieldsValue, setFlag]);
 
   return (
     <>
@@ -38,7 +36,7 @@ const HotLitresForm = ({ value, form }) => {
         <Col span={8}>
           <Form.Item name="prod_check_hot_volume" label={t('fields.checkHotLitre')} >
             <Checkbox 
-              defaultChecked={checked} 
+              checked={flag} 
               // onChange={onChange}
               disabled={true}
             ></Checkbox>
@@ -50,7 +48,7 @@ const HotLitresForm = ({ value, form }) => {
               style={{width:'100%'}}
               min={500}
               max={1500}
-              disabled={!checked}
+              disabled={!flag}
             />
           </Form.Item>
         </Col>
@@ -60,7 +58,7 @@ const HotLitresForm = ({ value, form }) => {
               style={{width:'100%'}}
               min={-25}
               max={275}
-              disabled={!checked}
+              disabled={!flag}
             />
           </Form.Item>
         </Col>

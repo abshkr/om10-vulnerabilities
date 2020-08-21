@@ -7,7 +7,7 @@ import {
   QuestionCircleOutlined,
   CloseOutlined,
 } from '@ant-design/icons';
-import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Checkbox, Col, Row, Input, Card } from 'antd';
+import { Form, Button, Tabs, Modal, notification, message, Drawer, Checkbox, Col, Row, Input, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 
@@ -43,10 +43,13 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
   const [prod_is_compliant, setCompliant] = useState(value?.prod_ldtol_flag);
   const [prod_is_locked, setLocked] = useState(value?.prod_is_locked);
   const [selected, setSelected] = useState(null);
+  const [hotFlag, setHotFlag] = useState(value?.prod_check_hot_volume)
 
   const [baseLoading, setBaseLoading] = useState(true);
 
   const { resetFields, setFieldsValue } = form;
+
+  const fields = columns(t, config);
 
   const IS_CREATING = !value;
 
@@ -61,6 +64,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
       }
     }
     
+    setHotFlag(hotFound);
     setFieldsValue({
       prod_check_hot_volume: hotFound,
     });
@@ -71,30 +75,40 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
       return deleteBase();
     }
 
-    let payload = null;
+    const payload = [];
     if (!values.to_create) {
       // if the latest pitem_hot_main is true, other base's pitem_hot_main must be false
-      payload = [];
       _.forEach(bases, (item) => {
-        if (item.pitem_base_code !== selected.pitem_base_code) {
+        if (item.pitem_base_code !== selected?.pitem_base_code) {
           if (values.pitem_hot_main === true) {
             item.pitem_hot_main = false;
           }
+          payload.push(item);
         } else {
-          item.pitem_base_code = values.pitem_base_code;
-          item.pitem_bltol_ntol = values.pitem_bltol_ntol;
-          item.pitem_bltol_flag = values.pitem_bltol_flag;
-          item.pitem_bltol_ptol = values.pitem_bltol_ptol;
-          item.pitem_ratio_value = values.pitem_ratio_value;
-          item.pitem_base_name = values.pitem_base_name;
-          item.pitem_bclass_name = values.pitem_bclass_name;
-          item.pitem_hot_main = values.pitem_hot_main;
+          selected.pitem_base_code = values.pitem_base_code;
+          selected.pitem_bltol_ntol = values.pitem_bltol_ntol;
+          selected.pitem_bltol_flag = values.pitem_bltol_flag;
+          selected.pitem_bltol_ptol = values.pitem_bltol_ptol;
+          selected.pitem_ratio_value = values.pitem_ratio_value;
+          selected.pitem_hot_main = values.pitem_hot_main;
+
+          selected.pitem_base_name = values.pitem_base_name;
+          selected.pitem_bclass_name = values.pitem_bclass_name;
+
+          selected.pitem_base_class = values.pitem_base_class;
+          selected.pitem_adtv_flag = values.pitem_adtv_flag;
+          selected.pitem_hot_check = values.pitem_hot_check;
+          selected.pitem_bclass_dens_lo = values.pitem_bclass_dens_lo;
+          selected.pitem_bclass_dens_hi = values.pitem_bclass_dens_hi;
+          selected.pitem_bclass_vcf_alg = values.pitem_bclass_vcf_alg;
+          selected.pitem_bclass_temp_lo = values.pitem_bclass_temp_lo;
+          selected.pitem_bclass_temp_hi = values.pitem_bclass_temp_hi;
+          payload.push(selected);
         }
-        payload.push(item);
       });
       /* payload = [
         ..._.filter(bases, (item) => {
-          return item.pitem_base_code !== selected.pitem_base_code;
+          return item.pitem_base_code !== selected?.pitem_base_code;
         }),
         {
           pitem_base_code: values.pitem_base_code,
@@ -108,6 +122,8 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
         },
       ]; */
       setSelected(null);
+      // setSelected(selected);
+      setBases([]);
     } else {
       if (
         _.find(bases, (item) => {
@@ -121,7 +137,6 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
         return;
       }
 
-      payload = [];
       _.forEach(bases, (item) => {
         if (values.pitem_hot_main === true) {
           item.pitem_hot_main = false;
@@ -134,26 +149,34 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
         pitem_bltol_flag: values.pitem_bltol_flag,
         pitem_bltol_ptol: values.pitem_bltol_ptol,
         pitem_ratio_value: values.pitem_ratio_value,
+        pitem_hot_main: values.pitem_hot_main,
         pitem_base_name: values.pitem_base_name,
         pitem_bclass_name: values.pitem_bclass_name,
-        pitem_hot_main: values.pitem_hot_main,
+        pitem_base_class: values.pitem_base_class,
+        pitem_adtv_flag: values.pitem_adtv_flag,
+        pitem_hot_check: values.pitem_hot_check,
+        pitem_bclass_dens_lo: values.pitem_bclass_dens_lo,
+        pitem_bclass_dens_hi: values.pitem_bclass_dens_hi,
+        pitem_bclass_vcf_alg: values.pitem_bclass_vcf_alg,
+        pitem_bclass_temp_lo: values.pitem_bclass_temp_lo,
+        pitem_bclass_temp_hi: values.pitem_bclass_temp_hi,
       });
     }
 
-    form.setFieldsValue({
+    /* form.setFieldsValue({
       bases: payload,
-    });
+    }); */
 
     setBases(payload);
   };
 
   const deleteBase = () => {
-    let payload = _.filter(bases, (item) => {
-      return item.pitem_base_code !== selected.pitem_base_code;
+    const payload = _.filter(bases, (item) => {
+      return item.pitem_base_code !== selected?.pitem_base_code;
     });
-    form.setFieldsValue({
+    /* form.setFieldsValue({
       bases: payload,
-    });
+    }); */
 
     setBases(payload);
     setSelected(null);
@@ -175,9 +198,9 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
       .get(`${DRAWER_PRODUCTS.BASES}?prod_code=${value?.prod_code}&prod_cmpycode=${value?.prod_cmpycode}`)
       .then((response) => {
         const payload = response.data?.records || [];
-        form.setFieldsValue({
+        /* form.setFieldsValue({
           bases: payload,
-        });
+        }); */
 
         setBases(payload);
         setBaseLoading(false);
@@ -189,49 +212,60 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
     setSelected(null);
     if (prod_code) {
       setFilterValue('' + prod_code);
+    } else {
+      setFilterValue(' ');
     }
     mutate(DRAWER_PRODUCTS.READ);
   };
 
   const onFinish = async () => {
-    const values = await form.validateFields();
+    try {
 
-    if (values.bases === undefined || values.bases.length <= 0) {
-      Modal.info({
-        title: t('prompts.notEnoughBase'),
-        okText: t('operations.close'),
-      });
-      return;
-    }
+      const values = await form.validateFields();
 
-    Modal.confirm({
-      title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
-      okText: IS_CREATING ? t('operations.create') : t('operations.update'),
-      okType: 'primary',
-      icon: <QuestionCircleOutlined />,
-      cancelText: t('operations.no'),
-      centered: true,
-      onOk: async () => {
-        await api
-          .post(IS_CREATING ? DRAWER_PRODUCTS.CREATE : DRAWER_PRODUCTS.UPDATE, values)
-          .then(() => {
-            onComplete(values.prod_code);
+      if (values.bases === undefined || values.bases.length <= 0) {
+        Modal.info({
+          title: t('prompts.notEnoughBase'),
+          okText: t('operations.close'),
+        });
+        return;
+      }
 
-            notification.success({
-              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
-            });
-          })
-          .catch((errors) => {
-            _.forEach(errors.response.data.errors, (error) => {
-              notification.error({
-                message: error.type,
-                description: error.message,
+      Modal.confirm({
+        title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
+        okText: IS_CREATING ? t('operations.create') : t('operations.update'),
+        okType: 'primary',
+        icon: <QuestionCircleOutlined />,
+        cancelText: t('operations.no'),
+        centered: true,
+        onOk: async () => {
+          await api
+            .post(IS_CREATING ? DRAWER_PRODUCTS.CREATE : DRAWER_PRODUCTS.UPDATE, values)
+            .then(() => {
+              onComplete(values.prod_code);
+
+              notification.success({
+                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+              });
+            })
+            .catch((errors) => {
+              _.forEach(errors.response.data.errors, (error) => {
+                notification.error({
+                  message: error.type,
+                  description: error.message,
+                });
               });
             });
-          });
-      },
-    });
+        },
+      });
+
+    } catch (error) {
+      message.error({
+        key: 'submit',
+        content: t('descriptions.validationFailed'),
+      });
+    }
   };
 
   const onDelete = () => {
@@ -286,8 +320,13 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
   }, [resetFields, value, visible]);
 
   useEffect(() => {
+    console.log('Base has been changed!.......', bases)
+    form.setFieldsValue({
+      bases: bases,
+    });
+
     adjustHotTempCheckFlag(bases);
-  }, [bases, adjustHotTempCheckFlag, setFieldsValue]);
+  }, [bases]);//, adjustHotTempCheckFlag, setFieldsValue]);
 
   const layout = {
     labelCol: {
@@ -379,7 +418,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
             <LoadTolerance form={form} value={value} />
 
             {config.manageHotProduct && (
-              <HotLitresForm value={value} form={form} />
+              <HotLitresForm value={value} form={form} hotFlag={hotFlag} />
             )}
 
             {config.manageDCS && (
@@ -516,12 +555,12 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
                 </>
               }
             >
-              <Form.Item name="bases" noStyle>
+              <Form.Item name="bases">
                 <DataTable
                   data={bases}
                   height="78vh"
                   minimal
-                  columns={columns(t, config)}
+                  columns={fields}
                   handleSelect={(value) => setSelected(value[0])}
                 />
               </Form.Item>
