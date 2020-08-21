@@ -33,7 +33,7 @@ const Company = ({ form, value, onChange }) => {
   return (
     <Form.Item
       name="report_cmpycode"
-      label={t('fields.company')}
+      label={t('fields.reportCmpyname')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select
@@ -50,7 +50,7 @@ const Company = ({ form, value, onChange }) => {
       >
         {options?.records.map(item => (
           <Select.Option key={item.cmpy_code} value={item.cmpy_code}>
-            {item.cmpy_name}
+            {item.cmpy_code + ' - ' + item.cmpy_name}
           </Select.Option>
         ))}
       </Select>

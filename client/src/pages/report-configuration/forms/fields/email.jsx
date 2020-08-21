@@ -44,7 +44,7 @@ const Email = ({ form, value, enabled, canEmail }) => {
     <>
       <Form.Item
         name="report_cmpyemail"
-        label={t('fields.email')}
+        label={t('fields.reportCmpyemail')}
         rules={[{ required: canEmail, validator: validate }]}
       >
         <Input disabled={!enabled || !canEmail} />
