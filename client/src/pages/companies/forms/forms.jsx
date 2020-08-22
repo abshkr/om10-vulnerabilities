@@ -411,14 +411,14 @@ const FormModal = ({
                 <Col span={6}>
                   <Form.Item name="supplier" noStyle>
                     <Checkbox checked={supplier} onChange={onSupplierChange}>
-                      {t('fields.supplier')}
+                      {t('fields.schdSupplier')}
                     </Checkbox>
                   </Form.Item>
                 </Col>
                 <Col span={6}>
                   <Form.Item name="carrier" noStyle>
                     <Checkbox checked={carrier} onChange={onCarrierChange}>
-                      {t('fields.carrier')}
+                      {t('fields.schdCarrier')}
                     </Checkbox>
                   </Form.Item>
                 </Col>

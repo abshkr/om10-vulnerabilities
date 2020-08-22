@@ -6,7 +6,9 @@ import { Form, Button, Tabs, Modal, notification } from 'antd';
 import { DataTable } from '../../../components';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
+import moment from 'moment';
 
+import { SETTINGS } from '../../../constants';
 import api, { COMPANIES } from '../../../api';
 import useSWR, { mutate } from 'swr';
 import columns from './columns';
@@ -76,6 +78,7 @@ const RelationForm = ({ value, handleFormState }) => {
     v.parent_cmpy_code = value.cmpy_code;
     v.parent_cmpy_name = value.cmpy_name;
     if (v.is_creating) {
+      v.create_date = moment().format(SETTINGS.DATE_TIME_FORMAT);
       if (
         _.find(children, (item) => {
           return item.child_cmpy_code === v.child_cmpy_code;

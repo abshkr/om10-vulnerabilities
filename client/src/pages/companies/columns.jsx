@@ -39,7 +39,7 @@ const columns = (t) => [
     cellRenderer: 'BooleanRenderer',
   },
   {
-    headerName: t('fields.supplier'),
+    headerName: t('fields.schdSupplier'),
     field: 'supplier',
     filter: 'BooleanFilter',
     sortable: true,
@@ -47,7 +47,7 @@ const columns = (t) => [
     cellRenderer: 'BooleanRenderer',
   },
   {
-    headerName: t('fields.carrier'),
+    headerName: t('fields.schdCarrier'),
     field: 'carrier',
     filter: 'BooleanFilter',
     sortable: true,

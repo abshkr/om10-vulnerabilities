@@ -38,7 +38,7 @@ const Companies = () => {
   const specialActions = () => {
     FormModal({
       value: currentCmpy,
-      width: '120vh',
+      width: '80vw',
       form: <SpecialActionForm value={currentCmpy} handleFormState={handleFormState} setFilterValue={setFilterValue} />,
       id: currentCmpy.cmpy_code,
       name: currentCmpy.cmpy_name,
@@ -49,7 +49,7 @@ const Companies = () => {
   const companyRelations = () => {
     FormModal({
       value: currentCmpy,
-      width: '120vh',
+      width: '80vw',
       form: <RelationsForm value={currentCmpy} handleFormState={handleFormState} />,
       id: currentCmpy.cmpy_code,
       name: currentCmpy.cmpy_name,
