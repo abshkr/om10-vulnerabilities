@@ -44,7 +44,7 @@ const generatePaths = (t) => [
   },
 
   {
-    page: t('pageMenu.config'),
+    page: t('pageMenu.stock'),
     name: t('pageNames.tankInventory'),
     path: ROUTES.TANK_INVENTORY,
   },
@@ -56,13 +56,13 @@ const generatePaths = (t) => [
   },
 
   {
-    page: t('pageMenu.config'),
+    page: t('pageMenu.stock'),
     name: t('pageNames.siteBalance'),
     path: ROUTES.SITE_BALANCE,
   },
 
   {
-    page: t('pageMenu.config'),
+    page: t('pageMenu.stock'),
     name: t('pageNames.productInventory'),
     path: ROUTES.PRODUCT_INVENTORY,
   },
@@ -134,7 +134,7 @@ const generatePaths = (t) => [
   },
 
   {
-    page: t('pageMenu.config'),
+    page: t('pageMenu.companies'),
     name: t('pageNames.allocations'),
     path: ROUTES.ALLOCATIONS,
   },
@@ -146,7 +146,7 @@ const generatePaths = (t) => [
   },
 
   {
-    page: t('pageMenu.config'),
+    page: t('pageMenu.operations'),
     name: t('pageNames.loadSchedules'),
     path: ROUTES.LOAD_SCHEDULES,
   },
@@ -158,7 +158,7 @@ const generatePaths = (t) => [
   },
 
   {
-    page: t('pageMenu.config'),
+    page: t('pageMenu.stock'),
     name: t('pageNames.selfFuelTransactionList'),
     path: ROUTES.SELF_FUEL_TRANSACTION_LIST,
   },
@@ -176,7 +176,7 @@ const generatePaths = (t) => [
   },
 
   {
-    page: t('pageMenu.config'),
+    page: t('pageMenu.stock'),
     name: t('pageNames.tankGroups'),
     path: ROUTES.TANK_GROUPS,
   },
@@ -219,18 +219,12 @@ const generatePaths = (t) => [
 
   {
     page: t('pageMenu.reports'),
-    name: t('pageNames.folioScheduling'),
-    path: ROUTES.FOLIO_SCHEDULLING,
-  },
-
-  {
-    page: t('pageMenu.reports'),
     name: t('pageNames.hostMessagingInterface'),
     path: ROUTES.HOST_MESSAGING_INTERFACE,
   },
 
   {
-    page: t('pageMenu.config'),
+    page: t('pageMenu.reports'),
     name: t('pageNames.auditingData'),
     path: ROUTES.AUDITING_DATA,
   },
@@ -278,7 +272,7 @@ const generatePaths = (t) => [
   },
 
   {
-    page: t('pageMenu.config'),
+    page: t('pageMenu.operations'),
     name: t('pageNames.orderListing'),
     path: ROUTES.ORDER_LISTING,
   },
@@ -368,7 +362,7 @@ const generatePaths = (t) => [
   },
 
   {
-    page: t('pageMenu.config'),
+    page: t('pageMenu.stock'),
     name: t('pageNames.tanks'),
     path: ROUTES.TANKS,
   },

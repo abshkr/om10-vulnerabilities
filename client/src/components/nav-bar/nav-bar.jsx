@@ -36,7 +36,8 @@ const NavBar = () => {
   const onSearch = (searchText) => {
     const val = generator(searchText, t);
 
-    setOptions(!searchText ? [] : val);
+    // setOptions(!searchText ? [] : val);
+    setOptions(val);
   };
 
   const onSelect = (data) => {

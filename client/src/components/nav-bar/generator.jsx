@@ -3,6 +3,10 @@ import _ from 'lodash';
 import { generatePaths } from '../../utils';
 
 const generator = (target, t) => {
+  if (!target || target.trim() === '') {
+    return [];
+  }
+
   const data = generatePaths(t);
 
   const filtered = [];
