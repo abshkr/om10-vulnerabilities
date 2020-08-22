@@ -8,7 +8,7 @@ import _ from 'lodash';
 import api, { DRAWER_PRODUCTS } from 'api';
 import columns from './columns';
 import useSWR, { mutate } from 'swr';
-import { DataTable } from 'components';
+import { DataTable, Download } from 'components';
 
 const GenericForm = ({}) => {
   const { t } = useTranslation();
@@ -16,6 +16,8 @@ const GenericForm = ({}) => {
   const { resetFields } = form;
   const [selected, setSelected] = useState(null);
   const [newGeneric, setNewGeneric] = useState('');
+
+  const fields = columns(t);
 
   const { data: payload, isValidating } = useSWR(DRAWER_PRODUCTS.GENERICS_READ);
 
@@ -131,8 +133,11 @@ const GenericForm = ({}) => {
           data={payload?.records}
           isLoading={isValidating}
           height="48vh"
-          minimal
-          columns={columns(t)}
+          minimal={false}
+          extra={
+            <Download data={payload?.records} isLoading={isValidating} columns={fields} />
+          }
+          columns={fields}
           handleSelect={setSelected}
         />
 
