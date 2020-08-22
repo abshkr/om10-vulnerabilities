@@ -1790,9 +1790,29 @@ class Movement extends CommonClass
                 SELECT *
                 FROM GUI_NOM_SCHEDULES
                 WHERE MV_KEY = :mv_key
-                ORDER BY SHLS_TRIP_NO";
+            ";
+            if (isset($this->mvitm_item_id)) {
+                $query = $query . "
+                    AND SHLS_TRIP_NO IN (
+                        select msi.MSITM_SHLSTRIP 
+                        from 
+                            MOV_SCHD_ITEMS msi, 
+                            MOVEMENT_ITEMS mvi 
+                        where 
+                            msi.MSITM_SHLSSUPP=SUPPLIER_CODE 
+                            and msi.MSITM_MOVEID=mvi.MVITM_MOVE_ID 
+                            and msi.MSITM_MOVITEM=mvi.MVITM_LINE_ID 
+                            and mvi.MVITM_ITEM_ID=:mvitm_item_id
+                    ) 
+                ";
+            }
+            $query = $query . "ORDER BY SHLS_TRIP_NO";
+
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':mv_key', $this->mv_key); 
+            if (isset($this->mvitm_item_id)) {
+                oci_bind_by_name($stmt, ':mvitm_item_id', $this->mvitm_item_id); 
+            }
         } else {
             $query = "
                 SELECT *

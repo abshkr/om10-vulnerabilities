@@ -12,7 +12,7 @@ import Forms from '../../../../load-schedules/forms';
 
 const Schedules = ({ selected }) => {
   const url = selected 
-    ? `${MOVEMENT_NOMIATIONS.SCHEDULES}?mv_key=${selected?.mvitm_key}` 
+    ? `${MOVEMENT_NOMIATIONS.SCHEDULES}?mv_key=${selected?.mvitm_key}&mvitm_item_id=${selected?.mvitm_item_id}` 
     : `${MOVEMENT_NOMIATIONS.SCHEDULES}`;
 
   const [visible, setVisible] = useState(false);
