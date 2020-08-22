@@ -62,6 +62,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const [form] = Form.useForm();
 
   const [tab, setTab] = useState('0');
+  const [drawerWidth, setDrawerWidth] = useState('75vw');
 
   const [mode, setMode] = useState('3');
   const [unload, setUnload] = useState(false);
@@ -116,7 +117,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
   const { resetFields, setFieldsValue } = form;
 
+  const onFormClosed = () => {
+    setDrawerWidth('75vw');
+    handleFormState(false, null);
+  };
+
   const onComplete = (value) => {
+    setDrawerWidth('75vw');
     handleFormState(false, null);
     if (value) {
       locateTrip(value);
@@ -454,6 +461,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
     } else {
       setTab(v);
     }
+
+    if (v === '6' || v === '8' || v === '9') {
+      setDrawerWidth('95vw');
+    } else {
+      setDrawerWidth('75vw');
+    }
+
   }
 
   //Unload is preorder only, confirmed with old flash screen
@@ -518,12 +532,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
-      onClose={() => handleFormState(false, null)}
+      onClose={() => onFormClosed()}
       maskClosable={IS_CREATING}
       mask={IS_CREATING}
       destroyOnClose
       placement="right"
-      width="75vw"
+      width={drawerWidth}
       visible={visible}
       footer={
         <>
@@ -531,7 +545,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={() => onFormClosed()}
           >
             {t('operations.cancel')}
           </Button>
