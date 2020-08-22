@@ -38,7 +38,7 @@ const Generic = ({ form, value }) => {
         filterOption={(input, option) =>
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
-        /* dropdownRender={menu => (
+        dropdownRender={menu => (
           <div style={{width:'500px'}}>
             <Row gutter={[8, 0]}>
               <Col span={5}><b>{t('fields.material')}</b></Col>
@@ -48,17 +48,16 @@ const Generic = ({ form, value }) => {
             </Row>
             {menu}
           </div>
-        )} */
+        )}
       >
         {options?.records.map((item, index) => (
           <Select.Option key={index} value={item.material}>
-            {item.material}{!item.adr_desc1?'':' - '}{item.adr_desc1}{!item.adr_name?'':' - '}{item.adr_name}{!item.adr_type?'':' - '}{item.adr_type}
-            {/* <Row gutter={[8, 0]}>
+            <Row gutter={[8, 0]}>
               <Col span={5}>{item.material}</Col>
               <Col span={9}>{item.adr_desc1}</Col>
               <Col span={5}>{item.adr_name}</Col>
               <Col span={5}>{item.adr_type}</Col>
-            </Row> */}
+            </Row>
           </Select.Option>
         ))}
       </Select>

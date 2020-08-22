@@ -13,8 +13,9 @@ const ProductCode = ({ form, value }) => {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.productCode')}`);
     }
 
-    if (input && input.length > 10) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 10 ─ ${t('descriptions.maxCharacters')}`);
+    const len = (new TextEncoder().encode(input)).length;
+    if (input && len > 36) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 36 ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();

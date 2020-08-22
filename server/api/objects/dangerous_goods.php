@@ -25,8 +25,10 @@ class DangerousGoods extends CommonClass
     public function read_brief()
     {
         $query = "
-            SELECT MATERIAL FROM DANGEROUS_GOODS 
-            ORDER BY MATERIAL";
+            SELECT MATERIAL, ADR_DESC1, ADR_NAME, ADR_TYPE
+            FROM DANGEROUS_GOODS 
+            ORDER BY MATERIAL
+        ";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;

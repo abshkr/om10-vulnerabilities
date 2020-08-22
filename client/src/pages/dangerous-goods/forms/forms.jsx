@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons';
 
 import { useTranslation } from 'react-i18next';
-import { Form, Button, Tabs, notification, Modal, Input, Drawer } from 'antd';
+import { Form, Button, Tabs, notification, message, Modal, Input, Drawer } from 'antd';
 import { mutate } from 'swr';
 
 import _ from 'lodash';
@@ -36,34 +36,41 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   };
 
   const onFinish = async () => {
-    const values = await form.validateFields();
-    Modal.confirm({
-      title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
-      okText: IS_CREATING ? t('operations.create') : t('operations.update'),
-      okType: 'primary',
-      icon: <QuestionCircleOutlined />,
-      cancelText: t('operations.no'),
-      centered: true,
-      onOk: async () => {
-        await api
-          .post(IS_CREATING ? DANGEROUS_GOODS.CREATE : DANGEROUS_GOODS.UPDATE, values)
-          .then((response) => {
-            onComplete(values?.material);
+    try {
+      const values = await form.validateFields();
+      Modal.confirm({
+        title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
+        okText: IS_CREATING ? t('operations.create') : t('operations.update'),
+        okType: 'primary',
+        icon: <QuestionCircleOutlined />,
+        cancelText: t('operations.no'),
+        centered: true,
+        onOk: async () => {
+          await api
+            .post(IS_CREATING ? DANGEROUS_GOODS.CREATE : DANGEROUS_GOODS.UPDATE, values)
+            .then((response) => {
+              onComplete(values?.material);
 
-            notification.success({
-              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
-            });
-          })
+              notification.success({
+                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+                description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+              });
+            })
 
-          .catch((error) => {
-            notification.error({
-              message: error.message,
-              description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
+            .catch((error) => {
+              notification.error({
+                message: error.message,
+                description: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
+              });
             });
-          });
-      },
-    });
+        },
+      });
+    } catch (error) {
+      message.error({
+        key: 'submit',
+        content: t('descriptions.validationFailed'),
+      });
+    }
   };
 
   const onDelete = () => {
@@ -130,6 +137,37 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
 
     if (input && !!match && !value) {
       return Promise.reject(t('descriptions.alreadyExists'));
+    }
+
+    const len = (new TextEncoder().encode(input)).length;
+    if (input && len > 40) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    return Promise.resolve();
+  };
+
+  const validate = (rule, input) => {
+    /*
+    rule:
+      {
+        "required": true,
+        "title": "ADR Name",
+        "maxLength": 32,
+        "field": "adr_name",
+        "fullField": "adr_name",
+        "type": "string"
+      }
+    */
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.set')} ─ ${rule.title}`);
+      }
+    }
+
+    const len = (new TextEncoder().encode(input)).length;
+    if (input && len > rule.maxLength) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: ${rule.maxLength} ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();
@@ -199,64 +237,120 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             <Form.Item
               name="material"
               label={t('fields.material')}
-              rules={[{ required: true, validator: materialValidate }]}
+              rules={[{ required: true, title: t('fields.material'), maxLength: 40, validator: materialValidate }]}
             >
               <Input />
             </Form.Item>
 
-            <Form.Item name="adr_name" label={t('fields.adrName')} rules={[{ required: true }]}>
+            <Form.Item
+              name="adr_name"
+              label={t('fields.adrName')}
+              rules={[{ required: true, title: t('fields.adrName'), maxLength: 32, validator: validate }]}
+            >
               <Input />
             </Form.Item>
 
-            <Form.Item name="adr_type" label={t('fields.adrType')} rules={[{ required: true }]}>
+            <Form.Item
+              name="adr_type"
+              label={t('fields.adrType')}
+              rules={[{ required: true, title: t('fields.adrType'), maxLength: 16, validator: validate }]}
+            >
               <Input />
             </Form.Item>
 
-            <Form.Item name="adr_desc1" label={t('fields.adrDesc')} rules={[{ required: true }]}>
+            <Form.Item
+              name="adr_desc1"
+              label={t('fields.adrDesc')}
+              rules={[{ required: true, title: t('fields.adrDesc'), maxLength: 256, validator: validate }]}
+            >
               <Input />
             </Form.Item>
 
-            <Form.Item name="adr_desc2" label={t('fields.adrDesc2')}>
+            <Form.Item 
+              name="adr_desc2" 
+              label={t('fields.adrDesc2')}
+              rules={[{ required: false, title: t('fields.adrDesc2'), maxLength: 256, validator: validate }]}
+            >
               <Input />
             </Form.Item>
 
-            <Form.Item name="adr_desc3" label={t('fields.adrDesc3')}>
+            <Form.Item 
+              name="adr_desc3" 
+              label={t('fields.adrDesc3')}
+              rules={[{ required: false, title: t('fields.adrDesc3'), maxLength: 256, validator: validate }]}
+            >
               <Input />
             </Form.Item>
 
-            <Form.Item name="adr_fareklasse" label={t('fields.adrFareklasse')}>
+            <Form.Item 
+              name="adr_fareklasse" 
+              label={t('fields.adrFareklasse')}
+              rules={[{ required: false, title: t('fields.adrFareklasse'), maxLength: 16, validator: validate }]}
+            >
               <Input />
             </Form.Item>
 
-            <Form.Item name="protect_freeze" label={t('fields.protectFreeze')}>
+            <Form.Item 
+              name="protect_freeze" 
+              label={t('fields.protectFreeze')}
+              rules={[{ required: false, title: t('fields.protectFreeze'), maxLength: 64, validator: validate }]}
+            >
               <Input />
             </Form.Item>
 
-            <Form.Item name="certific_of_analysis" label={t('fields.certificOfAnalysis')}>
+            <Form.Item 
+              name="certific_of_analysis" 
+              label={t('fields.certificOfAnalysis')}
+              rules={[{ required: false, title: t('fields.certificOfAnalysis'), maxLength: 16, validator: validate }]}
+            >
               <Input />
             </Form.Item>
 
-            <Form.Item name="additional_txt" label={t('fields.additionalTxt')}>
+            <Form.Item 
+              name="additional_txt" 
+              label={t('fields.additionalTxt')}
+              rules={[{ required: false, title: t('fields.additionalTxt'), maxLength: 256, validator: validate }]}
+            >
               <Input />
             </Form.Item>
 
-            <Form.Item name="placard_notation1" label={t('fields.placardNotation1')}>
+            <Form.Item 
+              name="placard_notation1" 
+              label={t('fields.placardNotation1')}
+              rules={[{ required: false, title: t('fields.placardNotation1'), maxLength: 16, validator: validate }]}
+            >
               <Input />
             </Form.Item>
 
-            <Form.Item name="placard_notation2" label={t('fields.placardNotation2')}>
+            <Form.Item 
+              name="placard_notation2" 
+              label={t('fields.placardNotation2')}
+              rules={[{ required: false, title: t('fields.placardNotation2'), maxLength: 16, validator: validate }]}
+            >
               <Input />
             </Form.Item>
 
-            <Form.Item name="placard_notation3" label={t('fields.placardNotation3')}>
+            <Form.Item 
+              name="placard_notation3" 
+              label={t('fields.placardNotation3')}
+              rules={[{ required: false, title: t('fields.placardNotation3'), maxLength: 16, validator: validate }]}
+            >
               <Input />
             </Form.Item>
 
-            <Form.Item name="placard_notation4" label={t('fields.placardNotation4')}>
+            <Form.Item 
+              name="placard_notation4" 
+              label={t('fields.placardNotation4')}
+              rules={[{ required: false, title: t('fields.placardNotation4'), maxLength: 16, validator: validate }]}
+            >
               <Input />
             </Form.Item>
 
-            <Form.Item name="stcc_code" label={t('fields.stccCode')}>
+            <Form.Item 
+              name="stcc_code" 
+              label={t('fields.stccCode')}
+              rules={[{ required: false, title: t('fields.stccCode'), maxLength: 32, validator: validate }]}
+            >
               <Input />
             </Form.Item>
           </TabPane>
