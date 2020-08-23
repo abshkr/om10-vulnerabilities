@@ -7,6 +7,7 @@ import { Menu, Tooltip } from 'antd';
 
 import { LogoContainer, MenuContainer } from './style';
 import { ROUTES, SETTINGS } from '../../constants';
+import { useConfig } from '../../hooks';
 
 import { Icons } from '..';
 import { AUTH } from 'api';
@@ -17,6 +18,7 @@ const { SubMenu } = Menu;
 const Navigation = () => {
   const { t } = useTranslation();
   const history = useHistory();
+  const config = useConfig();
 
   const [active, setActive] = useState([ROUTES.HOME]);
 
@@ -228,9 +230,11 @@ const Navigation = () => {
             <Icons size={40} hidden type="personnelOnSite" /> {t('pageNames.personnelOnSite')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.AUDITING_DATA} style={{ display: 'flex' }} newscreen={ROUTES.AUDITING_DATA}>
-            <Icons size={40} hidden type="auditingData" /> {t('pageNames.auditingData')}
-          </Menu.Item>
+          {config.manageAuditing && (
+            <Menu.Item key={ROUTES.AUDITING_DATA} style={{ display: 'flex' }} newscreen={ROUTES.AUDITING_DATA}>
+              <Icons size={40} hidden type="auditingData" /> {t('pageNames.auditingData')}
+            </Menu.Item>
+          )}
 
           <Menu.Item key={ROUTES.METERING} style={{ display: 'flex', marginBottom: 10 }} newscreen={ROUTES.METERING}>
             <Icons size={40} hidden type="metering" /> {t('pageNames.metering')}
@@ -348,15 +352,19 @@ const Navigation = () => {
             {t('pageNames.deliveryLocations')}
           </Menu.Item>
 
-          <Menu.Item key={ROUTES.PARTNERS} style={{ display: 'flex' }} newscreen={ROUTES.PARTNERS}>
-            <Icons size={40} hidden type="partners" />
-            {t('pageNames.partners')}
-          </Menu.Item>
+          {config.managePartnersAndPartnership && (
+            <Menu.Item key={ROUTES.PARTNERS} style={{ display: 'flex' }} newscreen={ROUTES.PARTNERS}>
+              <Icons size={40} hidden type="partners" />
+              {t('pageNames.partners')}
+            </Menu.Item>
+          )}
 
-          <Menu.Item key={ROUTES.PARTNERSHIP} style={{ display: 'flex' }} newscreen={ROUTES.PARTNERSHIP}>
-            <Icons size={40} hidden type="partnership" />
-            {t('pageNames.partnership')}
-          </Menu.Item>
+          {config.managePartnersAndPartnership && (
+            <Menu.Item key={ROUTES.PARTNERSHIP} style={{ display: 'flex' }} newscreen={ROUTES.PARTNERSHIP}>
+              <Icons size={40} hidden type="partnership" />
+              {t('pageNames.partnership')}
+            </Menu.Item>
+          )}
 
           <Menu.Item key={ROUTES.CUSTOMER_CATEGORIES} style={{ display: 'flex', marginBottom: 10 }} newscreen={ROUTES.CUSTOMER_CATEGORIES}>
             <Icons size={40} hidden type="customerCategories" />

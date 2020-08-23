@@ -7,11 +7,19 @@ import { useHistory } from 'react-router-dom';
 import useSWR from 'swr';
 import _ from 'lodash';
 
+import { ROUTES } from '../../constants';
+import { useConfig } from '../../hooks';
 import { generatePaths } from '../../utils';
 import api, { AUTH } from '../../api';
 
 const Favourites = () => {
-  const { data, revalidate } = useSWR(AUTH.SETUP);
+  const config = useConfig();
+  // const { data, revalidate } = useSWR(AUTH.SETUP);
+  // these two parameters have no effects on URL itself, but will trigger the refresh when features change
+  const { data, revalidate } = useSWR(
+    `${AUTH.SETUP}?audit=${config.manageAuditing}&partner=${config.managePartnersAndPartnership}`
+  );
+  
   const { t } = useTranslation();
   const history = useHistory();
 
@@ -41,8 +49,28 @@ const Favourites = () => {
 
   const onFavourite = () => {
     try {
-      const paths = generatePaths(t);
-
+      // const paths = generatePaths(t);
+      const pathData = generatePaths(t);
+      const paths = [];
+      // auditing, partner, and partnership pages may be turned off by features
+      _.forEach(pathData, (o) => {
+        if (o.path !== ROUTES.AUDITING_DATA && 
+        o.path !== ROUTES.PARTNERS && 
+        o.path !== ROUTES.PARTNERSHIP) {
+          paths.push(o);
+        } else {
+          if (o.path === ROUTES.AUDITING_DATA && config.manageAuditing) {
+            paths.push(o);
+          }
+          if (o.path === ROUTES.PARTNERS && config.managePartnersAndPartnership) {
+            paths.push(o);
+          }
+          if (o.path === ROUTES.PARTNERSHIP && config.managePartnersAndPartnership) {
+            paths.push(o);
+          }
+        }
+      });
+    
       const payload = [...data?.records];
 
       const entry = _.find(paths, ['path', current]);
@@ -83,7 +111,23 @@ const Favourites = () => {
       const payload = [];
 
       _.forEach(data?.records, (item) => {
-        payload.push(<Menu.Item key={item.config_key}>{item.config_value}</Menu.Item>);
+        // auditing, partner, and partnership pages may be turned off by features
+        if (item.config_key !== ROUTES.AUDITING_DATA &&
+        item.config_key !== ROUTES.PARTNERS && 
+        item.config_key !== ROUTES.PARTNERSHIP) {
+          payload.push(<Menu.Item key={item.config_key}>{item.config_value}</Menu.Item>);
+        } else {
+          if (item.config_key === ROUTES.AUDITING_DATA && config.manageAuditing) {
+            payload.push(<Menu.Item key={item.config_key}>{item.config_value}</Menu.Item>);
+          }
+          if (item.config_key === ROUTES.PARTNERS && config.managePartnersAndPartnership) {
+            payload.push(<Menu.Item key={item.config_key}>{item.config_value}</Menu.Item>);
+          }
+          if (item.config_key === ROUTES.PARTNERSHIP && config.managePartnersAndPartnership) {
+            payload.push(<Menu.Item key={item.config_key}>{item.config_value}</Menu.Item>);
+          }
+        }
+        // payload.push(<Menu.Item key={item.config_key}>{item.config_value}</Menu.Item>);
       });
 
       setItems(payload);

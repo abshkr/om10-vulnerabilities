@@ -15,6 +15,7 @@ import { useHistory } from 'react-router-dom';
 
 import { NavBarContainer } from './style';
 import { ROUTES } from '../../constants';
+import { useConfig } from '../../hooks';
 import { Events, Favourites } from '..';
 import generator from './generator';
 
@@ -28,13 +29,14 @@ const SearchIconOutlined = (props) => (
 
 const NavBar = () => {
   const { t } = useTranslation();
+  const config = useConfig();
 
   let history = useHistory();
 
   const [options, setOptions] = useState([]);
 
   const onSearch = (searchText) => {
-    const val = generator(searchText, t);
+    const val = generator(searchText, t, config);
 
     // setOptions(!searchText ? [] : val);
     setOptions(val);
