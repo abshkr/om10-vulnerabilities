@@ -914,6 +914,7 @@ class ManualTrans extends CommonClass
                 AND OPD.OSPROD_PRODCODE = OO_QTY.PROD_CODE(+)
                 AND CO.ORDER_CUST_ORDNO = :order_cust_no
                 AND OPD.OSPROD_PRODCMPY = :supplier
+                AND OPD.ORDER_PROD_QTY > 0
             ORDER BY OPD.OSPROD_PRODCODE
         ";
         $stmt = oci_parse($this->conn, $query);
