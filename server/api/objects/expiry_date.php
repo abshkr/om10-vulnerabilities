@@ -12,6 +12,7 @@ class ExpiryDate extends CommonClass
 
     public $BOOLEAN_FIELDS = array(
         "ED_STATUS" => 1,
+        "EDT_REJECT" => 1,
     );
 
     public function update($expiry_dates = null)
@@ -316,7 +317,8 @@ class ExpiryDate extends CommonClass
                 NVL(ED_CMPY_CODE, DEFAULT_CMPY) ED_CMPY_CODE,
                 NVL(ED_OBJECT_ID, DEFAULT_OBJ) ED_OBJECT_ID,
                 ED_EXP_DATE,
-                ED_STATUS
+                ED_STATUS,
+                EDT_REJECT
             FROM (
                 SELECT ED_CMPY_CODE,
                     ED_OBJECT_ID,
@@ -329,7 +331,7 @@ class ExpiryDate extends CommonClass
                     AND ED_EXP_DATE IS NOT NULL
                 ) EXPIRY_DATE_DETAILS_PER,
                 (
-                SELECT EDT_TARGET_CODE, EDT_TYPE_CODE, EDT_TYPE_DESC
+                SELECT EDT_TARGET_CODE, EDT_TYPE_CODE, EDT_TYPE_DESC, EDT_REJECT
                 FROM EXPIRY_DATE_TYPES
                 WHERE EDT_TARGET_CODE = :ed_target_code
                 ) EXPIRY_DATE_PERSONNEL_TYPES,

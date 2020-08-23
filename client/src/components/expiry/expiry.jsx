@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CalendarOutlined } from '@ant-design/icons';
-import { Table, Button, Popconfirm, Form } from 'antd';
+import { Table, Button, Popconfirm, Form, Checkbox } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import _ from 'lodash';
@@ -86,7 +86,7 @@ const Expiry = ({ form, value, type }) => {
       title: t('fields.expiryDate'),
       dataIndex: 'ed_exp_date',
       key: 'ed_exp_date',
-      width: 300,
+      width: 250,
       align: 'center',
       editable: true,
       cellClass: 'editable-ag-grid-cell',
@@ -107,6 +107,15 @@ const Expiry = ({ form, value, type }) => {
       align: 'center',
       editable: true,
       cellClass: 'editable-ag-grid-cell',
+    },
+    {
+      title: t('fields.rejectAuthorization'),
+      dataIndex: 'edt_reject',
+      key: 'edt_reject',
+      align: 'center',
+      render: (text, record) => {
+        return <Checkbox disabled checked={record?.edt_reject} /> 
+      }
     },
     {
       title: t('fields.operations'),
