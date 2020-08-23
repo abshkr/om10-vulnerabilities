@@ -93,7 +93,7 @@ const Page = ({ name, page, children, modifiers, minimal, transparent, access, a
   useEffect(() => {
     setLoading(access && access?.isLoading);
     setViewable(access?.canView);
-    setLocked(access?.isProtected);
+    setLocked(authenticated ? false : access?.isProtected);
   }, [access]);
 
   if (standalone && isViewable && !isLocked) {
