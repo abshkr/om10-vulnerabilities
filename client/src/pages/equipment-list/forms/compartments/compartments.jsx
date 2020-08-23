@@ -78,7 +78,7 @@ const Compartments = ({ form, value, equipment, onChange }) => {
     const options = _.filter(payload?.records, predicate) || [];
 
     setOptions(options);
-    setSelected(options[0]?.eqpt_id);
+    setSelected(value? value.eqpt_id : options[0]?.eqpt_id);
   }, [value, payload, equipment]);
 
   useEffect(() => {
