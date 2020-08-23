@@ -7,7 +7,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     // cellRenderer: 'BooleanRenderer',
     suppressSizeToFit: true,
-    width: 140,
+    width: 160,
   },
   {
     headerName: t('fields.recordKey'),
@@ -16,7 +16,7 @@ const columns = (t) => [
     resizable: true,
     filter: 'FuzzyFilter',
     suppressSizeToFit: true,
-    width: 110,
+    width: 120,
   },
   {
     headerName: t('fields.action'),
@@ -53,7 +53,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     // cellRenderer: 'BooleanRenderer',
     suppressSizeToFit: true,
-    width: 110,
+    width: 140,
   },
   {
     headerName: t('fields.valueAfter'),
@@ -63,7 +63,7 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     // cellRenderer: 'BooleanRenderer',
     suppressSizeToFit: true,
-    width: 110,
+    width: 140,
   },
   {
     headerName: t('fields.userId'),
@@ -81,7 +81,7 @@ const columns = (t) => [
     resizable: true,
     filter: 'MultiFilter',
     suppressSizeToFit: true,
-    width: 110,
+    width: 120,
   },
   {
     headerName: t('fields.companyCode'),
@@ -99,7 +99,7 @@ const columns = (t) => [
     resizable: true,
     filter: 'MultiFilter',
     suppressSizeToFit: true,
-    width: 120,
+    width: 200,
   },
   {
     headerName: t('fields.locationId'),
@@ -117,7 +117,7 @@ const columns = (t) => [
     resizable: true,
     filter: 'MultiFilter',
     suppressSizeToFit: true,
-    width: 120,
+    width: 200,
   },
 
   {
@@ -136,7 +136,7 @@ const columns = (t) => [
     resizable: true,
     filter: 'MultiFilter',
     suppressSizeToFit: true,
-    width: 140,
+    width: 240,
   },
 ];
 

@@ -14,7 +14,13 @@ import auth from 'auth';
 
 import columns from './columns';
 
+import Forms from './forms';
+
 const AuditingData = () => {
+  const [visible, setVisible] = useState(false);
+  const [selected, setSelected] = useState(null);
+  const [filterValue, setFilterValue] = useState('');
+
   const access = useAuth('M_AUDITREPORT');
   const { t } = useTranslation();
 
@@ -31,6 +37,11 @@ const AuditingData = () => {
 
   const data = payload?.records;
   const fields = columns(t);
+
+  const handleFormState = (visibility, value) => {
+    setVisible(visibility);
+    setSelected(value);
+  };
 
   const setRange = (start, end) => {
     setStart(start);
@@ -51,7 +62,23 @@ const AuditingData = () => {
 
   return (
     <Page page={page} name={name} modifiers={modifiers} access={access} avatar="auditingData">
-      <DataTable columns={fields} data={data} isLoading={isValidating} />
+      <DataTable
+        minimal={false}
+        data={data}
+        columns={fields}
+        isLoading={isValidating}
+        selectionMode="single"
+        onClick={(payload) => handleFormState(true, payload)}
+        handleSelect={(payload) => handleFormState(true, payload[0])}
+        filterValue={filterValue}
+      />
+      <Forms 
+        value={selected} 
+        visible={visible} 
+        handleFormState={handleFormState} 
+        access={access}
+        setFilterValue={setFilterValue}
+     />
     </Page>
   );
 };
