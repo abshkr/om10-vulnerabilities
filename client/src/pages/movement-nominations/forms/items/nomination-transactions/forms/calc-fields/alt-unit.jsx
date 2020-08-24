@@ -50,7 +50,7 @@ const AltQtyUnit = ({ form, value, altQty, pageState }) => {
         }
       >
         {options?.records.map((item, index) => (
-          <Select.Option key={index} value={item.unit}>
+          <Select.Option key={index} value={item.unit_id}>
             {item.unit}
           </Select.Option>
         ))}

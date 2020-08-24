@@ -285,7 +285,7 @@
         "baseCorrMthd": "Correction Method",
         "baseRefTempSpec": "Ref Temp Spec",
         "baseLimitPresetHt": "Hot Temp Flag",
-        "baseLimitPresetHt2": "Limit Preset Mass QTY to Capacity @ Hot temperature",
+        "baseLimitPresetHt2": "Limit Preset Mass Quantity to Capacity @ Hot temperature",
         "baseColor": "Color",
 		"baseProdColor": "Base Product Color",
 		"baseColorCurrentSet": "Currently set to",
