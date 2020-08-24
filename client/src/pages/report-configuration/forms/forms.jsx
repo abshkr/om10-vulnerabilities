@@ -101,6 +101,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   useEffect(() => {
     if (!value && !visible) {
       resetFields();
+      setCanEmail(false);
     }
   }, [resetFields, value, visible]);
 
