@@ -94,7 +94,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
   const CAN_REVERSE = 
     (value?.load_reverse_flag === '0' || value?.load_reverse_flag === '2') &&
-    (value?.status !== 'A' && value?.status !== 'L');
+    (value?.status !== 'A' && value?.status !== 'L')&&
+    value?.cmpy_schd_rev_repost;
   const CAN_ARCHIVE = 
     (value?.load_reverse_flag === '0' || value?.load_reverse_flag === '1' || value?.load_reverse_flag === '2') &&
     (value?.status !== 'A' && value?.status !== 'L') &&
