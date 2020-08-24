@@ -313,6 +313,7 @@ class SpecialMovement extends CommonClass
         }
     }
 
+    //Old php: classes\ReverseTransaction.class.php::do_specmov_reverse
     public function reverse()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
@@ -370,6 +371,17 @@ class SpecialMovement extends CommonClass
                 write_log("reverse_trip failed", __FILE__, __LINE__, LogLevel::ERROR);
                 return;
             }
+        }
+
+        $query = "UPDATE MOV_LOAD_ITEMS SET MLITM_STATUS = 9 WHERE MLITM_ID = :mlitm_id";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':mlitm_id', $this->mlitm_id);
+        if (!oci_execute($stmt)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(500, response("__INTERNAL_ERROR__", "Internal Error: " . $e['message']));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
         }
 
         $error = new EchoSchema(200, response("__SPECIAL_MOVEMENT_REVERSED__",

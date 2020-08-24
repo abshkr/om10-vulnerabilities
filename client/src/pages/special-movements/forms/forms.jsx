@@ -459,7 +459,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
           .post(SPECIAL_MOVEMENTS.REVERSE, value)
           .then(
             () => {
-              onComplete();
+              onComplete(value?.mlitm_id);
 
               notification.success({
                 message: t('messages.movementReverseSuccess'),
