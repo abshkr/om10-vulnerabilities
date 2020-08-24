@@ -5,7 +5,7 @@
 OM_VER=`git describe --dirty --always --tags`
 
 # If the install dir doesn't exist, exit.
-if [! -d "tmp/$OM_VER/"]; then
+if [ ! -d "tmp/$OM_VER/" ]; then
     exit 1
 fi
 
