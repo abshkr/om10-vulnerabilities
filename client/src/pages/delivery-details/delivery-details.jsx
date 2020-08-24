@@ -151,19 +151,21 @@ const DeliveryDetails = ({ access, params }) => {
         minimal={true}
         autoColWidth
       />
-      <Forms
-        value={selected}
-        visible={visible}
-        handleFormState={handleFormState}
-        access={access}
-        pageState={pageState}
-        revalidate={revalidate}
-        supplier={supplier}
-        loadNumber={loadNumber}
-        loadType={loadType}
-        supplierName={supplierName}
-        loadTypeName={loadTypeName}
-      />
+      {pageState !== 'view' && (
+        <Forms
+          value={selected}
+          visible={visible}
+          handleFormState={handleFormState}
+          access={access}
+          pageState={pageState}
+          revalidate={revalidate}
+          supplier={supplier}
+          loadNumber={loadNumber}
+          loadType={loadType}
+          supplierName={supplierName}
+          loadTypeName={loadTypeName}
+        />
+      )}
     </Page>
   );
 };
