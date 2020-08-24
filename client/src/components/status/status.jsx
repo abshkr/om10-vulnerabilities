@@ -9,22 +9,24 @@ import jwtDecode from 'jwt-decode';
 const Status = () => {
   const { t } = useTranslation();
   const { authenticated } = useSelector((state) => state.auth);
-  const { id, offset, dateTimeFormat } = useContext(ConfigStore);
+  const { id, offset, dateTimeFormat, serverTime } = useContext(ConfigStore);
   
   const [user, setUser] = useState(null);
   const [time, setTime] = useState(null);
 
   useEffect(() => {
+    const serverCurrent = moment(serverTime, 'YYYY-MM-DD HH:mm:ss');
+    const diff = serverCurrent.diff(moment())
     const interval = setInterval(() => {
-      if (offset) {
-        const current = moment().utcOffset(offset).format(dateTimeFormat);
+      if (serverTime) {
+        const current = moment().add(diff / 1000, 'seconds').format(dateTimeFormat);
 
         setTime(current);
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [offset]);
+  }, [serverTime]);
 
   useEffect(() => {
     if (authenticated) {

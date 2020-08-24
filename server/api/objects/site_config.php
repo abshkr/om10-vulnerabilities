@@ -133,6 +133,7 @@ class SiteConfig extends CommonClass
             SITE_EXP_MONTHS, SITE_LD_RETN_NEWLDS, SITE_LD_RETNPRD_NEW_MOV, SITE_LD_RETNPRD_USED_MOV,
             SITE_CODE, SITE_NAME,
             TZ_OFFSET(SESSIONTIMEZONE) SERVER_TIME_OFFSET,
+            SYSDATE SERVER_TIME,
             SITE_SEAL_MODE
             FROM SITE";
         $stmt = oci_parse($this->conn, $query);
@@ -212,6 +213,12 @@ class SiteConfig extends CommonClass
         array_push($result_array, array(
             "config_key" => "SERVER_TIME_OFFSET",
             "config_value" => $row['SERVER_TIME_OFFSET'],
+            "config_comment" => "",
+            "config_required_by_gui" => "",
+            ));
+        array_push($result_array, array(
+            "config_key" => "SERVER_TIME",
+            "config_value" => $row['SERVER_TIME'],
             "config_comment" => "",
             "config_required_by_gui" => "",
             ));
