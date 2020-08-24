@@ -41,6 +41,7 @@ const AltQtyUnit = ({ form, value, altQty, pageState }) => {
         dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
+        allowClear
         disabled={(pageState === 'transfer' ? false : false) || !altQty}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectUnit') : null}

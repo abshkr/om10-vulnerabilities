@@ -263,6 +263,7 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
             <Select
               dropdownMatchSelectWidth={false}
               showSearch
+              allowClear
               loading={isValidating}
               disabled={IS_DISALBED}
               optionFilterProp="children"
