@@ -81,7 +81,8 @@ const RelationForm = ({ value, handleFormState }) => {
       v.create_date = moment().format(SETTINGS.DATE_TIME_FORMAT);
       if (
         _.find(children, (item) => {
-          return item.child_cmpy_code === v.child_cmpy_code;
+          return item.child_cmpy_code === v.child_cmpy_code && 
+            item.child_cmpy_role === v.child_cmpy_role;
         })
       ) {
         notification.error({
@@ -96,7 +97,8 @@ const RelationForm = ({ value, handleFormState }) => {
       });
     } else {
       const filtered = _.filter(children, (item) => {
-        return item.child_cmpy_code !== v.child_cmpy_code;
+        return item.child_cmpy_code !== v.child_cmpy_code && 
+          item.child_cmpy_role === v.child_cmpy_role;
       });
       setChildren([...filtered, v]);
       setFieldsValue({
@@ -116,7 +118,8 @@ const RelationForm = ({ value, handleFormState }) => {
 
   const onDelete = () => {
     const filtered = _.filter(children, (item) => {
-      return item.child_cmpy_code !== selected.child_cmpy_code;
+      return !(item.child_cmpy_code === selected.child_cmpy_code  && 
+        item.child_cmpy_role === selected.child_cmpy_role);
     });
     setChildren([...filtered]);
     setFieldsValue({
