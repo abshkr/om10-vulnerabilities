@@ -68,21 +68,37 @@ class Movement extends CommonClass
         }
     }
 
+    //Old amf php: cores/collections/dmSpecialMovements.php $file      = "/usr/omega/bin/gsap_erpIn/UnitOfMeasure.csv"
+    /*
+        0,BB6,L15,162
+        1,BBL,L,159
+        2,KG,KG,1
+        3,L,L,1
+        4,L15,L15,1
+        5,L20,L15,1
+        6,L30,L15,1
+        7,LB,KG,0.454
+        8,GAL,L,4
+        9,UGL,L,4
+        10,M3,L,1000
+        11,M15,L15,1000
+        12,TO,KG,1000
+    */
     public function alternate_units()
     {
-        $query = "SELECT 'BB6' UNIT FROM DUAL
-            UNION SELECT 'BBL' UNIT FROM DUAL
-            UNION SELECT 'KG' UNIT FROM DUAL
-            UNION SELECT 'L' UNIT FROM DUAL
-            UNION SELECT 'L15' UNIT FROM DUAL
-            UNION SELECT 'L20' UNIT FROM DUAL
-            UNION SELECT 'L30' UNIT FROM DUAL
-            UNION SELECT 'LB' UNIT FROM DUAL
-            UNION SELECT 'GAL' UNIT FROM DUAL
-            UNION SELECT 'UGL' UNIT FROM DUAL
-            UNION SELECT 'M3' UNIT FROM DUAL
-            UNION SELECT 'M15' UNIT FROM DUAL
-            UNION SELECT 'TO' UNIT FROM DUAL";
+        $query = "SELECT 'BB6' UNIT, 0 UNIT_ID FROM DUAL
+            UNION SELECT 'BBL' UNIT, 1 UNIT_ID FROM DUAL
+            UNION SELECT 'KG' UNIT, 2 UNIT_ID FROM DUAL
+            UNION SELECT 'L' UNIT, 3 UNIT_ID FROM DUAL
+            UNION SELECT 'L15' UNIT, 4 UNIT_ID FROM DUAL
+            UNION SELECT 'L20' UNIT, 5 UNIT_ID FROM DUAL
+            UNION SELECT 'L30' UNIT, 6 UNIT_ID FROM DUAL
+            UNION SELECT 'LB' UNIT, 7 UNIT_ID FROM DUAL
+            UNION SELECT 'GAL' UNIT, 8 UNIT_ID FROM DUAL
+            UNION SELECT 'UGL' UNIT, 9 UNIT_ID FROM DUAL
+            UNION SELECT 'M3' UNIT, 10 UNIT_ID FROM DUAL
+            UNION SELECT 'M15' UNIT, 11 UNIT_ID FROM DUAL
+            UNION SELECT 'TO' UNIT, 12 UNIT_ID FROM DUAL";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;

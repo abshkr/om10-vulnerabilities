@@ -76,6 +76,8 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
         mlitm_qty_kg: value?.mlitm_qty_kg,
         mlitm_temp_amb: value?.mlitm_temp_amb,
         mlitm_dens_cor: value?.mlitm_dens_cor,
+        mlitm_qty_rpt: value?.mlitm_qty_rpt,
+        mlitm_unit_rpt: value?.mlitm_unit_rpt,
         // mlitm_qty_amb: _.round(_.toNumber(value?.mlitm_qty_amb), config.precisionVolume),
         // mlitm_qty_cor: _.round(_.toNumber(value?.mlitm_qty_cor), config.precisionVolume),
         // mlitm_qty_kg: _.round(_.toNumber(value?.mlitm_qty_kg), config.precisionMass),
@@ -272,7 +274,7 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
               }
             >
               {options?.records.map((item, index) => (
-                <Select.Option key={index} value={item.unit}>
+                <Select.Option key={index} value={item.unit_id}>
                   {item.unit}
                 </Select.Option>
               ))}
