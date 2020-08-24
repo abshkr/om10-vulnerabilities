@@ -64,7 +64,7 @@ const DensityRange = ({ form, value, classification, config }) => {
             label={`${t('fields.baseProdDensHi')} ${classification ? `(${low} - ${high})${t(`units.${config.densityUnit}`)}` : ''}`}
             rules={[{ 
               required: false,
-              title: t('fields.baseProdDensLo'), 
+              title: t('fields.baseProdDensHi'), 
               dataType: 'NUMBER',
               // maxLength: 256, 
               precision: 3,

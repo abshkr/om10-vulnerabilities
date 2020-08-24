@@ -2,22 +2,12 @@ import React, { useEffect } from 'react';
 import { Form, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 
+import { validateField } from '../../../../utils';
+
 const Name = ({ form, value }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
-
-  const validate = (rule, input) => {
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.baseProdName')}`);
-    }
-
-    if (input && input.length > 20) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
-    }
-
-    return Promise.resolve();
-  };
 
   useEffect(() => {
     if (value) {
@@ -28,7 +18,22 @@ const Name = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="base_name" label={t('fields.baseProdName')} rules={[{ required: true, validator: validate }]}>
+    <Form.Item 
+      name="base_name" 
+      label={t('fields.baseProdName')} 
+      rules={[{ 
+        required: true,
+        title: t('fields.baseProdName'), 
+        dataType: 'STRING',
+        maxLength: 40, 
+        precision: null,
+        min: null, 
+        max: null,
+        prompts: t,
+        // returnType: 'notice',
+        validator: validateField 
+      }]}
+    >
       <Input />
     </Form.Item>
   );
