@@ -6,5 +6,5 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/gate_permission.php';
 
-Utilities::read('GatePermission', $method = 'dropdown_eqpt_types', $filter = true);
+Utilities::read('GatePermission', $method = 'eqpt_types', $filter = true);
 

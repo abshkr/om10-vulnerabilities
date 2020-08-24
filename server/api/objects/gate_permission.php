@@ -523,9 +523,9 @@ class GatePermission extends CommonClass
         }
     }
 
-    public function dropdown_eqpt_types()
+    public function eqpt_types()
     {
         $serv = new EqptService($this->conn);
-        return $serv->dropdown_eqpt_types();
+        return $serv->eqpt_types();
     }
 }
