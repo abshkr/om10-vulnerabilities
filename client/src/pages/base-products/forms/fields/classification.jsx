@@ -16,7 +16,7 @@ const Classification = ({ form, value, onChange }) => {
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.classification')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.baseProdClassDesc')}`);
     }
 
     return Promise.resolve();
@@ -54,7 +54,7 @@ const Classification = ({ form, value, onChange }) => {
   return (
     <Form.Item
       name="base_cat"
-      label={t('fields.classification')}
+      label={t('fields.baseProdClassDesc')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select

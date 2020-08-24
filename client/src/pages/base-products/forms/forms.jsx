@@ -8,7 +8,7 @@ import {
   CloseOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
+import { Form, Button, Tabs, Modal, notification, message, Drawer, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 
@@ -51,36 +51,45 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
   };
 
   const onFinish = async () => {
-    const values = await form.validateFields();
+    try {
 
-    Modal.confirm({
-      title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
-      okText: IS_CREATING ? t('operations.create') : t('operations.update'),
-      okType: 'primary',
-      icon: <QuestionCircleOutlined />,
-      cancelText: t('operations.no'),
-      centered: true,
-      onOk: async () => {
-        await api
-          .post(IS_CREATING ? BASE_PRODUCTS.CREATE : BASE_PRODUCTS.UPDATE, values)
-          .then(() => {
-            onComplete(values.base_code);
+      const values = await form.validateFields();
 
-            notification.success({
-              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-              description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
-            });
-          })
-          .catch((errors) => {
-            _.forEach(errors.response.data.errors, (error) => {
-              notification.error({
-                message: error.type,
-                description: error.message,
+      Modal.confirm({
+        title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
+        okText: IS_CREATING ? t('operations.create') : t('operations.update'),
+        okType: 'primary',
+        icon: <QuestionCircleOutlined />,
+        cancelText: t('operations.no'),
+        centered: true,
+        onOk: async () => {
+          await api
+            .post(IS_CREATING ? BASE_PRODUCTS.CREATE : BASE_PRODUCTS.UPDATE, values)
+            .then(() => {
+              onComplete(values.base_code);
+
+              notification.success({
+                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+                description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
+              });
+            })
+            .catch((errors) => {
+              _.forEach(errors.response.data.errors, (error) => {
+                notification.error({
+                  message: error.type,
+                  description: error.message,
+                });
               });
             });
-          });
-      },
-    });
+        },
+      });
+
+    } catch (error) {
+      message.error({
+        key: 'submit',
+        content: t('descriptions.validationFailed'),
+      });
+    }
   };
 
   const onDelete = () => {
@@ -128,7 +137,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="30vw"
+      width="40vw"
       visible={visible}
       footer={
         <>
@@ -176,21 +185,18 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
               onChange={setClassification}
               classification={classification}
             />
+            {manageBaseProductDensityRange && (
+              <DensityRange form={form} value={value} classification={classification} config={config} />
+            )}
             <Group form={form} value={value} />
             <Color form={form} value={value} />
 
-            {manageBaseProductDensityRange && (
-              <DensityRange form={form} value={value} classification={classification} />
-            )}
-
+            <Divider/>
             {manageHotProduct && (
-              <>
-                <Divider>{t('tabColumns.product')}</Divider>
-                <RefSpecTemp form={form} value={value} />
-                <CorrectionMethod form={form} value={value} />
-                <HotTempFlag form={form} value={value} />
-              </>
+              <HotTempFlag form={form} value={value} />
             )}
+            <RefSpecTemp form={form} value={value} />
+            <CorrectionMethod form={form} value={value} />
           </TabPane>
         </Tabs>
       </Form>

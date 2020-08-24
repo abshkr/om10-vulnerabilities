@@ -21,7 +21,7 @@ const Group = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="base_prod_group" label={t('fields.group')}>
+    <Form.Item name="base_prod_group" label={t('fields.baseProdGroupName')}>
       <Select
         dropdownMatchSelectWidth={false}
         loading={isValidating}

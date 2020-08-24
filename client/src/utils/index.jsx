@@ -14,6 +14,8 @@ import { pwdComplexity, complexityDesc } from './pwd-complexity';
 import csvToJSON from './csv-to-json';
 import fetcher from './fetcher';
 import hexToRGB from './hex-to-rbg';
+import validateField from './validate-field';
+import validateNumber from './validate-number';
 import validatorStatus from './validator-status';
 import generatePaths from './generate-paths';
 import hash from './hash';
@@ -37,6 +39,8 @@ export {
   fetcher,
   hexToRGB,
   VCFManager,
+  validateField,
+  validateNumber,
   validatorStatus,
   generatePaths,
   hash,

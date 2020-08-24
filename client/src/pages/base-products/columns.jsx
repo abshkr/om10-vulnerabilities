@@ -6,7 +6,7 @@ const columns = (t, config) => [
     filter: 'FuzzyFilter',
     resizable: true,
     pinned: 'left',
-    width: 120,
+    width: 200,
     suppressSizeToFit: true,
   },
   {
@@ -15,7 +15,8 @@ const columns = (t, config) => [
     sortable: true,
     filter: 'FuzzyFilter',
     resizable: true,
-    width: 180,
+    // pinned: 'left',
+    width: 200,
     suppressSizeToFit: true,
   },
   {
@@ -25,8 +26,8 @@ const columns = (t, config) => [
     filter: 'FuzzyFilter',
     resizable: true,
     cellRenderer: 'ColorRenderer',
-    width: 130,
-    // suppressSizeToFit: true,
+    width: 160,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.classId'),
@@ -65,6 +66,22 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
+    headerName: `${t('fields.baseProdDensLo')} [${t(`units.${config.densityUnit}`)}]`,
+    field: 'base_dens_lo',
+    sortable: true,
+    resizable: true,
+    width: 180,
+    suppressSizeToFit: true,
+  },
+  {
+    headerName: `${t('fields.baseProdDensHi')} [${t(`units.${config.densityUnit}`)}]`,
+    field: 'base_dens_hi',
+    sortable: true,
+    resizable: true,
+    width: 180,
+    suppressSizeToFit: true,
+  },
+  {
     headerName: t('fields.isAdditive'),
     field: 'base_adtv',
     sortable: true,
@@ -79,7 +96,7 @@ const columns = (t, config) => [
     field: 'base_tank_count',
     sortable: true,
     resizable: true,
-    width: 180,
+    width: 200,
     suppressSizeToFit: true,
   },
   {
@@ -97,7 +114,7 @@ const columns = (t, config) => [
     field: 'base_class_dens_lo',
     sortable: true,
     resizable: true,
-    width: 140,
+    width: 180,
     suppressSizeToFit: true,
   },
   {
@@ -105,7 +122,7 @@ const columns = (t, config) => [
     field: 'base_class_dens_hi',
     sortable: true,
     resizable: true,
-    width: 140,
+    width: 180,
     suppressSizeToFit: true,
   },
   {
@@ -113,7 +130,7 @@ const columns = (t, config) => [
     field: 'base_class_temp_lo',
     sortable: true,
     resizable: true,
-    width: 140,
+    width: 180,
     suppressSizeToFit: true,
   },
   {
@@ -121,7 +138,7 @@ const columns = (t, config) => [
     field: 'base_class_temp_hi',
     sortable: true,
     resizable: true,
-    width: 140,
+    width: 180,
     suppressSizeToFit: true,
   },
   {
@@ -130,8 +147,8 @@ const columns = (t, config) => [
     sortable: true,
     filter: 'MultiFilter',
     resizable: true,
-    hide: !config.manageHotProduct,
-    width: 140,
+    hide: false,
+    width: 160,
     suppressSizeToFit: true,
   },
   {
@@ -140,8 +157,8 @@ const columns = (t, config) => [
     sortable: true,
     filter: 'MultiFilter',
     resizable: true,
-    hide: !config.manageHotProduct,
-    width: 140,
+    hide: false,
+    width: 160,
     suppressSizeToFit: true,
   },
   {
@@ -152,7 +169,7 @@ const columns = (t, config) => [
     resizable: true,
     cellRenderer: 'BooleanRenderer',
     hide: !config.manageHotProduct,
-    width: 140,
+    width: 160,
     suppressSizeToFit: true,
   },
 ];

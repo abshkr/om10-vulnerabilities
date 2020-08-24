@@ -12,6 +12,14 @@ const RefSpecTemp = ({ form, value }) => {
 
   const { data: options, isValidating } = useSWR(BASE_PRODUCTS.REF_TEMP);
 
+  const validate = (rule, input) => {
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.refTempSpec')}`);
+    }
+
+    return Promise.resolve();
+  };
+
   useEffect(() => {
     setFieldsValue({
       base_ref_temp_spec: value ? value.base_ref_temp_spec : '1'
@@ -19,7 +27,11 @@ const RefSpecTemp = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="base_ref_temp_spec" label={t('fields.refTempSpec')}>
+    <Form.Item 
+      name="base_ref_temp_spec" 
+      label={t('fields.refTempSpec')}
+      rules={[{ required: true, validator: validate }]}
+    >
       <Select
         dropdownMatchSelectWidth={false}
         loading={isValidating}

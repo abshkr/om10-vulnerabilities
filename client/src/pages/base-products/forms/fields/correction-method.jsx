@@ -13,6 +13,14 @@ const CorrectionMethod = ({ form, value }) => {
 
   const { data: options, isValidating } = useSWR(BASE_PRODUCTS.CORRECTION_METHOD);
 
+  const validate = (rule, input) => {
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.correctionMethod')}`);
+    }
+
+    return Promise.resolve();
+  };
+
   useEffect(() => {
     if (value) {
       setFieldsValue({
@@ -22,7 +30,11 @@ const CorrectionMethod = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="base_corr_mthd" label={t('fields.correctionMethod')}>
+    <Form.Item 
+      name="base_corr_mthd" 
+      label={t('fields.correctionMethod')}
+      rules={[{ required: true, validator: validate }]}
+    >
       <Select
         dropdownMatchSelectWidth={false}
         loading={isValidating}
