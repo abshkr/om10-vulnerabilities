@@ -102,7 +102,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
       notification.error({
         message: t('validate.lineItemValidation'),
         description: lines,
-        duration: 0,
+        // duration: 0,
         style: {
           height: '500px',
           overflowY: 'scroll',

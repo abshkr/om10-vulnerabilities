@@ -248,7 +248,7 @@ const ManualTransactions = ({ popup, params }) => {
       notification.error({
         message: t('validate.lineItemValidation'),
         description: lines,
-        duration: 0,
+        // duration: 0,
         placement: 'topLeft',
         style: {
           width: 600,
