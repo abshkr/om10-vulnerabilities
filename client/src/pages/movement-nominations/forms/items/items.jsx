@@ -332,7 +332,10 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
           .post(MOVEMENT_NOMIATIONS.TOGGLE_ITEM, itemValue)
           .then((response) => {
             mutate(url);
-
+            setSelected([]);
+            const buttonStates = handleButtonState(-1);
+            setButtonState(buttonStates);
+      
             notification.success({
               message: t('messages.updateSuccess'),
               description: `${t('messages.updateSuccess')}`,
@@ -374,6 +377,10 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
         buttonStates.viewSchedule = false;
         buttonStates.makeTransaction = false;
         buttonStates.viewTransaction = false;
+      }
+
+      if (selected?.[0]?.mvitm_completed) {
+        buttonStates.makeTransaction = false;
       }
 
       setButtonState(buttonStates);
