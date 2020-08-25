@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import useSWR from 'swr';
-import { Button } from 'antd';
+import { Button, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
@@ -12,7 +12,8 @@ import columns from './columns';
 import auth from '../../auth';
 
 import Forms from './forms';
-import { stubFalse } from 'lodash';
+import api from 'api';
+import _ from 'lodash';
 
 const Allocations = ({popup, params}) => {
   const [visible, setVisible] = useState(false);
@@ -26,6 +27,7 @@ const Allocations = ({popup, params}) => {
 
   const [start, setStart] = useState('-1');
   const [end, setEnd] = useState('-1');
+  const [isSearching, setSearching] = useState(false);
 
   const url =
     popup && alloctype && company
@@ -47,9 +49,45 @@ const Allocations = ({popup, params}) => {
     setSelected(value);
   };
 
+  const locateLockal = (values) => {
+    if (!values.alloc_type && 
+      !values.alloc_cmpycode &&
+      !values.alloc_suppcode && 
+      !values.alloc_lock) {
+      return;
+    }
+
+    setSearching(true);
+
+    api
+      .get(ALLOCATIONS.READ, {
+        params: {
+          alloc_type: values.alloc_type,
+          alloc_cmpycode: values.alloc_cmpycode,
+          alloc_suppcode: values.alloc_suppcode,
+          alloc_lock: values.alloc_lock
+        },
+      })
+      .then((res) => {
+        // setCompartments(res.data.records);
+        setData(res.data.records);
+        setSearching(false);
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
+        });
+        setSearching(false);
+      });
+  };
+
   const fields = columns(t);
 
-  const data = payload?.records;
+  // const data = payload?.records;
+  const [data, setData] = useState(payload?.records);
   const isLoading = isValidating || !data;
 
   const page = t('pageMenu.companies');
@@ -61,6 +99,15 @@ const Allocations = ({popup, params}) => {
       setCompany(params?.alloc_cmpycode);
     }
   }, [popup, params]);
+
+  useEffect(() => {
+    if (payload?.records) {
+      setData(payload?.records);
+      // setLoading(false);
+      payload.records = null;
+    } 
+    
+  }, [payload]);
 
   const modifiers = (
     <>
@@ -88,12 +135,20 @@ const Allocations = ({popup, params}) => {
         minimal={false}
         data={data}
         columns={fields}
-        isLoading={isLoading}
+        isLoading={isLoading || isSearching}
         selectionMode="single"
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
+        clearFilterPlus={revalidate}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
+      <Forms 
+        value={selected} 
+        visible={visible} 
+        handleFormState={handleFormState} 
+        access={access} 
+        url={url}
+        locateLockal={locateLockal} />
+      />
     </Page>
   );
 };

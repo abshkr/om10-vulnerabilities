@@ -23,7 +23,7 @@ import Period from './period';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const FormModal = ({ value, visible, handleFormState, access, url, locateLockal }) => {
   const { data: units } = useSWR(ALLOCATIONS.PERIOD_TYPES);
 
   const { t } = useTranslation();
@@ -43,9 +43,13 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   const IS_CREATING = !value;
   const CAN_ALLOCATE_PERIOD = selected && value && lockType === '4';
 
-  const onComplete = () => {
+  const onComplete = (value) => {
     handleFormState(false, null);
-    mutate(ALLOCATIONS.READ);
+    if (value) {
+      locateLockal(value);
+    } else {
+      mutate(url);
+    }
   };
 
   const getAllocations = useCallback(() => {
@@ -69,6 +73,8 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     const values = await form.validateFields();
     const allocs = [];
 
+    console.log(values);
+
     _.forEach(values?.allocs, (alloc) => {
       allocs.push({
         aitem_prodcode: alloc.aitem_prodcode,
@@ -90,7 +96,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
         await api
           .post(IS_CREATING ? ALLOCATIONS.CREATE : ALLOCATIONS.UPDATE, values)
           .then(() => {
-            onComplete();
+            onComplete(values);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
