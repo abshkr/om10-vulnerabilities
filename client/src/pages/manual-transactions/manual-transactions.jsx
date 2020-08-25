@@ -158,10 +158,11 @@ const ManualTransactions = ({ popup, params }) => {
         });
       }
 
+      // console.log('...................onItemValidation.....', item);
       // check the planned qty and loaded qty
       const plan_qty = _.round(_.toNumber(item.trsf_qty_plan), 0);
       const load_qty = _.round(_.toNumber(item.trsf_qty_left), 0);
-      if (plan_qty === load_qty) {
+      if (plan_qty > 0 && load_qty > 0 && plan_qty === load_qty) {
         errors.push({
           field: `${t('fields.drawerProduct')} (${t('fields.compartment')} ${item.trsf_cmpt_no})`,
           message: `${t('prompts.productFullyLoaded')} [${t('fields.scheduled')}: ${plan_qty}, ${t('fields.loaded')}: ${load_qty}]`,

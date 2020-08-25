@@ -74,7 +74,7 @@ const buildPayloadToRepost = (transaction) => {
       transfer.trsf_qty_cor = titem?.trsf_qty_cor;
       transfer.trsf_load_kg = titem?.trsf_load_kg;
       transfer.trsf_equip_id = titem?.eqpt_code;
-      // transfer.trsf_qty_plan = titem?.PLANNED_QTY;
+      transfer.trsf_qty_plan = titem?.trsf_qty_amb; //titem?.PLANNED_QTY;
       // transfer.trsf_qty_left = titem?.AVAIL_QTY;
       transfer.trsf_cmpt_capacit = titem?.trsf_cmpt_capacit;
       transfer.trsf_prod_name = titem.trsfprod_prodcode + ' - ' + titem.prod_name;

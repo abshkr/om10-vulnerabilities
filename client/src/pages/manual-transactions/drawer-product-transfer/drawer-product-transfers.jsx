@@ -266,6 +266,7 @@ const DrawerProductTransfers = ({
         o.eqpt_code === item.eqpt_code && o.cmpt_no === item.trsf_trailercomp
       ));
       if (cmpt !== undefined) {
+        item.trsf_cmpt_unit = cmpt.cmpt_units;
         item.trsf_cmpt_no = cmpt.tnkr_cmpt;
         item.trsf_cmpt_capacit = cmpt.adj_capacity > cmpt.adj_safefill ? cmpt.adj_safefill : cmpt.adj_capacity;
       }
@@ -275,6 +276,7 @@ const DrawerProductTransfers = ({
     return transaction;
   };
 
+  // for repost transactions
   const updateDrawerProductTransfers = (transfers, transaction) => {
     _.forEach(transfers, (item) => {
       // get the matched transfer from transaction
@@ -291,7 +293,17 @@ const DrawerProductTransfers = ({
         item.trsf_prod_name = cmpt.trsfprod_prodcode + ' - ' + cmpt.prod_name;
         item.trsf_prod_cmpy = transaction.trsa_supplier;
         item.trsf_arm_cd = cmpt.trsf_baa_code;
-        // item.trsf_qty_plan = cmpt.;
+        if (!item.trsf_qty_plan) {
+          if (cmpt.trsf_cmpt_unit === '5') {
+            item.trsf_qty_plan = cmpt.trsf_qty_amb;
+          } else if (cmpt.trsf_cmpt_unit === '11') {
+            item.trsf_qty_plan = cmpt.trsf_qty_cor;
+          } else if (cmpt.trsf_cmpt_unit === '17') {
+            item.trsf_qty_plan = cmpt.trsf_load_kg;
+          } else {
+            item.trsf_qty_plan = cmpt.trsf_qty_amb;
+          }
+        }
         // item.trsf_qty_left = cmpt.;
         item.trsf_density = cmpt.trsf_density;
         item.trsf_temp = cmpt.trsf_temp;
