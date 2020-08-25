@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
-
 import _ from 'lodash';
 import { calcArmDensity } from '../../../../../../../utils'
+import { validateField } from '../../../../../../../utils';
 
 const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
   const [minDens, setMinDens] = useState(config.minDensity);
@@ -14,7 +14,7 @@ const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
 
   const { setFieldsValue, validateFields } = form;
 
-  const validate = (rule, input) => {
+  /* const validate = (rule, input) => {
     if (rule.required) {
       if (input === '' || !input) {
         return Promise.reject(`${t('validate.set')} ─ ${t('fields.nomtranStdDens')}`);
@@ -36,7 +36,7 @@ const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
     }
 
     return Promise.resolve();
-  };
+  }; */
 
   useEffect(() => {
     if (value) {
@@ -95,7 +95,19 @@ const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
     <Form.Item
       name="mlitm_dens_cor"
       label={t('fields.nomtranStdDens') + '[' + String(minDens) + ' ~ ' + String(maxDens) + ']' + '(' + t('fields.nomtranStdDensUnit') + ')'}
-      rules={[{ required: false, validator: validate }]}
+      // rules={[{ required: false, validator: validate }]}
+      rules={[{ 
+        required: false,
+        title: t('fields.nomtranStdDens'), 
+        dataType: 'NUMBER',
+        // maxLength: 9, 
+        precision: null, // config.precisionDensity,
+        min: _.toNumber(minDens), 
+        max: _.toNumber(maxDens),
+        prompts: t,
+        // returnType: 'notice',
+        validator: validateField 
+      }]}
     >
       <InputNumber
         style={{ width: '100%' }}

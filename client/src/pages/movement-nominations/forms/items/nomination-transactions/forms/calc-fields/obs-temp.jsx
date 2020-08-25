@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
-
 import _ from 'lodash';
+import { validateField } from '../../../../../../../utils';
 
 const ObsTemp = ({ form, value, setValue, tank, arm, pageState, config }) => {
   const [minTemp, setMinTemp] = useState(config.minTemperature);
@@ -13,7 +13,7 @@ const ObsTemp = ({ form, value, setValue, tank, arm, pageState, config }) => {
 
   const { setFieldsValue } = form;
 
-  const validate = (rule, input) => {
+  /* const validate = (rule, input) => {
     if (rule.required) {
       if (input === '' || !input) {
         return Promise.reject(`${t('validate.set')} ─ ${t('fields.nomtranObsTemp')}`);
@@ -25,7 +25,7 @@ const ObsTemp = ({ form, value, setValue, tank, arm, pageState, config }) => {
     }
 
     return Promise.resolve();
-  };
+  }; */
 
   useEffect(() => {
     if (value) {
@@ -59,15 +59,27 @@ const ObsTemp = ({ form, value, setValue, tank, arm, pageState, config }) => {
     <Form.Item
       name="mlitm_temp_amb"
       label={t('fields.nomtranObsTemp') + '[' + String(minTemp) + ' ~ ' + String(maxTemp) + ']' + '(' + t('fields.nomtranObsTempUnit') + ')'}
-      rules={[{ required: false, validator: validate }]}
+      // rules={[{ required: false, validator: validate }]}
+      rules={[{ 
+        required: false,
+        title: t('fields.nomtranObsTemp'), 
+        dataType: 'NUMBER',
+        // maxLength: 9, 
+        precision: null, // config.precisionTemperature,
+        min: _.toNumber(minTemp), 
+        max: _.toNumber(maxTemp),
+        prompts: t,
+        // returnType: 'notice',
+        validator: validateField 
+      }]}
     >
       <InputNumber
+        // min={_.toNumber(minTemp)}
+        // max={_.toNumber(maxTemp)}
+        precision={config.precisionTemperature}
         style={{ width: '100%' }}
         disabled={pageState === 'transfer' ? false : false}
         // placeholder={String(minTemp) + ' ~ ' + String(maxTemp)}
-        min={_.toNumber(minTemp)}
-        max={_.toNumber(maxTemp)}
-        precision={config.precisionTemperature}
         onChange={setValue}
       />
     </Form.Item>
