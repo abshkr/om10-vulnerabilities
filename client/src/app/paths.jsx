@@ -17,6 +17,11 @@ const paths = [
   },
 
   {
+    path: ROUTES.NOT_FOUND,
+    component: lazy(() => import('../pages/not-found')),
+  },
+
+  {
     path: ROUTES.EQUIPMENT_LIST,
     component: lazy(() => import('../pages/equipment-list')),
   },

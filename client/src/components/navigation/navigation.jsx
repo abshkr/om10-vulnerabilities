@@ -34,13 +34,21 @@ const Navigation = () => {
       api
         .get(`${AUTH.PERMISSIONS}?object_text=M_BAYVIEW`)
         .then((res) => {
-          console.log(res.data.records);
           if (!res.data.records[0].priv_view) {
-            console.log("cannot view");
+            console.log("Do not have view privilege");
             history.push(ROUTES.UNAUTHORIZED);
           } else {
-            // window.open(`https://10.1.10.238:22443/scadaviews/bayview/index.html#/overview`, "_blank");
-            window.open(`https://${window.location.hostname}/scadaviews/bayview/index.html#/overview`, "_blank");
+            api
+              .get(`http://${window.location.hostname}:${window.location.port}/scadaviews/bayview/index.html`)
+              .then((res) => {
+                window.open(`http://${window.location.hostname}:${window.location.port}/scadaviews/bayview/index.html#/overview`, "_blank");
+                })
+              .catch(function (error) {
+                // window.open(ROUTES.NOT_FOUND, "_blank");
+                history.push(ROUTES.NOT_FOUND);
+              })
+            // window.open(`https://10.1.10.238/scadaviews/bayview/index.html#/overview`, "_blank");
+            // window.open(`http://${window.location.hostname}:${window.location.port}/scadaviews/bayview/index.html#/overview`, "_blank");
           }
         }) ;
     } else {
