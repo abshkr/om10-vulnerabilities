@@ -69,7 +69,7 @@ const DrawerProductTransfers = ({
   drawerChanges,
   setDrawerChanges,
 }) => {
-  console.log('--------------------------', sourceType, supplier, trip, order, tanker);
+  // console.log('--------------------------', sourceType, supplier, trip, order, tanker);
   const { data } = useSWR((
       sourceType === 'SCHEDULE' && supplier && trip && 
       `${MANUAL_TRANSACTIONS.TRIP_DETAILS}?supplier=${supplier}&trip_no=${trip}`
@@ -311,7 +311,7 @@ const DrawerProductTransfers = ({
         item.trsf_qty_cor = cmpt.trsf_qty_cor;
         item.trsf_load_kg = cmpt.trsf_load_kg;
       }
-      console.log('---------- updateDrawerProductTransfers', cmpt, item);
+      // console.log('---------- updateDrawerProductTransfers', cmpt, item);
     });
   
     return transfers;
@@ -338,7 +338,7 @@ const DrawerProductTransfers = ({
       if (repostBase !== undefined) {
         arm.stream_tankden = repostBase?.trsb_dns;
       }
-      console.log('---------- updateBaseProductTransfers', arm, repostBase);
+      // console.log('---------- updateBaseProductTransfers', arm, repostBase);
     });
   
     return arms;
@@ -377,7 +377,7 @@ const DrawerProductTransfers = ({
         // base.trsf_bs_ratio_total = repostBase.;
         // base.trsf_bs_ratio_total2 = repostBase.;
       }
-      console.log('---------- updateBaseProductTransfers', base, repostBase);
+      // console.log('---------- updateBaseProductTransfers', base, repostBase);
     });
   
     return bases;
@@ -461,7 +461,7 @@ const DrawerProductTransfers = ({
           base.trsf_bs_qty_cor = _.toNumber(response?.data?.real_litre15);
         }
       }
-      console.log('DrawerProductTransfers: calcBaseQuantity', base);
+      // console.log('DrawerProductTransfers: calcBaseQuantity', base);
     });
 
   }
@@ -531,7 +531,7 @@ const DrawerProductTransfers = ({
 
   const initBaseTotals = (items) => {
     const totals = [];
-    console.log('DrawerProductTransfers: initBaseTotals - start', items);
+    // console.log('DrawerProductTransfers: initBaseTotals - start', items);
 
     _.forEach(items, (item) => {
       totals.push({
@@ -553,14 +553,14 @@ const DrawerProductTransfers = ({
         is_updated: item.is_updated,
       });
     });
-    console.log('DrawerProductTransfers: initBaseTotals - end', totals);
+    // console.log('DrawerProductTransfers: initBaseTotals - end', totals);
 
     return totals;
   }
 
   const makeBaseTotals = (items) => {
     const totals = [];
-    console.log('DrawerProductTransfers: makeBaseTotals - start', items);
+    // console.log('DrawerProductTransfers: makeBaseTotals - start', items);
     let itemExisted = false;
 
     _.forEach(items, (item) => {
@@ -580,7 +580,7 @@ const DrawerProductTransfers = ({
         totals.push(item);
       }
     });
-    console.log('DrawerProductTransfers: makeBaseTotals - end', totals);
+    // console.log('DrawerProductTransfers: makeBaseTotals - end', totals);
 
     return totals;
   }
@@ -744,7 +744,7 @@ const DrawerProductTransfers = ({
   const onCalculate = async () => {
     // check to see if at least one compartment has temperature and one of three quantities
     const payload = form.getFieldValue('transfers');
-    console.log('????????????????', form, payload);
+    // console.log('????????????????', form, payload);
     // const payload = retrieveTransfers();
     let found = false;
     for (let tidx = 0; tidx < payload.length; tidx++) {
@@ -834,7 +834,7 @@ const DrawerProductTransfers = ({
   };
 
   const onRestore = async () => {
-    console.log('DrawerProductTransfers: onRestore');
+    // console.log('DrawerProductTransfers: onRestore');
     const arms = await refreshProductArms(supplier, products?.records);
 
     _.forEach(productArms, (o) => {
@@ -907,7 +907,7 @@ const DrawerProductTransfers = ({
   };
 
   const onRestoreOld = async () => {
-    console.log('DrawerProductTransfers: onRestore');
+    // console.log('DrawerProductTransfers: onRestore');
     const option = selected;
     await setSelected(null);
     await setSelected(option);
@@ -947,7 +947,7 @@ const DrawerProductTransfers = ({
       description: !clicked ? t('descriptions.clearAllTransfer') : t('descriptions.clearLineTransfer'),
     }); */
 
-    console.log('DrawerProductTransfers: onClear');
+    // console.log('DrawerProductTransfers: onClear');
     // const payload = form.getFieldValue('transfers');
     _.forEach(payload, (item) => {
       if (!clicked) {
@@ -969,7 +969,7 @@ const DrawerProductTransfers = ({
       }
     });
     setPayload(payload);
-    console.log('DrawerProductTransfers: onClear', payload);
+    // console.log('DrawerProductTransfers: onClear', payload);
 
     notification.success({
       message: t('messages.clearTransferSuccess'),
@@ -1015,7 +1015,7 @@ const DrawerProductTransfers = ({
       centered: true,
       cancelText: 'No',
       onOk: async () => {
-        console.log('DrawerProductTransfers: onClear');
+        // console.log('DrawerProductTransfers: onClear');
         // const payload = form.getFieldValue('transfers');
         _.forEach(payload, (item) => {
           if (!clicked) {
@@ -1037,7 +1037,7 @@ const DrawerProductTransfers = ({
           }
         });
         setPayload(payload);
-        console.log('DrawerProductTransfers: onClear', payload);
+        // console.log('DrawerProductTransfers: onClear', payload);
 
         notification.success({
           message: t('messages.clearTransferSuccess'),
@@ -1080,24 +1080,24 @@ const DrawerProductTransfers = ({
         ? t('descriptions.copyScheduledQuantity') : t('descriptions.copyCompartmentCapacity'),
     }); */
   
-    console.log('DrawerProductTransfers: onCopy');
+    // console.log('DrawerProductTransfers: onCopy');
     
     // const payload = form.getFieldValue('transfers');
     _.forEach(payload, (item) => {
-      console.log('DrawerProductTransfers: onCopy in loop before', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
+      // console.log('DrawerProductTransfers: onCopy in loop before', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
       if (!(item.trsf_arm_cd === t('placeholder.selectArmCode') || 
         item.trsf_arm_cd === t('placeholder.noArmAvailable') ||
         item.trsf_prod_name === t('placeholder.selectDrawerProduct')) && 
         !(!item.trsf_density || String(item.trsf_density).trim()==='')) {
         if (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') {
           item.trsf_qty_amb = item.trsf_qty_plan;
-          console.log('DrawerProductTransfers: onCopy in loop after1', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
+          // console.log('DrawerProductTransfers: onCopy in loop after1', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
           // tableAPI.updateRowData({ update: [item] });
           updateTransferRow(item);
         } else {
           if (item.trsf_cmpt_capacit) {
             item.trsf_qty_amb = item.trsf_cmpt_capacit;
-            console.log('DrawerProductTransfers: onCopy in loop after2', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
+            // console.log('DrawerProductTransfers: onCopy in loop after2', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
             // tableAPI.updateRowData({ update: [item] });
             updateTransferRow(item);
           }
@@ -1105,7 +1105,7 @@ const DrawerProductTransfers = ({
       }
     });
     setPayload(payload);
-    console.log('DrawerProductTransfers: onCopy', payload);
+    // console.log('DrawerProductTransfers: onCopy', payload);
 
     notification.success({
       message: t('messages.copyQuantitySuccess'),
@@ -1149,24 +1149,24 @@ const DrawerProductTransfers = ({
       centered: true,
       cancelText: 'No',
       onOk: async () => {
-        console.log('DrawerProductTransfers: onCopy');
+        // console.log('DrawerProductTransfers: onCopy');
         
         // const payload = form.getFieldValue('transfers');
         _.forEach(payload, (item) => {
-          console.log('DrawerProductTransfers: onCopy in loop before', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
+          // console.log('DrawerProductTransfers: onCopy in loop before', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
           if (!(item.trsf_arm_cd === t('placeholder.selectArmCode') || 
             item.trsf_arm_cd === t('placeholder.noArmAvailable') ||
             item.trsf_prod_name === t('placeholder.selectDrawerProduct')) && 
             !(!item.trsf_density || String(item.trsf_density).trim()==='')) {
             if (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') {
               item.trsf_qty_amb = item.trsf_qty_plan;
-              console.log('DrawerProductTransfers: onCopy in loop after1', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
+              // console.log('DrawerProductTransfers: onCopy in loop after1', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
               // tableAPI.updateRowData({ update: [item] });
               updateTransferRow(item);
             } else {
               if (item.trsf_cmpt_capacit) {
                 item.trsf_qty_amb = item.trsf_cmpt_capacit;
-                console.log('DrawerProductTransfers: onCopy in loop after2', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
+                //console.log('DrawerProductTransfers: onCopy in loop after2', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
                 // tableAPI.updateRowData({ update: [item] });
                 updateTransferRow(item);
               }
@@ -1174,7 +1174,7 @@ const DrawerProductTransfers = ({
           }
         });
         setPayload(payload);
-        console.log('DrawerProductTransfers: onCopy', payload);
+        // console.log('DrawerProductTransfers: onCopy', payload);
 
         notification.success({
           message: t('messages.copyQuantitySuccess'),
@@ -1190,7 +1190,7 @@ const DrawerProductTransfers = ({
   };
 
   const toggleCalcButton = () => {
-    console.log('DrawerProductTransfers: toggle button Calculate Drawer ', canCalc);
+    // console.log('DrawerProductTransfers: toggle button Calculate Drawer ', canCalc);
     const payload = form.getFieldValue('transfers');
 
     if (payload) {
@@ -1208,9 +1208,9 @@ const DrawerProductTransfers = ({
   }
 
   const toggleRestoreButton = () => {
-    console.log('DrawerProductTransfers: toggle button Get Tank Densities ', canRestore);
+    // console.log('DrawerProductTransfers: toggle button Get Tank Densities ', canRestore);
     const payload = form.getFieldValue('transfers');
-    console.log('DrawerProductTransfers: toggle button Get Tank Densities ', payload);
+    // console.log('DrawerProductTransfers: toggle button Get Tank Densities ', payload);
 
     if (payload) {
       const item = _.find(payload, (o) => (o?.trsf_density));
@@ -1225,9 +1225,9 @@ const DrawerProductTransfers = ({
   }
 
   const toggleCopyButton = () => {
-    console.log('DrawerProductTransfers: toggle button Copy ', canCopy);
+    // console.log('DrawerProductTransfers: toggle button Copy ', canCopy);
     const payload = form.getFieldValue('transfers');
-    console.log('DrawerProductTransfers: toggle button Copy ', payload);
+    // console.log('DrawerProductTransfers: toggle button Copy ', payload);
 
     if (payload) {
       const item = _.find(payload, (o) => (
@@ -1236,7 +1236,7 @@ const DrawerProductTransfers = ({
         o.trsf_prod_name === t('placeholder.selectDrawerProduct')) && 
         !(!o.trsf_density || String(o.trsf_density).trim()==='')
       ));
-      console.log('DrawerProductTransfers: toggle button Copy item', item);
+      // console.log('DrawerProductTransfers: toggle button Copy item', item);
       if (item) {
         setCanCopy(true);
       } else {
@@ -1248,7 +1248,7 @@ const DrawerProductTransfers = ({
   }
 
   const onCellUpdate = (value) => {
-    console.log('DrawerProductTransfers: onCellUpdate', value);
+    // console.log('DrawerProductTransfers: onCellUpdate', value);
     // console.log('DrawerProductTransfers: onCellUpdate2', value?.colDef?.field, value?.colDef?.headerName, value?.value, value?.newValue, value?.data.trsf_cmpt_capacit);
     if (value?.colDef?.field === 'trsf_arm_cd' || 
       value?.colDef?.field === 'trsf_temp' || 
@@ -1278,26 +1278,26 @@ const DrawerProductTransfers = ({
 
   useEffect(() => {
     if (selected) {
-      console.log("DrawerProductTransfers: line selected", selected);
+      // console.log("DrawerProductTransfers: line selected", selected);
       //adjustProduct(selected.trsf_cmpt_no, form.getFieldValue('base_transfers'));
     }
   }, [selected]);
 
   useEffect(() => {
     if (clicked) {
-      console.log("DrawerProductTransfers: line clicked", clicked);
+      // console.log("DrawerProductTransfers: line clicked", clicked);
     }
   }, [clicked]);
 
   useEffect(() => {
     if (data) {
-      console.log("DrawerProductTransfers: data changed", data?.records);
+      // console.log("DrawerProductTransfers: data changed", data?.records);
     }
   }, [data]);
 
   useEffect(() => {
     if (payload?.length > 0) {
-      console.log("DrawerProductTransfers: sourceType changed", sourceType);
+      // console.log("DrawerProductTransfers: sourceType changed", sourceType);
       setPayload([]);
     }
   }, [sourceType]);
@@ -1316,7 +1316,7 @@ const DrawerProductTransfers = ({
 
   useEffect(() => {
     const values = columns(t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms);
-    console.log('!!!!!!!!!!!!!!!!!!!!!!!I am here !!!!!', sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms);
+    // console.log('!!!!!!!!!!!!!!!!!!!!!!!I am here !!!!!', sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms);
     setFields(values);
   }, [t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms]);
 
@@ -1328,7 +1328,7 @@ const DrawerProductTransfers = ({
 
     // NOTE: this data is form get_order_details or get_sched_details, not the products
     if (data && productArms && composition && (!repost || (repost && transactions))) {
-      console.log('DrawerProductTransfers: Watch data, supplier, trip, order, tanker! Data not null', data);
+      // console.log('DrawerProductTransfers: Watch data, supplier, trip, order, tanker! Data not null', data);
       // adjust productArms if it is a repost transaction
       let transaction = {};
       if (repost) {
@@ -1338,7 +1338,7 @@ const DrawerProductTransfers = ({
         updateProductArms(productArms, transaction);
       }
       let transformed = buildDrawTransfers(data?.records, productArms, t, sourceType, loadType, repost);
-      console.log('DrawerProductTransfers: Watch data, supplier, trip, order, tanker - transformed', transformed);
+      // console.log('DrawerProductTransfers: Watch data, supplier, trip, order, tanker - transformed', transformed);
 
       // adjust transfers if it is a repost transaction
       if (repost) {
@@ -1349,7 +1349,7 @@ const DrawerProductTransfers = ({
         setPayload(transformed);
       } else {
         setPayload(dataLoaded?.transfers);
-        console.log('MT 2 - DrawProductTransfers: data are loaded!');
+        // console.log('MT 2 - DrawProductTransfers: data are loaded!');
         setSelected(dataLoaded?.transfers?.[0]);
         // const loaded = _.clone(dataLoaded);
         // loaded.transfers = [];
@@ -1362,7 +1362,7 @@ const DrawerProductTransfers = ({
 
   useEffect(() => {
     if (payload) {
-      console.log('DrawerProductTransfers: Payload changed and do setFieldsValue. payload:', payload);
+      // console.log('DrawerProductTransfers: Payload changed and do setFieldsValue. payload:', payload);
       setFieldsValue({
         transfers: payload,
       });

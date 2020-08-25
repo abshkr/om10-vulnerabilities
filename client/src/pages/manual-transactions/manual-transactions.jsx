@@ -327,7 +327,7 @@ const ManualTransactions = ({ popup, params }) => {
         setDrawerChanges([]);
         try {
           const values = await form.validateFields();
-          console.log('MTmain: onSubmit - await values', values);
+          // console.log('MTmain: onSubmit - await values', values);
           await api
             .post(MANUAL_TRANSACTIONS.SUBMIT, preparePayloadToSubmit(values))
             .then((response) => {
@@ -362,7 +362,7 @@ const ManualTransactions = ({ popup, params }) => {
               });
             });
         } catch (error) {
-          console.log('................MT submit validation error:', error);
+          // console.log('................MT submit validation error:', error);
           message.error({
             key: 'submit',
             content: t('descriptions.validationFailed'),
@@ -409,7 +409,7 @@ const ManualTransactions = ({ popup, params }) => {
         resetFormData();
         // resetFormGrids();
 
-        console.log('MTmain: loadMTData', res.data?.records);
+        // console.log('MTmain: loadMTData', res.data?.records);
         const record = res.data?.records?.[0];
         if (record.gud_head_data !== '' && record.gud_head_data !== null && record.gud_head_data !== false) {
           record.gud_head_data = JSON.parse(_.replace(record.gud_head_data, '{}', '""'));
@@ -419,10 +419,10 @@ const ManualTransactions = ({ popup, params }) => {
         }
 
         //setDataLoaded(record);
-        console.log('MTmain: loadMTData - DataLoaded', record);
+        // console.log('MTmain: loadMTData - DataLoaded', record);
 
         const values = prepareValuesToLoad(record);
-        console.log('MTmain: loadMTData - prepareValuesToLoad', values);
+        // console.log('MTmain: loadMTData - prepareValuesToLoad', values);
 
         setDataLoaded(values);
     
@@ -432,7 +432,7 @@ const ManualTransactions = ({ popup, params }) => {
         // setDataMeterTransfers(values?.meter_transfers);
         // setDataMeterTotals(values?.meter_totals);
 
-        console.log('MTmain: loadMTData - start to set form fields by loading data!');
+        // console.log('MTmain: loadMTData - start to set form fields by loading data!');
       });
   };
 
@@ -477,8 +477,8 @@ const ManualTransactions = ({ popup, params }) => {
           // const save_format = form.getFieldValue('save_format');
           const save_format = 'JSON';
           const values = await form.validateFields();
-          console.log('MTmain: onSave - await values', values);
-          console.log('MTmain: onSave - data board', dataBoard);
+          // console.log('MTmain: onSave - await values', values);
+          // console.log('MTmain: onSave - data board', dataBoard);
           await api
             .post(MANUAL_TRANSACTIONS.SAVE_MT_DATA, preparePayloadToSave(values, save_format))
             .then((response) => {
@@ -510,7 +510,7 @@ const ManualTransactions = ({ popup, params }) => {
   };
 
   useEffect(() => {
-    console.log('MTmain: sourceType changed.', sourceType);
+    // console.log('MTmain: sourceType changed.', sourceType);
     resetFormData();
   }, [sourceType]);
 

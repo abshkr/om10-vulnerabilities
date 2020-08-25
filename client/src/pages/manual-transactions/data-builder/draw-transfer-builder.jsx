@@ -14,7 +14,7 @@ const buildDrawTransfersByArm = (record, productArms, t, sourceType, loadType, r
       if (items?.length > 0) {
         armClnValue = items?.[0]?.stream_armcode;
         const prodArms = adjustProductArms(productArms, record?.shls_supp, record?.prod_code);
-        console.log('....................buildDrawTransfersByArm', items?.[0]?.stream_index, items?.[0]?.stream_armcode, prodArms);
+        // console.log('....................buildDrawTransfersByArm', items?.[0]?.stream_index, items?.[0]?.stream_armcode, prodArms);
         densClnValue = calcArmDensity(items?.[0]?.stream_armcode, prodArms);
       }
     }
@@ -60,7 +60,7 @@ const buildDrawTransfers = (records, productArms, t, sourceType, loadType, repos
     _.forEach(records, (record) => {
       // console.log('buildDrawTransfers', record?.shls_supp);
       if (record.shls_supp !== '') {
-        console.log('************* buildDrawTransfers', record, record?.shls_supp, record?.prod_code);
+        // console.log('************* buildDrawTransfers', record, record?.shls_supp, record?.prod_code);
         const transfer = buildDrawTransfersByArm(record, productArms, t, sourceType, loadType, repost);
 
         transfers.push(transfer);

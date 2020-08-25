@@ -24,7 +24,7 @@ export default class BayArm extends Component {
     const { values } = this.state;
     const prodDens = calcArmDensity(armcode, values);
 
-    console.log('BayArm: prod density - ', prodDens);
+    // console.log('BayArm: prod density - ', prodDens);
 
     return prodDens;
   };
@@ -49,7 +49,7 @@ export default class BayArm extends Component {
     // current[index].trsf_qty_cor = null;
     // current[index].trsf_load_kg = null;
 
-    console.log('BayArm, onClick', key, index, record, current);
+    // console.log('BayArm, onClick', key, index, record, current);
 
 
     /* form.setFieldsValue({
@@ -70,7 +70,7 @@ export default class BayArm extends Component {
     const { arms, t } = this.props;
 
     const armsByProd = adjustProductArms(arms, this.props.data.trsf_prod_cmpy, this.props.data.trsf_prod_code);
-    console.log('BayArms componentDidMount', arms, armsByProd, this.props.data);
+    // console.log('BayArms componentDidMount', arms, armsByProd, this.props.data);
 
     this.setState({
       isLoading: false,

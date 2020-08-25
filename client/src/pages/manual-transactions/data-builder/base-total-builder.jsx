@@ -88,7 +88,7 @@ const buildBaseTotalsByArm = (prodArms, transfer) => {
       bases.push(base);
     });
   }
-  console.log('...................buildBaseTotalsByArm: ', bases, transfer);
+  // console.log('...................buildBaseTotalsByArm: ', bases, transfer);
   return bases;
 };
 
@@ -110,7 +110,7 @@ const adjustBaseTotals = (prodArms, transfers) => {
   const items = buildBaseTotals(prodArms, transfers);
 
   const totals = [];
-  console.log('adjustBaseTotals - start', items);
+  // console.log('adjustBaseTotals - start', items);
   let itemExisted = false;
 
   _.forEach(items, (item) => {
@@ -134,7 +134,7 @@ const adjustBaseTotals = (prodArms, transfers) => {
       totals.push(item);
     }
   });
-  console.log('adjustBaseTotals - end', totals);
+  // console.log('adjustBaseTotals - end', totals);
 
   return totals;
 };

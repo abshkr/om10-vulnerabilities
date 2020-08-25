@@ -43,7 +43,7 @@ const MeterTransfers = ({
         const loaded = _.clone(dataLoaded);
         loaded.meter_transfers = [];
         setDataLoaded(loaded);
-        console.log('MT 5 - MeterTransfers: data are loaded!');
+        // console.log('MT 5 - MeterTransfers: data are loaded!');
       }
     }
 
@@ -52,7 +52,7 @@ const MeterTransfers = ({
 
   useEffect(() => {
     if (data) {
-      console.log('MeterTransfers: Data changed and do setFieldsValue. Data:', data);
+      // console.log('MeterTransfers: Data changed and do setFieldsValue. Data:', data);
       form.setFieldsValue({
         meter_transfers: data,
       });
@@ -71,7 +71,7 @@ const MeterTransfers = ({
 
   useEffect(() => {
     if (data?.length > 0) {
-      console.log("MeterTransfers: sourceType changed", sourceType);
+      // console.log("MeterTransfers: sourceType changed", sourceType);
       setData([]);
     }
   }, [sourceType]);

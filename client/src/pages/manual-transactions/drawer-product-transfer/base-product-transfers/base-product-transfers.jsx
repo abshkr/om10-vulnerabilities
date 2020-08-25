@@ -58,7 +58,7 @@ const BaseProductTransfers = ({
       // tranbases = _.clone(pre);
       setData(pre);
       sumBaseTotals(pre, selected);
-      console.log('MT 3 - BaseProductTransfers: normal data!');
+      // console.log('MT 3 - BaseProductTransfers: normal data!');
     } else {
       // tranbases = _.clone(dataLoaded.base_transfers);
       setData(dataLoaded.base_transfers);
@@ -66,7 +66,7 @@ const BaseProductTransfers = ({
       const loaded = _.clone(dataLoaded);
       loaded.base_transfers = [];
       setDataLoaded(loaded);
-      console.log('MT 3 - BaseProductTransfers: data are loaded!');
+      // console.log('MT 3 - BaseProductTransfers: data are loaded!');
     }
   };
 
@@ -76,7 +76,7 @@ const BaseProductTransfers = ({
 
   useEffect(() => {
     if (data) {
-      console.log('BaseProductTransfers: data changed and do setFieldsValue. Data:', data);
+      // console.log('BaseProductTransfers: data changed and do setFieldsValue. Data:', data);
       form.setFieldsValue({
         base_transfers: data,
       });
@@ -94,7 +94,7 @@ const BaseProductTransfers = ({
   }, [data]);
 
   useEffect(() => {
-    console.log('BaseProductTransfers: base quantity totals changed on data and clicked', clicked);
+    // console.log('BaseProductTransfers: base quantity totals changed on data and clicked', clicked);
     if (data) {
       const obs = _.sumBy(data.filter((o)=>(o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no)), 'trsf_bs_qty_amb');
       const std = _.sumBy(data.filter((o)=>(o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no)), 'trsf_bs_qty_cor');
@@ -112,13 +112,13 @@ const BaseProductTransfers = ({
 
   useEffect(() => {
     if (data?.length > 0) {
-      console.log("BaseProductTransfers: sourceType changed.", sourceType);
+      // console.log("BaseProductTransfers: sourceType changed.", sourceType);
       setData([]);
     }
   }, [sourceType]);
 
   const onCellUpdate = (value) => {
-    console.log('BaseProductTransfers: onCellUpdate', value);
+    // console.log('BaseProductTransfers: onCellUpdate', value);
 
     const bases = _.clone(data);
     let index=0;

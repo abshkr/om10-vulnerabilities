@@ -96,7 +96,7 @@ const MeterTotals = ({
       const loaded = _.clone(dataLoaded);
       loaded.meter_totals = [];
       setDataLoaded(loaded);
-      console.log('MT 6 - MeterTotals: data are loaded!');
+      // console.log('MT 6 - MeterTotals: data are loaded!');
     }
   }
 
@@ -106,7 +106,7 @@ const MeterTotals = ({
 
   useEffect(() => {
     if (data) {
-      console.log('MeterTotals: data changed and do setFieldsValue. Data:', data);
+      // console.log('MeterTotals: data changed and do setFieldsValue. Data:', data);
       form.setFieldsValue({
         meter_totals: data,
       });
@@ -125,7 +125,7 @@ const MeterTotals = ({
 
   useEffect(() => {
     if (data?.length > 0) {
-      console.log("MeterTotals: sourceType changed", sourceType);
+      // console.log("MeterTotals: sourceType changed", sourceType);
       setData([]);
     }
   }, [sourceType]);

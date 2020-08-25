@@ -19,7 +19,7 @@ export default class DrawerProducts extends Component {
 
   calcDensity = (armcode, values) => {
     const prodDens = calcArmDensity(armcode, values);
-    console.log('DrawerProducts: prod density - ', prodDens);
+    // console.log('DrawerProducts: prod density - ', prodDens);
 
     return prodDens;
   };
@@ -32,7 +32,7 @@ export default class DrawerProducts extends Component {
 
     const key = this.props.data?.trsf_cmpt_no; // tnkr_cmpt_no;
     const index = _.findIndex(current, ['trsf_cmpt_no', key]);
-    console.log('DrawerProducts, onClick', key, index, record, this.props);
+    // console.log('DrawerProducts, onClick', key, index, record, this.props);
 
     const items = getAvailableArms(arms, record?.item?.prod_cmpy, record?.item?.prod_code);
     const prodArms = adjustProductArms(arms, record?.item?.prod_cmpy, record?.item?.prod_code);

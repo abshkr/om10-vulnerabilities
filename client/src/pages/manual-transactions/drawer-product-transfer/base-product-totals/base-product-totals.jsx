@@ -48,7 +48,7 @@ const BaseProductTotals = ({
 
   const adjustBaseTotals = (items) => {
     const totals = [];
-    console.log('BaseProductTotals: adjustBaseTotals - start', items);
+    // console.log('BaseProductTotals: adjustBaseTotals - start', items);
     let itemExisted = false;
 
     _.forEach(items, (item) => {
@@ -74,7 +74,7 @@ const BaseProductTotals = ({
         totals.push(item);
       }
     });
-    console.log('BaseProductTotals: adjustBaseTotals - end', totals);
+    // console.log('BaseProductTotals: adjustBaseTotals - end', totals);
 
     // adjust sum totals
     sumBaseTotals(totals);
@@ -96,7 +96,7 @@ const BaseProductTotals = ({
       const loaded = _.clone(dataLoaded);
       loaded.base_totals = [];
       setDataLoaded(loaded);
-      console.log('MT 4 - BaseTotals: data are loaded!');
+      // console.log('MT 4 - BaseTotals: data are loaded!');
     }
   };
 
@@ -106,7 +106,7 @@ const BaseProductTotals = ({
 
   useEffect(() => {
     if (data) {
-      console.log('BaseProductTotals: data changed and do setFieldsValue. Data:', data);
+      // console.log('BaseProductTotals: data changed and do setFieldsValue. Data:', data);
       form.setFieldsValue({
         base_totals: data,
       });
@@ -124,20 +124,20 @@ const BaseProductTotals = ({
   }, [data]);
 
   useEffect(() => {
-    console.log('BaseProductTotals: base quantity totals changed on clicked', clicked);
+    // console.log('BaseProductTotals: base quantity totals changed on clicked', clicked);
     getBaseTotals();
     setUpdating(false);
   }, [clicked]);
 
   useEffect(() => {
     if (data?.length > 0) {
-      console.log("BaseProductTotals: sourceType changed", sourceType);
+      // console.log("BaseProductTotals: sourceType changed", sourceType);
       setData([]);
     }
   }, [sourceType]);
 
   const onCellUpdate = (value) => {
-    console.log('BaseProductTotals: onCellUpdate', value);
+    // console.log('BaseProductTotals: onCellUpdate', value);
 
     const bases = _.clone(data);
     let index=0;

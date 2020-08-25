@@ -3,7 +3,7 @@ import {buildMeterTransfers} from './meter-transfer-builder';
 
 const adjustMeterTotals = (items) => {
   const totals = [];
-  console.log('meter-total-builder: adjustMeterTotals - start', items);
+  // console.log('meter-total-builder: adjustMeterTotals - start', items);
   let itemExisted = false;
 
   _.forEach(items, (item) => {
@@ -50,7 +50,7 @@ const adjustMeterTotals = (items) => {
       totals.push(item);
     }
   });
-  console.log('meter-total-builder: adjustMeterTotals - end', totals);
+  // console.log('meter-total-builder: adjustMeterTotals - end', totals);
 
   return totals;
 }

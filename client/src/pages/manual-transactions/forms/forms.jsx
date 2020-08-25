@@ -239,7 +239,7 @@ const Forms = ({
       mt_delv_num: '',
     });
 
-    console.log('handleSupplierSelect', sourceType);
+    // console.log('handleSupplierSelect', sourceType);
 
     if (sourceType === 'SCHEDULE') {
       setTripsLoading(true);
@@ -376,7 +376,7 @@ const Forms = ({
   };
 
   const loadOrderSeal = async (value) => {
-    console.log('Forms: loadOrderSeal', value);
+    // console.log('Forms: loadOrderSeal', value);
     setFieldsValue({
       seal_range: value?.sealRange,
     });
@@ -505,7 +505,7 @@ const Forms = ({
 
   // get all the list in one place
   useEffect(() => {
-    console.log('---------------------drivers are ready!')
+    // console.log('---------------------drivers are ready!')
     if (selectedTrip || selectedOrder) {
       if (!selectedDriver) {
         setFieldsValue({

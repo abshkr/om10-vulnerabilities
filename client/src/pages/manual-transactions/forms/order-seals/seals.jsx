@@ -14,7 +14,7 @@ const { Search } = Input;
 
 const OrderSeals = ({ value, onClose }) => {
   const config = useConfig();
-  console.log('config', config.sealPrefix, config.sealPostfix, config);
+  // console.log('config', config.sealPrefix, config.sealPostfix, config);
 
   const { t } = useTranslation();
 
