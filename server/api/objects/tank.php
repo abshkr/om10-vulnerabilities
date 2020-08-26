@@ -30,6 +30,8 @@ class Tank extends CommonClass
         "TANK_AFC_ENABLED" => "Y",
         "TANK_INV_NEEDED" => "Y",
         "TANK_ADHOC_IVRQ" => "Y",
+        "TANK_INV_NEEDED" => "Y",
+        "TANK_ADHOC_IVRQ" => "Y",
         "TANK_ACTIVE" => 1,
     );
 
@@ -314,11 +316,13 @@ class Tank extends CommonClass
     protected function update_children($old_data = null)
     {
         if (!isset($this->tank_max_flow)) {
-            return;
+            return true;
         }
         
         $this->delete_children();
         $this->insert_children();
+
+        return true;
     }
 
     protected function delete_children()

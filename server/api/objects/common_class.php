@@ -436,10 +436,18 @@ class CommonClass
 
         $old_child_data = $this->retrieve_children_data();
         if ($this->del_n_ins_children) {
-            $this->delete_children();
-            $this->insert_children();
+            if ($this->delete_children() === false) {
+                oci_rollback($this->conn);
+                return false;
+            }
+
+            if ($this->insert_children() === false ) {
+                oci_rollback($this->conn);
+                return false;
+            }
         } else {
-            if (!$this->update_children($old_child_data)) {
+            if ($this->update_children($old_child_data) === false) {
+                oci_rollback($this->conn);
                 return false;
             }
         }
