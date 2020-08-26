@@ -21,7 +21,7 @@ const BayView = () => {
 
   useEffect(() => {
     api
-    .get(`http://${window.location.hostname}:${window.location.port}/scadaviews/bayview/index.html`)
+    .get(`https://${window.location.hostname}:${window.location.port}/scadaviews/bayview/index.html`)
     .then((res) => {
       setAvailable(true);
       })
@@ -38,7 +38,7 @@ const BayView = () => {
         <Page page={page} name={name} access={access}>
           <div style={{ height: 'calc(100vh - 200px)' }}>
             <Iframe
-              url={`http://${window.location.hostname}:${window.location.port}/scadaviews/bayview/index.html#/overview`}
+              url={`https://${window.location.hostname}:${window.location.port}/scadaviews/bayview/index.html#/overview`}
               // url={`https://${window.location.hostname}/scadaviews/bayview/index.html`}
               id="myId"
               className="myClassname"
