@@ -62,7 +62,7 @@ class SocketClient
         fwrite($this->fp, $str);
 
         $this->respond = "";
-        $BUF_SIZE = 4096;
+        $BUF_SIZE = 8192;
         while (!feof($this->fp)) {
             $reads = fread($this->fp, $BUF_SIZE);
             $this->respond = $this->respond . $reads;
