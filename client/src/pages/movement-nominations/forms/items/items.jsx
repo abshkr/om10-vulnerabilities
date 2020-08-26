@@ -176,17 +176,27 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
     setMakeTransactionVisible(true);
   };
 
+  const getNextLineNo = () => {
+    let nextNo = 0;
+    tableAPI.forEachNode((rowNode, index) => {
+      if (nextNo < _.toNumber(rowNode?.data?.mvitm_line_id)) {
+        nextNo = _.toNumber(rowNode?.data?.mvitm_line_id);
+      }
+    });
+    return nextNo + 1;
+  };
+
   const handleItemAdd = () => {
-    const length = size + 1;
+    const length = getNextLineNo();
 
     const line = {
-      mvitm_line_id: String(size + 1),
+      mvitm_line_id: String(length),
       mvitm_item_id: '',
       mvitm_key: value?.mv_key,
       mvitm_terminal: value?.mv_terminal,
       mvitm_type: 0,
       mvitm_type_name: 'Receipt',
-      mvitm_item_key: String(size + 1),
+      mvitm_item_key: String(length),
       mvitm_status: 0,
       mvitm_status_name: 'NEW',
       mvitm_prod_qty: '0',
