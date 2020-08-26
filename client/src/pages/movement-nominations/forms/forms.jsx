@@ -126,6 +126,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
     const items = [];
 
     tableAPI.forEachNodeAfterFilterAndSort((rowNode, index) => {
+      // user may have visited MT4NOM screen where two date fields will be populated
+      // with the format not recognized by DB. Make sure they are set to blank.
+      rowNode.data.mvitm_dtim_effect = '';
+      rowNode.data.mvitm_dtim_expiry = '';
       items.push(rowNode.data);
     });
 
