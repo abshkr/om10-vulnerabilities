@@ -29,28 +29,6 @@ const Navigation = () => {
       history.push(ROUTES.TANKS, {
         listed: true,
       });
-    } else if (event?.key === ROUTES.BAY_VIEW) {
-      // const access = useAuth('M_BAYVIEW'); //Cannot use useAuth here because this is a function not a component
-      api
-        .get(`${AUTH.PERMISSIONS}?object_text=M_BAYVIEW`)
-        .then((res) => {
-          if (!res.data.records[0].priv_view) {
-            console.log("Do not have view privilege");
-            history.push(ROUTES.UNAUTHORIZED);
-          } else {
-            api
-              .get(`http://${window.location.hostname}:${window.location.port}/scadaviews/bayview/index.html`)
-              .then((res) => {
-                window.open(`http://${window.location.hostname}:${window.location.port}/scadaviews/bayview/index.html#/overview`, "_blank");
-                })
-              .catch(function (error) {
-                // window.open(ROUTES.NOT_FOUND, "_blank");
-                history.push(ROUTES.NOT_FOUND);
-              })
-            // window.open(`https://10.1.10.238/scadaviews/bayview/index.html#/overview`, "_blank");
-            // window.open(`http://${window.location.hostname}:${window.location.port}/scadaviews/bayview/index.html#/overview`, "_blank");
-          }
-        }) ;
     } else {
       history.push(event.key);
     }
