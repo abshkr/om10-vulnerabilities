@@ -1520,7 +1520,12 @@ class Movement extends CommonClass
             }
             
             if ($still_exist === false) {
+                // WRONG OBJECT used to delete, should use $item_array in $old_children instead of $item from frontend
+                // Otherwise, it will always delete the last nomination item.
                 write_log(sprintf("Delete movement item. move_id:%d, line_id:%d", $this->mv_id, $item->mvitm_line_id), 
+                    __FILE__, __LINE__);
+                $item_line_id = $item_array['MVITM_LINE_ID'];
+                write_log(sprintf("Delete movement item. move_id:%d, line_id:%d", $this->mv_id, $item_line_id), 
                     __FILE__, __LINE__);
 
                 $query = "DELETE FROM MOVEMENT_ITEMS 
@@ -1528,7 +1533,8 @@ class Movement extends CommonClass
                         AND MVITM_LINE_ID = :mvitm_line_id";
                 $stmt = oci_parse($this->conn, $query);
                 oci_bind_by_name($stmt, ':mvitm_move_id', $this->mv_id);
-                    oci_bind_by_name($stmt, ':mvitm_line_id', $item->mvitm_line_id);
+                // oci_bind_by_name($stmt, ':mvitm_line_id', $item->mvitm_line_id);
+                oci_bind_by_name($stmt, ':mvitm_line_id', $item_line_id);
                 if (!oci_execute($stmt, $this->commit_mode)) {
                     $e = oci_error($stmt);
                     write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
