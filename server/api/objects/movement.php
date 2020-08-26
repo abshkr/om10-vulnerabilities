@@ -1449,21 +1449,6 @@ class Movement extends CommonClass
             }
         }
 
-        if (isset($this->order_instruction)) {
-            $query = "INSERT INTO ORD_INSTRUCT (OI_ORDER_NO, OI_INSTR_COUNTER, OI_INSTRUCTION)
-                VALUES (:oi_order_no, 1, :oi_instruction)";
-            $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':oi_order_no', $this->order_sys_no);
-            oci_bind_by_name($stmt, ':oi_instruction', $this->order_instruction);
-
-            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-                $e = oci_error($stmt);
-                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-                throw new DatabaseException($e['message']);
-                return false;
-            }
-        }
-
         return true;
     }
 
@@ -1483,7 +1468,12 @@ class Movement extends CommonClass
 
         $tank_max_flows = array();
         while ($flow_row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
-            $tank_max_flows[$flow_row['MVITM_ITEM_KEY']] = $flow_row;
+            // Note: 
+            //   MVITM_LINE_ID is a better choice as the line identifier 
+            //   because its value is fixed and cannot be NULL as part of primary key.
+            //   The column MVITM_ITEM_KEY is editable in front-end.
+            // $tank_max_flows[$flow_row['MVITM_ITEM_KEY']] = $flow_row;
+            $tank_max_flows[$flow_row['MVITM_LINE_ID']] = $flow_row;
         }
 
         // write_log(json_encode($tank_max_flows), __FILE__, __LINE__);
@@ -1501,7 +1491,7 @@ class Movement extends CommonClass
             
             $still_exist = false;
             foreach ($this->items as $item) {
-                if ($item->mvitm_item_key == $product) {
+                if ($item->mvitm_line_id == $product) {
                     $still_exist = true;
 
                     $set_string = "";
@@ -1569,14 +1559,14 @@ class Movement extends CommonClass
 
         //In new but not in old.
         foreach ($this->items as $item) {
-            if (isset($old_children[$item->mvitm_item_key])) {
+            if (isset($old_children[$item->mvitm_line_id])) {
                 continue;
             }
 
-            write_log(sprintf("Insert movement item. move_id:%d, line_id:%d", $this->mv_id, $item->mvitm_item_key), 
+            write_log(sprintf("Insert movement item. move_id:%d, line_id:%d", $this->mv_id, $item->mvitm_line_id), 
                     __FILE__, __LINE__);
 
-            $lineno = intval($item->mvitm_item_key);
+            $lineno = intval($item->mvitm_line_id);
             $mvitm_item_id = $this->mv_id * 1000 + $lineno;
             $query = "INSERT INTO MOVEMENT_ITEMS (
                 MVITM_MOVE_ID,
