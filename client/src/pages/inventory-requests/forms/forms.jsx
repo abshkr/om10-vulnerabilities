@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import _ from 'lodash';
 
-import { Type, Period, InventoryDate, SelectAllTanks } from './fields';
+import { Type, Period, InventoryDate, SelectAllTanks, Terminal } from './fields';
 import api, { INVENTORY_REQUESTS } from '../../../api';
 import { SETTINGS } from '../../../constants';
 
@@ -112,7 +112,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="50vw"
+      width="40vw"
       visible={visible}
       footer={
         <>
@@ -153,6 +153,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       <Form scro layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" style={{ height: '40vh' }}>
           <TabPane tab={t('tabColumns.general')} key="1">
+            <Terminal form={form} value={value} />
             <Type form={form} value={value} />
             <Period form={form} value={value} />
             <InventoryDate form={form} value={value} />
