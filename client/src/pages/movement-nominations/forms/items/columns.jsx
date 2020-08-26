@@ -490,7 +490,7 @@ const useColumns = (value, selected) => {
       editable: selected?.[0]?.editable && groupTo.includes(selected?.[0]?.mvitm_type),
 
       cellClass:
-        selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type)
+        selected?.[0]?.editable && groupTo.includes(selected?.[0]?.mvitm_type)
           ? 'selected-editable-ag-grid-cell'
           : '',
 
@@ -509,7 +509,7 @@ const useColumns = (value, selected) => {
       editable: selected?.[0]?.editable && groupTo.includes(selected?.[0]?.mvitm_type),
 
       cellClass:
-        selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type)
+        selected?.[0]?.editable && groupTo.includes(selected?.[0]?.mvitm_type)
           ? 'selected-editable-ag-grid-cell'
           : '',
 
@@ -540,7 +540,7 @@ const useColumns = (value, selected) => {
       editable: selected?.[0]?.editable && groupTo.includes(selected?.[0]?.mvitm_type),
 
       cellClass:
-        selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type)
+        selected?.[0]?.editable && groupTo.includes(selected?.[0]?.mvitm_type)
           ? 'selected-editable-ag-grid-cell'
           : '',
 
@@ -590,7 +590,7 @@ const useColumns = (value, selected) => {
       editable: selected?.[0]?.editable && groupTo.includes(selected?.[0]?.mvitm_type),
 
       cellClass:
-        selected?.[0]?.editable && groupFrom.includes(selected?.[0]?.mvitm_type)
+        selected?.[0]?.editable && groupTo.includes(selected?.[0]?.mvitm_type)
           ? 'selected-editable-ag-grid-cell'
           : '',
 
@@ -688,7 +688,8 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 100,
       suppressSizeToFit: true,
-      editable: false, //selected?.[0]?.editable || !value,
+      editable: selected?.[0]?.editable || !value,
+      cellClass: selected?.[0]?.editable || !value ? 'selected-editable-ag-grid-cell' : '',
       cellEditor: 'NumericEditor',
     },
     {
