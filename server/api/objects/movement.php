@@ -1083,6 +1083,30 @@ class Movement extends CommonClass
         }
     }
 
+    public function nomination_item()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        $query = "
+            SELECT *
+            FROM MOVEMENT_ITEMS
+            WHERE MVITM_MOVE_ID = :mvitm_line_id
+                AND MVITM_ITEM_ID = :mvitm_item_id
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':mvitm_line_id', $this->mv_id);
+        oci_bind_by_name($stmt, ':mvitm_item_id', $this->mvitm_item_id);
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function nomination_status()
     {
         $query = "

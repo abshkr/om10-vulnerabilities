@@ -20,7 +20,7 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
 
   const url = value ? `${MOVEMENT_NOMIATIONS.ITEMS}?mv_id=${value?.mv_id}` : null;
 
-  const { data: payload, revalidate } = useSWR(url);
+  const { data: payload, revalidate } = useSWR(url, { revalidateOnFocus: false });
 
   const [data, setData] = useState([]);
   const [selected, setSelected] = useState([]);
@@ -150,8 +150,83 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
     }
   };
 
-  const gotoMakeTransactions = () => {
+  const getNominationItem = async (key, item) => {
+    const results = await api.get(`${MOVEMENT_NOMIATIONS.NOMITEM}?mv_id=${key}&mvitm_item_id=${item}`);
+
+    return results?.data;
+  };
+
+  const gotoMakeTransactions = async () => {
     const currItem = selected?.[0];
+
+    const lines = await getNominationItem(value?.mv_id, currItem?.mvitm_item_id);
+
+    const oldItem = lines?.records?.[0];
+    console.log('..............gotoMakeTransactions', oldItem, currItem);
+    /*
+      view-only columns in items table:
+        mvitm_line_id,
+        mvitm_key,
+        mvitm_terminal,
+        mvitm_item_id,
+        mvitm_completed,
+        mvitm_status,
+        mvitm_shiploc_from,
+        mvitm_shiptext_from,
+        mvitm_shiptext_from2,
+        mvitm_shiploc_to,
+        mvitm_shiptext_to,
+        mvitm_shiptext_to2,
+        mvitm_qty_schd,
+        mvitm_qty_move,
+        mvitm_qty_delv,
+      editable columns in items table:
+        mvitm_type,
+        mvitm_item_key,
+        mvitm_prod_qty,
+        mvitm_prod_unit,
+        mvitm_plant_from,
+        mvitm_prodcmpy_from,
+        mvitm_prodcode_from,
+        mvitm_prodname_from,
+        mvitm_tank_from,
+        mvitm_plant_to,
+        mvitm_prodcmpy_to,
+        mvitm_prodcode_to,
+        mvitm_prodname_to,
+        mvitm_tank_to,
+        mvitm_comments,
+    */
+    let itemChanged = false;
+    if (
+      oldItem?.mvitm_type          !== currItem?.mvitm_type          ||
+      oldItem?.mvitm_item_key      !== currItem?.mvitm_item_key      ||
+      _.toNumber(oldItem?.mvitm_prod_qty)      !== _.toNumber(currItem?.mvitm_prod_qty)      ||
+      oldItem?.mvitm_prod_unit     !== currItem?.mvitm_prod_unit     ||
+      oldItem?.mvitm_plant_from    !== currItem?.mvitm_plant_from    ||
+      oldItem?.mvitm_prodcmpy_from !== currItem?.mvitm_prodcmpy_from ||
+      oldItem?.mvitm_prodcode_from !== currItem?.mvitm_prodcode_from ||
+      oldItem?.mvitm_prodname_from !== currItem?.mvitm_prodname_from ||
+      oldItem?.mvitm_tank_from     !== currItem?.mvitm_tank_from     ||
+      oldItem?.mvitm_plant_to      !== currItem?.mvitm_plant_to      ||
+      oldItem?.mvitm_prodcmpy_to   !== currItem?.mvitm_prodcmpy_to   ||
+      oldItem?.mvitm_prodcode_to   !== currItem?.mvitm_prodcode_to   ||
+      oldItem?.mvitm_prodname_to   !== currItem?.mvitm_prodname_to   ||
+      oldItem?.mvitm_tank_to       !== currItem?.mvitm_tank_to       ||
+      oldItem?.mvitm_comments      !== currItem?.mvitm_comments      
+    ) {
+      itemChanged = true;
+    }
+
+    if (itemChanged) {
+      notification.warning({
+        message: t('messages.nominationItemChanged') + ' [' + t('fields.line') + ': ' + currItem?.mvitm_item_id + ']',
+        description: t('descriptions.nominationItemChanged'),
+      });
+      return;
+    }
+
+
     currItem.mvitm_carrier = value?.mv_carrier;
     currItem.mvitm_tanker = value?.mv_vehicle;
     if (!currItem.mvitm_tanker) {
@@ -246,7 +321,7 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
   };
 
   const onEditingFinished = (value) => {
-    let payload = value.data;
+    let nomitem = value.data;
 
     console.log('onEditingFinished', value, value.colDef);
 
@@ -255,9 +330,9 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
       const prodFromList = value.colDef?.cellRendererParams?.values;
       if (prodFromList) {
         const prodFrom = _.filter(prodFromList, (o) => o.code === value?.value);
-        payload.mvitm_prodname_from = prodFrom?.[0]?.code + ' - ' + prodFrom?.[0]?.name;
+        nomitem.mvitm_prodname_from = prodFrom?.[0]?.code + ' - ' + prodFrom?.[0]?.name;
       } else {
-        payload.mvitm_prodname_from = value?.value;
+        nomitem.mvitm_prodname_from = value?.value;
       }
     }
 
@@ -266,62 +341,62 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
       const prodToList = value.colDef?.cellRendererParams?.values;
       if (prodToList) {
         const prodTo = _.filter(prodToList, (o) => o.code === value?.value);
-        payload.mvitm_prodname_to = prodTo?.[0]?.code + ' - ' + prodTo?.[0]?.name;
+        nomitem.mvitm_prodname_to = prodTo?.[0]?.code + ' - ' + prodTo?.[0]?.name;
       } else {
-        payload.mvitm_prodname_to = value?.value;
+        nomitem.mvitm_prodname_to = value?.value;
       }
     }
 
     if (value.colDef.field === 'mvitm_prodcmpy_from') {
-      payload.mvitm_prodcode_from = t('placeholder.selectPlease');
+      nomitem.mvitm_prodcode_from = t('placeholder.selectPlease');
     }
 
     if (value.colDef.field === 'mvitm_prodcmpy_to') {
-      payload.mvitm_prodcode_to = t('placeholder.selectPlease');
+      nomitem.mvitm_prodcode_to = t('placeholder.selectPlease');
     }
 
     if (value.colDef.field === 'mvitm_type') {
       if (value.value === 0) {
-        payload.mvitm_plant_from = '';
-        payload.mvitm_prodcmpy_from = '';
-        payload.mvitm_prodcode_from = '';
-        payload.mvitm_tank_from = '';
+        nomitem.mvitm_plant_from = '';
+        nomitem.mvitm_prodcmpy_from = '';
+        nomitem.mvitm_prodcode_from = '';
+        nomitem.mvitm_tank_from = '';
 
-        payload.mvitm_plant_to = t('placeholder.selectPlease');
-        payload.mvitm_prodcmpy_to = t('placeholder.selectPlease');
-        payload.mvitm_prodcode_to = t('placeholder.selectPlease');
-        payload.mvitm_tank_to = ''; //t('placeholder.selectPlease');
+        nomitem.mvitm_plant_to = t('placeholder.selectPlease');
+        nomitem.mvitm_prodcmpy_to = t('placeholder.selectPlease');
+        nomitem.mvitm_prodcode_to = t('placeholder.selectPlease');
+        nomitem.mvitm_tank_to = ''; //t('placeholder.selectPlease');
       }
 
       if (value.value === 1) {
-        payload.mvitm_plant_from = t('placeholder.selectPlease');
-        payload.mvitm_prodcmpy_from = t('placeholder.selectPlease');
-        payload.mvitm_prodcode_from = t('placeholder.selectPlease');
-        payload.mvitm_tank_from = ''; //t('placeholder.selectPlease');
+        nomitem.mvitm_plant_from = t('placeholder.selectPlease');
+        nomitem.mvitm_prodcmpy_from = t('placeholder.selectPlease');
+        nomitem.mvitm_prodcode_from = t('placeholder.selectPlease');
+        nomitem.mvitm_tank_from = ''; //t('placeholder.selectPlease');
 
-        payload.mvitm_tank_to = '';
-        payload.mvitm_prodcode_to = '';
-        payload.mvitm_plant_to = '';
-        payload.mvitm_prodcmpy_to = '';
+        nomitem.mvitm_tank_to = '';
+        nomitem.mvitm_prodcode_to = '';
+        nomitem.mvitm_plant_to = '';
+        nomitem.mvitm_prodcmpy_to = '';
       }
 
       if (value.value === 2) {
-        payload.mvitm_plant_from = t('placeholder.selectPlease');
-        payload.mvitm_prodcmpy_from = t('placeholder.selectPlease');
-        payload.mvitm_prodcode_from = t('placeholder.selectPlease');
-        payload.mvitm_tank_from = ''; //t('placeholder.selectPlease');
+        nomitem.mvitm_plant_from = t('placeholder.selectPlease');
+        nomitem.mvitm_prodcmpy_from = t('placeholder.selectPlease');
+        nomitem.mvitm_prodcode_from = t('placeholder.selectPlease');
+        nomitem.mvitm_tank_from = ''; //t('placeholder.selectPlease');
 
-        payload.mvitm_plant_to = t('placeholder.selectPlease');
-        payload.mvitm_prodcmpy_to = t('placeholder.selectPlease');
-        payload.mvitm_prodcode_to = t('placeholder.selectPlease');
-        payload.mvitm_tank_to = ''; //t('placeholder.selectPlease');
+        nomitem.mvitm_plant_to = t('placeholder.selectPlease');
+        nomitem.mvitm_prodcmpy_to = t('placeholder.selectPlease');
+        nomitem.mvitm_prodcode_to = t('placeholder.selectPlease');
+        nomitem.mvitm_tank_to = ''; //t('placeholder.selectPlease');
       }
     }
 
-    tableAPI.updateRowData({ update: [payload] });
+    tableAPI.updateRowData({ update: [nomitem] });
 
-    //setSelected([payload]);
-    handleItemSelect([payload]);
+    //setSelected([nomitem]);
+    handleItemSelect([nomitem]);
   };
 
   const onToggle = () => {
@@ -366,11 +441,12 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
 
   useEffect(() => {
     if (payload?.records) {
+      console.log('..................I am here 1');
       setData(payload?.records);
     }
 
     setSize(payload?.records?.length || 0);
-  }, [payload]);
+  }, [payload, setData]);
 
   useEffect(() => {
     if (tableAPI) {
