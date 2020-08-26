@@ -439,7 +439,9 @@ class CommonClass
             $this->delete_children();
             $this->insert_children();
         } else {
-            $this->update_children($old_child_data);
+            if (!$this->update_children($old_child_data)) {
+                return false;
+            }
         }
         
         $new_child_data = $this->retrieve_children_data();
