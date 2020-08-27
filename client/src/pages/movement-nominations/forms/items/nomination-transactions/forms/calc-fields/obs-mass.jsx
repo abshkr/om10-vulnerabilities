@@ -41,7 +41,7 @@ const ObsMass = ({ form, value, onChange, setValue, pageState, config }) => {
   return (
     <Form.Item
       name="mlitm_qty_kg"
-      label={t('fields.nomtranMass') + '(' + t('fields.nomtranMassUnit') + ')'}
+      label={t('fields.nomtranMass') + '(' + t('units.kg') + ')'}
       // rules={[{ required: false, validator: validate }]}
       rules={[{ 
         required: false,
