@@ -1,0 +1,105 @@
+{
+  "generic": {
+    "helpHeader": "客服中心24小时服务",
+    "international": "国际直拨",
+    "withinAustralia": "澳洲国内",
+    "tollFree": "澳洲国内免费",
+    "email": "Email",
+    "facsimile": "传真",
+    "help": "帮助",
+    "about": "关于服务协议",
+    "loginHeader": "指尖下的自动化油库",
+    "title": "登录 - 认证",
+    "version": "版本",
+    "login": "登录帐号",
+    "havingTrouble": "有问题吗？"
+  },
+
+  "fields": {
+    "omegaUser": "Omega用户",
+    "password": "密码",
+    "addressCode": "地址代码",
+    "addressDetails": "地址详情",
+    "addressAction": "",
+    "addressLineCode": "地址代码",
+    "addressLineNo": "地址详情行号",
+    "addressLineType": "地址详情类型",
+    "addressLineTypeId": "地址详情类型编号",
+    "addressLineTypeName": "地址详情类型名称",
+    "addressLineText": "地址详情内容",
+    "addressText": "地址详情",
+    "addressLines": "地址行详情",
+    "addressLineTypes": "地址详情类型"
+  },
+
+  "pageMenu": {
+    "general": "一般",
+    "dashboard": "仪表板",
+    "schedules": "时间表",
+    "operations": "运作",
+    "accessControl": "访问控制",
+    "gantry": "龙门式",
+    "reports": "报告书",
+    "printers": "印表机",
+    "stockManagement": "库存管理",
+    "customers": "顾客",
+    "printerConfiguration": "打印机配置",
+    "stockReconciliation": "库存对帐",
+    "user": "用户"
+  },
+
+  "pageNames": {
+    "general": "常规参数",
+    "dashboard": "仪表板",
+    "schedules": "发油配送",
+    "operations": "操作一览",
+    "accessControl": "油库安全管理"
+  },
+
+  "operations": {
+    "clickHere": "点击这里",
+    "logIn": "登录"
+  },
+
+  "tabColumns": {},
+
+  "messages": {
+    "cuztomizeLanding": "装备定制",
+    "scheduling": "发油安排",
+    "inventoryManagement": "库存管理",
+    "detailedReporting": "详细报告",
+    "inputOmegaUser": "输入Omega用户名",
+    "inputOmegaPassword": "输入密码",
+    "loginSuccess": "登录成功",
+    "loginFailed": "登录失败"
+  },
+
+  "prompts": {},
+
+  "divider": {},
+
+  "descriptions": {
+    "loginSuccess": "登录帐号: ",
+    "cuztomizeLanding": "在Omega系统中，几个点击就能管理和创建新的装备",
+    "scheduling": "用Omega系统事先安排发油任务",
+    "inventoryManagement": "Omega系统的批量管理可以同时管理多个库存",
+    "detailedReporting": "Omega系统可以生成各种详细和综合性的报告，让库区情况一目了然。"
+  },
+
+  "placeholder": {},
+
+  "validate": {},
+
+  "units": {
+    "lpm": "LPM",
+    "celsius": "°C",
+    "kgm3": "kg/m3",
+    "volume": "Volume"
+  },
+
+  "types": {
+    "number": "仓号",
+    "integer": "必须是整数",
+    "float": "浮动"
+  }
+}
