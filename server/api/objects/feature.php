@@ -8,8 +8,47 @@ include_once 'common_class.php';
 
 class Feature extends CommonClass
 {
-    protected $TABLE_NAME = 'DUMMY';
-    
+	protected $TABLE_NAME = 'DUMMY';
+	
+	private $CNH_DESC = array(
+        "BASE_PROD__DENS_RANGE" => "基础油品：密度范围",
+        "DCS" => "DCS (第二油品调配公司)",
+        "HOT_PRODUCT_BITUMEN" => "高温油品 (Bitumen)",
+        "TANK_STRAPPING" => "油罐测量",
+        "DANGEROUS_GOODS" => "危险产品",
+        "COMPANY_RELATIONS" => "公司上下级关系管理",
+        "AUDITING" => "审计(重新登录后生效)",
+        "CUSTOM_EXPIRY_DATES" => "自定义过期时间",
+        "PARTNERSHIP" => "合作伙伴和合作关系定义(重新登录后生效)",
+        "DATE_RANGE_FILTER" => "预定义数据时间范围",
+        "AUTO_FILTER_WHEN_OPEN_SCREEN" => "打开新页面后自动过滤",
+        "TANK_LEVEL_ALARMS" => "油罐高度报警",
+        "DOR" => "附加主机信息",
+        "MAKE_MANUAL_TRANSACTION" => "启用手工发油",
+        "VIEW_DELIVERY_DETAILS" => "允许查看配送细节",
+    );
+	
+	private function translate_chn(&$result_array)
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+			__FILE__, __LINE__);
+			
+		write_log(json_encode($result_array), __FILE__, __LINE__);
+
+        $lang = Utilities::getCurrLang();
+        if ($lang !== 'CHN') {
+            return;
+        }
+
+        foreach ($result_array as $key => $item) {
+            write_log($item->feature_code, __FILE__, __LINE__);
+            if (array_key_exists($item->feature_code, $this->CNH_DESC)) {
+                write_log($this->CNH_DESC[$item->feature_code], __FILE__, __LINE__);
+                $result_array[$key]->feature_name = $this->CNH_DESC[$item->feature_code];
+            }
+        }
+	}
+	
     public function read()
     {
         $file = null;
@@ -29,9 +68,12 @@ class Feature extends CommonClass
                     }
                 }
             }
-        }
+		}
+		$this->translate_chn($feature_array);
+
         $result = array();
-        $result["records"] = $feature_array;
+		$result["records"] = $feature_array;
+		
         echo json_encode($result, JSON_PRETTY_PRINT);
     }
 
