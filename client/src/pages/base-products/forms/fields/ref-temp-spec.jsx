@@ -14,7 +14,7 @@ const RefSpecTemp = ({ form, value }) => {
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.refTempSpec')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.baseRefTempSpec')}`);
     }
 
     return Promise.resolve();
@@ -29,7 +29,7 @@ const RefSpecTemp = ({ form, value }) => {
   return (
     <Form.Item 
       name="base_ref_temp_spec" 
-      label={t('fields.refTempSpec')}
+      label={t('fields.baseRefTempSpec')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select

@@ -73,7 +73,7 @@ const Overview = ({ selected, isLoading }) => {
                 {selected?.tank_max_capacity} {selected?.tank_max_capacity==='' ? '' : t('units.litres')}
               </Descriptions.Item> */}
 
-              <Descriptions.Item label={t('fields.classification')} span={24}>
+              <Descriptions.Item label={t('fields.baseProdClassDesc')} span={24}>
                 {selected?.tank_bclass_name}
               </Descriptions.Item>
             </Descriptions>

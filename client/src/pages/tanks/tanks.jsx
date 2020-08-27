@@ -85,7 +85,7 @@ const Tanks = () => {
       key: 'tank_density',
     },
     {
-      field: t('fields.classification'),
+      field: t('fields.baseProdClassDesc'),
       key: 'tank_bclass_name',
     },
     {

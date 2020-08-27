@@ -15,7 +15,7 @@ const CorrectionMethod = ({ form, value }) => {
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.correctionMethod')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.baseCorrMthd')}`);
     }
 
     return Promise.resolve();
@@ -32,7 +32,7 @@ const CorrectionMethod = ({ form, value }) => {
   return (
     <Form.Item 
       name="base_corr_mthd" 
-      label={t('fields.correctionMethod')}
+      label={t('fields.baseCorrMthd')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select

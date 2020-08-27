@@ -30,7 +30,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.classId'),
+    headerName: t('fields.baseProdCat'),
     field: 'base_cat',
     sortable: true,
     filter: 'MultiFilter',
@@ -39,7 +39,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.classification'),
+    headerName: t('fields.baseProdClassDesc'),
     field: 'base_class_desc',
     sortable: true,
     filter: 'MultiFilter',
@@ -48,7 +48,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.groupCode'),
+    headerName: t('fields.baseProdProdGroup'),
     field: 'base_prod_group',
     sortable: true,
     filter: 'FuzzyFilter',
@@ -57,7 +57,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.group'),
+    headerName: t('fields.baseProdGroupName'),
     field: 'base_group_name',
     sortable: true,
     filter: 'MultiFilter',
@@ -82,7 +82,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.isAdditive'),
+    headerName: t('fields.baseProdAdtv'),
     field: 'base_adtv',
     sortable: true,
     resizable: true,
@@ -92,7 +92,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.numberOfTanks'),
+    headerName: t('fields.baseProdTankCount'),
     field: 'base_tank_count',
     sortable: true,
     resizable: true,
@@ -100,7 +100,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.listOfTanks'),
+    headerName: t('fields.baseProdTankList'),
     field: 'base_tank_list',
     sortable: true,
     filter: 'FuzzyFilter',
@@ -142,7 +142,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.correctionMethod'),
+    headerName: t('fields.baseCorrMthd'),
     field: 'base_corr_mthd_name',
     sortable: true,
     filter: 'MultiFilter',
@@ -152,7 +152,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.refTempSpec'),
+    headerName: t('fields.baseRefTempSpec'),
     field: 'base_ref_temp_spec_name',
     sortable: true,
     filter: 'MultiFilter',
@@ -162,7 +162,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.hotTempFlag'),
+    headerName: t('fields.baseLimitPresetHt'),
     field: 'base_limit_preset_ht',
     sortable: true,
     filter: 'BooleanFilter',
