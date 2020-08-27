@@ -581,7 +581,7 @@ const Forms = ({
     <>
       <Row gutter={24}>
         <Col span={8}>
-          <Form.Item name="source_type" label={t('fields.transactionType')} rules={[{ required: true }]}>
+          <Form.Item name="source_type" label={t('fields.mtDataType')} rules={[{ required: true }]}>
             <Select
               dropdownMatchSelectWidth={false}
               disabled={popup}
@@ -619,7 +619,7 @@ const Forms = ({
         </Col>
 
         <Col span={8}>
-          <Form.Item name="user_comments" label={t('fields.comments')} rules={[{ required: false }]}>
+          <Form.Item name="user_comments" label={t('fields.mtDataUserComments')} rules={[{ required: false }]}>
             <Input />
           </Form.Item>
         </Col>
@@ -651,7 +651,7 @@ const Forms = ({
         </Col>
 
         <Col span={8}>
-          <Form.Item name="tanker" label={t('fields.tanker')} rules={[{ required: true }]}>
+          <Form.Item name="tanker" label={t('fields.mtDataTanker')} rules={[{ required: true }]}>
             <Select
               dropdownMatchSelectWidth={false}
               allowClear
@@ -675,7 +675,7 @@ const Forms = ({
         </Col>
 
         <Col span={8}>
-          <Form.Item name="start_date" label={t('fields.startDate')} rules={[{ required: false }]}>
+          <Form.Item name="start_date" label={t('fields.mtDataStartTime')} rules={[{ required: false }]}>
             <DatePicker showTime={{ format: 'HH:mm' }} format={format} style={{ width: '100%' }} />
           </Form.Item>
         </Col>
@@ -685,7 +685,7 @@ const Forms = ({
         <Col span={8}>
           <Form.Item
             name="customer"
-            label={t('fields.customer')}
+            label={t('fields.mtDataCustomer')}
             rules={[{ required: sourceType === 'OPENORDER' }]}
           >
             <Select
@@ -711,7 +711,7 @@ const Forms = ({
         </Col>
 
         <Col span={8}>
-          <Form.Item name="driver" label={t('fields.driver')} rules={[{ required: true }]}>
+          <Form.Item name="driver" label={t('fields.mtDataDriver')} rules={[{ required: true }]}>
             <Select
               dropdownMatchSelectWidth={false}
               loading={driversLoading}
@@ -735,7 +735,7 @@ const Forms = ({
         </Col>
 
         <Col span={8}>
-          <Form.Item name="end_date" label={t('fields.endDate')} rules={[{ required: false }]}>
+          <Form.Item name="end_date" label={t('fields.mtDataEndTime')} rules={[{ required: false }]}>
             <DatePicker showTime={{ format: 'HH:mm' }} format={format} style={{ width: '100%' }} />
           </Form.Item>
         </Col>
@@ -745,7 +745,7 @@ const Forms = ({
         <Col span={8}>
           <Form.Item
             name="trip_no"
-            label={t('fields.tripNumber')}
+            label={t('fields.mtDataTripNo')}
             rules={[{ required: sourceType === 'SCHEDULE' }]}
           >
             <Select
@@ -799,7 +799,7 @@ const Forms = ({
         <Col span={8}>
           <Form.Item
             name="order_no"
-            label={t('fields.orderNumber')}
+            label={t('fields.mtDataOrderNo')}
             rules={[{ required: sourceType === 'OPENORDER' }]}
           >
             <Select
