@@ -19,7 +19,7 @@ const LocationCode = ({ form, value }) => {
   const validate = (rule, input) => {
     if (rule.required) {
       if (input === '' || !input) {
-        return Promise.reject(`${t('validate.set')} ─ ${t('fields.code')}`);
+        return Promise.reject(`${t('validate.set')} ─ ${t('fields.delvCode')}`);
       }
     }
 
@@ -33,7 +33,7 @@ const LocationCode = ({ form, value }) => {
   return (
     <Form.Item 
       name="delv_code" 
-      label={t('fields.code')} 
+      label={t('fields.delvCode')} 
       rules={[{ required: false, validator: validate }]}>
       <Input disabled={true} />
     </Form.Item>

@@ -9,7 +9,7 @@ const Name = ({ form, value }) => {
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.name')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.delvName')}`);
     }
 
     if (input && input.length > 100) {
@@ -28,7 +28,7 @@ const Name = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="delv_name" label={t('fields.name')} rules={[{ required: true, validator: validate }]}>
+    <Form.Item name="delv_name" label={t('fields.delvName')} rules={[{ required: true, validator: validate }]}>
       <Input />
     </Form.Item>
   );

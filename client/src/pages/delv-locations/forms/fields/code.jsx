@@ -32,7 +32,7 @@ const Code = ({ form, value }) => {
     }
 
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.code')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.delvCode')}`);
     }
 
     if (input && input.length > 16) {
@@ -43,7 +43,7 @@ const Code = ({ form, value }) => {
   };
 
   return (
-    <Form.Item name="delv_code" label={t('fields.code')} rules={[{ required: true, validator: validate }]}>
+    <Form.Item name="delv_code" label={t('fields.delvCode')} rules={[{ required: true, validator: validate }]}>
       <Input disabled={!!value || isValidating} />
     </Form.Item>
   );

@@ -16,7 +16,7 @@ const CustomerSupplier = ({ form, value, onChange }) => {
   const validate = (rule, input) => {
     if (rule.required) {
       if (input === '' || !input) {
-        return Promise.reject(`${t('validate.select')} ─ ${t('fields.supplier')}`);
+        return Promise.reject(`${t('validate.select')} ─ ${t('fields.delvCustSupplier')}`);
       }
     }
 
@@ -36,7 +36,7 @@ const CustomerSupplier = ({ form, value, onChange }) => {
   return (
     <Form.Item
       name="delv_cust_suppcode"
-      label={t('fields.supplier')}
+      label={t('fields.delvCustSupplier')}
       rules={[{ required: false, validator: validate }]}
     >
       <Select
