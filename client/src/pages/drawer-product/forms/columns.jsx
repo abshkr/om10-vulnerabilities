@@ -1,6 +1,6 @@
 const columns = (t, config) => [
   {
-    headerName: t('fields.baseProductCode'),
+    headerName: t('fields.pitemProdCode'),
     field: 'pitem_base_code',
     filter: 'MultiFilter',
     sortable: true,
@@ -10,7 +10,7 @@ const columns = (t, config) => [
     pinned: "left",
   },
   {
-    headerName: t('fields.baseProductName'),
+    headerName: t('fields.pitemProdName'),
     field: 'pitem_base_name',
     filter: 'MultiFilter',
     sortable: true,
@@ -20,7 +20,7 @@ const columns = (t, config) => [
     pinned: "left",
   },
   {
-    headerName: t('fields.ratio'),
+    headerName: t('fields.pitemRatioValue'),
     field: 'pitem_ratio_value',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -29,7 +29,7 @@ const columns = (t, config) => [
     width: 80,
   },
   {
-    headerName: t('fields.blendToleranceCheck'),
+    headerName: t('fields.pitemBltolFlag'),
     field: 'pitem_bltol_flag',
     filter: 'BooleanFilter',
     sortable: true,
@@ -39,7 +39,7 @@ const columns = (t, config) => [
     width: 180,
   },
   {
-    headerName: t('fields.lowerLimit'),
+    headerName: t('fields.pitemBltolNtol'),
     field: 'pitem_bltol_ntol',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -48,7 +48,7 @@ const columns = (t, config) => [
     width: 130,
   },
   {
-    headerName: t('fields.upperLimit'),
+    headerName: t('fields.pitemBltolPtol'),
     field: 'pitem_bltol_ptol',
     filter: 'MultiFilter',
     sortable: true,
@@ -161,7 +161,7 @@ const columns = (t, config) => [
     width: 100,
   },
   {
-    headerName: t('fields.baseClass'),
+    headerName: t('fields.pitemBclassName'),
     field: 'pitem_bclass_name',
     filter: 'MultiFilter',
     sortable: true,

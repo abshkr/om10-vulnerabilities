@@ -112,7 +112,7 @@ const FormModal = ({ value, handleBaseCallBack, config }) => {
       >
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1" style={{ height: '60vh' }}>
-            <Form.Item name="pitem_base_code" label={t('fields.baseProduct')} rules={[{ required: true, validator: validateBase }]}>
+            <Form.Item name="pitem_base_code" label={t('fields.pitemBaseProduct')} rules={[{ required: true, validator: validateBase }]}>
               <Select
                 dropdownMatchSelectWidth={false}
                 // loading={isValidating}
@@ -130,11 +130,11 @@ const FormModal = ({ value, handleBaseCallBack, config }) => {
                 )):null}
               </Select>
             </Form.Item>
-            <Form.Item name="pitem_ratio_value" label={t('fields.ratio')} rules={[{ required: true, validator: validateRatio }]}>
+            <Form.Item name="pitem_ratio_value" label={t('fields.pitemRatioValue')} rules={[{ required: true, validator: validateRatio }]}>
               <InputNumber min={1} style={{ width: '100%' }} />
             </Form.Item>
 
-            <Form.Item name="pitem_bltol_flag" label={t('fields.blendToleranceCheck')} valuePropName="checked" >
+            <Form.Item name="pitem_bltol_flag" label={t('fields.pitemBltolFlag2')} valuePropName="checked" >
               <Checkbox 
                 defaultChecked={value?.pitem_bltol_flag} 
                 onChange={onCheck}
@@ -143,7 +143,7 @@ const FormModal = ({ value, handleBaseCallBack, config }) => {
 
             <Row gutter={[8, 20]}>
               <Col span={12}>
-                <Form.Item name="pitem_bltol_ntol" label={t('fields.lowerLimit')} rules={[{ required: false }]}>
+                <Form.Item name="pitem_bltol_ntol" label={t('fields.pitemBltolNtol')} rules={[{ required: false }]}>
                   <InputNumber
                     min={-200}
                     max={0}
@@ -157,7 +157,7 @@ const FormModal = ({ value, handleBaseCallBack, config }) => {
                 </Form.Item>
               </Col>
               <Col span={12}>
-                <Form.Item name="pitem_bltol_ptol" label={t('fields.upperLimit')} rules={[{ required: false }]}>
+                <Form.Item name="pitem_bltol_ptol" label={t('fields.pitemBltolPtol')} rules={[{ required: false }]}>
                   <InputNumber
                     min={0}
                     max={200}

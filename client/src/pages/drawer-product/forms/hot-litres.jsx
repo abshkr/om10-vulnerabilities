@@ -34,7 +34,7 @@ const HotLitresForm = ({ value, form, hotFlag }) => {
     <>
       <Row gutter={[8, 2]}>
         <Col span={8}>
-          <Form.Item name="prod_check_hot_volume" label={t('fields.checkHotLitre')} >
+          <Form.Item name="prod_check_hot_volume" label={t('fields.prodCheckHotVolume2')} >
             <Checkbox 
               checked={flag} 
               // onChange={onChange}

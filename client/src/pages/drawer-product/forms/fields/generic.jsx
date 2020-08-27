@@ -14,7 +14,7 @@ const Generic = ({ form, value }) => {
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.genericName')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.prodClass')}`);
     }
 
     return Promise.resolve();
@@ -35,7 +35,7 @@ const Generic = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="prod_class" label={t('fields.genericName')} rules={[{ required: true, validator: validate }]}>
+    <Form.Item name="prod_class" label={t('fields.prodClass')} rules={[{ required: true, validator: validate }]}>
       <Select
         dropdownMatchSelectWidth={false}
         loading={isValidating}

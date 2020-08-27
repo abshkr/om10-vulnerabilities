@@ -70,7 +70,7 @@ const LoadTolerance = ({ form, value }) => {
         </Col>
 
         <Col span={8}>
-          <Form.Item name="prod_ldtol_ntol" label={t('fields.lowerLimit')} rules={[{ required: false, validator: validate }]}>
+          <Form.Item name="prod_ldtol_ntol" label={t('fields.prodLdtolNtol')} rules={[{ required: false, validator: validate }]}>
             <InputNumber
               // defaultValue={-10}
               style={{width:'100%'}}
@@ -85,7 +85,7 @@ const LoadTolerance = ({ form, value }) => {
         </Col>
 
         <Col span={8}>
-          <Form.Item name="prod_ldtol_ptol" label={t('fields.upperLimit')} rules={[{ required: false, validator: validate }]}>
+          <Form.Item name="prod_ldtol_ptol" label={t('fields.prodLdtolPtol')} rules={[{ required: false, validator: validate }]}>
             <InputNumber
               // defaultValue={10}
               style={{width:'100%'}}
