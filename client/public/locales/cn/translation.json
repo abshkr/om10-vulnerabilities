@@ -729,7 +729,7 @@
 		"lockId": "Lock ID",
 		"lockOut": "Lock Out",
 		"lockType": "Lock Type",
-		"locked": "Locked?",
+		"locked": "锁定?",
 		"lockout": "Lockout",
 		"locks": "Locks",
 		"loggedInAs": "Logged In As",
@@ -1283,7 +1283,7 @@
 		"sourceUnit": "Source Unit",
 		"standard": "Standard",
 		"standardDensity": "Standard Density",
-		"standardQuantity": "Standard Quantity",
+		"standardQuantity": "Standard Quantity",descri
 		"standardVolume": "Standard Volume",
 		"startAt": "Start At",
 		"startDate": "Start Date",

@@ -464,7 +464,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
                 </Row>
               </Col>
               <Col span={16}>
-                <Form.Item name="prod_desc" label={t('fields.description')}>
+                <Form.Item name="prod_desc" label={t('fields.prodDesc')}>
                   <TextArea rows={3} />
                 </Form.Item>
               </Col>

@@ -170,7 +170,7 @@ const columns = (t, config) => [
     width: 130,
   },
   {
-    headerName: t('fields.checkHotLitre'),
+    headerName: t('fields.baseLimitPresetHt'),
     field: 'pitem_hot_check',
     filter: 'BooleanFilter',
     sortable: true,
