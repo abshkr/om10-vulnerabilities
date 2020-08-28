@@ -166,17 +166,17 @@
 		"zeroCompartmentCount": "The compartment count cannot be zero"
 	},
 	"divider": {
-		"baseProducts": "Base Products",
-		"calculation": "Calculation",
-		"dateTime": "Date Time",
-		"directions": "Directions",
-		"drawerProductTransfer": "Drawer product transfer details",
-		"ddiTitle": "Delivery Details Items",
-		"dddTitle": "DN Templates",
-		"ddbTitle": "BOL Templates",
-		"flags": "Flags",
-		"meters": "Meters",
-		"variances": "Variances"
+		"baseProducts": "基础油品",
+		"calculation": "油品计算",
+		"dateTime": "日期时间",
+		"directions": "油品移动方向",
+		"drawerProductTransfer": "调配油品转移详情",
+		"ddiTitle": "配送细节油品明细",
+		"dddTitle": "配送细节DN模板",
+		"ddbTitle": "配送细节BOL模板",
+		"flags": "标记组合",
+		"meters": "流量计",
+		"variances": "可变范围"
 	},
 	"fields": {
 		"accessType": "Access Type",
