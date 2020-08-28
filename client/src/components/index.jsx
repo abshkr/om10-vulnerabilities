@@ -24,4 +24,5 @@ export { default as Locked } from './locked';
 export { default as Reset } from './reset';
 export { default as InputNumber } from './input-number';
 export { default as PartnershipManager } from './partnership';
+export { default as OrderManager } from './order-manager';
 export { default as SelectInput } from './select-input';

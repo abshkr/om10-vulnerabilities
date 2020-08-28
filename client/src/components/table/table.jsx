@@ -28,7 +28,7 @@ import {
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
 
-import { NumericEditor, SelectEditor, BooleanEditor, ListEditor } from './editors';
+import { NumericEditor, SelectEditor, BooleanEditor, ListEditor, InputPopupEditor } from './editors';
 import { LoadingStatus } from './status';
 import { Search } from '..';
 
@@ -63,6 +63,7 @@ const defaultComponents = {
   SelectEditor,
   BooleanEditor,
   ListEditor,
+  InputPopupEditor,
 };
 
 const defaultColumnDef = {};
