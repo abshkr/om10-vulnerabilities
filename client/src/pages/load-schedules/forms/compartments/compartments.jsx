@@ -30,7 +30,7 @@ const Compartments = ({ form, value, tanker, drawer }) => {
   const [compartments, setCompartments] = useState([]);
   const [products, setProducts] = useState([]);
 
-  const fields = columns(t, form, products, soldTo, shipTo, units);
+  const fields = columns(t, form, products, soldTo, shipTo, units, drawer);
 
   const components = {
     ProductEditor,
