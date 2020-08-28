@@ -25,7 +25,7 @@
 		"clearAllTransfer": "The temperatures and three quantities will be cleared in all compartments.",
 		"clearLineTransfer": "The temperature and three quantities will be cleared in the selected compartment.",
 		"clearTransferSuccess": "You have cleared the transfer(s)",
-		"closeFailed": "You have closed the transaction",
+		"closeFailed": "Failed to close the transaction",
 		"closeFolioFailed": "Failed to close the first frozen folio",
 		"closeFolioSuccess": "First frozen folio successfully closed",
 		"closeFolioTriggered": "Successfully triggered close first frozen folio",
