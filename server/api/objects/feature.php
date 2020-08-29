@@ -30,10 +30,10 @@ class Feature extends CommonClass
 	
 	private function translate_chn(&$result_array)
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-			__FILE__, __LINE__);
+        // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+		// 	__FILE__, __LINE__);
 			
-		write_log(json_encode($result_array), __FILE__, __LINE__);
+		// write_log(json_encode($result_array), __FILE__, __LINE__);
 
         $lang = Utilities::getCurrLang();
         if ($lang !== 'CHN') {
@@ -41,9 +41,9 @@ class Feature extends CommonClass
         }
 
         foreach ($result_array as $key => $item) {
-            write_log($item->feature_code, __FILE__, __LINE__);
+            // write_log($item->feature_code, __FILE__, __LINE__);
             if (array_key_exists($item->feature_code, $this->CNH_DESC)) {
-                write_log($this->CNH_DESC[$item->feature_code], __FILE__, __LINE__);
+                // write_log($this->CNH_DESC[$item->feature_code], __FILE__, __LINE__);
                 $result_array[$key]->feature_name = $this->CNH_DESC[$item->feature_code];
             }
         }
