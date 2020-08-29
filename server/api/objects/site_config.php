@@ -183,8 +183,8 @@ class SiteConfig extends CommonClass
 
     private function translate_chn(&$result_array)
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
+        // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+        //     __FILE__, __LINE__);
 
         $lang = Utilities::getCurrLang();
         if ($lang !== 'CHN') {
@@ -192,9 +192,9 @@ class SiteConfig extends CommonClass
         }
 
         foreach ($result_array as $key => $item) {
-            write_log($item['config_key'], __FILE__, __LINE__);
+            // write_log($item['config_key'], __FILE__, __LINE__);
             if (array_key_exists($item['config_key'], $this->CNH_DESC)) {
-                write_log($this->CNH_DESC[$item['config_key']], __FILE__, __LINE__);
+                // write_log($this->CNH_DESC[$item['config_key']], __FILE__, __LINE__);
                 $result_array[$key]['config_comment'] = $this->CNH_DESC[$item['config_key']];
             }
         }
