@@ -604,7 +604,7 @@ const Forms = ({
               loading={carriersLoading}
               onChange={handleCarrierSelect}
               optionFilterProp="children"
-              placeholder={t('placeholder.selectCarriers')}
+              placeholder={t('placeholder.selectCarrier')}
               filterOption={(input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }

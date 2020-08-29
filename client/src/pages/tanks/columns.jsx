@@ -244,23 +244,23 @@ const columns = (t, config) => [
   },
 
   {
-    headerName: t('fields.tankStatus'),
+    headerName: t('fields.tankStatusId'),
     field: 'tank_status',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: !config?.manageTankLevelAlarms,
+    hide: false, // !config?.manageTankLevelAlarms,
     width: 120,
     suppressSizeToFit: true,
   },
 
   {
-    headerName: t('fields.description'),
+    headerName: t('fields.tankStatus'),
     field: 'tank_status_name',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: !config?.manageTankLevelAlarms,
+    hide: false, // !config?.manageTankLevelAlarms,
     width: 160,
     suppressSizeToFit: true,
   },

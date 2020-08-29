@@ -15,7 +15,7 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
   // (!sourceType || !loadNumber || (sourceType === 'SCHEDULE' && loadType !== 'BY_COMPARTMENT')) &&
   // (!sourceType || !loadNumber || (sourceType === 'OPENORDER')) &&
   {
-    headerName: t('fields.soldTo'),
+    headerName: t('fields.mtSoldTo'),
     field: 'trsf_sold_to',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -29,7 +29,7 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
   },
 
   {
-    headerName: t('fields.deliverNumber'),
+    headerName: t('fields.mtDelvNum'),
     field: 'trsf_delv_num',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -43,7 +43,7 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
   },
 
   {
-    headerName: t('fields.shipTo'),
+    headerName: t('fields.mtShipTo'),
     field: 'trsf_delv_loc',
     filter: 'FuzzyFilter',
     sortable: true,

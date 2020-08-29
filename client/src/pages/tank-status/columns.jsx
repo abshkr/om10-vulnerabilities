@@ -230,7 +230,7 @@ const columns = (t) => [
   },
 
   {
-    headerName: t('fields.tankStatus'),
+    headerName: t('fields.tankStatusId'),
     field: 'tank_status',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -240,7 +240,7 @@ const columns = (t) => [
   },
 
   {
-    headerName: t('fields.description'),
+    headerName: t('fields.tankStatus'),
     field: 'tank_status_name',
     filter: 'FuzzyFilter',
     sortable: true,
