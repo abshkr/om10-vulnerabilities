@@ -7,7 +7,7 @@ const columns = t => [
     resizable: true
   },
   {
-    headerName: t('fields.type'),
+    headerName: t('fields.movementType'),
     field: 'mr_type_name',
     filter: 'MultiFilter',
     sortable: true,

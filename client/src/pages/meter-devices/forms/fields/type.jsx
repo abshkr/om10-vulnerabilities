@@ -15,7 +15,7 @@ const Type = ({ form, value }) => {
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.businessProcess')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.type')}`);
     }
 
     return Promise.resolve();
