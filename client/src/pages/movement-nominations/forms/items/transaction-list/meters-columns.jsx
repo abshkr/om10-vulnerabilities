@@ -14,37 +14,37 @@ const meterColumns = (t) => [
   },
 
   {
-    headerName: t('fields.openingAmbient'),
+    headerName: t('fields.meterOpeningAmbient'),
     field: 'trsb_opn_amb',
     sortable: true,
     resizable: true,
   },
   {
-    headerName: t('fields.closingAmbient'),
+    headerName: t('fields.meterClosingAmbient'),
     field: 'trsb_cls_amb',
     sortable: true,
     resizable: true,
   },
   {
-    headerName: t('fields.openingCorrected'),
+    headerName: t('fields.meterOpeningCorrected'),
     field: 'trsb_opn_cor',
     sortable: true,
     resizable: true,
   },
   {
-    headerName: t('fields.closingCorrected'),
+    headerName: t('fields.meterClosingCorrected'),
     field: 'trsb_cls_cor',
     sortable: true,
     resizable: true,
   },
   {
-    headerName: t('fields.openingMass'),
+    headerName: t('fields.meterOpeningMass'),
     field: 'trsb_opn_kg',
     sortable: true,
     resizable: true,
   },
   {
-    headerName: t('fields.closingMass'),
+    headerName: t('fields.meterClosingMass'),
     field: 'trsb_cls_kg',
     sortable: true,
     resizable: true,

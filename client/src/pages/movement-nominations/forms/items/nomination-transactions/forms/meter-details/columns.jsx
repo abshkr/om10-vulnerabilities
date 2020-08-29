@@ -16,7 +16,7 @@ const columns = (t, pageState, form, arm) => [
     editable: false,
   },
   {
-    headerName: t('fields.openingAmbient'),
+    headerName: t('fields.meterOpeningAmbient'),
     field: 'trsf_opn_amb',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -25,7 +25,7 @@ const columns = (t, pageState, form, arm) => [
     // cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
   },
   {
-    headerName: t('fields.closingAmbient'),
+    headerName: t('fields.meterClosingAmbient'),
     field: 'trsf_cls_amb',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -42,7 +42,7 @@ const columns = (t, pageState, form, arm) => [
     editable: false,
   },
   {
-    headerName: t('fields.openingCorrected'),
+    headerName: t('fields.meterOpeningCorrected'),
     field: 'trsf_opn_cor',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -51,7 +51,7 @@ const columns = (t, pageState, form, arm) => [
     // cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
   },
   {
-    headerName: t('fields.closingCorrected'),
+    headerName: t('fields.meterClosingCorrected'),
     field: 'trsf_cls_cor',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -68,7 +68,7 @@ const columns = (t, pageState, form, arm) => [
     editable: false,
   },
   {
-    headerName: t('fields.openingMass'),
+    headerName: t('fields.meterOpeningMass'),
     field: 'trsf_open_kg',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -77,7 +77,7 @@ const columns = (t, pageState, form, arm) => [
     // cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
   },
   {
-    headerName: t('fields.closingMass'),
+    headerName: t('fields.meterClosingMass'),
     field: 'trsf_close_kg',
     filter: 'FuzzyFilter',
     sortable: true,

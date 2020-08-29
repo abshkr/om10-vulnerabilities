@@ -15,7 +15,7 @@ const Type = ({ form, value }) => {
 
   const validate = (rule, value) => {
     if (value === '' || !value) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.type')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.movementType')}`);
     }
 
     return Promise.resolve();
@@ -33,7 +33,7 @@ const Type = ({ form, value }) => {
   return (
     <Form.Item 
       name="mr_type" 
-      label={t('fields.type')} 
+      label={t('fields.movementType')} 
       rules={[{ required: true, validator: validate }]}
     >
       <Select

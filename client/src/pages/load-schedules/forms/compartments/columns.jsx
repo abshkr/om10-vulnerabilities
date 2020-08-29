@@ -1,4 +1,4 @@
-const columns = (t, form, products, soldTo, shipTo, units) => [
+const columns = (t, form, products, soldTo, shipTo, units, drawer) => [
   {
     headerName: t('fields.equipment'),
     field: 'eqpt_code',
@@ -105,7 +105,7 @@ const columns = (t, form, products, soldTo, shipTo, units) => [
     cellClass: 'editable-ag-grid-cell',
     cellEditor: 'SoldToEditor',
     cellEditorParams: {
-      values: soldTo?.records || [],
+      values: soldTo?.records.filter((o)=>(o.partner_cmpy_code === drawer)) || [],
       form: form,
     },
   },
@@ -120,7 +120,7 @@ const columns = (t, form, products, soldTo, shipTo, units) => [
     cellClass: 'editable-ag-grid-cell',
     cellEditor: 'ShipToEditor',
     cellEditorParams: {
-      values: shipTo?.records || [],
+      values: shipTo?.records.filter((o)=>(o.partner_cmpy_code === drawer)) || [],
       form: form,
     },
   },

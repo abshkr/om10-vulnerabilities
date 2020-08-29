@@ -261,7 +261,7 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item name="mlitm_unit_rpt" label={t('fields.unit')} >
+          <Form.Item name="mlitm_unit_rpt" label={t('fields.alternateUnit')} >
             <Select
               dropdownMatchSelectWidth={false}
               showSearch

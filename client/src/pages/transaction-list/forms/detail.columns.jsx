@@ -17,37 +17,37 @@ const detailColumns = (isFromNomination, t) => [
       },
 
       {
-        headerName: t('fields.openingAmbient'),
+        headerName: t('fields.meterOpeningAmbient'),
         field: isFromNomination ? 'trsb_opn_amb' : 'trsf_opn_amb',
         sortable: true,
         resizable: true,
       },
       {
-        headerName: t('fields.closingAmbient'),
+        headerName: t('fields.meterClosingAmbient'),
         field: isFromNomination ? 'trsb_cls_amb' : 'trsf_cls_amb',
         sortable: true,
         resizable: true,
       },
       {
-        headerName: t('fields.openingCorrected'),
+        headerName: t('fields.meterOpeningCorrected'),
         field: isFromNomination ? 'trsb_opn_cor' : 'trsf_opn_cor',
         sortable: true,
         resizable: true,
       },
       {
-        headerName: t('fields.closingCorrected'),
+        headerName: t('fields.meterClosingCorrected'),
         field: isFromNomination ? 'trsb_cls_cor' : 'trsf_cls_cor',
         sortable: true,
         resizable: true,
       },
       {
-        headerName: t('fields.openingMass'),
+        headerName: t('fields.meterOpeningMass'),
         field: isFromNomination ? 'trsb_opn_kg' : 'trsf_open_kg',
         sortable: true,
         resizable: true,
       },
       {
-        headerName: t('fields.closingMass'),
+        headerName: t('fields.meterClosingMass'),
         field: isFromNomination ? 'trsb_cls_kg' : 'trsf_close_kg',
         sortable: true,
         resizable: true,
