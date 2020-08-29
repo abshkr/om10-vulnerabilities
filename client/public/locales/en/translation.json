@@ -774,6 +774,7 @@
 		"monthlyVarianceLimit": "Monthly Variance Limit",
 		"movementDateAndTime": "Movement Date & Time",
 		"movementDetailType": "Movement Detail Type",
+		"movementKey": "Movement Key",
 		"movementNumber": "Movement Number",
 		"movementStatus": "Movement Status",
 		"movementType": "Movement Type",

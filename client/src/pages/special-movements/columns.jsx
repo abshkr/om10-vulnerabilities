@@ -7,7 +7,7 @@ const columns = t => [
     resizable: true
   },
   {
-    headerName: t('fields.nominationKey'),
+    headerName: t('fields.movementKey'),
     field: 'mlitm_mov_key',
     filter: 'FuzzyFilter',
     sortable: true,
