@@ -12,7 +12,7 @@ const Priority = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        shls_shift: value.shls_shift,
+        shls_priority: value.shls_priority,
       });
     }
   }, [value, setFieldsValue]);
