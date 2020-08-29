@@ -42,7 +42,7 @@ class SocketClient
         if (!$this->fp) {
             write_log("Failed to connect to server. errnum:" . $errnum . ", errstr:" . $errstr, 
                 __FILE__, __LINE__, LogLevel::WARNING);
-            throw new Bay999Exception("Failed to connect to server. errnum:" . $errnum . ", errstr:" . $errstr);
+            throw new Bay999Exception("Failed to connect to server, please check bay999. errnum:" . $errnum . ", errstr:" . $errstr);
         }
     }
 
