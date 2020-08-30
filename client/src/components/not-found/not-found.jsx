@@ -6,7 +6,7 @@ import { Icons } from '..';
 
 import NotFoundContainer from './style';
 
-const NotFound = () => {
+const NotFound = ({target}) => {
   const { t } = useTranslation();
 
   return (
@@ -14,7 +14,7 @@ const NotFound = () => {
       <Result
         title={t('messages.sysNotFound')}
         icon={<Icons type="modules" size={256} />}
-        subTitle={t('descriptions.sysNotFound')}
+        subTitle={t('descriptions.sysNotFound') + ': ' + target } 
       />
     </NotFoundContainer>
   );

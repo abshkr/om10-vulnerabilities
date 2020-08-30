@@ -21,9 +21,13 @@ const BayView = () => {
 
   useEffect(() => {
     api
-    .get(`https://${window.location.hostname}:${window.location.port}/scadaviews/bayview/index.html`)
+    .get(`https://${window.location.hostname}/scadaviews/bayview/index.html`)
     .then((res) => {
-      setAvailable(true);
+      if (res.data.includes("<title>OMEGA 5000</title>")){
+        setAvailable(false);
+      } else {
+        setAvailable(true);
+      }
       })
     .catch(function (error) {
       setAvailable(false);
@@ -32,14 +36,13 @@ const BayView = () => {
   }, []);
 
   if (!available) {
-    return <NotFound />
+    return <NotFound target={`https://${window.location.hostname}/scadaviews/bayview/index.html#/overview`}/>
   } else {
     return (
         <Page page={page} name={name} access={access}>
           <div style={{ height: 'calc(100vh - 200px)' }}>
             <Iframe
-              url={`https://${window.location.hostname}:${window.location.port}/scadaviews/bayview/index.html#/overview`}
-              // url={`https://${window.location.hostname}/scadaviews/bayview/index.html`}
+              url={`https://${window.location.hostname}/scadaviews/bayview/index.html#/overview`}
               id="myId"
               className="myClassname"
               display="initial"
