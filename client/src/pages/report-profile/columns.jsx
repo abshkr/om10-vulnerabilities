@@ -1,6 +1,6 @@
 const columns = t => [
   {
-    headerName: t('fields.sourceExists'),
+    headerName: t('fields.reportJasperFileExist'),
     field: 'source_exists',
     sortable: true,
     resizable: true,
@@ -8,7 +8,7 @@ const columns = t => [
     cellRenderer: 'BooleanRenderer',
   },
   {
-    headerName: t('fields.source'),
+    headerName: t('fields.reportJasperFile'),
     field: 'report_jasper_file',
     sortable: true,
     resizable: true,

@@ -15,7 +15,7 @@ const Source = ({ form, value, onChange }) => {
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.source')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.sourceMtrDev')}`);
     }
 
     return Promise.resolve();
@@ -34,7 +34,7 @@ const Source = ({ form, value, onChange }) => {
   return (
     <Form.Item
       name="mtd_src_code"
-      label={t('fields.source')}
+      label={t('fields.sourceMtrDev')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select

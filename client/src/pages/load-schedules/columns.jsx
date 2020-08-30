@@ -30,7 +30,7 @@ const columns = (IS_NOMINATION, t) => [
     hide: IS_NOMINATION,
   },
   {
-    headerName: t('fields.source'),
+    headerName: t('fields.sourceTrip'),
     field: 'shls_srctype_desc',
     filter: 'MultiFilter',
     sortable: true,

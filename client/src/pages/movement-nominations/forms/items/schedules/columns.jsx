@@ -11,7 +11,7 @@ const columns = (IS_NOMINATION, t) => [
   },
 
   {
-    headerName: t('fields.source'),
+    headerName: t('fields.sourceTrip'),
     field: 'shls_srctype',
     filter: 'FuzzyFilter',
     sortable: true,

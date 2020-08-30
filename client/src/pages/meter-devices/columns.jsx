@@ -21,21 +21,21 @@ const columns = t => [
     resizable: true
   },
   {
-    headerName: t('fields.source'),
+    headerName: t('fields.sourceType'),
     field: 'src_name',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
-    headerName: t('fields.unit'),
+    headerName: t('fields.sourceUnit'),
     field: 'mtd_src_type',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true
   },
   {
-    headerName: t('fields.receiving'),
+    headerName: t('fields.receivingType'),
     field: 'dst_name',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -63,7 +63,7 @@ const columns = t => [
     resizable: true
   },
   {
-    headerName: t('fields.poll'),
+    headerName: t('fields.pollInterval'),
     field: 'mtd_poll',
     filter: 'FuzzyFilter',
     sortable: true,

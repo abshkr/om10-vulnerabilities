@@ -10,7 +10,7 @@ const columns = (t) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.source'),
+    headerName: t('fields.sourceUnit'),
     field: 'pmv_srccode',
     sortable: true,
     resizable: true,
@@ -28,7 +28,7 @@ const columns = (t) => [
   },
 
   {
-    headerName: t('fields.destination'),
+    headerName: t('fields.destinationUnit'),
     field: 'pmv_dstcode',
     sortable: true,
     resizable: true,
