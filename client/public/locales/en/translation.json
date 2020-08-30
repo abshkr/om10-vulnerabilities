@@ -1493,7 +1493,7 @@
 		"printBOLSuccess": "Successfully printed the BOL",
 		"printDriverInstructionSuccess": "Successfully printed driver instruction",
 		"printLoadReportSuccess": "Successfully printed load report",
-		"regenerating": "A request to regenerate the report has been sent",
+		"regenerating": "A request to regenerate the report has been sent. It may take a few minutes before completion.",
 		"regeneratingComplete": "Regeneration complete",
 		"reportGenerationSuccessful": "Successfully generated report",
 		"restoreSuccess": "Successfully restored",
