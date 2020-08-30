@@ -13,7 +13,7 @@ const Source = ({ form, value, onChange }) => {
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.source')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.reportJasperFile')}`);
     }
 
     return Promise.resolve();
@@ -30,7 +30,7 @@ const Source = ({ form, value, onChange }) => {
   return (
     <Form.Item
       name="report_jasper_file"
-      label={t('fields.source')}
+      label={t('fields.reportJasperFile')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select
@@ -40,7 +40,7 @@ const Source = ({ form, value, onChange }) => {
         showSearch
         onChange={onChange}
         optionFilterProp="children"
-        placeholder={!value ? t('placeholder.selectSource') : null}
+        placeholder={!value ? t('placeholder.selectReportSource') : null}
         filterOption={(input, option) =>
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }

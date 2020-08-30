@@ -44,7 +44,7 @@ const columns = t => [
   {
     headerName: t('fields.showComment'),
     field: 'mr_show_comment',
-    filter: 'FuzzyFilter',
+    filter: 'BooleanFilter',
     cellRenderer: 'BooleanRenderer',
     sortable: true,
     resizable: true

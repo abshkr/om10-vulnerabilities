@@ -35,7 +35,7 @@ const columns = t => [
     resizable: true,
   },
   {
-    headerName: t('fields.supplier'),
+    headerName: t('fields.supplierName'),
     field: 'alloc_suppname',
     filter: 'MultiFilter',
     sortable: true,

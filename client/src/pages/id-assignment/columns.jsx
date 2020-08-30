@@ -112,7 +112,7 @@ const columns = t => [
   },
   {
     headerName: t('fields.supplier'),
-    field: 'kya_issuer_name',
+    field: 'kya_supp_name',
     sortable: true,
     filter: 'BooleanFilter',
     resizable: true,

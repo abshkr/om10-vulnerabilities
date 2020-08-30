@@ -10,7 +10,7 @@ const Poll = ({ form, value }) => {
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.poll')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.pollInterval')}`);
     }
 
     return Promise.resolve();
@@ -27,7 +27,7 @@ const Poll = ({ form, value }) => {
   return (
     <Form.Item
       name="mtd_poll"
-      label={`${t('fields.poll')} (10-9999)`}
+      label={`${t('fields.pollInterval')} (10-9999)`}
       rules={[{ required: true, validator: validate }]}
     >
       <InputNumber min={10} max={9999} style={{ width: '100%', marginBottom: 10 }} />
