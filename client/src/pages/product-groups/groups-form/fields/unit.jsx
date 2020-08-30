@@ -36,7 +36,7 @@ const Unit = ({ form, value }) => {
         loading={isValidating}
         showSearch
         optionFilterProp="children"
-        placeholder={!value ? t('placeholder.selectUnit') : null}
+        placeholder={!value ? t('placeholder.selectQtyUnit') : null}
         filterOption={(input, option) =>
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
