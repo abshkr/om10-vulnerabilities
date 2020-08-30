@@ -1026,6 +1026,7 @@
 		"password": "Password",
 		"percentage": "Percentage",
 		"period": "Period",
+		"periodRequest": "Period",
 		"periodId": "Period ID",
 		"permissionId": "Permission ID",
 		"permissionName": "Permission Name",

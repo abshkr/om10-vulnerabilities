@@ -15,7 +15,7 @@ const Period = ({ form, value }) => {
 
   const validate = (rule, value) => {
     if (value === '' || !value) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.period')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.periodRequest')}`);
     }
 
     return Promise.resolve();
@@ -32,7 +32,7 @@ const Period = ({ form, value }) => {
   return (
     <Form.Item
       name="tkrq_period"
-      label={t('fields.period')}
+      label={t('fields.periodRequest')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select

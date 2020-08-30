@@ -8,7 +8,7 @@ const columns = (t) => {
       resizable: true,
     },
     {
-      headerName: t('fields.period'),
+      headerName: t('fields.periodRequest'),
       field: 'tkrq_period_name',
       filter: 'MultiFilter',
       sortable: true,
