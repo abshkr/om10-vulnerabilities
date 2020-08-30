@@ -69,7 +69,7 @@ const FormModal = ({ visible, onCreate, onCancel, gates }) => {
       visible={visible}
       title={t('prompts.createNewGate')}
       okText={t('operations.create')}
-      cancelText={t('operations.close')}
+      cancelText={t('operations.cancel')}
       onCancel={onCancel}
       onOk={onFinish}
     >
