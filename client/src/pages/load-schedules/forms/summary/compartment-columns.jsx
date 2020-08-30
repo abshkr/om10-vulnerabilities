@@ -81,13 +81,13 @@ const columns = (t, form, products, soldTo, shipTo, units) => [
     suppressSizeToFit: true,
   },
 
-  {
-    headerName: t('fields.prevProduct'),
-    field: 'shls_srctype',
-    resizable: true,
-    width: 90,
-    suppressSizeToFit: true,
-  },
+  // {
+  //   headerName: t('fields.prevProduct'),
+  //   field: 'shls_srctype',
+  //   resizable: true,
+  //   width: 90,
+  //   suppressSizeToFit: true,
+  // },
 
   {
     headerName: t('fields.soldTo'),
