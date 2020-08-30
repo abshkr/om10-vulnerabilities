@@ -115,7 +115,7 @@ const columns = (t) => [
     },
   },
   {
-    headerName: 'Additive?',
+    headerName: t('fields.pitemAdtvFlag'),
     field: 'trsf_bs_adtv_flag',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -123,7 +123,7 @@ const columns = (t) => [
     hide: true,
   },
   {
-    headerName: 'Base Ratio Value',
+    headerName: t('fields.pitemRatioValue'),
     field: 'trsf_bs_ratio_value',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -131,7 +131,7 @@ const columns = (t) => [
     hide: true,
   },
   {
-    headerName: 'Base Ratio Total',
+    headerName: t('fields.pitemRatioTotal'),
     field: 'trsf_bs_ratio_total',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -139,7 +139,7 @@ const columns = (t) => [
     hide: true,
   },
   {
-    headerName: 'Base Ratio Total',
+    headerName: t('fields.pitemRatioTotal'),
     field: 'trsf_bs_ratio_total2',
     filter: 'FuzzyFilter',
     sortable: true,
