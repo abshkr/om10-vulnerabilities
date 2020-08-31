@@ -61,7 +61,7 @@ const Home = () => {
     <>
       <Row gutter={[16, 16]}>
         <Col span={8}>
-          <Card title={`Tankers`} hoverable size="small" loading={isLoading} onClick={onTankers}>
+          <Card title={t('pageNames.overviewTankers')} hoverable size="small" loading={isLoading} onClick={onTankers}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <div
                 style={{
@@ -84,7 +84,7 @@ const Home = () => {
 
                   <tbody>
                     <tr className="first">
-                      <td>Active:</td>
+                      <td>{t('fields.countActive')+':'}</td>
                       <td style={{ textAlign: 'right' }}>{data?.tanker_active}</td>
                       <td style={{ textAlign: 'right' }}>{` [${
                         Math.floor((data?.tanker_active / data?.tanker_total) * 100) || 0
@@ -94,7 +94,7 @@ const Home = () => {
 
                   <tbody>
                     <tr>
-                      <td>Total:</td>
+                      <td>{t('fields.totalCount')+':'}</td>
                       <td style={{ textAlign: 'right' }}>{data?.tanker_total}</td>
                     </tr>
                   </tbody>
@@ -107,7 +107,7 @@ const Home = () => {
         </Col>
 
         <Col span={8}>
-          <Card title={`Personnel`} hoverable size="small" loading={isLoading} onClick={onPersonnel}>
+          <Card title={t('pageNames.overviewPersonnel')} hoverable size="small" loading={isLoading} onClick={onPersonnel}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <div
                 style={{
@@ -129,7 +129,7 @@ const Home = () => {
 
                   <tbody>
                     <tr className="first">
-                      <td>Unlocked:</td>
+                      <td>{t('fields.countUnlocked')+':'}</td>
                       <td style={{ textAlign: 'right' }}>{data?.personnel_unlocked}</td>
                       <td style={{ textAlign: 'right' }}>{` [${
                         Math.floor((data?.personnel_unlocked / data?.personnel_total) * 100) || 0
@@ -139,7 +139,7 @@ const Home = () => {
 
                   <tbody>
                     <tr>
-                      <td>Total:</td>
+                      <td>{t('fields.totalCount')+':'}</td>
                       <td style={{ textAlign: 'right' }}>{data?.personnel_total}</td>
                     </tr>
                   </tbody>
@@ -152,7 +152,7 @@ const Home = () => {
         </Col>
 
         <Col span={8}>
-          <Card title={`ID Assignment`} hoverable size="small" loading={isLoading} onClick={onID}>
+          <Card title={t('pageNames.overviewIdAssignment')} hoverable size="small" loading={isLoading} onClick={onID}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <div
                 style={{
@@ -174,7 +174,7 @@ const Home = () => {
 
                   <tbody>
                     <tr className="first">
-                      <td>Used:</td>
+                      <td>{t('fields.countUsed')+':'}</td>
                       <td style={{ textAlign: 'right' }}>{data?.key_used}</td>
                       <td style={{ textAlign: 'right' }}>{` [${
                         Math.floor((data?.key_used / data?.key_available) * 100) || 0
@@ -184,7 +184,7 @@ const Home = () => {
 
                   <tbody>
                     <tr>
-                      <td>Available:</td>
+                      <td>{t('fields.countAvailable')+':'}</td>
                       <td style={{ textAlign: 'right' }}>{data?.key_available}</td>
                     </tr>
                   </tbody>
@@ -195,9 +195,9 @@ const Home = () => {
             </div>
 
             <div style={{ fontSize: 16, position: 'absolute', bottom: 5, fontWeight: 500 }}>
-              {`Personnel: ${data?.key_person || 0}, Tanker: ${data?.key_tanker || 0}, Combo: ${
+              {`${t('fields.countTagPersonnel')}: ${data?.key_person || 0}, ${t('fields.countTagTanker')}: ${data?.key_tanker || 0}, ${t('fields.countTagCombo')}: ${
                 data?.key_combo || 0
-              }, Other: ${data?.key_other || 0}`}
+              }, ${t('fields.countTagOther')}: ${data?.key_other || 0}`}
             </div>
           </Card>
         </Col>
@@ -205,7 +205,7 @@ const Home = () => {
 
       <Row gutter={[16, 16]}>
         <Col span={8}>
-          <Card title="Current Folio" hoverable size="small" loading={isLoading} onClick={onFolio}>
+          <Card title={t('pageNames.overviewCurrentFolio')} hoverable size="small" loading={isLoading} onClick={onFolio}>
             <DataTable
               data={data?.folio_loads}
               columns={folio(t)}
@@ -213,7 +213,7 @@ const Home = () => {
               minimal
               footer={[
                 {
-                  trsa_bay_cd: 'Total: ',
+                  trsa_bay_cd: t('fields.totalSum') + ': ',
                   loads: _.sumBy(data?.folio, (object) => {
                     return _.toNumber(object?.loads) || 0;
                   }),
@@ -228,7 +228,7 @@ const Home = () => {
         </Col>
 
         <Col span={8}>
-          <Card title="Tanker Movement" hoverable size="small" loading={isLoading} onClick={onSchedule}>
+          <Card title={t('pageNames.overviewTankerMovement')} hoverable size="small" loading={isLoading} onClick={onSchedule}>
             <DataTable
               data={data?.tanker_movement}
               columns={movement(t)}
@@ -236,7 +236,7 @@ const Home = () => {
               minimal
               footer={[
                 {
-                  bays_per_load: 'Total: ',
+                  bays_per_load: t('fields.totalSum') + ': ',
                   loads: _.sumBy(data?.tanker_movement, (object) => {
                     return _.toNumber(object?.loads) || 0;
                   }),
@@ -248,7 +248,7 @@ const Home = () => {
         </Col>
 
         <Col span={8}>
-          <Card title="Transaction Numbers" hoverable size="small" loading={isLoading} onClick={onTransactionList}>
+          <Card title={t('pageNames.overviewTransactionNumbers')} hoverable size="small" loading={isLoading} onClick={onTransactionList}>
             <DataTable data={data?.transaction_ids} columns={ids(t)} parentHeight="450px" minimal />
           </Card>
         </Col>
