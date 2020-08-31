@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { Card, Col, Row, Select, Radio } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 import ReactApexChart from 'react-apexcharts';
 import useSWR from 'swr';
@@ -8,6 +9,9 @@ import _ from 'lodash';
 import { DASHBOARD } from '../../../api';
 
 const Overview = () => {
+  const { t } = useTranslation();
+  const txtAll = t('fields.all');
+
   const { data: payload } = useSWR(DASHBOARD.OVERVIEW);
 
   const [dailySeries, setDailySeries] = useState([]);
@@ -20,13 +24,13 @@ const Overview = () => {
 
   const [storageSeries, setStorageSeries] = useState([]);
   const [storageOptions, setStorageOptions] = useState({});
-  const [storageClass, setStorageClass] = useState('All');
+  const [storageClass, setStorageClass] = useState(txtAll);
   const [storageTypes, setStorageTypes] = useState([]);
 
   const [folioSeries, setFolioSeries] = useState([]);
   const [folioOptions, setFolioOptions] = useState({});
 
-  const [folioClass, setFolioClass] = useState('All');
+  const [folioClass, setFolioClass] = useState(txtAll);
   const [folioTypes, setFolioTypes] = useState([]);
 
   useEffect(() => {
@@ -112,7 +116,7 @@ const Overview = () => {
     if (entry?.storage) {
       const baseClasses = _.uniq(_.map(entry?.storage, 'bclass_desc'));
 
-      setStorageTypes(['All', ...baseClasses]);
+      setStorageTypes([txtAll, ...baseClasses]);
     }
   }, [payload]);
 
@@ -122,7 +126,7 @@ const Overview = () => {
     if (entry?.storage && storageClass) {
       const payload = [];
 
-      if (storageClass === 'All') {
+      if (storageClass === txtAll) {
         const transformed = _.chain(entry?.storage)
           .groupBy((value) => {
             return value?.bclass_desc;
@@ -210,7 +214,7 @@ const Overview = () => {
     if (entry?.folio_throughput) {
       const baseClasses = _.uniq(_.map(entry?.folio_throughput, 'bclass_desc'));
 
-      setFolioTypes(['All', ...baseClasses]);
+      setFolioTypes([txtAll, ...baseClasses]);
     }
   }, [payload]);
 
@@ -223,7 +227,7 @@ const Overview = () => {
       for (let index = 0; index < entry?.folio_throughput.length; index++) {
         const base = entry?.folio_throughput[index];
 
-        if (folioClass === 'All') {
+        if (folioClass === txtAll) {
           payload.push({
             name: base.base_name,
             data: [_.toNumber(base.qty_cmb)],
@@ -349,14 +353,19 @@ const Overview = () => {
     <div>
       <Row gutter={[16, 16]}>
         <Col span={12}>
-          <Card title="Daily Throughput Totals (m3)" hoverable size="small" loading={!payload}>
+          <Card
+            title={t('pageNames.chartDailyThroughputTotals') + ' (' + t('units.m3') + ')'}
+            hoverable
+            size="small"
+            loading={!payload}
+          >
             <ReactApexChart options={dailyOptions} series={dailySeries} type="line" height={285} />
           </Card>
         </Col>
 
         <Col span={12}>
           <Card
-            title="Base Product Storage (m3)"
+            title={t('pageNames.chartBaseProductStorage') + ' (' + t('units.m3') + ')'}
             hoverable
             size="small"
             loading={!payload}
@@ -370,7 +379,7 @@ const Overview = () => {
               >
                 {storageTypes.map((item) => (
                   <Select.Option value={item} key={item}>
-                    {`${item !== 'All' ? 'Class: ' : ''} ${item}`}
+                    {`${item !== txtAll ? t('fields.class') + ': ' : ''} ${item}`}
                   </Select.Option>
                 ))}
               </Select>
@@ -384,7 +393,7 @@ const Overview = () => {
       <Row gutter={[16, 16]}>
         <Col span={12}>
           <Card
-            title="Current Folio Throughput (m3)"
+            title={t('pageNames.chartCurrentFolioThroughput') + ' (' + t('units.m3') + ')'}
             hoverable
             size="small"
             loading={!payload}
@@ -399,7 +408,7 @@ const Overview = () => {
               >
                 {folioTypes.map((item) => (
                   <Select.Option value={item} key={item}>
-                    {`${item !== 'All' ? 'Class: ' : ''} ${item}`}
+                    {`${item !== txtAll ? t('fields.class') + ': ' : ''} ${item}`}
                   </Select.Option>
                 ))}
               </Select>
@@ -411,7 +420,7 @@ const Overview = () => {
 
         <Col span={12}>
           <Card
-            title="Weekly Throughput (m3)"
+            title={t('pageNames.chartWeeklyThroughput') + ' (' + t('units.m3') + ')'}
             hoverable
             size="small"
             loading={!payload}
@@ -421,8 +430,8 @@ const Overview = () => {
                 buttonStyle="solid"
                 onChange={(event) => setWeeklyMode(event.target.value)}
               >
-                <Radio.Button value="linear">Linear</Radio.Button>
-                <Radio.Button value="log">Logarithmic</Radio.Button>
+                <Radio.Button value="linear">{t('fields.chartLinear')}</Radio.Button>
+                <Radio.Button value="log">{t('fields.chartLogarithmic')}</Radio.Button>
               </Radio.Group>
             }
           >
