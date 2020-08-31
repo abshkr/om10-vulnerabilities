@@ -36,7 +36,7 @@ const columns = (t) => [
   },
 
   {
-    headerName: `${t('fields.closingAmbient')} (L)`,
+    headerName: `${t('fields.closingAmbient')} (${t('units.ltr')})`,
     field: 'close_amb_tot',
     sortable: true,
     resizable: true,
@@ -48,7 +48,7 @@ const columns = (t) => [
   },
 
   {
-    headerName: `${t('fields.closingCorrected')} (L)`,
+    headerName: `${t('fields.closingCorrected')} (${t('units.ltr')})`,
     field: 'close_std_tot',
     sortable: true,
     resizable: true,

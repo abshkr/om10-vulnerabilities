@@ -37,13 +37,13 @@ const columns = t => [
     resizable: true,
   },
   {
-    headerName: `${t('fields.standardVolume')} (L)`,
+    headerName: `${t('fields.standardVolume')} (${t('units.ltr')})`,
     field: 'netvol',
     sortable: true,
     resizable: true,
   },
   {
-    headerName: `${t('fields.observedVolume')} (L)`,
+    headerName: `${t('fields.observedVolume')} (${t('units.ltr')})`,
     field: 'grossvol',
     sortable: true,
     resizable: true,

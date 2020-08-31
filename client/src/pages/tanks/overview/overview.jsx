@@ -37,7 +37,7 @@ const Overview = ({ selected, isLoading }) => {
               </Descriptions.Item>
 
               <Descriptions.Item label={t('fields.productLevel')} span={24}>
-                {selected?.tank_prod_lvl} ${t('units.mm')}
+                {selected?.tank_prod_lvl} {t('units.mm')}
               </Descriptions.Item>
 
               <Descriptions.Item label={t('fields.observedVolume')} span={24}>
@@ -66,7 +66,7 @@ const Overview = ({ selected, isLoading }) => {
               </Descriptions.Item>
 
               {/* <Descriptions.Item label={t('fields.waterLevel')} span={24}>
-                {selected?.tank_water_lvl} mm
+                {selected?.tank_water_lvl} {t('units.mm')}
               </Descriptions.Item> */}
 
               {/* <Descriptions.Item label={t('fields.maximumCapacity')} span={24}>

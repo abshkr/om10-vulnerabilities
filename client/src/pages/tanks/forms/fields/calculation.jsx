@@ -283,14 +283,14 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         form={form}
         value={value?.tank_amb_vol}
         name="tank_amb_vol" 
-        label={`${t('fields.ambientVolume')} (Litres)`}
+        label={`${t('fields.ambientVolume')} (${t('units.litres')})`}
         min={0}
         max={999999999}
         style={{ width: '100%' }}
         precision={value?.tank_base_class==='6' ? config.precisionAdditive : config.precisionVolume}
         onChange={handleAmbVolFieldChange}
       />
-      {/* <Form.Item name="tank_amb_vol" label={`${t('fields.ambientVolume')} (Litres)`}>
+      {/* <Form.Item name="tank_amb_vol" label={`${t('fields.ambientVolume')} (${t('units.litres')})`}>
         <InputNumber
           min={0}
           max={999999999}
@@ -304,14 +304,14 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         form={form}
         value={value?.tank_cor_vol}
         name="tank_cor_vol"
-        label={`${t('fields.standardVolume')} (Litres)`}
+        label={`${t('fields.standardVolume')} (${t('units.litres')})`}
         min={0}
         max={999999999}
         style={{ width: '100%' }}
         precision={value?.tank_base_class==='6' ? config.precisionAdditive : config.precisionVolume}
         onChange={handleCorVolFieldChange}
       />
-      {/* <Form.Item name="tank_cor_vol" label={`${t('fields.standardVolume')} (Litres)`}>
+      {/* <Form.Item name="tank_cor_vol" label={`${t('fields.standardVolume')} (${t('units.litres')})`}>
         <InputNumber
           min={0}
           max={999999999}

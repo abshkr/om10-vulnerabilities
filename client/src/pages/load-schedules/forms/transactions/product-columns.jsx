@@ -20,13 +20,13 @@ const productColumns = (t) => [
     resizable: true,
   },
   {
-    headerName: t('fields.ambient') + ' (L)',
+    headerName: t('fields.ambient') + ' (' + t('units.ltr') + ')',
     field: 'trsb_avl',
     sortable: true,
     resizable: true,
   },
   {
-    headerName: t('fields.standard') + ' (L)',
+    headerName: t('fields.standard') + ' (' + t('units.ltr') + ')',
     field: 'trsb_cvl',
     sortable: true,
     resizable: true,

@@ -137,11 +137,11 @@ const Calculation = ({ form, value, range, envrionment }) => {
         <Input style={{ width: '100%' }} addonAfter={temperaturePostfix} />
       </Form.Item>
 
-      <Form.Item name="tank_amb_vol" label={`${t('fields.ambientVolume')} (Litres)`}>
+      <Form.Item name="tank_amb_vol" label={`${t('fields.ambientVolume')} (${t('units.litres')})`}>
         <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
       </Form.Item>
 
-      <Form.Item name="tank_cor_vol" label={`${t('fields.standardVolume')} (Litres)`}>
+      <Form.Item name="tank_cor_vol" label={`${t('fields.standardVolume')} (${t('units.litres')})`}>
         <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
       </Form.Item>
 

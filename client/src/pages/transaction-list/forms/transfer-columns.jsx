@@ -29,14 +29,14 @@ const transferColumns = (isFromNomination, t) => [
     resizable: true,
   },
   {
-    headerName: t('fields.ambient') + ' (L)',
+    headerName: t('fields.ambient') + ' (' + t('units.ltr') + ')',
     field: 'trsf_qty_amb',
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
   },
   {
-    headerName: t('fields.standard') + ' (L)',
+    headerName: t('fields.standard') + ' (' + t('units.ltr') + ')',
     field: 'trsf_qty_cor',
     filter: 'MultiFilter',
     sortable: true,
