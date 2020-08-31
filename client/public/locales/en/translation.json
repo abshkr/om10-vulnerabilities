@@ -1,5 +1,6 @@
 {
 	"descriptions": {
+		"availableAttempts": "Your available attempts left: ",
 		"CannotBeNegative": "Value cannot be a negative number",
 		"PDSFailed": "Failed to create PDS File",
 		"PDSSuccessful": "PDS file was successfully created",
@@ -1437,6 +1438,7 @@
 		"about": "About (EULA)",
 		"directDialCN": "Direct Dial (China)",
 		"directDialPHIL": "Direct Dial (Philippines)",
+		"dkiName": "Diamondkey International",
 		"email": "Email",
 		"every": "Every ",
 		"everyMonth": " of every month",

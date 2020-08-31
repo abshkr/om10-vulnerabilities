@@ -1,5 +1,6 @@
 {
 	"descriptions": {
+		"availableAttempts": "您尚余可尝试次数：",
 		"CannotBeNegative": "数值不能为负数",
 		"PDSFailed": "PDS文件生成失败",
 		"PDSSuccessful": "成功生成PDS文件",
@@ -72,7 +73,7 @@
 		"lastFieldChanged": "最后修改的字段",
 		"loadFailed": "数据读取失败",
 		"loadSuccess": "您已成功读取了数据",
-		"loginSuccess": "登录帐号: ",
+		"loginSuccess": "登录账号: ",
 		"maxCharacters": "字符数目太高超过允许上限",
 		"maxDateRange": "日期范围：",
 		"maxExpTarget": "该目标允许的有效日期类型的上限数是10",
@@ -1437,6 +1438,7 @@
 		"about": "关于(EULA)",
 		"directDialCN": "直拨电话(中国)",
 		"directDialPHIL": "直拨电话(菲律宾)",
+		"dkiName": "达基国际",
 		"email": "电子邮件",
 		"every": "每次",
 		"everyMonth": "/每个月",
