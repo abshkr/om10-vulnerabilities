@@ -80,8 +80,8 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
   const temperaturePostfix = (
     <Form.Item name="tank_temp_unit" noStyle>
       <Select style={{width:"120px"}} defaultValue={config?.temperatureUnit || 'degC'} onChange={handleTemperature}>
-        <Option value="degC">Celcius</Option>
-        <Option value="degF">Fahrenheit</Option>
+        <Option value="degC">{t('units.celcius')}</Option>
+        <Option value="degF">{t('units.fahrenheit')}</Option>
       </Select>
     </Form.Item>
   );
@@ -156,7 +156,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         name="tank_density"
         label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${
           value?.tank_base_dens_hi
-        })${t('units.kg/m3')} ${`@ Reference Temperature ${config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(
+        })${t('units.kg/m3')} ${`@ ${t('fields.referenceTemperature')} ${config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(
           config?.referenceTemperature
         )}ºF`}`}
         min={value?.tank_base_dens_lo}
@@ -246,13 +246,13 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         form={form}
         value={value?.tank_prod_lvl}
         name="tank_prod_lvl"
-        label={`${t('fields.productLevel')} (mm)`}
+        label={`${t('fields.productLevel')} (${t('units.mm')})`}
         min={0} 
         max={999999999} 
         precision={config.precisionLevel}
         style={{ width: '100%' }} 
       />
-      {/* <Form.Item name="tank_prod_lvl" label={`${t('fields.productLevel')} (mm)`}>
+      {/* <Form.Item name="tank_prod_lvl" label={`${t('fields.productLevel')} (${t('units.mm')})`}>
         <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
       </Form.Item> */}
 
@@ -325,14 +325,14 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         form={form}
         value={value?.tank_liquid_kg}
         name="tank_liquid_kg"
-        label={`${t('fields.liquidMass')} (Kg)`}
+        label={`${t('fields.liquidMass')} (${t('units.kg')})`}
         min={0}
         max={999999999}
         style={{ width: '100%' }}
         precision={value?.tank_base_class==='6' ? config.precisionAdditive : config.precisionMass}
         onChange={handleMassQtyFieldChange}
       />
-      {/* <Form.Item name="tank_liquid_kg" label={`${t('fields.liquidMass')} (Kg)`}>
+      {/* <Form.Item name="tank_liquid_kg" label={`${t('fields.liquidMass')} (${t('units.kg')})`}>
         <InputNumber
           min={0}
           max={999999999}

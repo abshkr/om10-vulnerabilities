@@ -1,6 +1,6 @@
 const columns = (t) => [
   {
-    headerName: t('fields.compartmentNumber'),
+    headerName: t('fields.compartment'),
     field: 'trsf_cmpt_no',
     filter: 'FuzzyFilter',
     sortable: true,

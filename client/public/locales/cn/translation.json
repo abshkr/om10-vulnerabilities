@@ -1,6 +1,6 @@
 {
 	"descriptions": {
-		"availableAttempts": "您尚余可尝试次数：",
+		"availableAttempts": "您尚余可尝试次数",
 		"CannotBeNegative": "数值不能为负数",
 		"PDSFailed": "PDS文件生成失败",
 		"PDSSuccessful": "成功生成PDS文件",
@@ -2038,8 +2038,10 @@
 		"float": "浮点数"
 	},
 	"units": {
+		"celcius": "摄氏度",
 		"degC": "°C",
 		"degF": "°F",
+		"fahrenheit": "华氏度",
 		"kg": "公斤",
 		"kg/m3": "公斤/米³",
 		"lamb": "升(视量)",

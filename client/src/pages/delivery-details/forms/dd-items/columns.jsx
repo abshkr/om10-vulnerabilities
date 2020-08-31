@@ -100,7 +100,7 @@ const columns = (t, pageState, form) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.ddiCmptNum'),
+    headerName: t('fields.compartment'),
     field: 'ddi_cmpt_num',
     filter: 'FuzzyFilter',
     sortable: true,

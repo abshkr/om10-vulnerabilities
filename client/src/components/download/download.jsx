@@ -23,7 +23,7 @@ const Download = ({ data, columns, isLoading, round, icon }) => {
         }
         disabled={isLoading || payload?.length===0 || !payload}
       >
-        Export CSV
+        {t('operations.export')}
       </Button>
     </CSVLink>
   );

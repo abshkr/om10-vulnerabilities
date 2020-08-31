@@ -67,7 +67,7 @@ const cells = (t) => [
     }, 
     {
       code: 'ddi_cmpt_num',
-      label: t('fields.ddiCmptNum'),
+      label: t('fields.compartment'),
       dataType: 'NUMBER',
       maxLength: 2,
       editable: true,

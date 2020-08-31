@@ -25,7 +25,7 @@ const EmptyWeight = ({ form, value }) => {
   return (
     <Form.Item
       name="eqpt_empty_kg"
-      label={`${t('fields.emptyWeight')} (Kg)`}
+      label={`${t('fields.emptyWeight')} (${t('units.kg')})`}
       rules={[{ required: false, validator: validate }]}
     >
       <InputNumber min={0} style={{ width: '100%' }} />

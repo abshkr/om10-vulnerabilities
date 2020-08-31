@@ -25,7 +25,7 @@ const columns = t => [
     filter: 'MultiFilter',
   },
   {
-    headerName: `${t('fields.tankLevel')} (mm)`,
+    headerName: `${t('fields.tankLevel')} (${t('units.mm')})`,
     field: 'tank_prod_lvl',
     sortable: true,
     resizable: true,

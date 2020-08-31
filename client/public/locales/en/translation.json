@@ -2038,8 +2038,10 @@
 		"number": "Number"
 	},
 	"units": {
+		"celcius": "Celcius",
 		"degC": "°C",
 		"degF": "°F",
+		"fahrenheit": "Fahrenheit",
 		"kg": "kg",
 		"kg/m3": "kg/m³",
 		"lamb": "L(amb)",
