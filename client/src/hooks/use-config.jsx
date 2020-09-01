@@ -68,6 +68,7 @@ const useConfig = () => {
     showSeals: false,
     externalBlendAllowed: false,
     offset: null,
+    serverTime: null,
     id: null,
     loading: true,
     precisionAPI: 2,
@@ -82,6 +83,7 @@ const useConfig = () => {
     maxTemperature: 150,
     minDensity: 0,
     maxDensity: 2000,
+    maxLengthTankCode: 10,
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -203,6 +205,7 @@ const useConfig = () => {
         externalBlendAllowed: configurationObject?.SITE_EXTERNAL_BLENDING_ALLOWED,
         dateTimeFormat: configurationObject?.SITE_DATETIME_FORMAT || 'DD/MM/YYYY HH:mm:ss',
         offset: configurationObject?.SERVER_TIME_OFFSET || '+00:00',
+        serverTime: configurationObject?.SERVER_TIME,
         id: configurationObject?.SITE_IDENTIFIER,
         loading: false,
         precisionAPI: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_API) || 2,
@@ -213,6 +216,7 @@ const useConfig = () => {
         precisionMass: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_MASS) || 0,
         precisionAdditive: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_ADDITIVE) || 3,
         precisionSG: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_SG) || 6,
+        maxLengthTankCode: _.toNumber(configurationObject?.SITE_MAXLEN_TANKCODE) || 10,
       });
     }
     // eslint-disable-next-line

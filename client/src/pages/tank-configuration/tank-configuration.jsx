@@ -13,8 +13,10 @@ import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
 import { useAuth } from 'hooks';
+import { useConfig } from '../../hooks';
 
 const TankConfiguration = () => {
+  const config = useConfig();
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -72,6 +74,7 @@ const TankConfiguration = () => {
         visible={visible}
         handleFormState={handleFormState}
         access={access}
+        config={config}
         setFilterValue={setFilterValue}
       />
     </Page>

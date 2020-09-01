@@ -18,7 +18,7 @@ import api, { TANKS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
+const FormModal = ({ value, visible, handleFormState, access, config, setFilterValue }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -158,7 +158,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane tab={t('tabColumns.general')} forceRender={true} key="1">
             <Terminal form={form} value={value} />
-            <Code form={form} value={value} />
+            <Code form={form} value={value} config={config} />
             <Name form={form} value={value} />
             <Product form={form} value={value} onChange={setProduct} />
             <Density form={form} value={value} product={product} />

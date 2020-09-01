@@ -5,8 +5,9 @@ import useSWR from 'swr';
 import _ from 'lodash';
 
 import { TANKS } from '../../../../api';
+import { REGEX } from '../../../../constants';
 
-const Code = ({ form, value }) => {
+const Code = ({ form, value, config }) => {
   const { t } = useTranslation();
   const { data: payload, isValidating } = useSWR(TANKS.READ);
 
@@ -33,8 +34,16 @@ const Code = ({ form, value }) => {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.code')}`);
     }
 
-    if (input && input.length > 12) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 12 ─ ${t('descriptions.maxCharacters')}`);
+    const regex = new RegExp(REGEX.ALPHANUMERIC);
+    const validated = regex.exec(input);
+
+    if (!validated) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('descriptions.mustBeAlphaNumeric')}`);
+    }
+
+    const len = (new TextEncoder().encode(input)).length;
+    if (input && len > config?.maxLengthTankCode) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: ${config?.maxLengthTankCode} ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();
