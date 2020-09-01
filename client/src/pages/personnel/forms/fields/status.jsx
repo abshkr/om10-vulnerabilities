@@ -9,20 +9,32 @@ const Status = ({ form, value }) => {
   const { data: options, isValidating } = useSWR(PERSONNEL.USER_STATUS);
   const { setFieldsValue } = form;
 
-  // const [options] = useState([
-  //   {
-  //     key: '0',
-  //     value: 'Inactive'
-  //   },
-  //   {
-  //     key: '1',
-  //     value: 'Active'
-  //   },
-  //   {
-  //     key: '2',
-  //     value: 'Locked'
-  //   }
-  // ]);
+  const states = [
+    {
+      user_status_flag: '0',
+      urer_status_name: t('operations.userInactive'),
+      enabled: false,
+      visible: true,
+    },
+    {
+      user_status_flag: '1',
+      urer_status_name: t('operations.userActive'),
+      enabled: false,
+      visible: true,
+    },
+    {
+      user_status_flag: '2',
+      urer_status_name: t('operations.userLocked'),
+      enabled: true,
+      visible: true,
+    },
+    {
+      user_status_flag: '3',
+      urer_status_name: t('operations.userDeleted'),
+      enabled: false,
+      visible: false,
+    },
+  ];
 
   useEffect(() => {
     if (value) {
@@ -44,8 +56,13 @@ const Status = ({ form, value }) => {
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
-        {options?.records.map((item, index) => (
+        {/* options?.records.map((item, index) => (
           <Select.Option key={index} value={item.user_status_flag} disabled={item.user_status_flag !== '2'}>
+            {item.urer_status_name}
+          </Select.Option>
+        )) */}
+        {states.filter((o)=>(o.visible===true)).map((item, index) => (
+          <Select.Option key={index} value={item.user_status_flag} disabled={!item.enabled}>
             {item.urer_status_name}
           </Select.Option>
         ))}
