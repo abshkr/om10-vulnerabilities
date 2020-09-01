@@ -226,7 +226,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
       if (values.bases === undefined || values.bases.length <= 0) {
         Modal.info({
           title: t('prompts.notEnoughBase'),
-          okText: t('operations.close'),
+          okText: t('operations.cancel'),
         });
         return;
       }
