@@ -139,6 +139,8 @@ if (version_compare(PHP_VERSION, '5.4', '<')) {
                     break;
                 case 415:$text = 'Unsupported Media Type';
                     break;
+                case 498:$text = 'Token expired/invalid';
+                    break;
                 case 500:$text = 'Internal Server Error';
                     break;
                 case 501:$text = 'Not Implemented';
