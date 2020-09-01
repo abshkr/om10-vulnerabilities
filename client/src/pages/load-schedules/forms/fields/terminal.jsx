@@ -3,12 +3,17 @@ import React, { useEffect } from 'react';
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
+import jwtDecode from 'jwt-decode';
 
 import { SITE_CONFIGURATION } from 'api';
 
 const Terminal = ({ form, value }) => {
   const { t } = useTranslation();
   const { setFieldsValue } = form;
+
+  const token = sessionStorage.getItem('token');
+  const decoded = jwtDecode(token);
+  const site_code = decoded?.site_code
 
   const { data: options, isValidating } = useSWR(SITE_CONFIGURATION.TERMINALS);
 
@@ -25,8 +30,12 @@ const Terminal = ({ form, value }) => {
       setFieldsValue({
         shls_terminal: value.shls_terminal,
       });
+    } else {
+      setFieldsValue({
+        shls_terminal: site_code, // options?.records?.[0].term_code,
+      });
     }
-  }, [value]);
+  }, [value, setFieldsValue]);
 
   return (
     <Form.Item
