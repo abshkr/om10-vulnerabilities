@@ -29,6 +29,29 @@ const Navigation = () => {
       history.push(ROUTES.TANKS, {
         listed: true,
       });
+    } else if (event?.key === ROUTES.BAY_VIEW) {
+      // const access = useAuth('M_BAYVIEW'); //Cannot use useAuth here because this is a function not a component
+      api
+        .get(`${AUTH.PERMISSIONS}?object_text=M_BAYVIEW`)
+        .then((res) => {
+          if (!res.data.records[0].priv_view) {
+            console.log("Do not have view privilege");
+            history.push(ROUTES.UNAUTHORIZED);
+          } else {
+            api
+              .get(`https://${window.location.hostname}/scadaviews/bayview/index.html`)
+              .then((res) => {
+                if (res.data.includes("<title>OMEGA 5000</title>")){
+                  history.push(ROUTES.BAY_VIEW);
+                } else {
+                  window.open(`https://${window.location.hostname}/scadaviews/bayview/index.html`, "_blank");
+                }
+              })
+              .catch(function (error) {
+                history.push(ROUTES.BAY_VIEW);
+              })
+          }
+        }) ;
     } else {
       history.push(event.key);
     }
