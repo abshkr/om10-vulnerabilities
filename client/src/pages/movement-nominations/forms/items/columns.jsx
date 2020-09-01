@@ -670,7 +670,6 @@ const useColumns = (value, selected) => {
       width: 100,
       suppressSizeToFit: true,
       editable: selected?.[0]?.editable || !value,
-
       cellClass: selected?.[0]?.editable || !value ? 'selected-editable-ag-grid-cell' : '',
     },
     {
@@ -688,9 +687,10 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 100,
       suppressSizeToFit: true,
-      editable: selected?.[0]?.editable || !value,
-      cellClass: selected?.[0]?.editable || !value ? 'selected-editable-ag-grid-cell' : '',
-      cellEditor: 'NumericEditor',
+      editable: false,
+      // editable: selected?.[0]?.editable || !value,
+      // cellClass: selected?.[0]?.editable || !value ? 'selected-editable-ag-grid-cell' : '',
+      // cellEditor: 'NumericEditor',
     },
     {
       headerName: t('fields.quantityDelivered'),
@@ -699,9 +699,10 @@ const useColumns = (value, selected) => {
       resizable: true,
       width: 100,
       suppressSizeToFit: true,
-      editable: selected?.[0]?.editable || !value,
-      cellClass: selected?.[0]?.editable || !value ? 'selected-editable-ag-grid-cell' : '',
-      cellEditor: 'NumericEditor',
+      editable: false,
+      // editable: selected?.[0]?.editable || !value,
+      // cellClass: selected?.[0]?.editable || !value ? 'selected-editable-ag-grid-cell' : '',
+      // cellEditor: 'NumericEditor',
     },
   ];
 };
