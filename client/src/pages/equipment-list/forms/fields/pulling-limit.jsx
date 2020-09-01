@@ -26,7 +26,7 @@ const PullingLimit = ({ form, value }) => {
   return (
     <Form.Item
       name="eqpt_max_gross"
-      label={`${t('fields.pullingLimit')} (Kg)`}
+      label={`${t('fields.pullingLimit')} (${t('units.kg')})`}
       rules={[{ required: false, validator: validate }]}
     >
       <InputNumber min={0} style={{ width: '100%' }} />

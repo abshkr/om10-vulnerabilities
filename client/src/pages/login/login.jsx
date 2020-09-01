@@ -308,7 +308,7 @@ const Login = ({ handleLogin, auth }) => {
             </Form.Item>
 
             <div style={{ textAlign: 'center', color: 'red', marginBottom: 10 }}>
-              {attempts !== null && !isNaN(attempts) && status !== -1 ? `You have ${attempts} attempts left.` : ``}
+              {attempts !== null && !isNaN(attempts) && status !== -1 ? `${t('descriptions.availableAttempts')}${attempts}` : ``}
             </div>
 
             <Row gutter={[12, 12]}>
@@ -352,7 +352,7 @@ const Login = ({ handleLogin, auth }) => {
 
         <LoginFooter>
           <LoginFooterLogo>
-            <img src="/images/dki_big.png" alt="Diamondkey International" />
+            <img src="/images/dki_big.png" alt={t('generic.dkiName')} />
           </LoginFooterLogo>
         </LoginFooter>
       </FormContainer>

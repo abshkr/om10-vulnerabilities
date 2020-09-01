@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Spin } from 'antd';
 import { AgGridReact } from 'ag-grid-react';
+import { useTranslation } from 'react-i18next';
 
 import { FuzzyFilter, MultiFilter, BooleanFilter } from './filters';
 
@@ -96,11 +97,15 @@ const Table = ({
   rowEditingStopped,
   clearFilterPlus,
 }) => {
+  const { t } = useTranslation();
   const { windowWidth } = useWindowSize();
 
   const [payload, setPayload] = useState([]);
   const [value, setValue] = useState(filterValue);
   const [api, setAPI] = useState('');
+
+  const overlayNoRowsText = 
+    '<span style="padding: 10px; font-size: 16px">' + t('descriptions.noRowsToShow') + '</span>';
 
   // const loading = !data || isLoading;
 
@@ -214,7 +219,7 @@ const Table = ({
                     style={{ float: 'right', marginLeft: 5 }}
                     onClick={onFilterClear}
                   >
-                    Clear Filters
+                    {t('operations.clearFilter')}
                   </Button>
                 </>
               )}
@@ -232,6 +237,7 @@ const Table = ({
                   frameworkComponents={{ ...defaultComponents, ...components }}
                   onRowDoubleClicked={(value) => onClick && onClick(value.data)}
                   loadingOverlayComponent="LoadingStatus"
+                  overlayNoRowsTemplate={overlayNoRowsText}
                   rowSelection={selectionMode || 'multiple'}
                   defaultColDef={defaultColumnDef}
                   onCellEditingStopped={onEditingFinished}

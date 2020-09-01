@@ -20,16 +20,16 @@ const Dashboard = ({ user }) => {
     <Page page={t('pageMenu.dashboard')} minimal access={access}>
       <DashboardContainer>
         <Tabs type="card" defaultActiveKey="0">
-          <Tabs.TabPane tab="Home" key="0">
+          <Tabs.TabPane tab={t('tabColumns.home')} key="0">
             <Home />
           </Tabs.TabPane>
 
-          <Tabs.TabPane tab="Overview" key="1">
+          <Tabs.TabPane tab={t('tabColumns.overview')} key="1">
             <Overview />
           </Tabs.TabPane>
 
           {user?.per_code === '9999' && (
-            <Tabs.TabPane tab="Release Notes" key="3">
+            <Tabs.TabPane tab={t('tabColumns.releaseNotes')} key="3">
               <ReleaseNotes />
             </Tabs.TabPane>
           )}

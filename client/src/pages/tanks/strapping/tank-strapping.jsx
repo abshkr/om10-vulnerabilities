@@ -284,7 +284,7 @@ const TankStrapping = ({ terminal, code, isLoading, access, tanks }) => {
                 label={t('fields.level')}
                 rules={[{ required: true, validator: validate, label: t('fields.level') }]}
               >
-                <Input type="number" style={{ width: '100%' }} min={0} addonAfter="mm" />
+                <Input type="number" style={{ width: '100%' }} min={0} addonAfter={t('units.mm')} />
               </Form.Item>
 
               <Form.Item
@@ -292,7 +292,7 @@ const TankStrapping = ({ terminal, code, isLoading, access, tanks }) => {
                 label={t('fields.observedVolume')}
                 rules={[{ required: true, validator: validate, label: t('fields.observedVolume') }]}
               >
-                <Input type="number" style={{ width: '100%' }} min={0} addonAfter="Litres" />
+                <Input type="number" style={{ width: '100%' }} min={0} addonAfter={t('units.litres')} />
               </Form.Item>
             </TabPane>
           </Tabs>

@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms) => [
   {
-    headerName: t('fields.compartmentNumber'),
+    headerName: t('fields.compartment'),
     field: 'trsf_cmpt_no',
     filter: 'FuzzyFilter',
     sortable: true,

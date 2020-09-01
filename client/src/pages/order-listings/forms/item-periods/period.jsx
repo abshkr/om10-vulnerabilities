@@ -166,7 +166,7 @@ const PeriodForm = ({ value, units, parent, revalidate, data, form }) => {
               loading={!units}
               showSearch
               optionFilterProp="children"
-              placeholder={t('placeholder.selectUnit')}
+              placeholder={t('placeholder.selectQtyUnit')}
               filterOption={(input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }

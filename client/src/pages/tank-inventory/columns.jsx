@@ -25,7 +25,7 @@ const columns = t => [
     filter: 'MultiFilter',
   },
   {
-    headerName: `${t('fields.tankLevel')} (mm)`,
+    headerName: `${t('fields.tankLevel')} (${t('units.mm')})`,
     field: 'tank_prod_lvl',
     sortable: true,
     resizable: true,
@@ -37,13 +37,13 @@ const columns = t => [
     resizable: true,
   },
   {
-    headerName: `${t('fields.standardVolume')} (L)`,
+    headerName: `${t('fields.standardVolume')} (${t('units.ltr')})`,
     field: 'netvol',
     sortable: true,
     resizable: true,
   },
   {
-    headerName: `${t('fields.observedVolume')} (L)`,
+    headerName: `${t('fields.observedVolume')} (${t('units.ltr')})`,
     field: 'grossvol',
     sortable: true,
     resizable: true,

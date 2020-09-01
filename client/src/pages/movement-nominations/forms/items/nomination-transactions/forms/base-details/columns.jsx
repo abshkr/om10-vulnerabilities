@@ -77,7 +77,7 @@ const columns = (t, pageState, form, arm) => [
 
 
   {
-    headerName: t('fields.compartmentNumber'),
+    headerName: t('fields.compartment'),
     field: 'trsf_bs_cmpt_no',
     filter: 'FuzzyFilter',
     sortable: true,

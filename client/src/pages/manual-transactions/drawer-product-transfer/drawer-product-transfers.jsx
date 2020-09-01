@@ -1491,7 +1491,7 @@ const DrawerProductTransfers = ({
       </Row>
       <Card size="small" title={t('divider.baseProducts')}>
         <Tabs defaultActiveKey="1" animated={false} type="card">
-          <TabPane tab={t('tabColumns.transferDetails')} key="1" forceRender={true}>
+          <TabPane tab={t('tabColumns.baseProductDetails')} key="1" forceRender={true}>
             <BaseProductTransfers 
               form={form} 
               sourceType={sourceType} 

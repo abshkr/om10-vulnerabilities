@@ -44,7 +44,7 @@ const AltQtyUnit = ({ form, value, altQty, pageState }) => {
         allowClear
         disabled={(pageState === 'transfer' ? false : false) || !altQty}
         optionFilterProp="children"
-        placeholder={!value ? t('placeholder.selectUnit') : null}
+        placeholder={!value ? t('placeholder.selectQtyUnit') : null}
         filterOption={(value, option) =>
           option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
         }

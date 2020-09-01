@@ -36,7 +36,7 @@ const columns = (t) => [
   },
 
   {
-    headerName: `${t('fields.closingAmbient')} (L)`,
+    headerName: `${t('fields.closingAmbient')} (${t('units.ltr')})`,
     field: 'close_amb_tot',
     sortable: true,
     resizable: true,
@@ -48,7 +48,7 @@ const columns = (t) => [
   },
 
   {
-    headerName: `${t('fields.closingCorrected')} (L)`,
+    headerName: `${t('fields.closingCorrected')} (${t('units.ltr')})`,
     field: 'close_std_tot',
     sortable: true,
     resizable: true,
@@ -60,7 +60,7 @@ const columns = (t) => [
   },
 
   {
-    headerName: `${t('fields.closingMass')} (Kg)`,
+    headerName: `${t('fields.closingMass')} (${t('units.kg')})`,
     field: 'close_mass_tot',
     sortable: true,
     resizable: true,
@@ -83,7 +83,7 @@ const columns = (t) => [
   },
 
   {
-    headerName: `${t('fields.tankLevel')} (mm)`,
+    headerName: `${t('fields.tankLevel')} (${t('units.mm')})`,
     field: 'tank_prod_lvl',
     sortable: true,
     resizable: true,
@@ -116,7 +116,7 @@ const columns = (t) => [
   },
 
   {
-    headerName: `${t('fields.closingDensity')} (Kg/m3)`,
+    headerName: `${t('fields.closingDensity')} (${t('units.kg/m3')})`,
     field: 'close_density',
     sortable: true,
     resizable: true,

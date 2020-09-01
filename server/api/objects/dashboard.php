@@ -214,17 +214,34 @@ class Dashboard extends CommonClass
 
         $result = array();
         $query = "
-            SELECT SUM(TANK_AMB_VOL) / 1000 QTY_ABM, 
-                SUM(TANK_COR_VOL) / 1000 QTY_COR,
+            SELECT 
+                SUM(TANK_AMB_VOL) / 1000   QTY_ABM, 
+                SUM(TANK_COR_VOL) / 1000   QTY_COR,
                 TANK_BASE, 
                 BASE_NAME,
                 BCLASS_NO,
-                BCLASS_DESC
-            FROM TANKS, BASE_PRODS, BASECLASS
+                BC.BCLASS_DESC             BCLASS_DESC
+            FROM 
+                TANKS, 
+                BASE_PRODS, 
+                (
+                    SELECT
+                        BS.BCLASS_NO,
+                        NVL(BM.BCLASS_NAME, BS.BCLASS_DESC)           AS BCLASS_DESC,
+                        BS.BCLASS_DENS_LO,
+                        BS.BCLASS_DENS_HI,
+                        BS.BCLASS_VCF_ALG,
+                        BS.BCLASS_TEMP_LO,
+                        BS.BCLASS_TEMP_HI
+                    FROM BASECLASS BS,
+                        BCLASS_TYP BM
+                    WHERE BS.BCLASS_NO = BM.BCLASS_ID(+)
+                ) BC
             WHERE TANK_BASE = BASE_CODE
-                AND BASE_CAT = BCLASS_NO
-            GROUP BY TANK_BASE, BASE_NAME, BCLASS_NO, BCLASS_DESC
-            ORDER BY QTY_ABM DESC";
+                AND BASE_CAT = BC.BCLASS_NO
+            GROUP BY TANK_BASE, BASE_NAME, BC.BCLASS_NO, BC.BCLASS_DESC
+            ORDER BY QTY_ABM DESC
+        ";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
@@ -250,18 +267,38 @@ class Dashboard extends CommonClass
         //     GROUP BY BASE_CODE, BASE_NAME, TRSB_UNT
         //     ORDER BY BASE_NAME";
         $query = "
-            SELECT NVL(DECODE(TRSB_UNT, 34, SUM(TRSB_AVL) / 1000, SUM(TRSB_AVL)), 0) / 1000 QTY_AMB, 
-                NVL(DECODE(TRSB_UNT, 34, SUM(TRSB_CVL) / 1000, SUM(TRSB_CVL)), 0) / 1000 QTY_CMB, 
-                BASE_CODE TRSF_BASE_P, 
-                BASE_NAME, BCLASS_DESC
-            FROM TRANSACTIONS, TRANSFERS, CLOSEOUTS, TRANBASE, BASE_PRODS, BASECLASS
+            SELECT 
+                NVL(DECODE(TRSB_UNT, 34, SUM(TRSB_AVL) / 1000, SUM(TRSB_AVL)), 0) / 1000    QTY_AMB, 
+                NVL(DECODE(TRSB_UNT, 34, SUM(TRSB_CVL) / 1000, SUM(TRSB_CVL)), 0) / 1000    QTY_CMB, 
+                BASE_CODE                                                                   TRSF_BASE_P, 
+                BASE_NAME, 
+                BC.BCLASS_DESC                                                              BCLASS_DESC
+            FROM 
+                TRANSACTIONS, 
+                TRANSFERS, 
+                CLOSEOUTS, 
+                TRANBASE, 
+                BASE_PRODS, 
+                (
+                    SELECT
+                        BS.BCLASS_NO,
+                        NVL(BM.BCLASS_NAME, BS.BCLASS_DESC)           AS BCLASS_DESC,
+                        BS.BCLASS_DENS_LO,
+                        BS.BCLASS_DENS_HI,
+                        BS.BCLASS_VCF_ALG,
+                        BS.BCLASS_TEMP_LO,
+                        BS.BCLASS_TEMP_HI
+                    FROM BASECLASS BS,
+                        BCLASS_TYP BM
+                    WHERE BS.BCLASS_NO = BM.BCLASS_ID(+)
+                ) BC
             WHERE TRSA_ID = TRSFTRID_TRSA_ID
                 AND STATUS = 0
                 AND TRSB_ID_TRSF_ID = TRSF_ID
                 AND TRSB_BS = BASE_CODE
-                AND BASE_CAT = BCLASS_NO
+                AND BASE_CAT = BC.BCLASS_NO
                 AND TRSA_ED_DMY > PREV_CLOSEOUT_DATE
-            GROUP BY BASE_CODE, BASE_NAME, TRSB_UNT, BCLASS_DESC
+            GROUP BY BASE_CODE, BASE_NAME, TRSB_UNT, BC.BCLASS_DESC
             ORDER BY BASE_NAME";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, $this->commit_mode)) {
