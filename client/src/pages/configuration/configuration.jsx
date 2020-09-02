@@ -359,7 +359,7 @@ const ConfigurationItems = ({ data, onChange }) => (
   />
 );
 
-const FeatureItems = ({ data, onChange }) => (
+const FeatureItems = ({ data, onChange, t }) => (
   <List
     style={{ height: 'calc(100vh - 300px)', overflowY: 'auto', minHeight: 720 }}
     itemLayout="horizontal"
@@ -379,7 +379,7 @@ const FeatureItems = ({ data, onChange }) => (
               />
             }
             // eslint-disable-next-line
-            title={<a>{item.feature_name}</a>}
+            title={<a>{t('features.'+item.feature_code)}</a>}
           />
         </List.Item>
       );
@@ -629,7 +629,7 @@ const Configuration = ({ user, config }) => {
 
           {user?.per_code === '9999' && (
             <TabPane tab={t('tabColumns.features')} key="7">
-              <FeatureItems data={features} onChange={onFeatureEdit} />
+              <FeatureItems data={features} onChange={onFeatureEdit} t={t} />
             </TabPane>
           )}
 

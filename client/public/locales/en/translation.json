@@ -183,6 +183,24 @@
 		"meters": "Meters",
 		"variances": "Variances"
 	},
+	"features": {
+		"BASE_PROD__DENS_RANGE": "Base Product: Density Range",
+		"DCS": "DCS (2nd Drawer)",
+		"HOT_PRODUCT_BITUMEN": "Hot Product (Bitumen)",
+		"API": "API",
+		"TANK_STRAPPING": "Tank Strapping",
+		"DANGEROUS_GOODS": "Dangerous Goods",
+		"COMPANY_RELATIONS": "Company Relations",
+		"AUDITING": "Auditing Data",
+		"CUSTOM_EXPIRY_DATES": "Customized Expiry Dates",
+		"PARTNERSHIP": "Partners and Partnership",
+		"DATE_RANGE_FILTER": "Preset Date Range to Filter",
+		"AUTO_FILTER_WHEN_OPEN_SCREEN": "Start filtering automatically when screen opens",
+		"TANK_LEVEL_ALARMS": "Tank Level Alarms",
+		"DOR": "Additional Host Data",
+		"MAKE_MANUAL_TRANSACTION": "Make Manual Transaction",
+		"VIEW_DELIVERY_DETAILS": "View Delivery Details"
+	},
 	"fields": {
 		"accessType": "Access Type",
 		"ack_id": "Ack ID",
