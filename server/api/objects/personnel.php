@@ -1207,4 +1207,76 @@ class Personnel extends CommonClass
             return $row['TOTAL_ROWS'];
         }
     }
+
+    public function update_status()
+    {
+        write_log(json_encode($this), __FILE__, __LINE__);
+
+        //Old data
+        $query = "
+            SELECT * FROM GUI_PERSONNEL
+            WHERE PER_CODE = :per_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':per_code', $this->per_code);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
+        if (isset($this->user_status_flag)) {
+            $query = "
+            UPDATE URBAC_USERS
+            SET USER_STATUS_FLAG = :user_status_flag
+            WHERE TRIM(USER_CODE) = :per_code";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':per_code', $this->per_code);
+            oci_bind_by_name($stmt, ':user_status_flag', $this->user_status_flag);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return false;
+            }
+        }
+
+        $journal = new Journal($this->conn, $autocommit = false);
+        $jnl_data[0] = Utilities::getCurrPsn();
+        $jnl_data[1] = "PERSONNEL";
+        $jnl_data[2] = $this->per_code;
+
+        if (!$journal->jnlLogEvent(
+            Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        //New data
+        $query = "
+            SELECT * FROM GUI_PERSONNEL
+            WHERE PER_CODE = :per_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':per_code', $this->per_code);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $row2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
+        $module = "GUI_PERSONNEL";
+        $record = sprintf("code:%s", $this->per_code);
+        // write_log(json_encode($row), __FILE__, __LINE__, LogLevel::ERROR);
+        // write_log(json_encode($row2), __FILE__, __LINE__, LogLevel::ERROR);
+        if (!$journal->updateChanges($row, $row2, $module, $record)) {
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        oci_commit($this->conn);
+        return true;
+    }
 }

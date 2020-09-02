@@ -113,7 +113,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
 
         notification.success({
           message: t('messages.unlockSuccess'),
-          description: `${t('descriptions.unlockSuccess')}`,
+          description: `${t('descriptions.unlockAllSuccess')}`,
         });
       })
       .catch((errors) => {

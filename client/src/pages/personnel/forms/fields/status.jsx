@@ -50,20 +50,15 @@ const Status = ({ form, value }) => {
   return (
     <Form.Item name="user_status_flag" label={t('fields.status')}>
       <Radio.Group
-        // buttonStyle="solid"
         style={{ marginBottom: 10, display: 'flex', flexDirection: 'column'  }}
         onChange={(event) => setMode(event.target.value)}
+        disabled={true}
       >
         {options?.records.filter((o)=>(o.user_status_flag!=='3')).map((item, index) => (
           <Radio key={index} value={item.user_status_flag} disabled={item.user_status_flag !== '2'}>
             {item.urer_status_name}
           </Radio>
         ))}
-        {/* options?.records.filter((o)=>(o.user_status_flag!=='3')).map((item, index) => (
-          <Radio.Button key={index} value={item.user_status_flag} disabled={item.user_status_flag !== '2'}>
-            {item.urer_status_name}
-          </Radio.Button>
-        )) */}
       </Radio.Group>
     </Form.Item>
   );

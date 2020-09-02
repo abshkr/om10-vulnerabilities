@@ -9,7 +9,8 @@ import {
   PlusOutlined,
   CloseOutlined,
   DeleteOutlined,
-  LoginOutlined,
+  LockOutlined,
+  UnlockOutlined,
   QuestionCircleOutlined,
   SafetyCertificateOutlined,
 } from '@ant-design/icons';
@@ -136,6 +137,40 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     });
   };
 
+  const onUserStatusChange = (flag) => {
+    Modal.confirm({
+      title: flag ? t('prompts.activate') : t('prompts.lock'),
+      okText: t('operations.yes'),
+      okType: 'danger',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await api
+          .post(PERSONNEL.UPDATE_STATUS, {
+            per_code: value?.per_code,
+            user_status_flag: flag ? '1' : '2',
+          })
+          .then(() => {
+            onComplete(value?.per_code);
+
+            notification.success({
+              message: flag ? t('messages.activateSuccess') : t('messages.lockSuccess'),
+              description: flag ? t('descriptions.activateSuccess') : t('descriptions.lockSuccess'),
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
+            });
+          });
+      },
+    });
+  };
+
   useEffect(() => {
     if (!value && !visible) {
       resetFields();
@@ -186,6 +221,30 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             </Button>
           )}
 
+          {!IS_CREATING && value?.user_status_flag === '2' && (
+            <Button
+              type="primary"
+              disabled={IS_CREATING || !access?.canUpdate}
+              icon={<UnlockOutlined />}
+              style={{ marginLeft: 5 }}
+              onClick={() => onUserStatusChange(true)}
+            >
+              {t('operations.activate')}
+            </Button>
+          )}
+
+          {!IS_CREATING && value?.user_status_flag === '1' && (
+            <Button
+              type="primary"
+              disabled={IS_CREATING || !access?.canUpdate}
+              icon={<LockOutlined />}
+              style={{ marginLeft: 5 }}
+              onClick={() => onUserStatusChange(false)}
+            >
+              {t('operations.lock')}
+            </Button>
+          )}
+
           {!IS_CREATING && (
             <Button
               type="primary"
@@ -194,7 +253,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               onClick={() => setPasswordResetVisible(true)}
               disabled={!access?.canUpdate}
             >
-              {t('tabColumns.resetPassword')}
+              {t('operations.resetPassword')}
             </Button>
           )}
 
@@ -202,13 +261,14 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             <Drawer
               title={t('tabColumns.resetPassword')}
               placement="right"
-              // bodyStyle={{ paddingTop: 25 }}
+              bodyStyle={{ paddingTop: 25 }}
               onClose={() => setPasswordResetVisible(false)}
               visible={passwordResetVisible}
-              width="30vw"
-              height="500px"
+              width="36vw"
             >
-              <PasswordReset value={value} />
+              <Form layout="vertical" >
+                <PasswordReset value={value} />
+              </Form>
             </Drawer>
           )}
 
