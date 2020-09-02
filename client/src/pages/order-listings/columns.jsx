@@ -79,7 +79,7 @@ const columns = (t) => [
   {
     headerName: t('fields.orderStatName'),
     field: 'order_stat_name',
-    filter: 'FuzzyFilter',
+    filter: 'MultiFilter',
     sortable: true,
     resizable: true,
     width: 160,

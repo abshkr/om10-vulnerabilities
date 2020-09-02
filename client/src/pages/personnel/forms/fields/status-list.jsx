@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, Radio } from 'antd';
+import { Form, Select } from 'antd';
 import useSWR from 'swr';
 import { PERSONNEL } from 'api';
 
 const Status = ({ form, value }) => {
-  const [mode, setMode] = useState(value?.user_status_flag);
   const { t } = useTranslation();
-
   const { data: options, isValidating } = useSWR(PERSONNEL.USER_STATUS);
-
   const { setFieldsValue } = form;
 
   /* const states = [
@@ -49,22 +46,27 @@ const Status = ({ form, value }) => {
 
   return (
     <Form.Item name="user_status_flag" label={t('fields.status')}>
-      <Radio.Group
-        buttonStyle="solid"
-        style={{ marginBottom: 10 }}
-        onChange={(event) => setMode(event.target.value)}
+      <Select
+        dropdownMatchSelectWidth={false}
+        loading={isValidating}
+        showSearch
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectStatus') : null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
       >
         {options?.records.filter((o)=>(o.user_status_flag!=='3')).map((item, index) => (
-          <Radio key={index} value={item.user_status_flag} disabled={item.user_status_flag !== '2'}>
+          <Select.Option key={index} value={item.user_status_flag} disabled={item.user_status_flag !== '2'}>
             {item.urer_status_name}
-          </Radio>
+          </Select.Option>
         ))}
-        {/* options?.records.filter((o)=>(o.user_status_flag!=='3')).map((item, index) => (
-          <Radio.Button key={index} value={item.user_status_flag} disabled={item.user_status_flag !== '2'}>
+        {/* states.filter((o)=>(o.visible===true)).map((item, index) => (
+          <Select.Option key={index} value={item.user_status_flag} disabled={!item.enabled}>
             {item.urer_status_name}
-          </Radio.Button>
+          </Select.Option>
         )) */}
-      </Radio.Group>
+      </Select>
     </Form.Item>
   );
 };

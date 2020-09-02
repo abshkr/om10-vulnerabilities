@@ -89,6 +89,16 @@ const columns = (expiryTypes, t) => {
     },
     {
       headerName: t('fields.status'),
+      field: 'user_status_flag',
+      sortable: true,
+      resizable: true,
+      filter: 'MultiFilter',
+      suppressSizeToFit: true,
+      width: 110,
+      hide: true,
+    },
+    {
+      headerName: t('fields.status'),
       field: 'urer_status_name',
       sortable: true,
       resizable: true,
