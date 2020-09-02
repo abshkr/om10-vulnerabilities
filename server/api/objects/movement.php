@@ -86,26 +86,46 @@ class Movement extends CommonClass
     */
     public function alternate_units()
     {
-        $query = "SELECT 'BB6' UNIT, 0 UNIT_ID FROM DUAL
-            UNION SELECT 'BBL' UNIT, 1 UNIT_ID FROM DUAL
-            UNION SELECT 'KG' UNIT, 2 UNIT_ID FROM DUAL
-            UNION SELECT 'L' UNIT, 3 UNIT_ID FROM DUAL
-            UNION SELECT 'L15' UNIT, 4 UNIT_ID FROM DUAL
-            UNION SELECT 'L20' UNIT, 5 UNIT_ID FROM DUAL
-            UNION SELECT 'L30' UNIT, 6 UNIT_ID FROM DUAL
-            UNION SELECT 'LB' UNIT, 7 UNIT_ID FROM DUAL
-            UNION SELECT 'GAL' UNIT, 8 UNIT_ID FROM DUAL
-            UNION SELECT 'UGL' UNIT, 9 UNIT_ID FROM DUAL
-            UNION SELECT 'M3' UNIT, 10 UNIT_ID FROM DUAL
-            UNION SELECT 'M15' UNIT, 11 UNIT_ID FROM DUAL
-            UNION SELECT 'TO' UNIT, 12 UNIT_ID FROM DUAL";
-        $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt, $this->commit_mode)) {
-            return $stmt;
+        if (file_exists("/usr/omega/bin/gsap_erpIn/UnitOfMeasure.csv")) {
+            $result = array();
+            $result["records"] = array();
+
+            $lines = file('/usr/omega/bin/gsap_erpIn/UnitOfMeasure.csv');
+            foreach($lines as $line) {
+                $attributes = explode(',', $line);
+                // write_log(json_encode($attributes), __FILE__, __LINE__);
+                $item = array(
+                    "unit" => $attributes[1],
+                    "unit_id" => $attributes[0],
+                );
+                array_push($result["records"], $item);
+            }
+
+            http_response_code(200);
+            echo json_encode($result, JSON_PRETTY_PRINT);
+            return $result;
         } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
+            $query = "SELECT 'BB6' UNIT, 0 UNIT_ID FROM DUAL
+                UNION SELECT 'BBL' UNIT, 1 UNIT_ID FROM DUAL
+                UNION SELECT 'KG' UNIT, 2 UNIT_ID FROM DUAL
+                UNION SELECT 'L' UNIT, 3 UNIT_ID FROM DUAL
+                UNION SELECT 'L15' UNIT, 4 UNIT_ID FROM DUAL
+                UNION SELECT 'L20' UNIT, 5 UNIT_ID FROM DUAL
+                UNION SELECT 'L30' UNIT, 6 UNIT_ID FROM DUAL
+                UNION SELECT 'LB' UNIT, 7 UNIT_ID FROM DUAL
+                UNION SELECT 'GAL' UNIT, 8 UNIT_ID FROM DUAL
+                UNION SELECT 'UGL' UNIT, 9 UNIT_ID FROM DUAL
+                UNION SELECT 'M3' UNIT, 10 UNIT_ID FROM DUAL
+                UNION SELECT 'M15' UNIT, 11 UNIT_ID FROM DUAL
+                UNION SELECT 'TO' UNIT, 12 UNIT_ID FROM DUAL";
+            $stmt = oci_parse($this->conn, $query);
+            if (oci_execute($stmt, $this->commit_mode)) {
+                return $stmt;
+            } else {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return null;
+            }
         }
     }
 
