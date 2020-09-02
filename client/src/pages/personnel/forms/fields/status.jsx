@@ -50,8 +50,8 @@ const Status = ({ form, value }) => {
   return (
     <Form.Item name="user_status_flag" label={t('fields.status')}>
       <Radio.Group
-        buttonStyle="solid"
-        style={{ marginBottom: 10 }}
+        // buttonStyle="solid"
+        style={{ marginBottom: 10, display: 'flex', flexDirection: 'column'  }}
         onChange={(event) => setMode(event.target.value)}
       >
         {options?.records.filter((o)=>(o.user_status_flag!=='3')).map((item, index) => (

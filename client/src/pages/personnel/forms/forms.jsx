@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Form, Button, Tabs, notification, Modal, Drawer } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Form, Button, Tabs, notification, Modal, Drawer, Row, Col, Divider } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
@@ -9,7 +9,9 @@ import {
   PlusOutlined,
   CloseOutlined,
   DeleteOutlined,
+  LoginOutlined,
   QuestionCircleOutlined,
+  SafetyCertificateOutlined,
 } from '@ant-design/icons';
 
 import {
@@ -34,6 +36,7 @@ import columns from './columns';
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
+  const [passwordResetVisible, setPasswordResetVisible] = useState(false);
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -49,6 +52,8 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     mutate(PERSONNEL.READ);
     if (per_code) {
       setFilterValue("" + per_code);
+    } else {
+      setFilterValue(" ");
     }
   };
 
@@ -145,7 +150,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="50vw"
+      width="60vw"
       visible={visible}
       footer={
         <>
@@ -160,7 +165,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
 
           <Button
             type="primary"
-            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+            icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             htmlType="submit"
             style={{ float: 'right', marginRight: 5 }}
             onClick={onFinish}
@@ -180,38 +185,95 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               {t('operations.delete')}
             </Button>
           )}
+
+          {!IS_CREATING && (
+            <Button
+              type="primary"
+              icon={<SafetyCertificateOutlined />}
+              style={{ float: 'left', marginLeft: 5 }}
+              onClick={() => setPasswordResetVisible(true)}
+              disabled={!access?.canUpdate}
+            >
+              {t('tabColumns.resetPassword')}
+            </Button>
+          )}
+
+          {passwordResetVisible && (
+            <Drawer
+              title={t('tabColumns.resetPassword')}
+              placement="right"
+              // bodyStyle={{ paddingTop: 25 }}
+              onClose={() => setPasswordResetVisible(false)}
+              visible={passwordResetVisible}
+              width="30vw"
+              height="500px"
+            >
+              <PasswordReset value={value} />
+            </Drawer>
+          )}
+
         </>
       }
     >
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane tab={t('tabColumns.general')} forceRender={true} key="1">
-            <Employer form={form} value={value} />
+            <Row gutter={[8, 2]}>
+              <Col span={8}>
+                <Employer form={form} value={value} />
+              </Col>
+              <Col span={8}>
+                <Code form={form} value={value} />
+              </Col>
+              <Col span={8}>
+                <Name form={form} value={value} />
+              </Col>
+            </Row>
 
-            <Code form={form} value={value} />
-            <Name form={form} value={value} />
+            <Row gutter={[8, 2]}>
+              <Col span={8}>
+                <Role form={form} value={value} />
+              </Col>
+              <Col span={8}>
+                <TimeCode form={form} value={value} />
+              </Col>
+              <Col span={8}>
+                <Department form={form} value={value} />
+              </Col>
+            </Row>
 
-            <Role form={form} value={value} />
-            <TimeCode form={form} value={value} />
+            <Row gutter={[8, 2]}>
+              <Col span={8}>
+                <Email form={form} value={value} />
+              </Col>
+              <Col span={8}>
+                <DriverLicence form={form} value={value} />
+              </Col>
+              <Col span={8}>
+                <SLP form={form} value={value} />
+              </Col>
+            </Row>
 
-            <SLP form={form} value={value} />
-            <Department form={form} value={value} />
+            <Row gutter={[8, 2]}>
+              <Col span={4}>
+                <Status form={form} value={value} />
+              </Col>
+              <Col span={20}>
+                <Comment form={form} value={value} />
+              </Col>
+            </Row>
 
-            <Email form={form} value={value} />
-            <DriverLicence form={form} value={value} />
+            {/* <Divider>{t('tabColumns.areaAccess')}</Divider> */}
 
-            <Status form={form} value={value} />
-            <Comment form={form} value={value} />
-          </TabPane>
-          <TabPane tab={t('tabColumns.expiryDates')} forceRender={true} key="2">
-            <Expiry form={form} value={value} type={PERSONNEL.EXPIRY_TYPES} />
-          </TabPane>
-
-          <TabPane tab={t('tabColumns.areaAccess')} forceRender={true} key="3">
             <Lock form={form} value={value} />
+
+            <Divider>{t('tabColumns.expiryDates')}</Divider>
+
+            <Expiry form={form} value={value} type={PERSONNEL.EXPIRY_TYPES} />
+            
           </TabPane>
 
-          {access?.canUpdate && 
+          {/* access?.canUpdate && 
             <TabPane
               // className="ant-tab-window"
               tab={t('tabColumns.resetPassword')}
@@ -221,7 +283,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             >
               <PasswordReset value={value} />
             </TabPane>
-          }
+           */}
         </Tabs>
       </Form>
     </Drawer>

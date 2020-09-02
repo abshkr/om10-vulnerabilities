@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useState } from 'react';
 
-import { Form, Checkbox, Divider } from 'antd';
+import { Form, Checkbox, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 import _ from 'lodash';
@@ -49,22 +49,27 @@ const Lock = ({ form, value }) => {
 
   return (
     <div className="personnel-lock">
-      <Form.Item 
-        name="per_lock" 
-        label="Area Access Control" 
-        valuePropName="checked"
-        onChange={onChange}
-      >
-        <Checkbox>{t('fields.lockOut')}</Checkbox>
-      </Form.Item>
-      <Divider></Divider>
-      <Form.Item name="area_accesses" label={t("fields.areaAccess")}>
-        <Checkbox.Group 
-          style={{ display: 'flex', flexDirection: 'column' }} 
-          options={options} 
-          disabled={lockout}
-        />
-      </Form.Item>
+      <Row gutter={[8, 2]}>
+        <Col span={4}>
+          <Form.Item 
+            name="per_lock" 
+            label="Area Access Control" 
+            valuePropName="checked"
+            onChange={onChange}
+          >
+            <Checkbox>{t('fields.lockOut')}</Checkbox>
+          </Form.Item>
+        </Col>
+        <Col span={20}>
+          <Form.Item name="area_accesses" label={t("fields.areaAccess")}>
+            <Checkbox.Group 
+              style={{ display: 'flex', flexDirection: 'row' }} 
+              options={options} 
+              disabled={lockout}
+            />
+          </Form.Item>
+        </Col>
+      </Row>
     </div>
   );
 };
