@@ -200,7 +200,7 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
 
   //           <Button
   //             type="primary"
-  //             icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+  //             icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
   //             htmlType="submit"
   //             style={{ float: 'right', marginRight: 5 }}
   //             onClick={onFinish}
@@ -303,7 +303,7 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
 
           <Button
             type="primary"
-            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+            icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             htmlType="submit"
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}

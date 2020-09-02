@@ -135,7 +135,7 @@ const FormModal = ({ value, length, visible, handleFormState, access }) => {
 
           <Button
             type="primary"
-            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+            icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             htmlType="submit"
             style={{ float: 'right', marginRight: 5 }}
             style={{ float: 'right', marginRight: 5 }}

@@ -182,7 +182,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
 
           <Button
             type="primary"
-            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+            icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
             disabled={(IS_CREATING ? !access?.canCreate : !access?.canUpdate) || !mainTabOn}

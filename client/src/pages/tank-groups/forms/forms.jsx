@@ -248,7 +248,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
           <Button
             type="primary"
-            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+            icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             htmlType="submit"
             onClick={onFinish}
             disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}

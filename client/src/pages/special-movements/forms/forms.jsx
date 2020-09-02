@@ -524,7 +524,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
 
           <Button
             type="primary"
-            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+            icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             htmlType="submit"
             // disabled={DISABLED}
             style={{ float: 'right', marginRight: 5 }}

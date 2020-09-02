@@ -129,7 +129,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
           {IS_CREATING && (
             <Button
               type="primary"
-              icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+              icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
               htmlType="submit"
               onClick={onFinish}
               style={{ float: 'right', marginRight: 5 }}
@@ -140,7 +140,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
           )}
           {/* <Button
             type="primary"
-            icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+            icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             htmlType="submit"
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}

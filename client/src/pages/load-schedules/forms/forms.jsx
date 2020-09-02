@@ -554,7 +554,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
           {!READ_ONLY && tab !== "6" && tab !== "7" && tab !== "8" && tab !== "9" && (
             <Button
               type="primary"
-              icon={IS_CREATING ? <EditOutlined /> : <PlusOutlined />}
+              icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
               onClick={onFinish}
               style={{ float: 'right', marginRight: 5 }}
               disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
