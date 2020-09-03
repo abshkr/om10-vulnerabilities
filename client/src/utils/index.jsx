@@ -13,6 +13,7 @@ import calcArmQuantity from './calculate-arm-quantity';
 import { pwdComplexity, complexityDesc } from './pwd-complexity';
 import csvToJSON from './csv-to-json';
 import fetcher from './fetcher';
+import getRealColor from './get-real-color';
 import hexToRGB from './hex-to-rbg';
 import validateField from './validate-field';
 import validateNumber from './validate-number';
@@ -37,6 +38,7 @@ export {
   calcArmQuantity,
   csvToJSON,
   fetcher,
+  getRealColor,
   hexToRGB,
   VCFManager,
   validateField,

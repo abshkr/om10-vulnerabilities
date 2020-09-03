@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Form } from 'antd';
+import { Button, Form, Tooltip } from 'antd';
 import { CompactPicker } from 'react-color';
 import { useTranslation } from 'react-i18next';
 
+import {getRealColor} from '../../../../utils';
+
 const BaseProductColor = ({ form, value }) => {
   const [visible, setVisible] = useState(false);
-  const [color, setColor] = useState('#fff');
+  const [color, setColor] = useState('#ffffff');
 
   const { t } = useTranslation();
 
@@ -27,7 +29,7 @@ const BaseProductColor = ({ form, value }) => {
 
   useEffect(() => {
     if (value) {
-      const color = value.base_color; // === '' ? '#fff' : value.base_color;
+      const color = value.base_color; // === '' ? '#ffffff' : value.base_color;
 
       setFieldsValue({
         base_color: color
@@ -40,9 +42,14 @@ const BaseProductColor = ({ form, value }) => {
   return (
     <div>
       <Form.Item name="base_color" label={t('fields.baseProdColor')}>
-        <Button color={color} onClick={handleVisiblity} style={{ background: color }} block>
-        {!color? t('fields.baseColorCurrentBlank') : t('fields.baseColorCurrentSet')} {color}
-        </Button>
+        <Tooltip 
+          placement="top" 
+          title={`${!color? t('fields.baseColorCurrentBlank') : t('fields.baseColorCurrentSet')} ${color}`}
+        >
+          <Button color={color} onClick={handleVisiblity} style={{ background: getRealColor(color) }} block>
+            {!color? t('fields.baseColorCurrentBlank') : t('fields.baseColorCurrentSet')} {color}
+          </Button>
+        </Tooltip>
       </Form.Item>
 
       <div
@@ -51,7 +58,7 @@ const BaseProductColor = ({ form, value }) => {
           zIndex: '2'
         }}
       >
-        {visible && <CompactPicker color={color} onChangeComplete={handleColorChange} />}
+        {visible && <CompactPicker color={getRealColor(color)} onChangeComplete={handleColorChange} />}
       </div>
     </div>
   );
