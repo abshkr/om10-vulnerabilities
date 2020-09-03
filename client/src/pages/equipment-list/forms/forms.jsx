@@ -16,6 +16,7 @@ import _ from 'lodash';
 
 import api, { EQUIPMENT_LIST } from '../../../api';
 import Compartments from './compartments';
+import { SETTINGS } from '../../../constants';
 
 import {
   Owner,
@@ -28,13 +29,14 @@ import {
   PullingLimit,
   Comments,
   Locks,
+  Legacy_Expires
 } from './fields';
 import { Expiry, CheckList, Equipment } from '../../../components';
 import columns from './columns';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
+const FormModal = ({ value, visible, handleFormState, access, setFilterValue, expiryDateMode, expiryTypes }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -69,6 +71,10 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
         );
       });
     }
+
+    values.eqpt_exp_d1_dmy = values?.eqpt_exp_d1_dmy?.format(SETTINGS.DATE_TIME_FORMAT);
+    values.eqpt_exp_d2_dmy = values?.eqpt_exp_d2_dmy?.format(SETTINGS.DATE_TIME_FORMAT);
+    values.eqpt_exp_d3_dmy = values?.eqpt_exp_d3_dmy?.format(SETTINGS.DATE_TIME_FORMAT);
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
@@ -261,7 +267,11 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
 
             <Divider>{t('tabColumns.expiryDates')}</Divider>
 
-            <Expiry form={form} value={value} type={EQUIPMENT_LIST.EXPIRY} />
+            {expiryDateMode === '1' ?
+              <Legacy_Expires form={form} value={value} expiryTypes={expiryTypes}></Legacy_Expires>
+              :
+              <Expiry form={form} value={value} type={EQUIPMENT_LIST.EXPIRY} />
+            }
           </TabPane>
         </Tabs>
       </Form>
