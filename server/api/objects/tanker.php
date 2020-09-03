@@ -865,9 +865,6 @@ class Tanker extends CommonClass
                 TNKR_BAY_LOOP_CH = :tnkr_bay_loop_ch,
                 TNKR_NTRIPS = :tnkr_ntrips,
                 TNKR_OWN_TXT = :tnkr_own_txt,
-                TNKR_LIC_EXP = TO_DATE(:tnkr_lic_exp, 'YYYY-MM-DD'),
-                TNKR_DGLIC_EXP = TO_DATE(:tnkr_dglic_exp, 'YYYY-MM-DD'),
-                TNKR_INS_EXP = TO_DATE(:tnkr_ins_exp, 'YYYY-MM-DD'),
                 STATS = :stats,
                 LAST_TRIP = :last_trip,
                 TNKR_NAME = :tnkr_name,
@@ -885,9 +882,6 @@ class Tanker extends CommonClass
         oci_bind_by_name($stmt, ':tnkr_bay_loop_ch', $this->tnkr_bay_loop_ch);
         oci_bind_by_name($stmt, ':tnkr_ntrips', $this->tnkr_ntrips);
         oci_bind_by_name($stmt, ':tnkr_own_txt', $this->tnkr_own_txt);
-        oci_bind_by_name($stmt, ':tnkr_lic_exp', $this->tnkr_lic_exp);
-        oci_bind_by_name($stmt, ':tnkr_dglic_exp', $this->tnkr_dglic_exp);
-        oci_bind_by_name($stmt, ':tnkr_ins_exp', $this->tnkr_ins_exp);
         oci_bind_by_name($stmt, ':stats', $this->tnkr_stats);
         oci_bind_by_name($stmt, ':last_trip', $this->tnkr_last_trip);
         oci_bind_by_name($stmt, ':tnkr_name', $this->tnkr_name);
@@ -900,6 +894,39 @@ class Tanker extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
+        }
+
+        $query = "
+            SELECT NVL(MAX(CONFIG_VALUE), '2') CONFIG_VALUE 
+            FROM SITE_CONFIG WHERE CONFIG_KEY = 'SITE_EXPIRY_DATE_MANAGE_MODE'";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        } 
+    
+        $row = oci_fetch_array($stmt, $this->commit_mode);
+        if ($row['CONFIG_VALUE'] === '1') {
+            $query = "
+                UPDATE TANKERS
+                SET TNKR_LIC_EXP = :tnkr_lic_exp,
+                    TNKR_DGLIC_EXP = :tnkr_dglic_exp, 
+                    TNKR_INS_EXP = :tnkr_ins_exp
+                WHERE TNKR_CODE = :tnkr_code";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':tnkr_lic_exp', $this->tnkr_lic_exp);
+            oci_bind_by_name($stmt, ':tnkr_dglic_exp', $this->tnkr_dglic_exp);
+            oci_bind_by_name($stmt, ':tnkr_ins_exp', $this->tnkr_ins_exp);
+            oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                throw new DatabaseException($e['message']);
+                return false;
+            }
         }
         
         //TNKR_EQUIP

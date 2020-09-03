@@ -15,6 +15,7 @@ import LastDepot from './last-depot';
 import CurrentDepot from './current-depot';
 import Locks from './locks';
 import SLP from './slp';
+import LegacyExpires from './legacy-expires';
 
 export {
   Depot,
@@ -33,5 +34,6 @@ export {
   LastDepot,
   CurrentDepot,
   Locks,
-  SLP
+  SLP,
+  LegacyExpires,
 };

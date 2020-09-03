@@ -29,7 +29,7 @@ import {
   PullingLimit,
   Comments,
   Locks,
-  Legacy_Expires
+  LegacyExpires
 } from './fields';
 import { Expiry, CheckList, Equipment } from '../../../components';
 import columns from './columns';
@@ -268,7 +268,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
             <Divider>{t('tabColumns.expiryDates')}</Divider>
 
             {expiryDateMode === '1' ?
-              <Legacy_Expires form={form} value={value} expiryTypes={expiryTypes}></Legacy_Expires>
+              <LegacyExpires form={form} value={value} expiryTypes={expiryTypes}></LegacyExpires>
               :
               <Expiry form={form} value={value} type={EQUIPMENT_LIST.EXPIRY} />
             }
