@@ -10,3 +10,5 @@ OM_VER=`git describe --dirty --always --tags`
 mkdir -p tmp/$OM_VER/frontend/
 # Copy required files to frontend/
 cp -r client/build/* server/api/ server/amfservices/ server/phpwrapper/ modules/load_bays/en/ modules/load_bays/images/ tmp/$OM_VER/frontend/
+# Add the few js files that are expected to be in DocumentRoot
+cp modules/load_bays/*.js tmp/$OM_VER/
