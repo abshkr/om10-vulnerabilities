@@ -8,11 +8,41 @@ const { Panel } = Collapse;
 
 const data = [
   {
-    title: `Latest Release Version Notes (10.1.8-rc.1) - 27/08/2020`,
+    title: `Latest Release Version Notes (10.1.8-rc.2) - 03/09/2020`,
     content: (
       <>
         <>
-          <Divider>Bug Fixes</Divider>
+          <Divider>RC.2 Bug Fixes</Divider>
+          <p>OM5K-7568 - <a>https://dev.diamondkey.com/browse/OM5K-7568</a></p>
+          <p>OM5K-7271 - <a>https://dev.diamondkey.com/browse/OM5K-7271</a></p>
+          <p>OM5K-7629 - <a>https://dev.diamondkey.com/browse/OM5K-7629</a></p>
+          <p>OM5K-7632 - <a>https://dev.diamondkey.com/browse/OM5K-7632</a></p>
+          <p>OM5K-7633 - <a>https://dev.diamondkey.com/browse/OM5K-7633</a></p>
+          <p>OM5K-7657 - <a>https://dev.diamondkey.com/browse/OM5K-7657</a></p>
+          <p>OM5K-7659 - <a>https://dev.diamondkey.com/browse/OM5K-7659</a></p>
+          <p>OM5K-7431 - <a>https://dev.diamondkey.com/browse/OM5K-7431</a></p>
+          <p>OM5K-7609 - <a>https://dev.diamondkey.com/browse/OM5K-7609</a></p>
+          <p>OM5K-7610 - <a>https://dev.diamondkey.com/browse/OM5K-7610</a></p>
+          <p>OM5K-7656 - <a>https://dev.diamondkey.com/browse/OM5K-7656</a></p>
+          <p>OM5K-7661 - <a>https://dev.diamondkey.com/browse/OM5K-7661</a></p>
+          <p>OM5K-7670 - <a>https://dev.diamondkey.com/browse/OM5K-7670</a></p>
+          <p>OM5K-7682 - <a>https://dev.diamondkey.com/browse/OM5K-7682</a></p>
+          <p>OM5K-7249 - <a>https://dev.diamondkey.com/browse/OM5K-7249</a></p>
+          <p>OM5K-7285 - <a>https://dev.diamondkey.com/browse/OM5K-7285</a></p>
+          <p>OM5K-7496 - <a>https://dev.diamondkey.com/browse/OM5K-7496</a></p>
+          <p>OM5K-7532 - <a>https://dev.diamondkey.com/browse/OM5K-7532</a></p>
+          <p>OM5K-7534 - <a>https://dev.diamondkey.com/browse/OM5K-7534</a></p>
+          <p>OM5K-7542 - <a>https://dev.diamondkey.com/browse/OM5K-7542</a></p>
+          <p>OM5K-7579 - <a>https://dev.diamondkey.com/browse/OM5K-7579</a></p>
+          <p>OM5K-7666 - <a>https://dev.diamondkey.com/browse/OM5K-7666</a></p>
+          <p>OM5K-7668 - <a>https://dev.diamondkey.com/browse/OM5K-7668</a></p>
+          <p>OM5K-7669 - <a>https://dev.diamondkey.com/browse/OM5K-7669</a></p>
+          <p>OM5K-7671 - <a>https://dev.diamondkey.com/browse/OM5K-7671</a></p>
+          <p>OM5K-7674 - <a>https://dev.diamondkey.com/browse/OM5K-7674</a></p>
+          <p>OM5K-7678 - <a>https://dev.diamondkey.com/browse/OM5K-7678</a></p>
+          <p>OM5K-7679 - <a>https://dev.diamondkey.com/browse/OM5K-7679</a></p>
+
+          <Divider>RC.1 Bug Fixes</Divider>
           <p>OM5K-6614 - <a>https://dev.diamondkey.com/browse/OM5K-6614</a></p>
           <p>OM5K-6835 - <a>https://dev.diamondkey.com/browse/OM5K-6835</a></p>
           <p>OM5K-7256 - <a>https://dev.diamondkey.com/browse/OM5K-7256</a></p>
