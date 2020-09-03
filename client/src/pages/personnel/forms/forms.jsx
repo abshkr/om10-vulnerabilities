@@ -28,15 +28,17 @@ import {
   Status,
   Comment,
   Lock,
+  LegacyExpires,
 } from './fields';
 
 import { CheckList, PasswordReset, Expiry } from '../../../components';
 import api, { PERSONNEL } from '../../../api';
 import columns from './columns';
+import { SETTINGS } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
+const FormModal = ({ value, visible, handleFormState, access, setFilterValue, expiryDateMode, expiryTypes }) => {
   const [passwordResetVisible, setPasswordResetVisible] = useState(false);
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -70,6 +72,10 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
         );
       });
     }
+
+    values.per_exp_d1_dmy = values?.per_exp_d1_dmy?.format(SETTINGS.DATE_TIME_FORMAT);
+    values.per_exp_d2_dmy = values?.per_exp_d2_dmy?.format(SETTINGS.DATE_TIME_FORMAT);
+    values.per_exp_d3_dmy = values?.per_exp_d3_dmy?.format(SETTINGS.DATE_TIME_FORMAT);
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
@@ -329,7 +335,11 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
 
             <Divider>{t('tabColumns.expiryDates')}</Divider>
 
-            <Expiry form={form} value={value} type={PERSONNEL.EXPIRY_TYPES} />
+            {expiryDateMode === '1' ?
+              <LegacyExpires form={form} value={value} expiryTypes={expiryTypes}></LegacyExpires>
+              :
+              <Expiry form={form} value={value} type={PERSONNEL.EXPIRY_TYPES} />
+            }
             
           </TabPane>
 

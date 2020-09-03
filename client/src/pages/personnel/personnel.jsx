@@ -11,9 +11,10 @@ import { PERSONNEL } from 'api';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
-import { useAuth } from 'hooks';
+import { useAuth, useConfig } from 'hooks';
 
 const Personnel = () => {
+  const { expiryDateMode } = useConfig();
   const { t } = useTranslation();
 
   const access = useAuth('M_PERSONNEL');
@@ -21,7 +22,7 @@ const Personnel = () => {
   const { data: payload, isValidating, revalidate } = useSWR(PERSONNEL.READ);
   const { data: expiryTypes } = useSWR(PERSONNEL.EXPIRY_TYPES);
 
-  const [fields, setFields] = useState(columns(expiryTypes?.records, t));
+  const [fields, setFields] = useState(columns(expiryTypes?.records, t, expiryDateMode));
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [filterValue, setFilterValue] = useState('');
@@ -33,7 +34,7 @@ const Personnel = () => {
 
   useEffect(() => {
     if (expiryTypes) {
-      setFields(columns(expiryTypes?.records, t));
+      setFields(columns(expiryTypes?.records, t, expiryDateMode));
     }
   }, [expiryTypes]);
 
@@ -78,6 +79,8 @@ const Personnel = () => {
         handleFormState={handleFormState} 
         access={access} 
         setFilterValue={setFilterValue}
+        expiryDateMode={expiryDateMode}
+        expiryTypes={expiryTypes?.records}
       />
     </Page>
   );
