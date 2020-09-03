@@ -16,7 +16,7 @@ const columns = (t, pageState, form, arm) => [
     editable: false,
   },
   {
-    headerName: t('fields.meterOpeningAmbient'),
+    headerName: t('fields.meterOpeningAmbient') + ' (' + t('units.ltr') + ')',
     field: 'trsf_opn_amb',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -25,7 +25,7 @@ const columns = (t, pageState, form, arm) => [
     // cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
   },
   {
-    headerName: t('fields.meterClosingAmbient'),
+    headerName: t('fields.meterClosingAmbient') + ' (' + t('units.ltr') + ')',
     field: 'trsf_cls_amb',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -34,7 +34,7 @@ const columns = (t, pageState, form, arm) => [
     // cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
   },
   {
-    headerName: t('fields.observedQuantity'),
+    headerName: t('fields.observedQuantity') + ' (' + t('units.ltr') + ')',
     field: 'trsf_qty_amb',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -42,7 +42,7 @@ const columns = (t, pageState, form, arm) => [
     editable: false,
   },
   {
-    headerName: t('fields.meterOpeningCorrected'),
+    headerName: t('fields.meterOpeningCorrected') + ' (' + t('units.ltr') + ')',
     field: 'trsf_opn_cor',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -51,7 +51,7 @@ const columns = (t, pageState, form, arm) => [
     // cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
   },
   {
-    headerName: t('fields.meterClosingCorrected'),
+    headerName: t('fields.meterClosingCorrected') + ' (' + t('units.ltr') + ')',
     field: 'trsf_cls_cor',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -60,7 +60,7 @@ const columns = (t, pageState, form, arm) => [
     // cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
   },
   {
-    headerName: t('fields.standardQuantity'),
+    headerName: t('fields.standardQuantity') + ' (' + t('units.ltr') + ')',
     field: 'trsf_qty_cor',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -68,7 +68,7 @@ const columns = (t, pageState, form, arm) => [
     editable: false,
   },
   {
-    headerName: t('fields.meterOpeningMass'),
+    headerName: t('fields.meterOpeningMass') + ' (' + t('units.kg') + ')',
     field: 'trsf_open_kg',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -77,7 +77,7 @@ const columns = (t, pageState, form, arm) => [
     // cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
   },
   {
-    headerName: t('fields.meterClosingMass'),
+    headerName: t('fields.meterClosingMass') + ' (' + t('units.kg') + ')',
     field: 'trsf_close_kg',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -86,7 +86,7 @@ const columns = (t, pageState, form, arm) => [
     // cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
   },
   {
-    headerName: t('fields.massQuantity'),
+    headerName: t('fields.massQuantity') + ' (' + t('units.kg') + ')',
     field: 'trsf_load_kg',
     filter: 'FuzzyFilter',
     sortable: true,

@@ -15,42 +15,42 @@ const meterColumns = (t) => [
   },
 
   {
-    headerName: t('fields.meterOpeningAmbient'),
+    headerName: t('fields.meterOpeningAmbient') + ' (' + t('units.ltr') + ')',
     field: 'trsb_opn_amb',
     sortable: true,
     resizable: true,
   },
 
   {
-    headerName: t('fields.meterClosingAmbient'),
+    headerName: t('fields.meterClosingAmbient') + ' (' + t('units.ltr') + ')',
     field: 'trsb_cls_amb',
     sortable: true,
     resizable: true,
   },
 
   {
-    headerName: t('fields.meterOpeningCorrected'),
+    headerName: t('fields.meterOpeningCorrected') + ' (' + t('units.ltr') + ')',
     field: 'trsb_opn_cor',
     sortable: true,
     resizable: true,
   },
 
   {
-    headerName: t('fields.meterClosingCorrected'),
+    headerName: t('fields.meterClosingCorrected') + ' (' + t('units.ltr') + ')',
     field: 'trsb_cls_cor',
     sortable: true,
     resizable: true,
   },
 
   {
-    headerName: t('fields.meterOpeningMass'),
+    headerName: t('fields.meterOpeningMass') + ' (' + t('units.kg') + ')',
     field: 'trsb_opn_kg',
     sortable: true,
     resizable: true,
   },
 
   {
-    headerName: t('fields.meterClosingMass'),
+    headerName: t('fields.meterClosingMass') + ' (' + t('units.kg') + ')',
     field: 'trsb_cls_kg',
     sortable: true,
     resizable: true,
