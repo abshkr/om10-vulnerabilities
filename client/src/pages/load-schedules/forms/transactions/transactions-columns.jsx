@@ -91,7 +91,7 @@ const columns = (t) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    hide: true,
+    hide: false,
   },
   {
     headerName: t('fields.lastModified'),
