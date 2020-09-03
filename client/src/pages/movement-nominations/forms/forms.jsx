@@ -44,10 +44,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
   const IS_CREATING = !value;
 
   const onFormClosed = () => {
+    resetFields();
     handleFormState(false, null);
   };
 
   const onComplete = (nomination) => {
+    resetFields();
     handleFormState(false, null);
     if (nomination) {
       locateNomination(nomination);

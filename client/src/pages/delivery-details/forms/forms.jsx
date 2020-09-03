@@ -115,6 +115,7 @@ const FormModal = ({
   };
 
   const onFormClosed = () => {
+    resetFields();
     handleFormState(false, null);
     setDrawerWidth('80vw');
     setMainTabOn(true);
@@ -122,6 +123,7 @@ const FormModal = ({
 
   const onComplete = () => {
     console.log('start of onComplete');
+    resetFields();
     handleFormState(false, null);
     setDrawerWidth('80vw');
     setMainTabOn(true);

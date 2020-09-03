@@ -21,14 +21,16 @@ const DensityRange = ({ form, value, classification, config }) => {
   useEffect(() => {
     if (classification && !value?.base_dens_lo && !value?.base_dens_hi) {
       setFieldsValue({
-        base_dens_lo: classification.bclass_dens_lo,
-        base_dens_hi: classification.bclass_dens_hi,
+        // base_dens_lo: classification.bclass_dens_lo,
+        // base_dens_hi: classification.bclass_dens_hi,
+        base_dens_lo: _.round(_.toNumber(classification?.bclass_dens_lo), config.precisionDensity),
+        base_dens_hi: _.round(_.toNumber(classification?.bclass_dens_hi), config.precisionDensity),
       });
     }
   }, [setFieldsValue, classification]);
 
-  const low = classification ? _.toNumber(classification?.bclass_dens_lo) : '';
-  const high = classification ? _.toNumber(classification?.bclass_dens_hi) : '';
+  const low = classification ? _.round(_.toNumber(classification?.bclass_dens_lo), config.precisionDensity) : '';
+  const high = classification ? _.round(_.toNumber(classification?.bclass_dens_hi), config.precisionDensity) : '';
 
   return (
     <>

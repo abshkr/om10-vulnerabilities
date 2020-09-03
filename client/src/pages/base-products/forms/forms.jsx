@@ -41,7 +41,15 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
 
   const { resetFields } = form;
 
+  const onFormClosed = () => {
+    setClassification(undefined);
+    resetFields();
+    handleFormState(false, null);
+  };
+
   const onComplete = (base_code) => {
+    setClassification(undefined);
+    resetFields();
     handleFormState(false, null);
     mutate(BASE_PRODUCTS.READ);
     handleFormState(false, null);
@@ -132,7 +140,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
-      onClose={() => handleFormState(false, null)}
+      onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
       mask={IS_CREATING}
@@ -145,7 +153,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={onFormClosed}
           >
             {t('operations.cancel')}
           </Button>
