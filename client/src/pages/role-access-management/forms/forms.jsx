@@ -37,6 +37,8 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
 
     if (auth_level_name) {
       setFilterValue('' + auth_level_name);
+    } else {
+      setFilterValue(' ');
     }
   };
 
@@ -47,8 +49,9 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
     const privilege = generator(privTemplate, values);
 
     const payload = {
-      auth_level_name: IS_CREATING ? values?.auth_level_name : value?.auth_level_name,
-      role_note: IS_CREATING ? values?.role_note : value?.role_note,
+      // auth_level_name: IS_CREATING ? values?.auth_level_name : value?.auth_level_name,
+      auth_level_name: IS_CREATING ? values?.auth_level_name : value?.auth_level_key,
+      role_note: IS_CREATING ? values?.role_note : (value?.role_id<10 ? value?.role_note : values?.role_note),
       role_code: IS_CREATING ? undefined : value?.role_code,
       delete_check: values?.delete_check,
       lock_check: values?.lock_check,
@@ -126,7 +129,7 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
       const regex = new RegExp(ALPHANUMERIC);
       const validated = regex.exec(input);
 
-      if (!validated) {
+      if (!validated && !value) {
         return Promise.reject(`${t('validate.invalidInput')}: ${t('descriptions.mustBeAlphaNumeric')}`);
       }
 
@@ -158,6 +161,7 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
         ...set,
         role_note: value?.role_note,
         auth_level_name: value?.auth_level_name,
+        auth_level_title: value?.auth_level_title,
         lock_check: value?.lock_check,
         delete_check: value?.delete_check,
       });
@@ -170,10 +174,17 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
     }
   }, [value, IS_CREATING, setFieldsValue]);
 
-  const options = ['View', 'Update', 'Create', 'Delete', 'Password'];
-  const loadScheduleOptions = [...options, {label: 'Schedule Product', value: 'Extra'}];
+  const options = [
+    { label: t('fields.accessView'),      value: 'View' },
+    { label: t('fields.accessUpdate'),    value: 'Update' },
+    { label: t('fields.accessCreate'),    value: 'Create' },
+    { label: t('fields.accessDelete'),    value: 'Delete' },
+    { label: t('fields.accessPassword'),  value: 'Password' }
+  ];
+  // const options = ['View', 'Update', 'Create', 'Delete', 'Password'];
+  const loadScheduleOptions = [...options, {label: t('fields.accessScheduleProduct'), value: 'Extra'}];
   // const loadScheduleOptions = [...options, 'Schedule Product'];
-  const folioOptions = [...options, {label: 'Close/Freeze Folio', value: 'Extra'}];
+  const folioOptions = [...options, {label: t('fields.accessCloseFreezeFolio'), value: 'Extra'}];
   // const folioOptions = [...options, 'Close/Freeze Folio'];
 
   // if (IS_CREATING) {
@@ -378,7 +389,7 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
             </Form.Item>
           </TabPane>
 
-          <TabPane tab={t('tabColumns.all')} key="1">
+          <TabPane tab={t('tabColumns.main')} key="1">
             <Form.Item name="MENU_HOME" label={t('pageMenu.home')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
