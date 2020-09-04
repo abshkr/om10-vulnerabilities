@@ -202,7 +202,14 @@
 		"VIEW_DELIVERY_DETAILS": "允许查看配送细节"
 	},
 	"fields": {
+		"accessCloseFreezeFolio": "结束/冻结预盘",
+		"accessCreate": "新增",
+		"accessDelete": "删除",
+		"accessPassword": "认证",
+		"accessScheduleProduct": "调度油品",
 		"accessType": "访问类型",
+		"accessUpdate": "修改",
+		"accessView": "查看",
 		"ack_id": "认可ID",
 		"acknowledged": "已认可",
 		"action": "操作方式",

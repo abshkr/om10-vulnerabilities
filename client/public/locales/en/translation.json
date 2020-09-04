@@ -202,7 +202,14 @@
 		"VIEW_DELIVERY_DETAILS": "View Delivery Details"
 	},
 	"fields": {
+		"accessCloseFreezeFolio": "Close/Freeze Folio",
+		"accessCreate": "Create",
+		"accessDelete": "Delete",
+		"accessPassword": "Password",
+		"accessScheduleProduct": "Schedule Product",
 		"accessType": "Access Type",
+		"accessUpdate": "Update",
+		"accessView": "View",
 		"ack_id": "Ack ID",
 		"acknowledged": "Acknowledged",
 		"action": "Action",
