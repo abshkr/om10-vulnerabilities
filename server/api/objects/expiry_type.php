@@ -23,11 +23,36 @@ class ExpiryDateType extends CommonClass
         "EDT_REJECT" => 1,
         "EDT_DEFAULT" => 1,
         "EDT_TIME_ENABLED" => 1,
+        "EXPIRY_DATE_REJA" => "Y",
     );
 
     public $NUMBER_FIELDS = array(
         "CHILD_COUNT",
     );
+
+    /**
+     * Because when SITE_EXPIRY_DATE_MANAGE_MODE is different, TABLE_NAME needs to change, so 
+     * do it here. still call super::common_prep
+    */
+    public function common_prep()
+    {
+        $query = "
+            SELECT NVL(MAX(CONFIG_VALUE), '2') CONFIG_VALUE 
+            FROM SITE_CONFIG WHERE CONFIG_KEY = 'SITE_EXPIRY_DATE_MANAGE_MODE'";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        } 
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        if ($row['CONFIG_VALUE'] === '1') {
+            $this->TABLE_NAME = "EXPIRY_DATE";
+        }
+
+        return parent::common_prep();
+    }
 
 
     public function readSimple($target_code = ExpiryTarget::ALL)
@@ -52,6 +77,69 @@ class ExpiryDateType extends CommonClass
 
     public function read($target_code = ExpiryTarget::ALL)
     {
+        write_log(sprintf("%s::%s() START. target_code:%s", __CLASS__, __FUNCTION__, $this->target_code),
+            __FILE__, __LINE__);
+
+        if (isset($this->target_code)) {
+            $target_code = $this->target_code;
+            write_log(sprintf("this->target_code set, use it:%s", $this->target_code), __FILE__, __LINE__);
+        }
+        
+        $query = "
+            SELECT NVL(MAX(CONFIG_VALUE), '2') CONFIG_VALUE 
+            FROM SITE_CONFIG WHERE CONFIG_KEY = 'SITE_EXPIRY_DATE_MANAGE_MODE'";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        } 
+    
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        if ($row['CONFIG_VALUE'] === '1') {
+            if ($target_code === ExpiryTarget::TANKER) {
+                $query = "SELECT EXPIRY_DATE_NO,
+                    EXPIRY_DATE_TITL,
+                    EXPIRY_DATE_REJA,
+                    EXPIRY_DATE_DESC
+                FROM EXPIRY_DATE
+                WHERE EXPIRY_DATE_NO IN (7, 8, 9)
+                ORDER BY EXPIRY_DATE_NO";
+            } else if ($target_code === ExpiryTarget::TRANSP_EQUIP) {
+                $query = "SELECT EXPIRY_DATE_NO,
+                    EXPIRY_DATE_TITL,
+                    EXPIRY_DATE_REJA,
+                    EXPIRY_DATE_DESC
+                FROM EXPIRY_DATE
+                WHERE EXPIRY_DATE_NO IN (1, 2, 3)
+                ORDER BY EXPIRY_DATE_NO";
+            } else if ($target_code === ExpiryTarget::PERSONNEL) {
+                $query = "SELECT EXPIRY_DATE_NO,
+                    EXPIRY_DATE_TITL,
+                    EXPIRY_DATE_REJA,
+                    EXPIRY_DATE_DESC
+                FROM EXPIRY_DATE
+                WHERE EXPIRY_DATE_NO IN (4, 5, 6)
+                ORDER BY EXPIRY_DATE_NO";
+            } else {
+                $query = "SELECT EXPIRY_DATE_NO,
+                    EXPIRY_DATE_TITL,
+                    EXPIRY_DATE_REJA,
+                    EXPIRY_DATE_DESC
+                FROM EXPIRY_DATE
+                ORDER BY EXPIRY_DATE_NO";
+            }
+            
+            $stmt = oci_parse($this->conn, $query);
+            if (oci_execute($stmt, $this->commit_mode)) {
+                return $stmt;
+            } else {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return null;
+            }
+        }
+
         $query = "SELECT EXPIRY_DATE_TYPES.*, 
                     DECODE(EDT_TARGET_CODE, 
                         'TANKERS', 'Expiry Dates For Tankers',
@@ -73,7 +161,7 @@ class ExpiryDateType extends CommonClass
                     EDT_DEFAULT
                 ORDER BY EDT_TARGET_CODE, EDT_TYPE_CODE";
         $stmt = oci_parse($this->conn, $query);
-        if (isset($this->target_code)&& $this->target_code) {
+        if (isset($this->target_code) && $this->target_code) {
             oci_bind_by_name($stmt, ':target_code', $this->target_code);
         } else {
             oci_bind_by_name($stmt, ':target_code', $target_code);

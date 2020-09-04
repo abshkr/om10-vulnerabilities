@@ -1,21 +1,54 @@
-const columns = (expiryTypes, t) => {
+const columns = (expiryTypes, t, expiryDateMode) => {
   const expiryColumns = [];
 
-  if (!!expiryColumns) {
-    for (let i = 0; i < expiryTypes?.length; i++) {
-      expiryColumns.push({
-        headerName: expiryTypes[i].edt_type_desc,
-        field: "expiry_dates",
-        sortable: true,
-        resizable: true,
-        filter: 'FuzzyFilter',
-        cellRenderer: 'ExpiryDateRenderer',
-        suppressSizeToFit: true,
-        width: 180,
-        cellRendererParams: {
-          edt_type_code: expiryTypes[i].edt_type_code,
-        }
-      });
+  if (expiryDateMode === '1') {
+    expiryColumns.push({
+      headerName: expiryTypes ? expiryTypes[0]?.expiry_date_titl : '',
+      field: "tnkr_lic_exp",
+      sortable: true,
+      resizable: true,
+      filter: 'FuzzyFilter',
+      cellRenderer: 'DateRenderer',
+      suppressSizeToFit: true,
+      width: 180,
+    });
+    expiryColumns.push({
+      headerName: expiryTypes ? expiryTypes[1]?.expiry_date_titl : '',
+      field: "tnkr_dglic_exp",
+      sortable: true,
+      resizable: true,
+      filter: 'FuzzyFilter',
+      cellRenderer: 'DateRenderer',
+      suppressSizeToFit: true,
+      width: 180,
+    });
+    expiryColumns.push({
+      headerName: expiryTypes ? expiryTypes[2]?.expiry_date_titl : '',
+      field: "tnkr_ins_exp",
+      sortable: true,
+      resizable: true,
+      filter: 'FuzzyFilter',
+      cellRenderer: 'DateRenderer',
+      suppressSizeToFit: true,
+      width: 180,
+    });
+  } else {
+    if (!!expiryColumns) {
+      for (let i = 0; i < expiryTypes?.length; i++) {
+        expiryColumns.push({
+          headerName: expiryTypes[i].edt_type_desc,
+          field: "expiry_dates",
+          sortable: true,
+          resizable: true,
+          filter: 'FuzzyFilter',
+          cellRenderer: 'ExpiryDateRenderer',
+          suppressSizeToFit: true,
+          width: 180,
+          cellRendererParams: {
+            edt_type_code: expiryTypes[i].edt_type_code,
+          }
+        });
+      }
     }
   }
   

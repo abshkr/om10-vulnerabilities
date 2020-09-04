@@ -230,12 +230,9 @@ class Equipment extends CommonClass
                 EQPT_OWNER_NAME,
                 EQPT_ETP,
                 EQPT_ETP_TITLE,
-                DECODE(EQPT_EXP_D1_DMY, NULL, '',
-                    TO_CHAR(EQPT_EXP_D1_DMY, 'YYYY-MM-DD')) AS EQPT_EXP_D1_DMY,
-                DECODE(EQPT_EXP_D2_DMY, NULL, '',
-                    TO_CHAR(EQPT_EXP_D2_DMY, 'YYYY-MM-DD')) AS EQPT_EXP_D2_DMY,
-                DECODE(EQPT_EXP_D3_DMY, NULL, '',
-                    TO_CHAR(EQPT_EXP_D3_DMY, 'YYYY-MM-DD')) AS EQPT_EXP_D3_DMY,
+                EQPT_EXP_D1_DMY,
+                EQPT_EXP_D2_DMY,
+                EQPT_EXP_D3_DMY,
                 EQPT_LOCK,
                 EQPT_EMPTY_KG,
                 EQP_MUST_TARE_IN,
@@ -569,6 +566,39 @@ class Equipment extends CommonClass
             oci_rollback($this->conn);
             throw new DatabaseException($e['message']);
             return false;
+        }
+
+        $query = "
+            SELECT NVL(MAX(CONFIG_VALUE), '2') CONFIG_VALUE 
+            FROM SITE_CONFIG WHERE CONFIG_KEY = 'SITE_EXPIRY_DATE_MANAGE_MODE'";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        } 
+    
+        $row = oci_fetch_array($stmt, OCI_NO_AUTO_COMMIT);
+        if ($row['CONFIG_VALUE'] === '1') {
+            $query = "
+                UPDATE TRANSP_EQUIP
+                SET EQPT_EXP_D1_DMY = :eqpt_exp_d1_dmy,
+                    EQPT_EXP_D2_DMY = :eqpt_exp_d2_dmy,
+                    EQPT_EXP_D3_DMY = :eqpt_exp_d3_dmy
+                WHERE EQPT_ID = :eqpt_id";
+            $stmt = oci_parse($this->conn, $query);
+           oci_bind_by_name($stmt, ':eqpt_exp_d1_dmy', $this->eqpt_exp_d1_dmy);
+            oci_bind_by_name($stmt, ':eqpt_exp_d2_dmy', $this->eqpt_exp_d2_dmy);
+            oci_bind_by_name($stmt, ':eqpt_exp_d3_dmy', $this->eqpt_exp_d3_dmy);
+            oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
+
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                throw new DatabaseException($e['message']);
+                return false;
+            }
         }
 
         //Update expiry dates

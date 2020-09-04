@@ -8,12 +8,14 @@ import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 import { Page, DataTable, Download } from '../../components';
 import { TANKER_LIST } from '../../api';
 import columns from './columns';
-import { useAuth } from '../../hooks';
+import { useAuth, useConfig } from '../../hooks';
 import auth from '../../auth';
 import Forms from './forms';
 // import { useEffect } from 'react';
 
 const TankerList = () => {
+  const { expiryDateMode } = useConfig();
+
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -24,7 +26,7 @@ const TankerList = () => {
   const { data: payload, isValidating, revalidate } = useSWR(TANKER_LIST.READ);
   const { data: expiryTypes } = useSWR(TANKER_LIST.EXPIRY);
 
-  const [fields, setFields] = useState(columns(expiryTypes?.records, t));
+  const [fields, setFields] = useState(columns(expiryTypes?.records, t, expiryDateMode));
 
   const data = payload?.records;
 
@@ -35,7 +37,7 @@ const TankerList = () => {
 
   useEffect(() => {
     if (expiryTypes) {
-      setFields(columns(expiryTypes?.records, t));
+      setFields(columns(expiryTypes?.records, t, expiryDateMode));
     }
   }, [expiryTypes]);
 
@@ -81,6 +83,8 @@ const TankerList = () => {
         handleFormState={handleFormState}
         access={access}
         setFilterValue={setFilterValue}
+        expiryDateMode={expiryDateMode}
+        expiryTypes={expiryTypes}
       />
     </Page>
   );

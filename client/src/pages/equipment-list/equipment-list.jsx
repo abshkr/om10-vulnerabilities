@@ -10,10 +10,12 @@ import { EQUIPMENT_LIST } from '../../api';
 
 import columns from './columns';
 import auth from '../../auth';
-import { useAuth } from 'hooks';
+import { useAuth, useConfig } from 'hooks';
 import Forms from './forms';
 
 const EquipmentList = () => {
+  const { expiryDateMode } = useConfig();
+  
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -23,7 +25,7 @@ const EquipmentList = () => {
   const { data: payload, isValidating, revalidate } = useSWR(EQUIPMENT_LIST.READ);
   const { data: expiryTypes } = useSWR(EQUIPMENT_LIST.EXPIRY);
 
-  const [fields, setFields] = useState(columns(expiryTypes?.records, t));
+  const [fields, setFields] = useState(columns(expiryTypes?.records, t, expiryDateMode));
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -37,7 +39,7 @@ const EquipmentList = () => {
 
   useEffect(() => {
     if (expiryTypes) {
-      setFields(columns(expiryTypes?.records, t));
+      setFields(columns(expiryTypes?.records, t, expiryDateMode));
     }
   }, [expiryTypes]);
 
@@ -82,6 +84,8 @@ const EquipmentList = () => {
           handleFormState={handleFormState}
           access={access}
           setFilterValue={setFilterValue}
+          expiryDateMode={expiryDateMode}
+          expiryTypes={expiryTypes?.records}
         />
       )}
     </Page>

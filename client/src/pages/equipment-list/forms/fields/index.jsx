@@ -9,5 +9,6 @@ import PullingLimit from './pulling-limit';
 import EmptyWeight from './empty-weight';
 import Locks from './locks';
 import Comments from './comments';
+import LegacyExpires from './legacy-expires';
 
-export { Owner, Code, Title, Id, EquipmentType, Area, LoadType, PullingLimit, EmptyWeight, Locks, Comments };
+export { Owner, Code, Title, Id, EquipmentType, Area, LoadType, PullingLimit, EmptyWeight, Locks, Comments, LegacyExpires };

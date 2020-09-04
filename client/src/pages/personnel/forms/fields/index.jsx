@@ -10,5 +10,6 @@ import Status from './status';
 import Comment from './comment';
 import Lock from './lock';
 import SLP from './slp';
+import LegacyExpires from './legacy-expires';
 
-export { Employer, Code, Name, Department, Email, Role, TimeCode, DriverLicence, Status, Comment, Lock, SLP };
+export { Employer, Code, Name, Department, Email, Role, TimeCode, DriverLicence, Status, Comment, Lock, SLP, LegacyExpires };

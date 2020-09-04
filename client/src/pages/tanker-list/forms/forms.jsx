@@ -33,15 +33,18 @@ import {
   CurrentDepot,
   Locks,
   SLP,
+  LegacyExpires,
 } from './fields';
 import api, { TANKER_LIST } from '../../../api';
 import Compartments from './compartments';
 import { Expiry, CheckList } from '../../../components';
 import columns from './columns';
+import { SETTINGS } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
+const FormModal = ({ value, visible, handleFormState, access, setFilterValue, expiryDateMode, expiryTypes }) => {
+  console.log(expiryTypes);
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -86,6 +89,10 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
         );
       });
     }
+
+    values.tnkr_lic_exp = values?.tnkr_lic_exp?.format(SETTINGS.DATE_TIME_FORMAT);
+    values.tnkr_dglic_exp = values?.tnkr_dglic_exp?.format(SETTINGS.DATE_TIME_FORMAT);
+    values.tnkr_ins_exp = values?.tnkr_ins_exp?.format(SETTINGS.DATE_TIME_FORMAT);
 
     Modal.confirm({
       title: IS_CREATING ? createPrompt : t('prompts.update'),
@@ -294,7 +301,11 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
 
             <Divider>{t('tabColumns.expiryDates')} </Divider>
 
-            <Expiry form={form} value={value} type={TANKER_LIST.EXPIRY} />
+            {expiryDateMode === '1' ?
+              <LegacyExpires form={form} value={value} expiryTypes={expiryTypes?.records}></LegacyExpires>
+              :
+              <Expiry form={form} value={value} type={TANKER_LIST.EXPIRY} />
+            }
           </TabPane>
         </Tabs>
       </Form>

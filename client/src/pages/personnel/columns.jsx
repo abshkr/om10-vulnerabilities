@@ -1,21 +1,34 @@
-const columns = (expiryTypes, t) => {
+const columns = (expiryTypes, t, expiryDateMode) => {
   const expiryColumns = [];
 
   if (!!expiryColumns) {
     for (let i = 0; i < expiryTypes?.length; i++) {
-      expiryColumns.push({
-        headerName: expiryTypes[i].edt_type_desc,
-        field: "expiry_dates",
-        sortable: true,
-        resizable: true,
-        filter: 'FuzzyFilter',
-        cellRenderer: 'ExpiryDateRenderer',
-        suppressSizeToFit: true,
-        width: 180,
-        cellRendererParams: {
-          edt_type_code: expiryTypes[i].edt_type_code,
-        }
-      });
+      if (expiryDateMode === '1') {
+        expiryColumns.push({
+          headerName: expiryTypes[i].expiry_date_titl,
+          field: "per_exp_d" + (i + 1) + "_dmy",
+          sortable: true,
+          resizable: true,
+          filter: 'FuzzyFilter',
+          cellRenderer: 'DateRenderer',
+          suppressSizeToFit: true,
+          width: 180,
+        });
+      } else {
+        expiryColumns.push({
+          headerName: expiryTypes[i].edt_type_desc,
+          field: "expiry_dates",
+          sortable: true,
+          resizable: true,
+          filter: 'FuzzyFilter',
+          cellRenderer: 'ExpiryDateRenderer',
+          suppressSizeToFit: true,
+          width: 180,
+          cellRendererParams: {
+            edt_type_code: expiryTypes[i].edt_type_code,
+          }
+        });
+      }
     }
   }
   

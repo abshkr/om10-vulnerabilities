@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import _ from 'lodash';
 
+import CheckboxContainer from './style';
+
 const HotLitresForm = ({ value, form, hotFlag }) => {
   const { t } = useTranslation();
   // const [form] = Form.useForm();
@@ -35,11 +37,13 @@ const HotLitresForm = ({ value, form, hotFlag }) => {
       <Row gutter={[8, 2]}>
         <Col span={8}>
           <Form.Item name="prod_check_hot_volume" label={t('fields.prodCheckHotVolume2')} >
-            <Checkbox 
-              checked={flag} 
-              // onChange={onChange}
-              disabled={true}
-            ></Checkbox>
+            <CheckboxContainer>
+              <Checkbox 
+                checked={flag} 
+                // onChange={onChange}
+                disabled={true}
+              ></Checkbox>
+            </CheckboxContainer>
           </Form.Item>
         </Col>
         <Col span={8}>
