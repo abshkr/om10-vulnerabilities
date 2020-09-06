@@ -56,7 +56,7 @@ const PasswordReset = ({ value }) => {
       </Form.Item>
 
       <Form.Item label={t('fields.password')}>
-        <Input value={password} onChange={(event) => setPassword(event.target.value)} />
+        <Input readOnly value={password} onChange={(event) => setPassword(event.target.value)} />
       </Form.Item>
 
       <div style={{ marginTop: 30, display: 'flex', justifyContent: 'space-around' }}>
