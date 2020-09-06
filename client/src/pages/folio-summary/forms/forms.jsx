@@ -42,6 +42,9 @@ const Forms = ({ value, visible, handleFormState, access }) => {
 
   useEffect(() => {
     getCloseoutStatus();
+    setSaveToFolioTrigger(0);
+    setSaveToTanksTrigger(0);
+    setCalculateTrigger(0);
   }, [value]);
 
   const enabled = value?.status === 0 || value?.status === 1;
