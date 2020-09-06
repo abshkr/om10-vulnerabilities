@@ -54,7 +54,7 @@ export default class MultiFilter extends Component {
     const { colDef, agGridReact } = this.props;
 
     this.setState({
-      keys: _.uniq(_.map(agGridReact.props.rowData, colDef.field))
+      keys: _.uniq(_.map(agGridReact.props.rowData, colDef.field)).sort()
     });
   }
 
