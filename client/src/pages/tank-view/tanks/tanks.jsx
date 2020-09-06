@@ -110,10 +110,10 @@ export default class Tanks extends Component {
     };
   };
 
-  hexToRgb = hex => {
+  hexToRgb = (hex) => {
     const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
 
-    hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+    hex = hex.replace(shorthandRegex, function (m, r, g, b) {
       return r + r + g + g + b + b;
     });
 
@@ -123,7 +123,7 @@ export default class Tanks extends Component {
       : null;
   };
 
-  handleManipulation = results => {
+  handleManipulation = (results) => {
     const data = [];
 
     const status = {
@@ -136,13 +136,11 @@ export default class Tanks extends Component {
       'Out Of Service - Offline': 'rgba(103,164,236,0.2)',
     };
 
-    _.forEach(results, tank => {
+    _.forEach(results, (tank) => {
       const capacity = _.toInteger(tank.tank_max_level);
       const volume = _.toInteger(tank.tank_prod_lvl);
 
-      let percent = _.isNaN((volume * 100) / capacity)
-        ? 0.0
-        : ((volume * 100) / capacity).toFixed(2);
+      let percent = _.isNaN((volume * 100) / capacity) ? 0.0 : ((volume * 100) / capacity).toFixed(2);
 
       if (capacity === 0) {
         percent = 0;
@@ -155,7 +153,7 @@ export default class Tanks extends Component {
         tank.tank_l_level,
         tank.tank_ll_level,
         tank.tank_uh_level,
-        tank.tank_ul_level,
+        tank.tank_ul_level
       );
 
       const baseColor =
@@ -223,9 +221,7 @@ export default class Tanks extends Component {
     return (
       <div className="tank-view">
         {data.map((item, index) => {
-          return (
-            <Tank key={index} tank={item} handleClick={handleClick} height={300} width={410} />
-          );
+          return <Tank key={index} tank={item} handleClick={handleClick} height={300} width={410} />;
         })}
       </div>
     );

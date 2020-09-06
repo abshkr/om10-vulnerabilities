@@ -1,176 +1,91 @@
-import React, { Component } from 'react';
-
-import { Button, Tabs, Modal, Spin, Icon, Select } from 'antd';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { List, Card, BackTop, Button, Badge, Tag } from 'antd';
+import { UpOutlined, SyncOutlined } from '@ant-design/icons';
+import ReactApexChart from 'react-apexcharts';
+import useSWR from 'swr';
 import _ from 'lodash';
 
-import { Page, Search, Download } from '../../components';
-import { search } from '../../utils/';
-import { tanks } from '../../api';
+import { TANKS } from 'api';
+import { TankViewContainer } from './style';
+import { Page } from 'components';
+import { useAuth } from 'hooks';
+import auth from 'auth';
 
-import columns from './columns';
-import auth from '../../auth';
+import TankImage from './img.png';
 
-import Summary from './summary';
-import Forms from './forms';
-import Tanks from './tanks';
+import transform from './transform';
 
-import './tank-view.css';
+const layout = {
+  gutter: 16,
+  xs: 1,
+  sm: 2,
+  md: 4,
+  lg: 4,
+  xl: 4,
+  xxl: 5,
+};
 
-class TankView extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: [],
-      value: '',
-      isLoading: true,
-      sorter: 'tank_code',
-      order: 'asc',
-    };
-  }
+const TankView = () => {
+  const { t } = useTranslation();
+  const access = useAuth('M_TANKVIEW');
 
-  handleClick = (object) => {
-    const { configuration, t } = this.props;
-    const { data } = this.state;
+  const [tanks, setTanks] = useState([]);
 
-    const defaults = object ? object.defaults : null;
+  const {} = useSWR(TANKS.READ, {
+    refreshInterval: 1000,
+    onSuccess: (data) => {
+      if (data?.records) {
+        const payload = transform(data?.records);
 
-    Modal.info({
-      title: object ? (
-        <div className="tank-modal-title">
-          Editing {defaults.tank_code} / {defaults.tank_name}{' '}
-        </div>
-      ) : (
-        'Create'
-      ),
-      centered: true,
-      icon: object ? 'edit' : 'form',
-      width: '40vw',
-      content: (
-        <Forms
-          value={defaults}
-          refresh={this.handleFetch}
-          profile={configuration}
-          t={t}
-          data={data}
-          tank={object}
+        setTanks(payload.splice(0, 5));
+      }
+    },
+  });
+
+  return (
+    <Page access={access} page={t('pageMenu.modules')} name={t('pageNames.tankView')} transparent>
+      <TankViewContainer img={TankImage}>
+        <List
+          grid={layout}
+          dataSource={tanks}
+          loading={!tanks}
+          renderItem={(item) => (
+            <List.Item>
+              <Card
+                size="small"
+                title={`${item?.code} / ${item?.name}`}
+                hoverable
+                headStyle={{ paddingRight: 0 }}
+                bodyStyle={{ background: item?.status?.colour }}
+                extra={
+                  <Tag
+                    icon={<SyncOutlined spin={item.automatic} />}
+                    color={item?.automatic ? 'green' : 'gold'}
+                  >
+                    {item?.automatic ? 'Automatic' : 'Manual'}
+                  </Tag>
+                }
+                actions={[
+                  <Badge status={item?.levels?.status?.hh} text="HH" />,
+                  <Badge status={item?.levels?.status?.h} text="H" />,
+                  <Badge status={item?.levels?.status?.l} text="L" />,
+                  <Badge status={item?.levels?.status?.ll} text="LL" />,
+                ]}
+              >
+                <ReactApexChart options={item?.options} series={item?.series} type="bar" height={188} />
+              </Card>
+            </List.Item>
+          )}
         />
-      ),
-      okButtonProps: {
-        style: { display: 'none' },
-      },
-    });
-  };
-
-  handleSearch = (value) => {
-    this.setState({
-      value,
-    });
-  };
-
-  handleFetch = () => {
-    const { sorter, order } = this.state;
-
-    axios.all([tanks.readTanks()]).then(
-      axios.spread((tanks) => {
-        this.setState({
-          data: _.orderBy(tanks.data.records, [sorter], [order]),
-          isLoading: false,
-        });
-      })
-    );
-  };
-
-  handleSorting = (value) => {
-    this.setState({
-      sorter: value,
-      isLoading: true,
-    });
-  };
-
-  handleSortOrder = (value) => {
-    this.setState({
-      order: value,
-      isLoading: true,
-    });
-  };
-
-  componentDidMount() {
-    this.handleFetch();
-    this.liveUpdate = setInterval(this.handleFetch, 1000);
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.liveUpdate);
-  }
-
-  render() {
-    const { data, value, isLoading, products, sorter, order } = this.state;
-    const { configuration, t } = this.props;
-
-    const results = search(value, data);
-
-    return (
-      <Page page="Operations" name="Tank View">
-        <Spin
-          spinning={isLoading}
-          indicator={<Icon type="loading" style={{ fontSize: 24, color: '#0054A4' }} spin />}
-        >
-          <Search value={value} search={this.handleSearch} />
-
-          <Select 
-            dropdownMatchSelectWidth={false}
-            value={sorter} 
-            style={{ width: 190, marginRight: 5 }} 
-            onChange={this.handleSorting}
-          >
-            <Select.Option value="tank_base_name">Sort By Product Name</Select.Option>
-            <Select.Option value="tank_group">Sort By Group</Select.Option>
-            <Select.Option value="tank_name">Sort By Tank Name</Select.Option>
-            <Select.Option value="tank_code">Sort By Tank Code</Select.Option>
-            <Select.Option value="tank_status_name">Sort By Tank Status</Select.Option>
-          </Select>
-
-          <Select 
-            dropdownMatchSelectWidth={false}
-            value={order} 
-            style={{ width: 190 }} 
-            onChange={this.handleSortOrder}
-          >
-            <Select.Option value="asc">Order By Ascending</Select.Option>
-            <Select.Option value="desc">Order By Descending</Select.Option>
-          </Select>
-
-          <Download data={results} columns={columns} type="Tank View" style={{ float: 'right' }} />
-
-          <Button
-            shape="round"
-            icon="setting"
-            type="primary"
-            style={{ float: 'right', marginRight: 5 }}
-            onClick={() => this.handleClick(null)}
-          >
-            Add Tank
+        <BackTop>
+          <Button type="primary" icon={<UpOutlined />}>
+            Scroll Up
           </Button>
-
-          <Tabs defaultActiveKey="1" animated={false}>
-            <Tabs.TabPane tab="Tank View" key="1" style={{ padding: 5 }} forceRender={true}>
-              <Tanks
-                results={results}
-                products={products}
-                configuration={configuration}
-                handleClick={this.handleClick}
-              />
-            </Tabs.TabPane>
-
-            <Tabs.TabPane tab="Summary" key="2" forceRender={true}>
-              <Summary data={results} t={t} />
-            </Tabs.TabPane>
-          </Tabs>
-        </Spin>
-      </Page>
-    );
-  }
-}
+        </BackTop>
+      </TankViewContainer>
+    </Page>
+  );
+};
 
 export default auth(TankView);

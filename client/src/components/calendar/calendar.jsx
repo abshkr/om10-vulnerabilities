@@ -37,14 +37,13 @@ const Calendar = ({ handleChange, handleClear, start, end, disabled, enableClear
   };
 
   const onRangeSelect = (dates) => {
-		if (dates) {
-			if (dates[2] === 'range') {
-				handleChange(dates[0].format(DATE_TIME_FORMAT), dates[1].format(DATE_TIME_FORMAT));
-			}
-		}
-		else {
-			handleClear();
-		}
+    if (dates) {
+      if (dates[2] === 'range') {
+        handleChange(dates[0].format(DATE_TIME_FORMAT), dates[1].format(DATE_TIME_FORMAT));
+      }
+    } else {
+      handleClear();
+    }
   };
 
   return (
@@ -58,7 +57,7 @@ const Calendar = ({ handleChange, handleClear, start, end, disabled, enableClear
       onOk={(dates) => onChange(dates)}
       onChange={(dates) => onRangeSelect(dates)}
       ranges={ranges}
-      style={{width: "360px"}}
+      style={{ width: '360px' }}
     />
   );
 };

@@ -476,6 +476,13 @@ const Navigation = () => {
             <Icons size={40} hidden type="fscStatus" />
             {t('pageNames.fscStatus')}
           </Menu.Item>
+
+
+          <Menu.Item key={ROUTES.TANK_VIEW} style={{ display: 'flex', marginTop: 10 }} newscreen={ROUTES.TANK_VIEW}>
+            <Icons size={40} hidden type="tankView" />
+            {t('pageNames.tankView')}
+          </Menu.Item>
+
         </SubMenu>
       </Menu>
     </MenuContainer>

@@ -323,7 +323,7 @@ const paths = [
 
   {
     path: ROUTES.TANK_VIEW,
-    component: lazy(() => import('../pages/work-in-progress')),
+    component: lazy(() => import('../pages/tank-view')),
   },
 
   {
