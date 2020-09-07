@@ -4,7 +4,6 @@ import { SWRConfig } from 'swr';
 import { fetcher } from 'utils';
 
 import { Modal } from 'antd';
-// import { useTranslation } from 'react-i18next';
 
 import Partnership from './partnership';
 
@@ -25,17 +24,17 @@ const PartnershipManager = (
     width: width,
     icon: <FileSearchOutlined />,
     content: (
-    <SWRConfig
+      <SWRConfig
         value={{
-        refreshInterval: 0,
-        fetcher,
+          refreshInterval: 0,
+          fetcher,
         }}
-    >
-      <Partnership value={value} onClose={onClose} />
-    </SWRConfig>
+      >
+        <Partnership value={value} onClose={onClose} />
+      </SWRConfig>
     ),
     okButtonProps: {
-    style: { display: 'none' },
+      style: { display: 'none' },
     },
   });
 

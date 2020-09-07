@@ -4,6 +4,8 @@ import { Input, Button } from 'antd';
 import _ from 'lodash';
 
 export default class InputPopupEditor extends Component {
+  _isMounted = false;
+
   constructor(props) {
     super(props);
 
@@ -16,29 +18,31 @@ export default class InputPopupEditor extends Component {
     return this.state.value;
   }
 
-  setCellValue = async (value) => {
-    const { form, grid, colDef, rowIndex } = this.props;
+  setCellValue = (value) => {
+    const { form, grid, tableAPI, colDef, rowIndex } = this.props;
 
     let current = form.getFieldValue(grid);
 
     current[rowIndex][colDef?.field] = value;
 
-    form.setFieldsValue({
+    /* form.setFieldsValue({
       [grid]: current,
-    });
-    console.log('InputPopupEditor: setCellValue', value, grid, rowIndex, current, colDef, this.props.api);
+    }); */
+    console.log('InputPopupEditor: setCellValue', value, grid, rowIndex, current, colDef);
 
-    //setPayload(current);
+    tableAPI.updateRowData({ update: [current[rowIndex]] });
 
-    this.setState(
-      {
-        value,
-      },
-      () => this.props.api.stopEditing()
-    );
+    if (this._isMounted) {
+      this.setState(
+        {
+          value,
+        },
+        () => this.props.api.stopEditing()
+      );
+    }
   };
 
-  popupCallBack = async (value) => {
+  popupCallBack = (value) => {
     const { name } = this.props;
 
     console.log('InputPopupEditor: popupCallBack', value);
@@ -50,17 +54,16 @@ export default class InputPopupEditor extends Component {
         if (_.isObject(value) && !value.hasOwnProperty(name)) {
           index = '';
         }
-        await this.setCellValue(index);
-        //this.setState({ value: index });
+        this.setCellValue(index);
     }
   }
 
-  handlePopup = async () => {
-    const { t, popupTitle, popupParams, value } = this.props;
-    console.log('InputPopupEditor: handlePopup', value);
+  handlePopup = () => {
+    const { t, popupManager, popupTitle, popupParams } = this.props;
+    console.log('InputPopupEditor: handlePopup');
     // pop up the dialog
-    if (_.isFunction(this.state.popupManager)) {
-        this.state.popupManager(
+    if (_.isFunction(popupManager)) {
+        popupManager(
             popupTitle,
             popupParams,
             this.popupCallBack,
@@ -71,46 +74,22 @@ export default class InputPopupEditor extends Component {
      }
   };
 
-  /* validate = (rule, input) => {
-
-    if ((required && input === '') || (required && !input)) {
-      return Promise.reject(`${t('validate.set')} ─ ${label}`);
-    }
-
-    const len = (new TextEncoder().encode(input)).length;
-    if (maxLength != undefined && input && len > maxLength) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: ${maxLength} ─ ${t('descriptions.maxCharacters')}`);
-    }
-
-    return Promise.resolve();
-  }; */
-
   handleValueChange = (event) => {
-    // this.setCellValue(event?.target?.value);
     this.setState({ value: event.target.value });
   }
 
   handlePressEnter = (event) => {
-    // this.setCellValue(event?.target?.value);
     this.setState({ value: event.target.value });
   }
 
   componentDidMount() {
-    const { popupManager } = this.props;
-    // mount this dialog
-    if (_.isFunction(popupManager)) {
-        this.setState({ popupManager: popupManager });
-    }
+    this._isMounted = true;
+    console.log('................componentDidMount', this._isMounted);
   }
 
   componentWillUnmount() {
-    /* const { data } = this.props;
-    // console.log('in NumericEditor componentWillUnmount', data);
-
-    if (data?.editable) {
-      this.refs.input.removeEventListener('keydown', this.onKeyDown);
-    } */
-    // this.props.value = this.state.value;
+    this._isMounted = false;
+    console.log('................componentWillUnmount', this._isMounted);
   }
 
   render() {
@@ -138,8 +117,6 @@ export default class InputPopupEditor extends Component {
                 )
             }
         />
-
-
       </div>
     );
   }

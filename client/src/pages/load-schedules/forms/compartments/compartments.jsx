@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form } from 'antd';
-import { DataTable } from '../../../../components';
+import { DataTable, PartnershipManager } from '../../../../components';
 
 import api, { LOAD_SCHEDULES } from '../../../../api';
 import columns from './columns';
@@ -11,34 +11,36 @@ import {
   UnitEditor,
   ScheduleEditor,
   DelvNoEditor,
-  SoldToEditor,
-  ShipToEditor,
+  // SoldToEditor,
+  // ShipToEditor,
 } from './fields';
 
 import useSWR from 'swr';
 
-const Compartments = ({ form, value, tanker, drawer }) => {
+const Compartments = ({ form, value, tanker, drawer, supplier }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
   const IS_CREATING = !value;
 
-  const { data: soldTo } = useSWR(LOAD_SCHEDULES.SOLD_TO);
-  const { data: shipTo } = useSWR(LOAD_SCHEDULES.SHIP_TO);
+  // const { data: soldTo } = useSWR(LOAD_SCHEDULES.SOLD_TO);
+  // const { data: shipTo } = useSWR(LOAD_SCHEDULES.SHIP_TO);
   const { data: units } = useSWR(LOAD_SCHEDULES.UNIT_TYPES);
 
   const [compartments, setCompartments] = useState([]);
   const [products, setProducts] = useState([]);
+  const [tableAPI, setTableAPI] = useState(null);
 
-  const fields = columns(t, form, products, soldTo, shipTo, units, drawer);
+  // const fields = columns(t, form, products, soldTo, shipTo, units, supplier);
+  const fields = columns(t, form, products, units, supplier, PartnershipManager, tableAPI);
 
   const components = {
     ProductEditor,
     UnitEditor,
     ScheduleEditor,
     DelvNoEditor,
-    SoldToEditor,
-    ShipToEditor,
+    // SoldToEditor,
+    // ShipToEditor,
   };
 
   useEffect(() => {
@@ -131,6 +133,7 @@ const Compartments = ({ form, value, tanker, drawer }) => {
         minimal 
         // editType='fullRow'
         rowEditingStopped={rowEditingStopped}
+        apiContext={setTableAPI}
       />
     </Form.Item>
   );

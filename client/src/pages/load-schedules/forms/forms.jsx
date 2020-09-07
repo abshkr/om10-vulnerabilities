@@ -788,7 +788,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             </Row>
 
             {mode === '2' && !READ_ONLY && (
-              <Compartments form={form} value={value} drawer={drawer} tanker={tanker} />
+              <Compartments form={form} value={value} drawer={drawer} tanker={tanker} supplier={supplier} />
             )}
 
             {mode === '3' && !READ_ONLY && <Products form={form} value={value} drawer={drawer} access={access} />}
