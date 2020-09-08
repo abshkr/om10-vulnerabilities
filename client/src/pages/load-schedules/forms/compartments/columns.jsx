@@ -1,4 +1,5 @@
-const columns = (t, form, products, soldTo, shipTo, units, drawer) => [
+// const columns = (t, form, products, soldTo, shipTo, units, supplier) => [
+const columns = (t, form, products, units, supplier, PartnershipManager, tableAPI) => [
   {
     headerName: t('fields.equipment'),
     field: 'eqpt_code',
@@ -73,10 +74,31 @@ const columns = (t, form, products, soldTo, shipTo, units, drawer) => [
 
   {
     headerName: t('fields.orderNo'),
-    field: 'shls_srctype',
+    field: 'order_id',
     resizable: true,
     width: 110,
     suppressSizeToFit: true,
+    /* editable: true,
+    cellClass: 'editable-ag-grid-cell',
+    cellEditor: 'InputPopupEditor',
+    cellEditorParams: {
+      form: form,
+      grid: 'compartments',
+      name: '',
+      tableAPI: tableAPI,
+      // maxLength: 20,
+      t,
+      popupDisabled: !supplier,
+      popupManager: PartnershipManager,
+      popupTitle: t('fields.orderNo') + ' - ' + t('pageNames.orderListing'),
+      popupParams: {
+        // order_supp_code: supplier,
+        partner_code: '',
+        partner_type: 'AG',
+        partner_cmpy_code: supplier,
+        partner_cust_acct: ''
+      },
+    }, */
   },
 
   {
@@ -103,10 +125,28 @@ const columns = (t, form, products, soldTo, shipTo, units, drawer) => [
     suppressSizeToFit: true,
     editable: true,
     cellClass: 'editable-ag-grid-cell',
-    cellEditor: 'SoldToEditor',
+    // cellEditor: 'SoldToEditor',
+    // cellEditorParams: {
+    //   values: soldTo?.records.filter((o)=>(o.partner_cmpy_code === supplier)) || [],
+    //   form: form,
+    // },
+    cellEditor: 'InputPopupEditor',
     cellEditorParams: {
-      values: soldTo?.records.filter((o)=>(o.partner_cmpy_code === drawer)) || [],
       form: form,
+      grid: 'compartments',
+      name: '',
+      tableAPI: tableAPI,
+      maxLength: 20,
+      t,
+      popupDisabled: !supplier,
+      popupManager: PartnershipManager,
+      popupTitle: t('fields.soldTo') + ' - ' + t('pageNames.partnership'),
+      popupParams: {
+        partner_code: '',
+        partner_type: 'AG',
+        partner_cmpy_code: supplier,
+        partner_cust_acct: ''
+      },
     },
   },
 
@@ -118,10 +158,28 @@ const columns = (t, form, products, soldTo, shipTo, units, drawer) => [
     suppressSizeToFit: true,
     editable: true,
     cellClass: 'editable-ag-grid-cell',
-    cellEditor: 'ShipToEditor',
+    // cellEditor: 'ShipToEditor',
+    // cellEditorParams: {
+    //   values: shipTo?.records.filter((o)=>(o.partner_cmpy_code === supplier)) || [],
+    //   form: form,
+    // },
+    cellEditor: 'InputPopupEditor',
     cellEditorParams: {
-      values: shipTo?.records.filter((o)=>(o.partner_cmpy_code === drawer)) || [],
       form: form,
+      grid: 'compartments',
+      name: '',
+      tableAPI: tableAPI,
+      maxLength: 20,
+      t,
+      popupDisabled: !supplier,
+      popupManager: PartnershipManager,
+      popupTitle: t('fields.shipTo') + ' - ' + t('pageNames.partnership'),
+      popupParams: {
+        partner_code: '',
+        partner_type: 'WE',
+        partner_cmpy_code: supplier,
+        partner_cust_acct: ''
+      },
     },
   },
 

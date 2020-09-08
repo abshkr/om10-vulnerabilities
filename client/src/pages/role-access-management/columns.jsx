@@ -7,6 +7,14 @@ const columns = t => [
     resizable: true
   },
   {
+    headerName: t('fields.roleKey'),
+    field: 'auth_level_key',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+  },
+  {
     headerName: t('fields.roleName'),
     field: 'auth_level_name',
     filter: 'FuzzyFilter',

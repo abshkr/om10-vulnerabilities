@@ -48,11 +48,11 @@ const FormSwitch = ({ config, onChange }) => {
           style={{ width: 280 }} 
           onChange={(value) => onChange(config, value)}
         >
-          <Option value="RANGE">RANGE</Option>
-          <Option value="COMMA">COMMA-SEPERATED</Option>
+          <Option value="RANGE">{t('descriptions.sealRangeWithRange')}</Option>
+          <Option value="COMMA">{t('descriptions.sealRangeWithComma')}</Option>
         </Select>
       );
-
+  
     case 'SITE_SEAL_MODE':
       return (
         <Select 
@@ -61,9 +61,9 @@ const FormSwitch = ({ config, onChange }) => {
           style={{ width: 280 }} 
           onChange={(value) => onChange(config, value)}
         >
-          <Option value="0">No-auto Mode</Option>
-          <Option value="1">Allocate With DLI</Option>
-          <Option value="2">Allocate With BOL</Option>
+          <Option value="0">{t('descriptions.sealModeNoAuto')}</Option>
+          <Option value="1">{t('descriptions.sealModeAllocDli')}</Option>
+          <Option value="2">{t('descriptions.sealModeAllocBol')}</Option>
         </Select>
       );
 
@@ -326,7 +326,7 @@ const FormSwitch = ({ config, onChange }) => {
   }
 };
 
-const ConfigurationItems = ({ data, onChange }) => (
+const ConfigurationItems = ({ data, onChange, t }) => (
   <List
     style={{ height: 'calc(100vh - 300px)', overflowY: 'auto', minHeight: 720 }}
     itemLayout="horizontal"
@@ -344,8 +344,8 @@ const ConfigurationItems = ({ data, onChange }) => (
                 style={{
                   visibility: item.config_value === 'N' || item.config_value === 'Y' ? 'visible' : 'hidden',
                 }}
-                checkedChildren={<span>On</span>}
-                unCheckedChildren={<span>Off</span>}
+                checkedChildren={<span>{t('operations.switchOn')}</span>}
+                unCheckedChildren={<span>{t('operations.switchOff')}</span>}
                 onChange={(value) => onChange(item, value ? 'Y' : 'N')}
               />
             }
@@ -373,8 +373,8 @@ const FeatureItems = ({ data, onChange, t }) => (
             avatar={
               <Switch
                 checked={item.feature_flag}
-                checkedChildren={<span>On</span>}
-                unCheckedChildren={<span>Off</span>}
+                checkedChildren={<span>{t('operations.switchOn')}</span>}
+                unCheckedChildren={<span>{t('operations.switchOff')}</span>}
                 onChange={(value) => onChange(item, value)}
               />
             }
@@ -387,7 +387,7 @@ const FeatureItems = ({ data, onChange, t }) => (
   />
 );
 
-const HostMessagingItems = ({ data, onChange }) => (
+const HostMessagingItems = ({ data, onChange, t }) => (
   <List
     style={{ height: 'calc(100vh - 300px)', overflowY: 'auto', minHeight: 720 }}
     itemLayout="horizontal"
@@ -404,8 +404,8 @@ const HostMessagingItems = ({ data, onChange }) => (
                 style={{
                   visibility: item.config_value === 'N' || item.config_value === 'Y' ? 'visible' : 'hidden',
                 }}
-                checkedChildren={<span>On</span>}
-                unCheckedChildren={<span>Off</span>}
+                checkedChildren={<span>{t('operations.switchOn')}</span>}
+                unCheckedChildren={<span>{t('operations.switchOff')}</span>}
                 onChange={(value) => onChange(item, value ? 'Y' : 'N')}
               />
             }
@@ -589,18 +589,21 @@ const Configuration = ({ user, config }) => {
             <ConfigurationItems
               data={_.filter(configuration, ['config_required_by_gui', 'Y'])}
               onChange={onConfigurationEdit}
+              t={t}
             />
           </TabPane>
           <TabPane tab={t('tabColumns.general')} key="2">
             <ConfigurationItems
               data={_.filter(configuration, ['config_required_by_gui', 'R'])}
               onChange={onConfigurationEdit}
+              t={t}
             />
           </TabPane>
           <TabPane tab={t('tabColumns.driverPin')} key="3">
             <ConfigurationItems
               data={_.filter(configuration, ['config_required_by_gui', 'P'])}
               onChange={onConfigurationEdit}
+              t={t}
             />
           </TabPane>
 
@@ -608,6 +611,7 @@ const Configuration = ({ user, config }) => {
             <ConfigurationItems
               data={_.filter(configuration, ['config_required_by_gui', 'M'])}
               onChange={onConfigurationEdit}
+              t={t}
             />
           </TabPane>
 
@@ -624,6 +628,7 @@ const Configuration = ({ user, config }) => {
             <ConfigurationItems
               data={_.sortBy(_.filter(configuration, ['config_required_by_gui', 'S']), ['config_key', 'config_comment'])}
               onChange={onConfigurationEdit}
+              t={t}
             />
           </TabPane>
 
@@ -637,6 +642,7 @@ const Configuration = ({ user, config }) => {
             <HostMessagingItems
               data={_.filter(configuration, ['config_required_by_gui', 'H'])}
               onChange={onConfigurationEdit}
+              t={t}
             />
           </TabPane>
         </Tabs>

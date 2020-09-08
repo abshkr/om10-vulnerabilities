@@ -4,6 +4,7 @@ import { SETTINGS } from '../../../constants';
 
 const buildPayloadToSubmit = (values, sourceType, orderSeals, t) => {
     const payload = {};
+    const qtyFactor = 1000;
 
     payload.supplier = values?.supplier;
     if (sourceType === 'SCHEDULE') {
@@ -60,12 +61,12 @@ const buildPayloadToSubmit = (values, sourceType, orderSeals, t) => {
         const mitem = values?.meter_transfers?.[midx];
         if (titem.trsf_cmpt_no === mitem.trsf_cmpt_no) {
           const meter = {};
-          meter.open_amb = mitem.trsf_mtr_opn_amb;
-          meter.open_cor = mitem.trsf_mtr_opn_cor;
-          meter.open_kg = mitem.trsf_mtr_open_kg;
-          meter.close_amb = mitem.trsf_mtr_cls_amb;
-          meter.close_cor = mitem.trsf_mtr_cls_cor;
-          meter.close_kg = mitem.trsf_mtr_close_kg;
+          meter.open_amb = mitem.trsf_mtr_opn_amb * qtyFactor;
+          meter.open_cor = mitem.trsf_mtr_opn_cor * qtyFactor;
+          meter.open_kg = mitem.trsf_mtr_open_kg * qtyFactor;
+          meter.close_amb = mitem.trsf_mtr_cls_amb * qtyFactor;
+          meter.close_cor = mitem.trsf_mtr_cls_cor * qtyFactor;
+          meter.close_kg = mitem.trsf_mtr_close_kg * qtyFactor;
           meter.injector_or_meter = mitem.injector_or_meter;
           meter.meter_injector_code = mitem.trsf_mtr_cd;
           transfer.meters.push(meter);

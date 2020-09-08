@@ -25,13 +25,14 @@ const Partnership = ({value, onClose}) => {
 
   const [selected, setSelected] = useState(null);
 
-  const onFinish = async () => {
+  const onFinish = () => {
     Modal.destroyAll();
-    await onClose(selected?.partner_code);
+    onClose(selected?.partner_code);
   };
 
   const handleSelect = (value) => {
     setSelected(value);
+    // onClose(value?.partner_code);
   };
 
   return (

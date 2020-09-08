@@ -33,7 +33,14 @@ class Role extends CommonClass
         SELECT 
             ROLE_ID,
             ROLE_CODE,
-            AUTH_LEVEL_NAME,
+            ROLE_TEXT           as AUTH_LEVEL_KEY,
+            (
+                CASE 
+                    WHEN AUTH_LEVEL_NAME = ROLE_TEXT 
+                    THEN ROLE_TEXT 
+                    ELSE ROLE_TEXT||' - '||AUTH_LEVEL_NAME
+                END
+            )                   as AUTH_LEVEL_NAME,
             ROLE_NOTE,
             ROLE_RANK,
             ROLE_TYPE,

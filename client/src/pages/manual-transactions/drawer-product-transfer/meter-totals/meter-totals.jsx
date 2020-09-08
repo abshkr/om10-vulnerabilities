@@ -102,7 +102,7 @@ const MeterTotals = ({
 
   useEffect(() => {
     getMeters();
-  }, [selected, transfers, productArms, dataLoaded]);
+  }, [transfers, productArms, dataLoaded]);
 
   useEffect(() => {
     if (data) {

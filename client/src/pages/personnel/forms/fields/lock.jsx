@@ -53,7 +53,7 @@ const Lock = ({ form, value }) => {
         <Col span={4}>
           <Form.Item 
             name="per_lock" 
-            label="Area Access Control" 
+            label={t("fields.areaAccessControl")} 
             valuePropName="checked"
             onChange={onChange}
           >

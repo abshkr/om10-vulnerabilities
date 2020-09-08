@@ -29,26 +29,57 @@ const MeterTransfers = ({
 
   const fields = columns(t);
 
+  const onCellUpdate = (value) => {
+    console.log('MeterTransfers: onCellUpdate', value);
+    // console.log('MeterTransfers: onCellUpdate2', value?.colDef?.field, value?.colDef?.headerName, value?.value, value?.newValue, value?.data.trsf_cmpt_capacit);
+
+    /* injector_or_meter: arm?.meter_type_code,
+    trsf_mtr_cd: arm?.stream_mtrcode,
+    trsf_mtr_typ: `${arm?.meter_type_code} - ${arm?.meter_type_desc}`,
+    trsf_cmpt_no: cmptNo, */
+
+    let current = form.getFieldValue('meter_transfers');
+    console.log('MeterTransfers: onCellUpdate', current);
+
+    const index = _.findIndex(current, (o) => (
+      o.trsf_cmpt_no === value?.data?.trsf_cmpt_no &&
+      o.trsf_mtr_cd === value?.data?.trsf_mtr_cd
+    ));
+    current[index][value.colDef.field] = value?.value;
+
+    setData(current);
+
+    if ( value?.colDef?.field === 'trsf_mtr_opn_amb' || 
+      value?.colDef?.field === 'trsf_mtr_opn_cor' || 
+      value?.colDef?.field === 'trsf_mtr_open_kg' || 
+      value?.colDef?.field === 'trsf_mtr_cls_amb' || 
+      value?.colDef?.field === 'trsf_mtr_cls_cor' ||
+      value?.colDef?.field === 'trsf_mtr_close_kg') {
+    }
+  };
+
   useEffect(() => {
     function getMeters() {
       setLoading(true);
 
       const meters = buildMeterTransfers(productArms, transfers);
 
+      console.log('MeterTransfers: dataLoaded!', dataLoaded);
       setLoading(false);
       if (!dataLoaded || !dataLoaded?.meter_transfers || dataLoaded?.meter_transfers?.length === 0) {
         setData(meters);
+        console.log('MT 5 - MeterTransfers: data are built!');
       } else {
         setData(dataLoaded.meter_transfers);
         const loaded = _.clone(dataLoaded);
         loaded.meter_transfers = [];
         setDataLoaded(loaded);
-        // console.log('MT 5 - MeterTransfers: data are loaded!');
+        console.log('MT 5 - MeterTransfers: data are loaded!');
       }
     }
 
     getMeters();
-  }, [selected, transfers, productArms, dataLoaded]);
+  }, [transfers, productArms, dataLoaded]);
 
   useEffect(() => {
     if (data) {
@@ -86,6 +117,7 @@ const MeterTransfers = ({
           height="70vh" 
           columns={fields} 
           editType={false}
+          onCellUpdate={(value) => onCellUpdate(value)}
         />
       </Form.Item>
     </Spin>
