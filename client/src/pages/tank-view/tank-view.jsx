@@ -59,7 +59,7 @@ const TankView = () => {
       const filtered = search(searchQuery, data?.records);
       const payload = transform(filtered);
 
-      setTanks(payload?.tanks?.splice(0, 15));
+      setTanks(payload?.tanks);
       setSummary(payload?.summary);
     }
   }, [data, searchQuery]);

@@ -255,7 +255,7 @@ function transform(data) {
       series: [
         {
           name: 'Total',
-          data: [_.random(0, 100)],
+          data: [percentage],
         },
       ],
 
