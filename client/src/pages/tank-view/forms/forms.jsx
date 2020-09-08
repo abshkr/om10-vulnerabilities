@@ -1,11 +1,12 @@
-import React, { Component } from 'react';
-import { Form, Button, Tabs, notification, Modal, Descriptions, Divider } from 'antd';
-import { tanks } from '../../../api';
-import { convertToLocale } from '../../../utils';
+import React, { useEffect, useState } from 'react';
 
+import { EditOutlined, PlusOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
+import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Descriptions } from 'antd';
+import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
+import { mutate } from 'swr';
 
-import axios from 'axios';
+import { Tank } from 'components';
 import {
   Code,
   Product,
@@ -13,205 +14,188 @@ import {
   Density,
   DailyVariance,
   MontlhyVariance,
-  Flags
-} from '../../../pages/tank-configuration/forms/fields';
+  Flags,
+  Levels,
+} from 'pages/tank-configuration/forms/fields';
 
-import TankForm from './tank-form';
+import { GeneralContainer } from '../style';
 
-class TankConfigurationForm extends Component {
-  handleCreate = () => {
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        axios
-          .all([tanks.createTank(values)])
-          .then(
-            axios.spread(() => {
-              this.props.refresh();
-              Modal.destroyAll();
-              notification.success({
-                message: 'Successfully Created.',
-                description: `You have Created the Tank ${values.tank_code}`
+import api, { TANKS } from '../../../api';
+
+const TabPane = Tabs.TabPane;
+
+const FormModal = ({ value, visible, handleFormState, access, handleRevalidate }) => {
+  const { t } = useTranslation();
+  const [form] = Form.useForm();
+
+  const IS_CREATING = !value;
+
+  const { resetFields } = form;
+
+  const [product, setProduct] = useState(undefined);
+
+  const onComplete = () => {
+    handleFormState(false, null);
+    handleRevalidate();
+  };
+
+  const onFinish = async () => {
+    const values = await form.validateFields();
+
+    Modal.confirm({
+      title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
+      okText: IS_CREATING ? t('operations.create') : t('operations.update'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await api
+          .post(IS_CREATING ? TANKS.CREATE : TANKS.UPDATE, values)
+          .then(() => {
+            onComplete();
+
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
               });
-            })
-          )
-          .catch(error => {
-            notification.error({
-              message: error.message,
-              description: 'Failed to create the Tank.'
             });
           });
-      } else {
-        notification.error({
-          message: 'Validation Failed.',
-          description: 'Make sure all the fields meet the requirements.'
-        });
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (!value && !visible) {
+      form.resetFields();
+    }
+  }, [resetFields, value, visible]);
+
+  return (
+    <Drawer
+      bodyStyle={{ paddingTop: 5 }}
+      onClose={() => handleFormState(false, null)}
+      maskClosable={IS_CREATING}
+      destroyOnClose={true}
+      mask={IS_CREATING}
+      placement="right"
+      width="40vw"
+      visible={visible}
+      footer={
+        <>
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => handleFormState(false, null)}
+          >
+            {t('operations.cancel')}
+          </Button>
+
+          <Button
+            type="primary"
+            icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
+            onClick={onFinish}
+            style={{ float: 'right', marginRight: 5 }}
+            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
+          >
+            {IS_CREATING ? t('operations.create') : t('operations.update')}
+          </Button>
+        </>
       }
-    });
-  };
+    >
+      <Form layout="vertical" form={form} scrollToFirstError>
+        <Tabs defaultActiveKey={IS_CREATING ? '2' : '1'}>
+          <TabPane tab={t('tabColumns.general')} key="1" disabled={IS_CREATING}>
+            <GeneralContainer>
+              <Tank item={value} />
 
-  handleUpdate = () => {
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        axios
-          .all([tanks.updateTank(values)])
-          .then(
-            axios.spread(() => {
-              this.props.refresh();
-              Modal.destroyAll();
-              notification.success({
-                message: 'Successfully Updated.',
-                description: `You have updated the Tank ${values.tank_code}`
-              });
-            })
-          )
-          .catch(error => {
-            notification.error({
-              message: error.message,
-              description: 'Failed to update the Tank.'
-            });
-          });
-      } else {
-        notification.error({
-          message: 'Validation Failed.',
-          description: 'Make sure all the fields meet the requirements.'
-        });
-      }
-    });
-  };
+              <div style={{ marginTop: 15 }}>
+                <Levels form={form} value={value} />
+              </div>
 
-  showUpdateConfirm = () => {
-    Modal.confirm({
-      title: 'Are you sure you want to update this tank?',
-      okText: 'Yes',
-      okType: 'primary',
-      cancelText: 'No',
-      centered: true,
-      onOk: this.handleUpdate
-    });
-  };
+              <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 10 }}>
+                <Descriptions.Item label="Product" span={12}>
+                  {value?.tank_base_name}
+                </Descriptions.Item>
 
-  showCreateConfirm = () => {
-    Modal.confirm({
-      title: 'Are you sure you want to create this tank?',
-      okText: 'Yes',
-      okType: 'primary',
-      cancelText: 'No',
-      centered: true,
-      onOk: this.handleCreate
-    });
-  };
+                <Descriptions.Item label="Product Code" span={12}>
+                  {value?.tank_base}
+                </Descriptions.Item>
 
-  render() {
-    const { form, value, data, tank, t } = this.props;
+                <Descriptions.Item label="Observed Temperature" span={12}>
+                  {value?.tank_temp} °C
+                </Descriptions.Item>
 
-    const TabPane = Tabs.TabPane;
+                <Descriptions.Item label="Reference Density" span={24}>
+                  {value?.tank_density} Kg / m³
+                </Descriptions.Item>
 
-    const capacity = !!value ? _.toInteger(value.tank_ullage) + _.toInteger(value.tank_amb_vol) : 0;
+                <Descriptions.Item label="Tank Capacity" span={24}>
+                  {value?.totalCapacity} Litres
+                </Descriptions.Item>
 
-    return (
-      <div>
-        <Form>
-          <Tabs defaultActiveKey={!!value ? '0' : '2'} animated={false}>
-            {!!value && (
-              <TabPane className="ant-tab-window" tab="Information" key="0" forceRender={true}>
-                <Descriptions bordered size="middle">
-                  <Descriptions.Item label="Product" span={2}>
-                    {value.tank_base_name}
-                  </Descriptions.Item>
+                <Descriptions.Item label="Tank Max Level" span={24}>
+                  {value?.tank_max_level} mm
+                </Descriptions.Item>
 
-                  <Descriptions.Item label="Product Code">{value.tank_base}</Descriptions.Item>
+                <Descriptions.Item label="Level" span={24}>
+                  {value?.tank_prod_lvl} mm
+                </Descriptions.Item>
 
-                  <Descriptions.Item label="Observed Temperature" span={3}>
-                    {value.tank_temp} °C
-                  </Descriptions.Item>
+                <Descriptions.Item label="Observed Quantity" span={24}>
+                  {value?.tank_amb_vol} Litres
+                </Descriptions.Item>
 
-                  <Descriptions.Item label="Reference Density" span={3}>
-                    {value.tank_density} Kg / m³
-                  </Descriptions.Item>
+                <Descriptions.Item label="Standard Quantity" span={24}>
+                  {value?.tank_cor_vol} Litres
+                </Descriptions.Item>
 
-                  <Descriptions.Item label="Tank Capacity" span={3}>
-                    {capacity} Litres
-                  </Descriptions.Item>
+                <Descriptions.Item label="Weight in Air" span={24}>
+                  {value?.tank_vapour_kg} T
+                </Descriptions.Item>
 
-                  <Descriptions.Item label="Tank Max Level" span={3}>
-                    {value.tank_max_level} mm
-                  </Descriptions.Item>
+                <Descriptions.Item label="Ullage" span={24}>
+                  {value?.tank_ullage} Litres
+                </Descriptions.Item>
 
-                  <Descriptions.Item label="Level" span={3}>
-                    {value.tank_prod_lvl} mm
-                  </Descriptions.Item>
+                <Descriptions.Item label="Pumpable Volume" span={24}>
+                  {value?.tank_pump_vol} T
+                </Descriptions.Item>
 
-                  <Descriptions.Item label="Observed Quantity" span={3}>
-                    {value.tank_amb_vol} Litres
-                  </Descriptions.Item>
+                <Descriptions.Item label="Water Level" span={24}>
+                  {value?.tank_water_lvl} mm
+                </Descriptions.Item>
 
-                  <Descriptions.Item label="Standard Quantity" span={3}>
-                    {value.tank_cor_vol} Litres
-                  </Descriptions.Item>
+                <Descriptions.Item label="Water Volume" span={24}>
+                  {value?.tank_liquid_kg} Kg
+                </Descriptions.Item>
+              </Descriptions>
+            </GeneralContainer>
+          </TabPane>
 
-                  <Descriptions.Item label="Weight in Air" span={3}>
-                    {value.tank_vapour_kg} T
-                  </Descriptions.Item>
+          <TabPane tab={t('tabColumns.configuration')} key="2" forceRender>
+            <Code form={form} value={value} config={null} />
+            <Name form={form} value={value} />
+            <Product form={form} value={value} onChange={setProduct} />
+            <Density form={form} value={value} product={product} />
+            <Divider>{t('divider.variances')}</Divider>
+            <DailyVariance form={form} value={value} />
+            <MontlhyVariance form={form} value={value} />
+            <Divider>{t('divider.flags')}</Divider>
+            <Flags form={form} value={value} />
+          </TabPane>
+        </Tabs>
+      </Form>
+    </Drawer>
+  );
+};
 
-                  <Descriptions.Item label="Ullage" span={3}>
-                    {value.tank_ullage} Litres
-                  </Descriptions.Item>
-
-                  <Descriptions.Item label="Pumpable Volume" span={3}>
-                    {value.tank_pump_vol} T
-                  </Descriptions.Item>
-
-                  <Descriptions.Item label="Water Level" span={3}>
-                    {value.tank_water_lvl} mm
-                  </Descriptions.Item>
-
-                  <Descriptions.Item label="Water Volume" span={3}>
-                    {value.tank_liquid_kg} Kg
-                  </Descriptions.Item>
-
-                  <Descriptions.Item label="Last Online" span={3}>
-                    {convertToLocale(value.tank_date)}
-                  </Descriptions.Item>
-                </Descriptions>
-              </TabPane>
-            )}
-
-            {!!value && (
-              <TabPane tab="Levels" className="ant-tab-window" key="1" forceRender={true}>
-                <TankForm tank={tank} form={form} value={value} data={data} />
-              </TabPane>
-            )}
-
-            <TabPane tab="General" className="ant-tab-window" key="2" forceRender={true}>
-              <Code form={form} value={value} t={t} data={data} />
-              <Name form={form} value={value} t={t} />
-              <Product form={form} value={value} t={t} />
-              <Density form={form} value={value} t={t} product={form.getFieldValue('tank_base')} />
-              <Divider>Variances</Divider>
-              <DailyVariance form={form} value={value} t={t} />
-              <MontlhyVariance form={form} value={value} t={t} />
-              <Divider>Flags</Divider>
-              <Flags form={form} value={value} t={t} />
-            </TabPane>
-          </Tabs>
-        </Form>
-
-        <Button shape="round" icon="close" style={{ float: 'right' }} onClick={() => Modal.destroyAll()}>
-          Cancel
-        </Button>
-
-        <Button
-          shape="round"
-          type="primary"
-          icon={!!value ? 'edit' : 'plus'}
-          style={{ float: 'right', marginRight: 5 }}
-          onClick={!!value ? this.showUpdateConfirm : this.showCreateConfirm}
-        >
-          {!!value ? 'Update' : 'Create'}
-        </Button>
-      </div>
-    );
-  }
-}
-
-export default TankConfigurationForm;
+export default FormModal;

@@ -173,14 +173,44 @@ function getLevelStatus(level, hhValue, hValue, lValue, llValue, userH, userL) {
   };
 }
 
-function transform(tanks) {
-  const payload = [];
+function transform(data) {
+  const tanks = [];
+  const summary = [];
 
-  _.forEach(tanks, (tank) => {
+  _.chain(data)
+    .groupBy((object) => object.tank_bclass_name)
+    .map((value, key) => {
+      const ullage = _.sumBy(value, (tank) => {
+        return parseInt(tank.tank_ullage);
+      });
+
+      const volume = _.sumBy(value, (tank) => {
+        return parseInt(tank.tank_amb_vol);
+      });
+
+      const capacity = ullage + volume;
+
+      const fill = (volume * 100) / capacity;
+
+      summary.push({
+        base_name: key,
+        tank_count: value.length,
+        total_capacity: capacity,
+        observed_quantity: volume,
+        total_ullage: ullage,
+        total_fill: _.isNaN(fill) ? 0 : _.round(fill, 2),
+      });
+
+      return true;
+    })
+    .value();
+
+  _.forEach(data, (tank) => {
     const capacity = _.toNumber(tank?.tank_max_level) || 0;
     const level = _.toNumber(tank?.tank_prod_lvl) || 0;
 
     const percentage = capacity === 0 ? 0 : (level * 100) / capacity;
+    const totalCapacity = _.toInteger(tank.tank_ullage) + _.toInteger(tank.tank_amb_vol) || 0;
 
     const baseColour = ['#fff', '', null].includes(tank?.tank_base_color) ? '#cdd6ac' : tank?.tank_base_color;
     const statusColour = statusColourMap[tank?.tank_status_name];
@@ -209,6 +239,10 @@ function transform(tanks) {
       automatic: tank?.tank_gaugingmthd === '1',
       percentage,
       capacity,
+      totalCapacity,
+
+      critical: Object.values(levelStatus)?.includes('processing'),
+
       levels: {
         values: level,
         status: levelStatus,
@@ -224,12 +258,17 @@ function transform(tanks) {
           data: [_.random(0, 100)],
         },
       ],
+
+      ...tank,
     };
 
-    payload.push(model);
+    tanks.push(model);
   });
 
-  return payload;
+  return {
+    summary,
+    tanks,
+  };
 }
 
 export default transform;

@@ -6,22 +6,8 @@ import Product from './product';
 import MaxFlow from './max-flow';
 import Flags from './flags';
 import Code from './code';
-import UserHLevel from './userHLevel';
-import UserLLevel from './userLLevel';
-import MaxLevel from './maxLevel';
-import Terminal from './terminal';
 
-export {
-  Name,
-  Code,
-  Product,
-  Density,
-  Flags,
-  DailyVariance,
-  MontlhyVariance,
-  MaxFlow,
-  UserHLevel,
-  UserLLevel,
-  MaxLevel,
-  Terminal
-};
+import Terminal from './terminal';
+import Levels from './levels';
+
+export { Name, Code, Product, Density, Flags, DailyVariance, MontlhyVariance, MaxFlow, Terminal, Levels };
