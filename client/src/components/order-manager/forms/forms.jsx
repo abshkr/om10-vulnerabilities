@@ -9,6 +9,7 @@ import {
   ClockCircleOutlined,
   CloseOutlined,
   CaretDownOutlined,
+  SyncOutlined,
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Row, Col } from 'antd';
@@ -45,7 +46,7 @@ import OrderItemTrips from './item-trips';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, config, pageState, revalidate, locateOrder, item, setItem }) => {
+const FormModal = ({ value, visible, handleFormState, config, pageState, revalidate, locateOrder, item, setItem, onClose, modal }) => {
   const [drawerWidth, setDrawerWidth] = useState('80vw');
   const [tableAPI, setTableAPI] = useState(undefined);
 
@@ -91,9 +92,103 @@ const FormModal = ({ value, visible, handleFormState, config, pageState, revalid
   const user_code = decoded?.per_code;
   console.log("jwtDecode", decoded);
   const site_code = decoded?.site_code
+			
+  const check_order = () => {
+    let is_available=false;
+    let is_approved=value?.order_approved;
+    let stat_id=value?.order_stat_id;
+    let error='';
+    
+    // check if the open order has been approved
+    if ( is_approved === false ) {
+      is_available = false;
+      error = t('descriptions.schdOrderRejectNotApproved')
+    } else {
+      // check if the open order has been expired
+      if ( stat_id === '6' ) { //6	EXPIRED
+        is_available = false;
+        error = t('descriptions.schdOrderRejectExpired')
+      } else {
+        // check if the open order still has enough amount to use
+        const qtyTotal = item?.oitem_prod_qty;
+        const qtyUsed = item?.oitem_schd_qty;
+        const qtyLeft = _.toNumber(qtyTotal) - _.toNumber(qtyUsed);
+    
+        if ( qtyLeft < 0.1 ) {
+          is_available = false;
+          error = t('descriptions.schdOrderRejectNotEnoughAmount')
+        } else {
+          is_available = true;
+
+          /* if ( stat_id === '0' ) { //0	NEW 
+            is_available = true;
+            error = t('descriptions.schdOrderRejectNotApproved')
+          }
+          else if ( stat_id === '1' ) { //1	PARTIALLY SCHEDULED
+            is_available = true;
+            error = t('descriptions.schdOrderRejectNotApproved')
+          }
+          else if ( stat_id == '2' ) { //2	FULLY SCHEDULED
+            is_available = false;
+            error = t('descriptions.schdOrderRejectFullyScheduled')
+          }
+          else if ( stat_id == '3' ) { //3	FULLY LOADED
+            is_available = false;
+            error = t('descriptions.schdOrderRejectFullyLoaded')
+          }
+          else if ( stat_id == '4' ) { //4	OUTSTANDING
+            is_available = false;
+            error = t('descriptions.schdOrderRejectOutstanding')
+          }
+          else if ( stat_id == '5' ) { //5	FULLY DELIVERED
+            is_available = false;
+            error = t('descriptions.schdOrderRejectFullyDelivered')
+          }
+          else if ( stat_id == '7' ) { //7	PARTIALLY LOADED
+            is_available = false;
+            error = t('descriptions.schdOrderRejectPartiallyLoaded')
+          }
+          else if ( stat_id == '8' ) { //8	PARTIALLY DELIVERED
+          
+            is_available = false;
+            error = t('descriptions.schdOrderRejectPartiallyDelivered')
+          }
+          else {
+            is_available = false;
+            error = t('descriptions.schdOrderRejectUnknownStatus')
+          } */							
+        }
+      }
+    }
+    
+    if (error.length > 0) {
+      notification.error({
+        message: t('descriptions.schdOrderReject'),
+        description: error,
+      });
+    }
+    return is_available;
+  }
 
   const onFormClosed = () => {
+    setItem(null);
     handleFormState(false, null);
+  };
+
+  const onFinish = () => {
+    if (!item) {
+      notification.warning({
+        message: '',
+        description: t('descriptions.schdOrderRejectNotSelected'),
+      });
+    } else {
+      const available = check_order();
+      if (available) {
+        modal.destroy();
+        // onClose(selected?.order_cust_no);
+        onClose(item?.order_cust_ordno);
+      }
+    }
   };
 
   const onComplete = (order) => {
@@ -183,9 +278,19 @@ const FormModal = ({ value, visible, handleFormState, config, pageState, revalid
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={onFormClosed}
           >
             {t('operations.cancel')}
+          </Button>
+
+          <Button
+            type="primary"
+            htmlType="button"
+            icon={<SyncOutlined />}
+            style={{ float: 'right', marginRight: 5 }}
+            onClick={onFinish}
+          >
+            {t('operations.ok')}
           </Button>
         </>
       }

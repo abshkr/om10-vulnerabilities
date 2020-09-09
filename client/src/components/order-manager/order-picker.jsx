@@ -15,7 +15,7 @@ import { getDateRangeOffset } from '../../utils';
 import columns from './columns';
 import Forms from './forms';
 
-const OrderPicker = ({popup, params, onClose, modal}) => {
+const OrderPicker = ({params, onClose, modal}) => {
   const [rangeStart, setRangeStart] = useState(0);
   const [rangeEnd, setRangeEnd] = useState(0);
 
@@ -66,10 +66,12 @@ const OrderPicker = ({popup, params, onClose, modal}) => {
   const [end, setEnd] = useState(null);
 
   const url =
-    popup && supplier && customer
+    // supplier && customer
+    supplier
       ? (
         start && end
-        ? `${ORDER_LISTINGS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}&order_supp_code=${supplier}&order_cust_acnt=${customer}`
+        // ? `${ORDER_LISTINGS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}&order_supp_code=${supplier}&order_cust_acnt=${customer}`
+        ? `${ORDER_LISTINGS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}&order_supp_code=${supplier}`
         : null // `${ORDER_LISTINGS.READ}?order_supp_code=${supplier}&order_cust_acnt=${customer}`
       )
       : (
@@ -194,11 +196,11 @@ const OrderPicker = ({popup, params, onClose, modal}) => {
   }, [filterByExpiry]);
 
   useEffect(() => {
-    if (popup && params) {
+    if (params) {
       setSupplier(params?.order_supp_code);
       setCustomer(params?.order_cust_acnt);
     }
-  }, [popup, params]);
+  }, [params]);
 
   useEffect(() => {
     if (payload) {
@@ -287,6 +289,8 @@ const OrderPicker = ({popup, params, onClose, modal}) => {
           locateOrder={locateOrder}
           item={item}
           setItem={setItem}
+          onClose={onClose}
+          modal={modal}
         />
       )}
       

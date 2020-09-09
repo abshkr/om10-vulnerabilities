@@ -32,7 +32,7 @@ const OrderManager = (
         fetcher,
       }}
     >
-      <OrderPicker popup={true} params={value} onClose={onClose} modal={modal}/>
+      <OrderPicker params={value} onClose={onClose} modal={modal}/>
     </SWRConfig>
     ),
     okButtonProps: {
