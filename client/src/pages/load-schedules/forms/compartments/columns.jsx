@@ -93,7 +93,7 @@ const columns = (t, form, products, units, supplier, PartnershipManager, OrderMa
     cellEditorParams: {
       form: form,
       grid: 'compartments',
-      name: '',
+      columnPairs: ['order_cust_ordno:order_cust_ordno', 'oitem_order_id:order_id', 'oitem_prod_code:prod_code', 'oitem_prod_name:prod_name'],
       tableAPI: tableAPI,
       // maxLength: 20,
       t,
@@ -101,7 +101,7 @@ const columns = (t, form, products, units, supplier, PartnershipManager, OrderMa
       height: '90vh',
       popupDisabled: !supplier,
       popupManager: OrderManager,
-      popupTitle: t('fields.orderNo') + ' - ' + t('pageNames.orderListing'),
+      popupTitle: t('descriptions.schdOrderTitle'),
       popupParams: {
         order_supp_code: supplier,
       },
@@ -141,7 +141,7 @@ const columns = (t, form, products, units, supplier, PartnershipManager, OrderMa
     cellEditorParams: {
       form: form,
       grid: 'compartments',
-      name: '',
+      columnPairs: '',
       tableAPI: tableAPI,
       maxLength: 20,
       t,
@@ -174,7 +174,7 @@ const columns = (t, form, products, units, supplier, PartnershipManager, OrderMa
     cellEditorParams: {
       form: form,
       grid: 'compartments',
-      name: '',
+      columnPairs: '',
       tableAPI: tableAPI,
       maxLength: 20,
       t,

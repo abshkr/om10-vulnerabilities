@@ -46,7 +46,7 @@ import OrderItemTrips from './item-trips';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, config, pageState, revalidate, locateOrder, item, setItem, onClose, modal }) => {
+const FormModal = ({ value, visible, handleFormState, config, pageState, item, setItem, onClose, modal }) => {
   const [drawerWidth, setDrawerWidth] = useState('80vw');
   const [tableAPI, setTableAPI] = useState(undefined);
 
@@ -93,7 +93,7 @@ const FormModal = ({ value, visible, handleFormState, config, pageState, revalid
   console.log("jwtDecode", decoded);
   const site_code = decoded?.site_code
 			
-  const check_order = () => {
+  const checkOrder = () => {
     let is_available=false;
     let is_approved=value?.order_approved;
     let stat_id=value?.order_stat_id;
@@ -128,27 +128,27 @@ const FormModal = ({ value, visible, handleFormState, config, pageState, revalid
             is_available = true;
             error = t('descriptions.schdOrderRejectNotApproved')
           }
-          else if ( stat_id == '2' ) { //2	FULLY SCHEDULED
+          else if ( stat_id === '2' ) { //2	FULLY SCHEDULED
             is_available = false;
             error = t('descriptions.schdOrderRejectFullyScheduled')
           }
-          else if ( stat_id == '3' ) { //3	FULLY LOADED
+          else if ( stat_id === '3' ) { //3	FULLY LOADED
             is_available = false;
             error = t('descriptions.schdOrderRejectFullyLoaded')
           }
-          else if ( stat_id == '4' ) { //4	OUTSTANDING
+          else if ( stat_id === '4' ) { //4	OUTSTANDING
             is_available = false;
             error = t('descriptions.schdOrderRejectOutstanding')
           }
-          else if ( stat_id == '5' ) { //5	FULLY DELIVERED
+          else if ( stat_id === '5' ) { //5	FULLY DELIVERED
             is_available = false;
             error = t('descriptions.schdOrderRejectFullyDelivered')
           }
-          else if ( stat_id == '7' ) { //7	PARTIALLY LOADED
+          else if ( stat_id === '7' ) { //7	PARTIALLY LOADED
             is_available = false;
             error = t('descriptions.schdOrderRejectPartiallyLoaded')
           }
-          else if ( stat_id == '8' ) { //8	PARTIALLY DELIVERED
+          else if ( stat_id === '8' ) { //8	PARTIALLY DELIVERED
           
             is_available = false;
             error = t('descriptions.schdOrderRejectPartiallyDelivered')
@@ -182,27 +182,14 @@ const FormModal = ({ value, visible, handleFormState, config, pageState, revalid
         description: t('descriptions.schdOrderRejectNotSelected'),
       });
     } else {
-      const available = check_order();
+      const available = checkOrder();
       if (available) {
         modal.destroy();
         // onClose(selected?.order_cust_no);
-        onClose(item?.order_cust_ordno);
+        // onClose(item?.order_cust_ordno);
+        onClose(item);
       }
     }
-  };
-
-  const onComplete = (order) => {
-    console.log('start of onComplete');
-    if (order) {
-      locateOrder(order);
-    } else {
-      revalidate();
-    }
-    setSupplier(undefined);
-    setDrawer(undefined);
-    setItem(null);
-    handleFormState(false, null);
-    console.log('end of onComplete');
   };
 
   const getOrderItems = useCallback(() => {
@@ -386,8 +373,8 @@ const FormModal = ({ value, visible, handleFormState, config, pageState, revalid
           />
         </Form.Item>
 
-        <Divider>{t('tabColumns.orderItemTrips')}</Divider>
-        <OrderItemTrips value={value} orderItem={item} />
+        {/* <Divider>{t('tabColumns.orderItemTrips')}</Divider>
+        <OrderItemTrips value={value} orderItem={item} /> */}
       </Form>
     </Drawer>
   );

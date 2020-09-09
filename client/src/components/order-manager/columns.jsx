@@ -67,6 +67,16 @@ const columns = (t) => [
     suppressSizeToFit: true,
   },
   {
+    headerName: t('fields.orderApproved'),
+    field: 'order_approved',
+    filter: 'BooleanFilter',
+    sortable: true,
+    resizable: true,
+    suppressSizeToFit: true,
+    width: 80,
+    cellRenderer: 'BooleanRenderer',
+  },
+  {
     headerName: t('fields.orderStatId'),
     field: 'order_stat_id',
     filter: 'FuzzyFilter',
@@ -191,16 +201,6 @@ const columns = (t) => [
     resizable: true,
     suppressSizeToFit: true,
     width: 120,
-  },
-  {
-    headerName: t('fields.orderApproved'),
-    field: 'order_approved',
-    filter: 'BooleanFilter',
-    sortable: true,
-    resizable: true,
-    suppressSizeToFit: true,
-    width: 80,
-    cellRenderer: 'BooleanRenderer',
   },
   {
     headerName: t('fields.orderAppNo'),

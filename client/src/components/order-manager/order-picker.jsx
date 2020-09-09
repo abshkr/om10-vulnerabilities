@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import useSWR from 'swr';
 import moment from 'moment';
-import { Form, Button, Select, Modal } from 'antd';
+import { Form, Button, Select, Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { CloseOutlined, SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
 
@@ -92,13 +92,88 @@ const OrderPicker = ({params, onClose, modal}) => {
   const onFinish = () => {
     modal.destroy();
     // onClose(selected?.order_cust_no);
-    onClose(item?.order_cust_ordno);
+    // onClose(item?.order_cust_ordno);
+    onClose(item);
   };
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
     setSelected(value);
     setPageState(visibility ? 'detail' : 'view');
+  };
+
+  const checkOrder = (value) => {
+    let is_available=false;
+    let is_approved=value?.order_approved;
+    let stat_id=value?.order_stat_id;
+    let error='';
+    
+    // check if the open order has been approved
+    if ( is_approved === false ) {
+      is_available = false;
+      error = t('descriptions.schdOrderRejectNotApproved')
+    } else {
+      // check if the open order has been expired
+      if ( stat_id === '6' ) { //6	EXPIRED
+        is_available = false;
+        error = t('descriptions.schdOrderRejectExpired');
+      } else {
+        is_available = true;
+
+        if ( stat_id === '0' || stat_id === '1' ) { //0 NEW or 1 PARTIALLY SCHEDULED
+          is_available = true;
+          error = '';
+        }
+        else if ( stat_id === '2' ) { //2	FULLY SCHEDULED
+          is_available = false;
+          error = t('descriptions.schdOrderRejectFullyScheduled');
+        }
+        else if ( stat_id === '3' ) { //3	FULLY LOADED
+          is_available = false;
+          error = t('descriptions.schdOrderRejectFullyLoaded');
+        }
+        else if ( stat_id === '4' ) { //4	OUTSTANDING
+          is_available = false;
+          error = t('descriptions.schdOrderRejectOutstanding');
+        }
+        else if ( stat_id === '5' ) { //5	FULLY DELIVERED
+          is_available = false;
+          error = t('descriptions.schdOrderRejectFullyDelivered');
+        }
+        else if ( stat_id === '7' ) { //7	PARTIALLY LOADED
+          is_available = false;
+          error = t('descriptions.schdOrderRejectPartiallyLoaded');
+        }
+        else if ( stat_id === '8' ) { //8	PARTIALLY DELIVERED
+          is_available = false;
+          error = t('descriptions.schdOrderRejectPartiallyDelivered');
+        }
+        else {
+          is_available = false;
+          error = t('descriptions.schdOrderRejectUnknownStatus');
+        }							
+      }
+    }
+    
+    if (error?.length > 0 && !is_available) {
+      console.log(".............I am here: checkOrder", error, is_available);
+      notification.error({
+        message: t('descriptions.schdOrderReject'),
+        description: error,
+      });
+      error = null;
+    }
+    return is_available;
+  }
+
+  const handleOrderSelect = (option) => {
+    console.log(".............I am here: handleOrderSelect");
+    const available = checkOrder(option);
+    if (available) {
+      handleFormState(true, option);
+    } else {
+      // handleFormState(false, null);
+    }
   };
 
   const setRange = (start, end) => {
@@ -198,7 +273,6 @@ const OrderPicker = ({params, onClose, modal}) => {
   useEffect(() => {
     if (params) {
       setSupplier(params?.order_supp_code);
-      setCustomer(params?.order_cust_acnt);
     }
   }, [params]);
 
@@ -260,12 +334,7 @@ const OrderPicker = ({params, onClose, modal}) => {
   );
 
   return (
-    <Form 
-      layout="vertical" 
-      form={form} 
-      onFinish={onFinish} 
-      scrollToFirstError style={{marginTop: "1rem"}}
-    >
+    <div>
       <DataTable
         minimal={false}
         data={data}
@@ -273,8 +342,8 @@ const OrderPicker = ({params, onClose, modal}) => {
         extra={modifiers}
         isLoading={isLoading}
         selectionMode="single"
-        onClick={(payload) => handleFormState(true, payload)}
-        handleSelect={(payload) => handleFormState(true, payload[0])}
+        onClick={(payload) => handleOrderSelect(payload)}
+        handleSelect={(payload) => handleOrderSelect(payload[0])}
         autoColWidth
         clearFilterPlus={revalidate}
       />
@@ -285,8 +354,6 @@ const OrderPicker = ({params, onClose, modal}) => {
           handleFormState={handleFormState}
           config={config}
           pageState={pageState}
-          revalidate={revalidate}
-          locateOrder={locateOrder}
           item={item}
           setItem={setItem}
           onClose={onClose}
@@ -294,7 +361,8 @@ const OrderPicker = ({params, onClose, modal}) => {
         />
       )}
       
-      <div style={{marginTop: "2rem"}}>
+      <div style={{marginTop: "10px"}}>
+        { t('descriptions.schdOrderNote') }
         <Button
           htmlType="button"
           icon={<CloseOutlined />}
@@ -303,17 +371,8 @@ const OrderPicker = ({params, onClose, modal}) => {
         >
           {t('operations.cancel')}
         </Button>
-
-        <Button
-          type="primary"
-          htmlType="submit"
-          icon={<SyncOutlined />}
-          style={{ float: 'right', marginRight: 5 }}
-        >
-          {t('operations.ok')}
-        </Button>
       </div>
-    </Form>
+    </div>
   );
 };
 

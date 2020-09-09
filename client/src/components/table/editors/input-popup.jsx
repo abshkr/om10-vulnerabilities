@@ -42,19 +42,55 @@ export default class InputPopupEditor extends Component {
     }
   };
 
-  popupCallBack = (value) => {
-    const { name } = this.props;
+  setRowValue = (value) => {
+    const { form, grid, tableAPI, columnPairs, colDef, rowIndex } = this.props;
 
+    let current = form.getFieldValue(grid);
+
+    _.forEach(columnPairs, (o) => {
+      const pairs = o.split(':');
+      const srcColumn = pairs[0];
+      const destColumn = pairs.length>1 ? pairs[1] : pairs[0];
+      current[rowIndex][destColumn] = value[srcColumn];
+    });
+
+    // current[rowIndex][colDef?.field] = value;
+
+    /* form.setFieldsValue({
+      [grid]: current,
+    }); */
+    console.log('InputPopupEditor: setCellValue', value, grid, rowIndex, current, colDef);
+
+    tableAPI.updateRowData({ update: [current[rowIndex]] });
+
+    /* if (this._isMounted) {
+      this.setState(
+        {
+          value[colDef.field],
+        },
+        () => this.props.api.stopEditing()
+      );
+    } */
+  };
+
+  popupCallBack = (value) => {
     console.log('InputPopupEditor: popupCallBack', value);
     if (value) {
-        let index = value;
+      if (_.isObject(value)) {
+        this.setRowValue(value);
+      } else {
+        this.setCellValue(value);
+      }
+
+      
+        /* let index = value;
         if (_.isObject(value) && value.hasOwnProperty(name)) {
           index = value[name];
         }
         if (_.isObject(value) && !value.hasOwnProperty(name)) {
           index = '';
-        }
-        this.setCellValue(index);
+        } */
+        
     }
   }
 
