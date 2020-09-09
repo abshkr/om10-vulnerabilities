@@ -402,7 +402,7 @@ const Login = ({ handleLogin, auth }) => {
 };
 
 const mapActionsToProps = (dispatch) => ({
-  handleLogin: (code, password) => dispatch(actions.login(code, password)),
+  handleLogin: (values, callback) => dispatch(actions.login(values, callback)),
 });
 
 const mapStateToProps = (state) => {
