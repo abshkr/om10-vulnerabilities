@@ -37,7 +37,7 @@ import { DateRange,
   JournalCategory,
 } from './fields';
 
-const SearchForm = ({onSearch, fields}) => {
+const SearchForm = ({onSearch, fields, modal}) => {
   const [orderSupplier, setOrderSupplier] = useState(null);
   const [specmvType, setSpecmvType] = useState(null);
   const [carrier, setCarrier] = useState(null);
@@ -45,7 +45,7 @@ const SearchForm = ({onSearch, fields}) => {
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
-    Modal.destroyAll();
+    modal.destroy();
     onSearch(values);
   };
 
@@ -85,7 +85,7 @@ const SearchForm = ({onSearch, fields}) => {
           htmlType="button"
           icon={<CloseOutlined />}
           style={{ float: 'right' }}
-          onClick={() => Modal.destroyAll()}
+          onClick={() => modal.destroy()}
         >
           {t('operations.cancel')}
         </Button>
@@ -108,7 +108,8 @@ const WindowSearch = (
     title, 
     fields,
   ) => {
-  Modal.info({
+  const modal = Modal.info();
+  modal.update({
     className: 'form-container',
     // title: t('operations.fields'),
     title: title? title: 'Search',
@@ -122,7 +123,7 @@ const WindowSearch = (
         fetcher,
         }}
     >
-      <SearchForm onSearch={onSearch} fields={fields} />
+      <SearchForm onSearch={onSearch} fields={fields} modal={modal}/>
     </SWRConfig>
     ),
     okButtonProps: {

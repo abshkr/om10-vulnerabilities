@@ -597,7 +597,8 @@ class Schedule extends CommonClass
                     "&prod=" . rawurlencode(strip_tags($compartment->prod_code)) . 
                     "&unit=" . rawurlencode(strip_tags($compartment->unit_code)) . 
                     "&sched=" . rawurlencode(strip_tags($compartment->qty_scheduled)) . 
-                    "&order=&bay_armCd=-1" .  
+                    "&order=" . rawurlencode(strip_tags($compartment->order_cust_ordno)) . 
+                    "&bay_armCd=-1" .  
                     "&supp=" . rawurlencode(strip_tags($this->supplier_code)) . 
                     "&tripNo=" . rawurlencode(strip_tags($this->shls_trip_no)) . 
                     "&tanker=" . rawurlencode(strip_tags($this->tnkr_code)) . 
@@ -1113,6 +1114,7 @@ class Schedule extends CommonClass
             SCHD_SOLD_TO_NUM,
             SCHD_SHIP_TO_NUM, 
             ORDER_CUST_ORDNO,
+            SCHD_ORDER as ORDER_ID,
             SCHD_DELIV_NUM, 
             PROD_CLASS, 
             QTY_LOADED, 
@@ -1154,6 +1156,7 @@ class Schedule extends CommonClass
                 SPEC_PROD.SCHD_SOLD_TO_NUM,
                 SPEC_PROD.SCHD_SHIP_TO_NUM, 
                 SPEC_PROD.ORDER_CUST_ORDNO,
+                SPEC_PROD.SCHD_ORDER,
                 SPEC_PROD.SCHD_DELIV_NUM, 
                 SPEC_PROD.PROD_CLASS, 
                 DECODE(SPEC_PROD.UNIT_CODE, 
@@ -1180,6 +1183,7 @@ class Schedule extends CommonClass
                         SPEC.SCHD_SOLD_TO_NUM,
                         SPEC.SCHD_SHIP_TO_NUM,
                         CUST_ORDER.ORDER_CUST_ORDNO,
+                        SPEC.SCHD_ORDER,
                         SPEC.SCHD_DELIV_NUM,
                         PR.PROD_CLASS
                     FROM SPECDETS SPEC,

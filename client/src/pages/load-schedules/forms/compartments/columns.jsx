@@ -1,5 +1,5 @@
 // const columns = (t, form, products, soldTo, shipTo, units, supplier) => [
-const columns = (t, form, products, units, supplier, PartnershipManager, tableAPI) => [
+const columns = (t, form, products, units, supplier, PartnershipManager, OrderManager, tableAPI, config) => [
   {
     headerName: t('fields.equipment'),
     field: 'eqpt_code',
@@ -78,8 +78,17 @@ const columns = (t, form, products, units, supplier, PartnershipManager, tableAP
     resizable: true,
     width: 110,
     suppressSizeToFit: true,
-    /* editable: true,
-    cellClass: 'editable-ag-grid-cell',
+    hide: true,
+  },
+
+  {
+    headerName: t('fields.orderNo'),
+    field: 'order_cust_ordno',
+    resizable: true,
+    width: 200,
+    suppressSizeToFit: true,
+    editable: config?.accessOpenOrderFromSchdules,
+    cellClass: config?.accessOpenOrderFromSchdules ? 'editable-ag-grid-cell' : '',
     cellEditor: 'InputPopupEditor',
     cellEditorParams: {
       form: form,
@@ -88,17 +97,15 @@ const columns = (t, form, products, units, supplier, PartnershipManager, tableAP
       tableAPI: tableAPI,
       // maxLength: 20,
       t,
+      width: '90vw',
+      height: '90vh',
       popupDisabled: !supplier,
-      popupManager: PartnershipManager,
+      popupManager: OrderManager,
       popupTitle: t('fields.orderNo') + ' - ' + t('pageNames.orderListing'),
       popupParams: {
-        // order_supp_code: supplier,
-        partner_code: '',
-        partner_type: 'AG',
-        partner_cmpy_code: supplier,
-        partner_cust_acct: ''
+        order_supp_code: supplier,
       },
-    }, */
+    },
   },
 
   {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form } from 'antd';
-import { DataTable, PartnershipManager } from '../../../../components';
+import { DataTable, PartnershipManager, OrderManager } from '../../../../components';
 
 import api, { LOAD_SCHEDULES } from '../../../../api';
 import columns from './columns';
@@ -17,7 +17,7 @@ import {
 
 import useSWR from 'swr';
 
-const Compartments = ({ form, value, tanker, drawer, supplier }) => {
+const Compartments = ({ form, value, tanker, drawer, supplier, config }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
@@ -32,7 +32,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier }) => {
   const [tableAPI, setTableAPI] = useState(null);
 
   // const fields = columns(t, form, products, soldTo, shipTo, units, supplier);
-  const fields = columns(t, form, products, units, supplier, PartnershipManager, tableAPI);
+  const fields = columns(t, form, products, units, supplier, PartnershipManager, OrderManager, tableAPI, config);
 
   const components = {
     ProductEditor,

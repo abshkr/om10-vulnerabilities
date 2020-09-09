@@ -56,7 +56,9 @@ import { ManualTransactionsPopup } from '../../manual-transactions';
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, url, locateTrip }) => {
-  const { manageMakeManualTransaction, showSeals, manageAdditionalHostData, manageViewDeliveryDetails } = useConfig();
+  // const { manageMakeManualTransaction, showSeals, manageAdditionalHostData, manageViewDeliveryDetails } = useConfig();
+  const config = useConfig();
+  const { manageMakeManualTransaction, showSeals, manageAdditionalHostData, manageViewDeliveryDetails } = config;
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -788,7 +790,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             </Row>
 
             {mode === '2' && !READ_ONLY && (
-              <Compartments form={form} value={value} drawer={drawer} tanker={tanker} supplier={supplier} />
+              <Compartments form={form} value={value} drawer={drawer} tanker={tanker} supplier={supplier} config={config} />
             )}
 
             {mode === '3' && !READ_ONLY && <Products form={form} value={value} drawer={drawer} access={access} />}

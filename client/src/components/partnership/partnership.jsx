@@ -9,7 +9,7 @@ import { Page, DataTable, Download } from '../../components';
 import { PARTNERSHIP } from '../../api';
 import columns from './columns';
 
-const Partnership = ({value, onClose}) => {
+const Partnership = ({value, onClose, modal}) => {
   const { t } = useTranslation();
   const url =
     value && value?.partner_cmpy_code && value?.partner_type
@@ -26,7 +26,7 @@ const Partnership = ({value, onClose}) => {
   const [selected, setSelected] = useState(null);
 
   const onFinish = () => {
-    Modal.destroyAll();
+    modal.destroy();
     onClose(selected?.partner_code);
   };
 
@@ -56,7 +56,7 @@ const Partnership = ({value, onClose}) => {
           htmlType="button"
           icon={<CloseOutlined />}
           style={{ float: 'right' }}
-          onClick={() => Modal.destroyAll()}
+          onClick={() => modal.destroy()}
         >
           {t('operations.cancel')}
         </Button>

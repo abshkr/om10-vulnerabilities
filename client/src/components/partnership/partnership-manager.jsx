@@ -8,15 +8,16 @@ import { Modal } from 'antd';
 import Partnership from './partnership';
 
 const PartnershipManager = (
-    title, 
-    value,
-    onClose, 
-    width,
-    height,
-    t,
-  ) => {
+  title, 
+  value,
+  onClose, 
+  width,
+  height,
+  t,
+) => {
   // const { t } = useTranslation();
-  Modal.info({
+  const modal = Modal.info();
+  modal.update({
     className: 'form-container',
     title: title? title: t('pageNames.partnership'),
     centered: true,
@@ -30,7 +31,7 @@ const PartnershipManager = (
           fetcher,
         }}
       >
-        <Partnership value={value} onClose={onClose} />
+        <Partnership value={value} onClose={onClose} modal={modal} />
       </SWRConfig>
     ),
     okButtonProps: {

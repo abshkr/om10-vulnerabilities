@@ -6,18 +6,19 @@ import { fetcher } from 'utils';
 import { Modal } from 'antd';
 // import { useTranslation } from 'react-i18next';
 
-import OrderListingsPopup from '../../pages/order-listings';
+import OrderPicker from './order-picker';
 
 const OrderManager = (
-    title, 
-    value,
-    onClose, 
-    width,
-    height,
-    t,
-  ) => {
+  title, 
+  value,
+  onClose, 
+  width,
+  height,
+  t,
+) => {
   // const { t } = useTranslation();
-  Modal.info({
+  const modal = Modal.info();
+  modal.update({
     className: 'form-container',
     title: title? title: t('pageNames.orderListing'),
     centered: true,
@@ -26,16 +27,16 @@ const OrderManager = (
     icon: <FileSearchOutlined />,
     content: (
     <SWRConfig
-        value={{
+      value={{
         refreshInterval: 0,
         fetcher,
-        }}
+      }}
     >
-      <OrderListingsPopup value={value} onClose={onClose} />
+      <OrderPicker popup={true} params={value} onClose={onClose} modal={modal}/>
     </SWRConfig>
     ),
     okButtonProps: {
-    style: { display: 'none' },
+      style: { display: 'none' },
     },
   });
 
