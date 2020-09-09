@@ -220,6 +220,7 @@ class SpecialMvService
         }
 
         $serv->unset_property('trsa_id');
+        $serv->unset_property('drawer_code');   //Do not set drawer so system retrieve it from db. 
 
         /* for transfer, this is the second schedule, which is an unloading */
         $serv->set_property('supplier', trim(substr($response, 70, 20)));
@@ -227,7 +228,6 @@ class SpecialMvService
         $serv->set_property('load_number', trim(substr($response, 61, 9)));
         $serv->set_property('start_time', $this->mlitm_dtim_start);
         $serv->set_property('finish_time', $this->mlitm_dtim_end);
-        $serv->set_property('drawer_code', trim(substr($response, 70, 20)));
         $serv->set_property('drawer_name', "");
         $serv->set_property('tanker_code', "SPECIAL");
         $serv->set_property('operator_code', "");
