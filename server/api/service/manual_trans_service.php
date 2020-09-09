@@ -797,7 +797,7 @@ class ManualTransactionService
 
                 $msg->trf_det[$i]->base[$j]->prod_class = new XPC();
                 $msg->trf_det[$i]->base[$j]->prod_class->prod_class =
-                    sprintf("%-8.8s", $this->transfers[$i]->bases[$j]->prod_class); /* Sample: "GASOLINE"*/
+                    strtoupper(sprintf("%-8.8s", $this->transfers[$i]->bases[$j]->prod_class)); /* Sample: "GASOLINE"*/
                 $msg->trf_det[$i]->base[$j]->prod_class->dens =
                     sprintf("%07d", $this->transfers[$i]->bases[$j]->dens); /* Sample: "0735300"*/
 
