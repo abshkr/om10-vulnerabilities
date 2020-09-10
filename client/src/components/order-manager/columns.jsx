@@ -1,4 +1,4 @@
-const columns = (t) => [
+const columns = (t, config) => [
   {
     headerName: t('fields.orderSysNo'),
     field: 'order_sys_no',
@@ -104,6 +104,9 @@ const columns = (t) => [
     width: 130,
     suppressSizeToFit: true,
     cellRenderer: 'DateRenderer',
+    cellRendererParams: {
+      defaultFormat: config?.dateTimeFormat||'DD/MM/YYYY HH:mm:ss',
+    },
   },
   {
     headerName: t('fields.orderExpTime'),
@@ -114,6 +117,9 @@ const columns = (t) => [
     width: 130,
     suppressSizeToFit: true,
     cellRenderer: 'DateRenderer',
+    cellRendererParams: {
+      defaultFormat: config?.dateTimeFormat||'DD/MM/YYYY HH:mm:ss',
+    },
   },
   {
     headerName: t('fields.orderModifiedOn'),
@@ -124,6 +130,9 @@ const columns = (t) => [
     width: 130,
     suppressSizeToFit: true,
     cellRenderer: 'DateRenderer',
+    cellRendererParams: {
+      defaultFormat: config?.dateTimeFormat||'DD/MM/YYYY HH:mm:ss',
+    },
   },
   {
     headerName: t('fields.orderDlocCode'),
@@ -162,6 +171,9 @@ const columns = (t) => [
     suppressSizeToFit: true,
     width: 130,
     cellRenderer: 'DateRenderer',
+    cellRendererParams: {
+      defaultFormat: config?.dateTimeFormat||'DD/MM/YYYY HH:mm:ss',
+    },
   },
   {
     headerName: t('fields.orderDrwrCode'),
@@ -221,6 +233,9 @@ const columns = (t) => [
     suppressSizeToFit: true,
     width: 130,
     cellRenderer: 'DateRenderer',
+    cellRendererParams: {
+      defaultFormat: config?.dateTimeFormat||'DD/MM/YYYY HH:mm:ss',
+    },
     hide: true,
   },
   {

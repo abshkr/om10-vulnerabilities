@@ -4,12 +4,14 @@ import moment from 'moment';
 import { DATE_TIME_FORMAT } from 'constants/settings';
 import ConfigStore from 'stores/config-store';
 
-const DateRenderer = ({ value }) => {
+// const DateRenderer = ({ value }) => {
+const DateRenderer = (props) => {
   const { dateTimeFormat } = useContext(ConfigStore);
-  console.log('...................dateTimeFormat', dateTimeFormat);
+  const { value, defaultFormat } = props;
+  // console.log('...................dateTimeFormat', dateTimeFormat, defaultFormat, props);
 
   if (value !== '') {
-    const payload = moment(value, DATE_TIME_FORMAT).format(dateTimeFormat||'DD/MM/YYYY HH:mm:ss');
+    const payload = moment(value, DATE_TIME_FORMAT).format(dateTimeFormat||defaultFormat);
 
     return <div>{payload}</div>;
   }
