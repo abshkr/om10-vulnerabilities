@@ -95,8 +95,10 @@ export default class InputPopupEditor extends Component {
   }
 
   handlePopup = () => {
-    const { t, popupManager, popupTitle, popupParams, width, height } = this.props;
+    const { t, popupManager, popupTitle, popupParams, width, height, data } = this.props;
     console.log('InputPopupEditor: handlePopup');
+
+    popupParams.lineData = data;
     // pop up the dialog
     if (_.isFunction(popupManager)) {
         popupManager(

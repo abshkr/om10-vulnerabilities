@@ -93,7 +93,13 @@ const columns = (t, form, products, units, supplier, PartnershipManager, OrderMa
     cellEditorParams: {
       form: form,
       grid: 'compartments',
-      columnPairs: ['order_cust_ordno:order_cust_ordno', 'oitem_order_id:order_id', 'oitem_prod_code:prod_code', 'oitem_prod_name:prod_name'],
+      columnPairs: [
+        'order_cust_ordno:order_cust_ordno', 
+        'oitem_order_id:order_id', 
+        'oitem_prod_code:prod_code', 
+        'oitem_prod_name:prod_name',
+        'qty_left:qty_scheduled'
+      ],
       tableAPI: tableAPI,
       // maxLength: 20,
       t,

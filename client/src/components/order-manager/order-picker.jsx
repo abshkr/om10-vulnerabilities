@@ -358,6 +358,7 @@ const OrderPicker = ({params, onClose, modal}) => {
           setItem={setItem}
           onClose={onClose}
           modal={modal}
+          params={params}
         />
       )}
       

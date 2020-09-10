@@ -46,7 +46,7 @@ import OrderItemTrips from './item-trips';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, config, pageState, item, setItem, onClose, modal }) => {
+const FormModal = ({ value, visible, handleFormState, config, pageState, item, setItem, onClose, modal, params }) => {
   const [drawerWidth, setDrawerWidth] = useState('80vw');
   const [tableAPI, setTableAPI] = useState(undefined);
 
@@ -246,6 +246,11 @@ const FormModal = ({ value, visible, handleFormState, config, pageState, item, s
     if (option) {
       option.editable = false;
       option.order_cust_ordno = value?.order_cust_no;
+      const qtyTotal = option?.oitem_prod_qty;
+      const qtyUsed = option?.oitem_schd_qty;
+      const qtyLeft = _.toNumber(qtyTotal) - _.toNumber(qtyUsed);
+      const safefill = _.toNumber(params?.lineData?.safefill);
+      option.qty_left = qtyLeft > safefill ? safefill : qtyLeft;
     }
     // console.log('handleItemSelect222', option);
     setItem(option);
