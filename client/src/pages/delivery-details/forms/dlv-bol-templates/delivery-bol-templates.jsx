@@ -31,6 +31,9 @@ const DeliveryBolTemplates = ({
   const [size, setSize] = useState(0);
   const [templateItem, setTemplateItem] = useState(undefined);
   const [templateList, setTemplateList] = useState([]);
+  const [clickedIns, setClickedIns] = useState(false);
+  const [clickedDel, setClickedDel] = useState(false);
+  const [clickedClr, setClickedClr] = useState(false);
 
   // console.log("DeliveryBolTemplates - values: ", value);
 
@@ -62,6 +65,8 @@ const DeliveryBolTemplates = ({
         message: t('messages.createSuccess'),
         description: t('descriptions.createSuccess'),
       });
+
+      setClickedIns(false);
     })
     .catch((errors) => {
       adjustRecords();
@@ -71,6 +76,7 @@ const DeliveryBolTemplates = ({
           description: error.message,
         });
       });
+      setClickedIns(false);
     });
   };
   
@@ -112,6 +118,9 @@ const DeliveryBolTemplates = ({
         message: t('messages.deleteSuccess'),
         description: t('messages.deleteSuccess'),
       });
+
+      setClickedDel(false);
+      setClickedClr(false);
     })
     .catch((errors) => {
       adjustRecords();
@@ -121,6 +130,8 @@ const DeliveryBolTemplates = ({
           description: error.message,
         });
       });
+      setClickedDel(false);
+      setClickedClr(false);
     });
   };
 
@@ -168,6 +179,7 @@ const DeliveryBolTemplates = ({
   };
 
   const handleItemAdd = () => {
+    setClickedIns(true);
     const length = getNextLineNo();
 
     const line = {
@@ -189,11 +201,13 @@ const DeliveryBolTemplates = ({
   };
 
   const handleItemRemove = () => {
+    setClickedDel(true);
     onDelete(selected?.[0]);
     // tableAPI.updateRowData({ remove: selected });
   };
 
   const handleItemRemoveAll = () => {
+    setClickedClr(true);
     tableAPI.forEachNode((rowNode, index) => {
       onDelete(rowNode?.data);
     });
@@ -282,7 +296,7 @@ const DeliveryBolTemplates = ({
       <Button 
         type="primary" 
         icon={<PlusOutlined />} 
-        disabled={!templateItem}
+        disabled={!templateItem || clickedIns}
         onClick={handleItemAdd} 
         style={{ marginRight: 5 }}
       >
@@ -292,7 +306,7 @@ const DeliveryBolTemplates = ({
       <Button
         type="danger"
         icon={<MinusOutlined />}
-        disabled={disabled}
+        disabled={disabled || clickedDel}
         onClick={handleItemRemove}
         style={{ marginBottom: 10, marginRight: 5 }}
       >
@@ -302,7 +316,7 @@ const DeliveryBolTemplates = ({
       <Button
         type="danger"
         icon={<MinusOutlined />}
-        disabled={size === 0}
+        disabled={size === 0 || clickedClr}
         onClick={handleItemRemoveAll}
         style={{ marginBottom: 10 }}
       >
