@@ -6,12 +6,21 @@ import moment from 'moment';
 import ConfigStore from 'stores/config-store';
 import { DATE_TIME_FORMAT } from 'constants/settings';
 
+import 'moment/locale/en-gb';
+import 'moment/locale/zh-cn';
+import enLocale from 'antd/es/date-picker/locale/en_GB';
+import zhLocale from 'antd/es/date-picker/locale/zh_CN';
+
+const momentLocales = {en: enLocale, cn: zhLocale};
+
 const { RangePicker } = DatePicker;
 
 const Calendar = ({ handleChange, handleClear, start, end, disabled, enableClear, max, format }) => {
   const { dateTimeFormat } = useContext(ConfigStore);
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  const locale = momentLocales[i18n.language||'en'];
 
   const formatted = format || dateTimeFormat;
 
@@ -58,6 +67,7 @@ const Calendar = ({ handleChange, handleClear, start, end, disabled, enableClear
       onChange={(dates) => onRangeSelect(dates)}
       ranges={ranges}
       style={{ width: '360px' }}
+      locale={locale}
     />
   );
 };
