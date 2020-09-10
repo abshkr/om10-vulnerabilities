@@ -264,8 +264,8 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
           >
             <Depot form={form} value={value} />
             <Owner form={form} value={value} />
-            <Code form={form} value={value} />
             <Carrier form={form} value={value} />
+            <Code form={form} value={value} />
             <Name form={form} value={value} />
 
             <Row gutter={[6, 0]}>
