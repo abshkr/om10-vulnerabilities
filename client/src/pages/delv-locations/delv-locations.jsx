@@ -95,6 +95,8 @@ const DelvLocations = ({popup, params}) => {
         handleFormState={handleFormState} 
         access={access} 
         setFilterValue={setFilterValue}
+        customer={customer}
+        url={url}
       />
     </Page>
   );

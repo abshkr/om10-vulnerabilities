@@ -39,7 +39,7 @@ import api, { DELV_LOCATIONS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
+const FormModal = ({ value, visible, handleFormState, access, setFilterValue, customer, url }) => {
   const [flag, setFlag] = useState(undefined);
   const [supplier, setSupplier] = useState(undefined);
   const [category, setCategory] = useState(undefined);
@@ -78,7 +78,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   const onComplete = (delv_code) => {
     resetFields();
     handleFormState(false, null);
-    mutate(DELV_LOCATIONS.READ);
+    mutate(url);
     setDrawerWidth('50vw');
     setMainTabOn(true);
     if (delv_code) {
@@ -87,6 +87,30 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       setFilterValue(' ');
     }
 
+  };
+
+  const createOneLink = async (location) => {
+    const item = {
+      delv_code: location,
+      cust_acnt: customer,
+    };
+    await api
+    .post(DELV_LOCATIONS.CREATE_LINK, item)
+    .then(() => {
+      onComplete(location);
+      notification.success({
+        message: t('messages.createSuccess'),
+        description: t('descriptions.createSuccess'),
+      });
+    })
+    .catch((errors) => {
+      _.forEach(errors.response.data.errors, (error) => {
+        notification.error({
+          message: error.type,
+          description: error.message,
+        });
+      });
+    });
   };
 
   const onFinish = async () => {
@@ -103,12 +127,16 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
         await api
           .post(IS_CREATING ? DELV_LOCATIONS.CREATE : DELV_LOCATIONS.UPDATE, values)
           .then(() => {
-            onComplete(values?.delv_code);
+            if (IS_CREATING && customer) {
+              createOneLink(values?.delv_code);
+            } else {
+              onComplete(values?.delv_code);
 
-            notification.success({
-              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-              description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
-            });
+              notification.success({
+                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+                description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
+              });
+            }
           })
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
@@ -122,6 +150,47 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     });
   };
 
+  const deleteLocation = async (value) => {
+    await api
+    .post(DELV_LOCATIONS.DELETE, value)
+    .then(() => {
+      onComplete();
+
+      notification.success({
+        message: t('messages.deleteSuccess'),
+        description: `${t('descriptions.deleteSuccess')}`,
+      });
+    })
+    .catch((errors) => {
+      _.forEach(errors.response.data.errors, (error) => {
+        notification.error({
+          message: error.type,
+          description: error.message,
+        });
+      });
+    });
+  };
+
+  const deleteOneLink = async (value) => {
+    const item = {
+      delv_code: value?.delv_code,
+      cust_acnt: customer,
+    };
+    await api
+    .post(DELV_LOCATIONS.DELETE_LINK, item)
+    .then(() => {
+      deleteLocation(value);
+    })
+    .catch((errors) => {
+      _.forEach(errors.response.data.errors, (error) => {
+        notification.error({
+          message: error.type,
+          description: error.message,
+        });
+      });
+    });
+  };
+
   const onDelete = () => {
     Modal.confirm({
       title: t('prompts.delete'),
@@ -131,24 +200,11 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        await api
-          .post(DELV_LOCATIONS.DELETE, value)
-          .then(() => {
-            onComplete();
-
-            notification.success({
-              message: t('messages.deleteSuccess'),
-              description: `${t('descriptions.deleteSuccess')}`,
-            });
-          })
-          .catch((errors) => {
-            _.forEach(errors.response.data.errors, (error) => {
-              notification.error({
-                message: error.type,
-                description: error.message,
-              });
-            });
-          });
+        if (!customer) {
+          deleteLocation(value);
+        } else {
+          deleteOneLink(value);
+        }
       },
     });
   };
@@ -198,7 +254,13 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={!access?.canDelete || !mainTabOn || value?.delv_cust_count > 0 || value?.delv_order_count > 0}
+              disabled={
+                !access?.canDelete || 
+                !mainTabOn || 
+                (!customer && value?.delv_cust_count > 0) || 
+                (customer && value?.delv_cust_count > 1) || 
+                value?.delv_order_count > 0
+              }
               onClick={onDelete}
             >
               {t('operations.delete')}
