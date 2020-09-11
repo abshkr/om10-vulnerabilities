@@ -3,12 +3,13 @@ import { Form, Select, Input, Button, Row, Col, DatePicker, Divider } from 'antd
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 import moment from 'moment';
+import { useState } from 'react';
 
 import api, { MANUAL_TRANSACTIONS } from '../../../api';
 import { getDateTimeFormat } from '../../../utils';
 import TripSealManager from './trip-seals';
 import OrderSealManager from './order-seals';
-import { useState } from 'react';
+import { SETTINGS } from '../../../constants';
 
 const { Option } = Select;
 
@@ -44,6 +45,7 @@ const Forms = ({
   setProductArms,
   resetFormGrids,
   setFormLoading,
+  config,
 }) => {
   const { setFieldsValue, resetFields } = form;
 
@@ -569,9 +571,15 @@ const Forms = ({
   }, [params, sourceType, selectedSupplier, selectedTrip]); */
 
   useEffect(() => {
+    const serverCurrent = moment(config.serverTime, SETTINGS.DATE_TIME_FORMAT);
+    // const diff = serverCurrent.diff(moment())
+    // const interval = setInterval(() => {
+    //   if (serverTime) {
+    //     const current = moment().add(diff / 1000, 'seconds').format(dateTimeFormat);
+    
     setFieldsValue({
-      start_date: moment(),
-      end_date: moment(),
+      start_date: serverCurrent, // moment(),
+      end_date: serverCurrent, // moment(),
     });
   }, [setFieldsValue]);
 

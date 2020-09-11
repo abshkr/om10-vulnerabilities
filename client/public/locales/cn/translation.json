@@ -2,6 +2,7 @@
 	"descriptions": {
 		"activateSuccess": "您已成功激活了记录",
 		"availableAttempts": "您尚余可尝试次数",
+		"blankDateFillWithServerTime": "该日期数据为空，如果您不想输入，系统会默认使用服务器的日期",
 		"CannotBeNegative": "数值不能为负数",
 		"PDSFailed": "PDS文件生成失败",
 		"PDSSuccessful": "成功生成PDS文件",

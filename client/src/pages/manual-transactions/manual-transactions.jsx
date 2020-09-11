@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 
 import _ from 'lodash';
 import jwtDecode from 'jwt-decode';
+import moment from 'moment';
 
 import { Page } from '../../components';
 
@@ -22,12 +23,15 @@ import DrawerProductTransfers from './drawer-product-transfer';
 import Forms from './forms';
 import api, { MANUAL_TRANSACTIONS } from '../../api';
 import useAuth from 'hooks/use-auth';
+import useConfig from 'hooks/use-config';
+import { SETTINGS } from '../../constants';
 
 import { buildPayloadToSubmit, buildPayloadToLoad, buildPayloadToSave } from './data-builder';
 
 const { confirm } = Modal;
 
 const ManualTransactions = ({ popup, params }) => {
+  const config = useConfig();
   //console.log("params", params);
   const { t } = useTranslation();
   const access = useAuth('M_MANUALTRANSACTIONS');
@@ -120,6 +124,14 @@ const ManualTransactions = ({ popup, params }) => {
   };
 
   const preparePayloadToSubmit = (values) => {
+    const serverCurrent = moment(config.serverTime, SETTINGS.DATE_TIME_FORMAT);
+    if (values?.start_date === null || values?.start_date === undefined) {
+      values.start_date = serverCurrent;
+    }
+    if (values?.end_date === null || values?.end_date === undefined) {
+      values.end_date = serverCurrent;
+    }
+
     const payload = buildPayloadToSubmit(values, sourceType, orderSeals, t);
     return payload;
   };
@@ -128,6 +140,27 @@ const ManualTransactions = ({ popup, params }) => {
     const errors = [];
 
     _.forEach(drawerChanges, (o) => {errors.push(o);});
+
+    // check the start and end date
+    const start_date = form.getFieldValue('start_date');
+    const end_date = form.getFieldValue('end_date');
+    if (start_date === null || start_date === undefined) {
+      errors.push({
+        field: `${t('fields.mtDataStartTime')}`,
+        message: `${t('descriptions.blankDateFillWithServerTime')}`,
+        key: `${'start_date'}`,
+        line: 0,
+      });
+    }
+    if (end_date === null || end_date === undefined) {
+      errors.push({
+        field: `${t('fields.mtDataEndTime')}`,
+        message: `${t('descriptions.blankDateFillWithServerTime')}`,
+        key: `${'end_date'}`,
+        line: 0,
+      });
+    }
+
 
     for (let tidx = 0; tidx < items?.length; tidx++) {
       const item = items?.[tidx];
@@ -588,6 +621,7 @@ const ManualTransactions = ({ popup, params }) => {
           setProductArms={setProductArms}
           resetFormGrids={resetFormGrids}
           setFormLoading={setFormLoading}
+          config={config}
         />
 
         <DrawerProductTransfers

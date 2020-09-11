@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import moment from 'moment';
+// import moment from 'moment';
 import { SETTINGS } from '../../../constants';
 
 const buildPayloadToSubmit = (values, sourceType, orderSeals, t) => {
@@ -16,7 +16,7 @@ const buildPayloadToSubmit = (values, sourceType, orderSeals, t) => {
     // console.log('...........buildPayloadToSubmit', values);
     // console.log('...........buildPayloadToSubmit', values?.start_date);
     // console.log('...........buildPayloadToSubmit', values?.end_date);
-    if (values?.start_date === null || values?.start_date === undefined) {
+    /* if (values?.start_date === null || values?.start_date === undefined) {
       payload.start_time = moment().format(SETTINGS.DATE_TIME_FORMAT);
     } else {
       payload.start_time = values?.start_date?.format(SETTINGS.DATE_TIME_FORMAT);
@@ -25,7 +25,9 @@ const buildPayloadToSubmit = (values, sourceType, orderSeals, t) => {
       payload.end_time = moment().format(SETTINGS.DATE_TIME_FORMAT);
     } else {
       payload.end_time = values?.end_date?.format(SETTINGS.DATE_TIME_FORMAT);
-    }
+    } */
+    payload.start_time = values?.start_date?.format(SETTINGS.DATE_TIME_FORMAT);
+    payload.end_time = values?.end_date?.format(SETTINGS.DATE_TIME_FORMAT);
     payload.load_security = values?.load_security;
     payload.seal_range = values?.seal_range;
 
