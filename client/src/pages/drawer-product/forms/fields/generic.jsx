@@ -5,12 +5,13 @@ import useSWR from 'swr';
 
 import { DRAWER_PRODUCTS } from '../../../../api';
 
-const Generic = ({ form, value }) => {
+const Generic = ({ form, value, flag, setFlag }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
 
-  const { data: options, isValidating } = useSWR(DRAWER_PRODUCTS.GENERICS);
+  // use this flag to trigger the refresh when generic names changed in its manager window.
+  const { data: options, isValidating } = useSWR(`${DRAWER_PRODUCTS.GENERICS}?flag=${flag}`);
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
@@ -33,6 +34,12 @@ const Generic = ({ form, value }) => {
       });
     }
   }, [value, setFieldsValue]);
+
+  useEffect(() => {
+    if (flag) {
+      setFlag(false);
+    }
+  }, [options, setFlag]);
 
   return (
     <Form.Item name="prod_class" label={t('fields.prodClass')} rules={[{ required: true, validator: validate }]}>

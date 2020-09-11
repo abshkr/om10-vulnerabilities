@@ -10,7 +10,7 @@ import columns from './columns';
 import useSWR, { mutate } from 'swr';
 import { DataTable, Download } from 'components';
 
-const GenericForm = ({}) => {
+const GenericForm = ({onClose}) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -20,6 +20,13 @@ const GenericForm = ({}) => {
   const fields = columns(t);
 
   const { data: payload, isValidating } = useSWR(DRAWER_PRODUCTS.GENERICS_READ);
+
+  const onFinish = () => {
+    Modal.destroyAll();
+    if (onClose) {
+      onClose();
+    }
+  };
 
   const onComplete = () => {
     mutate(DRAWER_PRODUCTS.GENERICS_READ);
@@ -181,7 +188,7 @@ const GenericForm = ({}) => {
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right', marginTop: '1rem' }}
-            onClick={() => Modal.destroyAll()}
+            onClick={onFinish}
           >
             {t('operations.cancel')}
           </Button>

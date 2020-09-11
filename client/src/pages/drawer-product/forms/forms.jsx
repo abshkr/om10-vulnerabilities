@@ -6,13 +6,17 @@ import {
   DeleteOutlined,
   QuestionCircleOutlined,
   CloseOutlined,
+  TrademarkOutlined,
 } from '@ant-design/icons';
 import { Form, Button, Tabs, Modal, notification, message, Drawer, Checkbox, Col, Row, Input, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
+import { SWRConfig } from 'swr';
+import { fetcher } from 'utils';
 
 import _ from 'lodash';
 import api, { DRAWER_PRODUCTS } from '../../../api';
+import GenericForm from '../generics/forms'
 
 import {
   DrawerCompany,
@@ -46,12 +50,36 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
   const [hotFlag, setHotFlag] = useState(value?.prod_check_hot_volume)
 
   const [baseLoading, setBaseLoading] = useState(true);
+  const [genericFlag, setGenericFlag] = useState(false);
 
   const { resetFields, setFieldsValue } = form;
 
   const fields = columns(t, config);
 
   const IS_CREATING = !value;
+
+  const manageGenerics = () => {
+    Modal.info({
+      className: 'form-container',
+      title: t('operations.manageGeneric'),
+      centered: true,
+      width: '60vw',
+      icon: <EditOutlined />,
+      content: (
+        <SWRConfig
+          value={{
+            refreshInterval: 0,
+            fetcher,
+          }}
+        >
+          <GenericForm onClose={()=>{setGenericFlag(true);}}/>
+        </SWRConfig>
+      ),
+      okButtonProps: {
+        style: { display: 'none' },
+      },
+    });
+  };
 
   const adjustHotTempCheckFlag = (bases) => {
     let hotFound=false;
@@ -350,6 +378,16 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
       footer={
         <>
           <Button
+            type="primary"
+            icon={<TrademarkOutlined />}
+            onClick={manageGenerics}
+            style={{ float: 'left' }}
+            disabled={!access?.canUpdate}
+          >
+            {t('operations.genericProd')}
+          </Button>
+
+          <Button
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
@@ -411,7 +449,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
                 <Hazchem form={form} value={value} />
               </Col>
               <Col span={8}>
-                <Generic form={form} value={value} />
+                <Generic form={form} value={value} flag={genericFlag} setFlag={setGenericFlag} />
               </Col>
             </Row>
 
