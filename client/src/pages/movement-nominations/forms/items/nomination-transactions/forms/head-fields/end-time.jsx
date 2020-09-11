@@ -4,10 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { Form, DatePicker, Col } from 'antd';
 import moment from 'moment';
 
+import { useConfig } from '../../../../../../../hooks';
 import { SETTINGS } from '../../../../../../../constants';
 import { getDateTimeFormat } from '../../../../../../../utils';
 
 const ItemExpiryTime = ({ form, value, pageState }) => {
+  const config = useConfig();
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -28,18 +30,20 @@ const ItemExpiryTime = ({ form, value, pageState }) => {
   };
 
   useEffect(() => {
+    const serverCurrent = moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT);
     if (value) {
       setFieldsValue({
         mvitm_dtim_expiry: 
-          value.mvitm_dtim_expiry === '' ? null : moment(value.mvitm_dtim_expiry, SETTINGS.DATE_TIME_FORMAT),
+          value.mvitm_dtim_expiry === '' ? serverCurrent : moment(value.mvitm_dtim_expiry, SETTINGS.DATE_TIME_FORMAT),
       });
     } else {
       setFieldsValue({
-        //mvitm_dtim_expiry: moment(),
-        mvitm_dtim_expiry: moment().add(60,'days'),//.format(SETTINGS.DATE_TIME_FORMAT),
+        mvitm_dtim_expiry: serverCurrent, // moment(),
+        // mvitm_dtim_expiry: moment().add(60,'days'),//.format(SETTINGS.DATE_TIME_FORMAT),
+        // mvitm_dtim_expiry: serverCurrent.add(60,'days'),
       });
     }
-  }, [value, setFieldsValue]);
+  }, [value, config, setFieldsValue]);
 
   return (
     <Form.Item

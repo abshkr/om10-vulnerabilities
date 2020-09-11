@@ -4,10 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { Form, DatePicker } from 'antd';
 import moment from 'moment';
 
+import { useConfig } from '../../../../hooks';
 import { SETTINGS } from '../../../../constants';
 import { getDateTimeFormat } from '../../../../utils';
 
 const MovementTime = ({ form, value, type, disabled }) => {
+  const config = useConfig();
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -18,16 +20,17 @@ const MovementTime = ({ form, value, type, disabled }) => {
   // Please Use Server Time
 
   useEffect(() => {
+    const serverCurrent = moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT);
     if (value) {
       setFieldsValue({
-        mlitm_dtim_start: '' ? null : moment(value.mlitm_dtim_start, SETTINGS.DATE_TIME_FORMAT)
+        mlitm_dtim_start: '' ? serverCurrent : moment(value.mlitm_dtim_start, SETTINGS.DATE_TIME_FORMAT),
       });
     } else {
       setFieldsValue({
-        mlitm_dtim_start: moment()
+        mlitm_dtim_start: serverCurrent, // moment(),
       });
     }
-  }, [value, setFieldsValue]);
+  }, [value, config, setFieldsValue]);
 
   return (
     <Form.Item name="mlitm_dtim_start" label={t('fields.movementDateAndTime')}>

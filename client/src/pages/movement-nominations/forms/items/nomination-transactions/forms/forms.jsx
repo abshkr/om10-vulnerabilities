@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import moment from 'moment';
 
 import { QuestionCircleOutlined, CloseOutlined, CalculatorOutlined, SaveOutlined } from '@ant-design/icons';
 
@@ -168,8 +169,17 @@ const FormModal = ({
     payload.cor_vol = values?.mlitm_qty_cor;
     payload.liq_kg = values?.mlitm_qty_kg;
     payload.density = values?.mlitm_dens_cor;
-    payload.start_time = values?.mvitm_dtim_effect?.format(SETTINGS.DATE_TIME_FORMAT);
-    payload.end_time = values?.mvitm_dtim_expiry?.format(SETTINGS.DATE_TIME_FORMAT);
+    const serverCurrent = moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT);
+    if (values?.mvitm_dtim_effect === null || values?.mvitm_dtim_effect === undefined) {
+      payload.start_time = serverCurrent.format(SETTINGS.DATE_TIME_FORMAT);
+    } else {
+      payload.start_time = values?.mvitm_dtim_effect?.format(SETTINGS.DATE_TIME_FORMAT);
+    }
+    if (values?.mvitm_dtim_expiry === null || values?.mvitm_dtim_expiry === undefined) {
+      payload.end_time = serverCurrent.format(SETTINGS.DATE_TIME_FORMAT);
+    } else {
+      payload.end_time = values?.mvitm_dtim_expiry?.format(SETTINGS.DATE_TIME_FORMAT);
+    }
 
     // console.log('..................payload', payload, arm);
     if (!!values?.mvitm_arm) {

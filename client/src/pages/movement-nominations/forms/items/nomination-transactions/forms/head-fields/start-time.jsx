@@ -4,10 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { Form, DatePicker, Col } from 'antd';
 import moment from 'moment';
 
+import { useConfig } from '../../../../../../../hooks';
 import { SETTINGS } from '../../../../../../../constants';
 import { getDateTimeFormat } from '../../../../../../../utils';
 
 const ItemEffectTime = ({ form, value, pageState }) => {
+  const config = useConfig();
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -28,17 +30,18 @@ const ItemEffectTime = ({ form, value, pageState }) => {
   };
 
   useEffect(() => {
+    const serverCurrent = moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT);
     if (value) {
       setFieldsValue({
         mvitm_dtim_effect: 
-          value.mvitm_dtim_effect === '' ? null : moment(value.mvitm_dtim_effect, SETTINGS.DATE_TIME_FORMAT),
+          value.mvitm_dtim_effect === '' ? serverCurrent : moment(value.mvitm_dtim_effect, SETTINGS.DATE_TIME_FORMAT),
       });
     } else {
       setFieldsValue({
-        mvitm_dtim_effect: moment(),
+        mvitm_dtim_effect: serverCurrent, // moment(),
       });
     }
-  }, [value, setFieldsValue]);
+  }, [value, config, setFieldsValue]);
 
   return (
     <Form.Item

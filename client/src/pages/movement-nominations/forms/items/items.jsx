@@ -244,8 +244,10 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
     if (currItem.mvitm_prodname_to === '') {
       currItem.mvitm_prodname_to = currItem?.mvitm_prodcode_to;
     }
-    currItem.mvitm_dtim_effect = moment();
-    currItem.mvitm_dtim_expiry = moment();
+    // const serverCurrent = moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT);
+
+    currItem.mvitm_dtim_effect = ''; //moment();
+    currItem.mvitm_dtim_expiry = ''; //moment();
     console.log('params for MT4NOM', currItem, selected);
     setTransItem(currItem);
     setMakeTransactionVisible(true);

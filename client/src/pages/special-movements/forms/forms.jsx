@@ -137,7 +137,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
-        values.mlitm_dtim_start = values?.mlitm_dtim_start?.format(SETTINGS.DATE_TIME_FORMAT);
+        const serverCurrent = moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT);
+        if (values?.mlitm_dtim_start === null || values?.mlitm_dtim_start === undefined) {
+          values.mlitm_dtim_start = serverCurrent.format(SETTINGS.DATE_TIME_FORMAT);
+        } else {
+          values.mlitm_dtim_start = values?.mlitm_dtim_start?.format(SETTINGS.DATE_TIME_FORMAT);
+        }
         if (type === '0') {
           values.mlitm_prodcmpy = '';
           values.mlitm_tankcode = '';
@@ -363,6 +368,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       onOk: async () => {
         try {
           const values = await form.validateFields();
+          const serverCurrent = moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT);
+          if (values?.mlitm_dtim_start === null || values?.mlitm_dtim_start === undefined) {
+            values.mlitm_dtim_start = serverCurrent.format(SETTINGS.DATE_TIME_FORMAT);
+          } else {
+            values.mlitm_dtim_start = values?.mlitm_dtim_start?.format(SETTINGS.DATE_TIME_FORMAT);
+          }
+          
           if (type === '0') {
             values.mlitm_prodcmpy = '';
             values.mlitm_tankcode = '';
@@ -381,7 +393,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
                 values.mlitm_id = payload[0].next_id;
               });
 
-            values.mlitm_dtim_start = values?.mlitm_dtim_start?.format(SETTINGS.DATE_TIME_FORMAT);
+            // values.mlitm_dtim_start = values?.mlitm_dtim_start?.format(SETTINGS.DATE_TIME_FORMAT);
             await api
               .post(SPECIAL_MOVEMENTS.CREATE, values)
               .then(
@@ -399,7 +411,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
                 return;
               });
           } else {
-            values.mlitm_dtim_start = values?.mlitm_dtim_start?.format(SETTINGS.DATE_TIME_FORMAT);
+            // values.mlitm_dtim_start = values?.mlitm_dtim_start?.format(SETTINGS.DATE_TIME_FORMAT);
             await api
               .post(SPECIAL_MOVEMENTS.UPDATE, values)
               .then(
