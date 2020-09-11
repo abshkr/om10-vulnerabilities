@@ -18,8 +18,10 @@ const EffectiveFrom = ({ form, value }) => {
 
     // compare EffectiveFrom with ExpiredAfter
     const expiredAfter = form.getFieldValue('mv_dtim_expiry');
-    if (input.isAfter(expiredAfter)) {
-      return Promise.reject(`${t('validate.effectiveDateLaterThanExpiryDate')}`);
+    if (!(!input || !expiredAfter)) {
+      if (input.isAfter(expiredAfter)) {
+        return Promise.reject(`${t('validate.effectiveDateLaterThanExpiryDate')}`);
+      }
     }
 
     return Promise.resolve();
