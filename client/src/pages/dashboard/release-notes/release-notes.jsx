@@ -8,7 +8,39 @@ const { Panel } = Collapse;
 
 const data = [
   {
-    title: `Latest Release Version Notes (10.1.8) - 07/09/2020`,
+    title: `Release Notes (10.1.9-rc.1) - 11/09/2020`,
+    content: (
+      <>
+        <>
+          <p>OM5K-7712 - <a>https://dev.diamondkey.com/browse/OM5K-7712</a></p>
+          <p>OM5K-7432 - <a>https://dev.diamondkey.com/browse/OM5K-7432</a></p>
+          <p>OM5K-7623 - <a>https://dev.diamondkey.com/browse/OM5K-7623</a></p>
+          <p>OM5K-7634 - <a>https://dev.diamondkey.com/browse/OM5K-7634</a></p>
+          <p>OM5K-7635 - <a>https://dev.diamondkey.com/browse/OM5K-7635</a></p>
+          <p>OM5K-7637 - <a>https://dev.diamondkey.com/browse/OM5K-7637</a></p>
+          <p>OM5K-7692 - <a>https://dev.diamondkey.com/browse/OM5K-7692</a></p>
+          <p>OM5K-7709 - <a>https://dev.diamondkey.com/browse/OM5K-7709</a></p>
+          <p>OM5K-7297 - <a>https://dev.diamondkey.com/browse/OM5K-7297</a></p>
+          <p>OM5K-7688 - <a>https://dev.diamondkey.com/browse/OM5K-7688</a></p>
+          <p>OM5K-7690 - <a>https://dev.diamondkey.com/browse/OM5K-7690</a></p>
+          <p>OM5K-7696 - <a>https://dev.diamondkey.com/browse/OM5K-7696</a></p>
+          <p>OM5K-7708 - <a>https://dev.diamondkey.com/browse/OM5K-7708</a></p>
+          <p>OM5K-7735 - <a>https://dev.diamondkey.com/browse/OM5K-7735</a></p>
+          <p>OM5K-7740 - <a>https://dev.diamondkey.com/browse/OM5K-7740</a></p>
+          <p>OM5K-7744 - <a>https://dev.diamondkey.com/browse/OM5K-7744</a></p>
+          <p>OM5K-7745 - <a>https://dev.diamondkey.com/browse/OM5K-7745</a></p>
+          <p>OM5K-7747 - <a>https://dev.diamondkey.com/browse/OM5K-7747</a></p>
+          <p>OM5K-7725 - <a>https://dev.diamondkey.com/browse/OM5K-7725</a></p>
+          <p>OM5K-7710 - <a>https://dev.diamondkey.com/browse/OM5K-7710</a></p>
+          <p>OM5K-7711 - <a>https://dev.diamondkey.com/browse/OM5K-7711</a></p>
+          <p>OM5K-7717 - <a>https://dev.diamondkey.com/browse/OM5K-7717</a></p>
+          <p>OM5K-7720 - <a>https://dev.diamondkey.com/browse/OM5K-7720</a></p>
+        </>
+      </>
+    ),
+  },
+  {
+    title: `Release Notes (10.1.8) - 07/09/2020`,
     content: (
       <>
         <>
@@ -104,7 +136,7 @@ const data = [
     ),
   },
   {
-    title: `Latest Release Version Notes (10.1.7) - 21/08/2020`,
+    title: `Release Version Notes (10.1.7) - 21/08/2020`,
     content: (
       <>
         <>
