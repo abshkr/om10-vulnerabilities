@@ -234,7 +234,7 @@ const Combination = ({ form }) => {
 
   return (
     <Form.Item name="composition">
-      <Input.Search placeholder={`Search By Equipment`} onSearch={onSearch} />
+      <Input.Search placeholder={t('placeholder.searchEqptType')} onSearch={onSearch} />
       <div style={{ display: 'flex', flexDirection: 'column', marginTop: 10 }}>
         <DragDropContext onDragEnd={onDragEnd} direction="horizontal">
           {state.map((el, ind) => (

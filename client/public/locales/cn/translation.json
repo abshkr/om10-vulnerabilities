@@ -1871,6 +1871,7 @@
 		"minNumber": "数值允许最小值",
 		"noArmAvailable": "未配置鹤管",
 		"noArmSelection": "无鹤管可选",
+		"searchEqptType": "查找运输设备类型",
 		"searchOmega": "检索OMEGA系统",
 		"selectAddress": "请选择地址",
 		"selectAddressLineType": "请点击选择地址行类型",

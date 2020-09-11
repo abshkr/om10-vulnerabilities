@@ -28,10 +28,10 @@ const EquipmentTypes = () => {
   const handleFormState = (visibility, value) => {
     if (visibility && !value) {
       Modal.confirm({
-        title: 'Is it a combination?',
+        title: t('prompts.isEqptCombo'),
         icon: <ExclamationCircleOutlined />,
-        okText: 'No',
-        cancelText: 'Yes',
+        okText: t('operations.no'),
+        cancelText: t('operations.yes'),
         centered: true,
         onOk() {
           setCombination(false);
