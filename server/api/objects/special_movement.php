@@ -61,13 +61,15 @@ class SpecialMovement extends CommonClass
                 MLITM_QTY_RPT, 
                 MLITM_UNIT_RPT, 
                 MLITM_STATUS, 
-                DECODE(MLITM_STATUS, 0, 'Entering', 5, 'Completed', 9, 'Reversed', 'Invalid') MV_STATUS_NAME,
+                DECODE(MLITM_STATUS, 0, 'Entering', 5, 'Completed', 9, 'Reversed', 'Invalid') MV_STATUS_NAME2,
+                SPECIAL_MOVSTATUS_TYPE_NAME   as MV_STATUS_NAME,
                 MLITM_DTIM_POSTED, 
                 MLITM_OPER_POSTED, 
                 MLITM_COMMENT 
-            FROM " . $this->VIEW_NAME . ", MOVITEM_TYPES, MOV_REASONS
+            FROM " . $this->VIEW_NAME . ", MOVITEM_TYPES, MOV_REASONS, SPECIAL_MOVSTATUS_TYPE
             WHERE MLITM_TYPE = MOVITEM_TYPES.MOVITEM_TYPE_ID (+)
                 AND MLITM_REASON_CODE = MOV_REASONS.MR_ID(+)
+                AND DECODE(MLITM_STATUS, 0, 0, 5, 1, 9, 2, MLITM_STATUS) = SPECIAL_MOVSTATUS_TYPE.SPECIAL_MOVSTATUS_TYPE_ID(+)
                 AND MLITM_ID LIKE :mlitm_id ";
         $stmt = oci_parse($this->conn, $query);
 
@@ -161,13 +163,15 @@ class SpecialMovement extends CommonClass
                     MLITM_QTY_RPT, 
                     MLITM_UNIT_RPT, 
                     MLITM_STATUS, 
-                    DECODE(MLITM_STATUS, 0, 'Entering', 5, 'Completed', 9, 'Reversed', 'Invalid') MV_STATUS_NAME,
+                    DECODE(MLITM_STATUS, 0, 'Entering', 5, 'Completed', 9, 'Reversed', 'Invalid') MV_STATUS_NAME2,
+                    SPECIAL_MOVSTATUS_TYPE_NAME   as MV_STATUS_NAME,
                     MLITM_DTIM_POSTED, 
                     MLITM_OPER_POSTED, 
                     MLITM_COMMENT 
-                FROM " . $this->VIEW_NAME . ", MOVITEM_TYPES, MOV_REASONS
+                FROM " . $this->VIEW_NAME . ", MOVITEM_TYPES, MOV_REASONS, SPECIAL_MOVSTATUS_TYPE
                 WHERE MLITM_TYPE = MOVITEM_TYPES.MOVITEM_TYPE_ID (+)
                     AND MLITM_REASON_CODE = MOV_REASONS.MR_ID(+)
+                    AND DECODE(MLITM_STATUS, 0, 0, 5, 1, 9, 2, MLITM_STATUS) = SPECIAL_MOVSTATUS_TYPE.SPECIAL_MOVSTATUS_TYPE_ID(+)
                 ORDER BY MLITM_DTIM_START DESC";
             $stmt = oci_parse($this->conn, $query);
         } else {
@@ -204,13 +208,15 @@ class SpecialMovement extends CommonClass
                     MLITM_QTY_RPT, 
                     MLITM_UNIT_RPT, 
                     MLITM_STATUS, 
-                    DECODE(MLITM_STATUS, 0, 'Entering', 5, 'Completed', 9, 'Reversed', 'Invalid') MV_STATUS_NAME,
+                    DECODE(MLITM_STATUS, 0, 'Entering', 5, 'Completed', 9, 'Reversed', 'Invalid') MV_STATUS_NAME2,
+                    SPECIAL_MOVSTATUS_TYPE_NAME   as MV_STATUS_NAME,
                     MLITM_DTIM_POSTED, 
                     MLITM_OPER_POSTED, 
                     MLITM_COMMENT 
-                FROM " . $this->VIEW_NAME . ", MOVITEM_TYPES, MOV_REASONS
+                FROM " . $this->VIEW_NAME . ", MOVITEM_TYPES, MOV_REASONS, SPECIAL_MOVSTATUS_TYPE
                 WHERE MLITM_TYPE = MOVITEM_TYPES.MOVITEM_TYPE_ID (+)
                     AND MLITM_REASON_CODE = MOV_REASONS.MR_ID(+)
+                    AND DECODE(MLITM_STATUS, 0, 0, 5, 1, 9, 2, MLITM_STATUS) = SPECIAL_MOVSTATUS_TYPE.SPECIAL_MOVSTATUS_TYPE_ID(+)
                     AND MLITM_DTIM_START > :start_date
                     AND MLITM_DTIM_START < :end_date
                 ORDER BY MLITM_DTIM_START DESC";
