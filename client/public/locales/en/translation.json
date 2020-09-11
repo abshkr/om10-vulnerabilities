@@ -2004,6 +2004,7 @@
     "deleteOverride": "Are you sure you want to delete override on this date?",
     "freezeCloseout": "Are you sure you want to run manual closeout?",
     "iButtonLookUp": "iButton Look up",
+    "isEqptCombo": "Is it a combination?",
     "killSessions": "You have exceeded your session limit, do you want previous sessions cleared?",
     "lock": "Are you sure you want to lock this record?",
     "logOut": "Are you sure you want to log out?",

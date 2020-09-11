@@ -1498,7 +1498,9 @@
 		"weightInAir": "非真空重量",
 		"weightInVacuum": "真空重量",
 		"weightTolerance": "车辆总载重允许误差范围(0-20%)",
-		"window": "盘点例外规则类型"
+		"window": "盘点例外规则类型",
+		"totalCapacity": "总体容量",
+		"full": "满罐率(%)"
 	},
 	"generic": {
 		"about": "关于(EULA)",
@@ -1731,7 +1733,8 @@
 		"viewSeals": "查看封签",
 		"viewTransaction": "查看油品交易",
 		"viewTripSeals": "查看提单封签",
-		"yes": "是"
+		"yes": "是",
+		"scrollUp": "向上滚动"
 	},
 	"pageMenu": {
 		"accessControl": "油库安全管理",
@@ -1978,7 +1981,9 @@
 		"selectDdiProduct": "请选择配送细节明细油品", 
 		"selectDnTemplate": "请选择送货单模板",
 		"selectBolTemplate": "请选择发油账单模板",
-		"wrongType": "数据类型错误"
+		"wrongType": "数据类型错误",
+		"searchTanks": "查找油罐",
+		"pressEnterToSearch": "按回车键开始查找"
 	},
 	"prompts": {
 		"activate": "请确认是否要激活该记录?",
@@ -1999,6 +2004,7 @@
 		"deleteOverride": "请确认是否要删除对该日期的否决?",
 		"freezeCloseout": "请确认是否要执行人工盘点?",
 		"iButtonLookUp": "查寻触摸式按钮",
+		"isEqptCombo": "是否组合车型?",
 		"killSessions": "您的当前进程总数已经超出允许上限，请问是否要清除上一个进程?",
 		"lock": "请确认是否要锁定该记录?",
 		"logOut": "请确认是否要登出系统?",
@@ -2122,12 +2128,13 @@
 		"transactions": "油品交易",
 		"transferDetails": "调配油品转移明细",
 		"transportationDoc": "运输文件参数设置",
-		"tripSeals": "提单封签"
+		"tripSeals": "提单封签",
+	    "summary": "总计"
 	},
 	"types": {
-		"number": "实数",
+		"float": "浮点数",
 		"integer": "整数",
-		"float": "浮点数"
+		"number": "实数"
 	},
 	"units": {
 		"celcius": "摄氏度",
