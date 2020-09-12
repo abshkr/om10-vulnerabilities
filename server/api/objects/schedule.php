@@ -961,15 +961,17 @@ class Schedule extends CommonClass
                         EQPT_ETP,
                         CMPT_NO EQPT_CMPT,
                         DECODE(CMPT_UNITS, 28, 5, CMPT_UNITS) UNIT_CODE,
-                        DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') UNIT_NAME,
+                        DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') UNIT_NAME2,
+                        UNIT_SCALE_VW.DESCRIPTION UNIT_NAME,
                         DECODE(ADJ_AMNT, NULL, CMPT_CAPACIT, CMPT_CAPACIT + ADJ_AMNT) SAFEFILL,
                         DECODE(ADJ_CAPACITY, NULL, CMPT_CAPACIT, ADJ_CAPACITY) SFL,
                         NVL(ADJ_CMPT_LOCK, 0) ADJ_CMPT_LOCK
-                    FROM TRANSP_EQUIP, COMPARTMENT, SFILL_ADJUST, TNKR_EQUIP
+                    FROM TRANSP_EQUIP, COMPARTMENT, SFILL_ADJUST, TNKR_EQUIP, UNIT_SCALE_VW
                     WHERE COMPARTMENT.CMPT_ETYP = TRANSP_EQUIP.EQPT_ETP
                         AND EQPT_ID = TC_EQPT
                         AND TC_TANKER = :tnkr_code
                         AND EQPT_ID = SFILL_ADJUST.ADJ_EQP(+)
+                        AND DECODE(CMPT_UNITS, 28, 5, CMPT_UNITS) = UNIT_SCALE_VW.UNIT_ID
                         AND CMPT_NO(+) = SFILL_ADJUST.ADJ_CMPT
                     ORDER BY TC_SEQNO, CMPT_NO
                 ) TMP
@@ -1129,16 +1131,18 @@ class Schedule extends CommonClass
                     EQPT_ETP,
                     CMPT_NO,
                     DECODE(CMPT_UNITS, 11, 11, 17, 17, 5) CMPT_UNITS,
-                    DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS_NAME,
+                    DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS_NAME2,
+                    UNIT_SCALE_VW.DESCRIPTION CMPT_UNITS_NAME,
                     DECODE(ADJ_AMNT, NULL, CMPT_CAPACIT, CMPT_CAPACIT + ADJ_AMNT) SAFEFILL,
                     DECODE(ADJ_CAPACITY, NULL, CMPT_CAPACIT, ADJ_CAPACITY) SFL,
                     NVL(ADJ_CMPT_LOCK, 0) ADJ_CMPT_LOCK
-                FROM TRANSP_EQUIP, COMPARTMENT, SFILL_ADJUST, TNKR_EQUIP
+                FROM TRANSP_EQUIP, COMPARTMENT, SFILL_ADJUST, TNKR_EQUIP, UNIT_SCALE_VW
                 WHERE COMPARTMENT.CMPT_ETYP = TRANSP_EQUIP.EQPT_ETP
                     AND EQPT_ID = TC_EQPT
                     AND TC_TANKER = (
                         SELECT SHL_TANKER FROM SCHEDULE WHERE SHLS_TRIP_NO = :shls_trip_no AND SHLS_SUPP = :shls_supp)
                     AND EQPT_ID = SFILL_ADJUST.ADJ_EQP(+)
+                    AND DECODE(CMPT_UNITS, 11, 11, 17, 17, 5) = UNIT_SCALE_VW.UNIT_ID
                     AND CMPT_NO(+) = SFILL_ADJUST.ADJ_CMPT
                 ORDER BY TC_SEQNO, CMPT_NO) TMP
             ) TANKER_INFO, 
