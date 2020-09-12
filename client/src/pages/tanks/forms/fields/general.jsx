@@ -85,6 +85,7 @@ const General = ({ form, value, config }) => {
               dropdownMatchSelectWidth={false}
               loading={isLoading}
               showSearch
+              disabled={true}
               optionFilterProp="children"
               filterOption={(input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -122,11 +123,12 @@ const General = ({ form, value, config }) => {
 
       <Row gutter={[8, 8]}>
         <Col span={12}>
-          <Form.Item name="tank_base" label={t('fields.baseProductName')}>
+          <Form.Item name="tank_base" label={t('fields.baseProduct')}>
             <Select
               dropdownMatchSelectWidth={false}
               loading={isLoading}
               showSearch
+              disabled={true}
               optionFilterProp="children"
               filterOption={(input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
