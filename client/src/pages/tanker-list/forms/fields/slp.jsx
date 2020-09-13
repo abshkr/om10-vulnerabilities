@@ -29,7 +29,7 @@ const SLP = ({ form, value }) => {
       <Input
         disabled
         addonAfter={
-          <Tooltip title="This functionality is not available at this stage.">
+          <Tooltip title={t('descriptions.funcNotAvailableAtThisStage')}>
             <InfoCircleOutlined style={{ fontSize: 16 }} />
           </Tooltip>
         }

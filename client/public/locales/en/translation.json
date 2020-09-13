@@ -61,6 +61,7 @@
     "expiryDateTable": "Apply the Expiry Dates to the following records",
     "flowContribution": "Flow Contribution",
     "fromProductNotBase": "Scheduled from-product is made of multiple base products.",
+    "funcNotAvailableAtThisStage": "This functionality is not available at this stage.",
     "gatePermissionRule": "Gate permission must define the first rule",
     "haltFailed": "Failed to halt the process",
     "haltSuccess": "You have halted the record",
