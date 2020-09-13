@@ -54,6 +54,8 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
     mutate(EQUIPMENT_LIST.READ);
     if (eqpt_code) {
       setFilterValue('' + eqpt_code);
+    } else {
+      setFilterValue(' ');
     }
   };
 

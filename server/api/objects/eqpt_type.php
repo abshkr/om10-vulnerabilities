@@ -158,14 +158,16 @@ class EquipmentType extends CommonClass
         $query = "
             SELECT CMPT_NO,
                 CMPT_UNITS CMPT_UNIT_ID,
-                DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS,
+                DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS2,
+                UNIT_SCALE_VW.DESCRIPTION CMPT_UNITS,
                 CMPT_CAPACIT,
                 CMPT_CAPACIT SAFEFILL,
                 CMPT_CAPACIT SFL,
                 COMPARTMENT.CMPT_ETYP ETYP_ID,
                 CMPT_N_SEALS
-            FROM COMPARTMENT
+            FROM COMPARTMENT, UNIT_SCALE_VW
             WHERE COMPARTMENT.CMPT_ETYP = :etyp_id
+                and COMPARTMENT.CMPT_UNITS = UNIT_SCALE_VW.UNIT_ID
             ORDER BY CMPT_NO";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':etyp_id', $hook_item['etyp_id']);
@@ -192,12 +194,14 @@ class EquipmentType extends CommonClass
         $query = "
             SELECT CMPT_NO,
                 CMPT_UNITS CMPT_UNIT_ID,
-                DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS,
+                DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS2,
+                UNIT_SCALE_VW.DESCRIPTION CMPT_UNITS,
                 CMPT_CAPACIT,
                 COMPARTMENT.CMPT_ETYP ETYP_ID,
                 CMPT_N_SEALS
-            FROM COMPARTMENT
+            FROM COMPARTMENT, UNIT_SCALE_VW
             WHERE COMPARTMENT.CMPT_ETYP = :etyp_id
+                and COMPARTMENT.CMPT_UNITS = UNIT_SCALE_VW.UNIT_ID
             ORDER BY CMPT_NO";
         $stmt = oci_parse($this->conn, $query);
         if ($etyp_id) {
