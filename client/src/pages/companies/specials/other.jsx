@@ -175,11 +175,11 @@ const OtherForm = ({ value, form }) => {
               dropdownMatchSelectWidth={false}
               // onChange={handleVetChange}
             >
-              <Select.Option key={-1} value="-1">Vet None</Select.Option>
-              <Select.Option key={0} value="0">Vet Carrier</Select.Option>
-              <Select.Option key={1} value="1">Vet Prime Mover</Select.Option>
-              <Select.Option key={2} value="2">Vet Trailer</Select.Option>
-              <Select.Option key={3} value="3">Vet All</Select.Option>
+              <Select.Option key={-1} value="-1">{t('fields.vetNone')}</Select.Option>
+              <Select.Option key={0} value="0">{t('fields.vetCarrier')}</Select.Option>
+              <Select.Option key={1} value="1">{t('fields.vetPM')}</Select.Option>
+              <Select.Option key={2} value="2">{t('fields.vetTrailer')}</Select.Option>
+              <Select.Option key={3} value="3">{t('fields.vetAll')}</Select.Option>
             </Select>
           </Form.Item>
         </Col>
