@@ -140,8 +140,20 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
     if (errors.length === 0) {
       values.items = items;
 
-      values.mv_dtim_effect = values.mv_dtim_effect?.format(SETTINGS.DATE_TIME_FORMAT);
-      values.mv_dtim_expiry = values.mv_dtim_expiry?.format(SETTINGS.DATE_TIME_FORMAT);
+      // console.log('.....................values.mv_dtim_effect', values.mv_dtim_effect);
+      // console.log('.....................values.mv_dtim_expiry', values.mv_dtim_expiry);
+      if (!values?.mv_dtim_effect) {
+        values.mv_dtim_effect = '';
+      } else {
+        values.mv_dtim_effect = values.mv_dtim_effect?.format(SETTINGS.DATE_TIME_FORMAT);
+      }
+      if (!values?.mv_dtim_expiry) {
+        values.mv_dtim_expiry = '';
+      } else {
+        values.mv_dtim_expiry = values.mv_dtim_expiry?.format(SETTINGS.DATE_TIME_FORMAT);
+      }
+      // console.log('.....................values.mv_dtim_effect2', values.mv_dtim_effect);
+      // console.log('.....................values.mv_dtim_expiry2', values.mv_dtim_expiry);
       if (!!value && !!value.mv_id) {
         values.mv_id = value.mv_id;
       }
