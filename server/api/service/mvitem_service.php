@@ -328,7 +328,7 @@ class MvitemService
             $from_tanks = $this->explode_arm_tanks();
             for ($j = 0; $j < $transfers[0]->Number_of_Bases; ++$j) {
                 $transfers[0]->bases[$j] = new Transfer_Base();
-                if ($this->from_arm) {
+                if (isset($this->from_arm)) {
                     $transfers[0]->bases[$j]->Tank_Code = $from_tanks[$bases[$j]['ratio_base']];
                 } else {
                     $transfers[0]->bases[$j]->Tank_Code = $this->from_tank;

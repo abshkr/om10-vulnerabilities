@@ -111,6 +111,100 @@ class SpecialMvService
         return true;
     }
 
+
+    private function retrieve_unit_str($unit_id) 
+    {
+        if (file_exists("/usr/omega/bin/gsap_erpIn/UnitOfMeasure.csv")) {
+            $result = array();
+            $result["records"] = array();
+
+            $lines = file('/usr/omega/bin/gsap_erpIn/UnitOfMeasure.csv');
+            foreach($lines as $line) {
+                $attributes = explode(',', $line);
+                // write_log(json_encode($attributes), __FILE__, __LINE__);
+                if ($unit_id == $attributes[0]) {
+                    return $attributes[1];
+                }
+            }
+
+            //Error, returns a default
+            write_log(sprintf("Failed to retrieve unit id:%d", $unit_id),
+                __FILE__, __LINE__, LogLevel::ERROR);
+            return 'L';
+        } else {
+            if ($unit_id == 0) {
+                return 'BB6';
+            } else if ($unit_id == 1) {
+                return 'BBL';
+            } else if ($unit_id == 2) {
+                return 'KG';
+            } else if ($unit_id == 3) {
+                return 'L';
+            } else if ($unit_id == 4) {
+                return 'L15';
+            } else if ($unit_id == 5) {
+                return 'L20';
+            } else if ($unit_id == 6) {
+                return 'L30';
+            } else if ($unit_id == 7) {
+                return 'LB';
+            } else if ($unit_id == 8) {
+                return 'GAL';
+            } else if ($unit_id == 9) {
+                return 'UGL';
+            } else if ($unit_id == 10) {
+                return 'M3';
+            } else if ($unit_id == 11) {
+                return 'M15';
+            } else if ($unit_id == 12) {
+                return 'TO';
+            } else {
+                //Error, returns a default
+                write_log(sprintf("Failed to retrieve unit id:%d", $unit_id),
+                __FILE__, __LINE__, LogLevel::ERROR);
+                return 'L';
+            }
+        }
+    }
+
+    private function finishup_schedule($trsa_id)
+    {
+        write_log(sprintf("%s::%s() START. trsa_id:%s", __CLASS__, __FUNCTION__, $trsa_id),
+            __FILE__, __LINE__);
+
+        $query = "SELECT MLITM_QTY_RPT, MLITM_UNIT_RPT
+            FROM MOV_LOAD_ITEMS
+            WHERE MLITM_ID = :mlitm_id";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':mlitm_id', $this->mlitm_id);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $mlitm_qty_rpt = $row['MLITM_QTY_RPT'];
+        $mlitm_unit_rpt = $row['MLITM_UNIT_RPT'];
+
+        $unit_str = $this->retrieve_unit_str($mlitm_unit_rpt);
+        $query = "UPDATE TRANSACTIONS 
+            SET TRSA_ALT_QTY = :trsa_alt_qty, 
+                TRSA_ALT_UNT = :trsa_alt_unt
+            WHERE TRSA_ID = :trsa_id";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':trsa_alt_qty', $mlitm_qty_rpt);
+        oci_bind_by_name($stmt, ':trsa_alt_unt', $unit_str);
+        oci_bind_by_name($stmt, ':trsa_id', $trsa_id);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Return : true or false
      */
@@ -210,6 +304,7 @@ class SpecialMvService
         $serv->set_property('auto_complete', "T");          //For special, auto complete is T
 
         $result = $serv->do_create($err_msg);
+        $this->finishup_schedule($serv->trsa_id);
         if ($this->mlitm_type != MV_TRANSFER) {
             return $result;
         }
@@ -274,6 +369,8 @@ class SpecialMvService
         $serv->set_property('is_nomination', false);
         $serv->set_property('auto_complete', "T");          //For special, auto complete is T
 
-        return $serv->do_create($err_msg);
+        $serv->do_create($err_msg);
+        $this->finishup_schedule($serv->trsa_id);
+        return true;
     }
 }
