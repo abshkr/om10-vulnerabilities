@@ -8,6 +8,29 @@ const { Panel } = Collapse;
 
 const data = [
   {
+    title: `Release Notes (10.1.9-rc.2) - 14/09/2020`,
+    content: (
+      <>
+        <>
+          <p>OM5K-7271 - <a>https://dev.diamondkey.com/browse/OM5K-7271</a></p>
+          <p>OM5K-7689 - <a>https://dev.diamondkey.com/browse/OM5K-7689</a></p>
+          <p>OM5K-7699 - <a>https://dev.diamondkey.com/browse/OM5K-7699</a></p>
+          <p>OM5K-7703 - <a>https://dev.diamondkey.com/browse/OM5K-7703</a></p>
+          <p>OM5K-7734 - <a>https://dev.diamondkey.com/browse/OM5K-7734</a></p>
+          <p>OM5K-7737 - <a>https://dev.diamondkey.com/browse/OM5K-7737</a></p>
+          <p>OM5K-7748 - <a>https://dev.diamondkey.com/browse/OM5K-7748</a></p>
+          <p>OM5K-7751 - <a>https://dev.diamondkey.com/browse/OM5K-7751</a></p>
+          <p>OM5K-7721 - <a>https://dev.diamondkey.com/browse/OM5K-7721</a></p>
+          <p>OM5K-7727 - <a>https://dev.diamondkey.com/browse/OM5K-7727</a></p>
+          <p>OM5K-7728 - <a>https://dev.diamondkey.com/browse/OM5K-7728</a></p>
+          <p>OM5K-7729 - <a>https://dev.diamondkey.com/browse/OM5K-7729</a></p>
+          <p>OM5K-7731 - <a>https://dev.diamondkey.com/browse/OM5K-7731</a></p>
+          <p>OM5K-7677 - <a>https://dev.diamondkey.com/browse/OM5K-7677</a></p>
+        </>
+      </>
+    ),
+  },
+  {
     title: `Release Notes (10.1.9-rc.1) - 11/09/2020`,
     content: (
       <>
