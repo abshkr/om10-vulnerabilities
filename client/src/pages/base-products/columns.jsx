@@ -87,7 +87,7 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     cellRenderer: 'BooleanRenderer',
-    filter: 'MultiFilter',
+    filter: 'BooleanFilter',
     width: 140,
     suppressSizeToFit: true,
   },
