@@ -395,9 +395,9 @@ const HostMessagingItems = ({ data, onChange, t }) => (
     dataSource={data}
     renderItem={(item) => {
       return (
-        <List.Item style={{ background: '#f1f1f1', marginBottom: 0, marginRight: 0, borderRadius: 5 }}>
+        <List.Item style={{ background: 'white', marginBottom: 10, marginRight: 10, borderRadius: 5 }}>
           <List.Item.Meta
-            style={{ justifyContent: 'left', alignContent: 'left', alignItems: 'left' }}
+            style={{ justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}
             avatar={
               <Switch
                 checked={item.config_value === 'Y'}
