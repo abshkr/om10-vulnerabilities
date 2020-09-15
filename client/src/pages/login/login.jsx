@@ -54,6 +54,7 @@ const Login = ({ handleLogin, auth }) => {
 
   const handleLanguage = (value) => {
     i18n.changeLanguage(value);
+    sessionStorage.setItem('language', (value));
   };
 
   const onChangePassword = (ret) => {

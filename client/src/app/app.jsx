@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 
 import { BrowserRouter, Route, Switch, Redirect } from 'react-router-dom';
 
@@ -41,7 +41,14 @@ const App = () => {
   const { i18n } = useTranslation();
 
   const language = locale[i18n.language];
-
+  
+  useEffect(() => {
+    const sessionLanguage = sessionStorage.getItem('language');
+    if (sessionLanguage !== 'en') {
+      i18n.changeLanguage(sessionLanguage);
+    }
+  }, []);
+  
   return (
     <ConfigProvider locale={language}>
       <Provider store={authStore}>
