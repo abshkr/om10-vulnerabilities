@@ -267,8 +267,10 @@ class Allocation extends CommonClass
                             return false;
                         }
                     } else if ($alloc->aitem_qtylimit > 0 && $item_array['AITEM_QTYLEFT'] > 0) {
+                        $new_left = $item_array['AITEM_QTYLEFT'] + ($alloc->aitem_qtylimit - $item_array['AITEM_QTYLIMIT']);
                         $query = "UPDATE ALLOCS
                             SET ALLOC_LIMIT = :aitem_qtylimit,
+                                ALLOC_LEFT = :new_left,
                                 ALLOC_UNITS = :aitem_produnit
                             WHERE ALL_PROD_PRODCMPY = :aitem_suppcode
                                 AND ALL_ATKY_AT_TYPE = :aitem_type
@@ -278,6 +280,7 @@ class Allocation extends CommonClass
                         oci_bind_by_name($stmt, ':aitem_prodcode', $alloc->aitem_prodcode);
                         oci_bind_by_name($stmt, ':aitem_suppcode', $this->alloc_suppcode);
                         oci_bind_by_name($stmt, ':aitem_qtylimit', $alloc->aitem_qtylimit);
+                        oci_bind_by_name($stmt, ':new_left', $new_left);
                         oci_bind_by_name($stmt, ':aitem_produnit', $alloc->aitem_produnit);
                         oci_bind_by_name($stmt, ':aitem_type', $this->alloc_type);
                         oci_bind_by_name($stmt, ':aitem_cmpycode', $this->alloc_cmpycode);
