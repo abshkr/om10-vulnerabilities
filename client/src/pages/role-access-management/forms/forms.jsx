@@ -735,7 +735,7 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item> */}
 
-            <Form.Item name="M_ADAPTIVEFLOWCONTROL" label={t('pageNames.adaptiveFlow')}>
+            <Form.Item name="M_ADAPTIVEFLOW" label={t('pageNames.adaptiveFlow')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
