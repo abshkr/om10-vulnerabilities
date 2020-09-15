@@ -62,6 +62,134 @@ class SiteConfig extends CommonClass
         "HOST_MESSAGING_OUT_SUBMIT_ON" => "提交发送信息",
     );
 
+    private $ENG_DESC = array(
+        "AIR_BUOYANCY_FACTOR" => "Air Buoyancy",
+        "ARCHIVE_CMPY_CODE" => "The company code for archived trips.",
+        "BOL_DN_FORCE_EMAIL" => "",
+        "BOL_DN_PROCESS_CONTROL" => "Whether to view or print BOL/DN separately",
+        "BOL_DN_TEMPLATE_GUI_ENABLED" => "Enable BOL/Delivery Note Template Screen.",
+        "BOL_VERSION" => "",
+        "CLOSEOUT_AUTO_CLOSE" => "Freeze and close folio when closeout runs.",
+        "CLOSEOUT_CSV_REPORTS" => "CSV report flag for closeout",
+        "DRIVER_PIN_AUTO_EXPIRE" => "PIN must be changed every X days: ",
+        "DRIVER_PIN_AUTO_LOCK" => "Lock Card after X incorrect PIN attempts [Updating this requires CCC to update config at the BAY]:",
+        "HOST_COMM_IN_MSG_AGE_DAYS" => "Parameter to define number for days for incoming message acceptability criteria.",
+        "HOST_COMM_MNTH_END" => "Its about month end and stop sending details to host",
+        "HOST_MESSAGING_IN_EDIT_ON" => "Edit incoming messages",
+        "HOST_MESSAGING_IN_SUBMIT_ON" => "Submit incoming messages",
+        "HOST_MESSAGING_OUT_EDIT_ON" => "Edit outgoing messages",
+        "HOST_MESSAGING_OUT_SUBMIT_ON" => "Submit outgoing messages",
+        "HOT_LITRE_SFL_FACTOR" => "Site-wide percentage to be used to reduce preset for hot litres, valid range [0.0 - 1.0]",
+        "ID_ADHOC_FLAG_ENABLED" => "allow the user to view and update the KYA_ADHOC flag in ID Assignment screen",
+        "LIMIT_TO_SERVER_DATETIME" => "DEFAULT TIME TO SERVER OR LOCAL CLIENT PC",
+        "LIVE_JOURNAL_SORT" => "Show Live Journal results with the latest at bottom",
+        "MONTHLY_REPORT_INCLUSIVE" => "Whether accumulative monthly report includes the folio that stride the start of the calendar month.",
+        "OMEGA_DATETIME_FMT" => "application default datetime format",
+        "OO_TO_ONE_TRIP" => "S: allow single open order in one trip; M: allow multiple open orders in one trip",
+        "REGION_CPP_DATEMONTH_FORMAT" => "%b/%Y|%m/%Y|%Y-%m",
+        "REGION_CPP_DATEONLY_FORMAT" => "%d/%b/%Y|%d/%m/%Y|%Y-%m-%d",
+        "REGION_CPP_DATETIME_FORMAT" => "%d/%b/%Y %H:%M:%S|%d/%m/%Y %H:%M:%S|%Y-%m-%d %H:%M:%S|%Y年%m月%d日 %H:%M:%S",
+        "REGION_CPP_DATEWEEK_FORMAT" => "%W/%Y|%Y,%W",
+        "REGION_DB_DATEMONTH_FORMAT" => "MON/YYYY|MM/rrrr|rrrr-MM",
+        "REGION_DB_DATEONLY_FORMAT" => "DD/MON/YYYY|dd/MM/rrrr|rrrr-MM-dd",
+        "REGION_DB_DATETIME_FORMAT" => "DD/MON/YYYY hh24:mi:ss|dd/MM/rrrr hh24:mi:ss|rrrr-MM-dd hh24:mi:ss|YYYY年MM月DD日 hh24:mi:ss",
+        "REGION_DB_DATEWEEK_FORMAT" => "WW/rrrr|YYYY,WW",
+        "REGION_MAJOR_LANGUAGE" => "The language used by the site",
+        "REPORT_OUTPUT_DOC_FOLDER" => "the folder where the report output file is saved",
+        "SAFEFILL_TOLERANCE_PERCENT" => "Safefill Tolerance Percentage (0.00 - 100.00%)",
+        "SAFEFILL_TOLERANCE_QTY" => "Safefill Tolerance Quantity (0 - 10000 L)",
+        "SCHD_RESET_DRIVER" => "Y - Omega allow to update driver on non-authorised schedule; Otherwise N not allowed.",
+        "SCHEDUNITS" => "either corercted litres or ambient litres loading",
+        "SEALNUM_SOURCE" => "Count of Seal:EXTERNAL(from Seals Assignment screen manually), Otherwise(from eqp type definition)",
+        "SEAL_POSTFIX" => "Site seals suffix",
+        "SEAL_PREFIX" => "Site seals prefix",
+        "SEAL_RANGE_SEPARATOR" => "Character to be used in Seal Number range",
+        "SHLS_SEAL_FMT" => "Schedule-SHLS_SEAL_NO format: RANGE(100234=36) vs NULL(100234,100235,100236)",
+        "SITE_2FA_DOMAINS" => "Approved domains for Two-factor authentication email",
+        "SITE_2FA_ENABLED" => "Two-factor authentication flag",
+        "SITE_2FA_TIMEOUT" => "Timeout for Two-factor authentication code",
+        "SITE_ADDRESS_TEMPLATE" => "Set the default template for address details if it is not null.",
+        "SITE_AUDIT_RETENTION" => "Site audit retention period.(Month)",
+        "SITE_AUDIT_SCREEN_ENABLED" => "Determine whether the Audit screen is enabled.",
+        "SITE_AUTO_COMPLETE_TRANSACTION" => "",
+        "SITE_AUTO_COMPLETE_TRANSACTOIN" => "Auto complete loading process",
+        "SITE_AUTO_FILTER_WHEN_OPEN_SCREEN" => "determine if auto filtering is allowed when screen opens",
+        "SITE_CANCEL_LOAD_ENABLED" => "Site Level, Load cancellation, Y-Enabled N-Disabled",
+        "SITE_CLEAR_FILTER_BLANK" => "determine if the date range will be cleared or reset to default value",
+        "SITE_CMPT_DOR_NUMBER_EDITABLE" => "The Host DOR number can be updated in load schedule compartment.",
+        "SITE_COMPANY_RELATION_ALLOWED" => "Determine whether the Company Relation screen is enabled.",
+        "SITE_COMPANY_RELATION_CHILD_ROLES" => "The default child company roles available to choose",
+        "SITE_COMPANY_RELATION_PARENT_ROLES" => "The default parent company roles available to choose",
+        "SITE_DATETIME_FORMAT" => "The default date time format for Frontend",
+        "SITE_DEFAULT_DATERANGE_ALLOCATION" => "The default date ranges in allocation. X~~Y: X days before today, Y days after today. -1: blank ",
+        "SITE_DEFAULT_DATERANGE_AUDIT" => "The default date ranges in audit reporting. X~~Y: X days before today, Y days after today. -1: blank ",
+        "SITE_DEFAULT_DATERANGE_CUSTORDER" => "The default date ranges in open orders. X~~Y: X days before today, Y days after today. -1: blank ",
+        "SITE_DEFAULT_DATERANGE_JOURNAL" => "The default date ranges in live journals. X~~Y: X days before today, Y days after today. -1: blank ",
+        "SITE_DEFAULT_DATERANGE_NOMINATION" => "The default date ranges in movement nominations screen. X~~Y: X days before today, Y days after today. -1: blank ",
+        "SITE_DEFAULT_DATERANGE_SCHEDULE" => "The default date ranges in load schedules screen. X~~Y: X days before today, Y days after today. -1: blank ",
+        "SITE_DEFAULT_DATERANGE_TRANSACTION" => "The default date ranges in transactions. X~~Y: X days before today, Y days after today. -1: blank ",
+        "SITE_DEFAULT_EQPT_EXPIRY" => "determine the default expiry date for equipment",
+        "SITE_DEFAULT_PRECISION_ADDITIVE" => "Additive Precision",
+        "SITE_DEFAULT_PRECISION_API" => "API Precision",
+        "SITE_DEFAULT_PRECISION_DENSITY" => "Density Precision",
+        "SITE_DEFAULT_PRECISION_LEVEL" => "Level Precision",
+        "SITE_DEFAULT_PRECISION_MASS" => "Mass Quantity Precision",
+        "SITE_DEFAULT_PRECISION_SG" => "SG Precision",
+        "SITE_DEFAULT_PRECISION_TEMPERATURE" => "Temperature Precision",
+        "SITE_DEFAULT_PRECISION_VOLUME" => "Volume Quantity Precision",
+        "SITE_DEFAULT_TIME_LENGTH" => "The length of time string. 3: HH, 6: HH:MM, 9: HH:MM:SS",
+        "SITE_DEFAULT_TIME_STRING" => "default time part if the datetime value has date part only",
+        "SITE_DEFAULT_TNKR_EXPIRY" => "determine the default expiry date for tankers",
+        "SITE_DOR_HISTORY_AVAILABLE" => "Enable the Additional Host DOR screen.",
+        "SITE_DOR_NUMBER_EDITABLE" => "The Host DOR number can be updated in load schedule screen.",
+        "SITE_DOR_NUMBER_VISIBLE" => "Show Host DOR number in load schedule screen.",
+        "SITE_EXPIRY_DATE_MANAGE_MODE" => "1: Legacy Expiry Date only; 2: New Generic Expiry Date Types; 3: Both",
+        "SITE_EXTERNAL_BLENDING_ALLOWED" => "Determine whether it is requred to determine base product quantities based on recipes when blending is performed externally.",
+        "SITE_IDASSN_DUPLICATE" => "determine if id assignemnt allows duplicated key number for different issuers",
+        "SITE_ISOTAINER_ENABLED" => "Site Level, Isotainer/Container field, Y-Enabled N-Disabled",
+        "SITE_JOURNAL_RETENTION" => "Site journal retention period.(Month)",
+        "SITE_LOAD_SAFEFILL_CHECK_BY_HIGHTEMP" => "Determine whether it is requred to check the capacity limiting of loads.",
+        "SITE_MAX_SEALS_PER_CMPT" => "the maximum number of seals allowed in a compartment",
+        "SITE_MAX_TAGS" => "Maximum number of tags allowed on site",
+        "SITE_MOVEMENTS_REV_ENABLED" => "Site Level, Movements Rev/Repost Y-Enabled N-Not",
+        "SITE_NOM_FILTER_BY_EXPIRY" => "determine if nominations are filtered by expired after date or effective from date",
+        "SITE_OO_ASSN_FROM_SCHD_CMPT" => "determine if user can access open order screen from load schedules screen",
+        "SITE_OO_FILTER_BY_EXPIRY" => "determine if open order is filtered by expiry date or ordered date",
+        "SITE_ORDER_LISTING_CLOSE_ALL_LOADS_VISIBLE" => "The visible flag for Close All Loads button in Order Listing screen",
+        "SITE_ORDER_LISTING_RESET_ORDER_VISIBLE" => "The visible flag for Reset Order button in Order Listing screen",
+        "SITE_OWNSHIP_UNIT" => "Site product ownership unit id",
+        "SITE_PARTNERSHIP_ENABLED" => "Enable Partners and Partnership.",
+        "SITE_PRICING_ENABLED" => "Enable Pricing related screens.",
+        "SITE_RAIL_TANK_AVAILABLE" => "Determine whether eqipment type can have rail tank car.",
+        "SITE_RIGID_SHIP_AVAILABLE" => "Determine whether eqipment type can have rigid ship.",
+        "SITE_SCHD_ARCHIVE_ENABLED" => "Site Level, Schedule Rev/Repost Y-Enabled N-Not",
+        "SITE_SCHD_REV_REPOST_ENABLED" => "Site Level, Schedule Rev/Repost Y-Enabled N-Not",
+        "SITE_SHLS_REQ_DRVR" => "dispatcher require to add the driver to schedule",
+        "SITE_TANK_STATUS_ENFORCEMENT_FLAG" => "The Tank Status Enforcement flag",
+        "SITE_TKRCODE_LEN_LIMIT" => "If Y tanker code length max 20 chars; N then max 40 chars",
+        "SITE_USE_LSI" => "Load Security Info in Manual Transactions",
+        "SITE_USE_SEAL" => "Site Level, whether security seal is used on site",
+        "SITE_USE_WEIGHBRIDGE" => "Site Level, whether weighbridge is used on site",
+        "SLP_EXPIRY_CODE_PERSONNEL" => "SLP mapping for PERSONNEL expiry",
+        "SLP_EXPIRY_CODE_VEHICLE" => "SLP mapping for VEHICLE expiry",
+        "THIRD_PARTY_LOADING" => "3rd party loads must authorise against a site manager open order.",
+        "TRIPNUM_AS_PASSWORD" => "make trip num with combination of sequential number and randome number",
+        "URBAC_AUTO_LOGOFF" => "Inactive session time out (Minutes):",
+        "URBAC_PWD_AUTO_EXPIRE" => "Personnel Password expires after X number of days:",
+        "URBAC_PWD_AUTO_LOCK" => "Lock Personnel account after X incorrect password attempts:",
+        "URBAC_PWD_COMPLEXITY" => "Select a password complexity level(FOR NEW PASSWORDS ONLY):",
+        "URBAC_PWD_LEN_MAX" => "Maximum Personnel password length required (FOR NEW PASSWORDS ONLY):",
+        "URBAC_PWD_LEN_MIN" => "Minimum Personnel password length required (FOR NEW PASSWORDS ONLY):",
+        "URBAC_PWD_REUSE" => "X number of previous passwords cannot be re-used by the Personnel:",
+        "URBAC_PWD_UPD_INTERVAL" => "Minutes before Personnel can change their password again:",
+        "URBAC_SESSION_PER_USER" => "Maximum Number of concurrent sessions permitted by the system:",
+        "URBAC_USER_AUTO_DELETE" => "Delete unused Personnel after X number of days:",
+        "URBAC_USER_AUTO_LOCK" => "Lock unused Personnel after X number of days:",
+        "ld_qty_chk" => "",
+        "ld_qty_err" => "",
+        "one_trip" => "to set if one tanker allow multiple trips or not",
+    );
+
     public function read()
     {
         if (isset($this->config_required_by_gui)) {
@@ -178,6 +306,10 @@ class SiteConfig extends CommonClass
             oci_commit($this->conn);
             return true;
         }
+
+        // Now call the parent function to update settings in SITE_CONFIG
+        // We need to unset the config_comment because it should not be changed in any circumstances.
+        unset($this->config_comment);
         return parent::update();
     }
 
@@ -198,6 +330,33 @@ class SiteConfig extends CommonClass
                 $result_array[$key]['config_comment'] = $this->CNH_DESC[$item['config_key']];
             }
         }
+    }
+
+    private function translate_by_lang(&$result_array)
+    {
+        // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+        //     __FILE__, __LINE__);
+
+        $lang = Utilities::getCurrLang();
+        if ($lang === 'CHN') {
+            foreach ($result_array as $key => $item) {
+                // write_log($item['config_key'], __FILE__, __LINE__);
+                if (array_key_exists($item['config_key'], $this->CNH_DESC)) {
+                    // write_log($this->CNH_DESC[$item['config_key']], __FILE__, __LINE__);
+                    $result_array[$key]['config_comment'] = $this->CNH_DESC[$item['config_key']];
+                }
+            }
+        }
+        if ($lang === 'ENG') {
+            foreach ($result_array as $key => $item) {
+                // write_log($item['config_key'], __FILE__, __LINE__);
+                if (array_key_exists($item['config_key'], $this->ENG_DESC)) {
+                    // write_log($this->ENG_DESC[$item['config_key']], __FILE__, __LINE__);
+                    $result_array[$key]['config_comment'] = $this->ENG_DESC[$item['config_key']];
+                }
+            }
+        }
+
     }
 
     public function read_decorate(&$result_array)
@@ -296,7 +455,7 @@ class SiteConfig extends CommonClass
             "config_required_by_gui" => "",
             ));
         
-        $this->translate_chn($result_array);
+        $this->translate_by_lang($result_array);
     }
     
     public function read_by_key()
