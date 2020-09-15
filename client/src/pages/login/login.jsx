@@ -44,6 +44,7 @@ const LoginOutlined = (props) => (
 );
 
 const Login = ({ handleLogin, auth }) => {
+  const [form] = Form.useForm();
   const { i18n, t } = useTranslation();
 
   const [isLoading, setLoading] = useState(false);
@@ -55,6 +56,8 @@ const Login = ({ handleLogin, auth }) => {
   const handleLanguage = (value) => {
     i18n.changeLanguage(value);
     sessionStorage.setItem('language', (value));
+    sessionStorage.setItem('user', document.getElementById("code")?.value);
+    sessionStorage.setItem('password', document.getElementById("password")?.value);
   };
 
   const onChangePassword = (ret) => {
@@ -269,6 +272,13 @@ const Login = ({ handleLogin, auth }) => {
     }
   }, [auth, history]);
 
+  useEffect(() => {
+    form.setFieldsValue({
+      code: sessionStorage.getItem('user'),
+      password: sessionStorage.getItem('password'),
+    })
+  }, []);
+
   return (
     <LoginContainer>
       <Helmet>
@@ -287,7 +297,7 @@ const Login = ({ handleLogin, auth }) => {
 
           <LoginSubtitle>{t('generic.login')}</LoginSubtitle>
 
-          <Form onFinish={handleSubmit} initialValues={{ language: i18n.language || 'en' }}>
+          <Form form={form} onFinish={handleSubmit} initialValues={{ language: i18n.language || 'en' }}>
             <Form.Item name="code" rules={[{ required: true, message: t('messages.inputOmegaUser') }]}>
               <Input
                 style={{ marginBottom: 5 }}
@@ -298,6 +308,7 @@ const Login = ({ handleLogin, auth }) => {
 
             <Form.Item
               name="password"
+              // value={curUser}
               rules={[{ required: true, message: t('messages.inputOmegaPassword') }]}
             >
               <Input

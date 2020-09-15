@@ -8,6 +8,9 @@ import * as actions from '../../actions/auth';
 import { ROUTES } from '../../constants';
 
 const Logout = ({ signout, idle }) => {
+  sessionStorage.removeItem("user");
+  sessionStorage.removeItem("password");
+
   let history = useHistory();
 
   useEffect(() => {
