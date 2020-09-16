@@ -1843,8 +1843,8 @@ class Movement extends CommonClass
 
         if (isset($this->mv_key)) {
             $query = "
-                SELECT *
-                FROM GUI_NOM_SCHEDULES
+                SELECT gns.*, 'Y' as CMPY_SCHD_REV_REPOST
+                FROM GUI_NOM_SCHEDULES gns
                 WHERE MV_KEY = :mv_key
             ";
             if (isset($this->mvitm_item_id)) {
@@ -1871,8 +1871,8 @@ class Movement extends CommonClass
             }
         } else {
             $query = "
-                SELECT *
-                FROM GUI_NOM_SCHEDULES
+                SELECT gns.*, 'Y' as CMPY_SCHD_REV_REPOST
+                FROM GUI_NOM_SCHEDULES gns
                 ORDER BY SHLS_TRIP_NO";
             $stmt = oci_parse($this->conn, $query);
         }
