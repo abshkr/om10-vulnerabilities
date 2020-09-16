@@ -9,7 +9,7 @@ import { DataTable } from '../../../../components';
 
 import columns from './columns';
 
-const Meters = ({ id, meterTrigger }) => {
+const Meters = ({ id, enabled, meterTrigger }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
@@ -18,7 +18,7 @@ const Meters = ({ id, meterTrigger }) => {
     revalidateOnFocus: false,
   });
 
-  const fields = columns(t);
+  const fields = columns(t, enabled);
 
   const update = () => {
     Modal.confirm({

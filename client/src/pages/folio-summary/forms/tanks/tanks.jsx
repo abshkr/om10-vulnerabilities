@@ -9,7 +9,7 @@ import { DataTable } from '../../../../components';
 import generator from './generator';
 import columns from './columns';
 
-const Tanks = ({ id, saveToFolioTrigger, saveToTanksTrigger, calculateTrigger }) => {
+const Tanks = ({ id, enabled, saveToFolioTrigger, saveToTanksTrigger, calculateTrigger }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
@@ -18,7 +18,7 @@ const Tanks = ({ id, saveToFolioTrigger, saveToTanksTrigger, calculateTrigger })
   const [preSelected, setPreSelected] = useState([]);
   const [tableAPI, setTableAPI] = useState(null);
 
-  const fields = columns(t);
+  const fields = columns(t, enabled);
 
   const fetch = useCallback(() => {
     setLoading(true);

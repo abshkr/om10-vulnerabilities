@@ -49,8 +49,6 @@ class FolioSetting extends CommonClass
             "param_comment" => 'last closeout date from CLOSEOUTS table'
             ));
     }
-    
-    
 
     public function read_ex()
     {
