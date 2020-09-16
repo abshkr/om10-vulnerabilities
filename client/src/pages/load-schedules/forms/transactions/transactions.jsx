@@ -121,11 +121,11 @@ const Transactions = ({ value }) => {
       <div style={{ marginTop: 20, marginBottom: 20 }} />
 
       <Tabs defaultActiveKey="1">
-        <Tabs.TabPane tab="Base Product Details" key="1">
+        <Tabs.TabPane tab={t('tabColumns.baseProductDetails')} key="1">
           <DataTable data={products} columns={productFields} height="80vh" minimal/>
         </Tabs.TabPane>
 
-        <Tabs.TabPane tab="Meter Details" key="2">
+        <Tabs.TabPane tab={t('tabColumns.meterDetails')} key="2">
           <DataTable data={meters} columns={meterFields} height="80vh" minimal/>
         </Tabs.TabPane>
       </Tabs>

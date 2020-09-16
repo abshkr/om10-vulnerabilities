@@ -86,16 +86,17 @@ const TransactionList = ({ selected }) => {
             parentHeight="200px"
             selectionMode="single"
             handleSelect={onTransferSelect}
+            minimal
           />
         </div>
 
         <Tabs defaultActiveKey="1" animated={false}>
           <Tabs.TabPane tab={t('tabColumns.meterDetails')} forceRender={true} key="1">
-            <DataTable data={meters} columns={meterFields} parentHeight="200px" />
+            <DataTable data={meters} columns={meterFields} parentHeight="200px" minimal />
           </Tabs.TabPane>
 
           <Tabs.TabPane tab={t('tabColumns.baseProductDetails')} forceRender={true} key="2">
-            <DataTable data={products} columns={detailFields} parentHeight="200px" />
+            <DataTable data={products} columns={detailFields} parentHeight="200px" minimal />
           </Tabs.TabPane>
         </Tabs>
       </Tabs.TabPane>
