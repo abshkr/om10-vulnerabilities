@@ -266,16 +266,16 @@ const columns = (IS_NOMINATION, t) => [
 
   {
     headerName: t('fields.unload'),
-    field: 'shls_ld_type',
+    field: 'unload',
     sortable: true,
     resizable: true,
     width: 120,
     suppressSizeToFit: true,
+    cellRenderer: 'BooleanRenderer',
   },
   {
     headerName: t('fields.reversed'),
-    field: 'cmpy_schd_rev_repost',
-    filter: 'BooleanFilter',
+    field: 'reversed',
     sortable: true,
     resizable: true,
     width: 120,
@@ -284,14 +284,15 @@ const columns = (IS_NOMINATION, t) => [
   },
   {
     headerName: t('fields.archived'),
-    field: 'cmpy_schd_archive',
+    field: 'archived',
     sortable: true,
     resizable: true,
-    hide: IS_NOMINATION,
+    hide: true,
     width: 120,
     suppressSizeToFit: true,
     cellRenderer: 'BooleanRenderer',
   },
+  
   {
     headerName: t('fields.supplierOrigin'),
     field: 'shls_supp_org',

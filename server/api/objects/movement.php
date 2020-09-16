@@ -1843,7 +1843,22 @@ class Movement extends CommonClass
 
         if (isset($this->mv_key)) {
             $query = "
-                SELECT gns.*, 'Y' as CMPY_SCHD_REV_REPOST
+                SELECT 
+                    gns.*, 
+                    'Y' as CMPY_SCHD_REV_REPOST,
+                    DECODE(LOAD_REVERSE_FLAG, 
+                        1, 'Y',
+                        3, 'Y',
+                        'N'
+                    ) REVERSED,
+                    DECODE(LOAD_REVERSE_FLAG, 
+                        3, 'Y',
+                        'N'
+                    ) ARCHIVED,
+                    DECODE(SHLS_LD_TYPE, 
+                        6, 'Y',
+                        'N'
+                    ) UNLOAD
                 FROM GUI_NOM_SCHEDULES gns
                 WHERE MV_KEY = :mv_key
             ";
@@ -1871,7 +1886,22 @@ class Movement extends CommonClass
             }
         } else {
             $query = "
-                SELECT gns.*, 'Y' as CMPY_SCHD_REV_REPOST
+                SELECT 
+                    gns.*, 
+                    'Y' as CMPY_SCHD_REV_REPOST,
+                    DECODE(LOAD_REVERSE_FLAG, 
+                        1, 'Y',
+                        3, 'Y',
+                        'N'
+                    ) REVERSED,
+                    DECODE(LOAD_REVERSE_FLAG, 
+                        3, 'Y',
+                        'N'
+                    ) ARCHIVED,
+                    DECODE(SHLS_LD_TYPE, 
+                        6, 'Y',
+                        'N'
+                    ) UNLOAD
                 FROM GUI_NOM_SCHEDULES gns
                 ORDER BY SHLS_TRIP_NO";
             $stmt = oci_parse($this->conn, $query);
