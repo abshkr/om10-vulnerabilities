@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { DataTable } from '../../../../../components';
 import { useTranslation } from 'react-i18next';
 import { MOVEMENT_NOMIATIONS } from '../../../../../api';
 import useSWR from 'swr';
 import { Tabs } from 'antd';
+import _ from 'lodash';
 
 import transferColumns from './transfer-columns';
 import meterColumns from './meters-columns';
@@ -16,9 +17,10 @@ const TransactionList = ({ selected }) => {
     ? `${MOVEMENT_NOMIATIONS.TRANSACTIONS}?mv_id=${selected?.mvitm_move_id}&line_id=${selected?.mvitm_line_id}`
     : null;
 
-  const { data } = useSWR(url);
+  const { data: payload } = useSWR(url);
   const { t } = useTranslation();
 
+  const [transactions, setTransactions] = useState([]);
   const [transfers, setTransfers] = useState([]);
   const [products, setProducts] = useState([]);
   const [meters, setMeters] = useState([]);
@@ -44,11 +46,33 @@ const TransactionList = ({ selected }) => {
     setMeters(meters);
   };
 
+  const adjustTransactions = (transactions) => {
+    _.forEach(transactions, (transaction) => {
+      const transfers = transaction?.transfers;
+      _.forEach(transfers, (transfer) => {
+        const meters = transfer?.meters;
+        _.forEach(meters, (meter) => {
+          meter.trsf_baa_code = transfer?.trsf_baa_code;
+          meter.baa_bay_seq = transfer?.baa_bay_seq;
+        });
+      });
+    });
+
+    return transactions;
+  };
+
+  useEffect(() => {
+    if (payload) {
+      const trsaData = adjustTransactions(payload?.records);
+      setTransactions(trsaData);
+    }
+  }, [payload, setTransactions, adjustTransactions]);
+
   return (
     <Tabs defaultActiveKey="1" animated={false}>
       <Tabs.TabPane tab={t('tabColumns.transactionForNomination')} forceRender={true} key="1">
         <DataTable
-          data={data?.records}
+          data={transactions}
           columns={fields}
           parentHeight="200px"
           selectionMode="single"

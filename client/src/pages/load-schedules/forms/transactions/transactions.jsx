@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Spin, Tabs, Divider } from 'antd';
+import _ from 'lodash';
 
 import api, { LOAD_SCHEDULES } from '../../../../api';
 import { DataTable } from '../../../../components';
@@ -26,6 +27,21 @@ const Transactions = ({ value }) => {
   const transactionsFields = transactionColumns(t);
   const transferFields = transferColumns(t);
   const meterFields = meterColumns(t);
+
+  const adjustTransactions = (transactions) => {
+    _.forEach(transactions, (transaction) => {
+      const transfers = transaction?.transfers;
+      _.forEach(transfers, (transfer) => {
+        const meters = transfer?.meters;
+        _.forEach(meters, (meter) => {
+          meter.trsf_baa_code = transfer?.trsf_baa_code;
+          meter.baa_bay_seq = transfer?.baa_bay_seq;
+        });
+      });
+    });
+
+    return transactions;
+  };
 
   const onTransactionSelect = (row) => {
     setTransfers(row?.transfers);
@@ -55,7 +71,8 @@ const Transactions = ({ value }) => {
           },
         })
         .then((res) => {
-          setTransactions(res.data?.records);
+          const trsaData = adjustTransactions(res.data?.records);
+          setTransactions(trsaData);
 
           if (res?.data?.records?.length > 0) {
             setTransfers(res?.data?.records[0]?.transfers);

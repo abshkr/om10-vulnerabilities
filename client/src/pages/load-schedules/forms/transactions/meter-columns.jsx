@@ -1,10 +1,26 @@
 const meterColumns = (t) => [
   {
+    headerName: t('fields.transfer'),
+    field: 'trsb_id_trsf_id',
+    sortable: true,
+    resizable: true,
+    hide: true,
+  },
+
+  {
     headerName: t('fields.arm'),
     field: 'trsf_baa_code',
     sortable: true,
     resizable: true,
     hide: true,
+  },
+
+  {
+    headerName: t('fields.arm'),
+    field: 'baa_bay_seq',
+    sortable: true,
+    resizable: true,
+    hide: false,
   },
 
   {
