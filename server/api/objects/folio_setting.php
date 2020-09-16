@@ -32,6 +32,26 @@ class FolioSetting extends CommonClass
         }
     }
 
+    public function read_decorate(&$result_array)
+    {
+        $query = "SELECT PREV_CLOSEOUT_DATE FROM CLOSEOUTS WHERE STATUS = 0";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        } 
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        array_push($result_array, array(
+            "param_key" => "LAST_CLOSEOUT_DATE",
+            "param_value" => $row['PREV_CLOSEOUT_DATE'],
+            "param_comment" => 'last closeout date from CLOSEOUTS table'
+            ));
+    }
+    
+    
+
     public function read_ex()
     {
         $query = "SELECT SITE_LD_RETN_NEWLDS, 

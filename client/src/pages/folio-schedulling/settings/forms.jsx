@@ -182,7 +182,7 @@ const Settings = ({ value, access }) => {
 
     setFieldsValue({
       last_closeout_time: _.filter(data, function (item) {
-        return item.param_key === 'LAST_DAILY_REPORT_DATE';
+        return item.param_key === 'LAST_CLOSEOUT_DATE';
       })[0].param_value,
     });
     setFieldsValue({
