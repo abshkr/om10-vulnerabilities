@@ -42,6 +42,7 @@ const Forms = ({ value, visible, handleFormState, access }) => {
 
   useEffect(() => {
     getCloseoutStatus();
+    setMeterTrigger(0);
     setSaveToFolioTrigger(0);
     setSaveToTanksTrigger(0);
     setCalculateTrigger(0);

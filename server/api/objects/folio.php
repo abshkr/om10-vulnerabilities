@@ -461,6 +461,7 @@ class Folio extends CommonClass
         }
     }
 
+    //Old php: dmFolio.getMeters
     public function get_meters()
     {
         $query = "

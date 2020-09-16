@@ -259,6 +259,8 @@
     "addressText": "Address Details",
     "adhoc": "Ad Hoc?",
     "adjustmentReason": "Adjustment Reason",
+	"adjustmentLiter": "Adjustment (Litres)",
+	"adjustmentKG": "Adjustment (kg)",
     "adrDesc": "ADR Description",
     "adrDesc2": "ADR Description2",
     "adrDesc3": "ADR Description3",

@@ -29,8 +29,16 @@ const columns = (t, enabled) => [
     field: 'close_amb_tot',
     sortable: true,
     resizable: true,
-    editable: enabled,
-    cellClass: enabled ? 'editable-ag-grid-cell' : '',
+    editable: function(params) {
+      return enabled && params.node.data.bam_qty_type === '0';
+    },
+    cellClass: function(params) {
+      if (enabled && params.node.data.bam_qty_type === '0') {
+        return 'editable-ag-grid-cell';
+      }
+      
+      return '';
+    },
     width: 100,
     cellEditor: 'NumericEditor',
     suppressSizeToFit: true,
@@ -40,27 +48,55 @@ const columns = (t, enabled) => [
     field: 'close_mass_tot',
     sortable: true,
     resizable: true,
+    editable: function(params) {
+      return enabled && params.node.data.bam_qty_type === '1';
+    },
+    cellClass: function(params) {
+      if (enabled && params.node.data.bam_qty_type === '1') {
+        return 'editable-ag-grid-cell';
+      }
+      
+      return '';
+    },
     width: 100,
     suppressSizeToFit: true,
   },
 
   {
-    headerName: t('fields.litres'),
+    headerName: t('fields.adjustmentLiter'),
     field: 'adj_amb_tot',
     sortable: true,
     resizable: true,
-    editable: enabled,
-    cellClass: enabled ? 'editable-ag-grid-cell' : '',
+    editable: function(params) {
+      return enabled && params.node.data.bam_qty_type === '0';
+    },
+    cellClass: function(params) {
+      if (enabled && params.node.data.bam_qty_type === '0') {
+        return 'editable-ag-grid-cell';
+      }
+      
+      return '';
+    },
     width: 100,
     cellEditor: 'NumericEditor',
     suppressSizeToFit: true,
   },
 
   {
-    headerName: t('fields.kg'),
+    headerName: t('fields.adjustmentKG'),
     field: 'adj_mass_tot',
     sortable: true,
     resizable: true,
+    editable: function(params) {
+      return enabled && params.node.data.bam_qty_type === '1';
+    },
+    cellClass: function(params) {
+      if (enabled && params.node.data.bam_qty_type === '1') {
+        return 'editable-ag-grid-cell';
+      }
+      
+      return '';
+    },
     width: 100,
     suppressSizeToFit: true,
   },
