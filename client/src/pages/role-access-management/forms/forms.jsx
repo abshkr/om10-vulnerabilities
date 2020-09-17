@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
   EditOutlined,
@@ -25,6 +25,7 @@ const TabPane = Tabs.TabPane;
 const FormModal = ({ value, visible, handleFormState, access, data, setFilterValue }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const [modules, setmodules] = useState([]);
 
   const { resetFields, setFieldsValue } = form;
   const { data: privileges } = useSWR(`${ROLE_ACCESS_MANAGEMENT.PRIVILEGES}`);
@@ -173,6 +174,18 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
       });
     }
   }, [value, IS_CREATING, setFieldsValue]);
+
+  useEffect(() => {
+    if (privileges) {
+      const menuItems = privileges.records;
+      const mod = {};
+      for (let i = 0; i < menuItems.length; i++) {
+        mod[menuItems[i].object_text] = menuItems[i].domain_object_active;
+      }
+      // console.log(mod);
+      setmodules(mod);
+    }
+  }, [privileges]);
 
   const options = [
     { label: t('fields.accessView'),      value: 'View' },
@@ -390,126 +403,126 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
           </TabPane>
 
           <TabPane tab={t('tabColumns.main')} key="1">
-            <Form.Item name="MENU_HOME" label={t('pageMenu.home')}>
+            <Form.Item name="MENU_HOME" style={{display: modules?.MENU_HOME ? "" :"none"}} label={t('pageMenu.home')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_SITECONFIG" label={t('pageNames.siteConfiguration')}>
+            <Form.Item name="M_SITECONFIG" style={{display: modules?.M_SITECONFIG ? "" :"none"}} label={t('pageNames.siteConfiguration')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            {/* <Form.Item name="MENU_SCHEDULE" label={t('pageMenu.schedules')}>
+            {/* <Form.Item name="MENU_SCHEDULE" style={{display: modules?.m_movementreason ? "" :"none"}} label={t('pageMenu.schedules')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="MENU_GANTRY" label={t('pageMenu.gantry')}>
+            <Form.Item name="MENU_GANTRY" style={{display: modules?.m_movementreason ? "" :"none"}} label={t('pageMenu.gantry')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="MENU_REPORTS" label={t('pageMenu.reports')}>
+            <Form.Item name="MENU_REPORTS" style={{display: modules?.m_movementreason ? "" :"none"}} label={t('pageMenu.reports')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="MENU_ACCESS" label={t('pageMenu.accessControl')}>
+            <Form.Item name="MENU_ACCESS" style={{display: modules?.m_movementreason ? "" :"none"}} label={t('pageMenu.accessControl')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="MENU_CUSTOMERS" label={t('pageMenu.customers')}>
+            <Form.Item name="MENU_CUSTOMERS" style={{display: modules?.m_movementreason ? "" :"none"}} label={t('pageMenu.customers')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="MENU_STOCK" label={t('pageMenu.stockManagement')}>
+            <Form.Item name="MENU_STOCK" style={{display: modules?.m_movementreason ? "" :"none"}} label={t('pageMenu.stockManagement')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="MENU_PRINTERS" label={t('pageMenu.printerConfiguration')}>
+            <Form.Item name="MENU_PRINTERS" style={{display: modules?.m_movementreason ? "" :"none"}} label={t('pageMenu.printerConfiguration')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="MENU_STOCKRECON" label={t('pageMenu.stockReconciliation')}>
+            <Form.Item name="MENU_STOCKRECON" style={{display: modules?.m_movementreason ? "" :"none"}} label={t('pageMenu.stockReconciliation')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="MENU_OPERATIONS" label={t('pageMenu.operations')}>
+            <Form.Item name="MENU_OPERATIONS" style={{display: modules?.m_movementreason ? "" :"none"}} label={t('pageMenu.operations')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item> */}
           </TabPane>
 
           <TabPane tab={t('pageMenu.operations')} key="2">
-            <Form.Item name="M_LOADSCHEDULES" label={t('pageNames.loadSchedules')}>
+            <Form.Item name="M_LOADSCHEDULES" style={{display: modules?.M_LOADSCHEDULES ? "" :"none"}} label={t('pageNames.loadSchedules')}>
               <Checkbox.Group
                 options={loadScheduleOptions}
                 style={{ flexDirection: 'row', marginBottom: '.7rem' }}
               />
             </Form.Item>
 
-            <Form.Item name="M_ORDERLISTING" label={t('pageNames.orderListing')}>
+            <Form.Item name="M_ORDERLISTING" style={{display: modules?.M_ORDERLISTING ? "" :"none"}} label={t('pageNames.orderListing')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_TRANSACTIONLIST" label={t('pageNames.transactionList')}>
+            <Form.Item name="M_TRANSACTIONLIST" style={{display: modules?.M_TRANSACTIONLIST ? "" :"none"}} label={t('pageNames.transactionList')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_NOMINATION" label={t('pageNames.movementNominations')}>
+            <Form.Item name="M_NOMINATION" style={{display: modules?.M_NOMINATION ? "" :"none"}} label={t('pageNames.movementNominations')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_SPECIALMOVEMENTS" label={t('pageNames.specialMovements')}>
+            <Form.Item name="M_SPECIALMOVEMENTS" style={{display: modules?.M_SPECIALMOVEMENTS ? "" :"none"}} label={t('pageNames.specialMovements')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_MANUALTRANSACTIONS" label={t('pageNames.manualTransactions')}>
+            <Form.Item name="M_MANUALTRANSACTIONS" style={{display: modules?.M_MANUALTRANSACTIONS ? "" :"none"}} label={t('pageNames.manualTransactions')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_PRODUCTMOVEMENT" label={t('pageNames.productMovements')}>
+            <Form.Item name="M_PRODUCTMOVEMENT" style={{display: modules?.M_PRODUCTMOVEMENT ? "" :"none"}} label={t('pageNames.productMovements')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_INVENTORYREQUEST" label={t('pageNames.inventoryRequests')}>
+            <Form.Item name="M_INVENTORYREQUEST" style={{display: modules?.M_INVENTORYREQUEST ? "" :"none"}} label={t('pageNames.inventoryRequests')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_GATECONTROL" label={t('pageNames.gateControl')}>
+            <Form.Item name="M_GATECONTROL" style={{display: modules?.M_GATECONTROL ? "" :"none"}} label={t('pageNames.gateControl')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_EQUIPMENT" label={t('pageNames.equipmentTypes')}>
+            <Form.Item name="M_EQUIPMENT" style={{display: modules?.M_EQUIPMENT ? "" :"none"}} label={t('pageNames.equipmentTypes')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_EQUIPMENTLIST" label={t('pageNames.equipmentList')}>
+            <Form.Item name="M_EQUIPMENTLIST" style={{display: modules?.M_EQUIPMENTLIST ? "" :"none"}} label={t('pageNames.equipmentList')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_TANKERS" label={t('pageNames.tankerList')}>
+            <Form.Item name="M_TANKERS" style={{display: modules?.M_TANKERS ? "" :"none"}} label={t('pageNames.tankerList')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
           </TabPane>
 
           <TabPane tab={t('pageMenu.stock')} key="3">
-            <Form.Item name="M_TANKSTATUS" label={t('pageNames.tanks')}>
+            <Form.Item name="M_TANKSTATUS" style={{display: modules?.M_TANKSTATUS ? "" :"none"}} label={t('pageNames.tanks')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_TANKGROUPS" label={t('pageNames.tankGroups')}>
+            <Form.Item name="M_TANKGROUPS" style={{display: modules?.M_TANKGROUPS ? "" :"none"}} label={t('pageNames.tankGroups')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_SITEBALANCE" label={t('pageNames.siteBalance')}>
+            <Form.Item name="M_SITEBALANCE" style={{display: modules?.M_SITEBALANCE ? "" :"none"}} label={t('pageNames.siteBalance')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_TANKINVENTORY" label={t('pageNames.tankInventory')}>
+            <Form.Item name="M_TANKINVENTORY" style={{display: modules?.M_TANKINVENTORY ? "" :"none"}} label={t('pageNames.tankInventory')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_PRODUCTINVENTORY" label={t('pageNames.productInventory')}>
+            <Form.Item name="M_PRODUCTINVENTORY" style={{display: modules?.M_PRODUCTINVENTORY ? "" :"none"}} label={t('pageNames.productInventory')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_SFTRANSACTIONLIST" label={t('pageNames.selfFuelTransactionList')}>
+            <Form.Item name="M_SFTRANSACTIONLIST" style={{display: modules?.M_SFTRANSACTIONLIST ? "" :"none"}} label={t('pageNames.selfFuelTransactionList')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
           </TabPane>
@@ -519,34 +532,34 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
             tab={t('pageMenu.reports')}
             key="4"
           >
-            <Form.Item name="M_FOLIOMANAGEMENT" label={t('pageNames.folioSummary')}>
+            <Form.Item name="M_FOLIOMANAGEMENT" style={{display: modules?.M_FOLIOMANAGEMENT ? "" :"none"}} label={t('pageNames.folioSummary')}>
               <Checkbox.Group
                 options={folioOptions}
                 style={{ flexDirection: 'row', marginBottom: '.7rem' }}
               />
             </Form.Item>
 
-            <Form.Item name="M_JASPERREPORTS" label={t('pageNames.onDemandReports')}>
+            <Form.Item name="M_JASPERREPORTS" style={{display: modules?.M_JASPERREPORTS ? "" :"none"}} label={t('pageNames.onDemandReports')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_JOURNALREPORT" label={t('pageNames.journal')}>
+            <Form.Item name="M_JOURNALREPORT" style={{display: modules?.M_JOURNALREPORT ? "" :"none"}} label={t('pageNames.journal')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_GSAPMESSAGING" label={t('pageNames.hostMessagingInterface')}>
+            <Form.Item name="M_GSAPMESSAGING" style={{display: modules?.M_GSAPMESSAGING ? "" :"none"}} label={t('pageNames.hostMessagingInterface')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_ONSITEREPORT" label={t('pageNames.personnelOnSite')}>
+            <Form.Item name="M_ONSITEREPORT" style={{display: modules?.M_ONSITEREPORT ? "" :"none"}} label={t('pageNames.personnelOnSite')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_AUDITREPORT" label={t('pageNames.auditingData')}>
+            <Form.Item name="M_AUDITREPORT" style={{display: modules?.M_AUDITREPORT ? "" :"none"}} label={t('pageNames.auditingData')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_METERING" label={t('pageNames.metering')}>
+            <Form.Item name="M_METERING" style={{display: modules?.M_METERING ? "" :"none"}} label={t('pageNames.metering')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
           </TabPane>
@@ -556,31 +569,31 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
             tab={t('pageMenu.security')}
             key="5"
           >
-            <Form.Item name="M_PERSONNEL" label={t('pageNames.personnel')}>
+            <Form.Item name="M_PERSONNEL" style={{display: modules?.M_PERSONNEL ? "" :"none"}} label={t('pageNames.personnel')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_IDENTIFICATIONASSIGNMENT" label={t('pageNames.idAssignment')}>
+            <Form.Item name="M_IDENTIFICATIONASSIGNMENT" style={{display: modules?.M_IDENTIFICATIONASSIGNMENT ? "" :"none"}} label={t('pageNames.idAssignment')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_EXPIRYDATES" label={t('pageNames.expiryDates')}>
+            <Form.Item name="M_EXPIRYDATES" style={{display: modules?.M_EXPIRYDATES ? "" :"none"}} label={t('pageNames.expiryDates')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_TIMECODES" label={t('pageNames.timeCodes')}>
+            <Form.Item name="M_TIMECODES" style={{display: modules?.M_TIMECODES ? "" :"none"}} label={t('pageNames.timeCodes')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_ROLEACCESS" label={t('pageNames.roleAccessManagement')}>
+            <Form.Item name="M_ROLEACCESS" style={{display: modules?.M_ROLEACCESS ? "" :"none"}} label={t('pageNames.roleAccessManagement')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_AREA" label={t('pageNames.area')}>
+            <Form.Item name="M_AREA" style={{display: modules?.M_AREA ? "" :"none"}} label={t('pageNames.area')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_GATEPERMISSION" label={t('pageNames.gatePermission')}>
+            <Form.Item name="M_GATEPERMISSION" style={{display: modules?.M_GATEPERMISSION ? "" :"none"}} label={t('pageNames.gatePermission')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
           </TabPane>
@@ -590,35 +603,35 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
             tab={t('pageMenu.products')}
             key="6"
           >
-            <Form.Item name="M_BASEPRODUCTS" label={t('pageNames.baseProducts')}>
+            <Form.Item name="M_BASEPRODUCTS" style={{display: modules?.M_BASEPRODUCTS ? "" :"none"}} label={t('pageNames.baseProducts')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_DRAWERPRODUCTS" label={t('pageNames.drawerProducts')}>
+            <Form.Item name="M_DRAWERPRODUCTS" style={{display: modules?.M_DRAWERPRODUCTS ? "" :"none"}} label={t('pageNames.drawerProducts')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_HAZCHEM" label={t('pageNames.hazchemCodes')}>
+            <Form.Item name="M_HAZCHEM" style={{display: modules?.M_HAZCHEM ? "" :"none"}} label={t('pageNames.hazchemCodes')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_DANGEROUSGOODS" label={t('pageNames.dangerousGoods')}>
+            <Form.Item name="M_DANGEROUSGOODS" style={{display: modules?.M_DANGEROUSGOODS ? "" :"none"}} label={t('pageNames.dangerousGoods')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_PRODUCTS" label={t('pageNames.productGroups')}>
+            <Form.Item name="M_PRODUCTS" style={{display: modules?.M_PRODUCTS ? "" :"none"}} label={t('pageNames.productGroups')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            {/* <Form.Item name="M_PRICEOFFSETS" label={t('pageNames.priceOffsets')}>
+            {/* <Form.Item name="M_PRICEOFFSETS" style={{display: modules?.m_movementreason ? "" :"none"}} label={t('pageNames.priceOffsets')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_CUSTOMERPRICING" label={t('pageNames.customerPricing')}>
+            <Form.Item name="M_CUSTOMERPRICING" style={{display: modules?.m_movementreason ? "" :"none"}} label={t('pageNames.customerPricing')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_ORDERPRODUCTPRICING" label={t('pageNames.orderProductPricing')}>
+            <Form.Item name="M_ORDERPRODUCTPRICING" style={{display: modules?.m_movementreason ? "" :"none"}} label={t('pageNames.orderProductPricing')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item> */}
           </TabPane>
@@ -628,35 +641,35 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
             tab={t('pageMenu.companies')}
             key="7"
           >
-            <Form.Item name="M_COMPANIES" label={t('pageNames.companies')}>
+            <Form.Item name="M_COMPANIES" style={{display: modules?.M_COMPANIES ? "" :"none"}} label={t('pageNames.companies')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_ALLOCATIONS" label={t('pageNames.allocations')}>
+            <Form.Item name="M_ALLOCATIONS" style={{display: modules?.M_ALLOCATIONS ? "" :"none"}} label={t('pageNames.allocations')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_CUSTOMERS" label={t('pageNames.customers')}>
+            <Form.Item name="M_CUSTOMERS" style={{display: modules?.M_CUSTOMERS ? "" :"none"}} label={t('pageNames.customers')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_ADDRESSES" label={t('pageNames.addresses')}>
+            <Form.Item name="M_ADDRESSES" style={{display: modules?.M_ADDRESSES ? "" :"none"}} label={t('pageNames.addresses')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_DELIVERYLOCATIONS" label={t('pageNames.deliveryLocations')}>
+            <Form.Item name="M_DELIVERYLOCATIONS" style={{display: modules?.M_DELIVERYLOCATIONS ? "" :"none"}} label={t('pageNames.deliveryLocations')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_PARTNERS" label={t('pageNames.partners')}>
+            <Form.Item name="M_PARTNERS" style={{display: modules?.M_PARTNERS ? "" :"none"}} label={t('pageNames.partners')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_PARTNERSHIP" label={t('pageNames.partnership')}>
+            <Form.Item name="M_PARTNERSHIP" style={{display: modules?.M_PARTNERSHIP ? "" :"none"}} label={t('pageNames.partnership')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_CUSTOMERCATEGORIES" label={t('pageNames.customerCategories')}>
+            <Form.Item name="M_CUSTOMERCATEGORIES" style={{display: modules?.M_CUSTOMERCATEGORIES ? "" :"none"}} label={t('pageNames.customerCategories')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
           </TabPane>
@@ -666,58 +679,58 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
             tab={t('pageMenu.config')}
             key="8"
           >
-            <Form.Item name="M_LOADBAYS" label={t('pageNames.loadBays')}>
+            <Form.Item name="M_LOADBAYS" style={{display: modules?.M_LOADBAYS ? "" :"none"}} label={t('pageNames.loadBays')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_BAYMOVEMENT" label={t('pageNames.companyBayMovement')}>
+            <Form.Item name="M_BAYMOVEMENT" style={{display: modules?.M_BAYMOVEMENT ? "" :"none"}} label={t('pageNames.companyBayMovement')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_LOADMETERS" label={t('pageNames.loadMeters')}>
+            <Form.Item name="M_LOADMETERS" style={{display: modules?.M_LOADMETERS ? "" :"none"}} label={t('pageNames.loadMeters')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_METERINGDEVICES" label={t('pageNames.meterDevices')}>
+            <Form.Item name="M_METERINGDEVICES" style={{display: modules?.M_METERINGDEVICES ? "" :"none"}} label={t('pageNames.meterDevices')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_PHYSICALPRINTERS" label={t('pageNames.physicalPrinters')}>
+            <Form.Item name="M_PHYSICALPRINTERS" style={{display: modules?.M_PHYSICALPRINTERS ? "" :"none"}} label={t('pageNames.physicalPrinters')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_SITEACCESSDEVICES" label={t('pageNames.siteAccessDevices')}>
+            <Form.Item name="M_SITEACCESSDEVICES" style={{display: modules?.M_SITEACCESSDEVICES ? "" :"none"}} label={t('pageNames.siteAccessDevices')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_KEYREADERDEVICES" label={t('pageNames.keyReaderDevices')}>
+            <Form.Item name="M_KEYREADERDEVICES" style={{display: modules?.M_KEYREADERDEVICES ? "" :"none"}} label={t('pageNames.keyReaderDevices')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_TANKCONFIGURATION" label={t('pageNames.tankConfiguration')}>
+            <Form.Item name="M_TANKCONFIGURATION" style={{display: modules?.M_TANKCONFIGURATION ? "" :"none"}} label={t('pageNames.tankConfiguration')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_LOGICALPRINTERS" label={t('pageNames.logicalPrinters')}>
+            <Form.Item name="M_LOGICALPRINTERS" style={{display: modules?.M_LOGICALPRINTERS ? "" :"none"}} label={t('pageNames.logicalPrinters')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_REPOCONFIGURATION" label={t('pageNames.reportConfiguration')}>
+            <Form.Item name="M_REPOCONFIGURATION" style={{display: modules?.M_REPOCONFIGURATION ? "" :"none"}} label={t('pageNames.reportConfiguration')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_REPOPROFILE" label={t('pageNames.reportProfile')}>
+            <Form.Item name="M_REPOPROFILE" style={{display: modules?.M_REPOPROFILE ? "" :"none"}} label={t('pageNames.reportProfile')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_FOLIOSCHEDULING" label={t('pageNames.folioScheduling')}>
+            <Form.Item name="M_FOLIOSCHEDULING" style={{display: modules?.M_FOLIOSCHEDULING ? "" :"none"}} label={t('pageNames.folioScheduling')}>
               <Checkbox.Group
                 options={folioOptions}
                 style={{ flexDirection: 'row', marginBottom: '.7rem' }}
               />
             </Form.Item>
 
-            <Form.Item name="M_MOVEMENTREASON" label={t('pageNames.movementReasons')}>
+            <Form.Item name="M_MOVEMENTREASON" style={{display: modules?.M_MOVEMENTREASON ? "" :"none"}} label={t('pageNames.movementReasons')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
           </TabPane>
@@ -727,23 +740,23 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
             tab={t('pageMenu.modules')}
             key="10"
           >
-            <Form.Item name="M_BAYVIEW" label={t('pageNames.bayView')}>
+            <Form.Item name="M_BAYVIEW" style={{display: modules?.M_BAYVIEW ? "" :"none"}} label={t('pageNames.bayView')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            {/* <Form.Item name="M_TANKVIEW" label={t('pageNames.tankView')}>
-              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
-            </Form.Item> */}
-
-            <Form.Item name="M_ADAPTIVEFLOW" label={t('pageNames.adaptiveFlow')}>
+            <Form.Item name="M_ADAPTIVEFLOW" style={{display: modules?.M_ADAPTIVEFLOW ? "" :"none"}} label={t('pageNames.adaptiveFlow')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            <Form.Item name="M_FSCSTATUS" label={t('pageNames.fscStatus')}>
+            <Form.Item name="M_FSCSTATUS" style={{display: modules?.M_FSCSTATUS ? "" :"none"}} label={t('pageNames.fscStatus')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
 
-            {/* <Form.Item name="M_PRODUCTASSETS" label={t('pageNames.drawerProductAssets')}>
+            <Form.Item name="M_TANKVIEW" style={{display: modules?.M_TANKVIEW ? "" :"none"}} label={t('pageNames.tankView')}>
+              <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
+            </Form.Item>
+
+            {/* <Form.Item name="M_PRODUCTASSETS" style={{display: modules?.m_movementreason ? "" :"none"}} label={t('pageNames.drawerProductAssets')}>
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item> */}
           </TabPane>
