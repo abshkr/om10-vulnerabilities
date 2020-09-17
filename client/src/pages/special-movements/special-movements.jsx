@@ -76,6 +76,13 @@ const SpecialMovements = () => {
       });
   };
 
+  const onRefresh = () => {
+    setStart(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    setEnd(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+
+    revalidate();
+  }
+
   useEffect(() => {
     if (payload?.records) {
       setData(payload?.records);
@@ -87,7 +94,7 @@ const SpecialMovements = () => {
     <>
       <Calendar handleChange={setRange} start={start} end={end} max={1000} />
 
-      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
+      <Button icon={<SyncOutlined />} onClick={() => onRefresh()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
 

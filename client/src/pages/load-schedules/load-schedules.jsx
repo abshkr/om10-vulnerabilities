@@ -47,6 +47,17 @@ const LoadSchedules = () => {
     // revalidate();
   };
 
+  const onRefresh = () => {
+    if (scheduleDateRange !== false) {
+      const ranges = getDateRangeOffset(String(scheduleDateRange), '7');
+      
+      setStart(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    }
+
+    revalidate();
+  }
+
   const locateTrip = (value) => {
     setSearch({
       shls_trip_no: value.shls_trip_no,
@@ -135,7 +146,7 @@ const LoadSchedules = () => {
     <>
       
       <Calendar handleChange={setRange} start={start} end={end} max={720}/>
-      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
+      <Button icon={<SyncOutlined />} onClick={() => onRefresh()} loading={isLoading}>
         {t('operations.refresh')}
       </Button>
 

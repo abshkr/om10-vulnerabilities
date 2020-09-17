@@ -77,6 +77,17 @@ const TransactionList = () => {
     });
   };
 
+  const onRefresh = () => {
+    if (transactionsDateRange !== false) {
+      const ranges = getDateRangeOffset(String(transactionsDateRange), '7');
+
+      setStart(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    }
+
+    revalidate();
+  }
+
   useEffect(() => {
     if (transactionsDateRange !== false) {
       const ranges = getDateRangeOffset(String(transactionsDateRange), '7');
@@ -102,7 +113,7 @@ const TransactionList = () => {
     <>
       <Calendar handleChange={setRange} start={start} end={end} max={1000} />
 
-      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
+      <Button icon={<SyncOutlined />} onClick={() => onRefresh()} loading={isLoading}>
         {t('operations.refresh')}
       </Button>
 
