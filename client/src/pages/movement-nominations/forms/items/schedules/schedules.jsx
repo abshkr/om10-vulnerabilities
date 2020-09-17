@@ -10,7 +10,7 @@ import { useAuth } from '../../../../../hooks';
 
 import Forms from '../../../../load-schedules/forms/nomforms';
 
-const Schedules = ({ selected }) => {
+const Schedules = ({ selected, cbFunction, closeForm }) => {
   const url = selected 
     ? `${MOVEMENT_NOMIATIONS.SCHEDULES}?mv_key=${selected?.mvitm_key}&mvitm_item_id=${selected?.mvitm_item_id}` 
     : `${MOVEMENT_NOMIATIONS.SCHEDULES}`;
@@ -60,6 +60,8 @@ const Schedules = ({ selected }) => {
         access={access}
         url={url}
         locateTrip={locateTrip}
+        cbFunction={cbFunction}
+        closeForm={closeForm}
       />
     </>
   );

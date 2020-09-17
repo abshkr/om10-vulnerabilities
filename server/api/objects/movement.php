@@ -68,6 +68,29 @@ class Movement extends CommonClass
         }
     }
 
+    public function count_nomination_item_trips()
+    {
+        $query = "
+            select COUNT(msi.MSITM_SHLSTRIP) AS CNT 
+            from 
+                MOV_SCHD_ITEMS msi, 
+                MOVEMENT_ITEMS mvi 
+            where 
+                msi.MSITM_MOVEID=mvi.MVITM_MOVE_ID 
+                and msi.MSITM_MOVITEM=mvi.MVITM_LINE_ID 
+                and mvi.MVITM_ITEM_ID=:mvitm_item_id
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':mvitm_item_id', $this->mvitm_item_id);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     //Old amf php: cores/collections/dmSpecialMovements.php $file      = "/usr/omega/bin/gsap_erpIn/UnitOfMeasure.csv"
     /*
         0,BB6,L15,162

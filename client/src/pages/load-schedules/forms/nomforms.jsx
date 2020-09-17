@@ -51,7 +51,7 @@ import BOL from './bol';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, url, locateTrip }) => {
+const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, cbFunction, closeForm }) => {
   const config = useConfig();
   const { manageMakeManualTransaction, showSeals, manageAdditionalHostData, manageViewDeliveryDetails } = config;
 
@@ -107,6 +107,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
     handleFormState(false, null);
     mutate(url);
     locateTrip(value);
+    closeForm(false);
   };
 
   const changeSupplier = (supplier) => {
@@ -299,6 +300,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               message: t('messages.reverseSuccess'),
             });
             onComplete(value);
+
+            if (!!cbFunction) {
+              cbFunction(value?.mv_key);
+            }
           })
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {

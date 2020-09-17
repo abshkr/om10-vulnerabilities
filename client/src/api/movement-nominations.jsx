@@ -1,6 +1,7 @@
 export const READ = '/api/pages/movement/read.php';
 export const SEARCH = '/api/pages/movement/search.php';
 export const CHECK_NOMKEY = '/api/pages/movement/check_nom_key.php';
+export const COUNT_NOMITEM_TRIPS = '/api/pages/movement/count_nomitem_trips.php';
 
 export const SUPPLIERS = '/api/pages/movement/suppliers.php';
 export const CARRIERS = '/api/pages/movement/carriers.php';

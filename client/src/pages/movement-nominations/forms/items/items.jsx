@@ -156,6 +156,12 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
     return results?.data;
   };
 
+  const countNominationItemTrips = async (item) => {
+    const results = await api.get(`${MOVEMENT_NOMIATIONS.COUNT_NOMITEM_TRIPS}?mvitm_item_id=${item}`);
+
+    return results?.data;
+  };
+
   const gotoMakeTransactions = async () => {
     const currItem = selected?.[0];
 
@@ -310,9 +316,11 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
     tableAPI.updateRowData({ remove: selected });
   };
 
-  const handleItemSelect = (items) => {
+  const handleItemSelect = async (items) => {
     console.log('handleItemSelect', items);
     if (items && items[0]) {
+      const trips = await countNominationItemTrips(items?.[0]?.mvitm_item_id);
+      items[0].trip_number = _.toNumber(trips?.records?.[0]?.cnt);
       items[0].editable = items?.[0]?.mvitm_status === 0 && !items?.[0]?.mvitm_completed;
       if (!items?.[0]?.mvitm_key) {
         items[0].mvitm_key = value?.mv_key;
@@ -511,7 +519,7 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
         type="primary"
         icon={<EyeOutlined />}
         style={{ float: 'right', marginRight: 5 }}
-        disabled={!buttonState?.viewTransaction || disabled}
+        disabled={(!buttonState?.viewTransaction && !(selected?.[0]?.trip_number > 0)) || disabled}
         onClick={() => setTransactionVisible(true)}
       >
         {t('operations.viewTransaction')}
@@ -521,7 +529,7 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
         type="primary"
         icon={<EyeOutlined />}
         style={{ float: 'right', marginRight: 5 }}
-        disabled={!buttonState?.viewSchedule || disabled}
+        disabled={(!buttonState?.viewSchedule && !(selected?.[0]?.trip_number > 0)) || disabled}
         // disabled={!(buttonState?.viewSchedule || value?.mv_status!==0) || disabled}
         onClick={() => setScheduleVisible(true)}
       >
@@ -576,7 +584,11 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
           visible={scheduleVisible}
           width="100vw"
         >
-          <Schedules selected={!selected?.[0]?.mvitm_key ? {mvitm_key: value?.mv_key} : selected?.[0]} />
+          <Schedules 
+            selected={!selected?.[0]?.mvitm_key ? {mvitm_key: value?.mv_key} : selected?.[0]} 
+            cbFunction={cbFunction}
+            closeForm={setScheduleVisible}
+          />
         </Drawer>
       )}
 
