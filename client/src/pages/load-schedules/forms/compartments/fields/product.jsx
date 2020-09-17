@@ -57,6 +57,7 @@ export default class Product extends Component {
       <div style={{ width: '100%',  display: 'flex' }}>
         <Select 
           dropdownMatchSelectWidth={false}
+          showSearch
           value={this.state.value} 
           style={{ width: '100%' }} 
           onChange={this.onClick} 
