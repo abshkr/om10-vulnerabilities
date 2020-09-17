@@ -11,6 +11,7 @@ import transferColumns from './transfer-columns';
 import meterColumns from './meters-columns';
 import detailColumns from './detail-columns';
 import columns from './columns';
+import TrueRenderer from './true-render';
 
 const TransactionList = ({ selected }) => {
   const url = selected
@@ -68,6 +69,10 @@ const TransactionList = ({ selected }) => {
     }
   }, [payload, setTransactions, adjustTransactions]);
 
+  const components = {
+    TrueRenderer,
+  };
+
   return (
     <Tabs defaultActiveKey="1" animated={false}>
       <Tabs.TabPane tab={t('tabColumns.transactionForNomination')} forceRender={true} key="1">
@@ -77,6 +82,8 @@ const TransactionList = ({ selected }) => {
           parentHeight="200px"
           selectionMode="single"
           handleSelect={onTransactionSelect}
+          components={components}
+          autoColWidth
         />
 
         <div style={{ marginTop: 10 }}>
