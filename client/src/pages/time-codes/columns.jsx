@@ -1,8 +1,8 @@
 const columns = t => [
   {
-    headerName: 'Day',
+    headerName: t('fields.day'),
     field: 'day',
-    filter: 'FuzzyFilter',
+    filter: 'MultiFilter',
     sortable: true,
     resizable: true,
     width: 350,

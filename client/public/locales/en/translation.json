@@ -485,6 +485,7 @@
     "dateRange": "Date Range",
     "dateTime": "Date Time",
     "dateTimeFormat": "Date Time Format",
+    "day": "Day",
     "dayOfWeek": "Day Of Week",
     "dbLdType": "Load Type ID",
     "dbLoadTypeName": "Load Type",
