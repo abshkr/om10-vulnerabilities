@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { List, Avatar, Card, Input, Spin } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { LoadingOutlined } from '@ant-design/icons';
@@ -19,6 +20,8 @@ const ItemDescription = ({ descriptions, item }) => {
 };
 
 const ListView = ({ id, data, onSelect, name, description, content, children, isLoading, selected }) => {
+  const { t } = useTranslation();
+
   const [payload, setPayload] = useState(undefined);
   const [query, setQuery] = useState('');
 
@@ -43,7 +46,7 @@ const ListView = ({ id, data, onSelect, name, description, content, children, is
           <div style={{ paddingRight: 10 }}>
             <Input.Search
               style={{ borderRadius: 5 }}
-              placeholder="Search Tanks"
+              placeholder={t('placeholder.searchTanks')}
               onSearch={setQuery}
               onChange={e => setQuery(e.target.value)}
               size="large"

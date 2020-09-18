@@ -187,7 +187,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
             form={form}
             value={value?.tank_15_density}
             name="tank_15_density"
-            label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi})${t('units.kg/m3')} ${`@ Compensation Temperature ${
+            label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi})${t('units.kg/m3')} ${`@ ${t('fields.compensationTemperature')} ${
               config?.vsmCompensation || config?.referenceTemperature
             }ºC/${VCFManager.temperatureC2F(config?.vsmCompensation || config?.referenceTemperature)}ºF`}`}
             min={value?.tank_base_dens_lo}

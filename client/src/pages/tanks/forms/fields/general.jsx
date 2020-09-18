@@ -162,7 +162,7 @@ const General = ({ form, value, config }) => {
             name="tank_density"
               label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${
                 value?.tank_base_dens_hi
-              }) ${`@ Reference Temperature ${config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(
+              }) ${`@ ${t('fields.referenceTemperature')} ${config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(
                 config?.referenceTemperature
               )}ºF`}`}
           >
