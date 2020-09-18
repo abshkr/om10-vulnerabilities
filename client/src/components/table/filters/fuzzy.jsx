@@ -47,14 +47,15 @@ export default class FuzzyFilter extends Component {
   }
 
   render() {
-    const { colDef } = this.props;
+    const { colDef, column } = this.props;
+    const t = column?.userProvidedColDef?.filterParams?.t;
 
     return (
       <div className="search-tab">
-        <div className="filter-header">Filter By {colDef.headerName}</div>
+        <div className="filter-header">{t('fields.filterBy')} {colDef.headerName}</div>
         <Input.Search
           size="small"
-          placeholder={`Search ${colDef.headerName}`}
+          placeholder={`${t('operations.search')} ${colDef.headerName}`}
           value={this.state.text}
           onChange={this.onChange}
         />

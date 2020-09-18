@@ -44,16 +44,17 @@ export default class BooleanFilter extends Component {
   }
 
   render() {
-    const { colDef } = this.props;
+    const { colDef, column } = this.props;
+    const t = column?.userProvidedColDef?.filterParams?.t;
 
     const options = [
-      { label: 'True', value: 'true' },
-      { label: 'False', value: 'false' }
+      { label: t('fields.boolTrue'), value: 'true' },
+      { label: t('fields.boolFalse'), value: 'false' }
     ];
 
     return (
       <div className="search-tab">
-        <div className="filter-header">Filter By {colDef.headerName}</div>
+        <div className="filter-header">{t('fields.filterBy')} {colDef.headerName}</div>
         <Divider style={{ marginTop: 10, marginBottom: 7 }} />
         <Checkbox.Group options={options} value={this.state.checkedList} onChange={this.onChange} />
       </div>

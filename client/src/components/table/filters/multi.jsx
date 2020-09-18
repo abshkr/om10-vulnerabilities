@@ -60,11 +60,12 @@ export default class MultiFilter extends Component {
 
   render() {
     const { keys } = this.state;
-    const { colDef } = this.props;
-
+    const { colDef, column } = this.props;
+    const t = column?.userProvidedColDef?.filterParams?.t;
+    // console.log('.............................multi.jsx', this.props);
     return (
       <div className="multi-select-tab">
-        <div className="filter-header">Filter By {colDef.headerName}</div>
+        <div className="filter-header">{t('fields.filterBy')} {colDef.headerName}</div>
         <Divider style={{ marginTop: 10, marginBottom: 7 }} />
         <div className="filter-checkbox">
           <Checkbox.Group

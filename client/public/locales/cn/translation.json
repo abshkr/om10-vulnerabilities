@@ -359,6 +359,8 @@
 		"baysLoads": "单次发油占用发油台数",
 		"blendToleranceCheck": "基础油品超标检查",
 		"bookBalance": "结余库存(标量升)",
+		"boolFalse": "假",
+		"boolTrue": "真",
 		"businessProcess": "业务流程",
 		"calculate": "参与计算?",
 		"canBeEmailed": "报表可发电子邮件?",

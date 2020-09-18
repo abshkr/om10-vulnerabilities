@@ -103,6 +103,7 @@ const Table = ({
   const [payload, setPayload] = useState([]);
   const [value, setValue] = useState(filterValue);
   const [api, setAPI] = useState('');
+  const [tableColumns, setTableColumns] = useState(columns);
 
   const overlayNoRowsText = 
     '<span style="padding: 10px; font-size: 16px">' + t('descriptions.noRowsToShow') + '</span>';
@@ -178,6 +179,19 @@ const Table = ({
   }, [data]);
 
   useEffect(() => {
+    if (t && columns) {
+      columns.forEach((o)=>{
+        if (o.filter==='FuzzyFilter' || o.filter==='MultiFilter' || o.filter==='BooleanFilter') {
+          o.filterParams = {
+            t
+          };
+        }
+      });
+      setTableColumns(columns);
+    }
+  }, [t, columns, setTableColumns]);
+
+  useEffect(() => {
     if (!!filterValue) {
       setValue('' + filterValue);
     }
@@ -231,7 +245,7 @@ const Table = ({
                 style={{ height: parentHeight || `calc(100vh - ${height || '250px'})` }}
               >
                 <AgGridReact
-                  columnDefs={columns}
+                  columnDefs={tableColumns}
                   rowData={payload}
                   onGridReady={handleGridReady}
                   frameworkComponents={{ ...defaultComponents, ...components }}
