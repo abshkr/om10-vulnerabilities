@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Input, InputNumber, Select } from 'antd';
 import _ from 'lodash';
-import { VCFManager } from '../../../../utils';
+import { VCFManager, calcApiFromSg, calcSgFromApi } from '../../../../utils';
 import { InputNumber as OmegaInputNumber } from '../../../../components';
 import CheckboxGroup from 'antd/es/checkbox/Group';
 
@@ -18,6 +18,11 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
     max: value?.tank_bclass_temp_hi || config.maxTemperature,
     type: 'ºC',
   });
+
+  const lowSG = _.round(calcSgFromApi(range?.high), config?.precisionSG);
+  const lowSGDef = _.round(calcSgFromApi(85), config?.precisionSG);
+  const highSG = _.round(calcSgFromApi(range?.low), config?.precisionSG);
+  const highSGDef = _.round(calcSgFromApi(0), config?.precisionSG);
 
   useEffect(() => {
     if (value) {
@@ -148,6 +153,14 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
     }
   };
 
+  const handleSgDensFieldChange = (input) => {
+    if (input !== undefined && input !== null && String(input).trim().length > 0) {
+      const API = calcApiFromSg(input);
+      value.tank_api = API;
+      pinDensity({ dens: API, type: 'A60F', title: t('fields.api') });
+    }
+  };
+
   return (
     <>
       <OmegaInputNumber
@@ -181,47 +194,73 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
       </Form.Item> */}
 
       {config?.temperatureUnit === 'degC' &&
-        config?.referenceTemperature === '15' &&
-        config?.vsmCompensation === '30' && (
-          <OmegaInputNumber
-            form={form}
-            value={value?.tank_15_density}
-            name="tank_15_density"
-            label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi})${t('units.kg/m3')} ${`@ ${t('fields.compensationTemperature')} ${
-              config?.vsmCompensation || config?.referenceTemperature
-            }ºC/${VCFManager.temperatureC2F(config?.vsmCompensation || config?.referenceTemperature)}ºF`}`}
+      config?.referenceTemperature === '15' &&
+      config?.vsmCompensation === '30' && (
+        <OmegaInputNumber
+          form={form}
+          value={value?.tank_15_density}
+          name="tank_15_density"
+          label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi})${t('units.kg/m3')} ${`@ ${t('fields.compensationTemperature')} ${
+            config?.vsmCompensation || config?.referenceTemperature
+          }ºC/${VCFManager.temperatureC2F(config?.vsmCompensation || config?.referenceTemperature)}ºF`}`}
+          min={value?.tank_base_dens_lo}
+          max={value?.tank_base_dens_hi}
+          style={{ width: '100%' }}
+          precision={config.precisionDensity}
+          onChange={handleCorDensFieldChange} // D30C
+        />
+        /* <Form.Item
+          name="tank_15_density"
+          label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${
+            value?.tank_base_dens_hi
+          }) ${`@${config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(
+            config?.referenceTemperature
+          )}ºF`}`}
+        >
+          <InputNumber
             min={value?.tank_base_dens_lo}
             max={value?.tank_base_dens_hi}
             style={{ width: '100%' }}
             precision={config.precisionDensity}
-            onChange={handleCorDensFieldChange} // D30C
+            onChange={handleStdDensFieldChange}
+            // formatter={value => value}
+            // parser={value => value}
           />
-          /* <Form.Item
-            name="tank_15_density"
-            label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${
-              value?.tank_base_dens_hi
-            }) ${`@${config?.referenceTemperature}ºC/${VCFManager.temperatureC2F(
-              config?.referenceTemperature
-            )}ºF`}`}
-          >
-            <InputNumber
-              min={value?.tank_base_dens_lo}
-              max={value?.tank_base_dens_hi}
-              style={{ width: '100%' }}
-              precision={config.precisionDensity}
-              onChange={handleStdDensFieldChange}
-              // formatter={value => value}
-              // parser={value => value}
-            />
-          </Form.Item> */
-        )}
+        </Form.Item> */
+      )}
+
+      {config?.manageAPI && config?.siteUseSG && (
+        <OmegaInputNumber
+          form={form}
+          value={value?.tank_sg}
+          name="tank_sg"
+          label={`${t('fields.specificGravity')} (${lowSG || lowSGDef} - ${highSG || highSGDef})`}
+          min={lowSG || lowSGDef}
+          max={highSG || highSGDef}
+          style={{ width: '100%' }}
+          precision={config.precisionSG}
+          onChange={handleSgDensFieldChange}
+        />
+        /* <Form.Item
+          name="tank_sg"
+          label={`${t('fields.specificGravity')} (${lowSG || lowSGDef} - ${highSG || highSGDef})`}
+        >
+          <InputNumber
+            min={lowSG || lowSGDef}
+            max={highSG || highSGDef}
+            style={{ width: '100%' }}
+            precision={config.precisionSG}
+            onChange={handleSgDensFieldChange}
+          />
+        </Form.Item> */
+      )}
 
       {config?.manageAPI && (
         <OmegaInputNumber
           form={form}
           value={value?.tank_api}
           name="tank_api"
-          label={`${t('fields.api')} (${range?.low || 0} - ${range?.high || 85}) @60ºF`}
+          label={`${t('fields.api')} (${range?.low || 0} - ${range?.high || 85})`}
           min={range?.low || 0}
           max={range?.high || 85}
           style={{ width: '100%' }}
@@ -230,7 +269,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         />
         /* <Form.Item
           name="tank_api"
-          label={`${t('fields.api')} (${range?.low || 0} - ${range?.high || 85}) @60ºF`}
+          label={`${t('fields.api')} (${range?.low || 0} - ${range?.high || 85})`}
         >
           <InputNumber
             min={range?.low || 0}

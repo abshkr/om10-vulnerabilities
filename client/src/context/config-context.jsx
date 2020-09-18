@@ -86,6 +86,7 @@ const ConfigProvider = ({ children }) => {
     minDensity: 0,
     maxDensity: 2000,
     maxLengthTankCode: 10,
+    siteUseSG: false,
   });
 
   const { data: configuration, revalidate: revalidateConfiguration } = useSWR(SITE_CONFIGURATION.READ, {
@@ -234,6 +235,7 @@ const ConfigProvider = ({ children }) => {
         precisionAdditive: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_ADDITIVE) || 3,
         precisionSG: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_SG) || 6,
         maxLengthTankCode: _.toNumber(configurationObject?.SITE_MAXLEN_TANKCODE) || 10,
+        siteUseSG: configurationObject?.SITE_USE_SG,
         revalidate: () => onRevalidate(),
       });
     }

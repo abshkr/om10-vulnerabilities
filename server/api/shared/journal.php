@@ -75,6 +75,7 @@ class Journal
             "TANK_GAUGINGMTHD_DESC" => "gauging method",
             "TANK_ULLAGE" => "ullage",
             "TANK_API" => "API",
+            "TANK_SG" => "specific gravity",
             "TANK_15_DENSITY" => "density",
             "TANK_SULPHUR" => "sulphur(wt%)",
             "TANK_FLASHPOINT" => "flash point",

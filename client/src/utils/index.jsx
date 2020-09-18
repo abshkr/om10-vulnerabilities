@@ -6,6 +6,8 @@ import getDateTimeFormat from './get-date-time-format';
 import getDateRangeOffset from './get-date-range-offset';
 import adjustProductArms from './adjust-product-arms';
 import getAvailableArms from './get-available-arms';
+import calcApiFromSg from './calculate-api-from-sg';
+import calcSgFromApi from './calculate-sg-from-api';
 import calcBaseRatios from './calculate-base-ratios';
 import calcArmDensity from './calculate-arm-density';
 import calcBaseQuantity from './calculate-base-quantity';
@@ -32,6 +34,8 @@ export {
   getDateRangeOffset,
   adjustProductArms,
   getAvailableArms,
+  calcApiFromSg,
+  calcSgFromApi,
   calcBaseRatios,
   calcArmDensity,
   calcBaseQuantity,

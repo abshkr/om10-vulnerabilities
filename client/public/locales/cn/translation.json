@@ -1366,6 +1366,7 @@
 		"sourceRecId": "源记录ID",
 		"sourceType": "来源类型",
 		"sourceUnit": "来源单元",
+		"specificGravity": "比重@60°F",
 		"standard": "标量",
 		"standardDensity": "标准密度",
 		"standardQuantity": "标量油量",

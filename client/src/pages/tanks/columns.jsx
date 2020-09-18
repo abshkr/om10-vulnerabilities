@@ -189,7 +189,16 @@ const columns = (t, config) => [
     hide: !config?.manageAPI,
     width: 110,
     suppressSizeToFit: true,
-    hide: !config?.manageAPI,
+  },
+  {
+    headerName: t('fields.specificGravity'),
+    field: 'tank_sg',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: !config?.manageAPI || !config?.siteUseSG,
+    width: 110,
+    suppressSizeToFit: true,
   },
 
   {
