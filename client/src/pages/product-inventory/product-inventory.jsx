@@ -24,7 +24,15 @@ const ProductInventory = () => {
   const fields = columns(t);
   const payload = transform(data?.records, unit);
 
-  const units = ['Litres', 'Cubic Metre', 'Imperial Gallon', 'U.S Gallon', 'Imperial Barrel', 'U.S Barrel'];
+  // const units = ['Litres', 'Cubic Metre', 'Imperial Gallon', 'U.S Gallon', 'Imperial Barrel', 'U.S Barrel'];
+  const units = [
+    {code: 'Litres', title: t('units.litres')},
+    {code: 'Cubic Metre', title: t('units.cubicMetre')},
+    {code: 'Imperial Gallon', title: t('units.imperialGallon')},
+    {code: 'U.S Gallon', title: t('units.usGallon')},
+    {code: 'Imperial Barrel', title: t('units.imperialBarrel')},
+    {code: 'U.S Barrel', title: t('units.usBarrel')},
+  ];
 
   const modifiers = (
     <>
@@ -37,8 +45,8 @@ const ProductInventory = () => {
       >
         {units.map((item) => {
           return (
-            <Select.Option key={item} value={item}>
-              {item}
+            <Select.Option key={item.code} value={item.code}>
+              {item.title}
             </Select.Option>
           );
         })}
