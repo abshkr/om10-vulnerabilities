@@ -10,6 +10,7 @@ import {
   CloseOutlined,
   AuditOutlined,
   CaretDownOutlined,
+  FilePdfOutlined,
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col, Radio, Checkbox, InputNumber } from 'antd';
@@ -73,6 +74,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const [carrier, setCarrier] = useState(undefined);
   const [tanker, setTanker] = useState(undefined);
   const [redoBOL, setRedoBOL] = useState(0);
+  const [exportPDF, setExportPDF] = useState(0);
   const [redoDLI, setRedoDLI] = useState(false);
   const [shipTo, setShipTo] = useState(value?.shls_ship_to_num);
   const [soldTo, setSoldTo] = useState(value?.shls_sold_to_num);
@@ -116,7 +118,6 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const CAN_ADD_HOST_DATA = value?.shls_ld_type === '2' && manageAdditionalHostData;
 
   const { data: siteData } = useSWR(SITE_CONFIGURATION.GET_SITE);
-
 
   const { resetFields, setFieldsValue } = form;
 
@@ -373,6 +374,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
     });
   };
 
+  const onExport = () => {
+    if (tab === "3") {
+      setExportPDF(exportPDF + 1);
+    }
+  }
+
   const onPrint = () => {
     const printEnumerator = {
       '2': {
@@ -608,6 +615,18 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             </Button>
           )}
 
+          {CAN_PRINT && !IS_CREATING && config?.bolVersion !== 'JASPER' && (
+            <Button 
+              type="primary" 
+              icon={<FilePdfOutlined />} 
+              onClick={onExport} 
+              style={{ marginRight: 5 }}
+              disabled={!access?.canUpdate}
+            >
+              {t('operations.exportPDF')}
+            </Button>
+          )}
+
           {!CAN_PRINT && !IS_CREATING && (
             <>
               {/* <Button
@@ -817,6 +836,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               supermode={form.getFieldValue('supermode')} 
               locateTrip={locateTrip} 
               setCurStatus={setCurStatus}
+              exportPDF={exportPDF}
             />
           </TabPane>
 

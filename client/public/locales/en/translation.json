@@ -1653,6 +1653,7 @@
     "editRule": "Edit Rule",
     "editing": "Editing",
     "export": "Export CSV",
+    "exportPDF": "Export PDF",
     "exportData": "Export Data",
     "filter": "Filter",
     "freezeCloseout": "Run Manual Closeout",

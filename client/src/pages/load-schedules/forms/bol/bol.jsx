@@ -5,10 +5,10 @@ import { Spin, Button, notification } from 'antd';
 import api from 'api';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
-
 import { LOAD_SCHEDULES } from '../../../../api';
+import { jsPDF } from "jspdf";
 
-const BOL = ({ value, redo, supermode, locateTrip, setCurStatus }) => {
+const BOL = ({ value, redo, supermode, locateTrip, setCurStatus, exportPDF }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState(null);
@@ -42,6 +42,23 @@ const BOL = ({ value, redo, supermode, locateTrip, setCurStatus }) => {
         });
     }
   }, [value, redo]);
+
+  useEffect(() => {
+    if (exportPDF > 0 && !!data) {
+      const doc = new jsPDF('p', 'pt', 'a4');
+
+      const start = data.search('<pre style="font-size:16px;">') + '<pre style="font-size:16px;">'.length;
+      const end = data.search('</pre>');
+
+      console.log(data.substring(start , end))
+      doc.setFont('courier');   //courier font gives all character same width in PDF
+      doc.setFontSize(12);
+      
+      doc.text(data.substring(start , end), 10, 15);
+      
+      doc.save("BOL_" + value.shls_trip_no + ".pdf");
+    }
+  }, [exportPDF]);
 
   return (
     <Spin spinning={!data} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
