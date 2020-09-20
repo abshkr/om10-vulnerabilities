@@ -36,6 +36,7 @@ const DeliveryDetailItems = ({
   const [selected, setSelected] = useState(null);
   // const [tableAPI, setTableAPI] = useState(null);
   const [size, setSize] = useState(0);
+  const [data, setData] = useState([]);
   const [productItem, setProductItem] = useState(undefined);
   const [ddiAddlInfoVisible, setDdiAddlInfoVisible] = useState(false);
 
@@ -51,7 +52,7 @@ const DeliveryDetailItems = ({
     , { revalidateOnFocus: false }
   );
 
-  const data = payload?.records;
+  // const data = payload?.records;
   const isLoading = isValidating || !data;
 
   const getNextLineNo = () => {
@@ -241,6 +242,13 @@ const DeliveryDetailItems = ({
     setProductItem(record?.item);
   };
 
+  useEffect(() => {
+    if (payload) {
+      setData(payload?.records);
+      setSize(payload?.records?.length);
+    }
+  }, [payload, setData, setSize]);
+
   return (
     <>
       <Select
@@ -267,7 +275,8 @@ const DeliveryDetailItems = ({
       <Button 
         type="primary" 
         icon={<PlusOutlined />} 
-        disabled={!(productItem || size===0)}
+        // disabled={!(productItem || size===0)}
+        disabled={!productItem && (productItem || !(products?.records?.length>0) || size>0)}
         onClick={handleItemAdd} 
         style={{ marginRight: 5 }}
       >
