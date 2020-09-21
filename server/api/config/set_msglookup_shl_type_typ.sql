@@ -27,3 +27,11 @@ insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (1829, 'CHN', '主机�
 insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (1830, 'CHN', '油品进库');
 
 commit;
+
+/*
+    fix chinese translation of ANNUALLY
+*/
+
+update MSG_LOOKUP set MESSAGE='每年' where MSG_ID=779 and LANG_ID='CHN';
+
+commit;
