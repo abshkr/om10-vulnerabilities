@@ -15,8 +15,6 @@ import {
 
 import { Page, DataTable, Download } from '../../components';
 import api, { INVENTORY_REQUESTS } from '../../api';
-import { responseType } from '../../utils';
-
 import tankColumns from './tank-columns';
 import generator from './generator';
 import columns from './columns';
@@ -76,7 +74,7 @@ const InventoryRequests = () => {
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
-                message: responseType(error.type, t),
+                message: error.type,
                 description: error.message,
               });
             });

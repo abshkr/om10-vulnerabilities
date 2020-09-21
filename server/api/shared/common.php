@@ -1,4 +1,5 @@
 <?php
+include_once __DIR__ . '/response.php';
 /*
  * Schema returns to REST caller
  */ 
@@ -13,7 +14,8 @@ class EchoSchema
         }
 
         if (!isset($type)) {
-            switch ($code) {
+            $type = response_type($code);
+            /* switch ($code) {
                 case 200:
                     $type = "OK";
                     break;
@@ -35,7 +37,7 @@ class EchoSchema
                 default:
                     write_log(sprintf("Undefined http code:%d", $code), __FILE__, __LINE__);
                     $type = "Internal Server Error";;
-            }
+            } */
         }
 
         if ($code == 200) {

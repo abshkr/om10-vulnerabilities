@@ -26,7 +26,6 @@ import { mutate } from 'swr';
 import _ from 'lodash';
 
 import api, { PRODUCT_MOVEMENTS } from '../../../api';
-import { responseType } from '../../../utils';
 
 const TabPane = Tabs.TabPane;
 
@@ -157,7 +156,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
-                message: responseType(error.type, t),
+                message: error.type,
                 description: error.message,
               });
             });

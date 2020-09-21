@@ -403,3 +403,47 @@ function response($case_name, $default = null, $params = null)
     return vsprintf($case_response_map[$case_name][$lang], $params);
     // return $case_response_map[$case_name][$lang];
 }
+
+//Reponse type with multiple lang support
+function response_type($code) 
+{
+    $case_response_map = array(
+        "__CODE_200__" => array(
+            "ENG" => "OK",
+            "CHN" => "成功"
+        ),
+        "__CODE_400__" => array(
+            "ENG" => "Bad Request",
+            "CHN" => "错误的请求"
+        ),
+        "__CODE_401__" => array(
+            "ENG" => "Unauthorized",
+            "CHN" => "未经授权"
+        ),
+        "__CODE_405__" => array(
+            "ENG" => "Method Not Allowed",
+            "CHN" => "不允许的方法"
+        ),
+        "__CODE_498__" => array(
+            "ENG" => "Invalid Token",
+            "CHN" => "令牌无效"
+        ),
+        "__CODE_500__" => array(
+            "ENG" => "Internal Server Error",
+            "CHN" => "内部服务器错误"
+        ),
+        "__CODE_DEF__" => array(
+            "ENG" => "Unknown Error",
+            "CHN" => "未知错误"
+        ),
+    );
+
+    $lang = Utilities::getCurrLang();
+    
+    $case_name = "__CODE_" . $code . "__";
+    if (!array_key_exists($case_name, $case_response_map)) {
+        $case_name = "__CODE_DEF__";
+    }
+
+    return $case_response_map[$case_name][$lang];
+}
