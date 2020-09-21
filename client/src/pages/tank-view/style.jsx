@@ -18,7 +18,7 @@ export const ToolbarContainer = styled.div`
 `;
 
 export const GeneralContainer = styled.div`
-  width: calc(40vw - 50px);
+  width: 100%;
   display: flex;
   flex-direction: column;
 

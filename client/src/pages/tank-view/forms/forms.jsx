@@ -86,7 +86,7 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate }
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="40vw"
+      width="45vw"
       visible={visible}
       footer={
         <>
@@ -122,11 +122,11 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate }
               </div>
 
               <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 10 }}>
-                <Descriptions.Item label="Product" span={12}>
+                <Descriptions.Item label="Product" span={2}>
                   {value?.tank_base_name}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Product Code" span={12}>
+                <Descriptions.Item label="Product Code" span={2}>
                   {value?.tank_base}
                 </Descriptions.Item>
 

@@ -10,70 +10,6 @@ const statusColourMap = {
   'Out Of Service - Offline': 'rgba(103,164,236,0.2)',
 };
 
-function getChartOptions(name, colour) {
-  const options = {
-    chart: {
-      type: 'bar',
-      height: 350,
-
-      toolbar: {
-        show: false,
-      },
-    },
-
-    plotOptions: {
-      bar: {
-        horizontal: false,
-        columnWidth: '55%',
-      },
-    },
-
-    colors: [colour],
-
-    xaxis: {
-      categories: [name],
-
-      labels: {
-        show: false,
-      },
-
-      axisBorder: {
-        show: false,
-      },
-      axisTicks: {
-        show: false,
-      },
-    },
-
-    yaxis: {
-      display: false,
-
-      min: 0,
-      max: 100,
-    },
-
-    fill: {
-      opacity: 1,
-    },
-
-    tooltip: {
-      y: {
-        formatter: function (val) {
-          return val + '%';
-        },
-      },
-    },
-
-    plotOptions: {
-      bar: {
-        columnWidth: '100%',
-      },
-    },
-  };
-
-  return options;
-}
-
 function getLevelStatus(level, hhValue, hValue, lValue, llValue, userH, userL) {
   const currentLevel = _.toNumber(level) || 0;
 
@@ -215,8 +151,6 @@ function transform(data) {
     const baseColour = ['#fff', '', null].includes(tank?.tank_base_color) ? '#cdd6ac' : tank?.tank_base_color;
     const statusColour = statusColourMap[tank?.tank_status_name];
 
-    const options = getChartOptions(tank?.tank_base_name, baseColour);
-
     const levelStatus = getLevelStatus(
       tank?.tank_prod_lvl || '',
       tank?.tank_hh_level,
@@ -242,7 +176,7 @@ function transform(data) {
       totalCapacity,
 
       critical: Object.values(levelStatus)?.includes('processing'),
-
+      baseColour,
       levels: {
         values: level,
         status: levelStatus,
@@ -250,14 +184,29 @@ function transform(data) {
 
       labels: ['Tank'],
 
-      options,
-
-      series: [
-        {
-          name: 'Total',
-          data: [percentage],
-        },
-      ],
+      payload: {
+        labels: ['Tank'],
+        datasets: [
+          {
+            label: 'Quantity',
+            backgroundColor: baseColour,
+            borderColor: 'rgba(105,105,105,0.9)',
+            borderWidth: 1,
+            hoverBackgroundColor: baseColour,
+            hoverBorderColor: 'rgba(105,105,105,1)',
+            data: [percentage],
+          },
+          {
+            label: 'Ullage',
+            backgroundColor: 'rgba(105,105,105,0.7)',
+            borderColor: 'rgba(105,105,105,1)',
+            borderWidth: 1,
+            hoverBackgroundColor: 'rgba(105,105,105,0.7)',
+            hoverBorderColor: 'rgba(105,105,105,1)',
+            data: percentage > 100 ? [0] : [100 - percentage],
+          },
+        ],
+      },
 
       ...tank,
     };
