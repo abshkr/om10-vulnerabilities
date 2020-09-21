@@ -20,6 +20,7 @@ import hexToRGB from './hex-to-rbg';
 import validateField from './validate-field';
 import validateNumber from './validate-number';
 import validatorStatus from './validator-status';
+import responseType from './response-type';
 import generatePaths from './generate-paths';
 import hash from './hash';
 import * as VCFManager from './vcf-manager';
@@ -48,6 +49,7 @@ export {
   validateField,
   validateNumber,
   validatorStatus,
+  responseType,
   generatePaths,
   hash,
   pwdComplexity,
