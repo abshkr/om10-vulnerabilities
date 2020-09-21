@@ -107,6 +107,7 @@ const DeliveryNoteTemplates = ({
   const handleItemRemove = () => {
     tableAPI.updateRowData({ remove: selected });
     adjustRecords();
+    // setSelected(null);
   };
 
   const handleItemSelect = (items) => {
@@ -204,7 +205,7 @@ const DeliveryNoteTemplates = ({
           type="primary"
           icon={<EditOutlined />}
           style={{ float: 'right', marginRight: 5 }}
-          disabled={!selected}
+          disabled={disabled || selected?.[0]?.ddd_action==='+'}
           onClick={() => setDddAddlInfoVisible(true)}
         >
           {t('operations.additionalInfo')}

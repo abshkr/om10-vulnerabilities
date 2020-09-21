@@ -5,8 +5,17 @@ import { Form, DatePicker, Checkbox, Input, Select } from 'antd';
 import moment from 'moment';
 import { SETTINGS } from '../../../constants';
 
+import 'moment/locale/en-gb';
+import 'moment/locale/zh-cn';
+import enLocale from 'antd/es/date-picker/locale/en_GB';
+import zhLocale from 'antd/es/date-picker/locale/zh_CN';
+
+const momentLocales = {en: enLocale, cn: zhLocale};
+
 const DateRange = ({form, timeOption, force}) => {
-  const { t } = useTranslation(); 
+  const { t, i18n } = useTranslation();
+  const locale = momentLocales[i18n.language||'en'];
+
   const { setFieldsValue } = form;
   const [checked, setChecked] = useState(force);
   
@@ -141,6 +150,7 @@ const DateRange = ({form, timeOption, force}) => {
         disabled={!checked}
         onChange={onRangeChange}
         defaultValue={[moment().subtract(7, 'days'), moment().add(7, 'days')]}
+        locale={locale}
       />
 
       <Form.Item name="start_date" noStyle >

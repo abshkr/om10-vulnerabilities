@@ -301,7 +301,7 @@ const DeliveryDetailItems = ({
           type="primary"
           icon={<EditOutlined />}
           style={{ float: 'right', marginRight: 5 }}
-          disabled={!selected}
+          disabled={disabled || selected?.[0]?.ddi_action==='+'}
           onClick={() => setDdiAddlInfoVisible(true)}
         >
           {t('operations.additionalInfo')}
