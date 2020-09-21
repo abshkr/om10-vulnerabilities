@@ -665,6 +665,14 @@ class IDAssignment extends CommonClass
             $default_pin = "bHUA7XfvOYA2";
         }
 
+        if (!isset($this->kya_lock)) {
+            $this->kya_lock = 'N';
+        }
+
+        if (!isset($this->kya_adhoc)) {
+            $this->kya_adhoc = 'N';
+        }
+
         $query = "INSERT INTO ACCESS_KEYS
         (   KYA_KEY_NO,
             KYA_KEY_ISSUER,
