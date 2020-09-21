@@ -119,7 +119,7 @@ const InventoryRequests = () => {
           onClick={onTankUpdate}
           loading={isLoading}
         >
-          {IS_REQUIRED ? 'Not Required' : 'Required'}
+          {IS_REQUIRED ? t('operations.notRequired') : t('operations.required')}
         </Button>
       )}
     </>
