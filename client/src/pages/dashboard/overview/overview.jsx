@@ -340,6 +340,7 @@ const Overview = () => {
 
       const series = [
         {
+          name: t('fields.throughput'),
           data: Object.values(payload),
         },
       ];
