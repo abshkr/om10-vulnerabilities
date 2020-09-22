@@ -195,7 +195,7 @@ const Overview = () => {
         },
 
         xaxis: {
-          categories: ['Products'],
+          categories: [t('fields.products')],
 
           labels: {
             show: false,
@@ -285,7 +285,7 @@ const Overview = () => {
         },
 
         xaxis: {
-          categories: ['Products'],
+          categories: [t('fields.products')],
 
           labels: {
             show: false,
