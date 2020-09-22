@@ -109,8 +109,15 @@ const Favourites = () => {
   useEffect(() => {
     if (data?.records) {
       const payload = [];
+      const pathData = generatePaths(t);
 
       _.forEach(data?.records, (item) => {
+        // get the name in current language for menu item
+        const entry = _.find(pathData, ['path', item.config_key]);
+        if (entry) {
+          item.config_value = entry?.name;
+        }
+        
         // auditing, partner, and partnership pages may be turned off by features
         if (item.config_key !== ROUTES.AUDITING_DATA &&
         item.config_key !== ROUTES.PARTNERS && 
