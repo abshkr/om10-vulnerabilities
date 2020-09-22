@@ -42,11 +42,11 @@ const Status = () => {
 
   return (
     <div style={{display: "flex", justifyContent: "flex-end", paddingTop: 5 }}>
-        <div style={{ width:"230px", fontSize: 12, textAlign: 'left', marginRight: 10 }}>
+        <div style={{ width:"230px", fontSize: 14, textAlign: 'left', marginRight: 10 }}>
           <strong>{t('fields.serverTime')}</strong>: <span>{time || '...'} </span>
         </div>
       
-        <div style={{ fontSize: 12, textAlign: 'right', marginRight: 15}}>
+        <div style={{ fontSize: 14, textAlign: 'right', marginRight: 15}}>
           <strong>{t('fields.loggedInAs')}</strong>:{' '}
           <span>
             {user || '...'} ({id})
