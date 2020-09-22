@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 
 import useSWR from 'swr';
 import moment from 'moment';
-import { Form, Button, Select, Modal, notification } from 'antd';
+import { Form, Button, Select, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { CloseOutlined, SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
+import { CloseOutlined, SyncOutlined, FileSearchOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, Calendar, WindowSearch } from '../../components';
+import { DataTable, Calendar, WindowSearch } from '../../components';
 import api, { ORDER_LISTINGS } from '../../api';
 import { SETTINGS } from '../../constants';
 import { useConfig } from '../../hooks';

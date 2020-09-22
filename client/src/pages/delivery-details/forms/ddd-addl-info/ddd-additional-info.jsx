@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  EditOutlined,
-  PlusOutlined,
-  MinusOutlined,
-  EyeOutlined,
-  CarryOutOutlined,
-  LockOutlined,
-} from '@ant-design/icons';
+import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Button, Form, Input, notification, Row, Col } from 'antd';
 import useSWR from 'swr';
@@ -222,7 +215,7 @@ const DddAdditionalInfo = ({
     }
 
     const len = (new TextEncoder().encode(input)).length;
-    if (maxLength != undefined && input && len > maxLength) {
+    if (maxLength !== undefined && input && len > maxLength) {
       errors.push({
         key: String(line) + ':' + label,
         field: label + ' [' + t('fields.line') + ' ' + line + ']',

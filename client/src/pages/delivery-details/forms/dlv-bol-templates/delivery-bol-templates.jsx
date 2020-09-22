@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import {
-  EditOutlined,
-  PlusOutlined,
-  MinusOutlined,
-  EyeOutlined,
-  CarryOutOutlined,
-  LockOutlined,
-} from '@ant-design/icons';
+import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Button, Form, Select, notification, Row, Col } from 'antd';
+import { Button, Form, Select, notification } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
 

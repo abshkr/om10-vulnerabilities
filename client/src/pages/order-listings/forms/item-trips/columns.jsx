@@ -85,10 +85,9 @@ const columns = (t) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    hide: false,
+    hide: true,
     editable: false,
     width: 100,
-    hide: true,
   },
   {
     headerName: t('fields.schdProdQty'),

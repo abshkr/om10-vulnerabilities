@@ -35,7 +35,7 @@ const InputNumber = ({
       return Promise.reject(`${t('validate.set')} ─ ${label}`);
     }
 
-    if (maxLength != undefined && input && input.length > maxLength) {
+    if (maxLength !== undefined && input && input.length > maxLength) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: ${maxLength} ─ ${t('descriptions.maxCharacters')}`);
     }
 

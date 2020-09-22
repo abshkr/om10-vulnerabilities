@@ -1,18 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-import {
-  EditOutlined,
-  PlusOutlined,
-  DeleteOutlined,
-  QuestionCircleOutlined,
-  RedoOutlined,
-  ClockCircleOutlined,
-  CloseOutlined,
-  CaretDownOutlined,
-  SyncOutlined,
-} from '@ant-design/icons';
+import { CloseOutlined, SyncOutlined } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Row, Col } from 'antd';
+import { Form, Button, Tabs, notification, Drawer, Divider, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import useSWR from 'swr';

@@ -447,8 +447,6 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
     });
   };
 
-  const onViewSchedule = () => {};
-
   useEffect(() => {
     if (payload?.records) {
       console.log('..................I am here 1');
