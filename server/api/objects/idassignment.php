@@ -673,6 +673,10 @@ class IDAssignment extends CommonClass
             $this->kya_adhoc = 'N';
         }
 
+        if (isset($this->kya_txt)) {
+            $this->kya_txt = strtoupper($this->kya_txt);
+        }
+
         $query = "INSERT INTO ACCESS_KEYS
         (   KYA_KEY_NO,
             KYA_KEY_ISSUER,
