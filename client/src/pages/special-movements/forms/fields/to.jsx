@@ -85,7 +85,7 @@ const To = ({
           setLoading(false);
         });
     },
-    [setFieldsValue]
+    [setProduct, setFieldsValue]
   );
 
   const onSupplierChange = value => {
@@ -122,7 +122,7 @@ const To = ({
       setTank(tankCode);
       setProduct(prodCode);
       // onChange(tankCode);
-      console.log('here I am in TO 2!....', prodCompany, tankCode, prodCode, type);
+      // console.log('here I am in TO 2!....', prodCompany, tankCode, prodCode, type);
 
       setFieldsValue({
         mlitm_prodcmpy_to: prodCompany,

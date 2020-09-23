@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
 import useSWR from 'swr';
 
-import { Page, DataTable, Download, FormModal } from '../../components';
+import { Page, DataTable, Download } from '../../components';
 import { EQUIPMENT_LIST } from '../../api';
 
 import columns from './columns';
@@ -41,7 +41,7 @@ const EquipmentList = () => {
     if (expiryTypes) {
       setFields(columns(expiryTypes?.records, t, expiryDateMode));
     }
-  }, [expiryTypes]);
+  }, [expiryTypes, t, expiryDateMode]);
 
   const modifiers = (
     <>

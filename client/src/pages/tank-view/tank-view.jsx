@@ -4,7 +4,7 @@ import { BackTop, Button, Input, Tabs } from 'antd';
 import { UpOutlined, PlusOutlined } from '@ant-design/icons';
 
 import useSWR from 'swr';
-import _ from 'lodash';
+// import _ from 'lodash';
 
 import { TANKS } from 'api';
 import { TankViewContainer, SearchSuffixContainer, ToolbarContainer } from './style';
