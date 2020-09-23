@@ -46,7 +46,7 @@ const Levels = ({ form, value }) => {
     <div style={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
       <Form.Item
         name="tank_max_level"
-        label={`${t('fields.tankMaxLevel')} (mm)`}
+        label={`${t('fields.tankMaxLevel')} (${t('units.mm')})`}
         style={{ flex: '1 1 auto', marginRight: 5, width: 300 }}
         rules={[
           {
@@ -59,7 +59,7 @@ const Levels = ({ form, value }) => {
 
       <Form.Item
         name="tank_ul_level"
-        label={`${t('fields.userLLevel')} (mm)`}
+        label={`${t('fields.userLLevel')} (${t('units.mm')})`}
         style={{ flex: '1 1 auto', marginLeft: 5, width: 300 }}
         rules={[
           {
@@ -72,7 +72,7 @@ const Levels = ({ form, value }) => {
 
       <Form.Item
         name="tank_uh_level"
-        label={`${t('fields.userHLevel')} (mm)`}
+        label={`${t('fields.userHLevel')} (${t('units.mm')})`}
         style={{ flex: '1 1 auto', marginLeft: 5, width: 300 }}
         rules={[
           {

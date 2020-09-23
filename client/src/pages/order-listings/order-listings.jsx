@@ -159,22 +159,22 @@ const OrderListings = ({popup, params}) => {
   };
 
   useEffect(() => {
-    console.log("I am here: rangeStart, start", start, rangeStart);
+    // console.log("I am here: rangeStart, start", start, rangeStart);
     if (rangeSetting !== '-1~~-1') {
       setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     } else {
       setStart('-1');
     }
-  }, [rangeStart]);
+  }, [rangeStart, rangeSetting, setStart]);
 
   useEffect(() => {
-    console.log("I am here: rangeEnd, end", end, rangeEnd);
+    // console.log("I am here: rangeEnd, end", end, rangeEnd);
     if (rangeSetting !== '-1~~-1') {
       setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     } else {
       setEnd('-1');
     }
-  }, [rangeEnd]);
+  }, [rangeEnd, rangeSetting, setEnd]);
 
   useEffect(() => {
     if (ranges) {
@@ -186,7 +186,7 @@ const OrderListings = ({popup, params}) => {
         setRangeEnd(-1);
       }
     }
-  }, [ranges]);
+  }, [ranges, rangeSetting, setRangeStart, setRangeEnd]);
 
   useEffect(() => {
     if (filterByExpiry) {
@@ -194,21 +194,21 @@ const OrderListings = ({popup, params}) => {
     }else {
       setTimeOption('ORDER_ORD_TIME');
     }
-  }, [filterByExpiry]);
+  }, [filterByExpiry, setTimeOption]);
 
   useEffect(() => {
     if (popup && params) {
       setSupplier(params?.order_supp_code);
       setCustomer(params?.order_cust_acnt);
     }
-  }, [popup, params]);
+  }, [popup, params, setSupplier, setCustomer]);
 
   useEffect(() => {
     if (payload) {
       setData(payload?.records);
       payload.records = null;
     }
-  }, [payload]);
+  }, [payload, setData]);
 
   const modifiers = (
     <>

@@ -8,6 +8,7 @@ import { mutate } from 'swr';
 
 import { Tank } from 'components';
 import {
+  Terminal, 
   Code,
   Product,
   Name,
@@ -21,10 +22,11 @@ import {
 import { GeneralContainer } from '../style';
 
 import api, { TANKS } from '../../../api';
+import { ConfigConsumer } from 'antd/lib/config-provider';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, handleRevalidate }) => {
+const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, config }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -122,67 +124,68 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate }
               </div>
 
               <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 10 }}>
-                <Descriptions.Item label="Product" span={2}>
+                <Descriptions.Item label={t('fields.product')} span={2}>
                   {value?.tank_base_name}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Product Code" span={2}>
+                <Descriptions.Item label={t('fields.productCode')} span={2}>
                   {value?.tank_base}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Observed Temperature" span={12}>
-                  {value?.tank_temp} °C
+                <Descriptions.Item label={t('fields.observedTemperature')} span={12}>
+                  {value?.tank_temp} {t('units.degC')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Reference Density" span={24}>
-                  {value?.tank_density} Kg / m³
+                <Descriptions.Item label={t('fields.referenceDensity')} span={24}>
+                  {value?.tank_density} {t('units.kg/m3')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Tank Capacity" span={24}>
-                  {value?.totalCapacity} Litres
+                <Descriptions.Item label={t('fields.tankCapacity')} span={24}>
+                  {value?.totalCapacity} {t('units.litres')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Tank Max Level" span={24}>
-                  {value?.tank_max_level} mm
+                <Descriptions.Item label={t('fields.tankMaxLevel')} span={24}>
+                  {value?.tank_max_level} {t('units.mm')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Level" span={24}>
-                  {value?.tank_prod_lvl} mm
+                <Descriptions.Item label={t('fields.level')} span={24}>
+                  {value?.tank_prod_lvl} {t('units.mm')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Observed Quantity" span={24}>
-                  {value?.tank_amb_vol} Litres
+                <Descriptions.Item label={t('fields.observedQuantity')} span={24}>
+                  {value?.tank_amb_vol} {t('units.litres')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Standard Quantity" span={24}>
-                  {value?.tank_cor_vol} Litres
+                <Descriptions.Item label={t('fields.standardQuantity')} span={24}>
+                  {value?.tank_cor_vol} {t('units.litres')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Weight in Air" span={24}>
-                  {value?.tank_vapour_kg} T
+                <Descriptions.Item label={t('fields.weightInAir')} span={24}>
+                  {value?.tank_vapour_kg} {t('units.kg')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Ullage" span={24}>
-                  {value?.tank_ullage} Litres
+                <Descriptions.Item label={t('fields.ullage')} span={24}>
+                  {value?.tank_ullage} {t('units.litres')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Pumpable Volume" span={24}>
-                  {value?.tank_pump_vol} T
+                <Descriptions.Item label={t('fields.pumpableVolume')} span={24}>
+                  {value?.tank_pump_vol} {t('units.litres')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Water Level" span={24}>
-                  {value?.tank_water_lvl} mm
+                <Descriptions.Item label={t('fields.waterLevel')} span={24}>
+                  {value?.tank_water_lvl} {t('units.mm')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Water Volume" span={24}>
-                  {value?.tank_liquid_kg} Kg
+                <Descriptions.Item label={t('fields.weightInVacuum')} span={24}>
+                  {value?.tank_liquid_kg} {t('units.kg')}
                 </Descriptions.Item>
               </Descriptions>
             </GeneralContainer>
           </TabPane>
 
-          <TabPane tab={t('tabColumns.configuration')} key="2" forceRender>
-            <Code form={form} value={value} config={null} />
+          <TabPane tab={t('tabColumns.tankConfiguration')} key="2" forceRender>
+            <Terminal form={form} value={value} />
+            <Code form={form} value={value} config={ConfigConsumer} />
             <Name form={form} value={value} />
             <Product form={form} value={value} onChange={setProduct} />
             <Density form={form} value={value} product={product} />

@@ -10,6 +10,7 @@ import { TANKS } from 'api';
 import { TankViewContainer, SearchSuffixContainer, ToolbarContainer } from './style';
 import { Page, Download } from 'components';
 import { useAuth } from 'hooks';
+import { useConfig } from 'hooks';
 
 import search from 'utils/search';
 import auth from 'auth';
@@ -25,6 +26,7 @@ const { Search } = Input;
 const { TabPane } = Tabs;
 
 const TankView = () => {
+  const config = useConfig();
   const { t } = useTranslation();
 
   const access = useAuth('M_TANKVIEW');
@@ -102,6 +104,7 @@ const TankView = () => {
         handleRevalidate={handleRevalidate}
         value={selected}
         access={access}
+        config={config}
       />
 
       <TankViewContainer>
