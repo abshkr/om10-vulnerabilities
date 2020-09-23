@@ -233,22 +233,22 @@ const OrderPicker = ({params, onClose, modal}) => {
   };
 
   useEffect(() => {
-    console.log("I am here: rangeStart, start", start, rangeStart);
+    // console.log("I am here: rangeStart, start", start, rangeStart);
     if (rangeSetting !== '-1~~-1') {
       setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     } else {
       setStart('-1');
     }
-  }, [rangeStart]);
+  }, [rangeStart, rangeSetting]);
 
   useEffect(() => {
-    console.log("I am here: rangeEnd, end", end, rangeEnd);
+    // console.log("I am here: rangeEnd, end", end, rangeEnd);
     if (rangeSetting !== '-1~~-1') {
       setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     } else {
       setEnd('-1');
     }
-  }, [rangeEnd]);
+  }, [rangeEnd, rangeSetting]);
 
   useEffect(() => {
     if (ranges) {
@@ -260,7 +260,7 @@ const OrderPicker = ({params, onClose, modal}) => {
         setRangeEnd(-1);
       }
     }
-  }, [ranges]);
+  }, [ranges, rangeSetting]);
 
   useEffect(() => {
     if (filterByExpiry) {

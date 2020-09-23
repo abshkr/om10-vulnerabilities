@@ -31,7 +31,7 @@ const validateField = (rule, input) => {
     }
  
     const len = (new TextEncoder().encode(input)).length;
-    if ((rule.maxLength != undefined && rule.maxLength != null) && input && len > rule.maxLength) {
+    if ((rule.maxLength !== undefined && rule.maxLength !== null) && input && len > rule.maxLength) {
       errors.push({
         key: rule.field + '_maxlen',
         field: rule.title,
@@ -42,7 +42,7 @@ const validateField = (rule, input) => {
     if (rule.dataType === 'STRING') {
     }
  
-    if (rule.dataType === 'NUMBER' && String(input).trim() !== '' && input !== undefined && input !=null ) {
+    if (rule.dataType === 'NUMBER' && String(input).trim() !== '' && input !== undefined && input !== null ) {
       const number = _.toNumber(input);
       const invalid = _.isNaN(number);
   

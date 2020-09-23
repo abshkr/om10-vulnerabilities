@@ -4,7 +4,7 @@ import { Form, Input, InputNumber, Select } from 'antd';
 import _ from 'lodash';
 import { VCFManager, calcApiFromSg, calcSgFromApi } from '../../../../utils';
 import { InputNumber as OmegaInputNumber } from '../../../../components';
-import CheckboxGroup from 'antd/es/checkbox/Group';
+// import CheckboxGroup from 'antd/es/checkbox/Group';
 
 const { Option } = Select;
 
@@ -57,7 +57,7 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         pinQuantity({ qty: '', type: 'NA', title: t('fields.ambientVolume') });
       }
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, pinDensity, pinQuantity]);
 
   const handleTemperature = (selected) => {
     if (selected !== 'degC') {

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 
 import { useTranslation } from 'react-i18next';
-import { Form, DatePicker, Col } from 'antd';
+import { Form, DatePicker } from 'antd';
 import moment from 'moment';
 
 import { SETTINGS } from '../../../../constants';
