@@ -370,8 +370,9 @@ const Overview = () => {
           >
             <Chart
               options={{
-                dailyOptions,
+                ...dailyOptions,
                 chart: {
+                  ...dailyOptions.chart,
                   ...options,
                 },
               }}
@@ -406,8 +407,9 @@ const Overview = () => {
           >
             <Chart
               options={{
-                storageOptions,
+                ...storageOptions,
                 chart: {
+                  ...storageOptions.chart,
                   ...options,
                 },
               }}
@@ -445,8 +447,9 @@ const Overview = () => {
           >
             <Chart
               options={{
-                folioOptions,
+                ...folioOptions,
                 chart: {
+                  ...folioOptions.chart,
                   ...options,
                 },
               }}
@@ -476,8 +479,9 @@ const Overview = () => {
           >
             <Chart
               options={{
-                weeklyOptions,
+                ...weeklyOptions,
                 chart: {
+                  ...weeklyOptions.chart,
                   ...options,
                 },
               }}

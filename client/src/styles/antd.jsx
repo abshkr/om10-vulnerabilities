@@ -341,6 +341,15 @@ const AntdStyleProvider = createGlobalStyle`
     background: #EAEDED;
   }
 
+  .ant-input[disabled] {
+    color: #777777 !important;
+    font-weight: 500 !important;
+  }
+
+  .ant-select-disabled.ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
+    color: #777777 !important;
+    font-weight: 500 !important;
+  }
 
 `;
 export default AntdStyleProvider;
