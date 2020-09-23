@@ -31,7 +31,7 @@ const ObsMass = ({ form, value, onChange, setValue, pageState, config }) => {
       onChange({ qty: value.mlitm_qty_kg, type: 'KG', title: t('fields.nomtranMass') });
       setValue(value.mlitm_qty_kg);
     }
-  }, [value, setFieldsValue, onChange, setValue]);
+  }, [value, t, setFieldsValue, onChange, setValue]);
 
   const handleFieldChange = (value) => {
     onChange({ qty: value, type: 'KG', title: t('fields.nomtranMass') });

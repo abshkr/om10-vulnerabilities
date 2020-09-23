@@ -86,8 +86,8 @@ const OrderPicker = ({params, onClose, modal}) => {
   const isLoading = isValidating || !data;
   const fields = columns(t, config);
 
-  const page = t('pageMenu.operations');
-  const name = t('pageNames.orderListing');
+  // const page = t('pageMenu.operations');
+  // const name = t('pageNames.orderListing');
 
   const onFinish = () => {
     modal.destroy();

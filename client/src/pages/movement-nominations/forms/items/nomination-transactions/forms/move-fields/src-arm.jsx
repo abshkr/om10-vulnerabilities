@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
 import _ from 'lodash';
 
-import { NOMINATION_TRANSACTIONS, MANUAL_TRANSACTIONS } from '../../../../../../../api';
+import { MANUAL_TRANSACTIONS } from '../../../../../../../api';
+// import { NOMINATION_TRANSACTIONS } from '../../../../../../../api';
 
 const SourceArm = ({ form, value, setArms, onChange, tank, pageState }) => {
   const { t } = useTranslation();

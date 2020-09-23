@@ -37,7 +37,7 @@ const Terminal = ({ form, value, pageState }) => {
         mv_terminal: site_code, // options?.records?.[0].term_code,
       });
     }
-  }, [value, setFieldsValue]);
+  }, [value, site_code, setFieldsValue]);
 
   return (
     <Form.Item 
