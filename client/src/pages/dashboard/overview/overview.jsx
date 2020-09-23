@@ -2,134 +2,16 @@ import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { Card, Col, Row, Select, Radio } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-import ReactApexChart from 'react-apexcharts';
+import Chart from 'react-apexcharts';
 import useSWR from 'swr';
 import _ from 'lodash';
 
 import { DASHBOARD } from '../../../api';
 
-import enTitles from './en.json';
-import cnTitles from './cn.json';
+import locale from './locale';
 
 const Overview = () => {
   const { t, i18n } = useTranslation();
-
-  /* const enTitles = {
-    "name": "en",
-    "options": {
-      "months": [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December"
-      ],
-      "shortMonths": [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec"
-      ],
-      "days": [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday"
-      ],
-      "shortDays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-      "toolbar": {
-        "exportToSVG": "Download SVG111",
-        "exportToPNG": "Download PNG",
-        "exportToCSV": "Download CSV",
-        "menu": "Menu",
-        "selection": "Selection",
-        "selectionZoom": "Selection Zoom",
-        "zoomIn": "Zoom In",
-        "zoomOut": "Zoom Out",
-        "pan": "Panning",
-        "reset": "Reset Zoom"
-      }
-    }
-  };
-  const cnTitles = {
-    "name": "cn",
-    "options": {
-      "months": [
-        "一月",
-        "二月",
-        "三月",
-        "四月",
-        "五月",
-        "六月",
-        "七月",
-        "八月",
-        "九月",
-        "十月",
-        "十一月",
-        "十二月"
-      ],
-      "shortMonths": [
-        "1月",
-        "2月",
-        "3月",
-        "4月",
-        "5月",
-        "6月",
-        "7月",
-        "8月",
-        "9月",
-        "10月",
-        "11月",
-        "12月"
-      ],
-      "days": [
-        "星期日",
-        "星期一",
-        "星期二",
-        "星期三",
-        "星期四",
-        "星期五",
-        "星期六"
-      ],
-      "shortDays": ["日", "一", "二", "三", "四", "五", "六"],
-      "toolbar": {
-        "exportToSVG": "导出下载SVG",
-        "exportToPNG": "导出下载PNG",
-        "exportToCSV": "导出下载CSV",
-        "menu": "菜单",
-        "selection": "选择",
-        "selectionZoom": "选择缩放",
-        "zoomIn": "放大",
-        "zoomOut": "缩小",
-        "pan": "平移",
-        "reset": "重置缩放"
-      }
-    }
-  };
-  ReactApexChart.chart = {
-    defaultLocale: i18n.language||'en',
-    locales: [enTitles, cnTitles],
-  };
-
-  console.log('....................cnTitles', cnTitles, i18n.language); */
 
   const txtAll = t('fields.all');
 
@@ -206,8 +88,6 @@ const Overview = () => {
           zoom: {
             enabled: false,
           },
-          defaultLocale: i18n.language||'en',
-          locales: [enTitles, cnTitles],
         },
 
         yaxis: {
@@ -231,7 +111,7 @@ const Overview = () => {
       };
       setWeeklyOptions(options);
     }
-  }, [payload, weeklyMode, weeklyMin, enTitles, cnTitles, i18n]);
+  }, [payload, weeklyMode, weeklyMin, i18n]);
 
   useEffect(() => {
     const entry = payload?.records && payload?.records[0];
@@ -287,8 +167,6 @@ const Overview = () => {
           zoom: {
             enabled: false,
           },
-          defaultLocale: i18n.language||'en',
-          locales: [enTitles, cnTitles],
         },
 
         plotOptions: {
@@ -331,7 +209,7 @@ const Overview = () => {
       setStorageOptions(options);
       setStorageSeries(payload);
     }
-  }, [payload, storageClass, enTitles, cnTitles, i18n]);
+  }, [payload, storageClass, i18n]);
 
   useEffect(() => {
     const entry = payload?.records && payload?.records[0];
@@ -372,8 +250,6 @@ const Overview = () => {
           zoom: {
             enabled: false,
           },
-          defaultLocale: i18n.language||'en',
-          locales: [enTitles, cnTitles],
         },
 
         plotOptions: {
@@ -423,7 +299,7 @@ const Overview = () => {
       setFolioOptions(options);
       setFolioSeries(payload);
     }
-  }, [payload, folioClass, enTitles, cnTitles, i18n]);
+  }, [payload, folioClass, i18n]);
 
   useEffect(() => {
     const entry = payload?.records && payload?.records[0];
@@ -442,8 +318,6 @@ const Overview = () => {
           zoom: {
             enabled: false,
           },
-          defaultLocale: i18n.language||'en',
-          locales: [enTitles, cnTitles],
         },
 
         yaxis: {
@@ -477,7 +351,12 @@ const Overview = () => {
       setDailyOptions(options);
       setDailySeries(series);
     }
-  }, [payload, enTitles, cnTitles, i18n]);
+  }, [payload, i18n]);
+
+  const options = {
+    ...locale,
+    defaultLocale: i18n.language || 'en',
+  };
 
   return (
     <div>
@@ -489,7 +368,17 @@ const Overview = () => {
             size="small"
             loading={!payload}
           >
-            <ReactApexChart options={dailyOptions} series={dailySeries} type="line" height={285} />
+            <Chart
+              options={{
+                dailyOptions,
+                chart: {
+                  ...options,
+                },
+              }}
+              series={dailySeries}
+              type="line"
+              height={285}
+            />
           </Card>
         </Col>
 
@@ -515,7 +404,17 @@ const Overview = () => {
               </Select>
             }
           >
-            <ReactApexChart options={storageOptions} series={storageSeries} type="bar" height={285} />
+            <Chart
+              options={{
+                storageOptions,
+                chart: {
+                  ...options,
+                },
+              }}
+              series={storageSeries}
+              type="bar"
+              height={285}
+            />
           </Card>
         </Col>
       </Row>
@@ -544,7 +443,17 @@ const Overview = () => {
               </Select>
             }
           >
-            <ReactApexChart options={folioOptions} series={folioSeries} type="bar" height={285} />
+            <Chart
+              options={{
+                folioOptions,
+                chart: {
+                  ...options,
+                },
+              }}
+              series={folioSeries}
+              type="bar"
+              height={285}
+            />
           </Card>
         </Col>
 
@@ -565,7 +474,17 @@ const Overview = () => {
               </Radio.Group>
             }
           >
-            <ReactApexChart options={weeklyOptions} series={weeklySeries} type="line" height={285} />
+            <Chart
+              options={{
+                weeklyOptions,
+                chart: {
+                  ...options,
+                },
+              }}
+              series={weeklySeries}
+              type="line"
+              height={285}
+            />
           </Card>
         </Col>
       </Row>
