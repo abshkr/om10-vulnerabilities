@@ -2,10 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   EditOutlined,
   PlusOutlined,
-  MinusOutlined,
-  EyeOutlined,
-  CarryOutOutlined,
-  LockOutlined,
+  MinusOutlined
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Button, Form, Select, Drawer, Tooltip, notification } from 'antd';
@@ -155,7 +152,7 @@ const DeliveryDetailItems = ({
     }
 
     const len = (new TextEncoder().encode(input)).length;
-    if ((rule.maxLength != undefined && rule.maxLength != null) && input && len > rule.maxLength) {
+    if ((rule.maxLength !== undefined && rule.maxLength !== null) && input && len > rule.maxLength) {
       errors.push({
         key: String(line) + ':' + rule.code + '_maxlen',
         field: rule.label + ' [' + t('fields.line') + ' ' + line + ']',

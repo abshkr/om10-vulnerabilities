@@ -32,8 +32,8 @@ import {
   SupplyDepot,
   Drawer as DrawerCompany,
   OrderStatus,
-  SoldTo,
-  ShipTo,
+  // SoldTo,
+  // ShipTo,
   TransferType,
   ApproveFlag,
   OrderInstructions,
@@ -48,7 +48,6 @@ import OrderTrips from './order-trips';
 import OrderItemTrips from './item-trips';
 
 import DeliveryDetails from '../../delivery-details';
-import { ItemEffectTime } from '../../movement-nominations/forms/items/nomination-transactions/forms/head-fields';
 import { ManualTransactionsPopup } from '../../manual-transactions';
 
 const TabPane = Tabs.TabPane;

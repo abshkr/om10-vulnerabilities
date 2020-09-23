@@ -31,7 +31,7 @@ const validateNumber = (rule, input) => {
     }
  
     const len = (new TextEncoder().encode(input)).length;
-    if ((rule.maxLength != undefined && rule.maxLength != null) && input && len > rule.maxLength) {
+    if ((rule.maxLength !== undefined && rule.maxLength !== null) && input && len > rule.maxLength) {
       errors.push({
         key: rule.field + '_maxlen',
         field: rule.title,

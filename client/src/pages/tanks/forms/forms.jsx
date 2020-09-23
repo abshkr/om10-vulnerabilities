@@ -5,11 +5,10 @@ import {
   PlusOutlined,
   CloseOutlined,
   RedoOutlined,
-  QuestionCircleOutlined,
-  DeleteOutlined,
+  QuestionCircleOutlined
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal, Radio, Drawer } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import api from 'api';
