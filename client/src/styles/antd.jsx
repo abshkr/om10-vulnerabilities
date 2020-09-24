@@ -342,12 +342,28 @@ const AntdStyleProvider = createGlobalStyle`
   }
 
   .ant-input[disabled] {
-    color: #777777 !important;
+    color: black !important;
     font-weight: 500 !important;
   }
 
   .ant-select-disabled.ant-select-single:not(.ant-select-customize-input) .ant-select-selector {
-    color: #777777 !important;
+    color: black !important;
+    font-weight: 500 !important;
+  }
+
+  .ant-input-number-disabled {
+    color: black !important;
+    font-weight: 500 !important;
+  }
+
+  .ant-picker-input > input[disabled] {
+    color: black !important;
+    font-weight: 500 !important;
+  }
+  
+
+  .ant-radio-button-wrapper-disabled.ant-radio-button-wrapper-checked {
+    color: black !important;
     font-weight: 500 !important;
   }
 

@@ -21,8 +21,8 @@ const Tanks = ({ data, isLoading, handleFormState }) => {
       dataSource={data}
       loading={isLoading}
       renderItem={(item) => (
-        <List.Item>
-          <Tank item={item} handleFormState={handleFormState} />
+        <List.Item onClick={() => handleFormState && handleFormState(true, item)}>
+          <Tank item={item} />
         </List.Item>
       )}
     />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BackTop, Button, Input, Tabs } from 'antd';
+import { BackTop, Button, Input, Tabs, Modal } from 'antd';
 import { UpOutlined, PlusOutlined } from '@ant-design/icons';
 
 import useSWR from 'swr';
@@ -112,6 +112,7 @@ const TankView = () => {
           <TabPane tab={t('tabColumns.tanks')} key="1">
             <Tanks data={tanks} isLoading={isLoading} handleFormState={handleFormState} />
           </TabPane>
+
           <TabPane tab={t('tabColumns.summary')} key="2">
             <Summary data={summary} isLoading={isLoading} />
           </TabPane>

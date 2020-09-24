@@ -9,14 +9,8 @@ import _ from 'lodash';
   5	O	Out Of Service - Offline
 */
 // use status id as index
+
 const statusColourMap = {
-  /* 'In Service - Not used': 'rgba(220,220,220,0.3)',
-  'Out of Service': 'rgba(103,164,236, 0.2)',
-  'In Service - Working': 'rgba(255,255,224,0.9)',
-  'In Service - Loading': 'rgba(148,205,108,0.3)',
-  'In Service - Settling': 'rgba(255,191,0,0.2)',
-  'In Service - Receiving': 'rgba(155,136,233,0.2)',
-  'Out Of Service - Offline': 'rgba(103,164,236,0.2)', */
   '0': 'rgba(220,220,220,0.3)',
   '4': 'rgba(255,255,224,0.9)',
   '3': 'rgba(148,205,108,0.3)',
@@ -33,7 +27,7 @@ function getLevelStatus(level, hhValue, hValue, lValue, llValue, userH, userL) {
       const hh = _.toInteger(hhValue);
 
       if (currentLevel >= hh) {
-        return 'processing';
+        return 'error';
       } else {
         return 'success';
       }
@@ -47,9 +41,9 @@ function getLevelStatus(level, hhValue, hValue, lValue, llValue, userH, userL) {
       const hh = _.toInteger(hhValue);
       const h = _.toInteger(hValue);
       if (currentLevel >= hh) {
-        return 'processing';
+        return 'error';
       } else if (currentLevel >= h) {
-        return 'processing';
+        return 'error';
       } else {
         return 'success';
       }
@@ -63,7 +57,7 @@ function getLevelStatus(level, hhValue, hValue, lValue, llValue, userH, userL) {
       const ll = _.toInteger(llValue);
 
       if (ll >= currentLevel) {
-        return 'processing';
+        return 'error';
       } else {
         return 'success';
       }
@@ -73,13 +67,11 @@ function getLevelStatus(level, hhValue, hValue, lValue, llValue, userH, userL) {
   };
 
   const getL = () => {
-    if (llValue !== '' || lValue !== '') {
-      const ll = _.toInteger(llValue);
+    if (lValue !== '') {
       const l = _.toInteger(lValue);
-      if (ll >= currentLevel) {
-        return 'processing';
-      } else if (l >= currentLevel) {
-        return 'processing';
+
+      if (currentLevel >= l) {
+        return 'error';
       } else {
         return 'success';
       }
@@ -91,8 +83,8 @@ function getLevelStatus(level, hhValue, hValue, lValue, llValue, userH, userL) {
   const getUserL = () => {
     if (userL !== '') {
       const user = _.toInteger(userL);
-      if (currentLevel <= user) {
-        return 'processing';
+      if (currentLevel >= user) {
+        return 'error';
       } else {
         return 'success';
       }
@@ -105,7 +97,7 @@ function getLevelStatus(level, hhValue, hValue, lValue, llValue, userH, userL) {
     if (userH !== '') {
       const user = _.toInteger(userH);
       if (currentLevel >= user) {
-        return 'processing';
+        return 'error';
       } else {
         return 'success';
       }
@@ -160,7 +152,7 @@ function transform(data) {
     const capacity = _.toNumber(tank?.tank_max_level) || 0;
     const level = _.toNumber(tank?.tank_prod_lvl) || 0;
 
-    const percentage = capacity === 0 ? 0 : (level * 100) / capacity;
+    const percentage = _.round(capacity === 0 ? 0 : (level * 100) / capacity, 2);
     const totalCapacity = _.toInteger(tank.tank_ullage) + _.toInteger(tank.tank_amb_vol) || 0;
 
     const baseColour = ['#fff', '', null].includes(tank?.tank_base_color) ? '#cdd6ac' : tank?.tank_base_color;
@@ -190,7 +182,7 @@ function transform(data) {
       capacity,
       totalCapacity,
 
-      critical: Object.values(levelStatus)?.includes('processing'),
+      critical: Object.values(levelStatus)?.includes('error'),
       baseColour,
       levels: {
         values: level,

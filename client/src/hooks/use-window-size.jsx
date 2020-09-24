@@ -1,5 +1,6 @@
 import { useLayoutEffect, useState } from 'react';
 import _ from 'lodash';
+import { useEffect } from 'react';
 
 const useWindowSize = () => {
   const [size, setSize] = useState({
@@ -20,6 +21,17 @@ const useWindowSize = () => {
     _.debounce(updateSize, 1000);
 
     return () => window.removeEventListener('resize', updateSize);
+  }, []);
+
+  useEffect(() => {
+    const updateSize = () => {
+      setSize({
+        height: window.outerHeight,
+        width: window.outerWidth,
+      });
+    };
+
+    updateSize();
   }, []);
 
   return {

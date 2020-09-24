@@ -8,7 +8,7 @@ import { mutate } from 'swr';
 
 import { Tank } from 'components';
 import {
-  Terminal, 
+  Terminal,
   Code,
   Product,
   Name,
@@ -137,47 +137,47 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, 
                 </Descriptions.Item>
 
                 <Descriptions.Item label={t('fields.referenceDensity')} span={24}>
-                  {value?.tank_density} {t('units.kg/m3')}
+                  {value?.tank_density?.toLocaleString('en-AU')} {t('units.kg/m3')}
                 </Descriptions.Item>
 
                 <Descriptions.Item label={t('fields.tankCapacity')} span={24}>
-                  {value?.totalCapacity} {t('units.litres')}
+                  {value?.totalCapacity?.toLocaleString('en-AU')} {t('units.litres')}
                 </Descriptions.Item>
 
                 <Descriptions.Item label={t('fields.tankMaxLevel')} span={24}>
-                  {value?.tank_max_level} {t('units.mm')}
+                  {value?.tank_max_level?.toLocaleString('en-AU')} {t('units.mm')}
                 </Descriptions.Item>
 
                 <Descriptions.Item label={t('fields.level')} span={24}>
-                  {value?.tank_prod_lvl} {t('units.mm')}
+                  {value?.tank_prod_lvl?.toLocaleString('en-AU')} {t('units.mm')}
                 </Descriptions.Item>
 
                 <Descriptions.Item label={t('fields.observedQuantity')} span={24}>
-                  {value?.tank_amb_vol} {t('units.litres')}
+                  {value?.tank_amb_vol?.toLocaleString('en-AU')} {t('units.litres')}
                 </Descriptions.Item>
 
                 <Descriptions.Item label={t('fields.standardQuantity')} span={24}>
-                  {value?.tank_cor_vol} {t('units.litres')}
+                  {value?.tank_cor_vol?.toLocaleString('en-AU')} {t('units.litres')}
                 </Descriptions.Item>
 
                 <Descriptions.Item label={t('fields.weightInAir')} span={24}>
-                  {value?.tank_vapour_kg} {t('units.kg')}
+                  {value?.tank_vapour_kg?.toLocaleString('en-AU')} {t('units.kg')}
                 </Descriptions.Item>
 
                 <Descriptions.Item label={t('fields.ullage')} span={24}>
-                  {value?.tank_ullage} {t('units.litres')}
+                  {value?.tank_ullage?.toLocaleString('en-AU')} {t('units.litres')}
                 </Descriptions.Item>
 
                 <Descriptions.Item label={t('fields.pumpableVolume')} span={24}>
-                  {value?.tank_pump_vol} {t('units.litres')}
+                  {value?.tank_pump_vol?.toLocaleString('en-AU')} {t('units.litres')}
                 </Descriptions.Item>
 
                 <Descriptions.Item label={t('fields.waterLevel')} span={24}>
-                  {value?.tank_water_lvl} {t('units.mm')}
+                  {value?.tank_water_lvl?.toLocaleString('en-AU')} {t('units.mm')}
                 </Descriptions.Item>
 
                 <Descriptions.Item label={t('fields.weightInVacuum')} span={24}>
-                  {value?.tank_liquid_kg} {t('units.kg')}
+                  {value?.tank_liquid_kg?.toLocaleString('en-AU')} {t('units.kg')}
                 </Descriptions.Item>
               </Descriptions>
             </GeneralContainer>
