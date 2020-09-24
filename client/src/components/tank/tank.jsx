@@ -24,11 +24,18 @@ const Tank = React.memo(function Tank({ item }) {
         title={`${item?.code} / ${item?.name}`}
         hoverable
         headStyle={{ paddingRight: 0 }}
-        extra={<Tag>{item?.status?.name}</Tag>}
+        extra={
+          <Tag
+            style={{ color: 'rgb(0,84,164)', borderColor: 'rgb(0,84,164)', fontWeight: '400' }}
+            color={item?.status?.colour}
+          >
+            {item?.status?.name}
+          </Tag>
+        }
         actions={[
           <Tag color={item?.baseColour}>{item?.tank_base_name}</Tag>,
 
-          <Tag icon={<SyncOutlined spin={item?.automatic} />} color={item?.automatic ? 'green' : 'gold'}>
+          <Tag icon={<SyncOutlined spin={item?.automatic} />} color={item?.automatic ? 'green' : ''}>
             Gauging: {item?.automatic ? 'Automatic' : 'Manual'}
           </Tag>,
         ]}
