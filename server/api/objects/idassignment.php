@@ -789,6 +789,10 @@ class IDAssignment extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
+        if (isset($this->kya_txt)) {
+            $this->kya_txt = strtoupper($this->kya_txt);
+        }
+        
         $query = "
             UPDATE ACCESS_KEYS
             SET KYA_PHYS_TYPE = :kya_phys_type,
