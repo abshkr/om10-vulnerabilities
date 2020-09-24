@@ -14,6 +14,7 @@ export const TankContainer = styled.div`
     justify-content: center !important;
     height: 300px;
     width: 100%;
+    transition: 0.5s all;
     background: ${(props) => (props?.critical ? 'rgba(236,110,104, 0.3)' : props?.status?.colour)};
   }
 `;
@@ -74,4 +75,24 @@ export const TankVolume = styled.div`
   transform: translate(-50%, -50%);
   z-index: 10;
   font-weight: bold;
+`;
+
+export const TankIndicator = styled.div`
+  height: 8px;
+  width: 8px;
+  border-radius: 8px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  transition: 0.5s all;
+
+  background-color: ${(props) => (props?.status === 'success' ? '#50c878' : '#c85064')};
+`;
+
+export const IndicatorContainer = styled.div`
+  display: flex;
+  align-items: center;
+
+  span {
+    margin-left: 4px;
+  }
 `;
