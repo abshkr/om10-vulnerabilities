@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import _ from 'lodash';
+// import _ from 'lodash';
 // import { useTranslation } from 'react-i18next';
 
 export default class TemperatureRender extends Component {
@@ -17,7 +17,7 @@ export default class TemperatureRender extends Component {
   }
 
   render() {
-    const { form, values } = this.props;
+    // const { form, values } = this.props;
     // const { t } = useTranslation();
 
     return (

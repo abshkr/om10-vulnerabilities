@@ -6,7 +6,7 @@ import _ from 'lodash';
 
 import { REPORT_PROFILE } from '../../../../api';
 
-const options = [
+/* const options = [
   {
     key: 'None',
     value: 'N'
@@ -23,11 +23,12 @@ const options = [
     key: 'Monthly',
     value: 'M'
   }
-];
+]; */
 
 const Type = ({ form, value, source }) => {
   const { t } = useTranslation();
   const { data } = useSWR(REPORT_PROFILE.READ);
+  const { data: options, isValidating } = useSWR(REPORT_PROFILE.TYPES);
 
   const { setFieldsValue } = form;
 
@@ -67,6 +68,7 @@ const Type = ({ form, value, source }) => {
     <Form.Item name="report_type" label={t('fields.type')} rules={[{ required: true, validator: validate }]}>
       <Select
         dropdownMatchSelectWidth={false}
+        loading={isValidating}
         disabled={!!value}
         showSearch
         optionFilterProp="children"
@@ -75,9 +77,9 @@ const Type = ({ form, value, source }) => {
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
-        {options.map(item => (
-          <Select.Option key={item.value} value={item.value}>
-            {item.key}
+        {options?.records.map(item => (
+          <Select.Option key={item.report_type_code} value={item.report_type_code}>
+            {item.report_type_name}
           </Select.Option>
         ))}
       </Select>

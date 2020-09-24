@@ -29,7 +29,7 @@ const TabPane = Tabs.TabPane;
 const FormModal = ({ value, visible, handleFormState, access, url, locateSpecialMv, config }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
-  const { resetFields, setFieldsValue } = form;
+  const { resetFields, getFieldsValue, setFieldsValue } = form;
 
   const [type, setType] = useState(null);
   const [tab, setTab] = useState('1');
@@ -220,7 +220,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
   };
 
   const onCalculate = () => {
-    const { getFieldsValue } = form;
+    // const { getFieldsValue } = form;
 
     const payload = getFieldsValue([
       'mlitm_qty_amb',
@@ -324,7 +324,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
               frm_real_dens: values.mlitm_dens_cor,
             })
             .then((response) => {
-              form.setFieldsValue({
+              setFieldsValue({
                 mlitm_qty_amb: response?.data?.real_litre,
                 mlitm_qty_cor: response?.data?.real_litre15,
                 mlitm_qty_kg: response?.data?.real_kg,
@@ -494,7 +494,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
     if (!value && !visible) {
       resetFields();
     }
-  }, [value, visible]);
+  }, [value, visible, resetFields]);
 
   return (
     <Drawer

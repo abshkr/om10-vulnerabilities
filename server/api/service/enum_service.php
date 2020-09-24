@@ -247,6 +247,27 @@ class EnumService
         }
     }
 
+    public function report_profile_types()
+    {
+        $query = "
+			select 
+				ALLOC_PERIOD_ID												as REPORT_TYPE_ID
+				, DECODE(ALLOC_PERIOD_ID, 1, 'D', 2, 'W', 4, 'M', 'N')   	as REPORT_TYPE_CODE 
+				, DECODE(ALLOC_PERIOD_ID, 0, ' ', ALLOC_PERIOD_NAME) 		as REPORT_TYPE_NAME
+			from ALLOC_PERIOD_TYP 
+            where ALLOC_PERIOD_ID in (0,1,2,4)
+        ";
+        // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function partner_types()
     {
         $query = "

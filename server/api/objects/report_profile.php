@@ -3,6 +3,7 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once __DIR__ . '/../service/enum_service.php';
 include_once 'common_class.php';
 
 class ReportProfile extends CommonClass
@@ -49,6 +50,12 @@ class ReportProfile extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    public function report_profile_types()
+    {
+        $serv = new EnumService($this->conn);
+        return $serv->report_profile_types();
     }
 
     public function jasper_files()

@@ -1298,7 +1298,7 @@
 		"reportFrontendFlag": "前台管理？",
 		"reportCloseoutBy": "盘点报表时段类型",
 		"reportCloseoutByDaterange": "日期时段 [开始/结束日期]",
-		"reportCloseoutByFoliorange": "Folio时段 [开始/结束Folio号]",
+		"reportCloseoutByFoliorange": "预盘时段 [开始/结束预盘号]",
 		"reportOutput": "报表输出",
 		"reports": "报表",
 		"requireWholeLoadToBeCompliant": "要求整个提单都符合标准",

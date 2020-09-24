@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined } from '@ant-design/icons';
 
 export default class TrueRenderer extends Component {
   render() {

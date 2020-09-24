@@ -9,11 +9,11 @@ const CloseOutReportBy = ({ form, value }) => {
 
   const options = [
     {
-      key: 'Date Range [Start/End Date]',
+      key: t('fields.reportCloseoutByDaterange'), // 'Date Range [Start/End Date]',
       value: false
     },
     {
-      key: 'Folio Range [Start/End Folio Number]',
+      key: t('fields.reportCloseoutByFoliorange'), // 'Folio Range [Start/End Folio Number]',
       value: true
     }
   ];

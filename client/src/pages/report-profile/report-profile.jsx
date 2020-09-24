@@ -24,7 +24,7 @@ const ReportProfile = () => {
   const { data: payload, isValidating, revalidate } = useSWR(REPORT_PROFILE.READ);
 
   const fields = columns(t);
-  const data = transfrom(payload?.records);
+  const data = transfrom(payload?.records, t);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
