@@ -135,47 +135,47 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate }
                 </Descriptions.Item>
 
                 <Descriptions.Item label="Reference Density" span={24}>
-                  {value?.tank_density} Kg / m³
+                  {value?.tank_density?.toLocaleString('en-AU')} Kg / m³
                 </Descriptions.Item>
 
                 <Descriptions.Item label="Tank Capacity" span={24}>
-                  {value?.totalCapacity} Litres
+                  {value?.totalCapacity?.toLocaleString('en-AU')} Litres
                 </Descriptions.Item>
 
                 <Descriptions.Item label="Tank Max Level" span={24}>
-                  {value?.tank_max_level} mm
+                  {value?.tank_max_level?.toLocaleString('en-AU')} mm
                 </Descriptions.Item>
 
                 <Descriptions.Item label="Level" span={24}>
-                  {value?.tank_prod_lvl} mm
+                  {value?.tank_prod_lvl?.toLocaleString('en-AU')} mm
                 </Descriptions.Item>
 
                 <Descriptions.Item label="Observed Quantity" span={24}>
-                  {value?.tank_amb_vol} Litres
+                  {value?.tank_amb_vol?.toLocaleString('en-AU')} Litres
                 </Descriptions.Item>
 
                 <Descriptions.Item label="Standard Quantity" span={24}>
-                  {value?.tank_cor_vol} Litres
+                  {value?.tank_cor_vol?.toLocaleString('en-AU')} Litres
                 </Descriptions.Item>
 
                 <Descriptions.Item label="Weight in Air" span={24}>
-                  {value?.tank_vapour_kg} T
+                  {value?.tank_vapour_kg?.toLocaleString('en-AU')} T
                 </Descriptions.Item>
 
                 <Descriptions.Item label="Ullage" span={24}>
-                  {value?.tank_ullage} Litres
+                  {value?.tank_ullage?.toLocaleString('en-AU')} Litres
                 </Descriptions.Item>
 
                 <Descriptions.Item label="Pumpable Volume" span={24}>
-                  {value?.tank_pump_vol} T
+                  {value?.tank_pump_vol?.toLocaleString('en-AU')} T
                 </Descriptions.Item>
 
                 <Descriptions.Item label="Water Level" span={24}>
-                  {value?.tank_water_lvl} mm
+                  {value?.tank_water_lvl?.toLocaleString('en-AU')} mm
                 </Descriptions.Item>
 
                 <Descriptions.Item label="Water Volume" span={24}>
-                  {value?.tank_liquid_kg} Kg
+                  {value?.tank_liquid_kg?.toLocaleString('en-AU')} Kg
                 </Descriptions.Item>
               </Descriptions>
             </GeneralContainer>

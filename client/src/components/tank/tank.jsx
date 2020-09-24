@@ -11,6 +11,7 @@ import {
   TankVolume,
   TankIndicator,
   IndicatorContainer,
+  TankLevel,
 } from './style';
 import Image from './img.png';
 
@@ -83,6 +84,7 @@ const Tank = React.memo(function Tank({ item }) {
         </TankIndicators>
 
         <TankVolume>{item?.percentage}%</TankVolume>
+        <TankLevel>{item?.tank_prod_lvl?.toLocaleString('en-AU')} mm</TankLevel>
       </Card>
     </TankContainer>
   );

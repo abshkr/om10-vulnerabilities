@@ -77,6 +77,14 @@ export const TankVolume = styled.div`
   font-weight: bold;
 `;
 
+export const TankLevel = styled.div`
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+`;
+
 export const TankIndicator = styled.div`
   height: 8px;
   width: 8px;
