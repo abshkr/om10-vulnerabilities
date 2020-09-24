@@ -18,9 +18,10 @@ const Dates = ({ form, value, expiry }) => {
 
   useEffect(() => {
     if (value) {
+      console.log('...................trip exp date', value);
       setFieldsValue({
-        shls_caldate: '' ? null : moment(value.shls_caldate, SETTINGS.DATE_TIME_FORMAT),
-        shls_exp2: '' ? null : moment(value.shls_exp2, SETTINGS.DATE_TIME_FORMAT),
+        shls_caldate: value.shls_caldate === '' ? null : moment(value.shls_caldate, SETTINGS.DATE_TIME_FORMAT),
+        shls_exp2: value.shls_exp2 === '' ? null : moment(value.shls_exp2, SETTINGS.DATE_TIME_FORMAT),
       });
     }
   }, [value, setFieldsValue]);
