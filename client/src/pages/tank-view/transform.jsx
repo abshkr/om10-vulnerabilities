@@ -9,14 +9,8 @@ import _ from 'lodash';
   5	O	Out Of Service - Offline
 */
 // use status id as index
+
 const statusColourMap = {
-  /* 'In Service - Not used': 'rgba(220,220,220,0.3)',
-  'Out of Service': 'rgba(103,164,236, 0.2)',
-  'In Service - Working': 'rgba(255,255,224,0.9)',
-  'In Service - Loading': 'rgba(148,205,108,0.3)',
-  'In Service - Settling': 'rgba(255,191,0,0.2)',
-  'In Service - Receiving': 'rgba(155,136,233,0.2)',
-  'Out Of Service - Offline': 'rgba(103,164,236,0.2)', */
   '0': 'rgba(220,220,220,0.3)',
   '4': 'rgba(255,255,224,0.9)',
   '3': 'rgba(148,205,108,0.3)',

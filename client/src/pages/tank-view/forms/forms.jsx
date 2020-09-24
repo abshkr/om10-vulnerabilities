@@ -136,48 +136,48 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, 
                   {value?.tank_temp} {t('units.degC')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Reference Density" span={24}>
-                  {value?.tank_density?.toLocaleString('en-AU')} Kg / m³
+                <Descriptions.Item label={t('fields.referenceDensity')} span={24}>
+                  {value?.tank_density?.toLocaleString('en-AU')} {t('units.kg/m3')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Tank Capacity" span={24}>
-                  {value?.totalCapacity?.toLocaleString('en-AU')} Litres
+                <Descriptions.Item label={t('fields.tankCapacity')} span={24}>
+                  {value?.totalCapacity?.toLocaleString('en-AU')} {t('units.litres')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Tank Max Level" span={24}>
-                  {value?.tank_max_level?.toLocaleString('en-AU')} mm
+                <Descriptions.Item label={t('fields.tankMaxLevel')} span={24}>
+                  {value?.tank_max_level?.toLocaleString('en-AU')} {t('units.mm')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Level" span={24}>
-                  {value?.tank_prod_lvl?.toLocaleString('en-AU')} mm
+                <Descriptions.Item label={t('fields.level')} span={24}>
+                  {value?.tank_prod_lvl?.toLocaleString('en-AU')} {t('units.mm')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Observed Quantity" span={24}>
-                  {value?.tank_amb_vol?.toLocaleString('en-AU')} Litres
+                <Descriptions.Item label={t('fields.observedQuantity')} span={24}>
+                  {value?.tank_amb_vol?.toLocaleString('en-AU')} {t('units.litres')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Standard Quantity" span={24}>
-                  {value?.tank_cor_vol?.toLocaleString('en-AU')} Litres
+                <Descriptions.Item label={t('fields.standardQuantity')} span={24}>
+                  {value?.tank_cor_vol?.toLocaleString('en-AU')} {t('units.litres')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Weight in Air" span={24}>
-                  {value?.tank_vapour_kg?.toLocaleString('en-AU')} T
+                <Descriptions.Item label={t('fields.weightInAir')} span={24}>
+                  {value?.tank_vapour_kg?.toLocaleString('en-AU')} {t('units.kg')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Ullage" span={24}>
-                  {value?.tank_ullage?.toLocaleString('en-AU')} Litres
+                <Descriptions.Item label={t('fields.ullage')} span={24}>
+                  {value?.tank_ullage?.toLocaleString('en-AU')} {t('units.litres')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Pumpable Volume" span={24}>
-                  {value?.tank_pump_vol?.toLocaleString('en-AU')} T
+                <Descriptions.Item label={t('fields.pumpableVolume')} span={24}>
+                  {value?.tank_pump_vol?.toLocaleString('en-AU')} {t('units.litres')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Water Level" span={24}>
-                  {value?.tank_water_lvl?.toLocaleString('en-AU')} mm
+                <Descriptions.Item label={t('fields.waterLevel')} span={24}>
+                  {value?.tank_water_lvl?.toLocaleString('en-AU')} {t('units.mm')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Water Volume" span={24}>
-                  {value?.tank_liquid_kg?.toLocaleString('en-AU')} Kg
+                <Descriptions.Item label={t('fields.weightInVacuum')} span={24}>
+                  {value?.tank_liquid_kg?.toLocaleString('en-AU')} {t('units.kg')}
                 </Descriptions.Item>
               </Descriptions>
             </GeneralContainer>

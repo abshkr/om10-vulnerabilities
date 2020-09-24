@@ -19,6 +19,8 @@ import Image from './img.png';
 import config from './config';
 
 const Tank = React.memo(function Tank({ item }) {
+  const { t } = useTranslation();
+
   return (
     <TankContainer critical={item?.critical} status={item?.status}>
       <Card
@@ -38,7 +40,8 @@ const Tank = React.memo(function Tank({ item }) {
           <Tag color={item?.baseColour}>{item?.tank_base_name}</Tag>,
 
           <Tag icon={<SyncOutlined spin={item?.automatic} />} color={item?.automatic ? 'green' : ''}>
-            Gauging: {item?.automatic ? 'Automatic' : 'Manual'}
+            {t('fields.gaugingMethod')}:{' '}
+            {item?.automatic ? t('fields.gaugingAuto') : t('fields.gaugingManual')}
           </Tag>,
         ]}
       >
