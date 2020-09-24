@@ -2,6 +2,7 @@ import React from 'react';
 import { SyncOutlined } from '@ant-design/icons';
 import { Card, Tag } from 'antd';
 import { Bar } from 'react-chartjs-2';
+import { useTranslation } from 'react-i18next';
 
 import {
   TankContainer,

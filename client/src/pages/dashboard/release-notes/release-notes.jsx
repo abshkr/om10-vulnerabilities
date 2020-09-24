@@ -8,27 +8,11 @@ const { Panel } = Collapse;
 
 const data = [
   {
-    title: `Release Notes (10.1.10-rc.2) - 22/09/2020`,
+    title: `Release Notes (10.1.10) - 23/09/2020`,
     content: (
       <>
         <>
           <p>OM5K-7809 - <a>https://dev.diamondkey.com/browse/OM5K-7809</a></p>
-          <p>OM5K-7706 - <a>https://dev.diamondkey.com/browse/OM5K-7706</a></p>
-          <p>OM5K-7782 - <a>https://dev.diamondkey.com/browse/OM5K-7782</a></p>
-          <p>OM5K-7787 - <a>https://dev.diamondkey.com/browse/OM5K-7787</a></p>
-          <p>OM5K-7788 - <a>https://dev.diamondkey.com/browse/OM5K-7788</a></p>
-          <p>OM5K-7803 - <a>https://dev.diamondkey.com/browse/OM5K-7803</a></p>
-          <p>OM5K-7673 - <a>https://dev.diamondkey.com/browse/OM5K-7673</a></p>
-          <p>OM5K-7705 - <a>https://dev.diamondkey.com/browse/OM5K-7705</a></p>
-          <p>OM5K-7675 - <a>https://dev.diamondkey.com/browse/OM5K-7675</a></p>
-        </>
-      </>
-    ),
-  },{
-    title: `Release Notes (10.1.10-rc.1) - 21/09/2020`,
-    content: (
-      <>
-        <>
           <p>OM5K-7433 - <a>https://dev.diamondkey.com/browse/OM5K-7433</a></p>
           <p>OM5K-7636 - <a>https://dev.diamondkey.com/browse/OM5K-7636</a></p>
           <p>OM5K-7638 - <a>https://dev.diamondkey.com/browse/OM5K-7638</a></p>
@@ -40,6 +24,7 @@ const data = [
           <p>OM5K-7571 - <a>https://dev.diamondkey.com/browse/OM5K-7571</a></p>
           <p>OM5K-7691 - <a>https://dev.diamondkey.com/browse/OM5K-7691</a></p>
           <p>OM5K-7697 - <a>https://dev.diamondkey.com/browse/OM5K-7697</a></p>
+          <p>OM5K-7706 - <a>https://dev.diamondkey.com/browse/OM5K-7706</a></p>
           <p>OM5K-7719 - <a>https://dev.diamondkey.com/browse/OM5K-7719</a></p>
           <p>OM5K-7734 - <a>https://dev.diamondkey.com/browse/OM5K-7734</a></p>
           <p>OM5K-7753 - <a>https://dev.diamondkey.com/browse/OM5K-7753</a></p>
@@ -52,12 +37,20 @@ const data = [
           <p>OM5K-7775 - <a>https://dev.diamondkey.com/browse/OM5K-7775</a></p>
           <p>OM5K-7776 - <a>https://dev.diamondkey.com/browse/OM5K-7776</a></p>
           <p>OM5K-7778 - <a>https://dev.diamondkey.com/browse/OM5K-7778</a></p>
+          <p>OM5K-7779 - <a>https://dev.diamondkey.com/browse/OM5K-7779</a></p>
+          <p>OM5K-7782 - <a>https://dev.diamondkey.com/browse/OM5K-7782</a></p>
           <p>OM5K-7786 - <a>https://dev.diamondkey.com/browse/OM5K-7786</a></p>
+          <p>OM5K-7787 - <a>https://dev.diamondkey.com/browse/OM5K-7787</a></p>
+          <p>OM5K-7788 - <a>https://dev.diamondkey.com/browse/OM5K-7788</a></p>
           <p>OM5K-7793 - <a>https://dev.diamondkey.com/browse/OM5K-7793</a></p>
+          <p>OM5K-7803 - <a>https://dev.diamondkey.com/browse/OM5K-7803</a></p>
+          <p>OM5K-7804 - <a>https://dev.diamondkey.com/browse/OM5K-7804</a></p>
           <p>OM5K-6974 - <a>https://dev.diamondkey.com/browse/OM5K-6974</a></p>
           <p>OM5K-7273 - <a>https://dev.diamondkey.com/browse/OM5K-7273</a></p>
           <p>OM5K-7667 - <a>https://dev.diamondkey.com/browse/OM5K-7667</a></p>
+          <p>OM5K-7673 - <a>https://dev.diamondkey.com/browse/OM5K-7673</a></p>
           <p>OM5K-7693 - <a>https://dev.diamondkey.com/browse/OM5K-7693</a></p>
+          <p>OM5K-7705 - <a>https://dev.diamondkey.com/browse/OM5K-7705</a></p>
           <p>OM5K-7718 - <a>https://dev.diamondkey.com/browse/OM5K-7718</a></p>
           <p>OM5K-7722 - <a>https://dev.diamondkey.com/browse/OM5K-7722</a></p>
           <p>OM5K-7730 - <a>https://dev.diamondkey.com/browse/OM5K-7730</a></p>
@@ -67,6 +60,7 @@ const data = [
           <p>OM5K-7769 - <a>https://dev.diamondkey.com/browse/OM5K-7769</a></p>
           <p>OM5K-7802 - <a>https://dev.diamondkey.com/browse/OM5K-7802</a></p>
           <p>OM5K-6853 - <a>https://dev.diamondkey.com/browse/OM5K-6853</a></p>
+          <p>OM5K-7675 - <a>https://dev.diamondkey.com/browse/OM5K-7675</a></p>
         </>
       </>
     ),

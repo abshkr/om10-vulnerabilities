@@ -6,7 +6,7 @@ const ProductName = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
-  const IS_CREATE = !value
+  // const IS_CREATE = !value
 
   const validate = (rule, input) => {
     if (input === '' || !input) {

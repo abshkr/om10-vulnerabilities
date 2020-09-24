@@ -6,7 +6,7 @@ const ProductCode = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
-  const IS_CREATE = !value
+  // const IS_CREATE = !value
 
   useEffect(() => {
     if (value) {

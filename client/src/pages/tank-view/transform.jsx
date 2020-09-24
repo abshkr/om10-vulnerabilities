@@ -1,13 +1,28 @@
 import _ from 'lodash';
 
+/*
+  0	N	In Service - Not used
+  1	R	In Service - Receiving
+  2	S	In Service - Settling
+  3	L	In Service - Loading
+  4	W	In Service - Working
+  5	O	Out Of Service - Offline
+*/
+// use status id as index
 const statusColourMap = {
-  'In Service - Not used': 'rgba(220,220,220,0.3)',
+  /* 'In Service - Not used': 'rgba(220,220,220,0.3)',
   'Out of Service': 'rgba(103,164,236, 0.2)',
   'In Service - Working': 'rgba(255,255,224,0.9)',
   'In Service - Loading': 'rgba(148,205,108,0.3)',
   'In Service - Settling': 'rgba(255,191,0,0.2)',
   'In Service - Receiving': 'rgba(155,136,233,0.2)',
-  'Out Of Service - Offline': 'rgba(103,164,236,0.2)',
+  'Out Of Service - Offline': 'rgba(103,164,236,0.2)', */
+  '0': 'rgba(220,220,220,0.3)',
+  '4': 'rgba(255,255,224,0.9)',
+  '3': 'rgba(148,205,108,0.3)',
+  '2': 'rgba(255,191,0,0.2)',
+  '1': 'rgba(155,136,233,0.2)',
+  '5': 'rgba(103,164,236,0.2)',
 };
 
 function getLevelStatus(level, hhValue, hValue, lValue, llValue, userH, userL) {
@@ -147,7 +162,7 @@ function transform(data) {
     const totalCapacity = _.toInteger(tank.tank_ullage) + _.toInteger(tank.tank_amb_vol) || 0;
 
     const baseColour = ['#fff', '', null].includes(tank?.tank_base_color) ? '#cdd6ac' : tank?.tank_base_color;
-    const statusColour = statusColourMap[tank?.tank_status_name];
+    const statusColour = statusColourMap[String(tank?.tank_status)];
 
     const levelStatus = getLevelStatus(
       tank?.tank_prod_lvl || '',

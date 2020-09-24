@@ -85,7 +85,7 @@ const From = ({
           setLoading(false);
         });
     },
-    [setFieldsValue]
+    [setProduct, setFieldsValue]
   );
 
   const onSupplierChange = value => {

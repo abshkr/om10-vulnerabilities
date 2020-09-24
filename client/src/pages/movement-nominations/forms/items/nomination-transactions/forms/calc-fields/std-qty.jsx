@@ -31,7 +31,7 @@ const StdQty = ({ form, value, onChange, setValue, pageState, config }) => {
       onChange({ qty: value.mlitm_qty_cor, type: 'L15', title: t('fields.nomtranStdQty') });
       setValue(value.mlitm_qty_cor);
     }
-  }, [value, setFieldsValue, onChange, setValue]);
+  }, [value, t, setFieldsValue, onChange, setValue]);
 
   const handleFieldChange = (value) => {
     onChange({ qty: value, type: 'L15', title: t('fields.nomtranStdQty') });

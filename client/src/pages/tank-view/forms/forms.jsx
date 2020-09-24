@@ -8,6 +8,7 @@ import { mutate } from 'swr';
 
 import { Tank } from 'components';
 import {
+  Terminal,
   Code,
   Product,
   Name,
@@ -21,10 +22,11 @@ import {
 import { GeneralContainer } from '../style';
 
 import api, { TANKS } from '../../../api';
+import { ConfigConsumer } from 'antd/lib/config-provider';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, handleRevalidate }) => {
+const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, config }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -122,16 +124,16 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate }
               </div>
 
               <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 10 }}>
-                <Descriptions.Item label="Product" span={2}>
+                <Descriptions.Item label={t('fields.product')} span={2}>
                   {value?.tank_base_name}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Product Code" span={2}>
+                <Descriptions.Item label={t('fields.productCode')} span={2}>
                   {value?.tank_base}
                 </Descriptions.Item>
 
-                <Descriptions.Item label="Observed Temperature" span={12}>
-                  {value?.tank_temp} °C
+                <Descriptions.Item label={t('fields.observedTemperature')} span={12}>
+                  {value?.tank_temp} {t('units.degC')}
                 </Descriptions.Item>
 
                 <Descriptions.Item label="Reference Density" span={24}>
@@ -181,8 +183,9 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate }
             </GeneralContainer>
           </TabPane>
 
-          <TabPane tab={t('tabColumns.configuration')} key="2" forceRender>
-            <Code form={form} value={value} config={null} />
+          <TabPane tab={t('tabColumns.tankConfiguration')} key="2" forceRender>
+            <Terminal form={form} value={value} />
+            <Code form={form} value={value} config={ConfigConsumer} />
             <Name form={form} value={value} />
             <Product form={form} value={value} onChange={setProduct} />
             <Density form={form} value={value} product={product} />

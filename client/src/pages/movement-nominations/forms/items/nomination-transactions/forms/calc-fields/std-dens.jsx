@@ -89,12 +89,12 @@ const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
     
     // console.log('validateFields([mlitm_dens_cor]);222');
     validateFields(['mlitm_dens_cor']);
-}, [tank, arm, setFieldsValue, setMinDens, setMaxDens, validateFields]);
+}, [tank, arm, config, setFieldsValue, setMinDens, setMaxDens, validateFields]);
 
   return (
     <Form.Item
       name="mlitm_dens_cor"
-      label={t('fields.nomtranStdDens') + '[' + String(minDens) + ' ~ ' + String(maxDens) + ']' + '(' + t('fields.nomtranStdDensUnit') + ')'}
+      label={t('fields.nomtranStdDens') + '[' + String(minDens) + ' ~ ' + String(maxDens) + '](' + t('fields.nomtranStdDensUnit') + ')'}
       // rules={[{ required: false, validator: validate }]}
       rules={[{ 
         required: false,

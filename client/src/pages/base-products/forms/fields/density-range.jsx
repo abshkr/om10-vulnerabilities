@@ -27,7 +27,7 @@ const DensityRange = ({ form, value, classification, config }) => {
         base_dens_hi: _.round(_.toNumber(classification?.bclass_dens_hi), config.precisionDensity),
       });
     }
-  }, [setFieldsValue, classification]);
+  }, [value, classification, config, setFieldsValue]);
 
   const low = classification ? _.round(_.toNumber(classification?.bclass_dens_lo), config.precisionDensity) : '';
   const high = classification ? _.round(_.toNumber(classification?.bclass_dens_hi), config.precisionDensity) : '';

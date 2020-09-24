@@ -296,7 +296,7 @@ const FormModal = ({
           {!IS_CREATING && (
             <Button
               type="primary"
-              // icon={<FormOutlined />}
+              icon={<FormOutlined />}
               style={{ float: 'left' }}
               loading={isValidating}
               onClick={() => specialActions()}
@@ -309,7 +309,7 @@ const FormModal = ({
           {!IS_CREATING && (
             <Button
               type="primary"
-              // icon={<ApiOutlined />}
+              icon={<ApiOutlined />}
               style={{ float: 'left', marginLeft: 5 }}
               loading={isValidating}
               onClick={() => companyRelations()}
