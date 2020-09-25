@@ -88,7 +88,7 @@ const Tank = React.memo(function Tank({ item }) {
         </TankIndicators>
 
         <TankVolume>{item?.percentage}%</TankVolume>
-        <TankLevel>{item?.tank_prod_lvl?.toLocaleString('en-AU')} mm</TankLevel>
+        <TankLevel>{item?.tank_prod_lvl?.toLocaleString('en-AU')||'0'} {t('units.mm')}</TankLevel>
       </Card>
     </TankContainer>
   );
