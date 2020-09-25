@@ -9,7 +9,16 @@ const HostData = ({ form, value }) => {
 
   const { setFieldsValue } = form;
 
-  const IS_DISABLED = !value ? false : value?.shls_status !== 'NEW SCHEDULE';
+  /*
+    1	F	NEW SCHEDULE
+    2	S	SPECED
+    3	A	ACTIVE
+    4	L	LOADING
+    5	E	ENDED
+    6	D	DELIVERED OK
+  */
+  const IS_DISABLED = !value ? false : value?.status !== 'F';
+  // const IS_DISABLED = !value ? false : value?.shls_status !== 'NEW SCHEDULE';
 
   const validate = (rule, input) => {
     const regex = new RegExp(REGEX.ALPHANUMERIC);

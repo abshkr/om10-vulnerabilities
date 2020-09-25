@@ -13,7 +13,16 @@ const SoldTo = ({ form, value, mode }) => {
 
   const { data: options, isValidating } = useSWR(LOAD_SCHEDULES.SOLD_TO);
 
-  const IS_DISABLED = mode === '2' || (value && value.shls_status !== 'NEW SCHEDULE');
+  /*
+    1	F	NEW SCHEDULE
+    2	S	SPECED
+    3	A	ACTIVE
+    4	L	LOADING
+    5	E	ENDED
+    6	D	DELIVERED OK
+  */
+  const IS_DISABLED = mode === '2' || (value && value.status !== 'F');
+  // const IS_DISABLED = mode === '2' || (value && value.shls_status !== 'NEW SCHEDULE');
 
   useEffect(() => {
     if (value) {

@@ -15,7 +15,16 @@ const Tanker = ({ form, value, carrier, onChange }) => {
     `${LOAD_SCHEDULES.TANKERS_BY_CARRIER}?tnkr_carrier=${carrier}`
   );
 
-  const IS_DISABLED = !value ? false : (value?.shls_status !== 'NEW SCHEDULE' || value?.shls_ld_type === '2');
+  /*
+    1	F	NEW SCHEDULE
+    2	S	SPECED
+    3	A	ACTIVE
+    4	L	LOADING
+    5	E	ENDED
+    6	D	DELIVERED OK
+  */
+  const IS_DISABLED = !value ? false : (value?.status !== 'F' || value?.shls_ld_type === '2');
+  // const IS_DISABLED = !value ? false : (value?.shls_status !== 'NEW SCHEDULE' || value?.shls_ld_type === '2');
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
