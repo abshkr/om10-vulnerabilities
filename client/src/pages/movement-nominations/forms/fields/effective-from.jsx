@@ -27,6 +27,10 @@ const EffectiveFrom = ({ form, value }) => {
     return Promise.resolve();
   };
 
+  const onChange = () => {
+    form.validateFields(['mv_dtim_effect', 'mv_dtim_expiry']);
+  };
+
   useEffect(() => {
     if (value) {
       setFieldsValue({
@@ -47,7 +51,7 @@ const EffectiveFrom = ({ form, value }) => {
       label={t('fields.effectiveFrom')}
       rules={[{ required: false, validator: validate }]}
     >
-      <DatePicker showTime style={{ width: '100%' }} />
+      <DatePicker showTime style={{ width: '100%' }} onChange={onChange} />
     </Form.Item>
   );
 };
