@@ -241,7 +241,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
     const values = {
       ...record,
       shls_caldate: record?.shls_caldate?.format(SETTINGS.DATE_TIME_FORMAT),
-      shls_exp2: record?.shls_exp2?.format(SETTINGS.DATE_TIME_FORMAT),
+      shls_exp2: !record?.shls_exp2? '' : record?.shls_exp2?.format(SETTINGS.DATE_TIME_FORMAT),
     };
 
     Modal.confirm({
