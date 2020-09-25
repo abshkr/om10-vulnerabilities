@@ -15,13 +15,18 @@ const Dates = ({ form, value, expiry }) => {
 
   const IS_DISABLED = !value ? false : value?.shls_status !== 'NEW SCHEDULE';
   const FORMAT = getDateTimeFormat();
+  const NEED_EXPIRY = expiry !== null && expiry !== undefined && expiry !== '' && _.toNumber(expiry) > 0;
 
   useEffect(() => {
     if (value) {
       console.log('...................trip exp date', value);
+      // const baseDate = moment();
+      const baseDate = value.shls_caldate === '' ? moment() : moment(value.shls_caldate, SETTINGS.DATE_TIME_FORMAT);
       setFieldsValue({
         shls_caldate: value.shls_caldate === '' ? null : moment(value.shls_caldate, SETTINGS.DATE_TIME_FORMAT),
-        shls_exp2: value.shls_exp2 === '' ? null : moment(value.shls_exp2, SETTINGS.DATE_TIME_FORMAT),
+        shls_exp2: value.shls_exp2 === '' 
+          ? (!NEED_EXPIRY ? null : baseDate.add(_.toNumber(expiry), 'hours')) 
+          : moment(value.shls_exp2, SETTINGS.DATE_TIME_FORMAT),
       });
     }
   }, [value, setFieldsValue]);
@@ -35,7 +40,7 @@ const Dates = ({ form, value, expiry }) => {
       </Col>
 
       <Col span={6}>
-        {(expiry !== null && expiry !== undefined && expiry !== '' && _.toNumber(expiry) > 0) && (
+        {NEED_EXPIRY && (
           <Form.Item name="shls_exp2" label={t('fields.expiryDate')}>
             <DatePicker disabled={IS_DISABLED} showTime format={FORMAT} style={{ width: '100%' }} />
           </Form.Item>
