@@ -1873,7 +1873,7 @@
 		"stockManagement": "油品库存管理",
 		"stockReconciliation": "油品库存调整管理",
 		"tankConfiguration": "油罐配置管理",
-		"tankGroups": "油品组合管理",
+		"tankGroups": "油罐组合管理",
 		"tankInventory": "油罐存油量查看",
 		"tankStatus": "油罐状态查看",
 		"tankStrapping": "油罐校正容积管理",
