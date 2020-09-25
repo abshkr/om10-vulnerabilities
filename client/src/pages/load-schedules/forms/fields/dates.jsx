@@ -62,6 +62,10 @@ const Dates = ({ form, value, expiry }) => {
     return Promise.resolve();
   };
 
+  const onChange = () => {
+    form.validateFields(['shls_caldate', 'shls_exp2']);
+  };
+
   useEffect(() => {
     if (value) {
       console.log('...................trip exp date', value);
@@ -84,7 +88,7 @@ const Dates = ({ form, value, expiry }) => {
           label={t('fields.scheduleDate')}
           rules={[{ required: true, validator: validateScheduleDate }]}
         >
-          <DatePicker disabled={IS_DISABLED} showTime format={FORMAT} style={{ width: '100%' }} />
+          <DatePicker disabled={IS_DISABLED} showTime format={FORMAT} style={{ width: '100%' }} onChange={onChange} />
         </Form.Item>
       </Col>
 
@@ -95,7 +99,7 @@ const Dates = ({ form, value, expiry }) => {
             label={t('fields.expiryDate')}
             rules={[{ required: false, validator: validateExpiryDate }]}
           >
-            <DatePicker disabled={IS_DISABLED} showTime format={FORMAT} style={{ width: '100%' }} />
+            <DatePicker disabled={IS_DISABLED} showTime format={FORMAT} style={{ width: '100%' }} onChange={onChange} />
           </Form.Item>
         )}
       </Col>
