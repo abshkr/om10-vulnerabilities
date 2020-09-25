@@ -2205,12 +2205,16 @@
     "lineItemValidation": "Line Items Validation",
     "mustBeBetween": "Must be between",
     "mustBeNumber": "Must be number",
+    "orderExpiryDateEarlierThanScheduleDate": "The Expiry Date Time should be later than Order Date Time",
+    "orderScheduleDateLaterThanExpiryDate": "The Order Date Time should be earlier than Expiry Date Time",
     "outOfRange": "Value out of range",
     "outOfRangeMax": "Value out of range, max value:",
     "outOfRangeMin": "Value out of range, min value:",
     "prodMoveSrcAndDst": "Source and/or destination must be a tank and specified",
     "select": "This field is required",
     "set": "This field is required",
+    "tripExpiryDateEarlierThanScheduleDate": "The Expiry Date Time should be later than Schedule Date Time",
+    "tripScheduleDateLaterThanExpiryDate": "The Schedule Date Time should be earlier than Expiry Date Time",
     "warnings": "warning(s)",
     "wrongType": "Incorrect type"
   }

@@ -2205,12 +2205,16 @@
 		"lineItemValidation": "行列数据验证",
 		"mustBeBetween": "数据范围必须是",
 		"mustBeNumber": "必须为实数",
+		"orderExpiryDateEarlierThanScheduleDate": "订单失效日期时间应该晚于订单下单日期时间",
+		"orderScheduleDateLaterThanExpiryDate": "订单下单日期时间应该早于订单失效日期时间",
 		"outOfRange": "数值超出范围",
 		"outOfRangeMax": "数值超出范围，最大允许值：",
 		"outOfRangeMin": "数值超出范围，最小允许值：",
 		"prodMoveSrcAndDst": "来源单元/目的单元必须是一个油罐并且已被指定",
 		"select": "此为必填字段",
 		"set": "此为必填字段",
+		"tripExpiryDateEarlierThanScheduleDate": "提单失效日期时间应该晚于提单下单日期时间",
+		"tripScheduleDateLaterThanExpiryDate": "提单下单日期时间应该早于提单失效日期时间",
 		"warnings": "警告",
 		"wrongType": "数据类型错误"
 	}
