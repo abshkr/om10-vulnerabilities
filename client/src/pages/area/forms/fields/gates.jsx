@@ -195,46 +195,8 @@ const Gates = ({ form, value }) => {
     }
   }, [getGates, value]);
 
-  return (
+  const extra = (
     <>
-      <FormModal visible={visible} onCreate={onGateCreate} onCancel={() => setVisible(false)} gates={data} />
-
-      <Divider> {t('tabColumns.gates')} </Divider>
-
-      <Form.Item name="gates" noStyle>
-        <List
-          size="small"
-          style={{ height: '50vh', overflowY: 'auto', marginTop: 10 }}
-          itemLayout="horizontal"
-          dataSource={data}
-          loading={{
-            indicator: <LoadingOutlined />,
-            spinning: isLoading,
-          }}
-          renderItem={(item) => (
-            <Card size="small" hoverable style={{ marginBottom: 5, marginTop: 5 }} bodyStyle={{ padding: 5 }}>
-              <List.Item
-                actions={[
-                  <Button
-                    icon={<DeleteOutlined />}
-                    type="danger"
-                    shape="circle"
-                    onClick={() => onRemove(item)}
-                  />,
-                ]}
-              >
-                <List.Item.Meta
-                  avatar={<Avatar>{item.gate_dvce}</Avatar>}
-                  // eslint-disable-next-line
-                  title={<a>{item.gate_k}</a>}
-                  description={<Description time={item.g_tcd} type={item.krdc_type} />}
-                />
-              </List.Item>
-            </Card>
-          )}
-        />
-      </Form.Item>
-
       <Button
         type="primary"
         block
@@ -244,6 +206,56 @@ const Gates = ({ form, value }) => {
       >
         {t('operations.add')}
       </Button>
+    </>
+  );
+
+  return (
+    <>
+      <FormModal visible={visible} onCreate={onGateCreate} onCancel={() => setVisible(false)} gates={data} />
+
+      {/* <Divider> {t('tabColumns.gates')} </Divider> */}
+      <Card 
+        size="small" 
+        title={t('tabColumns.gates')} 
+        extra={extra}
+      >
+
+        <Form.Item name="gates" noStyle>
+          <List
+            size="small"
+            style={{ height: '50vh', overflowY: 'auto', marginTop: 10 }}
+            itemLayout="horizontal"
+            dataSource={data}
+            loading={{
+              indicator: <LoadingOutlined />,
+              spinning: isLoading,
+            }}
+            renderItem={(item) => (
+              <Card size="small" hoverable style={{ marginBottom: 5, marginTop: 5 }} bodyStyle={{ padding: 5 }}>
+                <List.Item
+                  actions={[
+                    <Button
+                      icon={<DeleteOutlined />}
+                      type="danger"
+                      shape="circle"
+                      onClick={() => onRemove(item)}
+                    />,
+                  ]}
+                >
+                  <List.Item.Meta
+                    avatar={<Avatar>{item.gate_dvce}</Avatar>}
+                    // eslint-disable-next-line
+                    title={<a>{item.gate_k}</a>}
+                    description={<Description time={item.g_tcd} type={item.krdc_type} />}
+                  />
+                </List.Item>
+              </Card>
+            )}
+          />
+        </Form.Item>
+        
+      </Card>
+
     </>
   );
 };

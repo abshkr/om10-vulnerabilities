@@ -14,10 +14,28 @@ class Area extends CommonClass
     public function read()
     {
         $query = "
-            SELECT AREA_K,
-                AREA_NAME
-            FROM AREA_RC
-            ORDER BY AREA_K";
+            SELECT 
+                ar.AREA_K,
+                ar.AREA_NAME,
+                ag.GATE_COUNT,
+                ag.GATE_LIST
+            FROM 
+                AREA_RC ar,
+                (
+                    select
+                        GATE_AREA
+                        , COUNT(GATE_K) 										as GATE_COUNT
+                        , LISTAGG(GATE_K, ', ') WITHIN GROUP (ORDER BY GATE_K) 	as GATE_LIST
+                    from
+                        GATE_RC
+                    where
+                        1=1
+                    group by GATE_AREA
+                ) ag
+            WHERE
+                ar.AREA_K = ag.GATE_AREA(+)
+            ORDER BY ar.AREA_K
+        ";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;

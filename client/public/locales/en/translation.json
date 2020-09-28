@@ -282,6 +282,8 @@
     "area": "Area",
     "areaAccess": "Area Access",
     "areaAccessControl": "Area Access Control",
+    "areaGateCount": "Number of Gates",
+    "areaGateList": "List of Gates",
     "areaId": "Area ID",
     "areaLocation": "Area Location",
     "areaName": "Area Name",

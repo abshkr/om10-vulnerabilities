@@ -282,6 +282,8 @@
 		"area": "区域",
 		"areaAccess": "区域权限",
 		"areaAccessControl": "区域权限控制",
+		"areaGateCount": "区域门禁数量",
+		"areaGateList": "区域门禁列表",
 		"areaId": "区域ID",
 		"areaLocation": "区域地点",
 		"areaName": "区域名称",
