@@ -453,7 +453,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
               </Col>
             </Row>
 
-            <LoadTolerance form={form} value={value} />
+            <LoadTolerance form={form} value={value} config={config}/>
 
             {config.manageHotProduct && (
               <HotLitresForm value={value} form={form} hotFlag={hotFlag} />

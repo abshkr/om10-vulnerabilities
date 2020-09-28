@@ -85,6 +85,7 @@ const useConfig = () => {
     maxDensity: 2000,
     maxLengthTankCode: 10,
     siteUseSG: false,
+    load_tolerance_type: 'PERCENT',
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -220,6 +221,7 @@ const useConfig = () => {
         precisionSG: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_SG) || 6,
         maxLengthTankCode: _.toNumber(configurationObject?.SITE_MAXLEN_TANKCODE) || 10,
         siteUseSG: configurationObject?.SITE_USE_SG,
+        load_tolerance_type: configurationObject?.LOAD_TOLERANCE_TYPE,
       });
     }
     // eslint-disable-next-line

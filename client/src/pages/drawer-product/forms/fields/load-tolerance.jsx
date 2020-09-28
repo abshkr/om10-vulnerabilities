@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Checkbox, InputNumber, Row, Col } from 'antd';
 
-const LoadTolerance = ({ form, value }) => {
+const LoadTolerance = ({ form, value, config }) => {
   const { setFieldsValue } = form;
   const [ prod_ldtol_flag, setFlag ] = useState(value?.prod_ldtol_flag)
 
@@ -70,7 +70,8 @@ const LoadTolerance = ({ form, value }) => {
         </Col>
 
         <Col span={8}>
-          <Form.Item name="prod_ldtol_ntol" label={t('fields.prodLdtolNtol')} rules={[{ required: false, validator: validate }]}>
+          {config.load_tolerance_type === "PERCENT" ? 
+          <Form.Item name="prod_ldtol_ntol" label={t('fields.prodLdtolNtol') + ' (%)'} rules={[{ required: false, validator: validate }]}>
             <InputNumber
               // defaultValue={-10}
               style={{width:'100%'}}
@@ -81,22 +82,46 @@ const LoadTolerance = ({ form, value }) => {
               disabled={!prod_ldtol_flag}
               onChange={onChangeNtol}
             />
+          </Form.Item> :
+          <Form.Item name="prod_ldtol_ntol" label={t('fields.prodLdtolNtol') + ' (L)'} rules={[{ required: false, validator: validate }]}>
+            <InputNumber
+              // defaultValue={-10}
+              style={{width:'100%'}}
+              min={-2000}
+              max={0}
+              disabled={!prod_ldtol_flag}
+              onChange={onChangeNtol}
+            />
           </Form.Item>
+          }
+
         </Col>
 
         <Col span={8}>
-          <Form.Item name="prod_ldtol_ptol" label={t('fields.prodLdtolPtol')} rules={[{ required: false, validator: validate }]}>
+          {config.load_tolerance_type === "PERCENT" ? 
+          <Form.Item name="prod_ldtol_ptol" label={t('fields.prodLdtolPtol') + ' (%)'} rules={[{ required: false, validator: validate }]}>
             <InputNumber
               // defaultValue={10}
               style={{width:'100%'}}
               min={0}
-              max={200}
+              max={2000}
               formatter={value => `${value}%`}
               parser={value => value.replace('%', '')}
               disabled={!prod_ldtol_flag}
               onChange={onChangePtol}
             />
+          </Form.Item> :
+          <Form.Item name="prod_ldtol_ptol" label={t('fields.prodLdtolPtol') + ' (L)'} rules={[{ required: false, validator: validate }]}>
+            <InputNumber
+              // defaultValue={10}
+              style={{width:'100%'}}
+              min={0}
+              max={200}
+              disabled={!prod_ldtol_flag}
+              onChange={onChangePtol}
+            />
           </Form.Item>
+          }
         </Col>
     </Row>
     </>
