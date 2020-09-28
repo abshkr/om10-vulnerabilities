@@ -29,7 +29,7 @@ const Products = ({ value, form, drawer, access }) => {
 
   useEffect(() => {
     setData([]);
-    if (drawer && !value) {
+    if (drawer && !value && units) {
       api
         .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
           params: {
@@ -37,7 +37,7 @@ const Products = ({ value, form, drawer, access }) => {
           },
         })
         .then((res) => {
-          const payload = transform(res?.data?.records);
+          const payload = transform(res?.data?.records, units);
 
           setData(payload);
 
@@ -46,11 +46,11 @@ const Products = ({ value, form, drawer, access }) => {
           });
         });
     }
-  }, [drawer, value, setFieldsValue]);
+  }, [drawer, value, units, setFieldsValue]);
 
   useEffect(() => {
     setData([]);
-    if (value) {
+    if (value && units) {
       api
         .get(LOAD_SCHEDULES.PRODUCTS, {
           params: {
@@ -59,7 +59,7 @@ const Products = ({ value, form, drawer, access }) => {
           },
         })
         .then((res) => {
-          const payload = transform(res?.data?.records);
+          const payload = transform(res?.data?.records, units);
 
           setData(payload);
 
@@ -68,7 +68,7 @@ const Products = ({ value, form, drawer, access }) => {
           });
         });
     }
-  }, [value, setFieldsValue]);
+  }, [value, units, setFieldsValue]);
 
   return (
     <Form.Item name="products" noStyle>
