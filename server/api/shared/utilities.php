@@ -63,6 +63,47 @@ class Utilities
         }
     }
 
+    // Because some CGI may return language-related content to indicate the success or failure of DB operations,
+    // we need check them according to the particular langauge.
+    public static function http_cgi_result($response, $results)
+    {
+        /* 
+        // old code in V9 for the deletion of a record
+        $patternSuccessEng = "Successfully Deleted";
+        $patternSuccessChn = "成功删除";
+        $patternSuccessUtf = mb_convert_encoding($patternSuccessChn, 'UTF-8', 'GB2312');
+        $isFoundEng = strpos($response, $patternSuccessEng);
+        $isFoundChn = strpos($response, $patternSuccessChn);
+        $isFoundUtf = strpos($response, $patternSuccessUtf);
+        if ($isFoundEng === FALSE && $isFoundChn === FALSE && $isFoundUtf === FALSE) {
+            logMe("Delete load schedule failed!!!",LOADSCHEDCLASS);
+            return "ERROR";
+        } */
+
+        $lang = self::getCurrLang();
+
+        $isFound = false;
+        foreach ($results as $key => $value) {
+            if ($lang === $key) {
+                $patternSuccess = $value;
+                // CGI uses GB2312 for Chinese, V10 uses UTF-8.
+                if ($lang === 'CHN') {
+                    // $value is from V10 PHP in UTF-8 format
+                    // the text in response is in GB2312
+                    // $patternSuccess = mb_convert_encoding($value, 'UTF-8', 'GB2312');
+                    $patternSuccess = mb_convert_encoding($value, 'GB2312', 'UTF-8');
+                }
+                // check if the response body contains the text indicating success
+                $isFound = strpos($response, $patternSuccess);
+                if ($isFound === true) {
+                    break;
+                }
+            }
+        }
+
+        return $isFound;
+    }
+
     public static function http_get_cgi($cgi)
     {
         $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . "/" . $cgi . "?";

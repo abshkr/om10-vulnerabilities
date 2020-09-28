@@ -115,7 +115,13 @@ class Schedule extends CommonClass
     public function drawer_products()
     {
         $query = "
-            SELECT PROD_CODE, PROD_NAME, PROD_IMAGE FROM PRODUCTS 
+            SELECT 
+                PROD_CODE, 
+                PROD_NAME, 
+                PROD_IMAGE,
+                '5' as UNIT_CODE, 
+                (select DESCRIPTION from UNIT_SCALE_VW where UNIT_ID=5) as UNIT_NAME
+            FROM PRODUCTS 
             WHERE PROD_CMPY = :cmpy_code
             ORDER BY PROD_CODE";
         $stmt = oci_parse($this->conn, $query);
@@ -379,7 +385,12 @@ class Schedule extends CommonClass
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/load_scheds.cgi", $query_string);
         write_log($res, __FILE__, __LINE__);
 
-        if (strpos($res, "Successfully Deleted") === false) {
+        $results = array();
+        $results["ENG"] = "Successfully Deleted";
+        $results["CHN"] = "成功删除";
+        $isSucceed = Utilities::http_cgi_result($res, $results);
+        if ($isSucceed === false) {
+        // if (strpos($res, "Successfully Deleted") === false) {
             // throw new DatabaseException("load_scheds CGI error");
             write_log("load_scheds CGI error", __FILE__, __LINE__, LogLevel::ERROR);
             throw new DatabaseException(response("__CGI_FAILED__"));
@@ -608,7 +619,13 @@ class Schedule extends CommonClass
                     "&op=17&cmd=MOD";
     
                 $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/load_spec_compt.cgi", $query_string);
-                if (strpos($res, "Success!") === false) {
+                
+                $results = array();
+                $results["ENG"] = "Success!";
+                $results["CHN"] = "成功";
+                $isSucceed = Utilities::http_cgi_result($res, $results);
+                if ($isSucceed === false) {
+                // if (strpos($res, "Success!") === false) {
                     write_log("load_spec_compt CGI error", __FILE__, __LINE__, LogLevel::ERROR);
                     write_log($res, __FILE__, __LINE__);
                     throw new DatabaseException(response("__CGI_FAILED__"));
@@ -662,7 +679,12 @@ class Schedule extends CommonClass
 
                 $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/load_spec_prod.cgi", $query_string);
                 if ($cmd == "ADD") {
-                    if (strpos($res, "Success!") === false) {
+                    $results = array();
+                    $results["ENG"] = "Success!";
+                    $results["CHN"] = "成功";
+                    $isSucceed = Utilities::http_cgi_result($res, $results);
+                    if ($isSucceed === false) {
+                    // if (strpos($res, "Success!") === false) {
                         write_log("load_spec_prod CGI error", __FILE__, __LINE__, LogLevel::ERROR);
                         write_log($res, __FILE__, __LINE__);
                         throw new DatabaseException(response("__CGI_FAILED__"));
@@ -682,7 +704,13 @@ class Schedule extends CommonClass
                             "&op=18&cmd=ADD";
             
                         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/load_spec_prod.cgi", $query_string);
-                        if (strpos($res, "Success!") === false) {
+                        
+                        $results = array();
+                        $results["ENG"] = "Success!";
+                        $results["CHN"] = "成功";
+                        $isSucceed = Utilities::http_cgi_result($res, $results);
+                        if ($isSucceed === false) {
+                        // if (strpos($res, "Success!") === false) {
                             write_log($res, __FILE__, __LINE__);
                             write_log("load_spec_prod CGI error", __FILE__, __LINE__, LogLevel::ERROR);
                             throw new DatabaseException(response("__CGI_FAILED__"));
