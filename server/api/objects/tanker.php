@@ -445,6 +445,14 @@ class Tanker extends CommonClass
             return false;
         }
 
+        if (!isset($this->tnkr_ntrips)) {
+            $this->tnkr_ntrips = 0;
+        }
+
+        if (!isset($this->tnkr_max_kg)) {
+            $this->tnkr_max_kg = 0;
+        }
+
         $query = "
             INSERT INTO TANKERS (
                 TNKR_CODE,
