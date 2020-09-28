@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, Checkbox } from 'antd';
+import { Form, Checkbox, Row, Col } from 'antd';
 
 const Locks = ({ form, value }) => {
   const { t } = useTranslation();
@@ -17,15 +17,18 @@ const Locks = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <div style={{ display: 'flex' }}>
-      <Form.Item name="eqpt_lock" style={{ marginTop: 5 }} valuePropName="checked">
-        <Checkbox> {t('fields.locked')} </Checkbox>
-      </Form.Item>
-
-      <Form.Item name="eqp_must_tare_in" style={{ marginTop: 5 }} valuePropName="checked">
-        <Checkbox> {t('fields.mustTareIn')} </Checkbox>
-      </Form.Item>
-    </div>
+    <Row justify="space-around">
+      <Col span={12}>
+        <Form.Item name="eqpt_lock"  label= {t('fields.locked')} valuePropName="checked">
+          <Checkbox/> 
+        </Form.Item>
+      </Col>
+      <Col span={12}>
+        <Form.Item name="eqp_must_tare_in"  label= {t('fields.mustTareIn')} valuePropName="checked">
+          <Checkbox/>
+        </Form.Item>
+      </Col>
+    </Row>
   );
 };
 

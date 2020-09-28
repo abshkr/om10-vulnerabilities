@@ -9,7 +9,7 @@ import {
   UnlockOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal, Drawer, Divider } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Drawer, Divider, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
@@ -194,7 +194,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="50vw"
+      width="60vw"
       visible={visible}
       footer={
         <>
@@ -251,20 +251,52 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
             forceRender={true}
             key="1"
           >
-            <Owner form={form} value={value} />
-            <Code form={form} value={value} />
-            <Title form={form} value={value} />
-            <Area form={form} value={value} />
-            <Locks form={form} value={value} />
-            <Comments form={form} value={value} />
-            <EmptyWeight form={form} value={value} />
-            <PullingLimit form={form} value={value} />
+            <Row gutter={[8, 2]}>
+              <Col span={8}>
+                <Owner form={form} value={value} />
+              </Col>
+              <Col span={8}>
+                <Code form={form} value={value} />
+              </Col>
+              <Col span={8}>
+                <Title form={form} value={value} />
+              </Col>
+            </Row>
 
+            <Row gutter={[8, 2]}>
+              <Col span={8}>
+                <Area form={form} value={value} />
+              </Col>
+              <Col span={8}>
+                <EmptyWeight form={form} value={value} />
+              </Col>
+              <Col span={8}>
+                <PullingLimit form={form} value={value} />
+              </Col>
+            </Row>
+
+            <Row gutter={[8, 2]}>
+              <Col span={8}>
+                <Locks form={form} value={value} />
+              </Col>
+              <Col span={16}>
+                <Comments form={form} value={value} />
+              </Col>
+            </Row>
+            
             <Divider>{t('tabColumns.equipmentAndSafefill')}</Divider>
 
             <Equipment image={image} showName={value?.eqpt_etp_title} />
-            <LoadType form={form} value={value} />
-            <EquipmentType form={form} value={value} onChange={setEquipment} />
+
+            <Row gutter={[8, 2]}>
+              <Col span={8}>
+                <LoadType form={form} value={value} />
+              </Col>
+              <Col span={16}>
+                <EquipmentType form={form} value={value} onChange={setEquipment} />
+              </Col>
+            </Row>
+            
             <Compartments form={form} value={value} equipment={equipment} onChange={setImage} />
 
             <Divider>{t('tabColumns.expiryDates')}</Divider>
