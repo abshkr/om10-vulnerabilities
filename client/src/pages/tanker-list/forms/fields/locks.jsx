@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Form, Checkbox } from 'antd';
+import { Form, Checkbox, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 const Locks = ({ form, value }) => {
@@ -19,23 +19,30 @@ const Locks = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <div style={{ display: 'flex' }}>
-      <Form.Item name="tnkr_lock" style={{ marginTop: 10 }} valuePropName="checked">
-        <Checkbox> {t('fields.locked')} </Checkbox>
-      </Form.Item>
-
-      <Form.Item name="tnkr_active" style={{ marginTop: 10 }} valuePropName="checked">
-        <Checkbox> {t('fields.active')} </Checkbox>
-      </Form.Item>
-
-      <Form.Item name="tnkr_bay_loop_ch" style={{ marginTop: 10 }} valuePropName="checked">
-        <Checkbox> {t('fields.bayCheck')} </Checkbox>
-      </Form.Item>
-
-      <Form.Item name="tnkr_archive" style={{ marginTop: 10 }} valuePropName="checked">
-        <Checkbox> {t('fields.archived')} </Checkbox>
-      </Form.Item>
-    </div>
+    // <div style={{ display: 'flex' }}>
+    <Row justify="space-around">
+      <Col span={4}>
+        <Form.Item name="tnkr_lock" label= {t('fields.locked')} valuePropName="checked">
+          <Checkbox/>
+        </Form.Item>
+      </Col>
+      <Col span={4}>
+        <Form.Item name="tnkr_active"  label= {t('fields.active')} valuePropName="checked">
+          <Checkbox/>
+        </Form.Item>
+      </Col>
+      <Col span={4}>
+        <Form.Item name="tnkr_bay_loop_ch" label= {t('fields.bayCheck')} valuePropName="checked">
+          <Checkbox/>
+        </Form.Item>
+      </Col>
+      <Col span={4}>
+        <Form.Item name="tnkr_archive" label= {t('fields.archived')} valuePropName="checked">
+          <Checkbox/>
+        </Form.Item>
+      </Col>
+    </Row>
+    // </div>
   );
 };
 

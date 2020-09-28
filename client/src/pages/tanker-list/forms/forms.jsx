@@ -205,7 +205,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="50vw"
+      width="60vw"
       visible={visible}
       footer={
         <>
@@ -254,7 +254,12 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
         </>
       }
     >
-      <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
+      <Form 
+        layout="vertical" 
+        form={form} 
+        onFinish={onFinish} 
+        scrollToFirstError
+      >
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane
             tab={t('tabColumns.identification')}
@@ -262,38 +267,60 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
             forceRender={true}
             key="1"
           >
-            <Depot form={form} value={value} />
-            <Owner form={form} value={value} />
-            <Carrier form={form} value={value} />
-            <Code form={form} value={value} />
-            <Name form={form} value={value} />
-
-            <Row gutter={[6, 0]}>
-              <Col span={12}>
-                <TotalTrips form={form} value={value} />
+            <Row gutter={[8, 2]}>
+              <Col span={8}>
+                <Depot form={form} value={value} />
               </Col>
-
-              <Col span={12}>
-                <LastTrip form={form} value={value} />
+              <Col span={8}>
+                <Owner form={form} value={value} />
+              </Col>
+              <Col span={8}>
+                <Carrier form={form} value={value} />
               </Col>
             </Row>
 
-            <Comments form={form} value={value} />
-            <TankerPrompt form={form} value={value} />
+            <Row gutter={[8, 2]}>
+              <Col span={8}>
+                <Code form={form} value={value} />
+              </Col>
+              <Col span={8}>
+                <Name form={form} value={value} />
+              </Col>
+              <Col span={8}>
+                <TotalTrips form={form} value={value} />
+              </Col>
+            </Row>
 
-            <Row gutter={[6, 0]}>
-              <Col span={12}>
+            <Row gutter={[8, 2]}>
+              <Col span={8}>
+              <LastTrip form={form} value={value} />
+              </Col>
+              <Col span={16}>
+              <Comments form={form} value={value} />
+              </Col>
+            </Row>
+            
+            <Row gutter={[8, 2]}>
+              <Col span={8}>
+                <TankerPrompt form={form} value={value} />
+              </Col>
+              <Col span={8}>
                 <Pin form={form} value={value} />
               </Col>
-
-              <Col span={12}>
+              <Col span={8}>
                 <MaxKg form={form} value={value} />
               </Col>
             </Row>
 
-            <Locks form={form} value={value} />
-            <SLP form={form} value={value} />
-
+            <Row gutter={[8, 2]}>
+              <Col span={8}>
+                <SLP form={form} value={value} />
+              </Col>
+              <Col span={16}>
+                <Locks form={form} value={value} />
+              </Col>
+            </Row>
+            
             <Divider>{t('tabColumns.configuration')} </Divider>
 
             <EquipmentType form={form} value={value} onChange={setEquipment} />
