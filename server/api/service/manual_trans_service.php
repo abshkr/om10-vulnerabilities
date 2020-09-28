@@ -1055,6 +1055,29 @@ class ManualTransactionService
         return LD_TYPE::LD_PREORDER;
     }
 
+    /* If SHLS_EXP is NULL, set it so baiman does not reject this trip  */
+    private function check_schd_exp()
+    {
+        write_log(sprintf("%s::%s() START. trip:%d, supplier:%s",
+            __CLASS__, __FUNCTION__, $this->trip_no, $this->supplier),
+            __FILE__, __LINE__);
+
+        $query = "UPDATE SCHEDULE 
+            SET SHLS_EXP = SHLS_CALDATE + (SELECT SITE_SHLS_EXP_H FROM SITE)
+            WHERE SHLS_TRIP_NO = :trip AND SHLS_SUPP = :supplier
+                AND SHLS_EXP IS NULL";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':trip', $this->trip_no);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return -1;
+        }
+
+        return 1;
+    }
+
     /* update SCHEDULE table, set carrier and tanker with the real one.
     -1: fails
     0: no need to switch tanker
@@ -1231,6 +1254,11 @@ class ManualTransactionService
                 $error_msg = sprintf("Tanker %s has other active trips", $this->tanker_code);
                 return false;
             }
+
+            $check_schd_exp_result = $this->check_schd_exp();
+            if ($check_schd_exp_result < 0) {
+                write_log("Failed to swith tanker.", __FILE__, __LINE__);   //Do not return
+            } 
 
             $switch_result = $this->switch_tanker();
             if ($switch_result < 0) {
