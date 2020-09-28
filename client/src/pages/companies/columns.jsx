@@ -25,7 +25,7 @@ const columns = (t) => [
   {
     headerName: t('fields.aoiNumber'),
     field: 'cmpy_aoi',
-    filter: 'BooleanFilter',
+    filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     width: 130,
