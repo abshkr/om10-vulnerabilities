@@ -195,18 +195,18 @@ class BaseProduct extends CommonClass
             return false;
         }
 
-        $query = "
-            INSERT INTO GENERIC_PROD (GEN_PROD_CODE)
-            VALUES (:base_code)";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':base_code', $this->base_code);
+        // $query = "
+        //     INSERT INTO GENERIC_PROD (GEN_PROD_CODE)
+        //     VALUES (:base_code)";
+        // $stmt = oci_parse($this->conn, $query);
+        // oci_bind_by_name($stmt, ':base_code', $this->base_code);
 
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
-        }
+        // if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+        //     $e = oci_error($stmt);
+        //     write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
 
         $query = "
             INSERT INTO PRODUCTS (
@@ -393,16 +393,16 @@ class BaseProduct extends CommonClass
             return false;
         }
 
-        $query = "
-            DELETE FROM GENERIC_PROD WHERE GEN_PROD_CODE = :base_code";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':base_code', $this->base_code);
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
-        }
+        // $query = "
+        //     DELETE FROM GENERIC_PROD WHERE GEN_PROD_CODE = :base_code";
+        // $stmt = oci_parse($this->conn, $query);
+        // oci_bind_by_name($stmt, ':base_code', $this->base_code);
+        // if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+        //     $e = oci_error($stmt);
+        //     write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        //     oci_rollback($this->conn);
+        //     return false;
+        // }
 
         $query = "
             DELETE FROM BASE_PRODS WHERE BASE_CODE = :base_code";
