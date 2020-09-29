@@ -307,9 +307,7 @@ const OrderPicker = ({params, onClose, modal}) => {
       )}
 
       {rangeSetting !== '-1~~-1' && (
-        <div style={{ float: 'left', width: '420px' }}>
-          <Calendar handleChange={setRange} start={start} end={end} max={1000} />
-        </div>
+        <Calendar handleChange={setRange} start={start} end={end} max={1000} />
       )}
 
       <Button icon={<SyncOutlined />} onClick={onRefresh} loading={isLoading}>
