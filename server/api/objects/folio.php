@@ -399,16 +399,19 @@ class Folio extends CommonClass
                 CLOSEOUT_DATE,
                 PREV_CLOSEOUT_DATE,
                 STATUS,
+                FOLIO_STATUS_TYPES.FOLIO_STATUS_NAME  as STATUS_STR,
                 DECODE(STATUS, 0, 'OPEN',
                     1, 'FROZEN',
-                    'CLOSED') STATUS_STR,
+                    'CLOSED') STATUS_STR2,
                 REPORT_TRIGGER,
                 USER_CODE,
                 LAST_CHG_TIME,
                 CLOSEOUT_NAME
-             FROM " . $this->VIEW_NAME;
+             FROM " . $this->VIEW_NAME . ", FOLIO_STATUS_TYPES 
+             WHERE STATUS = FOLIO_STATUS_TYPES.FOLIO_STATUS_ID
+        ";
         if (isset($this->start_date) && isset($this->end_date)) {
-            $query .= " WHERE PREV_CLOSEOUT_DATE >= :start_date
+            $query .= " AND PREV_CLOSEOUT_DATE >= :start_date
                 AND PREV_CLOSEOUT_DATE < :end_date ";
         }
         $query .= " ORDER BY CLOSEOUT_NR DESC";
@@ -441,13 +444,30 @@ class Folio extends CommonClass
             BASECLASS.BCLASS_DENS_HI,
             BASECLASS.BCLASS_VCF_ALG,
             TANKS.TANK_DENSITY
-        FROM CLOSEOUT_TANK, TANKS, BASE_PRODS, BASECLASS, GAUGE_METHOD_TYP
+        FROM 
+            CLOSEOUT_TANK, 
+            TANKS, 
+            BASE_PRODS, 
+            (
+                SELECT
+                    BS.BCLASS_NO,
+                    NVL(BM.BCLASS_NAME, BS.BCLASS_DESC)           AS BCLASS_DESC,
+                    BS.BCLASS_DENS_LO,
+                    BS.BCLASS_DENS_HI,
+                    BS.BCLASS_VCF_ALG,
+                    BS.BCLASS_TEMP_LO,
+                    BS.BCLASS_TEMP_HI
+                FROM BASECLASS BS,
+                    BCLASS_TYP BM
+                WHERE BS.BCLASS_NO = BM.BCLASS_ID(+)
+            ) BASECLASS, 
+            GAUGE_METHOD_TYP
         WHERE CLOSEOUT_TANK.TANK_CODE = TANKS.TANK_CODE
             AND TANKS.TANK_BASE = BASE_PRODS.BASE_CODE
             AND BASE_PRODS.BASE_CAT = BASECLASS.BCLASS_NO
             AND TANK_GAUGINGMTHD = GAUGE_METHOD_ID(+)
             AND CLOSEOUT_TANK.CLOSEOUT_NR = :closeout_nr
-        ORDER BY BASECLASS.BCLASS_DESC
+        ORDER BY BASECLASS.BCLASS_NO
         ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':closeout_nr', $this->closeout_nr);
@@ -467,14 +487,16 @@ class Folio extends CommonClass
         $query = "
             SELECT DISTINCT CLOSEOUT_METER.*,
                 BA_METERS.BAM_QTY_TYPE,
-                DECODE(BAM_QTY_TYPE, 1, 'KG', 'VOL') BAM_QTY_TYPE_STR,
+                QTY_TYP.QTY_NAME  as BAM_QTY_TYPE_STR,
+                DECODE(BAM_QTY_TYPE, 1, 'KG', 'VOL') BAM_QTY_TYPE_STR2,
                 GUI_PIPENODE.STREAM_BASECODE,
                 GUI_PIPENODE.STREAM_BASENAME,
                 GUI_PIPENODE.STREAM_TANKCODE,
                 GUI_PIPENODE.STREAM_TANKTEMP,
                 GUI_PIPENODE.STREAM_TANKDEN
-            FROM CLOSEOUT_METER, BA_METERS, GUI_PIPENODE
+            FROM CLOSEOUT_METER, BA_METERS, GUI_PIPENODE, QTY_TYP
             WHERE CLOSEOUT_METER.METER_CODE = BA_METERS.BAM_CODE
+                AND BA_METERS.BAM_QTY_TYPE = QTY_TYP.QTY_ID
                 AND CLOSEOUT_METER.METER_CODE = GUI_PIPENODE.STREAM_MTRCODE
                 AND BA_METERS.BAM_CODE = GUI_PIPENODE.STREAM_MTRCODE
                 AND CLOSEOUT_METER.CLOSEOUT_NR = :closeout_nr
