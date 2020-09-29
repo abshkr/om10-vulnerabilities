@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form } from 'antd';
+import { Form, Row, Col } from 'antd';
+import _ from 'lodash';
+
 import { DataTable, PartnershipManager, OrderManager } from '../../../../components';
 
 import api, { LOAD_SCHEDULES } from '../../../../api';
 import columns from './columns';
+import productColumns from './product-column';
 
-import {
-  ProductEditor,
-  UnitEditor,
-  ScheduleEditor,
-  DelvNoEditor,
-  // SoldToEditor,
-  // ShipToEditor,
-} from './fields';
+import { ProductEditor, UnitEditor, ScheduleEditor, DelvNoEditor } from './fields';
 
 import useSWR from 'swr';
 
@@ -23,25 +19,11 @@ const Compartments = ({ form, value, tanker, drawer, supplier, config }) => {
   const { t } = useTranslation();
   const IS_CREATING = !value;
 
-  // const { data: soldTo } = useSWR(LOAD_SCHEDULES.SOLD_TO);
-  // const { data: shipTo } = useSWR(LOAD_SCHEDULES.SHIP_TO);
   const { data: units } = useSWR(LOAD_SCHEDULES.UNIT_TYPES);
 
   const [compartments, setCompartments] = useState([]);
   const [products, setProducts] = useState([]);
   const [tableAPI, setTableAPI] = useState(null);
-
-  // const fields = columns(t, form, products, soldTo, shipTo, units, supplier);
-  const fields = columns(t, form, products, units, supplier, PartnershipManager, OrderManager, tableAPI, config);
-
-  const components = {
-    ProductEditor,
-    UnitEditor,
-    ScheduleEditor,
-    DelvNoEditor,
-    // SoldToEditor,
-    // ShipToEditor,
-  };
 
   useEffect(() => {
     setCompartments([]);
@@ -68,12 +50,12 @@ const Compartments = ({ form, value, tanker, drawer, supplier, config }) => {
   useEffect(() => {
     if (IS_CREATING) {
       api
-      .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
-        params: {
-          drawer_code: drawer,
-        },
-      })
-      .then((res) => setProducts(res.data.records));
+        .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
+          params: {
+            drawer_code: drawer,
+          },
+        })
+        .then((res) => setProducts(res.data.records));
     }
   }, [drawer, tanker]);
 
@@ -99,23 +81,24 @@ const Compartments = ({ form, value, tanker, drawer, supplier, config }) => {
 
     if (!IS_CREATING) {
       api
-      .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
-        params: {
-          drawer_code: value.drawer_code,
-        },
-      })
-      .then((res) => setProducts(res.data.records));
+        .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
+          params: {
+            drawer_code: value.drawer_code,
+          },
+        })
+        .then((res) => setProducts(res.data.records));
     }
   }, [value, tanker, setFieldsValue]);
 
   const rowEditingStopped = (values) => {
     // console.log(values)
-    
+
     const current = form.getFieldValue('compartments');
     let scheduled = current[values.rowIndex].qty_scheduled;
-    if (parseInt(scheduled) === 0 && current[values.rowIndex].prod_code !== "") {
+
+    if (parseInt(scheduled) === 0 && current[values.rowIndex].prod_code !== '') {
       scheduled = parseInt(current[values.rowIndex].safefill);
-    } else if (current[values.rowIndex].prod_code === "" || !current[values.rowIndex].prod_code) {
+    } else if (current[values.rowIndex].prod_code === '' || !current[values.rowIndex].prod_code) {
       scheduled = 0;
     }
     current[values.rowIndex].qty_scheduled = scheduled;
@@ -123,18 +106,73 @@ const Compartments = ({ form, value, tanker, drawer, supplier, config }) => {
     setCompartments(current);
   };
 
+  const onDragFinished = (index, value) => {
+    const payload = [];
+
+    const rowNode = tableAPI.getRowNode(index);
+    const data = rowNode.data;
+
+    rowNode.setDataValue('prod_code', value?.prod_code);
+
+    rowNode.setDataValue('prod_name', value?.prod_name);
+
+    rowNode.setDataValue(
+      'qty_scheduled',
+      data?.qty_scheduled > 0 ? data?.qty_scheduled : parseInt(data.safefill)
+    );
+
+    tableAPI.forEachNodeAfterFilterAndSort((rowNode, index) => {
+      payload.push(rowNode.data);
+    });
+
+    form.setFieldsValue({
+      compartments: payload,
+    });
+
+    setCompartments(payload);
+  };
+
+  const fields = columns(
+    t,
+    form,
+    products,
+    units,
+    supplier,
+    PartnershipManager,
+    OrderManager,
+    tableAPI,
+    config,
+    onDragFinished,
+    compartments
+  );
+
+  const productFields = productColumns(t);
+
+  const components = {
+    ProductEditor,
+    UnitEditor,
+    ScheduleEditor,
+    DelvNoEditor,
+  };
+
   return (
     <Form.Item name="compartments">
-      <DataTable 
-        data={compartments} 
-        columns={fields} 
-        parentHeight="320px" 
-        components={components} 
-        minimal 
-        // editType='fullRow'
-        rowEditingStopped={rowEditingStopped}
-        apiContext={setTableAPI}
-      />
+      <Row gutter={[8, 8]}>
+        <Col flex={1}>
+          <DataTable data={products} columns={productFields} parentHeight="320px" minimal />
+        </Col>
+        <Col flex={4}>
+          <DataTable
+            data={compartments}
+            columns={fields}
+            parentHeight="320px"
+            components={components}
+            minimal
+            apiContext={setTableAPI}
+            rowEditingStopped={rowEditingStopped}
+          />
+        </Col>
+      </Row>
     </Form.Item>
   );
 };

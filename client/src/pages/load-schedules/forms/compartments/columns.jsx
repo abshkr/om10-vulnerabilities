@@ -1,5 +1,17 @@
 // const columns = (t, form, products, soldTo, shipTo, units, supplier) => [
-const columns = (t, form, products, units, supplier, PartnershipManager, OrderManager, tableAPI, config) => [
+const columns = (
+  t,
+  form,
+  products,
+  units,
+  supplier,
+  PartnershipManager,
+  OrderManager,
+  tableAPI,
+  config,
+  onDragFinished,
+  compartments
+) => [
   {
     headerName: t('fields.equipment'),
     field: 'eqpt_code',
@@ -32,12 +44,11 @@ const columns = (t, form, products, units, supplier, PartnershipManager, OrderMa
     resizable: true,
     width: 300,
     suppressSizeToFit: true,
-    editable: true,
-    cellClass: 'editable-ag-grid-cell',
-    cellEditor: 'ProductEditor',
-    cellEditorParams: {
-      values: products,
-      form: form,
+
+    cellRenderer: 'DraggableRenderer',
+    cellRendererParams: {
+      onDragFinished,
+      compartments,
     },
   },
 
@@ -94,11 +105,11 @@ const columns = (t, form, products, units, supplier, PartnershipManager, OrderMa
       form: form,
       grid: 'compartments',
       columnPairs: [
-        'order_cust_ordno:order_cust_ordno', 
-        'oitem_order_id:order_id', 
-        'oitem_prod_code:prod_code', 
+        'order_cust_ordno:order_cust_ordno',
+        'oitem_order_id:order_id',
+        'oitem_prod_code:prod_code',
         'oitem_prod_name:prod_name',
-        'qty_left:qty_scheduled'
+        'qty_left:qty_scheduled',
       ],
       tableAPI: tableAPI,
       // maxLength: 20,
@@ -158,7 +169,7 @@ const columns = (t, form, products, units, supplier, PartnershipManager, OrderMa
         partner_code: '',
         partner_type: 'AG',
         partner_cmpy_code: supplier,
-        partner_cust_acct: ''
+        partner_cust_acct: '',
       },
     },
   },
@@ -191,7 +202,7 @@ const columns = (t, form, products, units, supplier, PartnershipManager, OrderMa
         partner_code: '',
         partner_type: 'WE',
         partner_cmpy_code: supplier,
-        partner_cust_acct: ''
+        partner_cust_acct: '',
       },
     },
   },

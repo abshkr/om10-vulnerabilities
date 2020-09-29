@@ -25,6 +25,7 @@ import {
   TemperatureRenderer,
   DensityRenderer,
   ExpiryDateRenderer,
+  DraggableRenderer,
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -65,6 +66,7 @@ const defaultComponents = {
   BooleanEditor,
   ListEditor,
   InputPopupEditor,
+  DraggableRenderer,
 };
 
 const defaultColumnDef = {};
@@ -105,15 +107,14 @@ const Table = ({
   const [api, setAPI] = useState('');
   const [tableColumns, setTableColumns] = useState(columns);
 
-  const overlayNoRowsText = 
+  const overlayNoRowsText =
     '<span style="padding: 10px; font-size: 16px">' + t('descriptions.noRowsToShow') + '</span>';
 
   // const loading = !data || isLoading;
 
-	if (clearSelection)
-	{
-			api.deselectAll();
-	};
+  if (clearSelection) {
+    api.deselectAll();
+  }
 
   const handleMultipleSelection = () => {
     if (handleSelect) {
@@ -180,10 +181,10 @@ const Table = ({
 
   useEffect(() => {
     if (t && columns) {
-      columns.forEach((o)=>{
-        if (o.filter==='FuzzyFilter' || o.filter==='MultiFilter' || o.filter==='BooleanFilter') {
+      columns.forEach((o) => {
+        if (o.filter === 'FuzzyFilter' || o.filter === 'MultiFilter' || o.filter === 'BooleanFilter') {
           o.filterParams = {
-            t
+            t,
           };
         }
       });
@@ -263,9 +264,11 @@ const Table = ({
                   onCellValueChanged={onCellUpdate}
                   onFirstDataRendered={handleFirstDataRendered}
                   pinnedBottomRowData={footer}
-                  stopEditingWhenGridLosesFocus={stopEditingWhenGridLosesFocus===undefined ? true : stopEditingWhenGridLosesFocus}
+                  stopEditingWhenGridLosesFocus={
+                    stopEditingWhenGridLosesFocus === undefined ? true : stopEditingWhenGridLosesFocus
+                  }
                   singleClickEdit={true}
-                  editType={editType==='fullRow'?'fullRow':''}
+                  editType={editType === 'fullRow' ? 'fullRow' : ''}
                   onRowEditingStopped={rowEditingStopped}
                 />
               </div>

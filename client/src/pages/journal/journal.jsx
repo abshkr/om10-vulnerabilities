@@ -34,10 +34,7 @@ const Journal = () => {
   };
 
   const doSearch = (values) => {
-    if (!values.target_str && 
-      !values.msg_event &&
-      !values.msg_class && 
-      !values.start_date) {
+    if (!values.target_str && !values.msg_event && !values.msg_class && !values.start_date) {
       return;
     }
 
@@ -46,30 +43,28 @@ const Journal = () => {
 
   const revalidate = () => {
     setSearch(null);
-  }
+  };
 
   const modifiers = (
     <>
-      <Calendar handleChange={setRange} start={start} end={end} disabled={selected === '1'} />
-      <Button 
-        icon={<SyncOutlined />} 
-        onClick={() => revalidate()} 
-        disabled={selected==='1'}
-      >
+      <Calendar handleChange={setRange} start={start} end={end} disabled={selected === '1'} max={14} />
+      <Button icon={<SyncOutlined />} onClick={() => revalidate()} disabled={selected === '1'}>
         {t('operations.refresh')}
       </Button>
 
       <Download data={data} columns={fields} />
 
-      <Button 
+      <Button
         type="primary"
-        icon={<FileSearchOutlined />} 
-        disabled={selected==='1'}
-        onClick={() => WindowSearch(doSearch, t('operations.search'), {
-          journal_msg: true,
-          journal_event: true,
-          journal_category: true,
-        })}
+        icon={<FileSearchOutlined />}
+        disabled={selected === '1'}
+        onClick={() =>
+          WindowSearch(doSearch, t('operations.search'), {
+            journal_msg: true,
+            journal_event: true,
+            journal_category: true,
+          })
+        }
       >
         {t('operations.search')}
       </Button>
@@ -101,7 +96,14 @@ const Journal = () => {
           </Tabs.TabPane>
 
           <Tabs.TabPane tab={t('tabColumns.historicalJournal')} key="2">
-            <Historical t={t} start={start} end={end} setData={setData} setFields={setFields} search={search} />
+            <Historical
+              t={t}
+              start={start}
+              end={end}
+              setData={setData}
+              setFields={setFields}
+              search={search}
+            />
           </Tabs.TabPane>
         </Tabs>
       </JournalContainer>

@@ -21,9 +21,9 @@ export default class Product extends Component {
 
     if (!record) {
       const current = form.getFieldValue('compartments');
-      
-      current[rowIndex].prod_code = "";
-      current[rowIndex].prod_name = "";
+
+      current[rowIndex].prod_code = '';
+      current[rowIndex].prod_name = '';
       current[rowIndex].qty_scheduled = 0;
 
       form.setFieldsValue({
@@ -31,11 +31,13 @@ export default class Product extends Component {
       });
     } else {
       const current = form.getFieldValue('compartments');
-      
+
       current[rowIndex].prod_code = record.key;
       current[rowIndex].prod_name = record.value;
-      current[rowIndex].qty_scheduled = (current[rowIndex].qty_scheduled > 0 ? 
-        current[rowIndex].qty_scheduled : parseInt(current[rowIndex].safefill));
+      current[rowIndex].qty_scheduled =
+        current[rowIndex].qty_scheduled > 0
+          ? current[rowIndex].qty_scheduled
+          : parseInt(current[rowIndex].safefill);
 
       form.setFieldsValue({
         compartments: current,
@@ -54,14 +56,14 @@ export default class Product extends Component {
     const { values } = this.props;
 
     return (
-      <div style={{ width: '100%',  display: 'flex' }}>
-        <Select 
+      <div style={{ width: '100%', display: 'flex' }}>
+        <Select
           dropdownMatchSelectWidth={false}
           showSearch
-          value={this.state.value} 
-          style={{ width: '100%' }} 
-          onChange={this.onClick} 
-          bordered={false} 
+          value={this.state.value}
+          style={{ width: '100%' }}
+          onChange={this.onClick}
+          bordered={false}
           allowClear={!!this.state.value}
         >
           {values?.map((item) => (
@@ -72,7 +74,7 @@ export default class Product extends Component {
                 shape="square" 
                 style={{marginRight:"5px", visibility:item.prod_image? "visible": "hidden"}}
               /> */}
-              {item.prod_code + " - " + item.prod_name}
+              {item.prod_code + ' - ' + item.prod_name}
             </Select.Option>
           ))}
         </Select>
