@@ -36,13 +36,13 @@ const BayView = () => {
   }, []);
 
   if (!available) {
-    return <NotFound target={`https://${window.location.hostname}/scadaviews/bayview/index.html#/overview`}/>
+    return <NotFound target={`https://${window.location.hostname}:${window.location.port}/scadaviews/bayview/index.html#/overview`}/>
   } else {
     return (
         <Page page={page} name={name} access={access}>
           <div style={{ height: 'calc(100vh - 200px)' }}>
             <Iframe
-              url={`https://${window.location.hostname}/scadaviews/bayview/index.html#/overview`}
+              url={`https://${window.location.hostname}:${window.location.port}/scadaviews/bayview/index.html#/overview`}
               id="myId"
               className="myClassname"
               display="initial"

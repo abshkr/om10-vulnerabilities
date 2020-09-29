@@ -134,13 +134,15 @@ const FolioSummary = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms
-        value={selected}
-        visible={visible}
-        handleFormState={handleFormState}
-        access={access}
-        // setFilterValue={setFilterValue}
-      />
+      {visible && (
+        <Forms
+          value={selected}
+          visible={visible}
+          handleFormState={handleFormState}
+          access={access}
+          // setFilterValue={setFilterValue}
+        />
+      )}
     </Page>
   );
 };

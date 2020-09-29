@@ -264,14 +264,18 @@ class Schedule extends CommonClass
                     6, 'Y',
                     'N'
                 ) UNLOAD,
+                SHL_SOURCE_TYPES.SOURCE_TYPE_NAME as SHLS_SRCTYPE_DESC,
                 DECODE(SHLS_SRCTYPE, 
                     1, 'Manually Created',
                     2, 'From Host',
                     3, 'Open Order',
                     4, 'Standalone or Special',
                     'Unknown'
-            ) SHLS_SRCTYPE_DESC FROM " . $this->VIEW_NAME . "
-            WHERE SHLS_TRIP_NO LIKE :shls_trip_no " ;
+            ) SHLS_SRCTYPE_DESC2
+            FROM " . $this->VIEW_NAME . ", SHL_SOURCE_TYPES 
+            WHERE SHLS_TRIP_NO LIKE :shls_trip_no 
+                AND SHLS_SRCTYPE = SHL_SOURCE_TYPES.SOURCE_TYPE_ID
+        " ;
 
         if (isset($this->supplier_code)) {
             $query = $query . " AND SUPPLIER_CODE = :supplier_code";
@@ -779,14 +783,17 @@ class Schedule extends CommonClass
                     6, 'Y',
                     'N'
                 ) UNLOAD,
+                SHL_SOURCE_TYPES.SOURCE_TYPE_NAME as SHLS_SRCTYPE_DESC,
                 DECODE(SHLS_SRCTYPE, 
                     1, 'Manually Created',
                     2, 'From Host',
                     3, 'Open Order',
                     4, 'Standalone or Special',
                     'Unknown'
-                ) SHLS_SRCTYPE_DESC FROM " . $this->VIEW_NAME . "
+                ) SHLS_SRCTYPE_DESC2 
+            FROM " . $this->VIEW_NAME . ", SHL_SOURCE_TYPES
             WHERE SHLS_CALDATE > TO_CHAR(SYSDATE - 7, 'YYYY-MM-DD HH24:MI:SS')
+                AND SHLS_SRCTYPE = SHL_SOURCE_TYPES.SOURCE_TYPE_ID
             ORDER BY SHLS_CALDATE DESC";
             $stmt = oci_parse($this->conn, $query);
         
@@ -806,14 +813,17 @@ class Schedule extends CommonClass
                     6, 'Y',
                     'N'
                 ) UNLOAD,
+                SHL_SOURCE_TYPES.SOURCE_TYPE_NAME as SHLS_SRCTYPE_DESC,
                 DECODE(SHLS_SRCTYPE, 
                     1, 'Manually Created',
                     2, 'From Host',
                     3, 'Open Order',
                     4, 'Standalone or Special',
                     'Unknown'
-                ) SHLS_SRCTYPE_DESC FROM " . $this->VIEW_NAME . "
+                ) SHLS_SRCTYPE_DESC2 
+                FROM " . $this->VIEW_NAME . ", SHL_SOURCE_TYPES 
                 WHERE SHLS_CALDATE > :start_date AND SHLS_CALDATE < :end_date
+                    AND SHLS_SRCTYPE = SHL_SOURCE_TYPES.SOURCE_TYPE_ID
                 ORDER BY SHLS_CALDATE DESC";
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':start_date', $this->start_date);

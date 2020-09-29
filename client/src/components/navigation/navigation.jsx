@@ -46,13 +46,12 @@ const Navigation = () => {
             history.push(ROUTES.UNAUTHORIZED);
           } else {
             api
-              .get(`https://10.1.10.66/scadaviews/bayview/index.html`)
-              // .get(`https://${window.location.hostname}/scadaviews/bayview/index.html`)
+              .get(`https://${window.location.hostname}:${window.location.port}/scadaviews/bayview/index.html`)
               .then((res) => {
                 if (res.data.includes("<title>OMEGA 5000</title>")){
                   history.push(ROUTES.BAY_VIEW);
                 } else {
-                  window.open(`https://${window.location.hostname}/scadaviews/bayview/index.html`, "_blank");
+                  window.open(`https://${window.location.hostname}:${window.location.port}/scadaviews/bayview/index.html`, "_blank");
                 }
               })
               .catch(function (error) {

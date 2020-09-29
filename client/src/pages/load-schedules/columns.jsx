@@ -25,7 +25,7 @@ const columns = (IS_NOMINATION, t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 90,
+    width: 140,
     suppressSizeToFit: true,
     hide: IS_NOMINATION,
   },
