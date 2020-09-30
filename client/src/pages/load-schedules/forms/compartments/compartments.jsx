@@ -116,10 +116,17 @@ const Compartments = ({ form, value, tanker, drawer, supplier, config }) => {
 
     rowNode.setDataValue('prod_name', value?.prod_name);
 
-    rowNode.setDataValue(
-      'qty_scheduled',
-      data?.qty_scheduled > 0 ? data?.qty_scheduled : parseInt(data.safefill)
-    );
+    if (!value?.prod_code) {
+      rowNode.setDataValue(
+        'qty_scheduled',
+        value?.qty_scheduled
+      );
+    } else {
+      rowNode.setDataValue(
+        'qty_scheduled',
+        value?.qty_scheduled > 0 ? value?.qty_scheduled : parseInt(data.safefill)
+      );
+    }
 
     tableAPI.forEachNodeAfterFilterAndSort((rowNode, index) => {
       payload.push(rowNode.data);
