@@ -53,8 +53,8 @@ const Density = ({ form, value, product }) => {
       });
 
       if (base) {
-        setLow(base.base_class_dens_lo);
-        setHigh(base.base_class_dens_hi);
+        setLow(base.base_dens_lo);
+        setHigh(base.base_dens_hi);
       }
     }
   }, [payload, product]);
