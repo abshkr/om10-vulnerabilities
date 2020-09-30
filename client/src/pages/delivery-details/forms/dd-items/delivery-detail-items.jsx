@@ -104,14 +104,19 @@ const DeliveryDetailItems = ({
     if (length > 1) {
       addOneLine(productItem);
     } else {
-      _.forEach(products?.records, (item) => {
-        addOneLine(item);
-      });
+      if (!productItem) {
+        _.forEach(products?.records, (item) => {
+          addOneLine(item);
+        });
+      } else {
+        addOneLine(productItem);
+      }
     }
   };
 
   const handleItemRemove = () => {
     tableAPI.updateRowData({ remove: selected });
+    setSize(size>0 ? size-1 : 0);
   };
 
   const handleItemSelect = (items) => {
@@ -236,6 +241,7 @@ const DeliveryDetailItems = ({
   };
 
   const onClick = (value, record) => {
+    // console.log('.........onClick', value, record);
     setProductItem(record?.item);
   };
 
@@ -263,7 +269,7 @@ const DeliveryDetailItems = ({
         }
       >
         {products?.records?.map((item, index) => (
-          <Select.Option key={index} value={item.ddi_prod_code} item={item}>
+          <Select.Option key={index} value={item.item_desc} item={item}>
             {item.item_desc}
           </Select.Option>
         ))}
