@@ -17,12 +17,15 @@ export default class DraggableRenderer extends Component {
     const jsonData = event.dataTransfer.getData('text');
     const data = JSON.parse(jsonData);
 
+    console.log('.................gridDrop', jsonData, data, this.props);
+
     if (this.props.onDragFinished) {
       this.props.onDragFinished(this.props.rowIndex, data);
     }
   };
 
   onRemove = (event) => {
+    console.log('.................onRemove', this.props);
     if (this.props.onDragFinished) {
       this.props.onDragFinished(this.props.rowIndex, {
         prod_code: '',
@@ -33,12 +36,12 @@ export default class DraggableRenderer extends Component {
   };
 
   render() {
-    const { value } = this.props;
+    const { value, t } = this.props;
 
     return (
       <div onDragOver={this.gridDragOver} onDrop={this.gridDrop.bind(this)}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <div>{value === '' ? ' Drag A Product' : value}</div>
+          <div>{value === '' ? t('placeholder.dragProduct') : value}</div>
           {value !== '' && (
             <div>
               <Button

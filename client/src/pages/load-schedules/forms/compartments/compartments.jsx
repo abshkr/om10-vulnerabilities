@@ -88,7 +88,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, config }) => {
         })
         .then((res) => setProducts(res.data.records));
     }
-  }, [value, tanker, setFieldsValue]);
+  }, [value, tanker, setFieldsValue, setCompartments]);
 
   const rowEditingStopped = (values) => {
     // console.log(values)
@@ -111,6 +111,8 @@ const Compartments = ({ form, value, tanker, drawer, supplier, config }) => {
 
     const rowNode = tableAPI.getRowNode(index);
     const data = rowNode.data;
+
+    console.log('.......onDragFinished', index, value, data);
 
     rowNode.setDataValue('prod_code', value?.prod_code);
 
