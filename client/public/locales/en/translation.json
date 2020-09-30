@@ -1887,6 +1887,7 @@
     "transactionListbyNomination": "Transaction List By Nomination"
   },
   "placeholder": {
+    "dragProduct": "Drag A Product",
     "emailInvalid": "This Email is Invalid",
     "enterAddressLineText": "Click to enter the line text",
     "incorrectFormat": "Incorrect Format",

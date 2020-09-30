@@ -49,6 +49,7 @@ const columns = (
     cellRendererParams: {
       onDragFinished,
       compartments,
+      t,
     },
   },
 

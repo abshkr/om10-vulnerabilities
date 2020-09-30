@@ -1887,6 +1887,7 @@
 		"transactionListbyNomination": "大宗货单油品交易明细"
 	},
 	"placeholder": {
+		"dragProduct": "请拖拽油品赋予油仓",
 		"emailInvalid": "电子邮件的格式无效",
 		"enterAddressLineText": "请点击输入地址行内容",
 		"incorrectFormat": "格式不准确",
