@@ -402,14 +402,23 @@ class ManualTrans extends CommonClass
                     R.RAT_SEQ,
                     R.RAT_SUB_COUNT,
                     R.RAT_COUNT,
-                    R.RAT_TOTAL as RATIO_TOTAL
+                    R.RAT_TOTAL as RATIO_TOTAL,
+                    BA.BAA_LOCK,
+                    BA.BAA_BAD_LNK,
+                    BA.BAA_BAY_SEQ,
+                    BA.BAA_BAD_SEQ,
+                    BA.BAA_BLENDTYPE,
+                    BA.BAA_PARKTYPE
                 FROM 
                     RPTOBJ_PROD_RATIOS_VW R,
                     GUI_PIPENODE B,
+                    BA_ARMS BA,
                     BASE_PRODS BP
                 WHERE 
                     B.STREAM_BASECODE = R.RATIO_BASE(+)
                     AND B.STREAM_BASECODE = BP.BASE_CODE(+) 
+                    AND B.STREAM_ARMCODE = BA.BAA_CODE(+)
+                    AND BA.BAA_LOCK = 'N'
                     AND R.RAT_PROD_PRODCMPY = :prod_cmpy 
                     AND R.RAT_PROD_PRODCODE IN (" . $comma_separated_prods . ") 
                 ORDER BY R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE, R.RAT_SEQ, B.STREAM_BASECODE
@@ -442,14 +451,23 @@ class ManualTrans extends CommonClass
                     R.RAT_SEQ,
                     R.RAT_SUB_COUNT,
                     R.RAT_COUNT,
-                    R.RAT_TOTAL as RATIO_TOTAL
+                    R.RAT_TOTAL as RATIO_TOTAL,
+                    BA.BAA_LOCK,
+                    BA.BAA_BAD_LNK,
+                    BA.BAA_BAY_SEQ,
+                    BA.BAA_BAD_SEQ,
+                    BA.BAA_BLENDTYPE,
+                    BA.BAA_PARKTYPE
                 FROM 
                     RPTOBJ_PROD_RATIOS_VW R,
                     GUI_PIPENODE B,
+                    BA_ARMS BA,
                     BASE_PRODS BP
                 WHERE 
                     B.STREAM_BASECODE = R.RATIO_BASE(+)
                     AND B.STREAM_BASECODE = BP.BASE_CODE(+) 
+                    AND B.STREAM_ARMCODE = BA.BAA_CODE(+)
+                    AND BA.BAA_LOCK = 'N'
                     AND R.RAT_PROD_PRODCMPY = :prod_cmpy 
                     AND R.RAT_PROD_PRODCODE = :prod_code 
                 ORDER BY R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE, R.RAT_SEQ, B.STREAM_BASECODE
