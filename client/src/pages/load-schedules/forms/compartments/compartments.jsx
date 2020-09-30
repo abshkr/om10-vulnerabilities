@@ -129,6 +129,8 @@ const Compartments = ({ form, value, tanker, drawer, supplier, config }) => {
       compartments: payload,
     });
 
+    console.log(payload);
+
     setCompartments(payload);
   };
 
