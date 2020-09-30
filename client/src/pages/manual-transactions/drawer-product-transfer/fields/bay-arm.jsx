@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { Select } from 'antd';
 import _ from 'lodash';
 
-import api, { MANUAL_TRANSACTIONS } from '../../../../api';
-import {calcBaseRatios, calcArmDensity, adjustProductArms} from '../../../../utils'
+// import api, { MANUAL_TRANSACTIONS } from '../../../../api';
+import { calcArmDensity, adjustProductArms } from '../../../../utils'
 
 export default class BayArm extends Component {
   constructor(props) {
@@ -126,7 +126,8 @@ export default class BayArm extends Component {
               value={`${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
               item={item}
             >
-              {`${item.stream_baycode} - ${item.stream_armcode}`}
+              {/* {`${item.stream_baycode} - ${item.stream_armcode}`} */}
+              {`${item.stream_baycode} - ${'ARM' + item.stream_armcode.substr(4,2)}`}
             </Select.Option>
           ))}
         </Select>

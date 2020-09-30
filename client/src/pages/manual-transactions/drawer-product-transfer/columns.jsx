@@ -145,6 +145,15 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
       setPayload,
       t,
     },
+    cellRenderer: 'ListRenderer',
+    cellRendererParams: {
+      values: _.uniq(
+        _.map(productArms, (item) => {
+          // return { code: item.stream_armcode, name: item.stream_baycode + ' - ' + item.stream_armcode };
+          return { code: item.stream_armcode, name: item.stream_baycode + ' - ARM' + item.stream_armcode.substr(4,2) };
+        })
+      ),
+    },
   },
 
   {
