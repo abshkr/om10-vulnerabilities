@@ -11,6 +11,7 @@ import ATGRenderer from './atg';
 import MarkRenderer from './mark';
 import EquipmentRenderer from './equipment';
 import ListRenderer from './list';
+import PowerListRenderer from './power-list';
 import AffixRenderer from './affix';
 import TwinQuantityRenderer from './twin-quantity';
 import QuantityRenderer from './quantity';
@@ -33,6 +34,7 @@ export {
   MarkRenderer,
   EquipmentRenderer,
   ListRenderer,
+  PowerListRenderer,
   AffixRenderer,
   TwinQuantityRenderer,
   QuantityRenderer,

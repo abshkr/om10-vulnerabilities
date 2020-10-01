@@ -367,19 +367,21 @@ const useColumns = (value, selected) => {
           ? 'selected-editable-ag-grid-cell'
           : '',
 
-      cellRenderer: 'ListRenderer',
+      /* cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
           _.map(productsFrom?.records, (item) => {
             return { code: item.prod_code, name: item.prod_code + ' - ' + item.prod_name };
           })
-          /* _.map(
-            productsFrom?.records?.filter((item) => item.prod_cmpy === selected?.[0]?.mvitm_prodcmpy_from),
-            (item) => {
-              return { code: item.prod_code, name: item.prod_code + ' - ' + item.prod_name };
-            }
-          ) */
         ),
+      }, */
+
+      cellRenderer: 'PowerListRenderer',
+      cellRendererParams: {
+        values: _.uniq(productsFrom?.records),
+        codes: ['prod_cmpy', 'prod_code'],
+        names: ['prod_code', 'prod_name'],
+        columns: ['mvitm_prodcmpy_from', 'mvitm_prodcode_from'],
       },
       cellEditor: 'ListEditor',
       cellEditorParams: {
@@ -549,19 +551,21 @@ const useColumns = (value, selected) => {
           ? 'selected-editable-ag-grid-cell'
           : '',
 
-      cellRenderer: 'ListRenderer',
+      /* cellRenderer: 'ListRenderer',
       cellRendererParams: {
         values: _.uniq(
           _.map(productsTo?.records, (item) => {
             return { code: item.prod_code, name: item.prod_code + ' - ' + item.prod_name };
           })
-          /* _.map(
-            productsTo?.records?.filter((item) => item.prod_cmpy === selected?.[0]?.mvitm_prodcmpy_to),
-            (item) => {
-              return { code: item.prod_code, name: item.prod_code + ' - ' + item.prod_name };
-            }
-          ) */
         ),
+      }, */
+
+      cellRenderer: 'PowerListRenderer',
+      cellRendererParams: {
+        values: _.uniq(productsTo?.records),
+        codes: ['prod_cmpy', 'prod_code'],
+        names: ['prod_code', 'prod_name'],
+        columns: ['mvitm_prodcmpy_to', 'mvitm_prodcode_to'],
       },
       cellEditor: 'ListEditor',
       cellEditorParams: {
