@@ -21,6 +21,7 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
   const url = value ? `${MOVEMENT_NOMIATIONS.ITEMS}?mv_id=${value?.mv_id}` : null;
 
   const { data: payload, revalidate } = useSWR(url, { revalidateOnFocus: false });
+  const { data: nomItemStatus, isValidating } = useSWR(MOVEMENT_NOMIATIONS.STATUS);
 
   const [data, setData] = useState([]);
   const [selected, setSelected] = useState([]);
@@ -272,6 +273,10 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
   const handleItemAdd = () => {
     const length = getNextLineNo();
 
+    // get status name
+    const status = _.find(nomItemStatus?.records, (o)=>(String(o.movstatus_type_id)==='0'));
+    // console.log('............handleItemAdd', nomItemStatus, status);
+
     const line = {
       mvitm_line_id: String(length),
       mvitm_item_id: '',
@@ -281,7 +286,7 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
       mvitm_type_name: 'Receipt',
       mvitm_item_key: String(length),
       mvitm_status: 0,
-      mvitm_status_name: 'NEW',
+      mvitm_status_name: !status ? 'NEW' : status?.movstatus_type_name,
       mvitm_prod_qty: '0',
       mvitm_prod_unit: 5,
       mvitm_prod_unit_str: 'l (amb)',
