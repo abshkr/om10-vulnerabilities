@@ -10,13 +10,13 @@ export default class PowerListRenderer extends Component {
     };
   }
 
-  groupValuesByCodes = (data, codes) => {
+  groupValuesByKeys = (data, keys) => {
     let txt = '';
-    _.forEach(codes, (code) => {
+    _.forEach(keys, (key) => {
       if (txt.length > 0) {
         txt = txt + ' - ';
       }
-      txt = txt + data[code];
+      txt = txt + data[key];
     });
     return txt;
   };
@@ -24,12 +24,12 @@ export default class PowerListRenderer extends Component {
   getText = (items, codes, names, columns, data) => {
     // let option = _.find(items, function(o) { return o.code === item; });
     let option = _.find(items, (item) => (
-      this.groupValuesByCodes(item, codes) === this.groupValuesByCodes(data, columns)
+      this.groupValuesByKeys(item, codes) === this.groupValuesByKeys(data, columns)
     ));
     if (!option) {
       return this.state.value;
     } else {
-      return this.groupValuesByCodes(option, names);
+      return this.groupValuesByKeys(option, names);
     }
   };
 

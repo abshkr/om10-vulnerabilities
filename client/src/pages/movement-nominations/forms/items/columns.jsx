@@ -383,6 +383,17 @@ const useColumns = (value, selected) => {
         names: ['prod_code', 'prod_name'],
         columns: ['mvitm_prodcmpy_from', 'mvitm_prodcode_from'],
       },
+
+      /* cellEditor: 'PowerListEditor',
+      cellEditorParams: {
+        values: _.uniq(productsFrom?.records),
+        pcodes: ['prod_cmpy'],
+        names: ['prod_code', 'prod_name'],
+        pcolumns: ['mvitm_prodcmpy_from'],
+        ccodes: ['prod_code'],
+        ccolumns: ['mvitm_prodcode_from'],
+      }, */
+
       cellEditor: 'ListEditor',
       cellEditorParams: {
         values: _.uniq(
@@ -567,6 +578,17 @@ const useColumns = (value, selected) => {
         names: ['prod_code', 'prod_name'],
         columns: ['mvitm_prodcmpy_to', 'mvitm_prodcode_to'],
       },
+
+      /* cellEditor: 'PowerListEditor',
+      cellEditorParams: {
+        values: _.uniq(productsTo?.records),
+        pcodes: ['prod_cmpy'],
+        names: ['prod_code', 'prod_name'],
+        pcolumns: ['mvitm_prodcmpy_to'],
+        ccodes: ['prod_code'],
+        ccolumns: ['mvitm_prodcode_to'],
+      }, */
+
       cellEditor: 'ListEditor',
       cellEditorParams: {
         values: _.uniq(
