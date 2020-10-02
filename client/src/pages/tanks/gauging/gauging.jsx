@@ -18,6 +18,11 @@ const Gauging = ({ selected, access, isLoading, setSelected }) => {
   const onFinish = async () => {
     const values = await form.validateFields();
 
+    // console.log('..............values', values, selected);
+    // the tank_code has no value here, so we need to use the one from selection.
+    // Otherwise it will pick up the 1st tank user used to update after opening tank status screen.
+    values.tank_code = selected?.tank_code;
+
     Modal.confirm({
       title: t('prompts.update'),
       okText: t('operations.update'),
@@ -68,7 +73,7 @@ const Gauging = ({ selected, access, isLoading, setSelected }) => {
           </Form.Item>,
         ]}
       >
-        <Form.Item name="tank_code" noStyle />
+        {/* <Form.Item name="tank_code" noStyle /> */}
         <GaugingForm form={form} value={selected} />
       </Card>
     </Form>
