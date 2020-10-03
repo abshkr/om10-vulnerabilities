@@ -520,7 +520,8 @@ const FormModal = ({
     if (productItemTo && pageState !== 'disposal') {
       if (_.toNumber(productItemTo?.rat_count) > 1) {
         notification.error({
-          message: _.capitalize(pageState) + ': ' 
+          // message: _.capitalize(pageState) + ': ' 
+          message: value?.mvitm_type_name + ': ' 
             + productItemTo.prod_cmpy + ' - ' 
             + productItemTo.prod_code + ' - ' 
             + productItemTo.prod_name + ' ['
@@ -537,7 +538,8 @@ const FormModal = ({
     if (productItemFrom && pageState === 'transfer') {
       if (_.toNumber(productItemFrom?.rat_count) > 1) {
         notification.error({
-          message: _.capitalize(pageState) + ': ' 
+          // message: _.capitalize(pageState) + ': ' 
+          message: value?.mvitm_type_name + ': ' 
             + productItemFrom.prod_cmpy + ' - ' 
             + productItemFrom.prod_code + ' - ' 
             + productItemFrom.prod_name + ' ['
