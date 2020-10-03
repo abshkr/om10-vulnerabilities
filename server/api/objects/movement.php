@@ -1113,7 +1113,9 @@ class Movement extends CommonClass
             AND MVITM_UNIT_MOVE = U3.UNIT_ID (+)
             AND MVITM_UNIT_DELV = U4.UNIT_ID (+)
             AND MVITM_TYPE = MOVITEM_TYPES.MOVITEM_TYPE_ID (+)
-            AND MVITM_STATUS = MOVSTATUS_TYPES.MOVSTATUS_TYPE_ID (+)";
+            AND MVITM_STATUS = MOVSTATUS_TYPES.MOVSTATUS_TYPE_ID (+)
+        ORDER BY MVITM_ITEM_ID
+        ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':mvitm_line_id', $this->mv_id);
 
