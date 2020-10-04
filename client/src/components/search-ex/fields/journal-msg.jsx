@@ -9,7 +9,7 @@ const JournalSearch = () => {
   return (
     <Form.Item
         name="target_str"
-        label={t('fields.message')}
+        label={t('fields.details')}
       >
         <Input.TextArea rows='2'/>
       </Form.Item>

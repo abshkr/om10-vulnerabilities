@@ -50,160 +50,319 @@ class Journal
 
     //Mainly table name
     private $modules = array(
-        "GUI_TANKS" => "tank",
-        "GUI_REPORT_COMPANY" => "report configuration",
-        "GUI_REPORT_PROFILE" => "report profile",
-        "GUI_PERSONNEL" => "personnel",
-        "EXPIRY_DATE_PERSONNEL" => "personnel expiry date",
-        "TIMECODE" => "time code",
-        "PRINTER" => "physical printer",
-        "GUI_TANKERS" => "tanker",
-        "EXPIRY_DATE_TANKERS" => "tanker expiry date",
-        "TRANSP_EQUIP" => "equipment",
-        "EXPIRY_DATE_TRANSP_EQUIP" => "equipment expiry",
-        "EXPIRY_DATE_TANKERS" => "tanker expiry",
-        "EXPIRY_DATE_PERSONNEL" => "personnel expiry",
-        "GUI_ACCESS_KEYS" => "id assignment",
-        "BASE_PRODS" => "base product",
-        "EXPIRY_DATE_TYPES" => "expiry date type",
-        "URBAC_ROLE_DOMAINS_PRIVILEGES" => "role access privilege"
+        "CHN" => array(
+            "GUI_TANKS" => "油罐",
+            "GUI_REPORT_COMPANY" => "可用报表设置配置",
+            "GUI_REPORT_PROFILE" => "基础报表",
+            "GUI_PERSONNEL" => "人员",
+            "EXPIRY_DATE_PERSONNEL" => "人员有效期",
+            "TIMECODE" => "班次",
+            "PRINTER" => "物理打印机",
+            "GUI_TANKERS" => "油槽车",
+            "EXPIRY_DATE_TANKERS" => "油槽车有效期",
+            "TRANSP_EQUIP" => "运输设备",
+            "EXPIRY_DATE_TRANSP_EQUIP" => "运输设备有效期",
+            "EXPIRY_DATE_TANKERS" => "油槽车有效期",
+            "EXPIRY_DATE_PERSONNEL" => "人员有效期",
+            "GUI_ACCESS_KEYS" => "标识密钥",
+            "BASE_PRODS" => "基础油品",
+            "EXPIRY_DATE_TYPES" => "有效期类型",
+            "URBAC_ROLE_DOMAINS_PRIVILEGES" => "角色访问权限"
+        ),
+        "ENG" => array(
+            "GUI_TANKS" => "tank",
+            "GUI_REPORT_COMPANY" => "report configuration",
+            "GUI_REPORT_PROFILE" => "report profile",
+            "GUI_PERSONNEL" => "personnel",
+            "EXPIRY_DATE_PERSONNEL" => "personnel expiry date",
+            "TIMECODE" => "time code",
+            "PRINTER" => "physical printer",
+            "GUI_TANKERS" => "tanker",
+            "EXPIRY_DATE_TANKERS" => "tanker expiry date",
+            "TRANSP_EQUIP" => "equipment",
+            "EXPIRY_DATE_TRANSP_EQUIP" => "equipment expiry",
+            "EXPIRY_DATE_TANKERS" => "tanker expiry",
+            "EXPIRY_DATE_PERSONNEL" => "personnel expiry",
+            "GUI_ACCESS_KEYS" => "id assignment",
+            "BASE_PRODS" => "base product",
+            "EXPIRY_DATE_TYPES" => "expiry date type",
+            "URBAC_ROLE_DOMAINS_PRIVILEGES" => "role access privilege"
+        )
     );
 
     //Mainly fields in table
     private $keys = array(
-        "GUI_TANKS" => array(
-            "TANK_GAUGINGMTHD_DESC" => "gauging method",
-            "TANK_ULLAGE" => "ullage",
-            "TANK_API" => "API",
-            "TANK_SG" => "specific gravity",
-            "TANK_15_DENSITY" => "density",
-            "TANK_SULPHUR" => "sulphur(wt%)",
-            "TANK_FLASHPOINT" => "flash point",
-            "TANK_STATUS_NAME" => "tank status",
-            "TANK_HH_LEVEL" => "HH",
-            "TANK_H_LEVEL" => "H",
-            "TANK_L_LEVEL" => "L",
-            "TANK_LL_LEVEL" => "LL",
-            "TANK_UH_LEVEL" => "user H",
-            "TANK_UL_LEVEL" => "user L",
-            "TANK_AMB_VOL" => "AMB volume",
-            "TANK_PROD_C_OF_E" => "Exp.Coeff",
-            "TANK_PROD_LVL" => "product level",
-            "TANK_COR_VOL" => "std volume",
-            "TANK_LEAKDTCT_ON" => "leak detection",
-            "TANK_BASE" => "product code",
-            "TANK_TEMP" => "observed temperature",
-            "TANK_LIQUID_KG" => "liquid mass",
-            "TANK_DENSITY" => "density",
-            "TANK_INSTANCE" => "instance",
-            "TANK_DRV_TYPE" => "interface type",
-            "TANK_CHANNEL" => "channel",
-            "TANK_ADDRESS" => "register offset",
-            "TANK_DRV_AUX" => "auxiliary",
-            "TANK_POLL_GAP" => "poll interval",
-            "TANK_IDENTIFIER" => "identifer for gauge",
-        ),
-        "GUI_PERSONNEL" => array(
-            "PER_NAME" => "name",
-            "PER_LOCK" => "lock out",
-            "PER_DEPARTMENT" => "department",
-            "PER_LICENCE_NO" => "driver license no.",
-            "PER_COMMENTS" => "comments",
-            "PT_TIMECD" => "time code",
-            "USER_STATUS_FLAG" => "status",
-            "PER_CMPY" => "employer",
-            "CMPY_NAME" => "employer",
-            "PER_EMAIL" => "personnel email",
-        ),
-        "EXPIRY_DATE_DETAILS" => array(
+        "CHN" => array(
+            "GUI_TANKS" => array(
+                "TANK_GAUGINGMTHD_DESC" => "测量方法",
+                "TANK_ULLAGE" => "罐空余量",
+                "TANK_API" => "API",
+                "TANK_SG" => "比重",
+                "TANK_15_DENSITY" => "密度",
+                "TANK_SULPHUR" => "含硫率(重量%)",
+                "TANK_FLASHPOINT" => "闪点",
+                "TANK_STATUS_NAME" => "油罐状态",
+                "TANK_HH_LEVEL" => "高高报警点液位",
+                "TANK_H_LEVEL" => "高报警点液位",
+                "TANK_L_LEVEL" => "低报警点液位",
+                "TANK_LL_LEVEL" => "低低报警点液位",
+                "TANK_UH_LEVEL" => "用户高报警点液位",
+                "TANK_UL_LEVEL" => "用户低报警点液位",
+                "TANK_AMB_VOL" => "视量容积",
+                "TANK_PROD_C_OF_E" => "校正系数",
+                "TANK_PROD_LVL" => "油品液位",
+                "TANK_COR_VOL" => "标量容积",
+                "TANK_LEAKDTCT_ON" => "泄露监测",
+                "TANK_BASE" => "油罐油品代码",
+                "TANK_TEMP" => "视温度",
+                "TANK_LIQUID_KG" => "油品重量",
+                "TANK_DENSITY" => "标准密度",
+                "TANK_INSTANCE" => "设备使用口号码",
+                "TANK_DRV_TYPE" => "界面类型",
+                "TANK_CHANNEL" => "通讯频道",
+                "TANK_ADDRESS" => "油罐地址",
+                "TANK_DRV_AUX" => "电子地址",
+                "TANK_POLL_GAP" => "轮询间隔(秒)",
+                "TANK_IDENTIFIER" => "测量标识号",
+            ),
+            "GUI_PERSONNEL" => array(
+                "PER_NAME" => "人员名称",
+                "PER_LOCK" => "锁定",
+                "PER_DEPARTMENT" => "部门",
+                "PER_LICENCE_NO" => "司机执照",
+                "PER_COMMENTS" => "备注",
+                "PT_TIMECD" => "班次",
+                "USER_STATUS_FLAG" => "用户状态",
+                "PER_CMPY" => "雇主",
+                "CMPY_NAME" => "雇主",
+                "PER_EMAIL" => "电子邮件",
+            ),
+            "EXPIRY_DATE_DETAILS" => array(
 
+            ),
+            "TIMECODE" => array(
+                "TCD_MON" => "星期一",
+                "TCD_TUE" => "星期二",
+                "TCD_WED" => "星期三",
+                "TCD_THU" => "星期四",
+                "TCD_FRI" => "星期五",
+                "TCD_SAT" => "星期六",
+                "TCD_SUN" => "星期日",
+            ),
+            "PRINTER" => array(
+                "SYS_PRNTR" => "系统/物理打印机",
+                "AREA_NAME" => "区域地点",
+                "PRNTR_LOCK" => "锁定",
+                "PRNTR_AREA" => "打印机区域",
+            ),
+            "GUI_TANKERS" => array(
+                "ADJ_CMPT_LOCK" => "油仓锁定状态",
+                "TNKR_LOCK" => "油槽车锁定标志",
+                "TNKR_ACTIVE" => "油槽车激活标志",
+                "TNKR_MAX_KG" => "最大重量",
+                "TNKR_BAY_LOOP_CH" => "发油台检查标志",
+                "TNKR_NTRIPS" => "总提单数",
+                "STATS" => "油槽车状态",
+                "LAST_TRIP" => "最近提单",
+                "TNKR_NAME" => "油槽车名称",
+                "TNKR_PIN" => "密码",
+                "TNKR_ARCHIVE" => "油槽车归档标志",
+                "REMARKS" => "备注",
+                "TNKR_OWN_TXT" => "提示",
+            ),
+            "TRANSP_EQUIP" => array(
+                "EQPT_TITLE" => "运输设备名称",
+                "EQPT_LOCK" => "锁定标志",
+                "EQPT_EMPTY_KG" => "空仓重量",
+                "EQP_MUST_TARE_IN" => "预称重标志",
+                "EQPT_MAX_GROSS" => "车头承重",
+                "EQPT_COMMENTS" => "备注",
+                "EQPT_AREA" => "运输设备区域",
+                "EQPT_LOAD_TYPE" => "装载方式",
+            ),
+            "GUI_ACCESS_KEYS" => array(
+                "KYA_LOCK" => "锁定标志",
+                "KYA_TIMECD" => "标识班次",
+                "KYA_TXT" => "标识序列码",
+                "KYA_ADHOC" => "临时标识",
+                "KYA_PSN" => "标识人员",
+                "KYA_ROLE" => "标识角色",
+                "KYA_DRAWER" => "油品调配商",
+                "KYA_TANKER" => "油槽车",
+                "KYA_EQUIPMENT" => "运输设备",
+                "KYA_SP_SUPPLIER" => "供应商",
+                "KYA_PHYS_NAME" => "标识物理类型",
+            ),
+            "BASE_PRODS" => array(
+                "BASE_NAME" => "基础油品名称",
+                "BASE_PROD_GROUP" => "基础油品分组",
+                "BASE_CORR_MTHD" => "校准方式",
+                "BASE_REF_TEMP" => "参照温度",
+                "BASE_DENS_HI" => "基础油品密度上限",
+                "BASE_DENS_LO" => "基础油品密度下限",
+                "BASE_CAT" => "基础油品类别",
+                "BASE_REF_TUNT" => "报表温度单位",
+                "BASE_LIMIT_PRESET_HT" => "高温车容预检标志",
+                "BASE_REF_TEMP_SPEC" => "参照温度种类",
+            ),
+            "EXPIRY_DATE_TYPES" => array(
+                "EDT_TIME_ENABLED" => "编辑时间允许标志",
+                "EDT_STATUS" => "类别启用标志",
+                "EDT_REJECT" => "拒绝授权标志",
+                "EDT_DEFAULT" => "系统默认标志",
+                "EDT_TYPE_DESC" => "有效期类别描述",
+                "EDT_DEF_EXP_DATE" => "默认有效期值",
+            ),
+            "PRMSSN_RC" => array (
+                "PRMSSN_NAME" => "许可权限名称",
+                "RULE_CASE" => "许可权限规则类别",
+                "RULE_ETYP" => "运输设备类型",
+                "RULE_AUTH" => "授权级别",
+                "RULE_EXPIRY_CHECK" => "检查有效期标志"
+            ),
+            "URBAC_ROLE_DOMAINS_PRIVILEGES" => array(
+                "PRIV_VIEW" => "查看权限",
+                "PRIV_CREATE" => "新增权限",
+                "PRIV_UPDATE" => "修改权限",
+                "PRIV_DELETE" => "删除权限",
+                "PRIV_PROTECT" => "密码保护",
+            )
         ),
-        "TIMECODE" => array(
-            "TCD_MON" => "Monday",
-            "TCD_TUE" => "Thuesday",
-            "TCD_WED" => "Wednesday",
-            "TCD_THU" => "Thursday",
-            "TCD_FRI" => "Friday",
-            "TCD_SAT" => "Saturday",
-            "TCD_SUN" => "Sunday",
-        ),
-        "PRINTER" => array(
-            "SYS_PRNTR" => "system/physical printer",
-            "AREA_NAME" => "area location",
-            "PRNTR_LOCK" => "lock",
-            "PRNTR_AREA" => "printer area",
-        ),
-        "GUI_TANKERS" => array(
-            "ADJ_CMPT_LOCK" => "compartment lock status",
-            "TNKR_LOCK" => "lock status",
-            "TNKR_ACTIVE" => "active status",
-            "TNKR_MAX_KG" => "max kg",
-            "TNKR_BAY_LOOP_CH" => "bay check status",
-            "TNKR_NTRIPS" => "total trips",
-            "STATS" => "status",
-            "LAST_TRIP" => "last trip",
-            "TNKR_NAME" => "name",
-            "TNKR_PIN" => "pin",
-            "TNKR_ARCHIVE" => "archive status",
-            "REMARKS" => "comments",
-            "TNKR_OWN_TXT" => "tanker prompt",
-        ),
-        "TRANSP_EQUIP" => array(
-            "EQPT_TITLE" => "title",
-            "EQPT_LOCK" => "lock",
-            "EQPT_EMPTY_KG" => "empty weight",
-            "EQP_MUST_TARE_IN" => "tare_in status",
-            "EQPT_MAX_GROSS" => "pulling limit",
-            "EQPT_COMMENTS" => "comments",
-            "EQPT_AREA" => "area",
-            "EQPT_LOAD_TYPE" => "load type",
-        ),
-        "GUI_ACCESS_KEYS" => array(
-            "KYA_LOCK" => "lock status",
-            "KYA_TIMECD" => "time code",
-            "KYA_TXT" => "tag",
-            "KYA_ADHOC" => "adhoc",
-            "KYA_PSN" => "personnel",
-            "KYA_ROLE" => "role",
-            "KYA_DRAWER" => "drawer",
-            "KYA_TANKER" => "tanker",
-            "KYA_EQUIPMENT" => "equipment",
-            "KYA_SP_SUPPLIER" => "supplier",
-            "KYA_PHYS_NAME" => "physical type",
-        ),
-        "BASE_PRODS" => array(
-            "BASE_NAME" => "base name",
-            "BASE_PROD_GROUP" => "product group",
-            "BASE_CORR_MTHD" => "correction method",
-            "BASE_REF_TEMP" => "reference temperature",
-            "BASE_DENS_HI" => "density high",
-            "BASE_DENS_LO" => "density low",
-            "BASE_CAT" => "classification",
-            "BASE_REF_TUNT" => "base ref tunt",
-            "BASE_LIMIT_PRESET_HT" => "limit_preset_ht",
-            "BASE_REF_TEMP_SPEC" => "ref temp spec",
-        ),
-        "EXPIRY_DATE_TYPES" => array(
-            "EDT_TIME_ENABLED" => "enabled",
-            "EDT_STATUS" => "status",
-            "EDT_REJECT" => "reject authorization",
-            "EDT_DEFAULT" => "default flag",
-            "EDT_TYPE_DESC" => "type description",
-            "EDT_DEF_EXP_DATE" => "default value",
-        ),
-        "PRMSSN_RC" => array (
-            "PRMSSN_NAME" => "permission name",
-            "RULE_CASE" => "permission rule class",
-            "RULE_ETYP" => "equipment type",
-            "RULE_AUTH" => "authority type",
-            "RULE_EXPIRY_CHECK" => "expiry check"
-        ),
-        "URBAC_ROLE_DOMAINS_PRIVILEGES" => array(
-            "PRIV_VIEW" => "view privilege",
-            "PRIV_CREATE" => "create privilege",
-            "PRIV_UPDATE" => "update privilege",
-            "PRIV_DELETE" => "delete privilege",
-            "PRIV_PROTECT" => "password",
+        "ENG" => array(
+            "GUI_TANKS" => array(
+                "TANK_GAUGINGMTHD_DESC" => "gauging method",
+                "TANK_ULLAGE" => "ullage",
+                "TANK_API" => "API",
+                "TANK_SG" => "specific gravity",
+                "TANK_15_DENSITY" => "density",
+                "TANK_SULPHUR" => "sulphur(wt%)",
+                "TANK_FLASHPOINT" => "flash point",
+                "TANK_STATUS_NAME" => "tank status",
+                "TANK_HH_LEVEL" => "HH",
+                "TANK_H_LEVEL" => "H",
+                "TANK_L_LEVEL" => "L",
+                "TANK_LL_LEVEL" => "LL",
+                "TANK_UH_LEVEL" => "user H",
+                "TANK_UL_LEVEL" => "user L",
+                "TANK_AMB_VOL" => "AMB volume",
+                "TANK_PROD_C_OF_E" => "Exp.Coeff",
+                "TANK_PROD_LVL" => "product level",
+                "TANK_COR_VOL" => "std volume",
+                "TANK_LEAKDTCT_ON" => "leak detection",
+                "TANK_BASE" => "product code",
+                "TANK_TEMP" => "observed temperature",
+                "TANK_LIQUID_KG" => "liquid mass",
+                "TANK_DENSITY" => "density",
+                "TANK_INSTANCE" => "instance",
+                "TANK_DRV_TYPE" => "interface type",
+                "TANK_CHANNEL" => "channel",
+                "TANK_ADDRESS" => "register offset",
+                "TANK_DRV_AUX" => "auxiliary",
+                "TANK_POLL_GAP" => "poll interval",
+                "TANK_IDENTIFIER" => "identifer for gauge",
+            ),
+            "GUI_PERSONNEL" => array(
+                "PER_NAME" => "name",
+                "PER_LOCK" => "lock out",
+                "PER_DEPARTMENT" => "department",
+                "PER_LICENCE_NO" => "driver license no.",
+                "PER_COMMENTS" => "comments",
+                "PT_TIMECD" => "time code",
+                "USER_STATUS_FLAG" => "status",
+                "PER_CMPY" => "employer",
+                "CMPY_NAME" => "employer",
+                "PER_EMAIL" => "personnel email",
+            ),
+            "EXPIRY_DATE_DETAILS" => array(
+
+            ),
+            "TIMECODE" => array(
+                "TCD_MON" => "Monday",
+                "TCD_TUE" => "Thuesday",
+                "TCD_WED" => "Wednesday",
+                "TCD_THU" => "Thursday",
+                "TCD_FRI" => "Friday",
+                "TCD_SAT" => "Saturday",
+                "TCD_SUN" => "Sunday",
+            ),
+            "PRINTER" => array(
+                "SYS_PRNTR" => "system/physical printer",
+                "AREA_NAME" => "area location",
+                "PRNTR_LOCK" => "lock",
+                "PRNTR_AREA" => "printer area",
+            ),
+            "GUI_TANKERS" => array(
+                "ADJ_CMPT_LOCK" => "compartment lock status",
+                "TNKR_LOCK" => "lock status",
+                "TNKR_ACTIVE" => "active status",
+                "TNKR_MAX_KG" => "max kg",
+                "TNKR_BAY_LOOP_CH" => "bay check status",
+                "TNKR_NTRIPS" => "total trips",
+                "STATS" => "status",
+                "LAST_TRIP" => "last trip",
+                "TNKR_NAME" => "name",
+                "TNKR_PIN" => "pin",
+                "TNKR_ARCHIVE" => "archive status",
+                "REMARKS" => "comments",
+                "TNKR_OWN_TXT" => "tanker prompt",
+            ),
+            "TRANSP_EQUIP" => array(
+                "EQPT_TITLE" => "title",
+                "EQPT_LOCK" => "lock",
+                "EQPT_EMPTY_KG" => "empty weight",
+                "EQP_MUST_TARE_IN" => "tare_in status",
+                "EQPT_MAX_GROSS" => "pulling limit",
+                "EQPT_COMMENTS" => "comments",
+                "EQPT_AREA" => "area",
+                "EQPT_LOAD_TYPE" => "load type",
+            ),
+            "GUI_ACCESS_KEYS" => array(
+                "KYA_LOCK" => "lock status",
+                "KYA_TIMECD" => "time code",
+                "KYA_TXT" => "tag",
+                "KYA_ADHOC" => "adhoc",
+                "KYA_PSN" => "personnel",
+                "KYA_ROLE" => "role",
+                "KYA_DRAWER" => "drawer",
+                "KYA_TANKER" => "tanker",
+                "KYA_EQUIPMENT" => "equipment",
+                "KYA_SP_SUPPLIER" => "supplier",
+                "KYA_PHYS_NAME" => "physical type",
+            ),
+            "BASE_PRODS" => array(
+                "BASE_NAME" => "base name",
+                "BASE_PROD_GROUP" => "product group",
+                "BASE_CORR_MTHD" => "correction method",
+                "BASE_REF_TEMP" => "reference temperature",
+                "BASE_DENS_HI" => "density high",
+                "BASE_DENS_LO" => "density low",
+                "BASE_CAT" => "classification",
+                "BASE_REF_TUNT" => "base ref tunt",
+                "BASE_LIMIT_PRESET_HT" => "limit_preset_ht",
+                "BASE_REF_TEMP_SPEC" => "ref temp spec",
+            ),
+            "EXPIRY_DATE_TYPES" => array(
+                "EDT_TIME_ENABLED" => "enabled",
+                "EDT_STATUS" => "status",
+                "EDT_REJECT" => "reject authorization",
+                "EDT_DEFAULT" => "default flag",
+                "EDT_TYPE_DESC" => "type description",
+                "EDT_DEF_EXP_DATE" => "default value",
+            ),
+            "PRMSSN_RC" => array (
+                "PRMSSN_NAME" => "permission name",
+                "RULE_CASE" => "permission rule class",
+                "RULE_ETYP" => "equipment type",
+                "RULE_AUTH" => "authority type",
+                "RULE_EXPIRY_CHECK" => "expiry check"
+            ),
+            "URBAC_ROLE_DOMAINS_PRIVILEGES" => array(
+                "PRIV_VIEW" => "view privilege",
+                "PRIV_CREATE" => "create privilege",
+                "PRIV_UPDATE" => "update privilege",
+                "PRIV_DELETE" => "delete privilege",
+                "PRIV_PROTECT" => "password",
+            )
         )
     );
 
@@ -271,6 +430,8 @@ class Journal
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+
+        $msg_data = array();
         // $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
             $template_str = $row['MESSAGE'];
@@ -280,16 +441,37 @@ class Journal
             $message = "";
             for ($i = 0; $i < strlen($template_str); $i++) {
                 if ($template_str[$i] === '%') {
+                    if (!isset($data[$hit])) {
+                        $data[$hit] = "?";
+                    }
+                    $msg_data[$hit] = $data[$hit];
                     if ($hit === 1 && (
                         $template == Lookup::RECORD_ALTERED
                         || $template == Lookup::RECORD_ADD
                         || $template == Lookup::RECORD_DELETE
+                        || $template == Lookup::RECORD_ADDED
+                        || $template == Lookup::RECORD_DELETED
                     )) {
-                        if (isset($this->modules[$data[1]])) {
-                            $data[1] = $this->modules[$data[1]];
+                        if (isset($this->modules[$lang][$data[1]])) {
+                            $msg_data[1] = $this->modules[$lang][$data[1]];
                         }
                     }
-                    $message = $message . $data[$hit];
+                    if ($template == Lookup::RECORD_CHANGED) {
+                        if ($hit === 1) {
+                            if (isset($this->modules[$lang][$data[1]])) {
+                                $msg_data[1] = $this->modules[$lang][$data[1]];
+                            }
+                        }
+                        if ($hit === 3) {
+                            if (isset($this->keys[$lang][$data[1]][strtoupper($data[3])])) {
+                                $msg_data[3] = $this->keys[$lang][$data[1]][strtoupper($data[3])];
+                            } else {
+                                write_log(sprintf("[%s:%s] not defined in journal::keys, use term instead", 
+                                    $data[1], $data[3]), __FILE__, __LINE__, LogLevel::WARNING);
+                            }
+                        }
+                    }
+                    $message = $message . $msg_data[$hit];
                     $hit += 1;
                 } else {
                     $message = $message . $template_str[$i];
@@ -420,21 +602,23 @@ class Journal
         }
 
         $jnl_data[0] = Utilities::getCurrPsn();
-        if (isset($this->modules[$module])) {
+        $jnl_data[1] = $module; // do lookup when logging journal by the language
+        /* if (isset($this->modules[$module])) {
             $jnl_data[1] = $this->modules[$module];
         } else {
             $jnl_data[1] = $module;
-        }
+        } */
 
         $jnl_data[2] = $record;
 
-        if (isset($this->keys[$module][strtoupper($term)])) {
+        $jnl_data[3] = $term; // do lookup when logging journal by the language
+        /* if (isset($this->keys[$module][strtoupper($term)])) {
             $jnl_data[3] = $this->keys[$module][strtoupper($term)];
         } else {
             $jnl_data[3] = $term;
             write_log(sprintf("[%s:%s] not defined in journal::keys, use term instead", $module, $term),
                 __FILE__, __LINE__, LogLevel::WARNING);
-        }
+        } */
 
         $jnl_data[4] = $orig_value;
         $jnl_data[5] = $new_value;
