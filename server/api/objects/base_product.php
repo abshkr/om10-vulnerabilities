@@ -263,7 +263,7 @@ class BaseProduct extends CommonClass
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
         $jnl_data[0] = $curr_psn;
-        $jnl_data[1] = "Base product";
+        $jnl_data[1] = "BASE_PRODS";
         $jnl_data[2] = $this->base_code;
         $jnl_data[3] = sprintf(
             "name:%s, group:%s", $this->base_name, $this->base_prod_group);
@@ -332,7 +332,7 @@ class BaseProduct extends CommonClass
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
         $jnl_data[0] = $curr_psn;
-        $jnl_data[1] = "Base product";
+        $jnl_data[1] = "BASE_PRODS";
         $jnl_data[2] = $this->base_code;
 
         if (!$journal->jnlLogEvent(
@@ -428,7 +428,7 @@ class BaseProduct extends CommonClass
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
         $jnl_data[0] = $curr_psn;
-        $jnl_data[1] = "Base product";
+        $jnl_data[1] = "BASE_PRODS";
         $jnl_data[2] = $this->base_code;
 
         if (!$journal->jnlLogEvent(
