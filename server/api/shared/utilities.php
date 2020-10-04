@@ -63,6 +63,37 @@ class Utilities
         }
     }
 
+    /**
+    * Recursively process an array to convert all values in the array
+    * @param $data the array to be processed. This is pass-by-reference.
+    */
+    public static function arrayEncodingConversion(&$data, $to = 'UTF-8', $from = 'GB18030')
+    // public static function arrayEncodingConversion(&$data, $to = 'UTF-8', $from = 'GB2312')
+    // public static function arrayEncodingConversion(&$data, $to = 'GB2312', $from = 'UTF-8')
+    {
+        $nls_lang_str = strtoupper($_SERVER['NLS_LANG']);
+        if ( strpos( $nls_lang_str, "AL32UTF8" ) !== FALSE ) {
+            return;
+        }
+        
+        foreach($data as $key => $value) {
+            if (is_array($value) || is_object($value)) {
+                if (is_array($data))
+                    self::arrayEncodingConversion($data[$key], $to, $from);
+                else if (is_object($data))
+                    self::arrayEncodingConversion($data->$key, $to, $from);
+            } else {
+                if (is_string($value)) {
+                    if (is_array($data))
+                        $data[$key] = mb_convert_encoding($value, $to, $from);
+                    else if (is_object($data))
+                        $data->$key = mb_convert_encoding($value, $to, $from);
+                }
+            }
+        }
+    }
+
+
     // Because some CGI may return language-related content to indicate the success or failure of DB operations,
     // we need check them according to the particular langauge.
     public static function http_cgi_result($response, $results)
@@ -86,17 +117,23 @@ class Utilities
         foreach ($results as $key => $value) {
             if ($lang === $key) {
                 $patternSuccess = $value;
+                // check if the response body contains the text indicating success
+                $isFound = strpos($response, $patternSuccess);
+                if ($isFound === true) {
+                    break;
+                }
+                // if not found the success text, it may have different encoding in Chinese
                 // CGI uses GB2312 for Chinese, V10 uses UTF-8.
                 if ($lang === 'CHN') {
                     // $value is from V10 PHP in UTF-8 format
                     // the text in response is in GB2312
                     // $patternSuccess = mb_convert_encoding($value, 'UTF-8', 'GB2312');
                     $patternSuccess = mb_convert_encoding($value, 'GB2312', 'UTF-8');
-                }
-                // check if the response body contains the text indicating success
-                $isFound = strpos($response, $patternSuccess);
-                if ($isFound === true) {
-                    break;
+                    // check if the response body contains the text indicating success
+                    $isFound = strpos($response, $patternSuccess);
+                    if ($isFound === true) {
+                        break;
+                    }
                 }
             }
         }
@@ -258,6 +295,8 @@ class Utilities
 
         http_response_code(200);
         if ($num > 0) {
+            // self::arrayEncodingConversion($result["records"]);
+            // self::arrayEncodingConversion($result["records"], 'UTF-8', 'GB18030');
             echo json_encode($result, JSON_PRETTY_PRINT);
         } else {
             $result["message"] = response("__NO_RECORD_FOUND__");
