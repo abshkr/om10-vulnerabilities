@@ -235,11 +235,10 @@ const Settings = ({ user }) => {
             </Form.Item>
 
             <Form.Item name="password" rules={[{ required: true, validator: validatePassword }]}>
-              <Input
+              <Input.Password
                 onChange={(e) => setPassword(e.target.value)}
                 prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder={t('fields.newPassword')}
-                type="password"
                 autoComplete="off"
               />
             </Form.Item>
@@ -253,10 +252,9 @@ const Settings = ({ user }) => {
                 },
               ]}
             >
-              <Input
+              <Input.Password
                 prefix={<LockOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder={t('fields.confirmPassword')}
-                type="password"
                 autoComplete="off"
               />
             </Form.Item>
