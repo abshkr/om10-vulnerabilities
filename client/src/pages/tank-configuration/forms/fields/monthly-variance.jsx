@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, Input } from 'antd';
+import { Form, Input, InputNumber } from 'antd';
 import _ from 'lodash';
 
 const MontlhyVariance = ({ form, value }) => {
@@ -9,9 +9,9 @@ const MontlhyVariance = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const handlePercentageValidation = (rule, input) => {
-    if (input && !_.isInteger(parseInt(input))) {
+    /* if (input && !_.isInteger(parseInt(input))) {
       return Promise.reject(`${t('placeholder.wrongType')}: ${t('types.integer')}`);
-    }
+    } */
 
     if (input && parseInt(input) < -100) {
       return Promise.reject(`${t('placeholder.limit')}: ${-100} ─ ${t('descriptions.valueTooLow')}`);
@@ -57,7 +57,7 @@ const MontlhyVariance = ({ form, value }) => {
           }
         ]}
       >
-        <Input />
+        <InputNumber style={{ width: '100%' }} />
       </Form.Item>
 
       <Form.Item
