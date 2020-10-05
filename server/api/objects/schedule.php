@@ -1147,7 +1147,7 @@ class Schedule extends CommonClass
             NVL(UNIT_CODE, CMPT_UNITS) UNIT_CODE, 
             NVL(UNIT_NAME, CMPT_UNITS_NAME) UNIT_NAME, 
             SAFEFILL,
-            QTY_SCHEDULED, 
+            NVL(QTY_SCHEDULED, QTY_LOADED)  as QTY_SCHEDULED, 
             QTY_PRELOAD,
             SCHDSPEC_SHLSTRIP, 
             SCHDSPEC_SHLSSUPP, 
