@@ -9,6 +9,7 @@ import OtherForm from './other';
 import PrinterForm from './printer';
 import TemplateForm from './template';
 import _ from 'lodash';
+import { useConfig } from 'hooks';
 
 import api, { COMPANIES } from '../../../api';
 import { mutate } from 'swr';
@@ -16,6 +17,8 @@ import { mutate } from 'swr';
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, handleFormState, setFilterValue }) => {
+  const { bolVersion } = useConfig();
+  
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -122,9 +125,11 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
           <TabPane tab={t('tabColumns.printerSettings')} key="3" style={{ height: '60vh' }}>
             <PrinterForm value={value} form={form}></PrinterForm>
           </TabPane>
+          {bolVersion === 'JASPER' && 
           <TabPane tab={t('tabColumns.transportationDoc')} key="4" style={{ height: '60vh' }}>
             <TemplateForm value={value} form={form}></TemplateForm>
           </TabPane>
+          }
         </Tabs>
 
         <Form.Item>
