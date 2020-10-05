@@ -44,12 +44,13 @@ const columns = (
     resizable: true,
     width: 300,
     suppressSizeToFit: true,
+    editable: true,
+    cellClass: 'editable-ag-grid-cell',
+    cellEditor: 'ProductEditor',
 
-    cellRenderer: 'DraggableRenderer',
-    cellRendererParams: {
-      onDragFinished,
-      compartments,
-      t,
+    cellEditorParams: {
+      values: products,
+      form: form,
     },
   },
 

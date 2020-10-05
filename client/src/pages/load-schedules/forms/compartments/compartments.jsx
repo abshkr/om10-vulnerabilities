@@ -119,10 +119,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, config }) => {
     rowNode.setDataValue('prod_name', value?.prod_name);
 
     if (!value?.prod_code) {
-      rowNode.setDataValue(
-        'qty_scheduled',
-        value?.qty_scheduled
-      );
+      rowNode.setDataValue('qty_scheduled', value?.qty_scheduled);
     } else {
       rowNode.setDataValue(
         'qty_scheduled',
@@ -168,24 +165,36 @@ const Compartments = ({ form, value, tanker, drawer, supplier, config }) => {
 
   return (
     <Form.Item name="compartments">
-      <Row gutter={[8, 8]}>
-        <Col flex={1}>
-          <DataTable data={products} columns={productFields} parentHeight="320px" minimal />
-        </Col>
-        <Col flex={4}>
-          <DataTable
-            data={compartments}
-            columns={fields}
-            parentHeight="320px"
-            components={components}
-            minimal
-            apiContext={setTableAPI}
-            rowEditingStopped={rowEditingStopped}
-          />
-        </Col>
-      </Row>
+      <DataTable
+        data={compartments}
+        columns={fields}
+        parentHeight="320px"
+        components={components}
+        minimal
+        apiContext={setTableAPI}
+        rowEditingStopped={rowEditingStopped}
+      />
     </Form.Item>
   );
 };
 
 export default Compartments;
+
+{
+  /* <Row gutter={[8, 8]}>
+<Col flex={1}>
+  <DataTable data={products} columns={productFields} parentHeight="320px" minimal />
+</Col>
+<Col flex={4}>
+  <DataTable
+    data={compartments}
+    columns={fields}
+    parentHeight="320px"
+    components={components}
+    minimal
+    apiContext={setTableAPI}
+    rowEditingStopped={rowEditingStopped}
+  />
+</Col>
+</Row> */
+}
