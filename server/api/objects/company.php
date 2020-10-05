@@ -531,7 +531,7 @@ class Company extends CommonClass
                 :child_cmpy_code,
                 :child_cmpy_role,
                 :status,
-                SYSDATE,
+                TO_DATE(:create_date, 'YYYY-MM-DD HH24:MI:SS'),
                 :comments)";
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':parent_cmpy_code', $value->parent_cmpy_code);
@@ -539,6 +539,7 @@ class Company extends CommonClass
             oci_bind_by_name($stmt, ':child_cmpy_code', $value->child_cmpy_code);
             oci_bind_by_name($stmt, ':child_cmpy_role', $value->child_cmpy_role);
             oci_bind_by_name($stmt, ':status', $value->status);
+            oci_bind_by_name($stmt, ':create_date', $value->create_date);
             oci_bind_by_name($stmt, ':comments', $value->comments);
 
             if (!oci_execute($stmt, $this->commit_mode)) {
