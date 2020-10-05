@@ -10,10 +10,10 @@ import api, { PERSONNEL } from '../../api';
 const PasswordReset = ({ value }) => {
   const { t } = useTranslation();
 
-  const [password, setPassword] = useState(_.times(7, () => _.random(35).toString(36)).join(''));
+  const [password, setPassword] = useState(_.times(7, () => String.fromCharCode(_.random(33, 126))).join(''));
 
   const randomize = () => {
-    setPassword(_.times(7, () => _.random(35).toString(36)).join(''));
+    setPassword(_.times(7, () => String.fromCharCode(_.random(33, 126))).join(''));
   };
 
   const handleSubmit = () => {
