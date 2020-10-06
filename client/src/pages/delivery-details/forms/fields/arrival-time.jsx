@@ -27,7 +27,8 @@ const VehicleArrvTime= ({ form, value, pageState }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        dd_veh_arr_time: '' ? null : moment(value.dd_veh_arr_time, SETTINGS.DATE_TIME_FORMAT),
+        dd_veh_arr_time:
+          value.dd_veh_arr_time === '' ? null : moment(value.dd_veh_arr_time, SETTINGS.DATE_TIME_FORMAT),
       });
     } else {
       setFieldsValue({

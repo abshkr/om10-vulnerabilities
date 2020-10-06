@@ -134,7 +134,13 @@ const FormModal = ({
 
   const onFinish = async () => {
     const values = await validateFields();
-    values.dd_veh_arr_time = values?.dd_veh_arr_time?.format(SETTINGS.DATE_TIME_FORMAT);
+
+    // dd_veh_arr_time is optional
+    if (!values?.dd_veh_arr_time) {
+      values.dd_veh_arr_time = '';
+    } else {
+      values.dd_veh_arr_time = values.dd_veh_arr_time?.format(SETTINGS.DATE_TIME_FORMAT);
+    }
 
     const ddi_items=[];
     ddiTableAPI.forEachNode((rowNode, index) => {
