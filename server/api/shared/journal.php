@@ -48,6 +48,27 @@ class Journal
     private $conn;
     private $autoCommit;
 
+    // the multilingual settings in V9
+    private $langColumns;
+	private $langMessages;
+	private $langEnums;
+	private $langColumnEnums;
+
+    // Map of table name and view name
+    private $tvmaps = array(
+        "GUI_COMPANYS" => "COMPANYS",
+        "GUI_PRODUCTS" => "PRODUCTS",
+        "GUI_TANKS" => "TANKS",
+        "GUI_REPORT_COMPANY" => "REPORT_CMPY",
+        "GUI_REPORT_PROFILE" => "REPORT_FILES",
+        "GUI_PERSONNEL" => "PERSONNEL",
+        "EXPIRY_DATE_PERSONNEL" => "EXPIRY_DATE_DETAILS",
+        "GUI_TANKERS" => "TANKERS",
+        "EXPIRY_DATE_TANKERS" => "EXPIRY_DATE_DETAILS",
+        "EXPIRY_DATE_TRANSP_EQUIP" => "EXPIRY_DATE_DETAILS",
+        "GUI_ACCESS_KEYS" => "ACCESS_KEYS"
+    );
+
     //Mainly table name
     private $modules = array(
         "CHN" => array(
@@ -368,10 +389,13 @@ class Journal
 
     //Fields that do not count in valueChange.
     private $fields_excluded = array(
-        "GUI_ACCESS_KEYS" => array("KYA_ROLE", "KYA_TYPE", "KYA_KEY_CREATED", "KYA_PHYS_TYPE"),
+        // "GUI_ACCESS_KEYS" => array("KYA_ROLE", "KYA_TYPE", "KYA_KEY_CREATED", "KYA_PHYS_TYPE"),
+        "GUI_ACCESS_KEYS" => array("KYA_KEY_CREATED"),
         "TRANSP_EQUIP" => array("EQPT_LAST_MODIFIED"),
         "GUI_TANKERS" => array("TNKR_LAST_MODIFIED"),
         "GUI_PERSONNEL" => array("PER_LAST_MODIFIED"),
+        "GUI_COMPANYS" => array("SITE_MANAGER", "SUPPLIER", "CARRIER", "CUSTOMER", "DRAWER", "ISSUER", "EMPLOYER", "HOST"),
+        "SITE_CONFIG" => array("CONFIG_COMMENT", "CONFIG_REQUIRED_BY_GUI", "CONFIG_VAL_LAST_CHG"),
     );
 
     // constructor with $db as database connection
@@ -379,7 +403,252 @@ class Journal
     {
         $this->conn = $db;
         $this->autoCommit = $autocommit;
+
+        $this->getJournalSettings();
     }
+
+    private function getJournalSettings()
+    {
+        // $langClnFile = __DIR__ . "/../config/langColumns.json";
+        $langClnFile = dirname(__FILE__) . "/../config/langColumns.json";
+		$jsonColumns = file_get_contents($langClnFile);
+		// convert json to an associated array
+		$this->langColumns = json_decode( $jsonColumns, true );
+		
+		$langMsgFile = dirname(__FILE__) . "/../config/langMessages.json";
+		$jsonMessages = file_get_contents($langMsgFile);
+		// convert json to an associated array
+		$this->langMessages = json_decode( $jsonMessages, true );
+		
+		$langEnumFile = dirname(__FILE__) . "/../config/langEnums.json";
+		$jsonEnums = file_get_contents($langEnumFile);
+		// convert json to an associated array
+		$this->langEnums = json_decode( $jsonEnums, true );
+		
+		$langClnEnumFile = dirname(__FILE__) . "/../config/langColumnEnums.json";
+		$jsonClnEnums = file_get_contents($langClnEnumFile);
+		// convert json to an associated array
+		$this->langColumnEnums = json_decode( $jsonClnEnums, true );
+
+    }
+
+    private function getLanguages()
+    {
+        $query = "
+			select 
+				LANG_ID, LANG_NAME
+			from 
+				LANG_TYP
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            return null;
+        }
+
+        $rows = array();
+        while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            $rows[$row['LANG_ID']] = $row;
+        }
+
+        return $rows;
+    }
+	
+	private function getValueFromTable($src_name, $cln_lang, $cln_inpt, $cln_otpt, $in_lang, $in_value)
+	{
+		$query = "";
+		if ( $cln_lang === 'NA' ) {
+			$query = "
+				select 
+					$cln_otpt
+				from 
+					$src_name
+				where 
+					1=1
+					and $cln_inpt = :in_value
+			";
+		} else {
+			$query = "
+				select 
+					$cln_otpt
+				from 
+					$src_name
+				where 
+					1=1
+					and $cln_inpt = :in_value
+					and $cln_lang = :in_lang
+			";
+        }
+        
+        $stmt = oci_parse($this->conn, $query);
+			
+		if ( $cln_lang === 'NA' ) {
+            oci_bind_by_name($stmt, ':in_value', $in_value);
+        } else {
+            oci_bind_by_name($stmt, ':in_value', $in_value);
+            oci_bind_by_name($stmt, ':in_lang', $in_lang);
+        }
+
+        $str = $in_value;
+
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            return $str;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        if ($row !== FALSE) {
+            $str = $row[$cln_otpt];
+        }
+
+        return $str;
+    } 
+	
+	private function getValueFromEnum($src_name, $cln_lang, $cln_inpt, $cln_otpt, $in_lang, $in_value)
+	{
+        $query = "
+			select 
+				$cln_otpt
+			from 
+			(
+				select
+					mlu.LANG_ID		as $cln_lang
+					, eit.ENUMTYPENAME	as ENUM_TYPE
+					, eit.ENUM_NO		as $cln_inpt
+					, mlu.MESSAGE 		as $cln_otpt
+				from 
+					ENUMITEM		eit
+					, MSG_LOOKUP	mlu
+				where 
+					eit.ENUM_TMM = mlu.MSG_ID
+			)
+			where 
+				1=1
+				and ENUM_TYPE = :enum_type
+				and $cln_lang = :enum_lang
+				and $cln_inpt = :enum_no
+		";
+        
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':enum_type', $src_name);
+        oci_bind_by_name($stmt, ':enum_lang', $in_lang);
+        oci_bind_by_name($stmt, ':enum_no', $in_value);
+
+        $str = $in_value;
+
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            return $str;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        if ($row !== FALSE) {
+            $str = $row[$cln_otpt];
+        }
+
+        return $str;
+    } 
+	
+	private function getBinaryValueFromEnum($src_name, $cln_lang, $cln_inpt, $cln_otpt, $in_lang, $in_value)
+	{
+        $query = "
+			select 
+				LISTAGG($cln_otpt, ',') WITHIN group (order by $cln_inpt) as $cln_otpt
+			from 
+			(
+				select
+					mlu.LANG_ID		as $cln_lang
+					, eit.ENUMTYPENAME	as ENUM_TYPE
+					, eit.ENUM_NO		as $cln_inpt
+					, mlu.MESSAGE 		as $cln_otpt
+				from 
+					ENUMITEM		eit
+					, MSG_LOOKUP	mlu
+				where 
+					eit.ENUM_TMM = mlu.MSG_ID
+			)
+			where 
+				1=1
+				and ENUM_TYPE = :enum_type
+				and $cln_lang = :enum_lang
+				and BITAND(POWER(2,$cln_inpt), :enum_no)>0
+			group by ENUM_TYPE, $cln_lang
+		";
+        
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':enum_type', $src_name);
+        oci_bind_by_name($stmt, ':enum_lang', $in_lang);
+        oci_bind_by_name($stmt, ':enum_no', $in_value);
+
+        $str = $in_value;
+
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            return $str;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        if ($row !== FALSE) {
+            $str = $row[$cln_otpt];
+        }
+
+        return $str;
+    } 
+
+	private function mapColumnValue( $cln_src, $lang_code, $value )
+	{
+		// check if the column has enum type
+		// possible settings:
+		// 1. 'NA'
+		// 2. 'ENUM_TYPE_NAME'
+		// 3. 'ENUM|ENUM_TYPE_NAME|LANG_OPTION|INP_CLN|OUT_CLN'
+		// 4. 'TABLE|TABLE_NAME|LANG_OPTION|INP_CLN|OUT_CLN'
+		// 5. 'ENUMBIT|ENUM_TYPE_NAME|LANG_OPTION|INP_CLN|OUT_CLN'
+		$map_value = "";
+		if ( $cln_src === 'NA' ) {
+            // 1. 'NA': Not enum type, the value is directly used
+			$map_value = $value;
+		} else {
+			if ( strpos( $cln_src, '|' ) === FALSE ) {
+                // 2. 'ENUM_TYPE_NAME': look up the enum value from array langEnums
+				$map_value = $this->langEnums[$lang_code][$cln_src]['NO__'.$value];
+			} else {
+                // multiple parameters
+				$arr = explode( '|', $cln_src );
+				if ( count($arr) !== 5 ) {
+                    // Not match to any patterns, the value is directly used
+					$map_value = $value;
+				} else {
+					$src_type = $arr[0];
+					$src_name = $arr[1];
+					$cln_lang = $arr[2];
+					$cln_inpt = $arr[3];
+					$cln_otpt = $arr[4];
+					if ( $src_type === 'ENUM' ) {
+		                // 3. 'ENUM|ENUM_TYPE_NAME|LANG_OPTION|INP_CLN|OUT_CLN'
+						$map_value = $this->getValueFromEnum($src_name, $cln_lang, $cln_inpt, $cln_otpt, $lang_code, $value);
+					}
+					else if ( $src_type === 'TABLE' ) {
+                        // 4. 'TABLE|TABLE_NAME|LANG_OPTION|INP_CLN|OUT_CLN'
+						$map_value = $this->getValueFromTable($src_name, $cln_lang, $cln_inpt, $cln_otpt, $lang_code, $value);
+					}
+					else if ( $src_type === 'ENUMBIT' ) {
+                        // 5. 'ENUMBIT|ENUM_TYPE_NAME|LANG_OPTION|INP_CLN|OUT_CLN'
+						$map_value = $this->getBinaryValueFromEnum($src_name, $cln_lang, $cln_inpt, $cln_otpt, $lang_code, $value);
+					} else {
+                        // Not match to any patterns, the value is directly used
+						$map_value = $value;
+					}
+				}
+			}
+		}
+		
+		if ( $value !== $map_value ) {
+            if ($map_value != "" && $map_value != null) {
+                $map_value = $value . '::' . $map_value;
+            } else {
+                $map_value = $value;
+            }
+		}
+		
+		return $map_value;
+	}
 
     private function getEventStr($jnl_event, $lang)
     {
@@ -431,6 +700,11 @@ class Journal
             return null;
         }
 
+        $curr_table = $data[1];
+        if (isset($this->tvmaps[$data[1]])) {
+            $curr_table = $this->tvmaps[$data[1]];
+        }
+        $curr_column = strtoupper($data[3]);
         $msg_data = array();
         // $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
@@ -442,7 +716,7 @@ class Journal
             for ($i = 0; $i < strlen($template_str); $i++) {
                 if ($template_str[$i] === '%') {
                     if (!isset($data[$hit])) {
-                        $data[$hit] = "?";
+                        $data[$hit] = "";
                     }
                     $msg_data[$hit] = $data[$hit];
                     if ($hit === 1 && (
@@ -451,24 +725,34 @@ class Journal
                         || $template == Lookup::RECORD_DELETE
                         || $template == Lookup::RECORD_ADDED
                         || $template == Lookup::RECORD_DELETED
+                        || $template == Lookup::RECORD_CHANGED
                     )) {
                         if (isset($this->modules[$lang][$data[1]])) {
                             $msg_data[1] = $this->modules[$lang][$data[1]];
+                        } else {
+                            if (isset($this->langMessages[$lang]["SCREENS"][$curr_table])) {
+                                $msg_data[1] = $this->langMessages[$lang]["SCREENS"][$curr_table];
+                            }
                         }
                     }
                     if ($template == Lookup::RECORD_CHANGED) {
-                        if ($hit === 1) {
-                            if (isset($this->modules[$lang][$data[1]])) {
-                                $msg_data[1] = $this->modules[$lang][$data[1]];
+                        // 0: user, 1: table/view, 2: record key, 3: column, 4: orig value, 5: new value
+                        if ($hit === 3) {
+                            if (isset($this->keys[$lang][$data[1]][$curr_column])) {
+                                $msg_data[3] = $this->keys[$lang][$data[1]][$curr_column];
+                            } else {
+                                if (isset($this->langColumns[$lang][$curr_table][$curr_column])) {
+                                    $msg_data[3] = $this->langColumns[$lang][$curr_table][$curr_column];
+                                }
                             }
                         }
-                        if ($hit === 3) {
-                            if (isset($this->keys[$lang][$data[1]][strtoupper($data[3])])) {
-                                $msg_data[3] = $this->keys[$lang][$data[1]][strtoupper($data[3])];
-                            } else {
-                                write_log(sprintf("[%s:%s] not defined in journal::keys, use term instead", 
-                                    $data[1], $data[3]), __FILE__, __LINE__, LogLevel::WARNING);
-                            }
+                        if ($hit === 4) {
+                            $cln_src = $this->langColumnEnums[$curr_table][$curr_column];
+							$msg_data[4] = $this->mapColumnValue($cln_src, $lang, $data[4]);
+                        }
+                        if ($hit === 5) {
+                            $cln_src = $this->langColumnEnums[$curr_table][$curr_column];
+							$msg_data[5] = $this->mapColumnValue($cln_src, $lang, $data[5]);
                         }
                     }
                     $message = $message . $msg_data[$hit];
@@ -559,8 +843,10 @@ class Journal
         // write_log(json_decode($set_old), __FILE__, __LINE__);
 
         foreach ($set_new as $key => $value) {
+            write_log(sprintf("%s::%s LOOP. key:%s, value:%s", __CLASS__, __FUNCTION__, $key, $value),
+            __FILE__, __LINE__);
             if (array_key_exists($module, $this->fields_excluded) &&
-                in_array($key, $this->fields_excluded[$module])) {
+                in_array(strtoupper($key), $this->fields_excluded[$module])) {
                 continue;
             }
 
@@ -597,8 +883,12 @@ class Journal
             __CLASS__, __FUNCTION__, $module, $record, $term, $orig_value, $new_value),
             __FILE__, __LINE__);
 
+        if (array_key_exists($module, $this->fields_excluded) &&
+            in_array(strtoupper($term), $this->fields_excluded[$module])) {
+            return true;
+        }
         if ($orig_value === $new_value) {
-            return;
+            return true;
         }
 
         $jnl_data[0] = Utilities::getCurrPsn();
