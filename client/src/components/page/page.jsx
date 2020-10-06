@@ -65,7 +65,7 @@ const Page = ({ name, page, children, modifiers, minimal, transparent, access, a
       await api
         .post(AUTH.CHECK_PASSWORD, {
           password: hashed.psw,
-          per_code: '9999',
+          per_code: decoded?.per_code,
         })
         .then(() => {
           setViewable(access?.canView);

@@ -380,9 +380,19 @@ class Personnel extends CommonClass
         }
         $encrypted = $this->ecrypt_password($this->password);
 
-        $query = "SELECT COUNT(*) CN 
-            FROM URBAC_USERS
-            WHERE USER_CODE = :per_code AND USER_PASSWORD = :encrypted";
+        /* write_log(sprintf("check_password per_code [%s]", $this->per_code),
+        __FILE__, __LINE__, LogLevel::WARNING);
+        write_log(sprintf("check_password password [%s]", $this->password),
+        __FILE__, __LINE__, LogLevel::WARNING);
+        write_log(sprintf("check_password encrypted [%s]", $encrypted),
+        __FILE__, __LINE__, LogLevel::WARNING); */
+
+        $query = "
+            SELECT COUNT(*) CN 
+            FROM PERSONNEL
+            WHERE PER_CODE = :per_code 
+              AND (PER_PASSWD_2 = :encrypted OR PER_PASSWD = :encrypted)
+        ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
         oci_bind_by_name($stmt, ':encrypted', $encrypted);
