@@ -2099,6 +2099,7 @@
     "delvBolTemplate": "BOL Templates For Delivery Details",
     "details": "Details",
     "drawerProductAssets": "Drawer Product Assets",
+		"drawerProducts": "Drawer Product Configuration",
     "driverInstructions": "Driver Instructions",
     "driverPin": "Driver PIN",
     "equipmentAndSafefill": "Equipment and Safefill",

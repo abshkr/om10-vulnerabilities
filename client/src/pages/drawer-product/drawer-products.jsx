@@ -137,7 +137,7 @@ const DrawerProduct = () => {
         // onChange={setEndpoint} 
         animated={false}
       >
-        <Tabs.TabPane tab={t('tabColumns.general')} key="1">
+        <Tabs.TabPane tab={t('tabColumns.drawerProducts')} key="1">
           <DataTable
             data={data}
             columns={fields}
