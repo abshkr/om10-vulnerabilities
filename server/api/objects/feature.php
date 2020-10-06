@@ -585,7 +585,7 @@ class Feature extends CommonClass
             $module = 'SITE_CONFIG';
             $record = $config_key;
             if (!$journal->valueChange(
-                $module, $record, 'Config Value', $old_value, $config_value)) {
+                $module, $record, 'CONFIG_VALUE', $old_value, $config_value)) {
                 oci_rollback($this->conn);
                 return false;
             }

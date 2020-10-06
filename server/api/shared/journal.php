@@ -638,7 +638,9 @@ class Journal
 				}
 			}
 		}
-		
+        write_log(sprintf("[%s:%s:%s] mapColumnValue", $cln_src, $value, $map_value),
+        __FILE__, __LINE__, LogLevel::WARNING);
+
 		if ( $value !== $map_value ) {
             if ($map_value != "" && $map_value != null) {
                 $map_value = $value . '::' . $map_value;
