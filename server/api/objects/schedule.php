@@ -176,7 +176,7 @@ class Schedule extends CommonClass
         $serv->set_property('supplier', $this->supplier);
         $serv->set_property('trip_no', $this->trip_no);
         $error_msg = null;
-        if (!$serv->reverse_trip($error_msg)) {
+        if ($serv->reverse_trip($error_msg) != ReverseResult::SUCCESS) {
             $error = new EchoSchema(500, response("__INTERNAL_ERROR__", $error_msg));
             
             echo json_encode($error, JSON_PRETTY_PRINT);

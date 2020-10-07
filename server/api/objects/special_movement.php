@@ -366,7 +366,11 @@ class SpecialMovement extends CommonClass
             $serv->trip_no = $row['MSITM_SHLSTRIP'];
             $serv->supplier = $row['MSITM_SHLSSUPP'];
             $error_msg = null;
-            if (!$serv->reverse_trip($error_msg)) {
+
+            //Pair schedule will be reversed inside baiman
+            $reverse_reesult = $serv->reverse_trip($error_msg);
+            if ($reverse_reesult != ReverseResult::SUCCESS && 
+                $reverse_reesult != ReverseResult::ALREADY_REVERSED) {
                 if ($error_msg) {
                     $error = new EchoSchema(500, response("__INTERNAL_ERROR__", "Internal Error: " . $error_msg));
                 } else {

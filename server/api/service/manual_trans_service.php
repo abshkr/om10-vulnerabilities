@@ -4,6 +4,13 @@ include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/socket_client.php';
 include_once __DIR__ . '/../shared/baiman_typedef.php';
 
+abstract class ReverseResult
+{
+    const FAILED = 0;
+    const SUCCESS = 1;
+    const ALREADY_REVERSED = -1;
+}
+
 class ManualTransactionService
 {
     private $conn = null;
@@ -176,7 +183,7 @@ class ManualTransactionService
     }
 
     /**
-     * Return: true or false
+     * Return: 0: fail; 1: success; 2: already reversed. 
      */
     public function reverse_trip(&$err_msg)
     {
@@ -194,7 +201,7 @@ class ManualTransactionService
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             $err_msg = "DB error:" . $e['message'];
-            return false;
+            return ReverseResult::FAILED;
         }
         
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
@@ -202,7 +209,7 @@ class ManualTransactionService
             write_log(sprintf("Schedule %d/%s already reversed", $this->trip_no, $this->supplier), 
                 __FILE__, __LINE__, LogLevel::WARNING);
             $err_msg = sprintf("Schedule %d/%s already reversed", $this->trip_no, $this->supplier);
-            return false;
+            return ReverseResult::ALREADY_REVERSED;
         }
 
         $reverse_msg = $this->populate_reverse_det($this->trip_no, $this->supplier);
@@ -224,7 +231,7 @@ class ManualTransactionService
                 $e = oci_error($stmt);
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 $err_msg = "DB error:" . $e['message'];
-                return false;
+                return ReverseResult::FAILED;
             }
 
             $query = "SELECT NVL(MAX(TRSA_VERSION), 0) MAX_VERSION 
@@ -238,7 +245,7 @@ class ManualTransactionService
                 $e = oci_error($stmt);
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 $err_msg = "DB error:" . $e['message'];
-                return false;
+                return ReverseResult::FAILED;
             }
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             $trsa_ver = $row['MAX_VERSION'];
@@ -256,15 +263,15 @@ class ManualTransactionService
                 $e = oci_error($stmt);
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 $err_msg = "DB error:" . $e['message'];
-                return false;
+                return ReverseResult::FAILED;
             }
-            return true;
+            return ReverseResult::SUCCESS;
         } else {
             $err_msg = "Reverse failed: " . $response;
-            return false;
+            return ReverseResult::FAILED;
         }
 
-        return true;
+        return ReverseResult::SUCCESS;
     }
 
     //Get bay transaction id
