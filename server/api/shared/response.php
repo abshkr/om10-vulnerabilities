@@ -253,6 +253,10 @@ function response($case_name, $default = null, $params = null)
             "ENG" => "Both tank_prod_lvl and close_amb_tot not set, skip this calculation. tank:%s",
             "CHN" => "油罐液位和盘点总量(视量)均未设置，无法计算. 油罐:%s"
         ),
+        "__VCF_TANKLVL_QTY_NOT_SET__" => array(
+            "ENG" => "Both tank_prod_lvl and amb|cor|kg quantities not set, skip this calculation. tank:%s",
+            "CHN" => "油罐液位和盘点总量(视量、标量或重量)均未设置，无法计算. 油罐:%s"
+        ),
         "__VCF_CANNOT_GET_AMB_FROM_STRAP__" => array(
             "ENG" => "Cannot get ambient liter from strap. tank:%s",
             "CHN" => "盘点总量(视量)未设置. 油罐:%s"

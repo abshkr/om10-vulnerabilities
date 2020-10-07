@@ -270,16 +270,20 @@ class Folio extends CommonClass
                 // array_push($vcf_response, $value);
                 // continue;
             }
-            $url .= "frm_which_type=" . rawurlencode(strip_tags($value->frm_which_type)) . "&";
+            // $url .= "frm_which_type=" . rawurlencode(strip_tags($value->frm_which_type)) . "&";
 
             if (!isset($value->tank_prod_lvl)) {
                 write_log(sprintf("tank %s tank_prod_lvl not set, use close_amb_tot directly", $value->tank_code), __FILE__, __LINE__);
-                if (!isset($value->close_amb_tot)) {
-                    write_log(sprintf("both tank_prod_lvl and close_amb_tot not set, skip this calculation. tank:%s", $value->tank_code), 
+                if (!((isset($value->close_amb_tot) && $value->close_amb_tot > 0) ||
+                    (isset($value->close_std_tot) && $value->close_std_tot > 0) ||
+                    (isset($value->close_mass_tot) && $value->close_mass_tot > 0)) ) {
+                // if (!isset($value->close_amb_tot)) {
+                    write_log(sprintf("both tank_prod_lvl and close_amb_tot/close_std_tot/close_mass_tot not set, skip this calculation. tank:%s", $value->tank_code), 
                         __FILE__, __LINE__, LogLevel::WARNING);
                     $calc_in_trouble += 1;
 
-                    $err_msg = response("__VCF_TANKLVL_AMB_NOT_SET__", null, array($value->tank_code));
+                    // $err_msg = response("__VCF_TANKLVL_AMB_NOT_SET__", null, array($value->tank_code));
+                    $err_msg = response("__VCF_TANKLVL_QTY_NOT_SET__", null, array($value->tank_code));
                     
                     array_push($desc_array, $err_msg);
                     array_push($vcf_response, $value);
@@ -289,7 +293,10 @@ class Folio extends CommonClass
                 $strap_service = new StrapService($this->conn);
                 $strap_vol = $strap_service->get_amb($value->tank_code, $value->tank_prod_lvl);
                 if ($strap_vol <= 0) {
-                    if ($value->close_amb_tot <= 0) {
+                    if (!((isset($value->close_amb_tot) && $value->close_amb_tot > 0) ||
+                        (isset($value->close_std_tot) && $value->close_std_tot > 0) ||
+                        (isset($value->close_mass_tot) && $value->close_mass_tot > 0)) ) {
+                    // if ($value->close_amb_tot <= 0) {
                         write_log(sprintf("Tank %s: failed to get ambient liter from strap", $value->tank_code), 
                             __FILE__, __LINE__, LogLevel::WARNING);
                         $calc_in_trouble += 1;
@@ -299,12 +306,24 @@ class Folio extends CommonClass
                         array_push($vcf_response, $value);
                         continue;
                     } else {
-                        write_log("Failed to get ambient liter from strap, use close_amb_tot instead", 
+                        write_log("Failed to get ambient liter from strap, use close_amb_tot/close_std_tot/close_mass_tot instead", 
                             __FILE__, __LINE__, LogLevel::WARNING);
                     }
                 } else {
                     $value->close_amb_tot = $strap_vol;
                 }
+            }
+
+            // It seems that folio tanks never set or pass frm_which_type
+            // So we need to set this value on the first non-zero amount we found in amb, cor or kg
+            if (isset($value->close_amb_tot) && $value->close_amb_tot > 0) {
+                $value->frm_which_type = "LT";
+            } else if (isset($value->close_std_tot) && $value->close_std_tot > 0) {
+                $value->frm_which_type = "L15";
+            } else if (isset($value->close_mass_tot) && $value->close_mass_tot > 0) {
+                $value->frm_which_type = "KG";
+            } else {
+                $value->frm_which_type = "LT";
             }
 
             if ($value->frm_which_type === "KG") {
@@ -314,6 +333,8 @@ class Folio extends CommonClass
             } else if ($value->frm_which_type === "LT") {
                 $amount = $value->close_amb_tot;
             }
+
+            $url .= "frm_which_type=" . rawurlencode(strip_tags($value->frm_which_type)) . "&";
             $url .= "frm_real_amount=" . $amount . "&";
             $url .= "frm_baseCd=" . $value->tank_base . "&";
             $url .= "frm_real_temp=" . $value->close_temp . "&";
