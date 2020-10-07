@@ -47,7 +47,7 @@ const General = ({ form, value, refTempC, refTempF }) => {
           }
         >
           {areas?.records.map((item, index) => (
-            <Select.Option key={index} value={item.area_k}>
+            <Select.Option key={index} value={item.area_name}>
               {item.area_name}
             </Select.Option>
           ))}

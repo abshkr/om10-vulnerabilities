@@ -213,7 +213,7 @@ const General = ({ form, value, config }) => {
               }
             >
               {areas?.records.map((item, index) => (
-                <Select.Option key={index} value={item.area_k}>
+                <Select.Option key={index} value={item.area_name}>
                   {item.area_name}
                 </Select.Option>
               ))}
