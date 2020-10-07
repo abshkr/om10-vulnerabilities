@@ -35,6 +35,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
     const values = await form.validateFields();
 
     values.tkrq_due = values?.tkrq_due?.format(SETTINGS.DATE_TIME_FORMAT);
+    values.tkrq_key = IS_CREATING ? values?.tkrq_due : value?.tkrq_key;
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
@@ -150,8 +151,8 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
         </>
       }
     >
-      <Form scro layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
-        <Tabs defaultActiveKey="1" style={{ height: '40vh' }}>
+      <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
+        <Tabs defaultActiveKey="1" style={{ height: '80vh' }}>
           <TabPane tab={t('tabColumns.general')} key="1">
             <Terminal form={form} value={value} />
             <Type form={form} value={value} />

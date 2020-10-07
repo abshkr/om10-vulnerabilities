@@ -14,6 +14,7 @@ const generator = (data, config) => {
       date: date.format(config?.dateFormat||'YYYY-MM-DD'),
       time: date.format(config?.timeFormatHM||'HH:mm'),
       day_of_week: date.format('dddd'),
+      tkrq_key: element.tkrq_due,
     });
   });
 
