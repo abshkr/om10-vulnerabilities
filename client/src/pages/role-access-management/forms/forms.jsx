@@ -17,7 +17,7 @@ import useSWR from 'swr';
 import { setter, generator } from './generator';
 
 import api, { ROLE_ACCESS_MANAGEMENT } from '../../../api';
-import { ALPHANUMERIC } from 'constants/regex';
+import { ALPHANUMERIC_MULTILINGUAL } from 'constants/regex';
 import CopyTo from './copy-to';
 
 const TabPane = Tabs.TabPane;
@@ -127,7 +127,7 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
         return record.auth_level_name.toLowerCase() === input?.toLowerCase();
       });
 
-      const regex = new RegExp(ALPHANUMERIC);
+      const regex = new RegExp(ALPHANUMERIC_MULTILINGUAL);
       const validated = regex.exec(input);
 
       if (!validated && !value) {
@@ -147,7 +147,8 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
       }
     }
 
-    if (input && input.length > 40 && rule.field === 'auth_level_name') {
+    const len = (new TextEncoder().encode(input)).length;
+    if (input && len > 40 && rule.field === 'auth_level_name') {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
 
