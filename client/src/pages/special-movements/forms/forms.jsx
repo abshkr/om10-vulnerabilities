@@ -517,7 +517,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
             {t('operations.cancel')}
           </Button>
 
-          {!DISABLED && (
+          {!DISABLED && (value?.mlitm_status !== '9') && (
             <Button
               htmlType="button"
               icon={<CalculatorOutlined />}
@@ -542,7 +542,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
             style={{ float: 'right', marginRight: 5 }}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate || value.mlitm_status !== '0'}
+            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate || value?.mlitm_status !== '0'}
           >
             {IS_CREATING ? t('operations.save') : t('operations.update')}
           </Button>
@@ -554,7 +554,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
             // disabled={DISABLED}
             onClick={onSubmit}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate || value.mlitm_status !== '0'}
+            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate || value?.mlitm_status !== '0'}
           >
             {t('operations.submit')}
           </Button>
@@ -566,7 +566,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
               // disabled={DISABLED}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={!access?.canDelete || value.mlitm_status !== '0'}
+              disabled={!access?.canDelete || value?.mlitm_status !== '0'}
             >
               {t('operations.delete')}
             </Button>
