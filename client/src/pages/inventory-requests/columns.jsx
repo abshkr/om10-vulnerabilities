@@ -20,6 +20,13 @@ const columns = (t) => {
       sortable: true,
       resizable: true,
       cellRenderer: 'DateRenderer',
+      hide: true,
+    },
+    {
+      headerName: t('fields.date'),
+      field: 'date',
+      sortable: true,
+      resizable: true,
     },
     {
       headerName: t('fields.time'),

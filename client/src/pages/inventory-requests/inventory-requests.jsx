@@ -19,15 +19,17 @@ import tankColumns from './tank-columns';
 import generator from './generator';
 import columns from './columns';
 import auth from '../../auth';
-import { useAuth } from 'hooks';
+import { useAuth, useConfig } from 'hooks';
 import Forms from './forms';
 
 const { TabPane } = Tabs;
 
 const InventoryRequests = () => {
   const { t } = useTranslation();
+  const config = useConfig();
   const [visible, setVisible] = useState(false);
   const [invSelected, setInvSelected] = useState(null);
+  const [requestsData, setRequestsData] = useState(null);
 
   const access = useAuth('M_INVENTORYREQUEST');
 
@@ -39,7 +41,7 @@ const InventoryRequests = () => {
   const [tab, setTab] = useState('1');
 
   const isLoading = requestsLoading || tanksLoading;
-  const requestsData = generator(requests?.records);
+  // const requestsData = generator(requests?.records, config);
   const tanksData = tanks?.records;
   const tankFields = tankColumns(t);
   const fields = columns(t);
@@ -146,6 +148,12 @@ const InventoryRequests = () => {
     }
   }, [tanks, selected, tableAPI]);
 
+  useEffect(() => {
+    if (requests) {
+      setRequestsData(generator(requests?.records, config));
+    }
+  }, [requests, config, generator, setRequestsData]);
+
   return (
     <Page
       page={t('pageMenu.operations')}
@@ -164,7 +172,13 @@ const InventoryRequests = () => {
             onClick={(payload) => handleFormState(true, payload)}
             handleSelect={(payload) => handleFormState(true, payload[0])}
           />
-          <Forms value={invSelected} visible={visible} handleFormState={handleFormState} access={access} />
+          <Forms 
+            value={invSelected} 
+            visible={visible} 
+            handleFormState={handleFormState} 
+            access={access} 
+            config={config}
+          />
         </TabPane>
         <TabPane tab={t('tabColumns.tankSelection')} key="2">
           <DataTable

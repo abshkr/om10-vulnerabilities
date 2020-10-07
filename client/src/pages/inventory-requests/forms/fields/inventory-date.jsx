@@ -5,7 +5,7 @@ import moment from 'moment';
 
 import { SETTINGS } from '../../../../constants';
 
-const InventoryDate = ({ form, value }) => {
+const InventoryDate = ({ form, value, config }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
@@ -40,7 +40,7 @@ const InventoryDate = ({ form, value }) => {
 
   return (
     <Form.Item name="tkrq_due" label={t('fields.date')} rules={[{ required: true, validator: validate }]}>
-      <DatePicker format="DD/MM/YYYY HH:mm" showTime={{ format: 'HH:mm' }} onChange={onChange} />
+      <DatePicker format={config.dateTimeFormatHM} showTime={{ format: config.timeFormatHM }} onChange={onChange} />
     </Form.Item>
   );
 };

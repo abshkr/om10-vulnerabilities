@@ -19,7 +19,7 @@ import { SETTINGS } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const FormModal = ({ value, visible, handleFormState, access, config }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -156,7 +156,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             <Terminal form={form} value={value} />
             <Type form={form} value={value} />
             <Period form={form} value={value} />
-            <InventoryDate form={form} value={value} />
+            <InventoryDate form={form} value={value} config={config} />
             <SelectAllTanks form={form} value={value} />
           </TabPane>
         </Tabs>

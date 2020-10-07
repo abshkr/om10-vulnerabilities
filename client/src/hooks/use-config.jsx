@@ -8,6 +8,10 @@ import { AUTH, SITE_CONFIGURATION } from '../api';
 const useConfig = () => {
   const [config, setConfig] = useState({
     dateTimeFormat: 'DD/MM/YYYY HH:mm:ss',
+    dateFormat: 'DD/MM/YYYY',
+    timeFormat: 'HH:mm:ss',
+    dateTimeFormatHM: 'DD/MM/YYYY HH:mm',
+    timeFormatHM: 'HH:mm',
     temperatureUnit: null,
     densityUnit: null,
     referenceTemperature: null,
@@ -207,6 +211,10 @@ const useConfig = () => {
         userAutoLock: configurationObject?.URBAC_USER_AUTO_LOCK,
         externalBlendAllowed: configurationObject?.SITE_EXTERNAL_BLENDING_ALLOWED,
         dateTimeFormat: configurationObject?.SITE_DATETIME_FORMAT || 'DD/MM/YYYY HH:mm:ss',
+        dateFormat: String(configurationObject?.SITE_DATETIME_FORMAT)?.split(' ')?.[0] || 'DD/MM/YYYY',
+        timeFormat: String(configurationObject?.SITE_DATETIME_FORMAT)?.split(' ')?.[1] || 'HH:mm:ss',
+        dateTimeFormatHM: String(configurationObject?.SITE_DATETIME_FORMAT).substr(0,(String(configurationObject?.SITE_DATETIME_FORMAT).length-3)) || 'DD/MM-YYYY HH:mm',
+        timeFormatHM: 'HH:mm',
         offset: configurationObject?.SERVER_TIME_OFFSET || '+00:00',
         serverTime: configurationObject?.SERVER_TIME,
         id: configurationObject?.SITE_IDENTIFIER,
