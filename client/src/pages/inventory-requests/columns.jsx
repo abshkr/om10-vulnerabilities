@@ -16,6 +16,13 @@ const columns = (t) => {
     },
     {
       headerName: t('fields.date'),
+      field: 'tkrq_key',
+      sortable: true,
+      resizable: true,
+      hide: true,
+    },
+    {
+      headerName: t('fields.date'),
       field: 'tkrq_due',
       sortable: true,
       resizable: true,

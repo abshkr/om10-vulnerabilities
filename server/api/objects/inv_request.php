@@ -72,4 +72,42 @@ class InvRequest extends CommonClass
             return null;
         }
     }
+
+    public function pre_update()
+    {
+        write_log(sprintf("TKINVRQ111 [%s][%s]", $this->tkrq_due, $this->tkrq_key),
+        __FILE__, __LINE__, LogLevel::WARNING);
+
+        if (isset($this->tkrq_due) && 
+        isset($this->tkrq_key) && 
+        $this->tkrq_due != $this->tkrq_key) {
+            write_log(sprintf("TKINVRQ222 [%s][%s]", $this->tkrq_due, $this->tkrq_key),
+            __FILE__, __LINE__, LogLevel::WARNING);
+            // Since tkrq_due is PK, if it is changed, need update it first
+            $query = "
+                UPDATE TKINVRQ
+                SET TKRQ_DUE = TO_DATE(:tkrq_due, 'YYYY-MM-DD HH24:MI:SS')
+                WHERE TKRQ_DUE = TO_DATE(:tkrq_key, 'YYYY-MM-DD HH24:MI:SS')
+            ";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':tkrq_due', $this->tkrq_due);
+            oci_bind_by_name($stmt, ':tkrq_key', $this->tkrq_key);
+
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return; // false;
+            }
+            
+        }
+
+        // TKRQ_DEPOT
+        // TKRQ_ALLFLAG
+        // TKRQ_DUE
+        // TKRQ_PERIOD
+        // TKRQ_TYPE
+        // TKRQ_FIRST
+
+        // return parent::update();
+    }
 }
