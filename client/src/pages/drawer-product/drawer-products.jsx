@@ -23,6 +23,7 @@ const DrawerProduct = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [filterValue, setFilterValue] = useState('');
+  const [mainTabOn, setMainTabOn] = useState(true);
   
   const { t } = useTranslation();
   const config = useConfig();
@@ -30,6 +31,14 @@ const DrawerProduct = () => {
   const access = useAuth('M_DRAWERPRODUCTS');
   
   const { data: payload, isValidating, revalidate } = useSWR(DRAWER_PRODUCTS.READ);
+
+  const doTabChanges = (tabPaneKey) => {
+    if (tabPaneKey === '1') {
+      setMainTabOn(true);
+    } else {
+      setMainTabOn(false);
+    }
+  };
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -123,7 +132,7 @@ const DrawerProduct = () => {
         icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isLoading}
-        disabled={!access.canCreate}
+        disabled={!access.canCreate || !mainTabOn}
       >
         {t('operations.create')}
       </Button>
@@ -134,7 +143,8 @@ const DrawerProduct = () => {
     <Page page={page} name={name} modifiers={modifiers} access={access} avatar="drawerProducts">
       <Tabs 
         // defaultActiveKey={PRODUCT_GROUPS.READ_GROUPS} 
-        // onChange={setEndpoint} 
+        defaultActiveKey="1" 
+        onChange={doTabChanges} 
         animated={false}
       >
         <Tabs.TabPane tab={t('tabColumns.drawerProducts')} key="1">
