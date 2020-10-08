@@ -94,7 +94,7 @@ export default class NumericEditor extends Component {
   isCancelAfterEnd() {
     const value = _.toNumber(this.state.value);
     const valid = !_.isNaN(value);
-    const { data, colDef, ranges } = this.props;
+    const { data, colDef, ranges, t } = this.props;
     // console.log('NumericEditor - isCancelAfterEnd', colDef, data, ranges);
 
     if (valid) {
@@ -129,16 +129,16 @@ export default class NumericEditor extends Component {
 
       if (payload) {
         notification.error({
-          message: `${colDef.headerName} out of range!`,
-          description: `Please keep the values between ${min} ⟶ ${max}`,
+          message: `${colDef.headerName}${t('validate.dataOutRange')}!`,
+          description: `${t('descriptions.pleaseKeepValueRange')}${min} ⟶ ${max}`,
         });
       }
-
+      
       return payload;
     } else {
       notification.error({
-        message: `${colDef.headerName} data type is the number!`,
-        description: `Please enter a number`,
+        message: `${colDef.headerName}${t('validate.dataTypeNumber')}!`,
+        description: `${t('descriptions.pleaseEnterNumber')}`,
       });
     }
 

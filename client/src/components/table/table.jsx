@@ -190,6 +190,15 @@ const Table = ({
             t,
           };
         }
+        if (o.cellEditor === 'NumericEditor') {
+          if (!o.cellEditorParams.hasOwnProperty('t')) {
+            o.cellEditorParams['t'] = t;
+          }
+          /* o.cellEditorParams = {
+            ...o.cellEditorParams,
+            t,
+          }; */
+        }
       });
       setTableColumns(columns);
     }
