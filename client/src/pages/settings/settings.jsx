@@ -54,6 +54,12 @@ const Settings = ({ user }) => {
       );
     }
 
+    if (!pwdComplexity(input, input, config.passwordComplexity)) {
+      return Promise.reject(
+        `${t('descriptions.pwdComplexity') + ": " + complexityDesc(config.passwordComplexity, t)}`
+      );
+    }
+
     return Promise.resolve();
   };
 
