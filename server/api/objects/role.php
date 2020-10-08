@@ -103,24 +103,24 @@ class Role extends CommonClass
 
         $query = "SELECT A.DOMAIN_ID, DOMAIN_TEXT, A.OBJECT_ID, OBJECT_PARENT_ID,
                     OBJECT_TEXT, DOMAIN_OBJECT_ACTIVE,
-                    (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES B
+                    CASE WHEN (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES B
                     WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 1
-                        AND B.DOMAIN_ID = A.DOMAIN_ID AND B.OBJECT_ID = A.OBJECT_ID) PRIV_VIEW,
-                    (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES C
+                        AND B.DOMAIN_ID = A.DOMAIN_ID AND B.OBJECT_ID = A.OBJECT_ID) > 0 THEN 1 ELSE 0 END PRIV_VIEW,
+                    CASE WHEN (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES C
                     WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 2
-                        AND C.DOMAIN_ID = A.DOMAIN_ID AND C.OBJECT_ID = A.OBJECT_ID) PRIV_UPDATE,
-                    (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES D
+                        AND C.DOMAIN_ID = A.DOMAIN_ID AND C.OBJECT_ID = A.OBJECT_ID) > 0 THEN 1 ELSE 0 END PRIV_UPDATE,
+                        CASE WHEN (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES D
                     WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 3
-                        AND D.DOMAIN_ID = A.DOMAIN_ID AND D.OBJECT_ID = A.OBJECT_ID) PRIV_CREATE,
-                    (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES E
+                        AND D.DOMAIN_ID = A.DOMAIN_ID AND D.OBJECT_ID = A.OBJECT_ID) > 0 THEN 1 ELSE 0 END PRIV_CREATE,
+                    CASE WHEN (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES E
                     WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 4
-                        AND E.DOMAIN_ID = A.DOMAIN_ID AND E.OBJECT_ID = A.OBJECT_ID) PRIV_DELETE,
-                    (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES F
+                        AND E.DOMAIN_ID = A.DOMAIN_ID AND E.OBJECT_ID = A.OBJECT_ID) > 0 THEN 1 ELSE 0 END PRIV_DELETE,
+                    CASE WHEN (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES F
                     WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 5
-                        AND F.DOMAIN_ID = A.DOMAIN_ID AND F.OBJECT_ID = A.OBJECT_ID) PRIV_PROTECT,
-                    (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES F
+                        AND F.DOMAIN_ID = A.DOMAIN_ID AND F.OBJECT_ID = A.OBJECT_ID) > 0 THEN 1 ELSE 0 END PRIV_PROTECT,
+                    CASE WHEN (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES F
                     WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 6
-                        AND F.DOMAIN_ID = A.DOMAIN_ID AND F.OBJECT_ID = A.OBJECT_ID) PRIV_EXTRA    
+                        AND F.DOMAIN_ID = A.DOMAIN_ID AND F.OBJECT_ID = A.OBJECT_ID) > 0 THEN 1 ELSE 0 END PRIV_EXTRA    
                 FROM URBAC_DOMAIN_OBJECTS A, URBAC_DOMAINS, URBAC_OBJECTS
                 WHERE A.DOMAIN_ID != 1
                     AND A.DOMAIN_ID = URBAC_DOMAINS.DOMAIN_ID
@@ -304,10 +304,10 @@ class Role extends CommonClass
         oci_bind_by_name($stmt, ':domain_id', $item->domain_id);
         oci_bind_by_name($stmt, ':object_id', $item->object_id);
         oci_bind_by_name($stmt, ':privilege_id', $privilege_id);
-        write_log($this->role_id, __FILE__, __LINE__);
-        write_log($item->domain_id, __FILE__, __LINE__);
-        write_log($item->object_id, __FILE__, __LINE__);
-        write_log($privilege_id, __FILE__, __LINE__);
+        // write_log($this->role_id, __FILE__, __LINE__);
+        // write_log($item->domain_id, __FILE__, __LINE__);
+        // write_log($item->object_id, __FILE__, __LINE__);
+        // write_log($privilege_id, __FILE__, __LINE__);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
