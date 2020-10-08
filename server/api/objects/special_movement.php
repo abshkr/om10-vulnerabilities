@@ -259,7 +259,7 @@ class SpecialMovement extends CommonClass
 
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         $this->mlitm_id = $row['NEXT_ID'];
-        $this->mlitm_dtim_posted = date('Y-m-d H:i:s', time());
+        // $this->mlitm_dtim_posted = date('Y-m-d H:i:s', time());
         $this->mlitm_oper_posted = Utilities::getCurrPsn();
 
         $this->mlitm_mov_num  = $row['NEXT_ID'];
@@ -269,10 +269,31 @@ class SpecialMovement extends CommonClass
         }
     }
 
+    protected function post_create()
+    {
+        $query = "UPDATE MOV_LOAD_ITEMS SET MLITM_DTIM_POSTED = SYSDATE WHERE MLITM_ID = :mlitm_id";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':mlitm_id', $this->mlitm_id);
+        if (!oci_execute($stmt)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            // $error = new EchoSchema(500, response("__INTERNAL_ERROR__", "Internal Error: " . $e['message']));
+            // echo json_encode($error, JSON_PRETTY_PRINT);
+            false;
+        };
+
+        return true;
+    }
+
     public function pre_update()
     {
-        $this->mlitm_dtim_posted = date('Y-m-d H:i:s', time());
+        // $this->mlitm_dtim_posted = date('Y-m-d H:i:s', time());
         $this->mlitm_oper_posted = Utilities::getCurrPsn();
+    }
+
+    protected function post_update()
+    {
+        return $this->post_create();
     }
 
     public function mv_status() 
