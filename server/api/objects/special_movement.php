@@ -260,14 +260,19 @@ class SpecialMovement extends CommonClass
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         $this->mlitm_id = $row['NEXT_ID'];
         $this->mlitm_dtim_posted = date('Y-m-d H:i:s', time());
-        if (isset($_SESSION['PERCODE'])) {
-            $this->mlitm_oper_posted = $_SESSION['PERCODE'];
-        }
+        $this->mlitm_oper_posted = Utilities::getCurrPsn();
+
         $this->mlitm_mov_num  = $row['NEXT_ID'];
         $this->mlitm_status = "0";
         if (!isset($this->mlitm_dtim_end)) {
             $this->mlitm_dtim_end = $this->mlitm_dtim_start;
         }
+    }
+
+    public function pre_update()
+    {
+        $this->mlitm_dtim_posted = date('Y-m-d H:i:s', time());
+        $this->mlitm_oper_posted = Utilities::getCurrPsn();
     }
 
     public function mv_status() 
