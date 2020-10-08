@@ -37,6 +37,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
   const [supplierTo, setSupplierTo] = useState(undefined);
   const [tankFrom, setTankFrom] = useState(undefined);
   const [tankTo, setTankTo] = useState(undefined);
+  const [lastChangedTank, setLastChangedTank] = useState(undefined);
   const [productFrom, setProductFrom] = useState(undefined);
   const [productTo, setProductTo] = useState(undefined);
   const [quantitySource, setQuantitySource] = useState(null);
@@ -56,6 +57,16 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
 
   const FROM = ['1', '2'];
   const TO = ['0', '2'];
+
+  const changeTankTo = (value) => {
+    setTankTo(value);
+    setLastChangedTank(value);
+  }
+
+  const changeTankFrom = (value) => {
+    setTankFrom(value);
+    setLastChangedTank(value);
+  }
 
   const onTypeChange = (value) => {
     setType(value);
@@ -599,7 +610,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
                 supplier={supplierFrom}
                 setSupplier={setSupplierFrom}
                 tank={tankFrom}
-                setTank={setTankFrom}
+                setTank={changeTankFrom}
                 product={productFrom}
                 setProduct={setProductFrom}
                 // onChange={setTankFrom}
@@ -615,7 +626,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
                 supplier={supplierTo}
                 setSupplier={setSupplierTo}
                 tank={tankTo}
-                setTank={setTankTo}
+                setTank={changeTankTo}
                 product={productTo}
                 setProduct={setProductTo}
                 // onChange={setTankTo}
@@ -632,7 +643,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
               value={value}
               type={type}
               disabled={DISABLED}
-              tank={type==='0' ? tankTo : tankFrom}
+              tank={lastChangedTank}
               config={config}
               pinQuantity={setQuantitySource}
             />

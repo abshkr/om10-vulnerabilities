@@ -41,14 +41,14 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
           const densH = prod ? _.round(_.toNumber(prod?.density_hi), config.precisionDensity) : prod?.density_hi;
           setMinDens(densL);
           setMaxDens(densH);
-          console.log('I am here 111');
-          const temp_dens = getFieldValue('mlitm_dens_cor');
-          if (!temp_dens) {
-            console.log('I am here 222');
+          // console.log('I am here 111');
+          // const temp_dens = getFieldValue('mlitm_dens_cor');
+          // if (!temp_dens) {
+          //   console.log('I am here 222');
             setFieldsValue({
               mlitm_dens_cor: response.data.records[0].tank_density,
             });
-          }
+          // }
           setLoading(false);
           //console.log('validateFields([mlitm_dens_cor]);222');
           //validateFields(['mlitm_dens_cor']);
