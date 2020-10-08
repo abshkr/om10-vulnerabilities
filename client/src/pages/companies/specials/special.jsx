@@ -116,9 +116,11 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
     <div>
       <Form form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1">
+          {value?.supplier && 
           <TabPane tab={t('tabColumns.supplierSettings')} key="1" style={{ height: '65vh' }}>
             <SupplierForm value={value} form={form}></SupplierForm>
           </TabPane>
+          }
           <TabPane tab={t('tabColumns.others')} key="2" style={{ height: '60vh' }}>
             <OtherForm value={value} form={form}></OtherForm>
           </TabPane>

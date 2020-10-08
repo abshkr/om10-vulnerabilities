@@ -146,24 +146,29 @@ const OtherForm = ({ value, form }) => {
 
   return (
     <div>    
-      <Divider orientation="left">{t('fields.autoOrderNumbers')}</Divider>
-      <Row justify="center" gutter="8">
-        <Col span={7}>
-          <Form.Item name="cmpy_ord_strt" label={t('fields.startAt')} rules={[{ required: true }]}>
-            <InputNumber min={1} max={999999999} style={{width:'11vh'}}/>
-          </Form.Item>
-        </Col>
-        <Col span={7}>
-          <Form.Item name="cmpy_ord_end" label={t('fields.endAt')} rules={[{ required: true }]}>
-            <InputNumber min={1} max={999999999} style={{width:'11vh'}}/>
-          </Form.Item>
-        </Col>
-        <Col span={7}>
-          <Form.Item name="cmpy_ord_last" label={t('fields.lastUsed')} rules={[{ required: true }]}>
-            <InputNumber min={0} max={999999999} style={{width:'11vh'}}/>
-          </Form.Item>
-        </Col>
-      </Row>
+      {(value?.supplier || value?.drawer) &&
+      <div>
+        <Divider orientation="left">{t('fields.autoOrderNumbers')}</Divider>
+        
+        <Row justify="center" gutter="8">
+          <Col span={7}>
+            <Form.Item name="cmpy_ord_strt" label={t('fields.startAt')} rules={[{ required: true }]}>
+              <InputNumber min={1} max={999999999} style={{width:'11vh'}}/>
+            </Form.Item>
+          </Col>
+          <Col span={7}>
+            <Form.Item name="cmpy_ord_end" label={t('fields.endAt')} rules={[{ required: true }]}>
+              <InputNumber min={1} max={999999999} style={{width:'11vh'}}/>
+            </Form.Item>
+          </Col>
+          <Col span={7}>
+            <Form.Item name="cmpy_ord_last" label={t('fields.lastUsed')} rules={[{ required: true }]}>
+              <InputNumber min={0} max={999999999} style={{width:'11vh'}}/>
+            </Form.Item>
+          </Col>
+        </Row>
+      </div>
+      }
 
       <Divider orientation="left"></Divider>
       <Row justify="center" gutter="8">
