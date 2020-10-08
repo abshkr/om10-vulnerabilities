@@ -128,7 +128,7 @@ const Compartments = ({ form, value, equipment, onChange }) => {
       <Form.Item name="compartments">
         <Select
           dropdownMatchSelectWidth={false}
-          placeholder="Please Select"
+          placeholder={t('placeholder.selectPlease')}
           style={{ marginBottom: 10, marginTop: 10 }}
           showSearch
           value={selected}

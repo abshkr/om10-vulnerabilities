@@ -2200,6 +2200,8 @@
     "volume": "Volume"
   },
   "validate": {
+    "cmptCapacityLow": "Compartment capacity should not be lower than safefill",
+    "cmptSafefillHigh": "Compartment safefill should not be higher than capacity",
     "decimalPlacesExceeded": "Decimal places exceeded",
     "effectiveDateLaterThanExpiryDate": "The Effective Date Time should be earlier than Expiry Date Time",
     "errors": "error(s)",

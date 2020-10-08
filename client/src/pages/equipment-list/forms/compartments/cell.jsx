@@ -1,10 +1,12 @@
 import React, { useState, useRef, useContext, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Form, Checkbox, InputNumber, message } from 'antd';
 import _ from 'lodash';
 
 import Context from './context';
 
 const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, ...restProps }) => {
+  const { t } = useTranslation();
   const form = useContext(Context);
   const inputRef = useRef();
 
@@ -31,7 +33,8 @@ const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, 
           safefill: record?.safefill,
         });
 
-        message.error('Safefill Cannot be higher than capacity');
+        // message.error('Safefill Cannot be higher than capacity');
+        message.error(t('validate.cmptSafefillHigh'));
       }
     } else if (values?.sfl) {
       if (!record?.safefill || _.toNumber(values?.sfl) >= record?.safefill) {
@@ -45,7 +48,8 @@ const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, 
           sfl: record?.sfl,
         });
 
-        message.error('Compartment Capacity should not be less its than safefill.');
+        // message.error('Compartment Capacity should not be less its than safefill.');
+        message.error(t('validate.cmptCapacityLow'));
       }
     } else {
       onEdit();

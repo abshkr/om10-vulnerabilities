@@ -2200,6 +2200,8 @@
 		"volume": "容积"
 	},
 	"validate": {
+		"cmptCapacityLow": "油仓最大许可容量不应该低于其安全容量",
+		"cmptSafefillHigh": "油仓安全容量不应该高于其最大许可容量",
 		"decimalPlacesExceeded": "小数点后位数超限",
 		"effectiveDateLaterThanExpiryDate": "生效日期时间应该早于失效日期时间",
 		"errors": "错误",
