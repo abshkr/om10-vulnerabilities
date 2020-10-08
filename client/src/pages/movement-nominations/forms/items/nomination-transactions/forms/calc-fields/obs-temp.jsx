@@ -58,7 +58,7 @@ const ObsTemp = ({ form, value, setValue, tank, arm, pageState, config }) => {
   return (
     <Form.Item
       name="mlitm_temp_amb"
-      label={t('fields.nomtranObsTemp') + '[' + String(minTemp) + ' ~ ' + String(maxTemp) + ']' + '(' + t('fields.nomtranObsTempUnit') + ')'}
+      label={t('fields.nomtranObsTemp') + '[' + String(minTemp) + ' ~ ' + String(maxTemp) + ']' + '(' + t('units.degC') + ')'}
       // rules={[{ required: false, validator: validate }]}
       rules={[{ 
         required: false,

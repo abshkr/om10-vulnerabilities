@@ -172,7 +172,10 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
     <>
       <Row gutter={[8, 8]}>
         <Col span={12}>
-          <Form.Item name="mlitm_qty_amb" label={t('fields.observedQuantity')}>
+          <Form.Item 
+            name="mlitm_qty_amb" 
+            label={t('fields.observedQuantity') + '(' + t('units.ltr') + ')'}
+          >
             <InputNumber
               min={0}
               max={999999999}
@@ -189,7 +192,10 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
 
       <Row gutter={[8, 8]}>
         <Col span={12}>
-          <Form.Item name="mlitm_qty_cor" label={t('fields.standardQuantity')}>
+          <Form.Item 
+            name="mlitm_qty_cor" 
+            label={t('fields.standardQuantity') + '(' + t('units.ltr') + ')'}
+          >
             <InputNumber
               min={0}
               max={999999999}
@@ -201,7 +207,10 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item name="mlitm_qty_kg" label={t('fields.observedMass')}>
+          <Form.Item 
+            name="mlitm_qty_kg" 
+            label={t('fields.observedMass') + '(' + t('units.kg') + ')'}
+          >
             <InputNumber
               min={0}
               max={999999999}
@@ -218,7 +227,7 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
         <Col span={12}>
           <Form.Item
             name="mlitm_dens_cor"
-            label={`${t('fields.standardDensity')} ${limit ? `[${limit.density_lo} - ${limit.density_hi}]` : ''}` + '(' + t('fields.nomtranStdDensUnit') + ')'}
+            label={`${t('fields.standardDensity')} ${limit ? `[${limit.density_lo} - ${limit.density_hi}]` : ''}` + '(' + t('units.kg/m3') + ')'}
             rules={[{ required: false, validator: validateDensity }]}
           >
             <InputNumber
@@ -234,7 +243,7 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
         <Col span={12}>
           <Form.Item
             name="mlitm_temp_amb"
-            label={`${t('fields.observedTemperature')} ${limit ? `[${limit.temp_lo} - ${limit.temp_hi}]` : ''}`+ '(' + t('fields.nomtranObsTempUnit') + ')'}
+            label={`${t('fields.observedTemperature')} ${limit ? `[${limit.temp_lo} - ${limit.temp_hi}]` : ''}`+ '(' + t('units.degC') + ')'}
           >
             <InputNumber
               precision={tempDecimals>config.precisionTemperature ? config.precisionTemperature : tempDecimals}
