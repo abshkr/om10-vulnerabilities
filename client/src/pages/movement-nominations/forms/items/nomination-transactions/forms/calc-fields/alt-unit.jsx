@@ -34,7 +34,7 @@ const AltQtyUnit = ({ form, value, altQty, pageState }) => {
   return (
     <Form.Item
       name="mlitm_unit_rpt"
-      label={t('fields.nomtranAltQtyUnit') + '   '}
+      label={t('fields.nomtranAltQtyUnit')}
       rules={[{ required: false, validator: validate }]}
     >
       <Select
