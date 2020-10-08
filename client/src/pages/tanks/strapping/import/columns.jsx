@@ -14,6 +14,7 @@ const columns = (t) => [
         max: 999999999,
         min: 0,
       },
+      t,
     },
   },
   {
@@ -31,6 +32,7 @@ const columns = (t) => [
         max: 999999999,
         min: 0,
       },
+      t,
     },
   },
   {

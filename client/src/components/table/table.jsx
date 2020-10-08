@@ -185,20 +185,23 @@ const Table = ({
   useEffect(() => {
     if (t && columns) {
       columns.forEach((o) => {
-        if (o.filter === 'FuzzyFilter' || o.filter === 'MultiFilter' || o.filter === 'BooleanFilter') {
+        if (o?.filter === 'FuzzyFilter' || o?.filter === 'MultiFilter' || o?.filter === 'BooleanFilter') {
           o.filterParams = {
             t,
           };
         }
-        if (o.cellEditor === 'NumericEditor') {
-          if (!o.cellEditorParams.hasOwnProperty('t')) {
+        /* if (o?.cellEditor === 'NumericEditor') {
+          if (!o.hasOwnProperty('cellEditorParams')) {
+            o.cellEditorParams = {};
+          }
+          if (!o?.cellEditorParams?.hasOwnProperty('t')) {
             o.cellEditorParams['t'] = t;
           }
-          /* o.cellEditorParams = {
-            ...o.cellEditorParams,
-            t,
-          }; */
-        }
+          // o.cellEditorParams = {
+          //   ...o.cellEditorParams,
+          //   t,
+          // };
+        } */
       });
       setTableColumns(columns);
     }

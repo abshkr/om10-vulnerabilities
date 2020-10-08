@@ -41,6 +41,13 @@ const columns = (t, enabled) => [
     },
     width: 100,
     cellEditor: 'NumericEditor',
+    cellEditorParams: {
+      // ranges: {
+      //   max: 999999999,
+      //   min: 0,
+      // },
+      t,
+    },
     suppressSizeToFit: true,
   },
   {
@@ -79,6 +86,13 @@ const columns = (t, enabled) => [
     },
     width: 100,
     cellEditor: 'NumericEditor',
+    cellEditorParams: {
+      // ranges: {
+      //   max: 999999999,
+      //   min: 0,
+      // },
+      t,
+    },
     suppressSizeToFit: true,
   },
 

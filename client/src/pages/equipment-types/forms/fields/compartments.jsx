@@ -191,6 +191,7 @@ const Compartments = ({ form, value, isCombination }) => {
           max: _.toNumber(maxSealsPerCompartment),
           min: 0,
         },
+        t,
       },
     },
   ];

@@ -39,6 +39,13 @@ const columns = (t) => [
     editable: true,
     cellClass: 'editable-ag-grid-cell',
     cellEditor: 'NumericEditor',
+    cellEditorParams: {
+      // ranges: {
+      //   max: 999999999,
+      //   min: 0,
+      // },
+      t,
+    },
   },
   {
     headerName: t('fields.meterClosingAmbient') + ' (' + t('units.ltr') + ')',
@@ -49,6 +56,13 @@ const columns = (t) => [
     editable: true,
     cellClass: 'editable-ag-grid-cell',
     cellEditor: 'NumericEditor',
+    cellEditorParams: {
+      // ranges: {
+      //   max: 999999999,
+      //   min: 0,
+      // },
+      t,
+    },
   },
   {
     headerName: t('fields.meterOpeningCorrected') + ' (' + t('units.ltr') + ')',
@@ -59,6 +73,13 @@ const columns = (t) => [
     editable: true,
     cellClass: 'editable-ag-grid-cell',
     cellEditor: 'NumericEditor',
+    cellEditorParams: {
+      // ranges: {
+      //   max: 999999999,
+      //   min: 0,
+      // },
+      t,
+    },
   },
   {
     headerName: t('fields.meterClosingCorrected') + ' (' + t('units.ltr') + ')',
@@ -69,6 +90,13 @@ const columns = (t) => [
     editable: true,
     cellClass: 'editable-ag-grid-cell',
     cellEditor: 'NumericEditor',
+    cellEditorParams: {
+      // ranges: {
+      //   max: 999999999,
+      //   min: 0,
+      // },
+      t,
+    },
   },
   {
     headerName: t('fields.meterOpeningMass') + ' (' + t('units.kg') + ')',
@@ -79,6 +107,13 @@ const columns = (t) => [
     editable: true,
     cellClass: 'editable-ag-grid-cell',
     cellEditor: 'NumericEditor',
+    cellEditorParams: {
+      // ranges: {
+      //   max: 999999999,
+      //   min: 0,
+      // },
+      t,
+    },
   },
 
   {
@@ -90,6 +125,13 @@ const columns = (t) => [
     editable: true,
     cellClass: 'editable-ag-grid-cell',
     cellEditor: 'NumericEditor',
+    cellEditorParams: {
+      // ranges: {
+      //   max: 999999999,
+      //   min: 0,
+      // },
+      t,
+    },
   },
   // {
   //   headerName: t('fields.observedQuantity'),

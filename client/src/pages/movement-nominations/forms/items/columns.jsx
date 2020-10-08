@@ -275,6 +275,7 @@ const useColumns = (value, selected) => {
           max: 999999999,
           min: 0,
         },
+        t,
       },
     },
     {
@@ -727,6 +728,13 @@ const useColumns = (value, selected) => {
       // editable: selected?.[0]?.editable || !value,
       // cellClass: selected?.[0]?.editable || !value ? 'selected-editable-ag-grid-cell' : '',
       // cellEditor: 'NumericEditor',
+      // cellEditorParams: {
+      //   ranges: {
+      //     max: 999999999,
+      //     min: 0,
+      //   },
+      //   t,
+      // },
     },
     {
       headerName: t('fields.quantityDelivered'),
@@ -744,6 +752,13 @@ const useColumns = (value, selected) => {
       // editable: selected?.[0]?.editable || !value,
       // cellClass: selected?.[0]?.editable || !value ? 'selected-editable-ag-grid-cell' : '',
       // cellEditor: 'NumericEditor',
+      // cellEditorParams: {
+      //   ranges: {
+      //     max: 999999999,
+      //     min: 0,
+      //   },
+      //   t,
+      // },
     },
   ];
 };

@@ -44,6 +44,13 @@ const columns = (t, enabled) => [
     cellClass: enabled ? 'editable-ag-grid-cell' : '',
     width: 100,
     cellEditor: 'NumericEditor',
+    cellEditorParams: {
+      // ranges: {
+      //   max: 999999999,
+      //   min: 0,
+      // },
+      t,
+    },
     suppressSizeToFit: true,
   },
 
@@ -56,6 +63,13 @@ const columns = (t, enabled) => [
     cellClass: enabled ? 'editable-ag-grid-cell' : '',
     width: 100,
     cellEditor: 'NumericEditor',
+    cellEditorParams: {
+      // ranges: {
+      //   max: 999999999,
+      //   min: 0,
+      // },
+      t,
+    },
     suppressSizeToFit: true,
   },
 
@@ -68,6 +82,13 @@ const columns = (t, enabled) => [
     cellClass: enabled ? 'editable-ag-grid-cell' : '',
     width: 100,
     cellEditor: 'NumericEditor',
+    cellEditorParams: {
+      // ranges: {
+      //   max: 999999999,
+      //   min: 0,
+      // },
+      t,
+    },
     suppressSizeToFit: true,
   },
 
@@ -90,6 +111,13 @@ const columns = (t, enabled) => [
     width: 100,
     editable: enabled,
     cellEditor: 'NumericEditor',
+    cellEditorParams: {
+      // ranges: {
+      //   max: 999999999,
+      //   min: 0,
+      // },
+      t,
+    },
     cellClass: enabled ? 'editable-ag-grid-cell' : '',
   },
 
@@ -107,6 +135,7 @@ const columns = (t, enabled) => [
         max: 'max_temp',
         min: 'min_temp',
       },
+      t,
     },
     options: {
       max: 'max_temp',
@@ -129,6 +158,7 @@ const columns = (t, enabled) => [
         max: 'bclass_dens_hi',
         min: 'bclass_dens_lo',
       },
+      t,
     },
     options: {
       max: 'bclass_dens_hi',

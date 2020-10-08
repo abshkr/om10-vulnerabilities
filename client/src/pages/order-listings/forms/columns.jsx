@@ -67,6 +67,7 @@ const columns = (t, pageState, form, units) => [
         max: 999999999,
         min: 0,
       },
+      t,
     },
   },
   {
