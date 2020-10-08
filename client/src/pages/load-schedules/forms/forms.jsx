@@ -74,7 +74,9 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const [carrier, setCarrier] = useState(undefined);
   const [tanker, setTanker] = useState(undefined);
   const [redoBOL, setRedoBOL] = useState(0);
-  const [exportPDF, setExportPDF] = useState(0);
+  const [exportBOL, setExportBOL] = useState(0);
+  const [exportLDReport, setExportLDReport] = useState(0);
+  const [exportDLI, setExportDLI] = useState(0);
   const [redoDLI, setRedoDLI] = useState(false);
   const [shipTo, setShipTo] = useState(value?.shls_ship_to_num);
   const [soldTo, setSoldTo] = useState(value?.shls_sold_to_num);
@@ -376,7 +378,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
   const onExport = () => {
     if (tab === "3") {
-      setExportPDF(exportPDF + 1);
+      setExportBOL(exportBOL + 1);
+    } else if (tab === "4") {
+      setExportLDReport(exportLDReport + 1);
+    } else if (tab === "2") {
+      setExportDLI(exportDLI + 1);
     }
   }
 
@@ -826,7 +832,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
           </TabPane>
 
           <TabPane tab={t('tabColumns.driverInstructions')} disabled={IS_CREATING} key="2">
-            <DriverInstructions value={value} redoDLI={redoDLI} />
+            <DriverInstructions value={value} redoDLI={redoDLI} exportPDF={exportDLI}/>
           </TabPane>
 
           <TabPane tab={t('tabColumns.bol')} disabled={IS_CREATING || !CAN_VIEW_REPORTS} key="3">
@@ -836,12 +842,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               supermode={form.getFieldValue('supermode')} 
               locateTrip={locateTrip} 
               setCurStatus={setCurStatus}
-              exportPDF={exportPDF}
+              exportPDF={exportBOL}
             />
           </TabPane>
 
           <TabPane tab={t('tabColumns.loadReport')} disabled={IS_CREATING || !CAN_VIEW_REPORTS} key="4">
-            <LoadReport value={value} />
+            <LoadReport value={value} exportPDF={exportLDReport} />
           </TabPane>
 
           <TabPane tab={t('tabColumns.seals')} disabled={IS_CREATING || !showSeals || value.shls_ld_type === '6'} key="5">

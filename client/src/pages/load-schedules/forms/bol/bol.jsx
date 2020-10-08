@@ -50,7 +50,7 @@ const BOL = ({ value, redo, supermode, locateTrip, setCurStatus, exportPDF }) =>
       const start = data.search('<pre style="font-size:16px;">') + '<pre style="font-size:16px;">'.length;
       const end = data.search('</pre>');
 
-      console.log(data.substring(start , end))
+      // console.log(data.substring(start , end))
       doc.setFont('courier');   //courier font gives all character same width in PDF
       doc.setFontSize(12);
       

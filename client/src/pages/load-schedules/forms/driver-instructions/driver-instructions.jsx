@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import ReactHtmlParser from 'react-html-parser';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
-
+import { jsPDF } from "jspdf";
 import api, { LOAD_SCHEDULES } from '../../../../api';
 
-const DriverInstructions = ({ value, redoDLI }) => {
+const DriverInstructions = ({ value, redoDLI, exportPDF }) => {
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -22,6 +22,23 @@ const DriverInstructions = ({ value, redoDLI }) => {
         .then((res) => setData(res.data));
     }
   }, [value, redoDLI]);
+
+  useEffect(() => {
+    if (exportPDF > 0 && !!data) {
+      const doc = new jsPDF('p', 'pt', 'a4');
+
+      const start = data.search('<pre style="font-size:16px;">') + '<pre style="font-size:16px;">'.length;
+      const end = data.search('</pre>');
+
+      // console.log(data.substring(start , end))
+      doc.setFont('courier');   //courier font gives all character same width in PDF
+      doc.setFontSize(12);
+      
+      doc.text(data.substring(start , end), 10, 15);
+      
+      doc.save("DLI_" + value.shls_trip_no + ".pdf");
+    }
+  }, [exportPDF]);
 
   return (
     <Spin spinning={!data} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
