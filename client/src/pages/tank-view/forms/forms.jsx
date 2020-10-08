@@ -22,7 +22,6 @@ import {
 import { GeneralContainer } from '../style';
 
 import api, { TANKS } from '../../../api';
-import { ConfigConsumer } from 'antd/lib/config-provider';
 
 const TabPane = Tabs.TabPane;
 
@@ -185,7 +184,7 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, 
 
           <TabPane tab={t('tabColumns.tankConfiguration')} key="2" forceRender>
             <Terminal form={form} value={value} />
-            <Code form={form} value={value} config={ConfigConsumer} />
+            <Code form={form} value={value} config={config} />
             <Name form={form} value={value} />
             <Product form={form} value={value} onChange={setProduct} />
             <Density form={form} value={value} product={product} />
