@@ -15,7 +15,7 @@ import { TIME_CODES } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const TimecodeForm = ({ value, visible, handleFormState }) => {
+const TimecodeForm = ({ value, visible, handleFormState, setCode }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -23,7 +23,8 @@ const TimecodeForm = ({ value, visible, handleFormState }) => {
 
   const IS_CREATING = !value;
   
-  const onComplete = () => {
+  const onComplete = (title) => {
+    setCode(title);
     handleFormState(false, null); 
     mutate(TIME_CODES.READ);
   };
@@ -42,7 +43,7 @@ const TimecodeForm = ({ value, visible, handleFormState }) => {
         await api
           .post(TIME_CODES.CREATE, values)
           .then(() => {
-            onComplete();
+            onComplete(values?.tcd_title);
 
             notification.success({
               message: t('messages.createSuccess'),
@@ -63,10 +64,11 @@ const TimecodeForm = ({ value, visible, handleFormState }) => {
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('fields.timeCode')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.timeCode')}`);
     }
 
-    if (input && input.length > 4) {
+    const len = (new TextEncoder().encode(input)).length;
+    if (input && len > 4) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 4 ─ ${t('descriptions.maxCharacters')}`);
     }
 

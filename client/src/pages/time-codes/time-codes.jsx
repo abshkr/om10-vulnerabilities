@@ -36,8 +36,9 @@ const TimeCodes = () => {
 
   const fields = columns(t);
 
-  const handleFormState = (visibility) => {
+  const handleFormState = (visibility, title) => {
     setVisible(visibility);
+    // setCode(title);
     // setSelected(value);
   };
 
@@ -131,6 +132,8 @@ const TimeCodes = () => {
     mutate(TIME_CODES.READ);
     if (tcd_title) {
       setCode(tcd_title);
+    } else {
+      setCode(payload?.records[0].tcd_title);
     }
   };
 
@@ -290,7 +293,7 @@ const TimeCodes = () => {
         onCellClick={onCellEdit}
         extra={extra}
       />
-      <TimecodeForm value={selected} visible={visible} handleFormState={handleFormState} />
+      <TimecodeForm value={selected} visible={visible} handleFormState={handleFormState} setCode={setCode} />
     </Page>
   );
 };

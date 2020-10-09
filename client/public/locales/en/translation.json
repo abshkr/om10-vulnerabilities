@@ -174,7 +174,7 @@
     "tankVolumeInLine": "The tank volume in line ",
     "tankVolumeMustBeNumber": "Tank volume must be a number",
     "terminalNotMatch": "Terminal does not match",
-    "timecodeAL": "Cannot delete time code AL",
+    "timecodeAL": "Cannot delete time code AL which is system defined",
     "toProductNotBase": "Scheduled to-product is made of multiple base products.",
     "totalFlow": "Total Flow of All Products",
     "unauthorized": "You are not authorised to access this page",

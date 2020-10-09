@@ -174,7 +174,7 @@
 		"tankVolumeInLine": "油罐容积 - 行号：",
 		"tankVolumeMustBeNumber": "油罐容积必须是实数",
 		"terminalNotMatch": "油库不匹配",
-		"timecodeAL": "无法删除班次AL",
+		"timecodeAL": "班次AL是系统默认配置，不能删除",
 		"toProductNotBase": "计划进库的油品不是单一基础油品，而是由多种基础油品组成。",
 		"totalFlow": "所有油品的总流量",
 		"unauthorized": "抱歉，您没有访问此页面的权限",
