@@ -29,8 +29,14 @@ const PartnerForm = ({ value, visible, handleFormState, access }) => {
   const IS_CREATING = !value;
 
   const onComplete = () => {
+    resetFields();
     handleFormState(false, null);
     mutate(PARTNERSHIP.READ);
+  };
+
+  const onFormClosed = () => {
+    resetFields();
+    handleFormState(false, null);
   };
 
   const onFinish = async () => {
@@ -126,7 +132,7 @@ const PartnerForm = ({ value, visible, handleFormState, access }) => {
       resetFields();
       setCompany(null);
     }
-  }, [value]);
+  }, [value, resetFields]);
 
   useEffect(() => {
     if (payload?.records) {
@@ -137,7 +143,7 @@ const PartnerForm = ({ value, visible, handleFormState, access }) => {
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
-      onClose={() => handleFormState(false, null)}
+      onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
       mask={IS_CREATING}
@@ -150,7 +156,7 @@ const PartnerForm = ({ value, visible, handleFormState, access }) => {
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={onFormClosed}
           >
             {t('operations.cancel')}
           </Button>

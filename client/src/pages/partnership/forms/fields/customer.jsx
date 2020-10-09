@@ -29,6 +29,7 @@ const Customer = ({ form, value, company, disable }) => {
       <Select
         loading={isValidating}
         showSearch
+        allowClear
         disabled = {disable}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectCustomer') : null}
