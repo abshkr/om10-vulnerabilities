@@ -1,10 +1,12 @@
 import React, { useState, useRef, useContext, useEffect } from 'react';
-import { Form, Select, DatePicker, Checkbox } from 'antd';
+import { useTranslation } from 'react-i18next';
+import { Form, Select, DatePicker, Checkbox, message } from 'antd';
 import _ from 'lodash';
 
 import Context from './context';
 
 const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, expiry, ...restProps }) => {
+  const { t } = useTranslation();
   const form = useContext(Context);
   const inputRef = useRef();
 
@@ -12,24 +14,47 @@ const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, 
 
   const { setFieldsValue } = form;
 
+  const validate = (rule, input) => {
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.select')} ─ ${t('fields.expiryDate')}`);
+      }
+    }
+
+    return Promise.resolve();
+  };
+
   const onEdit = () => {
     setEditing(!editing);
   };
 
   const save = async (e) => {
-    const values = await form.validateFields();
+    try {
+      const values = await form.validateFields();
 
-    if (dataIndex === 'ed_exp_date') {
-      values.ed_exp_date = values?.ed_exp_date?.format('YYYY-MM-DD 00:00:00');
+      if (dataIndex === 'ed_exp_date') {
+        if (!values?.ed_exp_date) {
+          values.ed_exp_date = '';
+        } else {
+          values.ed_exp_date = values?.ed_exp_date?.format('YYYY-MM-DD 00:00:00');
+        }
+      }
+
+      if (!values?.ed_status) {
+        values.ed_status = false;
+      }
+
+      onEdit();
+
+      handleSave({ ...record, ...values });
+    } catch (error) {
+      // console.log('................Expiry Date Cell:', error);
+      message.error({
+        key: 'save',
+        content: t('descriptions.validationFailed'),
+      });
     }
 
-    if (!values?.ed_status) {
-      values.ed_status = false;
-    }
-
-    onEdit();
-
-    handleSave({ ...record, ...values });
   };
 
   useEffect(() => {
@@ -91,6 +116,7 @@ const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, 
             {
               type: 'object',
               required: true,
+              validator: validate
             },
           ]}
         >
