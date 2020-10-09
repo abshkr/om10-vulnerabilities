@@ -18,14 +18,15 @@ class CompanyBay extends CommonClass
     public function read()
     {
         $query = "
-        SELECT BACL_BAY_CODE,
-            BACL_CMPY_CODE,
-            CMPY_NAME,
-            BACL_BAY_TYPE,
-            DECODE(BACL_BAY_TYPE, 0, 'Tranditional Loading', 1, 'Nomination Movement', 'Tranditional Loading') BACL_BAY_TYPE_NAME
-        FROM BA_CMPY_LNK, COMPANYS
-        WHERE BACL_CMPY_CODE = CMPY_CODE
-        ORDER BY BACL_CMPY_CODE, BACL_BAY_CODE";
+            SELECT BACL_BAY_CODE,
+                BACL_CMPY_CODE,
+                CMPY_NAME,
+                BACL_BAY_TYPE,
+                BAY_LOAD_TYPE_NAME as BACL_BAY_TYPE_NAME
+            FROM BA_CMPY_LNK, COMPANYS, BAY_LOAD_TYPES
+            WHERE BACL_CMPY_CODE = CMPY_CODE AND BACL_BAY_TYPE = BAY_LOAD_TYPE_ID
+            ORDER BY BACL_CMPY_CODE, BACL_BAY_CODE
+        ";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
@@ -54,11 +55,13 @@ class CompanyBay extends CommonClass
     
     public function bay_types()
     {
-        $query = "SELECT 0 BACL_BAY_TYPE, 'Tranditional Loading' BACL_BAY_TYPE_NAME 
-            FROM DUAL
-            UNION 
-            SELECT 1 BACL_BAY_TYPE, 'Nomination Movement' BACL_BAY_TYPE_NAME 
-            FROM DUAL";
+        $query = "
+            SELECT 
+                BAY_LOAD_TYPE_ID  as BACL_BAY_TYPE, 
+                BAY_LOAD_TYPE_NAME as BACL_BAY_TYPE_NAME 
+            FROM BAY_LOAD_TYPES
+            ORDER BY BAY_LOAD_TYPE_ID
+        ";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;

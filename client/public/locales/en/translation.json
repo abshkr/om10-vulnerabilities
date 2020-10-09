@@ -364,6 +364,8 @@
     "bayOnly": "Bay Only",
     "bayOrDevice": "Host Bay or Device",
     "bayType": "Bay Type",
+    "bayTypeTraditionalLoading": "Traditional Loading",
+    "bayTypeNominationMovement": "Nomination Movement",
     "baysLoads": "Bays/Load",
     "blendToleranceCheck": "Blend Tolerance Check",
     "bookBalance": "Book Balance",

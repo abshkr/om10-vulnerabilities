@@ -1,0 +1,40 @@
+/*
+	add contents for Bay Load Types
+*/
+
+delete from MSG_LOOKUP where MSG_ID in (3090,3091);
+
+commit;
+
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3090, 'ENG', 'Traditional Loading');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3091, 'ENG', 'Nomination Movement');
+
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3090, 'CHN', '传统发油交易');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3091, 'CHN', '大宗油品交易');
+
+commit;
+
+delete from ENUMITEM where ENUMTYPENAME='BAY_LOAD_TYPE';
+
+insert into ENUMITEM (ENUMTYPENAME,ENUM_NO,ENUM_CODE,ENUM_TMM)values('BAY_LOAD_TYPE', 0, 'L', 3090);
+insert into ENUMITEM (ENUMTYPENAME,ENUM_NO,ENUM_CODE,ENUM_TMM)values('BAY_LOAD_TYPE', 1, 'M', 3091);
+
+commit;
+
+
+-- Add VIEW for Bay Load Types
+
+CREATE OR REPLACE VIEW BAY_LOAD_TYPES
+(BAY_LOAD_TYPE_ID, BAY_LOAD_TYPE_CODE, BAY_LOAD_TYPE_NAME)
+AS 
+SELECT 
+	ENUMITEM.ENUM_NO BAY_LOAD_TYPE_ID
+	, ENUMITEM.ENUM_CODE BAY_LOAD_TYPE_CODE
+	, MSG_GLBL.MESSAGE BAY_LOAD_TYPE_NAME
+FROM ENUMITEM,MSG_GLBL
+WHERE ENUMITEM.ENUM_TMM=MSG_GLBL.MSG_ID
+AND ENUMTYPENAME='BAY_LOAD_TYPE';
+
+/
+
+commit;

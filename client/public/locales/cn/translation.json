@@ -364,6 +364,8 @@
 		"bayOnly": "只在发油台返还",
 		"bayOrDevice": "在主发油台及设备处返还",
 		"bayType": "发油台类型",
+		"bayTypeTraditionalLoading": "传统发油交易",
+		"bayTypeNominationMovement": "大宗油品交易",
 		"baysLoads": "单次发油占用发油台数",
 		"blendToleranceCheck": "基础油品超标检查",
 		"bookBalance": "结余库存",
