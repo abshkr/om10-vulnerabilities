@@ -438,6 +438,24 @@ class EquipmentType extends CommonClass
         }
     }
 
+    protected function post_create()
+    {
+        // in case CGI wrote the text in non-utf8
+        $query = "UPDATE EQUIP_TYPES SET ETYP_TITLE =:etyp_title WHERE ETYP_ID = :etyp_id";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':', $this->etyp_title);
+        oci_bind_by_name($stmt, ':', $this->etyp_id);
+        if (!oci_execute($stmt)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            // $error = new EchoSchema(500, response("__INTERNAL_ERROR__", "Internal Error: " . $e['message']));
+            // echo json_encode($error, JSON_PRETTY_PRINT);
+            false;
+        };
+
+        return true;
+    }
+
     //sess_id=LWWRTniwSbdD&canBreak=0&eqpNm=CW&sched=n&op=17&rigid=n&etyp_category=P&callerTyp=flex
     public function create()
     {
