@@ -154,7 +154,9 @@ class EnumService
         $query = "
             SELECT *
             FROM BA_METER_TYP
-            ORDER BY BA_METER_ID";
+            WHERE BA_METER_ID != 0
+            ORDER BY BA_METER_ID
+        ";
         // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt)) {
