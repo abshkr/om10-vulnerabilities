@@ -61,7 +61,7 @@ const columns = (t) => [
     resizable: true,
     width: 140,
     suppressSizeToFit: true,
-   // hide: true,
+    // hide: true,
   },
   {
     headerName: t('fields.countEtypTanker'),
@@ -71,7 +71,7 @@ const columns = (t) => [
     resizable: true,
     width: 140,
     suppressSizeToFit: true,
-    //hide: true,
+    // hide: true,
   },
 ];
 

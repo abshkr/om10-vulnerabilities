@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
-import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col, Tag, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 
@@ -168,6 +168,23 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       visible={visible}
       footer={
         <>
+          {!IS_CREATING && (
+            <div
+              style={{ float: 'left', marginRight: 5 }}
+            >
+              <Tooltip placement="topRight" title={t("descriptions.countCustOrder")} >
+                <Tag color={value?.cust_order_count>0 ? 'red' : 'green'}>
+                  {t('fields.countCustOrder') + ': ' + value?.cust_order_count}
+                </Tag>
+              </Tooltip>
+              <Tooltip placement="topRight" title={t("descriptions.countCustLocation")} >
+                <Tag color={value?.cust_dloc_count>0 ? 'red' : 'green'}>
+                  {t('fields.countCustLocation') + ': ' + value?.cust_dloc_count}
+                </Tag>
+              </Tooltip>
+            </div>
+          )}
+
           <Button
             htmlType="button"
             icon={<CloseOutlined />}
@@ -192,7 +209,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={!access?.canDelete || !mainTabOn}
+              disabled={!access?.canDelete || !mainTabOn || value?.cust_order_count>0 || value?.cust_dloc_count>0}
               onClick={onDelete}
             >
               {t('operations.delete')}
