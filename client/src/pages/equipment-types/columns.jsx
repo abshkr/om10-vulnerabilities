@@ -53,6 +53,26 @@ const columns = (t) => [
     width: 100,
     suppressSizeToFit: true,
   },
+  {
+    headerName: t('fields.countEtypEquipment'),
+    field: 'eqpt_count',
+    filterable: true,
+    sortable: true,
+    resizable: true,
+    width: 140,
+    suppressSizeToFit: true,
+   // hide: true,
+  },
+  {
+    headerName: t('fields.countEtypTanker'),
+    field: 'tnkr_count',
+    filterable: true,
+    sortable: true,
+    resizable: true,
+    width: 140,
+    suppressSizeToFit: true,
+    //hide: true,
+  },
 ];
 
 export default columns;

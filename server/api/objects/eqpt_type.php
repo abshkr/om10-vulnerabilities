@@ -327,7 +327,9 @@ class EquipmentType extends CommonClass
                         DECODE(UPPER(FIRST_SUB_ITEM.ETYP_SCHEDUL), 'N', 'P', 'T'))
                     )) IMAGE,
                 NVL(EQUIP_CMPTS.CMPTS, EQUIP_TYPES_VW.ETYP_N_ITEMS) CMPTS,
-                EQUIP_TYPES_VW.CMPTNU
+                EQUIP_TYPES_VW.CMPTNU,
+                NVL(EQPT_COUNTS.EQPT_COUNT, 0)  EQPT_COUNT,
+                NVL(TNKR_COUNTS.TNKR_COUNT, 0)  TNKR_COUNT
             FROM EQUIP_TYPES_VW,
                 (SELECT NVL(ETYP_SCHEDUL, 'N') ETYP_SCHEDUL, NVL(ETYP_ISRIGID, 'N') ETYP_ISRIGID, CMPTNU, ECNCT_ETYP
                 FROM EQUIP_TYPES_VW, EQP_CONNECT
@@ -362,10 +364,22 @@ class EquipmentType extends CommonClass
                         WHERE EQC_SUB_ITEM = EQUIP_TYPES.ETYP_ID AND EQUIP_ISLEAF = 1
                     )
                     GROUP BY ETYP_ID_RT
-                ) EQUIP_CMPTS
+                ) EQUIP_CMPTS,
+                (
+                    SELECT EQPT_ETP, COUNT(*) EQPT_COUNT
+                    FROM TRANSP_EQUIP
+                    GROUP BY EQPT_ETP
+                ) EQPT_COUNTS,
+                (
+                    SELECT TNKR_ETP, COUNT(*) TNKR_COUNT
+                    FROM TANKERS
+                    GROUP BY TNKR_ETP
+                ) TNKR_COUNTS
             WHERE FIRST_SUB_ITEM.ECNCT_ETYP(+) = EQUIP_TYPES_VW.ETYP_ID
                 AND EQUIP_TYPES_VW.ETYP_ID = EQUIP_IMAGES.COMBO_ETYP(+)
                 AND EQUIP_TYPES_VW.ETYP_ID = EQUIP_CMPTS.COMBO_ETYP(+)
+                AND EQUIP_TYPES_VW.ETYP_ID = EQPT_COUNTS.EQPT_ETP(+)
+                AND EQUIP_TYPES_VW.ETYP_ID = TNKR_COUNTS.TNKR_ETP(+)
                 AND ETYP_TITLE like :etyp_title";
 
         if (isset($this->cmptnu)) {
