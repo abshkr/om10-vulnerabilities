@@ -68,8 +68,13 @@ class LoadMeter extends CommonClass
             return false;
         }
 
-        $query = "UPDATE BA_METERS SET BAM_KDATE_DMY = SYSDATE";
+        $query = "
+            UPDATE BA_METERS 
+            SET BAM_KDATE_DMY = SYSDATE
+            WHERE BAM_CODE = :bam_code
+        ";
         $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':bam_code', $this->bam_code);
         if (oci_execute($stmt, $this->commit_mode)) {
             return true;
         } else {

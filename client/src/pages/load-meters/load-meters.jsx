@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import useSWR from 'swr';
 import { Button } from 'antd';
@@ -15,6 +15,7 @@ import useAuth from 'hooks/use-auth';
 
 const LoadMeters = () => {
   const { t } = useTranslation();
+  const [filterValue, setFilterValue] = useState('');
 
   const { data: payload, isValidating, revalidate } = useSWR(LOAD_METERS.READ);
 
@@ -23,10 +24,14 @@ const LoadMeters = () => {
   const fields = columns(t);
   const data = payload?.records;
 
+  const handleFilter = (value) => {
+    setFilterValue(value);
+  };
+
   const handleClick = (value) => {
     FormModal({
       value,
-      form: <Forms value={value} />,
+      form: <Forms value={value} handleFilter={handleFilter} />,
       id: value?.bam_code,
       name: value?.bam_name,
       t,
@@ -47,7 +52,7 @@ const LoadMeters = () => {
 
   return (
     <Page page={t('pageMenu.config')} name={t('pageNames.loadMeters')} modifiers={modifiers} access={access}>
-      <DataTable columns={fields} data={data} isLoading={isValidating} onClick={handleClick} />
+      <DataTable columns={fields} data={data} isLoading={isValidating} onClick={handleClick} filterValue={filterValue} />
     </Page>
   );
 };

@@ -17,11 +17,21 @@ import api, { LOAD_METERS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value }) => {
+const FormModal = ({ value, handleFilter }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
   const IS_CREATING = !value;
+
+  const onComplete = (bam_code) => {
+    mutate(LOAD_METERS.READ);
+    if (bam_code) {
+      handleFilter("" + bam_code);
+    } else {
+      handleFilter(' ');
+    }
+    Modal.destroyAll();
+  };
 
   const onFinish = (values) => {
     Modal.confirm({
@@ -35,9 +45,9 @@ const FormModal = ({ value }) => {
         await api
           .post(IS_CREATING ? LOAD_METERS.CREATE : LOAD_METERS.UPDATE, values)
           .then((response) => {
-            Modal.destroyAll();
-
-            mutate(LOAD_METERS.READ);
+            onComplete(values?.bam_code);
+            // Modal.destroyAll();
+            // mutate(LOAD_METERS.READ);
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
               description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
@@ -65,8 +75,9 @@ const FormModal = ({ value }) => {
         await api
           .post(LOAD_METERS.DELETE, value)
           .then((response) => {
-            mutate(LOAD_METERS.READ);
-            Modal.destroyAll();
+            onComplete();
+            // mutate(LOAD_METERS.READ);
+            // Modal.destroyAll();
             notification.success({
               message: t('messages.deleteSuccess'),
               description: `${t('descriptions.deleteSuccess')}`,
