@@ -94,12 +94,12 @@ const FolioSummary = () => {
       </Button>
 
       <Button
-				title={showCloseoutStatus()}
+        title={showCloseoutStatus()}
         type="primary"
         icon={<SafetyCertificateOutlined />}
         onClick={() => closeFolio(null)}
         style={{ float: 'right', marginRight: 5 }}
-				disabled={!closeoutIsIdle}
+        disabled={!access?.extra || !closeoutIsIdle}
       >
         {t('operations.closeFirstFolio')}
       </Button>
