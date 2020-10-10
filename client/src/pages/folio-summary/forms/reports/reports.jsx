@@ -40,7 +40,7 @@ const Reports = ({ id, reportTrigger, setRegenerate }) => {
         dataSource={payload}
         columns={fields}
         // scroll={{ y: '120vh' }}
-        pagination={{ pageSize: 22 }}
+        pagination={{ showSizeChanger: true, defaultPageSize: 20 }}
       />
     </div>
   );
