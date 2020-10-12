@@ -24,7 +24,7 @@ import responseType from './response-type';
 import generatePaths from './generate-paths';
 import hash from './hash';
 import * as VCFManager from './vcf-manager';
-
+import generatePassword from './generate-password';
 export {
   search,
   generateOptions,
@@ -54,4 +54,5 @@ export {
   hash,
   pwdComplexity,
   complexityDesc,
+  generatePassword,
 };

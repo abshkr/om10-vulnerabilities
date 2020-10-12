@@ -6,14 +6,17 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
 import api, { PERSONNEL } from '../../api';
+import { generatePassword } from 'utils';
 
 const PasswordReset = ({ value }) => {
   const { t } = useTranslation();
 
-  const [password, setPassword] = useState(_.times(7, () => String.fromCharCode(_.random(33, 126))).join(''));
+  const [password, setPassword] = useState(generatePassword());
 
   const randomize = () => {
-    setPassword(_.times(7, () => String.fromCharCode(_.random(33, 126))).join(''));
+    const password = generatePassword();
+
+    setPassword(password);
   };
 
   const handleSubmit = () => {
