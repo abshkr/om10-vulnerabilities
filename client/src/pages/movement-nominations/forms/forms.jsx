@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
 import { Form, Button, Tabs, notification, Modal, Divider, Drawer, Row, Col, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { mutate } from 'swr';
+import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
 
 import {
@@ -38,6 +38,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { setFieldsValue, resetFields, validateFields } = form;
+
+  const { data: nomProducts } = useSWR(MOVEMENT_NOMIATIONS.NOM_PRODUCTS, { revalidateOnFocus: false });
 
   const fields = columns(t);
 
@@ -138,6 +140,24 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
     const errors = onItemValidation(items);
 
     if (errors.length === 0) {
+      // fill the product name for both/either from and/o to product
+      _.forEach(items, (item)=>{
+        const prodFrom = _.find(nomProducts?.records, (o) => (
+          o.prod_code === item.mvitm_prodcode_from && o.prod_cmpy === item.mvitm_prodcmpy_from
+        ));
+        item.mvitm_prodname_from = ''; 
+        if (prodFrom) {
+          item.mvitm_prodname_from = prodFrom.prod_cmpy + ' - ' + prodFrom.prod_code + ' - ' + prodFrom.prod_name; 
+        }
+        const prodTo = _.find(nomProducts?.records, (o) => (
+          o.prod_code === item.mvitm_prodcode_to && o.prod_cmpy === item.mvitm_prodcmpy_to
+        ));
+        item.mvitm_prodname_to = ''; 
+        if (prodTo) {
+          item.mvitm_prodname_to = prodTo.prod_cmpy + ' - ' + prodTo.prod_code + ' - ' + prodTo.prod_name; 
+        }
+      });
+
       values.items = items;
 
       // console.log('.....................values.mv_dtim_effect', values.mv_dtim_effect);
