@@ -536,11 +536,24 @@ class Allocation extends CommonClass
 
     public function types()
     {
+        if (isset($_SESSION['SESSION'])) {
+            $this->curr_cmpy = strip_tags($_SESSION['COMPANY']);
+        } else {
+            $this->curr_cmpy = 'NA';
+        }
+
+        // $query = "
+        //     SELECT *
+        //     FROM ALLOCATIONCHECK
+        //     ORDER BY ACHECK_TYPE";
         $query = "
-            SELECT *
-            FROM ALLOCATIONCHECK
-            ORDER BY ACHECK_TYPE";
+            SELECT COMPANY_ID ACHECK_TYPE, COMPANY_NAME ACHECK_NAME
+            FROM COMPANY_TYP
+            WHERE COMPANY_ID IN (2,3,4)
+            OR ( (:user_cmpy in (select CMPY_CODE from COMPANYS where bitand(CMPY_TYPE, 3)>0 )) AND COMPANY_ID=1 )
+        ";
         $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':user_cmpy', $this->curr_cmpy);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
