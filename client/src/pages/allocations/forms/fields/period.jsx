@@ -46,7 +46,7 @@ const Period = ({ form, value, lockType }) => {
       >
         {options?.records.map((item, index) => (
           <Select.Option key={index} value={item.alloc_period_id}>
-            {item.alloc_period_name}
+            {item.alloc_period_name||' '}
           </Select.Option>
         ))}
       </Select>
