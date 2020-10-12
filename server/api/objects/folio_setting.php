@@ -58,7 +58,7 @@ class FolioSetting extends CommonClass
                 NEXT_MANUAL_FREEZE_DATETIME, 
                 NEXT_MANUAL_CLOSE, 
                 SITE_LD_RETNPRD_NEW_MOV, 
-                SITE_LD_RETNPRD_USED_MOV  
+                SITE_LD_RETNPRD_USED_MOV
             FROM SITE";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
@@ -67,6 +67,15 @@ class FolioSetting extends CommonClass
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
+        }
+    }
+
+    public function read_ex_decorate(&$result_array)
+    {
+        $result_array[0]['closeout_running'] = false;
+        $output = shell_exec('ps -ef | grep "[c]loseout -"');
+        if (strlen($output) > 0) {
+            $result_array[0]['closeout_running'] = true;
         }
     }
 
