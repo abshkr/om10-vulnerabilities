@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
 import api, { PERSONNEL } from '../../api';
-import { generatePassword } from 'utils';
+import generatePassword from 'utils/generate-password';
 
 const PasswordReset = ({ value }) => {
   const { t } = useTranslation();
