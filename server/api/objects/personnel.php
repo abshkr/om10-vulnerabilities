@@ -523,6 +523,21 @@ class Personnel extends CommonClass
     //     return;
     // }
 
+    public function reset_password()
+    {
+        $this->update_password();
+        //Set USER_STATUS_FLAG = 0 so when user login with new password, force to change password
+        $query = "UPDATE URBAC_USERS SET USER_STATUS_FLAG = 0 WHERE USER_CODE = :per_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':per_code', $this->per_code);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
+        return;
+    }
+
     public function update_password()
     {
         write_log(json_encode($this), __FILE__, __LINE__);

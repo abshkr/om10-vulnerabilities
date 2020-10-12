@@ -3,6 +3,7 @@ export const CREATE = '/api/pages/personnel/create.php';
 export const UPDATE = '/api/pages/personnel/update.php';
 export const DELETE = '/api/pages/personnel/delete.php';
 export const UPDATE_PASSWORD = '/api/pages/personnel/update_password.php';
+export const RESET_PASSWORD = '/api/pages/personnel/reset_password.php';
 export const UPDATE_STATUS = '/api/pages/personnel/update_status.php';
 export const UPDATE_DEPARTMENT = '/api/session/change_cur_dep.php';
 export const READ_DEPARTMENT = '/api/session/get_cur_dep.php';

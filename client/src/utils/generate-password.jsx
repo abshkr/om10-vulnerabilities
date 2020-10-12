@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 const capitals = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-const special = '!"£$%^&*()-=+_?';
+const special = '!"#$%^&*()-=+_?';
 const numbers = '0123456789';
 
 function generatePassword() {

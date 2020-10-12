@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { CloseOutlined, CheckOutlined } from '@ant-design/icons';
 import { Form, Button, Modal, Input, notification } from 'antd';
@@ -11,6 +11,7 @@ const ChangePassword = ({language, user_code, old, dispatch, onReturn}) => {
   const { t } = useTranslation();
   const config = useConfig();
   const [form] = Form.useForm();
+  const [password, setPassword] = useState(null);
 
   const onFinish = (values) => {
     if (values.new !== values.confirm) {
@@ -65,6 +66,12 @@ const ChangePassword = ({language, user_code, old, dispatch, onReturn}) => {
       );
     }
 
+    if (!pwdComplexity(input, input, config.passwordComplexity)) {
+      return Promise.reject(
+        `${t('descriptions.pwdComplexity') + ": " + complexityDesc(config.passwordComplexity, t)}`
+      );
+    }
+
     return Promise.resolve();
   };
 
@@ -85,6 +92,10 @@ const ChangePassword = ({language, user_code, old, dispatch, onReturn}) => {
       );
     }
 
+    if (input && input !== password) {
+      return Promise.reject(t('descriptions.passwordDoesntMatch'));
+    }
+
     return Promise.resolve();
   };
 
@@ -94,7 +105,7 @@ const ChangePassword = ({language, user_code, old, dispatch, onReturn}) => {
         label={t("fields.newPassword")} 
         rules={[{ required: true, validator: validatePassword }]}
       >
-        <Input.Password autoFocus={true} ></Input.Password>
+        <Input.Password onChange={(e) => setPassword(e.target.value)} autoFocus={true} ></Input.Password>
       </Form.Item>  
 
       <Form.Item 
