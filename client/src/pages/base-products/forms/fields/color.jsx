@@ -7,7 +7,8 @@ import {getRealColor} from '../../../../utils';
 
 const BaseProductColor = ({ form, value }) => {
   const [visible, setVisible] = useState(false);
-  const [color, setColor] = useState('#ffffff');
+  // const [color, setColor] = useState('#ffffff');
+  const [color, setColor] = useState('');
 
   const { t } = useTranslation();
 

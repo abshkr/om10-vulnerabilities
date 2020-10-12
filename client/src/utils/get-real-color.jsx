@@ -1,11 +1,15 @@
 import _ from 'lodash';
 
 const getRealColor = (value) => {
-  let newValue = _.trimStart(value, '#');
-  newValue = _.padStart(newValue, 6, '0');
-  newValue = '#' + newValue;
+  if (!value || value === '') {
+    return '#ffffff';
+  } else {
+    let newValue = _.trimStart(value, '#');
+    newValue = _.padStart(newValue, 6, '0');
+    newValue = '#' + newValue;
 
-  return newValue;
+    return newValue;
+  }
 };
 
 export default getRealColor;
