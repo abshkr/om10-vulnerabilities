@@ -19,7 +19,7 @@ const AssetForm = ({ value, visible, handleFormState, access, setFilterValue }) 
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
-  const { resetFields, setFieldsValue } = form;
+  const { resetFields, setFieldsValue, getFieldValue } = form;
 
   const onComplete = (prod_code) => {
     handleFormState(false, null);
@@ -87,6 +87,9 @@ const AssetForm = ({ value, visible, handleFormState, access, setFilterValue }) 
   };
 
   const backcolorChange = (v) => {
+    // const currColor = getFieldValue('prod_backcolor');
+    // const currPickColor = getFieldValue('textcolorpicker');
+    // console.log('backcolorChange', currColor, currPickColor, v.target.value, v);
     setFieldsValue({
       prod_backcolor: v.target.value,
     });
@@ -120,9 +123,11 @@ const AssetForm = ({ value, visible, handleFormState, access, setFilterValue }) 
     if (value) {
       setFieldsValue({
         prod_textcolor: value.prod_textcolor,
-        textcolorpicker: value.prod_textcolor,
+        textcolorpicker: value.prod_textcolor === '' ? '#ffffff' : value.prod_textcolor,
+        // textcolorpicker: value.prod_textcolor,
         prod_backcolor: value.prod_backcolor,
-        backcolorpicker: value.prod_backcolor,
+        backcolorpicker: value.prod_backcolor === '' ? '#ffffff' : value.prod_backcolor,
+        // backcolorpicker: value.prod_backcolor,
         prod_image: value.prod_image,
       });
     }

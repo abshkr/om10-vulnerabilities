@@ -24,7 +24,11 @@ const PasswordReset = ({ value }) => {
       const user = value.per_code;
 
       api
-        .post(`${PERSONNEL.UPDATE_PASSWORD}?per_code=${user}&password=${password}`)
+        .post(PERSONNEL.RESET_PASSWORD,
+          {
+            per_code: user,
+            password: password
+          })
         .then((response) => {
           Modal.destroyAll();
           notification.success({
