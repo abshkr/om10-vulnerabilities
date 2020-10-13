@@ -114,12 +114,14 @@ function transform(data, showAdditives) {
   _.chain(data)
     .filter((object) => {
       if (!showAdditives) {
-        return !object?.tank_bclass_name?.includes('Additive');
+        // return !object?.tank_bclass_name?.includes('Additive');
+        return object?.tank_base_class !== '6' && object?.tank_base_class !== '11';
       }
 
       return true;
     })
-    .groupBy((object) => object.tank_bclass_name)
+    // .groupBy((object) => object.tank_bclass_name)
+    .groupBy((object) => object.tank_base_class)
 
     .map((value, key) => {
       const ullage = _.sumBy(value, (tank) => {
@@ -220,7 +222,8 @@ function transform(data, showAdditives) {
       ...tank,
     };
 
-    if (tank?.tank_bclass_name?.includes('Additive') && !showAdditives) {
+    // if (tank?.tank_bclass_name?.includes('Additive') && !showAdditives) {
+    if ((tank?.tank_base_class === '6' || tank?.tank_base_class === '11') && !showAdditives) {
       return null;
     } else {
       tanks.push(model);
