@@ -58,7 +58,7 @@ const AuthType = ({ value, form, enabled }) => {
         >
           {cases?.records.map((item, index) => (
             <Select.Option key={index} value={item.role_id}>
-              {item.auth_level_name}
+              {item.role_id === '999' ? t('fields.any') : item.auth_level_name}
             </Select.Option>
           ))}
         </Select>
