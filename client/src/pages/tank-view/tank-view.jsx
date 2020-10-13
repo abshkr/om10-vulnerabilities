@@ -131,7 +131,7 @@ const TankView = () => {
         <Tabs
           defaultActiveKey="1"
           type="card"
-          onChange={() => handleFormState(false, null)}
+          onChange={onTabChanges}
           tabBarExtraContent={
             <Checkbox checked={showAdditives} onChange={onShowAdditiveChange}>
               Show Additive Tanks
