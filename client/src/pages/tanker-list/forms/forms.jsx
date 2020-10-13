@@ -47,6 +47,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
   console.log(expiryTypes);
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const { resetFields } = form;
 
   const { data: payload } = useSWR(TANKER_LIST.READ, { refreshInterval: 0 });
   const [equipment, setEquipment] = useState(undefined);
@@ -55,11 +56,20 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
   const IS_CREATING = !value;
 
   const onComplete = (tnkr_code) => {
+    resetFields();
     handleFormState(false, null);
     mutate(TANKER_LIST.READ);
     if (tnkr_code) {
       setFilterValue('' + tnkr_code);
+    } else {
+      setFilterValue(' ');
     }
+  };
+
+  const onFormClosed = () => {
+    resetFields();
+    setEquipment(undefined);
+    handleFormState(false, null);
   };
 
   const onFinish = async () => {
@@ -200,7 +210,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
-      onClose={() => handleFormState(false, null)}
+      onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
       mask={IS_CREATING}
@@ -213,7 +223,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={onFormClosed}
           >
             {t('operations.cancel')}
           </Button>
