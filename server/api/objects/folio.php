@@ -538,11 +538,17 @@ class Folio extends CommonClass
        Closeout is considered idle if:
        1. it is not scheduled to freeze folio (NEXT_MANUAL_FREEZE_DATETIME is set), AND
        2. it is not scheduled to close folio (NEXT_MANUAL_CLOSE is set to "Y")
+       3. A closeout process is running
     */
     public function closeout_is_idle()
     {
         $result = array();
-        $result["records"] = TRUE;
+        $result["records"] = true;
+
+        $output = shell_exec('ps -ef | grep "[c]loseout -"');
+        if (strlen($output) > 0) {
+            $result["records"] = false;
+        }
 
         $query = "SELECT NEXT_MANUAL_FREEZE_DATETIME FROM SITE";
         $stmt = oci_parse($this->conn, $query);
@@ -550,12 +556,12 @@ class Folio extends CommonClass
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             $freezetime = $row["NEXT_MANUAL_FREEZE_DATETIME"];
             if ($freezetime) {
-                $result["records"] = FALSE;
+                $result["records"] = false;
             }
         } else {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-        		$result["records"] = FALSE;
+        		$result["records"] = false;
         }
 
         $query = "SELECT NEXT_MANUAL_CLOSE FROM SITE";
@@ -566,12 +572,12 @@ class Folio extends CommonClass
 
             /* Closeout only recognises "Y" */
             if ($close && $close == "Y") {
-                $result["records"] = FALSE;
+                $result["records"] = false;
 			}
         } else {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-        		$result["records"] = FALSE;
+        		$result["records"] = false;
         }
 
         http_response_code(200);
@@ -702,7 +708,7 @@ class Folio extends CommonClass
         // write_log(json_encode($reports), __FILE__, __LINE__);
         $result = array();
         $result["records"] = $reports;
-
+        
         http_response_code(200);
         if ($count > 0) {
             echo json_encode($result, JSON_PRETTY_PRINT);

@@ -29,7 +29,7 @@ const Reports = ({ id, reportTrigger, setRegenerate }) => {
   useEffect(() => {
     if (reportTrigger > 0) {
       regenerate();
-    }
+    } 
 
   }, [reportTrigger]);
 

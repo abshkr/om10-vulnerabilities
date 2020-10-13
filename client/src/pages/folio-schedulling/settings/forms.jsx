@@ -429,6 +429,7 @@ const Settings = ({ value, access }) => {
 	const closeoutIsBusy = () => {
 		return (  manualDates?.records[0].next_manual_close !== ""
             || manualDates?.records[0].next_manual_freeze_datetime !== ""
+            || manualDates?.records[0].closeout_running === true
 		);
 	};
 
@@ -495,7 +496,7 @@ const Settings = ({ value, access }) => {
           <Button
           	title={showCloseoutStatus()}
             type="primary"
-            disabled={!runAndOverrideFlag || closeoutIsBusy}
+            disabled={!runAndOverrideFlag || closeoutIsBusy()}
             icon={<CodeOutlined />}
             onClick={runAndOverride}
           >
@@ -620,9 +621,7 @@ const Settings = ({ value, access }) => {
             icon={<SafetyCertificateOutlined />}
             style={{ float: 'right', marginRight: 5 }}
             onClick={closeCloseout}
-            disabled={   !access?.extra
-											|| manualDates?.records[0].next_manual_close !== ""
-            					|| manualDates?.records[0].next_manual_freeze_datetime !== ""}
+            disabled={!access?.extra || closeoutIsBusy()}
           >
             {t('operations.closeCloseout')}
           </Button>
@@ -633,9 +632,7 @@ const Settings = ({ value, access }) => {
             icon={<SafetyCertificateOutlined />}
             style={{ float: 'right', marginRight: 5 }}
             onClick={freezeCloseout}
-            disabled={   !access?.extra
-											|| manualDates?.records[0].next_manual_close !== ""
-            					|| manualDates?.records[0].next_manual_freeze_datetime !== ""}
+            disabled={!access?.extra || closeoutIsBusy()}
           >
             {t('operations.freezeCloseout')}
           </Button>

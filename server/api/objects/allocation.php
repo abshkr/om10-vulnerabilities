@@ -536,11 +536,24 @@ class Allocation extends CommonClass
 
     public function types()
     {
+        if (isset($_SESSION['SESSION'])) {
+            $this->curr_cmpy = strip_tags($_SESSION['COMPANY']);
+        } else {
+            $this->curr_cmpy = 'NA';
+        }
+
+        // $query = "
+        //     SELECT *
+        //     FROM ALLOCATIONCHECK
+        //     ORDER BY ACHECK_TYPE";
         $query = "
-            SELECT *
-            FROM ALLOCATIONCHECK
-            ORDER BY ACHECK_TYPE";
+            SELECT COMPANY_ID ACHECK_TYPE, COMPANY_NAME ACHECK_NAME
+            FROM COMPANY_TYP
+            WHERE COMPANY_ID IN (2,3,4)
+            OR ( (:user_cmpy in (select CMPY_CODE from COMPANYS where bitand(CMPY_TYPE, 3)>0 )) AND COMPANY_ID=1 )
+        ";
         $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':user_cmpy', $this->curr_cmpy);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
@@ -598,7 +611,8 @@ class Allocation extends CommonClass
                 NVL(AITEM_QTYUSED, 0) AITEM_QTYUSED,
                 NVL(AITEM_QTYLEFT, 0) AITEM_QTYLEFT,
                 NVL(AITEM_PRODUNIT, 5) AITEM_PRODUNIT,
-                NVL(AITEM_UNITNAME, 'l (amb)') AITEM_UNITNAME,
+                NVL(AITEM_UNITNAME, 'l (amb)') AITEM_UNITNAME2,
+                aunit.DESCRIPTION  AITEM_UNITNAME,
                 NVL(AITEM_PERCHILD, ALLOC_PERIOD) AITEM_PERCHILD
             FROM
             (
@@ -618,11 +632,13 @@ class Allocation extends CommonClass
                 WHERE PRODUCTS.PROD_CMPY = :supplier
             ) ALL_PRODS,
             GUI_ALLOCATION_ITEMS
+	        , UNIT_SCALE_VW					aunit
             WHERE ALL_PRODS.PROD_CODE = GUI_ALLOCATION_ITEMS.AITEM_PRODCODE(+)
                 AND ALL_PRODS.PROD_CMPY = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
                 AND ALL_PRODS.ALLOC_TYPE = GUI_ALLOCATION_ITEMS.AITEM_TYPE(+)
                 AND ALL_PRODS.ALLOC_CMPYCODE = GUI_ALLOCATION_ITEMS.AITEM_CMPYCODE(+)
                 AND ALL_PRODS.ALLOC_SUPPCODE = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
+                AND NVL(GUI_ALLOCATION_ITEMS.AITEM_PRODUNIT, 5) = aunit.UNIT_ID
             ORDER BY AITEM_QTYLIMIT DESC, PROD_CODE
             ";
             $stmt = oci_parse($this->conn, $query);
@@ -641,7 +657,8 @@ class Allocation extends CommonClass
                 NVL(AITEM_QTYUSED, 0) AITEM_QTYUSED,
                 NVL(AITEM_QTYLEFT, 0) AITEM_QTYLEFT,
                 NVL(AITEM_PRODUNIT, 5) AITEM_PRODUNIT,
-                NVL(AITEM_UNITNAME, 'l (amb)') AITEM_UNITNAME,
+                NVL(AITEM_UNITNAME, 'l (amb)') AITEM_UNITNAME2,
+                aunit.DESCRIPTION  AITEM_UNITNAME,
                 NVL(AITEM_PERCHILD, ALLOC_PERIOD) AITEM_PERCHILD
             FROM
             (
@@ -664,11 +681,13 @@ class Allocation extends CommonClass
                     AND ALLOC_SUPPCODE = :alloc_supp
             ) ALL_PRODS,
             GUI_ALLOCATION_ITEMS
+	        , UNIT_SCALE_VW					aunit
             WHERE ALL_PRODS.PROD_CODE = GUI_ALLOCATION_ITEMS.AITEM_PRODCODE(+)
                 AND ALL_PRODS.PROD_CMPY = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
                 AND ALL_PRODS.ALLOC_TYPE = GUI_ALLOCATION_ITEMS.AITEM_TYPE(+)
                 AND ALL_PRODS.ALLOC_CMPYCODE = GUI_ALLOCATION_ITEMS.AITEM_CMPYCODE(+)
                 AND ALL_PRODS.ALLOC_SUPPCODE = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
+                AND NVL(GUI_ALLOCATION_ITEMS.AITEM_PRODUNIT, 5) = aunit.UNIT_ID
             ORDER BY AITEM_QTYLIMIT DESC, PROD_CODE
             ";
             $stmt = oci_parse($this->conn, $query);

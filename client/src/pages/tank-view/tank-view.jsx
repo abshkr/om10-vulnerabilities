@@ -21,6 +21,7 @@ import Tanks from './tanks';
 
 import transform from './transform';
 import columns from './columns';
+import sumcolumns from './summary/columns';
 
 const { Search } = Input;
 const { TabPane } = Tabs;
@@ -42,6 +43,12 @@ const TankView = () => {
   const [selected, setSelected] = useState(null);
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [tabKey, setTabKey] = useState('1');
+
+  const onTabChanges = (tabPaneKey) => {
+    setTabKey(tabPaneKey);
+    handleFormState(false, null);
+  };
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -69,6 +76,7 @@ const TankView = () => {
   const isLoading = !data || loading;
 
   const fields = columns(t);
+  const sumfields = sumcolumns(t);
 
   const page = t('pageMenu.modules');
   const name = t('pageNames.tankView');
@@ -84,7 +92,11 @@ const TankView = () => {
           suffix={<SearchSuffixContainer>{t('placeholder.pressEnterToSearch')}</SearchSuffixContainer>}
         />
 
-        <Download data={tanks} isLoading={isLoading} columns={fields} />
+        <Download 
+          data={tabKey === '1' ? tanks : summary} 
+          isLoading={isLoading} 
+          columns={tabKey === '1' ? fields: sumfields} 
+        />
 
         <Button
           type="primary"
@@ -92,7 +104,7 @@ const TankView = () => {
           onClick={() => handleFormState(true, null)}
           style={{ marginLeft: 10 }}
           loading={isLoading}
-          disabled={!access.canCreate}
+          disabled={!access.canCreate || tabKey !== '1'}
         >
           {t('operations.create')}
         </Button>
@@ -108,7 +120,7 @@ const TankView = () => {
       />
 
       <TankViewContainer>
-        <Tabs defaultActiveKey="1" type="card" onChange={() => handleFormState(false, null)}>
+        <Tabs defaultActiveKey="1" type="card" onChange={onTabChanges}>
           <TabPane tab={t('tabColumns.tanks')} key="1">
             <Tanks data={tanks} isLoading={isLoading} handleFormState={handleFormState} />
           </TabPane>

@@ -26,8 +26,23 @@ const Metering = () => {
   const fields = columns(t);
   const payload = transform(data?.records, unit, massUnit);
 
-  const units = ['Litres', 'Cubic Metre', 'Imperial Gallon', 'U.S Gallon', 'Imperial Barrel', 'U.S Barrel'];
-  const massUnits = ['KG', 'Pound', 'Imperial Ton', 'Ton'];
+  // const units = ['Litres', 'Cubic Metre', 'Imperial Gallon', 'U.S Gallon', 'Imperial Barrel', 'U.S Barrel'];
+  const units = [
+    {code: 'Litres', title: t('units.litres')},
+    {code: 'Cubic Metre', title: t('units.cubicMetre')},
+    {code: 'Imperial Gallon', title: t('units.imperialGallon')},
+    {code: 'U.S Gallon', title: t('units.usGallon')},
+    {code: 'Imperial Barrel', title: t('units.imperialBarrel')},
+    {code: 'U.S Barrel', title: t('units.usBarrel')},
+  ];
+  // const massUnits = ['KG', 'Pound', 'Imperial Ton', 'Ton'];
+  const massUnits = [
+    {code: 'KG', title: t('units.kg')},
+    {code: 'Pound', title: t('units.pound')},
+    {code: 'Imperial Ton', title: t('units.imperialTon')},
+    {code: 'Ton', title: t('units.ton')},
+  ];
+
 
   const modifiers = (
     <>
@@ -42,7 +57,7 @@ const Metering = () => {
   const extra = (
     <>
       <div style={{ float: 'left' }}>
-        <span style={{ float: 'left', fontSize: '0.7rem', marginRight: '0.2rem', paddingTop: '0.3rem' }}>
+        <span style={{ float: 'left', fontSize: '0.8rem', marginRight: '0.2rem', paddingTop: '0.3rem' }}>
           {t('fields.massUnit') + ':'}
         </span>
         <Select 
@@ -54,8 +69,8 @@ const Metering = () => {
         >
           {massUnits.map((item) => {
             return (
-              <Select.Option key={item} value={item}>
-                {item}
+              <Select.Option key={item.code} value={item.code}>
+                {item.title}
               </Select.Option>
             );
           })}
@@ -66,7 +81,7 @@ const Metering = () => {
         <span
           style={{
             float: 'left',
-            fontSize: '0.7rem',
+            fontSize: '0.8rem',
             marginRight: '0.2rem',
             marginLeft: '0.4rem',
             paddingTop: '0.3rem',
@@ -83,8 +98,8 @@ const Metering = () => {
         >
           {units.map((item) => {
             return (
-              <Select.Option key={item} value={item}>
-                {item}
+              <Select.Option key={item.code} value={item.code}>
+                {item.title}
               </Select.Option>
             );
           })}
