@@ -134,7 +134,7 @@ const TankView = () => {
           onChange={onTabChanges}
           tabBarExtraContent={
             <Checkbox checked={showAdditives} onChange={onShowAdditiveChange}>
-              Show Additive Tanks
+              {t('fields.showAdditiveTanks')}
             </Checkbox>
           }
         >

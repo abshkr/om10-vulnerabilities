@@ -1370,6 +1370,7 @@
 		"setPeriod": "配置周期",
 		"shift": "提单班次",
 		"shipTo": "接货方",
+    	"showAdditiveTanks": "显示添加剂油罐",
 		"showComment": "显示备注",
 		"siteId": "油库ID",
 		"siteManager": "油库管理公司",
