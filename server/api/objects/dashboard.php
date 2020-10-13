@@ -106,19 +106,26 @@ class Dashboard extends CommonClass
         $hook_item['transaction_ids'] = $result;
 
         $result = array();
-        $query = "
-            SELECT TRSA_BAY_CD, 
-                COUNT(TRSALDID_LOAD_ID) LOADS, 
-                SUM(TRSF_QTY_AMB) SUM_AMB, 
-                SUM(TRSF_QTY_COR) SUM_COR, 
-                SUM(TRSF_LOAD_KG) SUM_KG,
-                ROUND(SUM(TRSF_QTY_AMB) / COUNT(TRSALDID_LOAD_ID), 3) AVGAMB_PER_LOAD
-            FROM TRANSACTIONS, TRANSFERS, CLOSEOUTS
-            WHERE TRSA_ID = TRSFTRID_TRSA_ID
-                AND STATUS = 0
-                AND TRSA_ED_DMY > PREV_CLOSEOUT_DATE
-            GROUP BY TRSA_BAY_CD
-            ORDER BY TRSA_BAY_CD";
+        $query = "  SELECT TRANSACTIONS.TRSA_BAY_CD, 
+                        LOADS,
+                        SUM(TRSF_QTY_AMB) SUM_AMB, 
+                        SUM(TRSF_QTY_COR) SUM_COR, 
+                        SUM(TRSF_LOAD_KG) SUM_KG,
+                        ROUND(SUM(TRSF_QTY_AMB) / COUNT(TRSALDID_LOAD_ID), 3) AVGAMB_PER_LOAD
+                    FROM TRANSACTIONS, TRANSFERS, CLOSEOUTS,
+                        (
+                            SELECT TRSA_BAY_CD, COUNT(*) LOADS
+                            FROM TRANSACTIONS, CLOSEOUTS
+                            WHERE STATUS = 0
+                                AND TRSA_ED_DMY > PREV_CLOSEOUT_DATE
+                            GROUP BY TRSA_BAY_CD
+                        ) TRSA_COUNTS
+                    WHERE TRSA_ID = TRSFTRID_TRSA_ID
+                        AND STATUS = 0
+                        AND TRSA_ED_DMY > PREV_CLOSEOUT_DATE
+                        AND TRSA_COUNTS.TRSA_BAY_CD = TRANSACTIONS.TRSA_BAY_CD
+                    GROUP BY TRANSACTIONS.TRSA_BAY_CD, LOADS
+                    ORDER BY TRANSACTIONS.TRSA_BAY_CD";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
