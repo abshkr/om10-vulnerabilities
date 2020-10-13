@@ -214,10 +214,10 @@ const Home = () => {
               footer={[
                 {
                   trsa_bay_cd: t('fields.totalSum') + ': ',
-                  loads: _.sumBy(data?.folio, (object) => {
+                  loads: _.sumBy(data?.folio_loads, (object) => {
                     return _.toNumber(object?.loads) || 0;
                   }),
-                  sum_amb: _.sumBy(data?.folio, (object) => {
+                  sum_amb: _.sumBy(data?.folio_loads, (object) => {
                     return _.toNumber(object?.sum_amb) || 0;
                   }),
                   avgamb_per_load: null,
