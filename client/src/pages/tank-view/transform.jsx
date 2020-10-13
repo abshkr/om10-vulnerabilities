@@ -1,15 +1,5 @@
 import _ from 'lodash';
 
-/*
-  0	N	In Service - Not used
-  1	R	In Service - Receiving
-  2	S	In Service - Settling
-  3	L	In Service - Loading
-  4	W	In Service - Working
-  5	O	Out Of Service - Offline
-*/
-// use status id as index
-
 const statusColourMap = {
   '0': 'rgba(220,220,220,0.3)',
   '4': 'rgba(255,255,224,0.9)',
@@ -23,7 +13,7 @@ function getLevelStatus(level, hhValue, hValue, lValue, llValue, userH, userL) {
   const currentLevel = _.toNumber(level) || 0;
 
   const getHH = () => {
-    if (hhValue !== '') {
+    if (hhValue !== undefined) {
       const hh = _.toInteger(hhValue);
 
       if (currentLevel >= hh) {
@@ -32,12 +22,12 @@ function getLevelStatus(level, hhValue, hValue, lValue, llValue, userH, userL) {
         return 'success';
       }
     } else {
-      return 'success';
+      return 'default';
     }
   };
 
   const getH = () => {
-    if (hhValue !== '' || hValue !== '') {
+    if (hhValue !== undefined || hValue !== undefined) {
       const hh = _.toInteger(hhValue);
       const h = _.toInteger(hValue);
       if (currentLevel >= hh) {
@@ -48,12 +38,12 @@ function getLevelStatus(level, hhValue, hValue, lValue, llValue, userH, userL) {
         return 'success';
       }
     } else {
-      return 'success';
+      return 'default';
     }
   };
 
   const getLL = () => {
-    if (llValue !== '') {
+    if (llValue !== undefined) {
       const ll = _.toInteger(llValue);
 
       if (ll >= currentLevel) {
@@ -62,39 +52,40 @@ function getLevelStatus(level, hhValue, hValue, lValue, llValue, userH, userL) {
         return 'success';
       }
     } else {
-      return 'success';
+      return 'default';
     }
   };
 
   const getL = () => {
-    if (lValue !== '') {
+    if (lValue !== undefined) {
       const l = _.toInteger(lValue);
 
-      if (currentLevel >= l) {
+      if (currentLevel <= l) {
         return 'error';
       } else {
         return 'success';
       }
     } else {
-      return 'success';
+      return 'default';
     }
   };
 
   const getUserL = () => {
-    if (userL !== '') {
+    if (userL !== undefined) {
       const user = _.toInteger(userL);
-      if (currentLevel >= user) {
+
+      if (currentLevel <= user) {
         return 'error';
       } else {
         return 'success';
       }
     } else {
-      return 'success';
+      return 'default';
     }
   };
 
   const getUserH = () => {
-    if (userH !== '') {
+    if (userH !== undefined) {
       const user = _.toInteger(userH);
       if (currentLevel >= user) {
         return 'error';
@@ -102,7 +93,7 @@ function getLevelStatus(level, hhValue, hValue, lValue, llValue, userH, userL) {
         return 'success';
       }
     } else {
-      return 'success';
+      return 'default';
     }
   };
 
@@ -116,12 +107,20 @@ function getLevelStatus(level, hhValue, hValue, lValue, llValue, userH, userL) {
   };
 }
 
-function transform(data) {
+function transform(data, showAdditives) {
   const tanks = [];
   const summary = [];
 
   _.chain(data)
+    .filter((object) => {
+      if (!showAdditives) {
+        return !object?.tank_bclass_name?.includes('Additive');
+      }
+
+      return true;
+    })
     .groupBy((object) => object.tank_bclass_name)
+
     .map((value, key) => {
       const ullage = _.sumBy(value, (tank) => {
         return parseInt(tank.tank_ullage);
@@ -152,7 +151,10 @@ function transform(data) {
     const capacity = _.toNumber(tank?.tank_max_level) || 0;
     const level = _.toNumber(tank?.tank_prod_lvl) || 0;
 
-    const percentage = _.round(capacity === 0 ? 0 : (level * 100) / capacity, 2);
+    const percent = _.round(capacity === 0 ? 0 : (level * 100) / capacity, 2);
+
+    const percentage = percent > 100 ? 100 : percent;
+
     const totalCapacity = _.toInteger(tank.tank_ullage) + _.toInteger(tank.tank_amb_vol) || 0;
 
     const baseColour = ['#fff', '', null].includes(tank?.tank_base_color) ? '#cdd6ac' : tank?.tank_base_color;
@@ -218,7 +220,11 @@ function transform(data) {
       ...tank,
     };
 
-    tanks.push(model);
+    if (tank?.tank_bclass_name?.includes('Additive') && !showAdditives) {
+      return null;
+    } else {
+      tanks.push(model);
+    }
   });
 
   return {

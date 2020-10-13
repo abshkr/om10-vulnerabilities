@@ -198,3 +198,40 @@ export default Compartments;
 </Col>
 </Row> */
 }
+
+// const onDragFinished = (index, value) => {
+//   const payload = [];
+
+//   const rowNode = tableAPI.getRowNode(index);
+//   const data = rowNode.data;
+
+//   const productCode = value?.prod_code || '';
+//   const productName = value?.prod_name || '';
+
+//   const quantityScheduled = !value?.prod_code
+//     ? value?.qty_scheduled
+//     : value.qty_scheduled > 0
+//     ? value?.qty_scheduled
+//     : parseInt(data.safefill);
+
+//   tableAPI.forEachNodeAfterFilterAndSort((rowNode, tableIndex) => {
+//     if (tableIndex === index) {
+//       payload.push({
+//         ...rowNode.data,
+//         prod_code: productCode,
+//         prod_name: productName,
+//         qty_scheduled: quantityScheduled,
+//       });
+//     } else {
+//       payload.push(rowNode.data);
+//     }
+//   });
+
+//   tableAPI.updateRowData({ update: payload });
+
+//   form.setFieldsValue({
+//     compartments: payload,
+//   });
+
+//   setCompartments(payload);
+// };

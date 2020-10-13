@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BackTop, Button, Input, Tabs, Modal } from 'antd';
+import { BackTop, Button, Input, Tabs, Checkbox } from 'antd';
 import { UpOutlined, PlusOutlined } from '@ant-design/icons';
 
 import useSWR from 'swr';
@@ -40,7 +40,9 @@ const TankView = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [summary, setSummary] = useState([]);
 
+  const [showAdditives, setShowAdditives] = useState(false);
   const [selected, setSelected] = useState(null);
+
   const [visible, setVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tabKey, setTabKey] = useState('1');
@@ -63,15 +65,19 @@ const TankView = () => {
     });
   };
 
+  const onShowAdditiveChange = (e) => {
+    setShowAdditives(e?.target?.checked || false);
+  };
+
   useEffect(() => {
     if (data?.records) {
       const filtered = search(searchQuery, data?.records);
-      const payload = transform(filtered);
+      const payload = transform(filtered, showAdditives);
 
       setTanks(payload?.tanks);
       setSummary(payload?.summary);
     }
-  }, [data, searchQuery]);
+  }, [data, searchQuery, showAdditives]);
 
   const isLoading = !data || loading;
 
@@ -80,6 +86,8 @@ const TankView = () => {
 
   const page = t('pageMenu.modules');
   const name = t('pageNames.tankView');
+
+  console.log(tanks);
 
   return (
     <Page access={access} page={page} name={name} transparent>
@@ -92,10 +100,10 @@ const TankView = () => {
           suffix={<SearchSuffixContainer>{t('placeholder.pressEnterToSearch')}</SearchSuffixContainer>}
         />
 
-        <Download 
-          data={tabKey === '1' ? tanks : summary} 
-          isLoading={isLoading} 
-          columns={tabKey === '1' ? fields: sumfields} 
+        <Download
+          data={tabKey === '1' ? tanks : summary}
+          isLoading={isLoading}
+          columns={tabKey === '1' ? fields : sumfields}
         />
 
         <Button
@@ -120,7 +128,16 @@ const TankView = () => {
       />
 
       <TankViewContainer>
-        <Tabs defaultActiveKey="1" type="card" onChange={onTabChanges}>
+        <Tabs
+          defaultActiveKey="1"
+          type="card"
+          onChange={() => handleFormState(false, null)}
+          tabBarExtraContent={
+            <Checkbox checked={showAdditives} onChange={onShowAdditiveChange}>
+              Show Additive Tanks
+            </Checkbox>
+          }
+        >
           <TabPane tab={t('tabColumns.tanks')} key="1">
             <Tanks data={tanks} isLoading={isLoading} handleFormState={handleFormState} />
           </TabPane>

@@ -1,5 +1,11 @@
 import styled from 'styled-components';
 
+const levelStatusColour = {
+  success: '#50c878',
+  error: '#c85064',
+  default: '#d9d9d9',
+};
+
 export const TankContainer = styled.div`
   .ant-badge-status-processing {
     background-color: #c4371a !important;
@@ -93,7 +99,7 @@ export const TankIndicator = styled.div`
   margin-bottom: 5px;
   transition: 0.5s all;
 
-  background-color: ${(props) => (props?.status === 'success' ? '#50c878' : '#c85064')};
+  background-color: ${(props) => levelStatusColour[props?.status]};
 `;
 
 export const IndicatorContainer = styled.div`
