@@ -1054,7 +1054,8 @@ class Movement extends CommonClass
             MVITM_TANK_FROM,
             MVITM_PRODCMPY_FROM,
             MVITM_PRODCODE_FROM,
-            MVITM_PRODNAME_FROM,
+            MVITM_PRODNAME_FROM  as MVITM_PRODNAME_FROM2,
+            DECODE(PF.PROD_NAME, NULL, MVITM_PRODNAME_FROM, (PF.PROD_CMPY||' - '||PF.PROD_CODE||' - '||PF.PROD_NAME)) as MVITM_PRODNAME_FROM,
             MVITM_SHIPCODE_FROM,
             MVITM_SHIPTEXT_FROM,
             MVITM_SHIPLOC_FROM,
@@ -1062,7 +1063,8 @@ class Movement extends CommonClass
             MVITM_TANK_TO,
             MVITM_PRODCMPY_TO,
             MVITM_PRODCODE_TO,
-            MVITM_PRODNAME_TO,
+            MVITM_PRODNAME_TO  as MVITM_PRODNAME_TO2,
+            DECODE(PT.PROD_NAME, NULL, MVITM_PRODNAME_TO, (PT.PROD_CMPY||' - '||PT.PROD_CODE||' - '||PT.PROD_NAME)) as MVITM_PRODNAME_TO,
             MVITM_SHIPCODE_TO,
             MVITM_SHIPTEXT_TO,
             MVITM_SHIPLOC_TO,
@@ -1106,7 +1108,9 @@ class Movement extends CommonClass
         FROM MOVEMENT_ITEMS, 
             UNIT_SCALE_VW U1, UNIT_SCALE_VW U2, UNIT_SCALE_VW U3, UNIT_SCALE_VW U4,
             MOVSTATUS_TYPES,
-            MOVITEM_TYPES
+            MOVITEM_TYPES,
+            PRODUCTS PF,
+            PRODUCTS PT
         WHERE MVITM_MOVE_ID = :mvitm_line_id
             AND MVITM_PROD_UNIT = U1.UNIT_ID (+)
             AND MVITM_UNIT_SCHD = U2.UNIT_ID (+)
@@ -1114,6 +1118,10 @@ class Movement extends CommonClass
             AND MVITM_UNIT_DELV = U4.UNIT_ID (+)
             AND MVITM_TYPE = MOVITEM_TYPES.MOVITEM_TYPE_ID (+)
             AND MVITM_STATUS = MOVSTATUS_TYPES.MOVSTATUS_TYPE_ID (+)
+            AND MVITM_PRODCODE_TO = PT.PROD_CODE(+)
+            AND MVITM_PRODCMPY_TO = PT.PROD_CMPY(+)
+            AND MVITM_PRODCODE_FROM = PF.PROD_CODE(+)
+            AND MVITM_PRODCMPY_FROM = PF.PROD_CMPY(+)
         ORDER BY MVITM_ITEM_ID
         ";
         $stmt = oci_parse($this->conn, $query);
@@ -1134,11 +1142,85 @@ class Movement extends CommonClass
             __FILE__, __LINE__);
 
         $query = "
+        SELECT MVITM_MOVE_ID,
+            MVITM_LINE_ID,
+            MVITM_ITEM_ID,
+            MVITM_PERIOD_ID,
+            MVITM_ITEM_KEY,
+            MVITM_IDOC_NUM,
+            MVITM_CATEGORY,
+            MVITM_TYPE,
+            MVITM_DTIM_EFFECT,
+            MVITM_OPER_EFFECT,
+            MVITM_DTIM_EXPIRY,
+            MVITM_DTIM_CHANGE,
+            MVITM_OPER_CHANGE,
+            MVITM_PLANT_FROM,
+            MVITM_TANK_FROM,
+            MVITM_PRODCMPY_FROM,
+            MVITM_PRODCODE_FROM,
+            MVITM_PRODNAME_FROM  as MVITM_PRODNAME_FROM2,
+            DECODE(PF.PROD_NAME, NULL, MVITM_PRODNAME_FROM, (PF.PROD_CMPY||' - '||PF.PROD_CODE||' - '||PF.PROD_NAME)) as MVITM_PRODNAME_FROM,
+            MVITM_SHIPCODE_FROM,
+            MVITM_SHIPTEXT_FROM,
+            MVITM_SHIPLOC_FROM,
+            MVITM_PLANT_TO,
+            MVITM_TANK_TO,
+            MVITM_PRODCMPY_TO,
+            MVITM_PRODCODE_TO,
+            MVITM_PRODNAME_TO  as MVITM_PRODNAME_TO2,
+            DECODE(PT.PROD_NAME, NULL, MVITM_PRODNAME_TO, (PT.PROD_CMPY||' - '||PT.PROD_CODE||' - '||PT.PROD_NAME)) as MVITM_PRODNAME_TO,
+            MVITM_SHIPCODE_TO,
+            MVITM_SHIPTEXT_TO,
+            MVITM_SHIPLOC_TO,
+            MVITM_PROD_QTY,
+            MVITM_PROD_UNIT,
+            MVITM_RAT_UPTOL,
+            MVITM_QTY_UPTOL,
+            MVITM_UNIT_UPTOL,
+            MVITM_RAT_DNTOL,
+            MVITM_QTY_DNTOL,
+            MVITM_UNIT_DNTOL,
+            MVITM_QTY_SCHD,
+            MVITM_UNIT_SCHD,
+            MVITM_QTY_MOVE,
+            MVITM_UNIT_MOVE,
+            MVITM_QTY_DELV,
+            MVITM_UNIT_DELV,
+            MVITM_COMMENTS,
+            MVITM_TERMINAL,
+            MVITM_NUMBER,
+            MVITM_KEY,
+            MVITM_STATUS,
+            MVITM_FOLIO,
+            MVITM_LOCIT_PLANT,
+            MVITM_LOCIT_STORE,
+            MVITM_BY_PACKS,
+            MVITM_PACK_SIZE,
+            MVITM_EXEMPT_NO,
+            MVITM_EXEMPT_OFF,
+            MVITM_PRICE_TYPE,
+            MVITM_FIXEDPRI,
+            MVITM_PRICE,
+            MVITM_COMPLETED,
+            MVITM_SHIPTEXT_FROM2,
+            MVITM_SHIPTEXT_TO2
+        FROM MOVEMENT_ITEMS, 
+            PRODUCTS PF,
+            PRODUCTS PT
+        WHERE MVITM_MOVE_ID = :mvitm_line_id
+            AND MVITM_ITEM_ID = :mvitm_item_id
+            AND MVITM_PRODCODE_TO = PT.PROD_CODE(+)
+            AND MVITM_PRODCMPY_TO = PT.PROD_CMPY(+)
+            AND MVITM_PRODCODE_FROM = PF.PROD_CODE(+)
+            AND MVITM_PRODCMPY_FROM = PF.PROD_CMPY(+)
+        ";
+        /* $query = "
             SELECT *
             FROM MOVEMENT_ITEMS
             WHERE MVITM_MOVE_ID = :mvitm_line_id
                 AND MVITM_ITEM_ID = :mvitm_item_id
-        ";
+        "; */
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':mvitm_line_id', $this->mv_id);
         oci_bind_by_name($stmt, ':mvitm_item_id', $this->mvitm_item_id);
