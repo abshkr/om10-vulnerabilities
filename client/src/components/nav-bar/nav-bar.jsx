@@ -18,6 +18,8 @@ import { ROUTES } from '../../constants';
 import { useConfig } from '../../hooks';
 import { Events, Favourites } from '..';
 import generator from './generator';
+import api from 'api';
+import { AUTH } from 'api';
 
 import { ReactComponent as SearchIcon } from './search_two.svg';
 
@@ -43,7 +45,31 @@ const NavBar = () => {
   };
 
   const onSelect = (data) => {
-    if (data?.path) {
+    if (data?.path === ROUTES.BAY_VIEW) {
+      // const access = useAuth('M_BAYVIEW'); //Cannot use useAuth here because this is a function not a component
+      api
+        .get(`${AUTH.PERMISSIONS}?object_text=M_BAYVIEW`)
+        .then((res) => {
+          if (!res.data.records[0].priv_view) {
+            console.log("Do not have view privilege");
+            history.push(ROUTES.UNAUTHORIZED);
+          } else {
+            const port = window.location.port ? window.location.port : 443;
+            api
+              .get(`https://${window.location.hostname}:${port}/scadaviews/bayview/index.html`)
+              .then((res) => {
+                if (res.data.includes("<title>OMEGA 5000</title>")){
+                  history.push(ROUTES.BAY_VIEW);
+                } else {
+                  window.open(`https://${window.location.hostname}:${port}/scadaviews/bayview/index.html`, "_blank");
+                }
+              })
+              .catch(function (error) {
+                history.push(ROUTES.BAY_VIEW);
+              })
+          }
+        }) ;
+    } else if (data?.path) {
       history.push(data?.path);
     }
   };
