@@ -107,9 +107,9 @@ const Tanks = () => {
           setCurrTank(records[0]);
         } else {
           // get the current value of tank
-          const newTank = _.find(records, (o) => (o.tank_code === currTank?.tank_code));
+          const newTank = _.find(records, (o) => o.tank_code === currTank?.tank_code);
           if (newTank) {
-           setSelected(newTank);
+            setSelected(newTank);
           }
         }
       }

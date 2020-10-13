@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, InputNumber } from 'antd';
+import { Form, InputNumber, Divider } from 'antd';
 
 const Levels = ({ form, value }) => {
   const { t } = useTranslation();
@@ -30,14 +30,15 @@ const Levels = ({ form, value }) => {
         <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
       </Form.Item>
 
-      <Form.Item name="tank_ll_level" label={t('fields.llLevel')}>
-        <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
-      </Form.Item>
-
       <Form.Item name="tank_l_level" label={t('fields.lLevel')}>
         <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
       </Form.Item>
 
+      <Form.Item name="tank_ll_level" label={t('fields.llLevel')}>
+        <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
+      </Form.Item>
+
+      <Divider />
       <Form.Item name="tank_uh_level" label={t('fields.userHLevel')}>
         <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
       </Form.Item>

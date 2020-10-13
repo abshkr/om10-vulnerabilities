@@ -30,7 +30,10 @@ const Details = ({ selected, access, isLoading, config, setSelected }) => {
           .then(() => {
             mutate(TANKS.READ);
             // to refresh changes in the form, need to NULL the selected
-            setSelected(null);
+            setSelected({
+              ...selected,
+              ...values,
+            });
 
             notification.success({
               message: t('messages.updateSuccess'),
