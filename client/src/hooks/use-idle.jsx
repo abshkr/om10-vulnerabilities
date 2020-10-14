@@ -39,12 +39,9 @@ const useIdle = () => {
   useEffect(() => {
     if (autoLogOut) {
       const value = _.toNumber(autoLogOut);
+      const timeout = value > 0 ? value * 60000 : 99999999999999999;
 
-      if (value > 0) {
-        setTimeToIdle(value * 60000);
-      } else {
-        setTimeToIdle(99999999999999999);
-      }
+      setTimeToIdle(timeout);
     }
   }, [autoLogOut]);
 
