@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import { LockOutlined, IdcardOutlined, HomeOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Card, Button, Form, Input, Modal, notification } from 'antd';
+import { Card, Button, Form, Input, Modal, notification, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -10,12 +10,14 @@ import api, { PERSONNEL } from '../../api';
 import auth from '../../auth';
 import useSWR from 'swr';
 import { useConfig, useAuth } from '../../hooks';
-import { pwdComplexity, complexityDesc } from 'utils'
+import { pwdComplexity, complexityDesc } from 'utils';
+
+const { Option } = Select;
 
 const Settings = ({ user }) => {
   const config = useConfig();
   const access = useAuth('MENU_HOME');
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data: payload } = useSWR(PERSONNEL.READ_DEPARTMENT);
 
   const [profileForm] = Form.useForm();
@@ -56,7 +58,7 @@ const Settings = ({ user }) => {
 
     if (!pwdComplexity(input, input, config.passwordComplexity)) {
       return Promise.reject(
-        `${t('descriptions.pwdComplexity') + ": " + complexityDesc(config.passwordComplexity, t)}`
+        `${t('descriptions.pwdComplexity') + ': ' + complexityDesc(config.passwordComplexity, t)}`
       );
     }
 
@@ -121,11 +123,11 @@ const Settings = ({ user }) => {
     if (!pwdComplexity(values.password, values.confirm_password, config.passwordComplexity)) {
       notification.error({
         message: t('messages.validationFailed'),
-        description: t('descriptions.pwdComplexity') + ": " + complexityDesc(config.passwordComplexity, t),
+        description: t('descriptions.pwdComplexity') + ': ' + complexityDesc(config.passwordComplexity, t),
       });
       return;
     }
-    
+
     Modal.confirm({
       title: t('prompts.update'),
       okText: t('operations.update'),
@@ -266,6 +268,34 @@ const Settings = ({ user }) => {
             </Form.Item>
           </Card>
         </Form>
+      )}
+
+      {user?.per_code === '9999' && (
+        <Card
+          title={`${t(
+            'descriptions.changeUserLanguage'
+          )} - This Feature is Experimental and is only available for 9999.`}
+          size="small"
+          hoverable
+          style={{ borderColor: '1px solid #0054a43b' }}
+          bordered
+          actions={[
+            <Form.Item>
+              <Button style={{ float: 'right', marginRight: 15 }} type="primary" htmlType="submit">
+                {t('operations.update')}
+              </Button>
+            </Form.Item>,
+          ]}
+        >
+          <Select
+            defaultValue={i18n.language || 'en'}
+            style={{ width: '100%' }}
+            onChange={(val) => i18n.changeLanguage(val)}
+          >
+            <Option value="en">English</Option>
+            <Option value="cn">中文</Option>
+          </Select>
+        </Card>
       )}
     </Page>
   );

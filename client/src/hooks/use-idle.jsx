@@ -1,9 +1,9 @@
 import { useEffect, useState, useContext } from 'react';
 import createActivityDetector from 'activity-detector';
-
 import _ from 'lodash';
 
 import ConfigStore from 'stores/config-store';
+
 const useIdle = () => {
   const { autoLogOut } = useContext(ConfigStore);
 
