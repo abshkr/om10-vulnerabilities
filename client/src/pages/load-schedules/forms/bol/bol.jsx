@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { LOAD_SCHEDULES } from '../../../../api';
 import { jsPDF } from "jspdf";
 
-const BOL = ({ value, redo, supermode, locateTrip, setCurStatus, exportPDF }) => {
+const BOL = ({ value, redo, supermode, dcsmode, locateTrip, setCurStatus, exportPDF }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState(null);
@@ -22,7 +22,8 @@ const BOL = ({ value, redo, supermode, locateTrip, setCurStatus, exportPDF }) =>
           params: {
             supplier: value.supplier_code,
             trip_no: value.shls_trip_no,
-            supermode: supermode ? "on" : "off"
+            supermode: supermode ? "on" : "off",
+            dcsmode: dcsmode ? "on" : "off",
           },
         })
         .then((res) => {

@@ -2236,6 +2236,10 @@ class Movement extends CommonClass
             $query_string = $query_string . "&supermode=" . $this->supermode;
         }   
 
+        if (isset($this->dcsmode)) {
+            $query_string = $query_string . "&dcsmode=" . $this->dcsmode;
+        } 
+
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/bill_of_lading_popup.cgi", $query_string);
         if (strpos($res, "redirectToLoginPage") !== false) {
             $error = new EchoSchema(400, response("__INVALID_SESSION__"));
@@ -2277,6 +2281,10 @@ class Movement extends CommonClass
 
         if (isset($this->supermode)) {
             $query_string = $query_string . "&supermode=" . $this->supermode;
+        }
+
+        if (isset($this->dcsmode)) {
+            $query_string = $query_string . "&dcsmode=" . $this->dcsmode;
         }
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/bill_of_lading.cgi", $query_string);

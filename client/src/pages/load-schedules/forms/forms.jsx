@@ -423,6 +423,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               supplier: value.supplier_code,
               trip_no: value.shls_trip_no,
               supermode: !!form.getFieldValue('supermode') ? "on":"off",
+              dcsmode: !!form.getFieldValue('dcsmode') ? "on":"off",
             },
           })
           .then(() => {
@@ -598,6 +599,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             </Checkbox>
           )}
 
+          {tab === '3' && !IS_CREATING && config?.externalBlendAllowed && (
+            <Checkbox onChange={(e) => setFieldsValue({ dcsmode: e.target.checked })}>
+              {t('descriptions.ignoreDCSCheck')}
+            </Checkbox>
+          )}  
+
           {CAN_PRINT && !IS_CREATING && tab === "3" && (
             <Button type="primary" 
               icon={<AuditOutlined />} 
@@ -676,6 +683,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
         >
           <TabPane tab={t('tabColumns.general')} key="0">
             <Form.Item name="supermode" noStyle />
+            <Form.Item name="dcsmode" noStyle />
 
             <Row gutter={[8, 8]}>
               <Col span={12}>
@@ -840,6 +848,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               value={value} 
               redo={redoBOL} 
               supermode={form.getFieldValue('supermode')} 
+              dcsmode={form.getFieldValue('dcsmode')} 
               locateTrip={locateTrip} 
               setCurStatus={setCurStatus}
               exportPDF={exportBOL}

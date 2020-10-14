@@ -74,6 +74,7 @@
 		"hostSubmitOff": "接受信息的提交目前已被禁止。",
 		"iButtonLookUp": "请将光标置于文本输入框，然后刷卡或触摸按钮。点击确认按钮表示读取成功。",
 		"ignoreTolerance": "忽略容许偏差的检查",
+		"ignoreDCSCheck": "忽略DCS检查",
 		"inLine": "，行号：",
 		"invalidDecimals": "小数点后位数无效",
 		"inventoryManagement": "Omega系统的批量管理可以同时管理多个库存",

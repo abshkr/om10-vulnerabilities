@@ -74,6 +74,7 @@
     "hostSubmitOff": "Submit incoming message is currently disabled.",
     "iButtonLookUp": "Highlight the text box, scan iButton on reader then press Enter after the tag is read",
     "ignoreTolerance": "Ignore tolerance check",
+	"ignoreDCSCheck": "Ignore DCS info check",
     "inLine": " in line ",
     "invalidDecimals": "Invalid decimal places",
     "inventoryManagement": "Scale your ability to manage multiple inventories using bulk editing in OMEGA.",
