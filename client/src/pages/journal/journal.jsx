@@ -25,7 +25,7 @@ const Journal = () => {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState(null);
 
-  const [start, setStart] = useState(moment().subtract(3, 'hour').format(SETTINGS.DATE_TIME_FORMAT));
+  const [start, setStart] = useState(moment().subtract(1, 'hour').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
 
   const setRange = (start, end) => {
@@ -47,7 +47,7 @@ const Journal = () => {
 
   const modifiers = (
     <>
-      <Calendar handleChange={setRange} start={start} end={end} disabled={selected === '1'} max={14} />
+      <Calendar handleChange={setRange} start={start} end={end} disabled={selected === '1'} max={31} />
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} disabled={selected === '1'}>
         {t('operations.refresh')}
       </Button>

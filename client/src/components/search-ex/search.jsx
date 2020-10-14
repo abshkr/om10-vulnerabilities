@@ -8,14 +8,15 @@ import { DatePicker } from 'antd';
 
 import { Form, Button, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { DateRange, 
+import {
+  DateRange,
   Terminal,
-  LoadID, 
-  Supplier, 
+  LoadID,
+  Supplier,
   Carrier,
-  TripStatus, 
-  Tanker, 
-  Trip, 
+  TripStatus,
+  Tanker,
+  Trip,
   TrsaID,
   PlantSupplier,
   MovementID,
@@ -37,7 +38,7 @@ import { DateRange,
   JournalCategory,
 } from './fields';
 
-const SearchForm = ({onSearch, fields, modal}) => {
+const SearchForm = ({ onSearch, fields, modal }) => {
   const [orderSupplier, setOrderSupplier] = useState(null);
   const [specmvType, setSpecmvType] = useState(null);
   const [carrier, setCarrier] = useState(null);
@@ -50,7 +51,7 @@ const SearchForm = ({onSearch, fields, modal}) => {
   };
 
   return (
-    <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError style={{marginTop: "1rem"}}>
+    <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError style={{ marginTop: '1rem' }}>
       {fields?.terminal && <Terminal />}
       {fields?.shls_trip_no && <Trip />}
       {fields?.mlitm_prodcmpy && <PlantSupplier />}
@@ -59,7 +60,7 @@ const SearchForm = ({onSearch, fields, modal}) => {
       {fields?.trsa_id && <TrsaID />}
       {fields?.supplier_code && <Supplier />}
       {fields?.carrier_code && <Carrier onChange={setCarrier} />}
-      {fields?.tnkr_code && <Tanker carrier={carrier}/>}
+      {fields?.tnkr_code && <Tanker carrier={carrier} />}
       {fields?.trip_status && <TripStatus />}
       {fields?.mlitm_status && <MovementStatus />}
       {fields?.mlitm_type && <MovementType onChange={setSpecmvType} />}
@@ -77,10 +78,10 @@ const SearchForm = ({onSearch, fields, modal}) => {
       {fields?.journal_msg && <JournalSearch />}
       {fields?.journal_event && <JournalEvent />}
       {fields?.journal_category && <JournalCategory />}
-      
-      <DateRange form={form} timeOption={fields?.time_option} force={fields?.journal_msg}/>
-      
-      <div style={{marginTop: "2rem"}}>
+
+      <DateRange form={form} timeOption={fields?.time_option} force={fields?.journal_msg} />
+
+      <div style={{ marginTop: '2rem' }}>
         <Button
           htmlType="button"
           icon={<CloseOutlined />}
@@ -103,37 +104,31 @@ const SearchForm = ({onSearch, fields, modal}) => {
   );
 };
 
-const WindowSearch = (
-    onSearch, 
-    title, 
-    fields,
-  ) => {
+const WindowSearch = (onSearch, title, fields) => {
   const modal = Modal.info();
   modal.update({
     className: 'form-container',
     // title: t('operations.fields'),
-    title: title? title: 'Search',
+    title: title ? title : 'Search',
     centered: true,
     width: '25vw',
     icon: <FileSearchOutlined />,
     content: (
-    <SWRConfig
+      <SWRConfig
         value={{
-        refreshInterval: 0,
-        fetcher,
+          refreshInterval: 0,
+          fetcher,
         }}
-    >
-      <SearchForm onSearch={onSearch} fields={fields} modal={modal}/>
-    </SWRConfig>
+      >
+        <SearchForm onSearch={onSearch} fields={fields} modal={modal} />
+      </SWRConfig>
     ),
     okButtonProps: {
-    style: { display: 'none' },
+      style: { display: 'none' },
     },
   });
 
   return null;
 };
 
-
 export default WindowSearch;
-  

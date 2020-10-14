@@ -10,15 +10,15 @@ import 'moment/locale/zh-cn';
 import enLocale from 'antd/es/date-picker/locale/en_GB';
 import zhLocale from 'antd/es/date-picker/locale/zh_CN';
 
-const momentLocales = {en: enLocale, cn: zhLocale};
+const momentLocales = { en: enLocale, cn: zhLocale };
 
-const DateRange = ({form, timeOption, force}) => {
+const DateRange = ({ form, timeOption, force }) => {
   const { t, i18n } = useTranslation();
-  const locale = momentLocales[i18n.language||'en'];
+  const locale = momentLocales[i18n.language || 'en'];
 
   const { setFieldsValue } = form;
   const [checked, setChecked] = useState(force);
-  
+
   const openOrderTimeOptions = [
     {
       index: 1,
@@ -56,43 +56,40 @@ const DateRange = ({form, timeOption, force}) => {
   ];
 
   const onRangeChange = (dates) => {
-    setFieldsValue ({
+    setFieldsValue({
       start_date: dates[0].format(SETTINGS.DATE_TIME_FORMAT),
       end_date: dates[1].format(SETTINGS.DATE_TIME_FORMAT),
-    })
-  }
+    });
+  };
 
   const onCheckBox = (v) => {
     setChecked(v.target.checked);
-    setFieldsValue ({
-      use_date_range : v.target.checked,
-    })
-  }
+    setFieldsValue({
+      use_date_range: v.target.checked,
+    });
+  };
 
   useEffect(() => {
-    setFieldsValue ({
+    setFieldsValue({
       start_date: moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT),
-      end_date:  moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT),
-    })
-    if (timeOption === "open_order") {
-      setFieldsValue ({
+      end_date: moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT),
+    });
+    if (timeOption === 'open_order') {
+      setFieldsValue({
         time_option: 'ORDER_ORD_TIME',
-      })
-    } else if (timeOption === "movement_nomination") {
-      setFieldsValue ({
+      });
+    } else if (timeOption === 'movement_nomination') {
+      setFieldsValue({
         time_option: 'MV_DTIM_EFFECT',
-      })
+      });
     }
   }, [form]);
-  
+
   return (
     <div>
-      <Form.Item
-        name="use_date_range"
-        noStyle
-      >
-        <Checkbox 
-          style = {{marginTop: "3px", display: "block"}} 
+      <Form.Item name="use_date_range" noStyle>
+        <Checkbox
+          style={{ marginTop: '3px', display: 'block' }}
           onChange={onCheckBox}
           disabled={force}
           defaultChecked={force}
@@ -101,62 +98,60 @@ const DateRange = ({form, timeOption, force}) => {
         </Checkbox>
       </Form.Item>
 
-      {timeOption === "open_order" && <Form.Item
-        name="time_option"
-        noStyle
-      >
-        <Select
-          style = {{marginTop: "5px", marginBottom: "3px", width: "100%"}}
-          disabled={!checked}
-          defaultValue={'ORDER_ORD_TIME'}
-          // onChange={setTimeOption}
-          // optionFilterProp="children"
-          // placeholder={null}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {openOrderTimeOptions.map((item, index) => (
-            <Select.Option key={index} value={item.code}>
-              {item.name}
-            </Select.Option>
-          ))}
-        </Select>
-      </Form.Item>}
+      {timeOption === 'open_order' && (
+        <Form.Item name="time_option" noStyle>
+          <Select
+            style={{ marginTop: '5px', marginBottom: '3px', width: '100%' }}
+            disabled={!checked}
+            defaultValue={'ORDER_ORD_TIME'}
+            // onChange={setTimeOption}
+            // optionFilterProp="children"
+            // placeholder={null}
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {openOrderTimeOptions.map((item, index) => (
+              <Select.Option key={index} value={item.code}>
+                {item.name}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+      )}
 
-      {timeOption === "movement_nomination" && <Form.Item
-        name="time_option"
-        noStyle
-      >
-        <Select
-          style = {{marginTop: "5px", marginBottom: "3px", width: "100%"}}
-          disabled={!checked}
-          defaultValue="MV_DTIM_EFFECT"
-          // onChange={setTimeOption}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {nominationTimeOptions.map((item, index) => (
-            <Select.Option key={index} value={item.code}>
-              {item.name}
-            </Select.Option>
-          ))}
-        </Select>
-      </Form.Item>}
+      {timeOption === 'movement_nomination' && (
+        <Form.Item name="time_option" noStyle>
+          <Select
+            style={{ marginTop: '5px', marginBottom: '3px', width: '100%' }}
+            disabled={!checked}
+            defaultValue="MV_DTIM_EFFECT"
+            // onChange={setTimeOption}
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {nominationTimeOptions.map((item, index) => (
+              <Select.Option key={index} value={item.code}>
+                {item.name}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+      )}
 
       <DatePicker.RangePicker
-        style = {{ width: "100%"}}
+        style={{ width: '100%' }}
         disabled={!checked}
         onChange={onRangeChange}
         defaultValue={[moment().subtract(7, 'days'), moment().add(7, 'days')]}
         locale={locale}
       />
 
-      <Form.Item name="start_date" noStyle >
+      <Form.Item name="start_date" noStyle>
         <Input type="hidden" />
       </Form.Item>
-      <Form.Item name="end_date" noStyle >
+      <Form.Item name="end_date" noStyle>
         <Input type="hidden" />
       </Form.Item>
     </div>
