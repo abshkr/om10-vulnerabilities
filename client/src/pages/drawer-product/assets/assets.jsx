@@ -9,14 +9,16 @@ import columns from './columns';
 
 import AssetForm from './forms/asset-forms';
 
-const Assets = ({access}) => {
+const Assets = ({access, tabFlag}) => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [filterValue, setFilterValue] = useState('');
   
   const { t } = useTranslation();
 
-  const { data: payload, isValidating, revalidate } = useSWR(DRAWER_PRODUCTS.ASSETS);
+  // the variable tabFlag does nothing but trigger the reload of product assets
+  // const { data: payload, isValidating, revalidate } = useSWR(DRAWER_PRODUCTS.ASSETS);
+  const { data: payload, isValidating, revalidate } = useSWR(`${DRAWER_PRODUCTS.ASSETS}?tab_flag=${tabFlag}`);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);

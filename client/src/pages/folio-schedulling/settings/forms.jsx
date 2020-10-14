@@ -202,11 +202,18 @@ const Settings = ({ value, access }) => {
       })[0].param_value,
       'YYYY-MM-DD HH:mm:ss'
     );
+
+    const nextReportTime = moment(
+      _.filter(data, function (item) {
+        return item.param_key === 'NEXT_REPORT_TIME';
+      })[0].param_value,
+      'YYYY-MM-DD HH:mm:ss'
+    );
     setFieldsValue({
       next_closeout_date: nextDailyDate.format('YYYY-MM-DD'),
     });
     setFieldsValue({
-      next_closeout_time: nextDailyDate,
+      next_closeout_time: nextReportTime,
     });
 
     setRunAndOverRide(runnable(data));

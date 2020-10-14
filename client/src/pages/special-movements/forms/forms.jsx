@@ -53,7 +53,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
   const site_code = decoded?.site_code
 
   const IS_CREATING = !value;
-  const DISABLED = value?.mlitm_status === '5';
+  // status: 0 - 'Entering', 5 - 'Completed', 9 - 'Reversed', 4 - 'Outstanding'
+  const DISABLED = value?.mlitm_status === '5' || value?.mlitm_status === '9' || value?.mlitm_status === '4';
 
   const FROM = ['1', '2'];
   const TO = ['0', '2'];
@@ -539,8 +540,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
             </Button>
           )}
 
-          {DISABLED && (
-            <Button htmlType="button" onClick={onReverse} icon={<ReloadOutlined />}>
+          {(value?.mlitm_status === '5') && (
+            <Button 
+              htmlType="button" 
+              onClick={onReverse} 
+              icon={<ReloadOutlined />}
+              disabled={!access?.canUpdate || value?.mlitm_status !== '5'}
+            >
               {t('operations.reverse')}
             </Button>
           )}

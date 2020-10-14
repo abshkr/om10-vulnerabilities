@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { LoadingOutlined, PlusOutlined, QuestionCircleOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Spin, Button, Drawer, Tabs, Form, Select, InputNumber, Modal, notification } from 'antd';
+import { CloseOutlined, PlusOutlined, QuestionCircleOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Button, Drawer, Tabs, Form, Select, InputNumber, Modal, notification, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-import useSWR, { mutate } from 'swr';
+import useSWR from 'swr';
 import moment from 'moment';
 import jwtDecode from 'jwt-decode';
 import _ from 'lodash';
@@ -42,6 +42,30 @@ const AdditionalHostData = ({ value }) => {
 
   // console.log('decoded...........', decoded);
 
+  const validateList = (rule, input) => {
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.select')} ─ ${t('fields.additionalHostDataType')}`);
+      }
+    }
+
+    return Promise.resolve();
+  };
+
+  const validateText = (rule, input) => {
+    if (rule.required) {
+      if (input === '' || (input!==0 && !input)) {
+        return Promise.reject(`${t('validate.set')} ─ ${t('fields.additionalHostData')}`);
+      }
+    }
+
+    if (input && input.length > 6) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 6 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    return Promise.resolve();
+  };
+
   const handleFormState = (visibility, record) => {
     setVisible(visibility);
     setSelected(record);
@@ -66,44 +90,51 @@ const AdditionalHostData = ({ value }) => {
   };
 
   const onFinish = async () => {
-    const values = await form.validateFields();
-    values.dh_dor_number = values?.dh_dor_type + String(values.dh_dor_number);
-    values.dh_chg_date = moment().format(SETTINGS.DATE_TIME_FORMAT);
-    values.dh_per_code = user_code;
-    // values.dh_per_name = user_name;
+    try {
+      const values = await form.validateFields();
+      values.dh_dor_number = values?.dh_dor_type + String(values.dh_dor_number);
+      values.dh_chg_date = moment().format(SETTINGS.DATE_TIME_FORMAT);
+      values.dh_per_code = user_code;
+      // values.dh_per_name = user_name;
 
-    const record = {
-      ...selected,
-      ...values,
-    };
+      const record = {
+        ...selected,
+        ...values,
+      };
 
-    Modal.confirm({
-      title: !isUpdating ? t('prompts.create') : t('prompts.update'),
-      okText: !isUpdating ? t('operations.save') : t('operations.update'),
-      okType: 'primary',
-      icon: <QuestionCircleOutlined />,
-      cancelText: t('operations.no'),
-      centered: true,
-      onOk: async () => {
-        await api
-          .post(!isUpdating ? LOAD_SCHEDULES.HOST_DATA_CREATE : LOAD_SCHEDULES.HOST_DATA_UPDATE, record)
-          .then(() => {
-            onComplete();
+      Modal.confirm({
+        title: !isUpdating ? t('prompts.create') : t('prompts.update'),
+        okText: !isUpdating ? t('operations.save') : t('operations.update'),
+        okType: 'primary',
+        icon: <QuestionCircleOutlined />,
+        cancelText: t('operations.no'),
+        centered: true,
+        onOk: async () => {
+          await api
+            .post(!isUpdating ? LOAD_SCHEDULES.HOST_DATA_CREATE : LOAD_SCHEDULES.HOST_DATA_UPDATE, record)
+            .then(() => {
+              onComplete();
 
-            notification.success({
-              message: !isUpdating ? t('messages.createSuccess') : t('messages.updateSuccess'),
-            });
-          })
-          .catch((errors) => {
-            _.forEach(errors.response.data.errors, (error) => {
-              notification.error({
-                message: error.type,
-                description: error.message,
+              notification.success({
+                message: !isUpdating ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              });
+            })
+            .catch((errors) => {
+              _.forEach(errors.response.data.errors, (error) => {
+                notification.error({
+                  message: error.type,
+                  description: error.message,
+                });
               });
             });
-          });
-      },
-    });
+        },
+      });
+    } catch (error) {
+      message.error({
+        key: 'submit',
+        content: t('descriptions.validationFailed'),
+      });
+    }
   };
 
   const onDelete = () => {
@@ -162,6 +193,15 @@ const AdditionalHostData = ({ value }) => {
         footer={
           <>
             <Button
+              htmlType="button"
+              icon={<CloseOutlined />}
+              style={{ float: 'right' }}
+              onClick={() => handleFormState(false, null)}
+            >
+              {t('operations.cancel')}
+            </Button>
+
+            <Button
               type="primary"
               icon={<PlusOutlined />}
               style={{ float: 'right', marginRight: 5 }}
@@ -170,21 +210,27 @@ const AdditionalHostData = ({ value }) => {
               {!isUpdating ? t('operations.save') : t('operations.update')}
             </Button>
 
-            <Button
-              type="danger"
-              icon={<DeleteOutlined />}
-              style={{ float: 'right', marginRight: 5 }}
-              onClick={onDelete}
-            >
-              {t('operations.delete')}
-            </Button>
+            {isUpdating && (
+              <Button
+                type="danger"
+                icon={<DeleteOutlined />}
+                style={{ float: 'right', marginRight: 5 }}
+                onClick={onDelete}
+              >
+                {t('operations.delete')}
+              </Button>
+            )}
           </>
         }
       >
         <Tabs defaultActiveKey="1">
           <Tabs.TabPane key="1" tab={t('tabColumns.additionalHostData')}>
             <Form layout="vertical" form={form}>
-              <Form.Item name="dh_dor_type" label={t('fields.additionalHostDataType')}>
+              <Form.Item 
+                name="dh_dor_type" 
+                label={t('fields.additionalHostDataType')}
+                rules={[{ required: true, validator: validateList }]}
+              >
                 <Select
                   dropdownMatchSelectWidth={false}
                   loading={isValidating}
@@ -203,7 +249,11 @@ const AdditionalHostData = ({ value }) => {
                 </Select>
               </Form.Item>
 
-              <Form.Item name="dh_dor_number" label={t('fields.additionalHostData')}>
+              <Form.Item 
+                name="dh_dor_number" 
+                label={t('fields.additionalHostData')}
+                rules={[{ required: true, validator: validateText }]}
+              >
                 <InputNumber min={0} maxLength={6} precision={0} style={{ width: '100%' }} />
               </Form.Item>
             </Form>

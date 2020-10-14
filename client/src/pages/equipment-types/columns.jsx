@@ -73,6 +73,16 @@ const columns = (t) => [
     suppressSizeToFit: true,
     // hide: true,
   },
+  {
+    headerName: t('fields.countEtypEquiptype'),
+    field: 'etyp_count',
+    filterable: true,
+    sortable: true,
+    resizable: true,
+    width: 140,
+    suppressSizeToFit: true,
+    hide: true,
+  },
 ];
 
 export default columns;

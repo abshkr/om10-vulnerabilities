@@ -328,6 +328,7 @@ class EquipmentType extends CommonClass
                     )) IMAGE,
                 NVL(EQUIP_CMPTS.CMPTS, EQUIP_TYPES_VW.ETYP_N_ITEMS) CMPTS,
                 EQUIP_TYPES_VW.CMPTNU,
+                NVL(ETYP_COUNTS.ETYP_COUNT, 0)  ETYP_COUNT,
                 NVL(EQPT_COUNTS.EQPT_COUNT, 0)  EQPT_COUNT,
                 NVL(TNKR_COUNTS.TNKR_COUNT, 0)  TNKR_COUNT
             FROM EQUIP_TYPES_VW,
@@ -366,6 +367,11 @@ class EquipmentType extends CommonClass
                     GROUP BY ETYP_ID_RT
                 ) EQUIP_CMPTS,
                 (
+                    SELECT EQC_SUB_ITEM, COUNT(*) ETYP_COUNT
+                    FROM EQP_CONNECT
+                    GROUP BY EQC_SUB_ITEM
+                ) ETYP_COUNTS,
+                (
                     SELECT EQPT_ETP, COUNT(*) EQPT_COUNT
                     FROM TRANSP_EQUIP
                     GROUP BY EQPT_ETP
@@ -378,6 +384,7 @@ class EquipmentType extends CommonClass
             WHERE FIRST_SUB_ITEM.ECNCT_ETYP(+) = EQUIP_TYPES_VW.ETYP_ID
                 AND EQUIP_TYPES_VW.ETYP_ID = EQUIP_IMAGES.COMBO_ETYP(+)
                 AND EQUIP_TYPES_VW.ETYP_ID = EQUIP_CMPTS.COMBO_ETYP(+)
+                AND EQUIP_TYPES_VW.ETYP_ID = ETYP_COUNTS.EQC_SUB_ITEM(+)
                 AND EQUIP_TYPES_VW.ETYP_ID = EQPT_COUNTS.EQPT_ETP(+)
                 AND EQUIP_TYPES_VW.ETYP_ID = TNKR_COUNTS.TNKR_ETP(+)
                 AND ETYP_TITLE like :etyp_title";
@@ -452,13 +459,15 @@ class EquipmentType extends CommonClass
         }
     }
 
-    protected function post_create()
+    protected function update_title()
     {
         // in case CGI wrote the text in non-utf8
         $query = "UPDATE EQUIP_TYPES SET ETYP_TITLE =:etyp_title WHERE ETYP_ID = :etyp_id";
+        write_log(sprintf("%s::%s EQUIP_TYPES. key:%s, value:%s", __CLASS__, __FUNCTION__, $this->etyp_id, $this->etyp_title),
+        __FILE__, __LINE__);
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':', $this->etyp_title);
-        oci_bind_by_name($stmt, ':', $this->etyp_id);
+        oci_bind_by_name($stmt, ':etyp_title', $this->etyp_title);
+        oci_bind_by_name($stmt, ':etyp_id', $this->etyp_id);
         if (!oci_execute($stmt)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -491,6 +500,9 @@ class EquipmentType extends CommonClass
             return false;
             
         }
+
+        // keep the first result;
+        $first_res = $res;
     
         if (isset($this->compartments) && count($this->compartments) > 0) {
             $this->etyp_id = null;
@@ -550,6 +562,11 @@ class EquipmentType extends CommonClass
                     return false;
                 }
             }
+        }
+
+        if (preg_match("/(var eqpCd=)(\d+)(;)/", $first_res, $out)) {
+            $this->etyp_id = $out[2];
+            $this->update_title();
         }
 
         return true;

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Select, Input } from 'antd';
 import useSWR from 'swr';
@@ -8,16 +8,17 @@ import { GATE_PERMISSION } from '../../../../api';
 
 const AuthType = ({ value, form, enabled }) => {
   const { t } = useTranslation();
+  const [roles, setRoles] = useState([]);
   const { data: cases, isValidating } = useSWR(GATE_PERMISSION.ROLE_TYPES);
 
   const { setFieldsValue } = form;
 
   const onChange = (v) => {
-    const ruleEtypname = _.find(cases?.records, (item) => {
+    const ruleRole = _.find(roles, (item) => {
       return item.role_id === v;
     })
     setFieldsValue({
-      rule_authname: ruleEtypname.auth_level_name
+      rule_authname: ruleRole.auth_level_name
     })
   }
 
@@ -36,6 +37,17 @@ const AuthType = ({ value, form, enabled }) => {
       });
     }
   }, [value, enabled]);
+
+  useEffect(() => {
+    if (cases) {
+      _.forEach(cases?.records, (o) => {
+        if (o.role_id === '999') {
+          o.auth_level_name = t('fields.any');
+        }
+      });
+      setRoles(cases?.records);
+    }
+  }, [cases, setRoles]);
 
   return (
     <div>
@@ -56,7 +68,7 @@ const AuthType = ({ value, form, enabled }) => {
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
-          {cases?.records.map((item, index) => (
+          {roles.map((item, index) => (
             <Select.Option key={index} value={item.role_id}>
               {item.auth_level_name}
             </Select.Option>

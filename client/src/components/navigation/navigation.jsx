@@ -45,13 +45,14 @@ const Navigation = () => {
             console.log("Do not have view privilege");
             history.push(ROUTES.UNAUTHORIZED);
           } else {
+            const port = window.location.port ? window.location.port : 443;
             api
-              .get(`https://${window.location.hostname}:${window.location.port}/scadaviews/bayview/index.html`)
+              .get(`https://${window.location.hostname}:${port}/scadaviews/bayview/index.html`)
               .then((res) => {
                 if (res.data.includes("<title>OMEGA 5000</title>")){
                   history.push(ROUTES.BAY_VIEW);
                 } else {
-                  window.open(`https://${window.location.hostname}:${window.location.port}/scadaviews/bayview/index.html`, "_blank");
+                  window.open(`https://${window.location.hostname}:${port}/scadaviews/bayview/index.html`, "_blank");
                 }
               })
               .catch(function (error) {

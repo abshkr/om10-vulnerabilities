@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Select, Input } from 'antd';
 import useSWR from 'swr';
@@ -8,16 +8,17 @@ import { GATE_PERMISSION } from '../../../../api';
 
 const EquipType = ({ value, form, enabled }) => {
   const { t } = useTranslation();
+  const [equips, setEquips] = useState([]);
   const { data: cases, isValidating } = useSWR(GATE_PERMISSION.EQUIPMENT_TYPES);
 
   const { setFieldsValue } = form;
 
   const onChange = (v) => {
-    const ruleEtypname = _.find(cases?.records, (item) => {
+    const ruleEtyp = _.find(equips, (item) => {
       return item.etyp_id === v;
     })
     setFieldsValue({
-      rule_etypname: ruleEtypname.etyp_title
+      rule_etypname: ruleEtyp.etyp_title
     })
   }
 
@@ -37,6 +38,17 @@ const EquipType = ({ value, form, enabled }) => {
     }
   }, [value, enabled]);
 
+  useEffect(() => {
+    if (cases) {
+      _.forEach(cases?.records, (o) => {
+        if (o.etyp_id === '-999') {
+          o.etyp_title = t('fields.any');
+        }
+      });
+      setEquips(cases?.records);
+    }
+  }, [cases, setEquips]);
+
   return (
     <div>
       <Form.Item 
@@ -55,7 +67,7 @@ const EquipType = ({ value, form, enabled }) => {
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
-          {cases?.records.map((item, index) => (
+          {equips.map((item, index) => (
             <Select.Option key={index} value={item.etyp_id}>
               {item.etyp_title}
             </Select.Option>

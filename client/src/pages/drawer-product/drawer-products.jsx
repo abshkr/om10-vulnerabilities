@@ -168,7 +168,7 @@ const DrawerProduct = () => {
           />
         </Tabs.TabPane>
         <Tabs.TabPane tab={t('tabColumns.drawerProductAssets')} key="2">
-          <Assets access={access}/>
+          <Assets access={access} tabFlag={mainTabOn}/>
         </Tabs.TabPane>
       </Tabs>
     </Page>

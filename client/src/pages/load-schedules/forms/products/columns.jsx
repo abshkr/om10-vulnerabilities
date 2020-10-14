@@ -38,6 +38,7 @@ const columns = (t, form, units, access) => [
     suppressSizeToFit: true,
     cellEditor: 'UnitEditor',
     editable: true,
+    editable: access.extra,
     cellClass: 'editable-ag-grid-cell',
     cellEditorParams: {
       values: units?.records || [],

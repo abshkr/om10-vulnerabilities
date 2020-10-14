@@ -94,7 +94,7 @@ class Gate extends CommonClass
             }
         }
 
-        if ($result) {
+        if ($result === false) {
             $error = new EchoSchema(500, response("__CGI_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
         } else {

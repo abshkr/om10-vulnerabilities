@@ -109,6 +109,95 @@ class GatePermission extends CommonClass
         }
     }
 
+    private function get_enum_text()
+    {
+        $query = "
+			select MSG_ID, MESSAGE from MSG_LOOKUP 
+			where 
+				MSG_ID IN (147, 183, 1900)  
+				and (LANG_ID=SYS_CONTEXT('CONN_CONTEXT','LANG') OR (SYS_CONTEXT('CONN_CONTEXT','LANG') IS NULL AND LANG_ID = 'ENG')) 
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            return null;
+        }
+
+        $rows = array();
+        while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            $rows[] = $row;
+        }
+
+        return $rows;
+    }
+
+    private function make_rules_query()
+    {
+		$pmsg = $this->get_enum_text();
+		
+		$any_psnl = "Personnel";
+		$any_eqpt = "Transport Equipment";
+		$any_text = "ANY";
+		
+		foreach( $pmsg as $row ) {
+			if ( $row['MSG_ID'] == 147 ) {
+				$any_psnl = $row['MESSAGE'];
+			}
+			if ( $row['MSG_ID'] == 183 ) {
+				$any_eqpt = $row['MESSAGE'];
+			}
+			if ( $row['MSG_ID'] == 1900 ) {
+				$any_text = $row['MESSAGE'];
+			}
+        }
+        
+        $query = "
+            SELECT PR.PRMSSN_K RULE_ID, 
+                DECODE(PR.PRMSSN_CASE, 'DEFAULT_EQUIP', 'PRM_EQPT', 
+                    'DEFAULT_PERSONNEL', 'PRM_PRSSNL', 
+                    PR.PRMSSN_CASE) RULE_CASE, 
+                DECODE(PR.PRMSSN_CASE, 
+                    'DEFAULT_EQUIP', '$any_eqpt', 
+                    'PRM_EQPT', '$any_eqpt', 
+                    'DEFAULT_PERSONNEL', '$any_psnl', 
+                    'PRM_PRSSNL', '$any_psnl') RULE_CASENAME, 
+                DECODE(PR.PRMSSN_CASE, 'DEFAULT_EQUIP', -999, PR.PRMSSN_ETYP) RULE_ETYP, 
+                DECODE(PR.PRMSSN_CASE, 'DEFAULT_EQUIP', '$any_text', ET.ETYP_TITLE) RULE_ETYPNAME, 
+                PR.PRMSSN_AUTH RULE_AUTH, 
+                DECODE(PR.PRMSSN_CASE, 'DEFAULT_PERSONNEL', '$any_text', RT.AUTH_LEVEL_NAME) RULE_AUTHNAME, 
+                1 RULE_FIRST, 
+                PR.PRMSSN_K RULE_PARENT, 
+                NVL(PR.PRMSSN_EXPIRY_CHECK,0) RULE_EXPIRY_CHECK
+            FROM PRMSSN_RC PR, EQUIP_TYPES ET, AUTH_LEVEL_TYP RT
+            WHERE PR.PRMSSN_AUTH = RT.AUTH_LEVEL_ID(+)
+                AND PR.PRMSSN_ETYP = ET.ETYP_ID(+)
+                AND PR.PRMSSN_K = :prmssn_k
+            UNION
+            SELECT PR.PRMT_K RULE_ID,
+                DECODE(PR.PRMT_CLASS, 'DEFAULT_EQUIP', 'PRM_EQPT', 
+                    'DEFAULT_PERSONNEL', 'PRM_PRSSNL', 
+                    PR.PRMT_CLASS) RULE_CASE, 
+                DECODE(PR.PRMT_CLASS, 
+                    'DEFAULT_EQUIP', '$any_eqpt',
+                    'PRM_EQPT', '$any_eqpt',
+                    'DEFAULT_PERSONNEL', '$any_psnl',
+                    'PRM_PRSSNL', '$any_psnl'
+                ) RULE_CASENAME,
+                DECODE(PR.PRMT_CLASS, 'DEFAULT_EQUIP', -999, PR.PRMT_ETP) RULE_ETYP,
+                DECODE(PR.PRMT_CLASS, 'DEFAULT_EQUIP', '$any_text', ET.ETYP_TITLE) RULE_ETYPNAME,
+                PR.PRMT_AUTH RULE_AUTH,
+                DECODE(PR.PRMT_CLASS, 'DEFAULT_PERSONNEL', '$any_text', RT.AUTH_LEVEL_NAME) RULE_AUTHNAME,
+                0 RULE_FIRST,
+                PR.PRMT_PRMSSN RULE_PARENT,
+                NVL(PR.PRMT_EXPIRY_CHECK,0) RULE_EXPIRY_CHECK
+            FROM PRMT_RC PR, EQUIP_TYPES ET, AUTH_LEVEL_TYP RT
+            WHERE PR.PRMT_AUTH = RT.AUTH_LEVEL_ID(+)
+                AND PR.PRMT_ETP = ET.ETYP_ID(+)
+                AND PR.PRMT_PRMSSN = :prmssn_k
+        ";
+
+        return $query;
+    }
+
     public function read_hook(&$hook_item)
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
@@ -124,7 +213,7 @@ class GatePermission extends CommonClass
             return;
         }
 
-        $stmt = oci_parse($this->conn, $this->rules_query);
+        $stmt = oci_parse($this->conn, $this->make_rules_query()); // rules_query);
         oci_bind_by_name($stmt, ':prmssn_k', $hook_item['prmssn_k']);
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
@@ -139,7 +228,7 @@ class GatePermission extends CommonClass
 
     protected function retrieve_children_data()
     {
-        $stmt = oci_parse($this->conn, $this->rules_query);
+        $stmt = oci_parse($this->conn, $this->make_rules_query()); // rules_query);
         oci_bind_by_name($stmt, ':prmssn_k', $this->prmssn_k);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {

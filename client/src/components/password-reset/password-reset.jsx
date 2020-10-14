@@ -54,6 +54,9 @@ const PasswordReset = ({ value }) => {
     textField.select();
     document.execCommand('copy');
     textField.remove();
+    notification.success({
+      message: t('messages.copyQuantitySuccess'),
+    });
   };
 
   return (
