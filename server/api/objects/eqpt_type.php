@@ -328,6 +328,7 @@ class EquipmentType extends CommonClass
                     )) IMAGE,
                 NVL(EQUIP_CMPTS.CMPTS, EQUIP_TYPES_VW.ETYP_N_ITEMS) CMPTS,
                 EQUIP_TYPES_VW.CMPTNU,
+                NVL(ETYP_COUNTS.ETYP_COUNT, 0)  ETYP_COUNT,
                 NVL(EQPT_COUNTS.EQPT_COUNT, 0)  EQPT_COUNT,
                 NVL(TNKR_COUNTS.TNKR_COUNT, 0)  TNKR_COUNT
             FROM EQUIP_TYPES_VW,
@@ -366,6 +367,11 @@ class EquipmentType extends CommonClass
                     GROUP BY ETYP_ID_RT
                 ) EQUIP_CMPTS,
                 (
+                    SELECT EQC_SUB_ITEM, COUNT(*) ETYP_COUNT
+                    FROM EQP_CONNECT
+                    GROUP BY EQC_SUB_ITEM
+                ) ETYP_COUNTS,
+                (
                     SELECT EQPT_ETP, COUNT(*) EQPT_COUNT
                     FROM TRANSP_EQUIP
                     GROUP BY EQPT_ETP
@@ -378,6 +384,7 @@ class EquipmentType extends CommonClass
             WHERE FIRST_SUB_ITEM.ECNCT_ETYP(+) = EQUIP_TYPES_VW.ETYP_ID
                 AND EQUIP_TYPES_VW.ETYP_ID = EQUIP_IMAGES.COMBO_ETYP(+)
                 AND EQUIP_TYPES_VW.ETYP_ID = EQUIP_CMPTS.COMBO_ETYP(+)
+                AND EQUIP_TYPES_VW.ETYP_ID = ETYP_COUNTS.EQC_SUB_ITEM(+)
                 AND EQUIP_TYPES_VW.ETYP_ID = EQPT_COUNTS.EQPT_ETP(+)
                 AND EQUIP_TYPES_VW.ETYP_ID = TNKR_COUNTS.TNKR_ETP(+)
                 AND ETYP_TITLE like :etyp_title";

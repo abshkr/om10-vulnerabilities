@@ -199,6 +199,11 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
                   {t('fields.countEtypTanker') + ': ' + value?.tnkr_count}
                 </Tag>
               </Tooltip>
+              <Tooltip placement="topRight" title={t("descriptions.countEtypEquiptype")} >
+                <Tag color={value?.etyp_count>0 ? 'red' : 'green'}>
+                  {t('fields.countEtypEquiptype') + ': ' + value?.etyp_count}
+                </Tag>
+              </Tooltip>
             </div>
           )}
 
@@ -228,7 +233,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={!access?.canUpdate || value?.eqpt_count>0 || value?.tnkr_count>0}
+              disabled={!access?.canUpdate || value?.etyp_count>0 || value?.eqpt_count>0 || value?.tnkr_count>0}
               onClick={onDelete}
             >
               {t('operations.delete')}
