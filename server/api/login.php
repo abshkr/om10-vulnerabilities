@@ -74,7 +74,6 @@ if (!isset($object->user) || !isset($object->psw)) {
     return;
 }
 
-// $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . '/cgi-bin/en/login.cgi';
 $object->clientip = $_SERVER['REMOTE_ADDR'];
 
 $object->langcode = 'ENG';
