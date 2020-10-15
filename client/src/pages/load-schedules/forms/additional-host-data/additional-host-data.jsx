@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CloseOutlined, PlusOutlined, QuestionCircleOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Button, Drawer, Tabs, Form, Select, InputNumber, Modal, notification, message } from 'antd';
+import { Button, Drawer, Tabs, Form, Select, InputNumber, Input, Modal, notification, message, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import useSWR from 'swr';
@@ -30,6 +30,7 @@ const AdditionalHostData = ({ value }) => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [isUpdating, setUpdating] = useState(undefined);
+  const [dorType, setDorType] = useState('');
 
   const { setFieldsValue } = form;
 
@@ -71,6 +72,7 @@ const AdditionalHostData = ({ value }) => {
     setSelected(record);
     if (!record) {
       setUpdating(undefined);
+      setDorType('');
     } else {
       if (
         !record?.dh_dor_type &&
@@ -80,8 +82,10 @@ const AdditionalHostData = ({ value }) => {
         !record?.dh_per_name
       ) {
         setUpdating(false);
+        setDorType('');
       } else {
         setUpdating(true);
+        setDorType(record?.dh_dor_type);
       }
     }
   };
@@ -237,6 +241,7 @@ const AdditionalHostData = ({ value }) => {
                   dropdownMatchSelectWidth={false}
                   loading={isValidating}
                   showSearch
+                  onChange={setDorType}
                   optionFilterProp="children"
                   placeholder={!value ? t('placeholder.selectHostDataType') : null}
                   filterOption={(value, option) =>
@@ -252,11 +257,22 @@ const AdditionalHostData = ({ value }) => {
               </Form.Item>
 
               <Form.Item
-                name="dh_dor_number"
                 label={t('fields.additionalHostData')}
-                rules={[{ required: true, validator: validateText }]}
               >
-                <InputNumber min={0} maxLength={6} precision={0} style={{ width: '100%' }} />
+                <Row gutter={[2, 2]}>
+                  <Col span={3}>
+                    <Input value={dorType} disabled={true}/>
+                  </Col>
+                  <Col span={21}>
+                    <Form.Item
+                      name="dh_dor_number"
+                      // label={t('fields.additionalHostData')}
+                      rules={[{ required: true, validator: validateText }]}
+                    >
+                      <InputNumber min={0} maxLength={6} precision={0} style={{ width: '100%' }} />
+                    </Form.Item>
+                  </Col>
+                </Row>
               </Form.Item>
             </Form>
           </Tabs.TabPane>
