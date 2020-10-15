@@ -433,16 +433,16 @@ const Settings = ({ value, access }) => {
     return true;
   };
 
-	const closeoutIsBusy = () => {
-		return (  manualDates?.records[0].next_manual_close !== ""
-            || manualDates?.records[0].next_manual_freeze_datetime !== ""
-            || manualDates?.records[0].closeout_running === true
-		);
-	};
+  const closeoutIsBusy = () => {
+    return (
+      manualDates?.records[0].next_manual_close !== '' ||
+      manualDates?.records[0].next_manual_freeze_datetime !== '' ||
+      manualDates?.records[0].closeout_running === true
+    );
+  };
 
   const showCloseoutStatus = () => {
-		if (closeoutIsBusy())
-    {
+    if (closeoutIsBusy()) {
       return t('descriptions.closeoutIsBusy');
     }
   };
@@ -501,7 +501,7 @@ const Settings = ({ value, access }) => {
         <Col span={12} />
         <Col span={12} style={{ textAlign: 'center' }}>
           <Button
-          	title={showCloseoutStatus()}
+            title={showCloseoutStatus()}
             type="primary"
             disabled={!runAndOverrideFlag || closeoutIsBusy()}
             icon={<CodeOutlined />}
@@ -526,7 +526,7 @@ const Settings = ({ value, access }) => {
         </Col>
         <Col span={8}>
           <div>
-            Last modified on:{' '}
+            {t('fields.lastModified')}:{' '}
             {payload === undefined
               ? ''
               : _.filter(payload?.records, function (item) {
@@ -544,7 +544,7 @@ const Settings = ({ value, access }) => {
         </Col>
         <Col span={8}>
           <div>
-            Last modified on:{' '}
+            {t('fields.lastModified')}:{' '}
             {payload === undefined
               ? ''
               : _.filter(payload?.records, function (item) {
@@ -562,7 +562,7 @@ const Settings = ({ value, access }) => {
         </Col>
         <Col span={8}>
           <div>
-            Last modified on:{' '}
+            {t('fields.lastModified')}:{' '}
             {payload === undefined
               ? ''
               : _.filter(payload?.records, function (item) {
@@ -580,7 +580,7 @@ const Settings = ({ value, access }) => {
         </Col>
         <Col span={8}>
           <div>
-            Last modified on:{' '}
+            {t('fields.lastModified')}:{' '}
             {payload === undefined
               ? ''
               : _.filter(payload?.records, function (item) {
@@ -623,7 +623,7 @@ const Settings = ({ value, access }) => {
           }}
         >
           <Button
-          	title={showCloseoutStatus()}
+            title={showCloseoutStatus()}
             type="primary"
             icon={<SafetyCertificateOutlined />}
             style={{ float: 'right', marginRight: 5 }}
@@ -634,7 +634,7 @@ const Settings = ({ value, access }) => {
           </Button>
 
           <Button
-          	title={showCloseoutStatus()}
+            title={showCloseoutStatus()}
             type="primary"
             icon={<SafetyCertificateOutlined />}
             style={{ float: 'right', marginRight: 5 }}
