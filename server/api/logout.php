@@ -38,23 +38,8 @@ if (!$payload) {
     }
 }
 
-$url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . '/cgi-bin/en/logout.cgi';
-$clientip = $_SERVER['REMOTE_ADDR'];
-$langcode = isset($data->lang) ? isset($data->lang) : 'ENG';
-
-//$url         = 'https://127.0.0.1/cgi-bin/en/login.cgi';
-$data = array('sess_id' => $payload->sess_id, 'usr' => $payload->per_code);
-$options = array(
-    'http' => array(
-        'header' => "Content-type: text/xml\r\n",
-        'method' => 'POST',
-        'content' => http_build_query($data),
-    ),
-);
-$context = stream_context_create($options);
-// create request to CGI
-$result = file_get_contents($url, false, $context);
-// print_r($result);
+$query_string = "usr=" . rawurlencode(strip_tags($payload->per_code));
+$res = Utilities::http_cgi_invoke("cgi-bin/en/logout.cgi", $query_string);
 
 if (isset($_SESSION)) {
     session_unset();
