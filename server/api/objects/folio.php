@@ -173,23 +173,9 @@ class Folio extends CommonClass
                 continue;
             }
 
-            $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . "/cgi-bin/en/calcvcf.cgi?";
-            foreach ($value as $cgi_key => $cgi_value) {
-                $url .= $cgi_key . "=" . rawurlencode(strip_tags($cgi_value)) . "&";
-            }
-
-            if (isset($_SESSION["SESSION"])) {
-                $url .= "sess_id=" . $_SESSION["SESSION"];
-            }
-            write_log(sprintf("%s::%s(), url:%s", __CLASS__, __FUNCTION__, $url),
-                __FILE__, __LINE__);
-
-            $result = @file_get_contents($url);
-            if ($result === false) {
-                $e = error_get_last();
-                write_log($e['message'], __FILE__, __LINE__);
-            }
+            $result = Utilities::http_cgi_invoke("cgi-bin/en/calcvcf.cgi");
             // write_log(json_encode($result), __FILE__, __LINE__);
+            
 
             $real_cvf = Utilities::get_cgi_xml_value($result, 'REAL_VCF');
             $real_litre = Utilities::get_cgi_xml_value($result, 'REAL_LITRE');
