@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CloseOutlined, PlusOutlined, QuestionCircleOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Button, Drawer, Tabs, Form, Select, InputNumber, Modal, notification, message } from 'antd';
+import { Button, Drawer, Tabs, Form, Select, Input, Modal, notification, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import useSWR from 'swr';
@@ -54,7 +54,7 @@ const AdditionalHostData = ({ value }) => {
 
   const validateText = (rule, input) => {
     if (rule.required) {
-      if (input === '' || (input!==0 && !input)) {
+      if (input === '' || (input !== 0 && !input)) {
         return Promise.reject(`${t('validate.set')} ─ ${t('fields.additionalHostData')}`);
       }
     }
@@ -72,11 +72,13 @@ const AdditionalHostData = ({ value }) => {
     if (!record) {
       setUpdating(undefined);
     } else {
-      if (!record?.dh_dor_type &&
+      if (
+        !record?.dh_dor_type &&
         !record?.dh_dor_number &&
         !record?.dh_chg_date &&
         !record?.dh_per_code &&
-        !record?.dh_per_name) {
+        !record?.dh_per_name
+      ) {
         setUpdating(false);
       } else {
         setUpdating(true);
@@ -172,7 +174,7 @@ const AdditionalHostData = ({ value }) => {
     if (selected) {
       setFieldsValue({
         dh_dor_type: selected?.dh_dor_type,
-        dh_dor_number: selected?.dh_dor_number?.substring(selected?.dh_dor_type?.length),
+        dh_dor_number: selected?.dh_dor_number,
       });
     }
   }, [selected]);
@@ -226,8 +228,8 @@ const AdditionalHostData = ({ value }) => {
         <Tabs defaultActiveKey="1">
           <Tabs.TabPane key="1" tab={t('tabColumns.additionalHostData')}>
             <Form layout="vertical" form={form}>
-              <Form.Item 
-                name="dh_dor_type" 
+              <Form.Item
+                name="dh_dor_type"
                 label={t('fields.additionalHostDataType')}
                 rules={[{ required: true, validator: validateList }]}
               >
@@ -249,12 +251,12 @@ const AdditionalHostData = ({ value }) => {
                 </Select>
               </Form.Item>
 
-              <Form.Item 
-                name="dh_dor_number" 
+              <Form.Item
+                name="dh_dor_number"
                 label={t('fields.additionalHostData')}
                 rules={[{ required: true, validator: validateText }]}
               >
-                <InputNumber min={0} maxLength={6} precision={0} style={{ width: '100%' }} />
+                <Input style={{ width: '100%' }} />
               </Form.Item>
             </Form>
           </Tabs.TabPane>

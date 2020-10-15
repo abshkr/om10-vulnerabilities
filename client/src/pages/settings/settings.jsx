@@ -279,13 +279,6 @@ const Settings = ({ user }) => {
           hoverable
           style={{ borderColor: '1px solid #0054a43b' }}
           bordered
-          actions={[
-            <Form.Item>
-              <Button style={{ float: 'right', marginRight: 15 }} type="primary" htmlType="submit">
-                {t('operations.update')}
-              </Button>
-            </Form.Item>,
-          ]}
         >
           <Select
             defaultValue={i18n.language || 'en'}
