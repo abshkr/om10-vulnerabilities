@@ -35,7 +35,7 @@ const BusinessProcess = ({ form, value }) => {
       label={t('fields.businessProcess')}
       rules={[{ required: true, validator: validate }]}
     >
-      <Input />
+      <Input disabled={value?.mr_status === '2'} />
     </Form.Item>
   );
 };

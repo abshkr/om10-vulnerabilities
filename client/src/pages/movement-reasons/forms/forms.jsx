@@ -8,7 +8,7 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col, Tag, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import _ from 'lodash';
@@ -126,6 +126,18 @@ const FormModal = ({ value, length, visible, handleFormState, access }) => {
       visible={visible}
       footer={
         <>
+          {!IS_CREATING && value?.mr_status !== '2' && (
+            <div
+              style={{ float: 'left', marginRight: 5 }}
+            >
+              <Tooltip placement="topRight" title={t("descriptions.countReasonSpecmove")} >
+                <Tag color={value?.mlitm_count>0 ? 'red' : 'green'}>
+                  {t('fields.countReasonSpecmove') + ': ' + value?.mlitm_count}
+                </Tag>
+              </Tooltip>
+            </div>
+          )}
+
           <Button
             htmlType="button"
             icon={<CloseOutlined />}
@@ -141,7 +153,7 @@ const FormModal = ({ value, length, visible, handleFormState, access }) => {
             htmlType="submit"
             style={{ float: 'right', marginRight: 5 }}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
+            disabled={(IS_CREATING ? !access?.canCreate : !access?.canUpdate) || value?.mr_status === '2'}
             onClick={onFinish}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
@@ -153,7 +165,7 @@ const FormModal = ({ value, length, visible, handleFormState, access }) => {
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={!access?.canDelete}
+              disabled={!access?.canDelete || value?.mr_status === '2' || value?.mlitm_count > 0}
             >
               {t('operations.delete')}
             </Button>
@@ -165,6 +177,7 @@ const FormModal = ({ value, length, visible, handleFormState, access }) => {
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
             <p>ID: {value ? value?.mr_id : length + 1}</p>
+            {value?.mr_status === '2' && (<p><b>{value?.mr_flag_desc}</b></p>)}
 
             <Row>
               <Col><SendToHost form={form} onChange={setSend} value={value} /></Col>

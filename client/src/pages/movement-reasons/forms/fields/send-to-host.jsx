@@ -23,7 +23,7 @@ const SendToHost = ({ form, value, onChange }) => {
 
   return (
     <Form.Item name="mr_flag" valuePropName="checked">
-      <Checkbox onChange={handleCheck}>{t('fields.sendToHost')}</Checkbox>
+      <Checkbox onChange={handleCheck} disabled={value?.mr_status === '2'}>{t('fields.sendToHost')}</Checkbox>
     </Form.Item>
   );
 };

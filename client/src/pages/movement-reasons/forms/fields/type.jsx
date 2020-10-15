@@ -40,6 +40,7 @@ const Type = ({ form, value }) => {
         dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
+        disabled={value?.mr_status === '2'}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectType') : null}
         filterOption={(input, option) =>

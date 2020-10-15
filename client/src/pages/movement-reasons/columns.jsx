@@ -56,7 +56,16 @@ const columns = t => [
     // cellRenderer: 'BooleanRenderer',
     sortable: true,
     resizable: true
-  }
+  },
+  {
+    headerName: t('fields.countReasonSpecmove'),
+    field: 'mlitm_count',
+    filterable: true,
+    sortable: true,
+    resizable: true,
+    width: 140,
+    // hide: true,
+  },
 ];
 
 export default columns;

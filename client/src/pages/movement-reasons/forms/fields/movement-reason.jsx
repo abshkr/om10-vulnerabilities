@@ -41,7 +41,7 @@ const MovementReason = ({ form, value, send }) => {
               label={t('fields.originalMovementType')}
               rules={[{ required: send, validator: validate }]}
             >
-              <Input maxLength={4} style={{ width: '100%' }} />
+              <Input disabled={value?.mr_status === '2'} maxLength={4} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
 
@@ -51,7 +51,7 @@ const MovementReason = ({ form, value, send }) => {
               label={t('fields.originalReasonCode')}
               rules={[{ required: send, validator: validate }]}
             >
-              <Input maxLength={4} style={{ width: '100%' }} />
+              <Input disabled={value?.mr_status === '2'} maxLength={4} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
 
@@ -61,7 +61,7 @@ const MovementReason = ({ form, value, send }) => {
               label={t('fields.reversalMovementType')}
               rules={[{ required: send, validator: validate }]}
             >
-              <Input maxLength={4} style={{ width: '100%' }} />
+              <Input disabled={value?.mr_status === '2'} maxLength={4} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
 
@@ -71,7 +71,7 @@ const MovementReason = ({ form, value, send }) => {
               label={t('fields.reversalReasonCode')}
               rules={[{ required: send, validator: validate }]}
             >
-              <Input maxLength={4} style={{ width: '100%' }} />
+              <Input disabled={value?.mr_status === '2'} maxLength={4} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
         </Row>

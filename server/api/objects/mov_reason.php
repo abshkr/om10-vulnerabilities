@@ -40,7 +40,7 @@ class MovementReason extends CommonClass
             SELECT MR_ID,
                 MR_ACTION,
                 MR_TYPE,
-                MOVITEM_TYPE_NAME MR_TYPE_NAME,
+                MOV_TYPES.MOVITEM_TYPE_NAME MR_TYPE_NAME,
                 MR_MOV_TYPE_ORI,
                 MR_REASON_CODE_ORI,
                 MR_MOV_TYPE_REV,
@@ -52,13 +52,22 @@ class MovementReason extends CommonClass
                     2, 'Active, Read only, Send to host',
                     -1, 'Deleted',
                     'Unknown') MR_FLAG_DESC,
-                MR_SHOW_COMMENT
+                MR_SHOW_COMMENT,
+                NVL(MLITM_COUNTS.MLITM_COUNT, 0)  MLITM_COUNT
             FROM MOV_REASONS,
-                (SELECT MOVITEM_TYPE_ID, 
-                DECODE(MOVITEM_TYPE_ID, 0, 'R', 1, 'D', 2, 'T', 'R') MOVITEM_TYPE_CODE, 
-                MOVITEM_TYPE_NAME 
-                FROM MOVITEM_TYPES)
-            WHERE MR_TYPE = MOVITEM_TYPE_CODE(+)
+                (
+                    SELECT 
+                        MOVITEM_TYPE_ID, 
+                        DECODE(MOVITEM_TYPE_ID, 0, 'R', 1, 'D', 2, 'T', 'R') MOVITEM_TYPE_CODE, 
+                        MOVITEM_TYPE_NAME 
+                    FROM MOVITEM_TYPES
+                ) MOV_TYPES,
+                (
+                    SELECT MLITM_REASON_CODE, COUNT(*) MLITM_COUNT
+                    FROM MOV_LOAD_ITEMS
+                    GROUP BY MLITM_REASON_CODE
+                ) MLITM_COUNTS
+            WHERE MR_TYPE = MOV_TYPES.MOVITEM_TYPE_CODE(+) AND MR_ID = MLITM_COUNTS.MLITM_REASON_CODE(+)
             ORDER BY MR_ID
         ";
         $stmt = oci_parse($this->conn, $query);
