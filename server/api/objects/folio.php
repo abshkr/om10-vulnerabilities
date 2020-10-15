@@ -173,9 +173,13 @@ class Folio extends CommonClass
                 continue;
             }
 
-            $result = Utilities::http_cgi_invoke("cgi-bin/en/calcvcf.cgi");
+            $query_string = "";
+            foreach ($value as $cgi_key => $cgi_value) {
+                $query_string .= $cgi_key . "=" . rawurlencode(strip_tags($cgi_value)) . "&";
+            }
+
+            $result = Utilities::http_cgi_invoke("cgi-bin/en/calcvcf.cgi", $query_string);
             // write_log(json_encode($result), __FILE__, __LINE__);
-            
 
             $real_cvf = Utilities::get_cgi_xml_value($result, 'REAL_VCF');
             $real_litre = Utilities::get_cgi_xml_value($result, 'REAL_LITRE');
@@ -248,7 +252,6 @@ class Folio extends CommonClass
                 continue;
             }
 
-            $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . "/cgi-bin/en/calcvcf.cgi?";
             if (!isset($value->frm_which_type)) {
                 //ReactJS only set frm_which_type if somebody changed something.
                 write_log("frm_which_type not set, assume LT", __FILE__, __LINE__);
@@ -320,24 +323,12 @@ class Folio extends CommonClass
                 $amount = $value->close_amb_tot;
             }
 
-            $url .= "frm_which_type=" . rawurlencode(strip_tags($value->frm_which_type)) . "&";
-            $url .= "frm_real_amount=" . $amount . "&";
-            $url .= "frm_baseCd=" . $value->tank_base . "&";
-            $url .= "frm_real_temp=" . $value->close_temp . "&";
-            $url .= "frm_real_dens=" . $value->close_density;
-            if (isset($_SESSION["SESSION"])) {
-                $url .= "&sess_id=" . $_SESSION["SESSION"];
-            }
-
-            write_log(sprintf("%s::%s(), url:%s", __CLASS__, __FUNCTION__, $url),
-                __FILE__, __LINE__);
-
-            $result = @file_get_contents($url);
-            if ($result === false) {
-                $e = error_get_last();
-                write_log($e['message'], __FILE__, __LINE__);
-            }
-
+            $query_string = "frm_which_type=" . rawurlencode(strip_tags($value->frm_which_type)) 
+                . "&frm_real_amount=" . $amount 
+                . "&frm_baseCd=" . $value->tank_base 
+                . "&frm_real_temp=" . $value->close_temp 
+                . "&frm_real_dens=" . $value->close_density;
+            $result = Utilities::http_cgi_invoke("cgi-bin/en/calcvcf.cgi", $query_string);
             write_log(json_encode($result), __FILE__, __LINE__);
 
             if (Utilities::get_cgi_xml_value($result, 'MSG_CODE') > 0) {
