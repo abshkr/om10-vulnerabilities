@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CloseOutlined, PlusOutlined, QuestionCircleOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Button, Drawer, Tabs, Form, Select, Input, Modal, notification, message } from 'antd';
+import { Button, Drawer, Tabs, Form, Select, InputNumber, Modal, notification, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import useSWR from 'swr';
@@ -174,7 +174,7 @@ const AdditionalHostData = ({ value }) => {
     if (selected) {
       setFieldsValue({
         dh_dor_type: selected?.dh_dor_type,
-        dh_dor_number: selected?.dh_dor_number,
+        dh_dor_number: selected?.dh_dor_number?.substring(selected?.dh_dor_type?.length),
       });
     }
   }, [selected]);
@@ -256,7 +256,7 @@ const AdditionalHostData = ({ value }) => {
                 label={t('fields.additionalHostData')}
                 rules={[{ required: true, validator: validateText }]}
               >
-                <Input style={{ width: '100%' }} />
+                <InputNumber min={0} maxLength={6} precision={0} style={{ width: '100%' }} />
               </Form.Item>
             </Form>
           </Tabs.TabPane>
