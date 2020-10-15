@@ -42,6 +42,8 @@ const FormModal = ({ value, length, visible, handleFormState, access }) => {
       values.mr_id = length + 1;
     }
 
+    values.mr_flag = values?.mr_flag ? 1 : 0;
+
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),

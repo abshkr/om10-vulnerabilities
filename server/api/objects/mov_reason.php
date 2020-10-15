@@ -10,13 +10,22 @@ class MovementReason extends CommonClass
 {
     protected $TABLE_NAME = 'MOV_REASONS';
     
+    /*
+        The column MR_FLAG is not a Boolean type
+        -1: Deleted
+        0: Active, Do not send to host
+        1: Active, Send to host
+        2: Active, Read only, Send to host
+        other: Unknown status
+    */
     public $NUMBER_FIELDS = array(
         "MR_ID",
+        "MR_FLAG",
     );
 
     public $BOOLEAN_FIELDS = array(
-        "MR_FLAG" => 1,
-        "MR_SHOW_COMMENT" => 0
+        // "MR_FLAG" => 1,
+        "MR_SHOW_COMMENT" => 1
     );
 
     public function types()
@@ -37,9 +46,11 @@ class MovementReason extends CommonClass
                 MR_MOV_TYPE_REV,
                 MR_REASON_CODE_REV,
                 MR_FLAG,
+                MR_FLAG  as MR_STATUS,
                 DECODE(MR_FLAG, 0, 'Active, Do not send to host',
                     1, 'Active, Send to host',
                     2, 'Active, Read only, Send to host',
+                    -1, 'Deleted',
                     'Unknown') MR_FLAG_DESC,
                 MR_SHOW_COMMENT
             FROM MOV_REASONS,
