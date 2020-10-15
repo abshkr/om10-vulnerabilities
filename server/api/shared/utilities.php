@@ -143,8 +143,12 @@ class Utilities
 
     public static function http_get_cgi($cgi)
     {
-        $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . "/" . $cgi . "?";
-    
+        $host = $_SERVER['SERVER_ADDR'];
+        if (getenv('USE_SERVER_NAME_IN_CGI') == 'Y') {
+            $host = $_SERVER['SERVER_NAME'];
+        }
+        $url = URL_PROTOCOL . $host . ":" . $_SERVER['SERVER_PORT'] . "/" . $cgi . "?";
+        
         foreach ($_GET as $key => $value)
         {
             $url .= $key . "=". rawurlencode(strip_tags($value)) . "&";
@@ -163,7 +167,11 @@ class Utilities
 
     public static function http_cgi_invoke($cgi, $query_string = null)
     {
-        $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . ":" . $_SERVER['SERVER_PORT'] . "/" . $cgi . "?";
+        $host = $_SERVER['SERVER_ADDR'];
+        if (getenv('USE_SERVER_NAME_IN_CGI') == 'Y') {
+            $host = $_SERVER['SERVER_NAME'];
+        }
+        $url = URL_PROTOCOL . $host . ":" . $_SERVER['SERVER_PORT'] . "/" . $cgi . "?";
         if ($query_string) {
             $url .= $query_string . "&";
         } else {
