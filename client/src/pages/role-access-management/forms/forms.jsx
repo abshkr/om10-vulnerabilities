@@ -33,6 +33,7 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
   const IS_CREATING = !value;
 
   const onComplete = (auth_level_name) => {
+    resetFields();
     handleFormState(false, null);
     mutate(ROLE_ACCESS_MANAGEMENT.READ);
 
@@ -41,6 +42,11 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
     } else {
       setFilterValue(' ');
     }
+  };
+
+  const onFormClosed = () => {
+    resetFields();
+    handleFormState(false, null);
   };
 
   const onFinish = async () => {
@@ -54,8 +60,8 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
       auth_level_name: IS_CREATING ? values?.auth_level_name : value?.auth_level_key,
       role_note: IS_CREATING ? values?.role_note : (value?.role_id<10 ? value?.role_note_org : values?.role_note),
       role_code: IS_CREATING ? undefined : value?.role_code,
-      delete_check: values?.delete_check,
-      lock_check: values?.lock_check,
+      delete_check: values?.delete_check || false,
+      lock_check: values?.lock_check || false,
       privilege,
     };
 
@@ -308,7 +314,7 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
     <Drawer
       closable={false}
       bodyStyle={{ paddingTop: 5 }}
-      onClose={() => handleFormState(false, null)}
+      onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
       mask={IS_CREATING}
@@ -321,7 +327,7 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={onFormClosed}
           >
             {t('operations.cancel')}
           </Button>
