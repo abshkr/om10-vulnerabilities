@@ -490,52 +490,24 @@ class TankStatus extends CommonClass
         }
 
         //CGI sample: sess_id=vhNZdvHKEiQZ&tankTerm=TGI&tk=T1&prod=400003030&origin=&prodNm=U95+BASE&lvlAlrm=0&leakDtct=N&fcfld=&loDens=610.6&hiDens=770.352&tk_location=ON_SITE&Dnst=747.2&prodCE=0&lqdKG=521655&prodLvl=9800&obsTC=31.30&obsVol=2666065&stdVol=2661799&gaugMthd=1&tkGpNm=MOGAS&op=25
-        $session_id = Utilities::getCurrentSession($this);
-
-        $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . '/cgi-bin/en/stck_mgmt/tank_stat.cgi';
-
-        $ref_density = 0;
-        if (isset($this->tank_15_density) && $this->tank_15_density > 0) {
-            $ref_density = $this->tank_15_density;
-        } else {
-            $ref_density = $this->tank_density;
-        }
-
-        $data = array(
-            'tankTerm' => $this->tank_terminal,
-            'tk' => $this->tank_code,
-            'prod' => $this->tank_base,
-            'origin' => "",
-            // 'prodNm' => $this->tank_base_name,
-            'lvlAlrm' => $this->tank_lvl_alarm,
-            'leakDtct' => $this->tank_leakdtct_on,
-            'fcfld' => "",
-            'loDens' => $this->tank_bclass_dens_lo,
-            'hiDens' => $this->tank_bclass_dens_hi,
-            'tk_location' => $this->tank_location,
-            'Dnst' => $this->tank_density,
-            'prodCE' => $this->tank_prod_c_of_e,
-            'lqdKG' => $this->tank_liquid_kg,
-            'prodLvl' => $this->tank_prod_lvl,
-            'obsTC' => $this->tank_temp,
-            'obsVol' => $this->tank_amb_vol,
-            'stdVol' => $this->tank_cor_vol,
-            'gaugMthd' => $this->tank_gaugingmthd,
-            'tkGpNm' => $this->tank_group,
-            "sess_id" => $session_id,
-            'op' => "25");
-
-        $options = array
-            (
-            'http' => array
-            (
-                'header' => "Content-type: text/xml\r\n",
-                'method' => 'POST',
-                'content' => http_build_query($data),
-            ),
-        );
-        $context = stream_context_create($options);
-        $result = file_get_contents($url, false, $context);
+        $query_string = "fcfld=&origin=&op=25&tankTerm=" . rawurlencode(strip_tags($this->tank_terminal)) 
+            . "&tk=" . rawurlencode(strip_tags($this->tank_code)) 
+            . "&prod=" . rawurlencode(strip_tags($this->tank_base)) 
+            . "&lvlAlrm=" . rawurlencode(strip_tags($this->tank_lvl_alarm)) 
+            . "&leakDtct=" . rawurlencode(strip_tags($this->tank_leakdtct_on)) 
+            . "&loDens=" . rawurlencode(strip_tags($this->tank_bclass_dens_lo)) 
+            . "&hiDens=" . rawurlencode(strip_tags($this->tank_bclass_dens_hi)) 
+            . "&tk_location=" . rawurlencode(strip_tags($this->tank_location)) 
+            . "&Dnst=" . rawurlencode(strip_tags($this->tank_density)) 
+            . "&prodCE=" . rawurlencode(strip_tags($this->tank_prod_c_of_e)) 
+            . "&lqdKG=" . rawurlencode(strip_tags($this->tank_liquid_kg)) 
+            . "&prodLvl=" . rawurlencode(strip_tags($this->tank_prod_lvl)) 
+            . "&obsTC=" . rawurlencode(strip_tags($this->tank_temp)) 
+            . "&obsVol=" . rawurlencode(strip_tags($this->tank_amb_vol)) 
+            . "&stdVol=" . rawurlencode(strip_tags($this->tank_cor_vol)) 
+            . "&gaugMthd=" . rawurlencode(strip_tags($this->tank_gaugingmthd)) 
+            . "&tkGpNm=" . rawurlencode(strip_tags($this->tank_group));
+        $result = Utilities::http_cgi_invoke("cgi-bin/en/stck_mgmt/tank_stat.cgi", $query_string);
 
         $pattern = "var saveSt=\"1\";";
         if (!strstr($result, $pattern)) {
@@ -655,35 +627,16 @@ class TankStatus extends CommonClass
         }
 
         //CGI sample: sess_id=vhNZdvHKEiQZ&tankTerm=TGI&tk=T1&tkgId=11&tkgType=22&tkgAux=33&tkgChannel=44&tkgInst=55&tkgPollInt=120&tkAddress=66&op=20
-        $session_id = Utilities::getCurrentSession($this);
-
-        $url = URL_PROTOCOL . $_SERVER['SERVER_ADDR'] . '/cgi-bin/en/stck_mgmt/tank_stat.cgi';
-
-        $data = array(
-            'tankTerm' => $this->tank_terminal,
-            'tk' => $this->tank_code,
-            'tkgId' => $this->tank_identifier,
-            'tkgType' => $this->tank_drv_type,
-            'tkgAux' => $this->tank_drv_aux,
-            'tkgChannel' => $this->tank_channel,
-            'tkgInst' => $this->tank_instance,
-            'tkgPollInt' => $this->tank_poll_gap,
-            'tkAddress' => $this->tank_address,
-            "sess_id" => $session_id,
-            'op' => "20",
-        );
-
-        $options = array
-            (
-            'http' => array
-            (
-                'header' => "Content-type: text/xml\r\n",
-                'method' => 'POST',
-                'content' => http_build_query($data),
-            ),
-        );
-        $context = stream_context_create($options);
-        $result = file_get_contents($url, false, $context);
+        $query_string = "op=20&tankTerm=" . rawurlencode(strip_tags($this->tank_terminal)) 
+            . "&tk=" . rawurlencode(strip_tags($this->tank_code)) 
+            . "&tkgId=" . rawurlencode(strip_tags($this->tank_identifier)) 
+            . "&tkgType=" . rawurlencode(strip_tags($this->tank_drv_type)) 
+            . "&tkgAux=" . rawurlencode(strip_tags($this->tank_drv_aux)) 
+            . "&tkgChannel=" . rawurlencode(strip_tags($this->tank_channel)) 
+            . "&tkgInst=" . rawurlencode(strip_tags($this->tank_instance)) 
+            . "&tkgPollInt=" . rawurlencode(strip_tags($this->tank_poll_gap)) 
+            . "&tkAddress=" . rawurlencode(strip_tags($this->tank_address));
+        $result = Utilities::http_cgi_invoke("cgi-bin/en/stck_mgmt/tank_stat.cgi", $query_string);
 
         $pattern = "var op=\"30\";";
         if (!strstr($result, $pattern)) {
