@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import useSWR from 'swr';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
+import _ from 'lodash';
 
 import { Page, DataTable, Download } from '../../components';
 import { MOVEMENT_REASONS } from '../../api';
@@ -21,14 +22,37 @@ const MovementReasons = () => {
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [data, setData] = useState([]);
 
   const fields = columns(t);
-  const data = payload?.records;
+  // const data = payload?.records;
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
     setSelected(value);
   };
+
+  useEffect(() => {
+    if (payload?.records) {
+      _.forEach(payload?.records, (o) => {
+        o.mr_flag = o.mr_flag>0? true : false;
+
+        if (o.mr_flag_desc === 'Active, Do not send to host') { // 0
+          o.mr_flag_desc = t('fields.movReasonStatusActiveNotSend');
+        } else if (o.mr_flag_desc === 'Active, Send to host') { // 1
+          o.mr_flag_desc = t('fields.movReasonStatusActiveSend');
+        } else if (o.mr_flag_desc === 'Active, Read only, Send to host') { // 2
+          o.mr_flag_desc = t('fields.movReasonStatusActiveReadSend');
+        } else if (o.mr_flag_desc === 'Deleted') { // -1
+          o.mr_flag_desc = t('fields.movReasonStatusDeleted');
+        } else { // Unknown
+          o.mr_flag_desc = t('fields.movReasonStatusUnknown');
+        }
+      });
+
+      setData(payload?.records);
+    }
+  }, [payload, setData, t]);
 
   const modifiers = (
     <>
