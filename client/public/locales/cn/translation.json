@@ -23,6 +23,7 @@
 		"cannotDeleteLocked": "被锁定的运输设备不能被删除",
 		"cannotDeleteTareIn": "预称重的运输设备不能被删除",
 		"changeUseProfile": "修改用户档案",
+		"changeUserLanguage": "修改用户语言",
 		"changeYourPassword": "修改您的密码",
 		"characterMustStart": "首字符必须是",
 		"clearAllTransfer": "所有油仓中的温度以及三个油量数值将被清除。",
