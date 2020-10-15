@@ -72,6 +72,7 @@ const columns = (t, config) => [
     resizable: true,
     width: 180,
     suppressSizeToFit: true,
+    hide: !config?.manageBaseProductDensityRange,
   },
   {
     headerName: `${t('fields.baseProdDensHi')} [${t(`units.${config.densityUnit}`)}]`,
@@ -80,6 +81,7 @@ const columns = (t, config) => [
     resizable: true,
     width: 180,
     suppressSizeToFit: true,
+    hide: !config?.manageBaseProductDensityRange,
   },
   {
     headerName: t('fields.baseProdAdtv'),
