@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import useSWR from 'swr';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
+import _ from 'lodash';
 
 import { Page, DataTable, Download } from '../../components';
 import { ROLE_ACCESS_MANAGEMENT } from '../../api';
@@ -18,18 +19,30 @@ const RoleAccessManagement = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [filterValue, setFilterValue] = useState('');
+  const [data, setData] = useState([]);
 
   const access = useAuth('M_ROLEACCESS');
 
   const { data: payload, isValidating, revalidate } = useSWR(ROLE_ACCESS_MANAGEMENT.READ);
 
   const fields = columns(t);
-  const data = payload?.records;
+  // const data = payload?.records;
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
     setSelected(value);
   };
+
+  useEffect(() => {
+    if (payload?.records) {
+      _.forEach(payload?.records, (o) => {
+        o.role_note_org = o.role_note;
+        o.role_note = o.role_id<10 ? t('fields.roleDefault') : o.role_note;
+      });
+
+      setData(payload?.records);
+    }
+  }, [payload, setData, t]);
 
   const modifiers = (
     <>
@@ -37,7 +50,7 @@ const RoleAccessManagement = () => {
         {t('operations.refresh')}
       </Button>
 
-      <Download data={payload?.records} isLoading={isValidating} columns={fields} />
+      <Download data={data} isLoading={isValidating} columns={fields} />
 
       <Button
         type="primary"
@@ -74,7 +87,7 @@ const RoleAccessManagement = () => {
         visible={visible}
         handleFormState={handleFormState}
         access={access}
-        data={payload?.records}
+        data={data}
         setFilterValue={setFilterValue}
       />
     </Page>

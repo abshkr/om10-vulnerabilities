@@ -1340,6 +1340,8 @@
     "rigid": "Rigid",
     "rigidShip": "Rigid Ship",
     "role": "Role",
+    "roleDefault": "Default role",
+    "roleDefined": "User defined role",
     "roleId": "Role ID",
     "roleKey": "Role Key",
     "roleName": "Role Name",

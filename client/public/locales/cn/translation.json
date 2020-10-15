@@ -1340,6 +1340,8 @@
 		"rigid": "一体车",
 		"rigidShip": "油船",
 		"role": "角色",
+		"roleDefault": "系统默认角色",
+		"roleDefined": "用户定义角色",
 		"roleId": "角色ID",
 		"roleKey": "角色标识",
 		"roleName": "角色名称",

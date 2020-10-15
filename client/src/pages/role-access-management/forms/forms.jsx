@@ -52,7 +52,7 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
     const payload = {
       // auth_level_name: IS_CREATING ? values?.auth_level_name : value?.auth_level_name,
       auth_level_name: IS_CREATING ? values?.auth_level_name : value?.auth_level_key,
-      role_note: IS_CREATING ? values?.role_note : (value?.role_id<10 ? value?.role_note : values?.role_note),
+      role_note: IS_CREATING ? values?.role_note : (value?.role_id<10 ? value?.role_note_org : values?.role_note),
       role_code: IS_CREATING ? undefined : value?.role_code,
       delete_check: values?.delete_check,
       lock_check: values?.lock_check,
@@ -383,7 +383,11 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
               label={t('fields.comments')}
               rules={[{ required: true, validator: validate }]}
             >
-              <Input.TextArea options={options} style={{ flexDirection: 'row' }} />
+              <Input.TextArea 
+                options={options} 
+                style={{ flexDirection: 'row' }} 
+                disabled={value?.role_id<10}
+              />
             </Form.Item>
 
             <Form.Item
