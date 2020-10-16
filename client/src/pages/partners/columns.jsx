@@ -118,6 +118,15 @@ const columns = (t) => [
     suppressSizeToFit: true, 
     width: 160,
   },
+  {
+    headerName: t('fields.countPartnerPartnership'),
+    field: 'pshp_count',
+    filterable: true,
+    sortable: true,
+    resizable: true,
+    width: 140,
+    // hide: true,
+  },
 ];
 
 export default columns;

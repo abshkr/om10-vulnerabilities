@@ -8,7 +8,7 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, Select, Input, Drawer } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Select, Input, Drawer, Tag, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
@@ -172,6 +172,18 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       visible={visible}
       footer={
         <>
+          {!IS_CREATING && value?.mr_status !== '2' && (
+            <div
+              style={{ float: 'left', marginRight: 5 }}
+            >
+              <Tooltip placement="topRight" title={t("descriptions.countPartnerPartnership")} >
+                <Tag color={value?.pshp_count>0 ? 'red' : 'green'}>
+                  {t('fields.countPartnerPartnership') + ': ' + value?.pshp_count}
+                </Tag>
+              </Tooltip>
+            </div>
+          )}
+
           <Button
             htmlType="button"
             icon={<CloseOutlined />}
@@ -198,7 +210,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={!access?.canDelete}
+              disabled={!access?.canDelete || value?.pshp_count > 0}
             >
               {t('operations.delete')}
             </Button>

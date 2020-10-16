@@ -45,12 +45,18 @@ class Partner extends CommonClass
                 PR.PRTNR_TYPE,
                 PT.PARTNER_TYPE_NAME PRTNR_TYPE_NAME,
                 PR.PRTNR_ADDR,
+                NVL(PSHP_COUNTS.PSHP_COUNT, 0)  PSHP_COUNT,
                 NVL(DL.DB_ADDR_TEXT, ' ') PRTNR_ADDR_TEXT,
                 PR.PRTNR_SEQ || ' - ' || PR.PRTNR_CODE || ' - ' || PR.PRTNR_NAME1 PRTNR_DESC
             FROM PARTNER PR,
                 GUI_COMPANYS CM,
                 PARTNER_TYPES PT,
                 DB_ADDRESS DA,
+                (
+                    SELECT CCP_PRTNR_SEQ, COUNT(*) PSHP_COUNT
+                    FROM CMPY_CUST_PRTNR
+                    GROUP BY CCP_PRTNR_SEQ
+                ) PSHP_COUNTS,
                 (
                 SELECT 
                     DB_ADDR_LINE_ID,
@@ -62,6 +68,7 @@ class Partner extends CommonClass
                 AND PR.PRTNR_CMPY = CM.CMPY_CODE
                 AND PR.PRTNR_ADDR = DA.DB_ADDRESS_KEY(+)
                 AND DA.DB_ADDRESS_KEY = DL.DB_ADDR_LINE_ID(+)
+                AND PR.PRTNR_SEQ = PSHP_COUNTS.CCP_PRTNR_SEQ(+)
             ORDER BY PRTNR_SEQ
             ";
 
