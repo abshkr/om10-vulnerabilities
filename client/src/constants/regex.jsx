@@ -5,34 +5,52 @@ export const PASSWORD_COMPLEXITY = /(?=(.*[0-9]))((?=.*[A-Za-z0-9])(?=.*[A-Z])(?
 
 export const ALPHA = /^([A-Za-z]+[ \t\v\n\r\f]*)+$/;
 export const ALPHANUMERIC = /^([A-Za-z0-9-_]+[ \t\v\n\r\f]*)+$/;
-export const ALPHANUMERIC_SINGLEQUOTATION = /^([A-Za-z0-9-_\\']+[ \t\v\n\r\f]*)+$/;
-export const ALPHANUMERIC_SLASH = /^([A-Za-z0-9-_/]+[ \t\v\n\r\f]*)+$/;
-export const ALPHANUMERIC_SLASHBRACKETS = /^([A-Za-z0-9-_/\\[\\]\\<\\>\\(\\)\\{\\}]+[ \t\v\n\r\f]*)+$/;
-export const ALPHANUMERIC_DOT = /^([A-Za-z0-9-_\\.]+[ \t\v\n\r\f]*)+$/;
-export const ALPHANUMERIC_MOST = /^([A-Za-z0-9-_/\\&\\[\\]\\<\\>\\(\\)\\{\\}]+[ \t\v\n\r\f]*)+$/;
-export const ALPHANUMERIC_SPECIAL = /^([A-Za-z0-9-_/\\\\\'\\&\\[\\]\\<\\>\\(\\)\\{\\}\\,\\.]+[ \t\v\n\r\f]*)+$/;
+export const ALPHA_NOSPACE = /^([A-Za-z]+)+$/;
+export const ALPHANUMERIC_NOSPACE = /^([A-Za-z0-9-_]+)+$/;
+// export const ALPHANUMERIC_SINGLEQUOTATION = /^([A-Za-z0-9-_\\']+[ \t\v\n\r\f]*)+$/;
+export const ALPHANUMERIC_SINGLEQUOTATION = /^([A-Za-z0-9-_\']+[ \t\v\n\r\f]*)+$/;
+export const ALPHANUMERIC_SLASH = /^([A-Za-z0-9-_\/]+[ \t\v\n\r\f]*)+$/;
+// export const ALPHANUMERIC_SLASHBRACKETS = /^([A-Za-z0-9-_/\\[\\]\\<\\>\\(\\)\\{\\}]+[ \t\v\n\r\f]*)+$/;
+export const ALPHANUMERIC_SLASHBRACKETS = /^([A-Za-z0-9-_\/\[\]\<\>\(\)\{\}]+[ \t\v\n\r\f]*)+$/;
+// export const ALPHANUMERIC_DOT = /^([A-Za-z0-9-_\\.]+[ \t\v\n\r\f]*)+$/;
+export const ALPHANUMERIC_DOT = /^([A-Za-z0-9-_\.]+[ \t\v\n\r\f]*)+$/;
+// export const ALPHANUMERIC_MOST = /^([A-Za-z0-9-_/\\&\\[\\]\\<\\>\\(\\)\\{\\}]+[ \t\v\n\r\f]*)+$/;
+export const ALPHANUMERIC_MOST = /^([A-Za-z0-9-_\/\&\[\]\<\>\(\)\{\}]+[ \t\v\n\r\f]*)+$/;
+// export const ALPHANUMERIC_SPECIAL = /^([A-Za-z0-9-_/\\\\\'\\&\\[\\]\\<\\>\\(\\)\\{\\}\\,\\.]+[ \t\v\n\r\f]*)+$/;
+export const ALPHANUMERIC_SPECIAL = /^([A-Za-z0-9-_\/\\\'\&\[\]\<\>\(\)\{\}\,\.]+[ \t\v\n\r\f]*)+$/;
 // export const ALPHANUMERIC_SPECIAL_NOSQ = /^([A-Za-z0-9-_/\\\\\&\\[\\]\\<\\>\\(\\)\\{\\}\\,\\.]+[ \t\v\n\r\f]*)+$/;
-export const ALPHANUMERIC_SPECIAL_NOSQ = /^([A-Za-z0-9-_/\\\&\[\]\<\>\(\)\{\}\,\.]+[ \t\v\n\r\f]*)+$/;
+export const ALPHANUMERIC_SPECIAL_NOSQ = /^([A-Za-z0-9-_\/\\\&\[\]\<\>\(\)\{\}\,\.]+[ \t\v\n\r\f]*)+$/;
 export const ALPHANUMERIC_MULTILINGUAL = /^[\u0001-\ufffd]+$/;
 
 export const COLOR_VALUE = /^#([0-9a-fA-F]{6})$/;
 export const BAYCODE = /^BAY +[0-9]+$/;
 export const CURRENCY = /^[0-9]+(\.[0-9]{1,2})?$/;
-export const DOCUMENT = /^([^\\x00-\\xff]|[\\x00-\\xff])*$/;
-export const EMAIL2 = /^[\\w.-]+@\\w[\\w.-]+\\.[\\w.-]*[a-z][a-z]*([\\;\\:][ \t\v\n\r\f]*[\\w.-]+@\\w[\\w.-]+\\.[\\w.-]*[a-z][a-z]*)*$/;
+// export const DOCUMENT = /^([^\\x00-\\xff]|[\\x00-\\xff])*$/;
+export const DOCUMENT = /^([^\x00-\xff]|[\x00-\xff])*$/;
+// export const EMAIL2 = /^[\\w.-]+@\\w[\\w.-]+\\.[\\w.-]*[a-z][a-z]*([\\;\\:][ \t\v\n\r\f]*[\\w.-]+@\\w[\\w.-]+\\.[\\w.-]*[a-z][a-z]*)*$/;
+export const EMAIL2 = /^[\w.-]+@\w[\w.-]+\.[\w.-]*[a-z][a-z]*([\;\:][ \t\v\n\r\f]*[\w.-]+@\w[\w.-]+\.[\w.-]*[a-z][a-z]*)*$/;
 
 export const INTEGER = /^([0-9]+[ \t\v\n\r\f]*)+$/;
 export const INTEGER_NONZERO = /^([1-9][0-9]*[ \t\v\n\r\f]*)+$/;
-export const INTEGER_NEGATIVE = /^-[1-9]\\d*$/;
-export const INTEGER_NON_NEGATIVE = /^(([1-9]\\d*)|(0))$/;
-export const INTEGER_POSITIVE = /^[1-9]\\d*$/;
-export const INTEGER_NON_POSITIVE = /^((-[1-9]\\d*)|(0))$/;
+// export const INTEGER_NEGATIVE = /^-[1-9]\\d*$/;
+export const INTEGER_NEGATIVE = /^-[1-9]\d*$/;
+// export const INTEGER_NON_NEGATIVE = /^(([1-9]\\d*)|(0))$/;
+export const INTEGER_NON_NEGATIVE = /^(([1-9]\d*)|(0))$/;
+// export const INTEGER_POSITIVE = /^[1-9]\\d*$/;
+export const INTEGER_POSITIVE = /^[1-9]\d*$/;
+// export const INTEGER_NON_POSITIVE = /^((-[1-9]\\d*)|(0))$/;
+export const INTEGER_NON_POSITIVE = /^((-[1-9]\d*)|(0))$/;
 
-export const NUMERIC = /^(-?(([1-9]\\d*)|(0)))(\\.\\d+)?$/;
-export const NUMERIC_NEGATIVE = /^(-((([1-9]\\d*)(\\.\\d+)?)|((0)?(\\.((\\d*[1-9]\\d*)|([1-9]\\d*)))+)))$/;
-export const NUMERIC_POSITIVE = /^((([1-9]\\d*)(\\.\\d+)?)|((0)?(\\.((\\d*[1-9]\\d*)|([1-9]\\d*)))+))$/;
-export const NUMERIC_NON_POSITIVE = /^((-(([1-9]\\d*)|(0)?)(\\.\\d+)?)|(0+(\\.0+)?))$/;
-export const NUMERIC_NON_NEGATIVE = /^(([1-9]\\d*)|(0)?)(\\.\\d+)?$/;
+// export const NUMERIC = /^(-?(([1-9]\\d*)|(0)))(\\.\\d+)?$/;
+// export const NUMERIC_NEGATIVE = /^(-((([1-9]\\d*)(\\.\\d+)?)|((0)?(\\.((\\d*[1-9]\\d*)|([1-9]\\d*)))+)))$/;
+// export const NUMERIC_POSITIVE = /^((([1-9]\\d*)(\\.\\d+)?)|((0)?(\\.((\\d*[1-9]\\d*)|([1-9]\\d*)))+))$/;
+// export const NUMERIC_NON_POSITIVE = /^((-(([1-9]\\d*)|(0)?)(\\.\\d+)?)|(0+(\\.0+)?))$/;
+// export const NUMERIC_NON_NEGATIVE = /^(([1-9]\\d*)|(0)?)(\\.\\d+)?$/;
+export const NUMERIC = /^(-?(([1-9]\d*)|(0)))(\.\d+)?$/;
+export const NUMERIC_NEGATIVE = /^(-((([1-9]\d*)(\.\d+)?)|((0)?(\.((\d*[1-9]\d*)|([1-9]\d*)))+)))$/;
+export const NUMERIC_POSITIVE = /^((([1-9]\d*)(\.\d+)?)|((0)?(\.((\d*[1-9]\d*)|([1-9]\d*)))+))$/;
+export const NUMERIC_NON_POSITIVE = /^((-(([1-9]\d*)|(0)?)(\.\d+)?)|(0+(\.0+)?))$/;
+export const NUMERIC_NON_NEGATIVE = /^(([1-9]\d*)|(0)?)(\.\d+)?$/;
 
 export const PASSWORD_LOW = /^[A-Za-z0-9]+$/;
 

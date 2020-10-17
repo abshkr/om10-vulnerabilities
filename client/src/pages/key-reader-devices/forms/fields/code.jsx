@@ -5,6 +5,7 @@ import useSWR from 'swr';
 import _ from 'lodash';
 
 import { KEY_READER_DEVICES } from '../../../../api';
+import { REGEX } from '../../../../constants';
 
 const Code = ({ form, value }) => {
   const { t } = useTranslation();
@@ -23,6 +24,15 @@ const Code = ({ form, value }) => {
 
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.code')}`);
+    }
+
+    // const regex = new RegExp(REGEX.ALPHA_NOSPACE);
+    // const regex = new RegExp(REGEX.ALPHANUMERIC_NOSPACE);
+    const regex = new RegExp(REGEX.ALPHANUMERIC);
+    const validated = regex.exec(input);
+
+    if (!validated) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextAlphaNumeric')}`);
     }
 
     if (input && input.length > 3) {
