@@ -487,7 +487,6 @@ https://10.1.10.66/api/pages/tanker/terminals.php
 https://10.1.10.66/api/pages/tanker/search.php?tnkr_code=6689
 https://10.1.10.66/api/pages/tanker/search.php?tnkr_code=6689&tnkr_owner=69002511&tnkr_etp=2400&start_num=1&end_num=10
 https://10.1.10.66/api/pages/tanker/tnkr_composition.php?tnkr_code=TEMP_JJF9077
-https://10.1.10.66/api/pages/tanker/tnkr_compartments.php?tnkr_code=TEMP_JJF9077
 https://10.1.10.66/api/pages/tanker/toggle_lock.php?eqpt_id=111323347&cmptnu=2
 https://10.1.10.66/api/pages/tanker/unlock_all.php?tnkr_code=TEMP_JJF9077
 tnkr_bay_loop_ch: Bay Check

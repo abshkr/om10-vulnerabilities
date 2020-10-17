@@ -52,23 +52,18 @@ class Equipment extends CommonClass
 
     public function compartments()
     {
-        $query = "
-            SELECT EQPT_CODE,
-                EQPT_ETP,
-                CMPT_NO,
-                CMPT_UNITS CMPT_UNITS_CODE,
-                DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS2,
-                UNIT_SCALE_VW.DESCRIPTION CMPT_UNITS,
-                DECODE(ADJ_AMNT, NULL, CMPT_CAPACIT, CMPT_CAPACIT + ADJ_AMNT) SAFEFILL,
-                DECODE(ADJ_CAPACITY, NULL, CMPT_CAPACIT, ADJ_CAPACITY) SFL,
-                NVL(ADJ_CMPT_LOCK, 0) ADJ_CMPT_LOCK
-            FROM TRANSP_EQUIP, COMPARTMENT, SFILL_ADJUST, UNIT_SCALE_VW
-            WHERE COMPARTMENT.CMPT_ETYP = TRANSP_EQUIP.EQPT_ETP
-                AND COMPARTMENT.CMPT_UNITS = UNIT_SCALE_VW.UNIT_ID
-                AND EQPT_ID = :eqpt_id
-                AND EQPT_ID = SFILL_ADJUST.ADJ_EQP(+)
-                AND CMPT_NO(+) = SFILL_ADJUST.ADJ_CMPT
-            ORDER BY CMPT_NO";
+        $query = "SELECT EQPT_CODE,
+                    EQPT_ID EQPT_ETP,
+                    CMPT_NO,
+                    UNIT_ID CMPT_UNITS_CODE,
+                    UNIT_TITLE CMPT_UNITS2,
+                    UNIT_TITLE CMPT_UNITS,
+                    ADJ_SAFEFILL SAFEFILL,
+                    ADJ_CAPACITY SFL,
+                    NVL(ADJ_CMPT_LOCK, 0) ADJ_CMPT_LOCK
+                FROM GUI_EQUIPLIST_CMPT_VW 
+                WHERE EQPT_ID = :eqpt_id
+                    ORDER BY CMPT_NO";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
         if (oci_execute($stmt, $this->commit_mode)) {

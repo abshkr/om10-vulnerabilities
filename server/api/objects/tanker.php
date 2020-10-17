@@ -397,38 +397,6 @@ class Tanker extends CommonClass
         return true;
     }
 
-    public function compartments($tnkr_code)
-    {
-        $query = "
-            SELECT TNKR_CMPT_NO,
-                DECODE(ADJ_AMNT, NULL, CMPT_CAPACIT, CMPT_CAPACIT + ADJ_AMNT) SAFEFILL,
-                DECODE(ADJ_CAPACITY, NULL, CMPT_CAPACIT, ADJ_CAPACITY) SFL,
-                DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS
-            FROM
-                (
-                SELECT TC_TANKER, TC_SEQNO, EQPT_ID, EQPT_CODE, EQPT_ETP, CMPT_NO,
-                    CMPT_UNITS,
-                    ROW_NUMBER() OVER
-                    (PARTITION BY TC_TANKER ORDER BY TC_TANKER, TC_SEQNO, CMPT_NO) AS TNKR_CMPT_NO,
-                    CMPT_CAPACIT
-                FROM TNKR_EQUIP, TRANSP_EQUIP, COMPARTMENT
-                WHERE TC_EQPT = EQPT_ID AND COMPARTMENT.CMPT_ETYP = TRANSP_EQUIP.EQPT_ETP
-                    AND TC_TANKER = :tnkr_code
-                ) TNKR_CMPT_INFO, SFILL_ADJUST
-            WHERE TNKR_CMPT_INFO.EQPT_ID = SFILL_ADJUST.ADJ_EQP(+)
-            AND TNKR_CMPT_INFO.CMPT_NO = SFILL_ADJUST.ADJ_CMPT(+)
-            ORDER BY TNKR_CMPT_NO";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':tnkr_code', $tnkr_code);
-        if (oci_execute($stmt, $this->commit_mode)) {
-            return $stmt;
-        } else {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
-        }
-    }
-
     public function create($eqpts = null)
     {
         $term_code = null;
