@@ -3,6 +3,8 @@ import { Form, Input } from 'antd';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 
+import { REGEX } from '../../../../constants';
+
 const Code = ({ form, value, data }) => {
   const { t } = useTranslation();
 
@@ -25,6 +27,13 @@ const Code = ({ form, value, data }) => {
 
     if (input && !!match && !value) {
       return Promise.reject(t('descriptions.alreadyExists'));
+    }
+
+    const regex = new RegExp(REGEX.ALPHANUMERIC_SPECIAL_NOSQ);
+    const validated = regex.exec(input);
+
+    if (!validated) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextAlphaNumericSpecialNoSingleQuote')}`);
     }
 
     if (input && input.length > 20) {

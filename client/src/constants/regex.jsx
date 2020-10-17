@@ -11,7 +11,8 @@ export const ALPHANUMERIC_SLASHBRACKETS = /^([A-Za-z0-9-_/\\[\\]\\<\\>\\(\\)\\{\
 export const ALPHANUMERIC_DOT = /^([A-Za-z0-9-_\\.]+[ \t\v\n\r\f]*)+$/;
 export const ALPHANUMERIC_MOST = /^([A-Za-z0-9-_/\\&\\[\\]\\<\\>\\(\\)\\{\\}]+[ \t\v\n\r\f]*)+$/;
 export const ALPHANUMERIC_SPECIAL = /^([A-Za-z0-9-_/\\\\\'\\&\\[\\]\\<\\>\\(\\)\\{\\}\\,\\.]+[ \t\v\n\r\f]*)+$/;
-export const ALPHANUMERIC_SPECIAL_NOSQ = /^([A-Za-z0-9-_/\\\\\&\\[\\]\\<\\>\\(\\)\\{\\}\\,\\.]+[ \t\v\n\r\f]*)+$/;
+// export const ALPHANUMERIC_SPECIAL_NOSQ = /^([A-Za-z0-9-_/\\\\\&\\[\\]\\<\\>\\(\\)\\{\\}\\,\\.]+[ \t\v\n\r\f]*)+$/;
+export const ALPHANUMERIC_SPECIAL_NOSQ = /^([A-Za-z0-9-_/\\\&\[\]\<\>\(\)\{\}\,\.]+[ \t\v\n\r\f]*)+$/;
 export const ALPHANUMERIC_MULTILINGUAL = /^[\u0001-\ufffd]+$/;
 
 export const COLOR_VALUE = /^#([0-9a-fA-F]{6})$/;

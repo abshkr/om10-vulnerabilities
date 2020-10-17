@@ -5,6 +5,7 @@ import useSWR from 'swr';
 import _ from 'lodash';
 
 import { EQUIPMENT_LIST } from '../../../../api';
+import { REGEX } from '../../../../constants';
 
 import {validatorStatus} from '../../../../utils';
 
@@ -58,6 +59,14 @@ const Code = ({ form, value }) => {
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.code')}`);
     }
+
+    const regex = new RegExp(REGEX.ALPHANUMERIC_SPECIAL_NOSQ);
+    const validated = regex.exec(input);
+
+    if (!validated) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextAlphaNumericSpecialNoSingleQuote')}`);
+    }
+
     if (input && input.length > 40) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }

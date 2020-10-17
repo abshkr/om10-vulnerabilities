@@ -9,7 +9,7 @@ import {
   UnlockOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal, Drawer, Divider, Row, Col } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Drawer, Divider, Row, Col, Tag, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
@@ -198,6 +198,18 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
       visible={visible}
       footer={
         <>
+          {!IS_CREATING && (
+            <div
+              style={{ float: 'left', marginRight: 5 }}
+            >
+              <Tooltip placement="topRight" title={t("descriptions.countEqptTanker")} >
+                <Tag color={value?.tnkr_count>0 ? 'red' : 'green'}>
+                  {t('fields.countEqptTanker') + ': ' + value?.tnkr_count}
+                </Tag>
+              </Tooltip>
+            </div>
+          )}
+
           <Button
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
@@ -235,7 +247,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={!access?.canDelete}
+              disabled={!access?.canDelete || value?.tnkr_count>0}
             >
               {t('operations.delete')}
             </Button>

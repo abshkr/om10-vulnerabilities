@@ -137,7 +137,17 @@ const columns = (expiryTypes, t, expiryDateMode) => {
       resizable: true,
       suppressSizeToFit: true,
       width: 160,
-    }
+    },
+    {
+      headerName: t('fields.countEqptTanker'),
+      field: 'tnkr_count',
+      filterable: true,
+      sortable: true,
+      resizable: true,
+      width: 140,
+      suppressSizeToFit: true,
+      // hide: true,
+    },
   ];
 }
 

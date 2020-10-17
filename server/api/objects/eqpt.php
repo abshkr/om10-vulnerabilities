@@ -242,15 +242,25 @@ class Equipment extends CommonClass
                 ETYP_CATEGORY,
                 RN,
                 EQPT_LAST_MODIFIED,
-                EQPT_LAST_USED
+                EQPT_LAST_USED,
+                TNKR_COUNT
             FROM
             (
                 SELECT RES.*, ROWNUM RN
                 FROM
                 (
-                    SELECT GUI_EQUIPMENT_LIST.*
-                    FROM GUI_EQUIPMENT_LIST
-                    ORDER BY EQPT_ID
+                    SELECT 
+                        GUI_EQUIPMENT_LIST.*,
+                        NVL(TNKR_COUNTS.TNKR_COUNT, 0)  TNKR_COUNT
+                    FROM 
+                        GUI_EQUIPMENT_LIST,
+                        (
+                            SELECT TC_EQPT, COUNT(*) TNKR_COUNT
+                            FROM TNKR_EQUIP
+                            GROUP BY TC_EQPT
+                        ) TNKR_COUNTS
+                    WHERE GUI_EQUIPMENT_LIST.EQPT_ID = TNKR_COUNTS.TC_EQPT(+)
+                    ORDER BY GUI_EQUIPMENT_LIST.EQPT_ID
                 ) RES
             )
             WHERE RN >= :start_num
