@@ -135,7 +135,8 @@ class Seal extends CommonClass
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/loadspec_seal.cgi", $query_string);
         if (strpos($res, "OK") === false) {
             write_log("load_spec_compt CGI error", __FILE__, __LINE__, LogLevel::ERROR);
-            $error = new EchoSchema(400, response("__CGI_FAILED__"));
+            write_log($res, __FILE__, __LINE__);
+            $error = new EchoSchema(400, response("__CGI_FAILED__", $res));
             echo json_encode($error, JSON_PRETTY_PRINT);
             oci_rollback($this->conn);
             return;
@@ -219,7 +220,8 @@ class Seal extends CommonClass
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/loadspec_seal.cgi", $query_string);
         if (strpos($res, "OK") === false) {
             write_log("load_spec_compt CGI error", __FILE__, __LINE__, LogLevel::ERROR);
-            $error = new EchoSchema(400, response("__CGI_FAILED__"));
+            write_log($res, __FILE__, __LINE__);
+            $error = new EchoSchema(400, response("__CGI_FAILED__", $res));
             echo json_encode($error, JSON_PRETTY_PRINT);
             return;
         }
