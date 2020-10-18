@@ -10,7 +10,7 @@ import api, { FOLIO_SUMMARY } from 'api';
 
 const TabPane = Tabs.TabPane;
 
-const Forms = ({ value, visible, handleFormState, access }) => {
+const Forms = ({ value, visible, handleFormState, closeoutIsIdle, access }) => {
   const { t } = useTranslation();
   const [reportTrigger, setReportTrigger] = useState(0);
   const [meterTrigger, setMeterTrigger] = useState(0);
@@ -18,16 +18,8 @@ const Forms = ({ value, visible, handleFormState, access }) => {
   const [saveToTanksTrigger, setSaveToTanksTrigger] = useState(0);
   const [calculateTrigger, setCalculateTrigger] = useState(0);
   const [isRegenerating, setRegenerate] = useState(false);
-  const [closeoutIsIdle, setCloseoutIsIdle] = useState(false);
   const [tab, setTab] = useState('1');
-  // const [tankSelected, setTankSelected] = useState([]);
-
-  const getCloseoutStatus = useCallback(() => {
-    api.post(`${FOLIO_SUMMARY.CLOSEOUT_IS_IDLE}`).then((response) => {
-      setCloseoutIsIdle(response.data.records);
-    });
-  });
-
+  
   const showCloseoutStatus = () => {
     if (!closeoutIsIdle)
     {
@@ -41,7 +33,6 @@ const Forms = ({ value, visible, handleFormState, access }) => {
   }
 
   useEffect(() => {
-    getCloseoutStatus();
     setMeterTrigger(0);
     setSaveToFolioTrigger(0);
     setSaveToTanksTrigger(0);

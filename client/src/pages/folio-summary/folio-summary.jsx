@@ -140,6 +140,7 @@ const FolioSummary = () => {
           visible={visible}
           handleFormState={handleFormState}
           access={access}
+          closeoutIsIdle={closeoutIsIdle}
           // setFilterValue={setFilterValue}
         />
       )}
