@@ -278,7 +278,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal 
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
             <Type form={form} value={value} onChange={setType} onSupplier={setSupplier} />
-            <Company form={form} value={value} onChange={setCompany} />
+            <Company form={form} value={value} type={type} onChange={setCompany} />
             <Supplier form={form} value={value} type={type} onChange={setSupplier} />
             <LockType form={form} value={value} onChange={setLockType} />
             <PeriodItem form={form} value={value} lockType={lockType} />

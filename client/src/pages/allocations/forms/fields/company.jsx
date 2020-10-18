@@ -1,17 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
-import useSWR from 'swr';
+import api, { ALLOCATIONS } from '../../../../api';
 
-import { ALLOCATIONS } from '../../../../api';
-
-const Company = ({ form, value, onChange }) => {
+const Company = ({ form, value, type, onChange }) => {
   const { setFieldsValue } = form;
+  const [options, setOptions] = useState(null);
 
   const { t } = useTranslation();
-
-  const { data: options, isValidating } = useSWR(ALLOCATIONS.CUSTOMERS);
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
@@ -20,6 +17,24 @@ const Company = ({ form, value, onChange }) => {
 
     return Promise.resolve();
   };
+
+  useEffect(() => {
+    if (type) {
+      let url = `${ALLOCATIONS.SUPPLIERS}`;
+      if (type == 2) {
+        url = `${ALLOCATIONS.CARRIERS}`;
+      } else if (type == 3) {
+        url = `${ALLOCATIONS.CUSTOMERS}`;
+      } else if (type == 4) {
+        url = `${ALLOCATIONS.DRAWERS}`;
+      }
+        
+      api.get(url).then((response) => {
+        const payload = response.data?.records || [];
+        setOptions(payload);
+      });
+    }
+  }, [type]);
 
   useEffect(() => {
     if (value) {
@@ -38,7 +53,7 @@ const Company = ({ form, value, onChange }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
-        loading={isValidating}
+        // loading={isValidating}
         disabled={!!value}
         showSearch
         onChange={onChange}
@@ -48,7 +63,7 @@ const Company = ({ form, value, onChange }) => {
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
-        {options?.records.map((item, index) => (
+        {options?.map((item, index) => (
           <Select.Option key={index} value={item.cmpy_code}>
             {item.cmpy_code} - {item.cmpy_name}
           </Select.Option>
