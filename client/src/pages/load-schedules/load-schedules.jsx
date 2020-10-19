@@ -10,7 +10,7 @@ import { Page, DataTable, Download, Calendar, WindowSearch } from '../../compone
 import { LOAD_SCHEDULES } from '../../api';
 import { SETTINGS } from '../../constants';
 import { useAuth, useConfig } from 'hooks';
-import { getDateRangeOffset } from 'utils';
+import { getDateRangeOffset, getCurrentTime } from 'utils';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
@@ -19,7 +19,7 @@ import SourceRender from './source-render';
 import _ from 'lodash';
 
 const LoadSchedules = () => {
-  const { scheduleDateRange } = useConfig();
+  const { scheduleDateRange, serverTime } = useConfig();
   
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -47,12 +47,15 @@ const LoadSchedules = () => {
     // revalidate();
   };
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     if (scheduleDateRange !== false) {
       const ranges = getDateRangeOffset(String(scheduleDateRange), '7');
       
-      setStart(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-      setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      const currTime = await getCurrentTime();
+      setStart(moment(currTime, SETTINGS.DATE_TIME_FORMAT).subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      setEnd(moment(currTime, SETTINGS.DATE_TIME_FORMAT).add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      // setStart(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      // setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     }
 
     revalidate();
@@ -129,18 +132,18 @@ const LoadSchedules = () => {
   }, [payload]);
 
   useEffect(() => {
-    if (scheduleDateRange !== false) {
+    if (scheduleDateRange !== false && serverTime) {
       const ranges = getDateRangeOffset(String(scheduleDateRange), '7');
       
-      if (ranges.beforeToday !== 7) {
-        setStart(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      if (ranges.beforeToday !== -1) {
+        setStart(moment(serverTime, SETTINGS.DATE_TIME_FORMAT).subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
       }
 
-      if (ranges.afterToday !== 7) {
-        setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      if (ranges.afterToday !== -1) {
+        setEnd(moment(serverTime, SETTINGS.DATE_TIME_FORMAT).add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
       }
     }
-  }, [scheduleDateRange]);
+  }, [scheduleDateRange, serverTime]);
 
   const modifiers = (
     <>
