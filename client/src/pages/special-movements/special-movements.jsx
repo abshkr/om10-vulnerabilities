@@ -13,6 +13,7 @@ import columns from './columns';
 import auth from '../../auth';
 import { useAuth, useConfig } from 'hooks';
 import Forms from './forms';
+import { getCurrentTime } from 'utils';
 
 const SpecialMovements = () => {
   const config = useConfig();
@@ -76,12 +77,24 @@ const SpecialMovements = () => {
       });
   };
 
-  const onRefresh = () => {
-    setStart(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-    setEnd(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+  const onRefresh = async () => {
+      
+    const currTime = await getCurrentTime();
+    setStart(moment(currTime, SETTINGS.DATE_TIME_FORMAT).subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    setEnd(moment(currTime, SETTINGS.DATE_TIME_FORMAT).add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    // setStart(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    // setEnd(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
-    revalidate();
+    // Don't need revalidate, let useSWR handle itself while parameter changes
+    // revalidate();
   }
+
+  useEffect(() => {
+    if (config?.serverTime) {
+      setStart(moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT).subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      setEnd(moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT).add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+    }
+  }, [config?.serverTime]);
 
   useEffect(() => {
     if (payload?.records) {
