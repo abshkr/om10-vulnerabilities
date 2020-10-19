@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import moment from 'moment';
 
+import { SETTINGS } from '../../constants';
 import ConfigStore from 'stores/config-store';
 import jwtDecode from 'jwt-decode';
 
@@ -15,13 +16,17 @@ const Status = () => {
   const [time, setTime] = useState(null);
 
   useEffect(() => {
-    const serverCurrent = moment(serverTime, 'YYYY-MM-DD HH:mm:ss');
+    const serverCurrent = moment(serverTime, SETTINGS.DATE_TIME_FORMAT);
     const diff = serverCurrent.diff(moment())
     const interval = setInterval(() => {
       if (serverTime) {
         const current = moment().add(diff / 1000, 'seconds').format(dateTimeFormat);
 
         setTime(current);
+        sessionStorage.setItem(
+          'serverDateTime', 
+          moment().add(diff / 1000, 'seconds').format(SETTINGS.DATE_TIME_FORMAT)
+        );
       }
     }, 1000);
 

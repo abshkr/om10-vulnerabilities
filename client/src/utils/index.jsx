@@ -15,6 +15,8 @@ import calcArmQuantity from './calculate-arm-quantity';
 import { pwdComplexity, complexityDesc } from './pwd-complexity';
 import csvToJSON from './csv-to-json';
 import fetcher from './fetcher';
+import getServerTime from './get-server-time';
+import getCurrentTime from './get-current-time';
 import getRealColor from './get-real-color';
 import hexToRGB from './hex-to-rbg';
 import validateField from './validate-field';
@@ -43,6 +45,8 @@ export {
   calcArmQuantity,
   csvToJSON,
   fetcher,
+  getServerTime,
+  getCurrentTime,
   getRealColor,
   hexToRGB,
   VCFManager,

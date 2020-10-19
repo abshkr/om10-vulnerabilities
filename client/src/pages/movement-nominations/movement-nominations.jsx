@@ -15,7 +15,7 @@ import auth from '../../auth';
 import Forms from './forms';
 import { useAuth } from '../../hooks';
 import { useConfig } from '../../hooks';
-import { getDateRangeOffset } from '../../utils';
+import { getDateRangeOffset, getCurrentTime } from '../../utils';
 import Schedules from './forms/items/schedules';
 
 const MovementNominations = () => {
@@ -99,10 +99,21 @@ const MovementNominations = () => {
     }
   };
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     if (rangeSetting !== '-1~~-1') {
-      setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-      setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      const currTime = await getCurrentTime();
+      // console.log('.....................', rangeStart, rangeEnd, currTime);
+      /*
+        NOTE: do not use something like:
+          const currMoment = moment(currTime, SETTINGS.DATE_TIME_FORMAT);
+          setStart(currMoment.subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+          setEnd(currMoment.add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+        Somehow, currMoment will be updated after subtract()
+      */
+      setStart(moment(currTime, SETTINGS.DATE_TIME_FORMAT).subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      setEnd(moment(currTime, SETTINGS.DATE_TIME_FORMAT).add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      // setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      // setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     } else {
       setStart('-1');
       setEnd('-1');
@@ -149,20 +160,34 @@ const MovementNominations = () => {
   useEffect(() => {
     // console.log('I am here: rangeStart, start', start, rangeStart);
     if (rangeSetting !== '-1~~-1') {
-      setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      // const currTime = await getCurrentTime();
+      // setStart(moment(currTime, SETTINGS.DATE_TIME_FORMAT).subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      let currTime = moment();
+      if (config.serverTime) {
+        currTime = moment(config.serverTime, SETTINGS.DATE_TIME_FORMAT);
+      }
+      setStart(currTime.subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      // setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     } else {
       setStart('-1');
     }
-  }, [rangeStart, rangeSetting]);
+  }, [rangeStart, rangeSetting, config]);
 
   useEffect(() => {
     // console.log('I am here: rangeEnd, end', end, rangeEnd);
     if (rangeSetting !== '-1~~-1') {
-      setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      // const currTime = await getCurrentTime();
+      // setEnd(moment(currTime, SETTINGS.DATE_TIME_FORMAT).add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      let currTime = moment();
+      if (config.serverTime) {
+        currTime = moment(config.serverTime, SETTINGS.DATE_TIME_FORMAT);
+      }
+      setEnd(currTime.add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      // setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     } else {
       setEnd('-1');
     }
-  }, [rangeEnd, rangeSetting]);
+  }, [rangeEnd, rangeSetting, config]);
 
   useEffect(() => {
     if (ranges) {
