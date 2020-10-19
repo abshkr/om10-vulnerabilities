@@ -77,7 +77,10 @@ const Journal = () => {
 
   const modifiers = (
     <>
-      <Calendar handleChange={setRange} start={start} end={end} disabled={selected === '1'} max={31} />
+      {selected !== '1' && (
+        <Calendar handleChange={setRange} start={start} end={end} disabled={selected === '1'} max={31} />
+      )}
+      
       <Button icon={<SyncOutlined />} onClick={() => onRefresh()} disabled={selected === '1'}>
         {t('operations.refresh')}
       </Button>
