@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import useSWR from 'swr';
 import { Button } from 'antd';
@@ -10,13 +10,16 @@ import { Page, DataTable, Download, Calendar } from 'components';
 import * as SETTINGS from 'constants/settings';
 import { AUDITING_DATA } from 'api';
 import useAuth from 'hooks/use-auth';
+import { useConfig } from 'hooks';
 import auth from 'auth';
 
 import columns from './columns';
 
 import Forms from './forms';
+import { getDateRangeOffset, getCurrentTime } from 'utils';
 
 const AuditingData = () => {
+  const { auditDateRange, serverTime } = useConfig();
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [filterValue, setFilterValue] = useState('');
@@ -49,11 +52,40 @@ const AuditingData = () => {
     revalidate();
   };
 
+  const onRefresh = async () => {
+    if (auditDateRange !== false) {
+      const ranges = getDateRangeOffset(String(auditDateRange), '1');
+      
+      const currTime = await getCurrentTime();
+      const startTime = moment(currTime, SETTINGS.DATE_TIME_FORMAT).subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT);
+      const endTime = moment(currTime, SETTINGS.DATE_TIME_FORMAT).add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT);
+      setStart(startTime);
+      setEnd(endTime);
+    }
+
+    // Don't need revalidate, let useSWR handle itself while parameter changes
+    // revalidate();
+  }
+
+  useEffect(() => {
+    if (auditDateRange !== false && serverTime) {
+      const ranges = getDateRangeOffset(String(auditDateRange), '1');
+
+      if (ranges.beforeToday !== -1) {
+        setStart(moment(serverTime, SETTINGS.DATE_TIME_FORMAT).subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      }
+
+      if (ranges.afterToday !== -1) {
+        setEnd(moment(serverTime, SETTINGS.DATE_TIME_FORMAT).add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      }
+    }
+  }, [auditDateRange, serverTime]);
+
   const modifiers = (
     <>
       <Calendar handleChange={setRange} start={start} end={end} />
 
-      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
+      <Button icon={<SyncOutlined />} onClick={() => onRefresh()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
       <Download data={data} isLoading={isValidating} columns={fields} />
