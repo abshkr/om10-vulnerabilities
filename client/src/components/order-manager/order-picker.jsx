@@ -10,7 +10,7 @@ import { DataTable, Calendar, WindowSearch } from '../../components';
 import api, { ORDER_LISTINGS } from '../../api';
 import { SETTINGS } from '../../constants';
 import { useConfig } from '../../hooks';
-import { getDateRangeOffset } from '../../utils';
+import { getDateRangeOffset, getCurrentTime } from '../../utils';
 
 import columns from './columns';
 import Forms from './forms';
@@ -186,10 +186,13 @@ const OrderPicker = ({params, onClose, modal}) => {
     }
   };
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     if (rangeSetting !== '-1~~-1') {
-      setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-      setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      const currTime = await getCurrentTime();
+      setStart(moment(currTime, SETTINGS.DATE_TIME_FORMAT).subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      setEnd(moment(currTime, SETTINGS.DATE_TIME_FORMAT).add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      // setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      // setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     } else {
       setStart('-1');
       setEnd('-1');
@@ -235,20 +238,30 @@ const OrderPicker = ({params, onClose, modal}) => {
   useEffect(() => {
     // console.log("I am here: rangeStart, start", start, rangeStart);
     if (rangeSetting !== '-1~~-1') {
-      setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      let currTime = moment();
+      if (config.serverTime) {
+        currTime = moment(config.serverTime, SETTINGS.DATE_TIME_FORMAT);
+      }
+      setStart(currTime.subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      // setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     } else {
       setStart('-1');
     }
-  }, [rangeStart, rangeSetting]);
+  }, [rangeStart, rangeSetting, config]);
 
   useEffect(() => {
     // console.log("I am here: rangeEnd, end", end, rangeEnd);
     if (rangeSetting !== '-1~~-1') {
-      setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      let currTime = moment();
+      if (config.serverTime) {
+        currTime = moment(config.serverTime, SETTINGS.DATE_TIME_FORMAT);
+      }
+      setEnd(currTime.add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      // setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     } else {
       setEnd('-1');
     }
-  }, [rangeEnd, rangeSetting]);
+  }, [rangeEnd, rangeSetting, config]);
 
   useEffect(() => {
     if (ranges) {

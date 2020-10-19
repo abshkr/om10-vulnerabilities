@@ -14,7 +14,7 @@ import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
 import { useConfig } from '../../hooks';
-import { getDateRangeOffset } from '../../utils';
+import { getDateRangeOffset, getCurrentTime } from '../../utils';
 
 const OrderListings = ({popup, params}) => {
   const [rangeStart, setRangeStart] = useState(0);
@@ -112,10 +112,13 @@ const OrderListings = ({popup, params}) => {
     }
   };
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     if (rangeSetting !== '-1~~-1') {
-      setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-      setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      const currTime = await getCurrentTime();
+      setStart(moment(currTime, SETTINGS.DATE_TIME_FORMAT).subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      setEnd(moment(currTime, SETTINGS.DATE_TIME_FORMAT).add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      // setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      // setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     } else {
       setStart('-1');
       setEnd('-1');
@@ -161,20 +164,30 @@ const OrderListings = ({popup, params}) => {
   useEffect(() => {
     // console.log("I am here: rangeStart, start", start, rangeStart);
     if (rangeSetting !== '-1~~-1') {
-      setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      let currTime = moment();
+      if (config.serverTime) {
+        currTime = moment(config.serverTime, SETTINGS.DATE_TIME_FORMAT);
+      }
+      setStart(currTime.subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      // setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     } else {
       setStart('-1');
     }
-  }, [rangeStart, rangeSetting, setStart]);
+  }, [rangeStart, rangeSetting, config, setStart]);
 
   useEffect(() => {
     // console.log("I am here: rangeEnd, end", end, rangeEnd);
     if (rangeSetting !== '-1~~-1') {
-      setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      let currTime = moment();
+      if (config.serverTime) {
+        currTime = moment(config.serverTime, SETTINGS.DATE_TIME_FORMAT);
+      }
+      setEnd(currTime.add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      // setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     } else {
       setEnd('-1');
     }
-  }, [rangeEnd, rangeSetting, setEnd]);
+  }, [rangeEnd, rangeSetting, config, setEnd]);
 
   useEffect(() => {
     if (ranges) {
