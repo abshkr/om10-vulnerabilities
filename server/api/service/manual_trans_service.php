@@ -213,7 +213,14 @@ class ManualTransactionService
         }
 
         $reverse_msg = $this->populate_reverse_det($this->trip_no, $this->supplier);
-        $client = new SocketClient($this->conn);
+        try {
+            $client = new SocketClient($this->conn);
+        } catch (Bay999Exception $e) {
+            $err_msg = $e->getMessage();
+            write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
+            return ReverseResult::FAILED;
+        }
+
         $client->send($reverse_msg);
         $response = $client->get_repond();
 
