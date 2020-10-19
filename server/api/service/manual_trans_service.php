@@ -257,13 +257,15 @@ class ManualTransactionService
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             $trsa_ver = $row['MAX_VERSION'];
             
+            // write_log(sprintf("Prepare to update transaction. oper:%s, trip:%d, supp:%s, ver:%d", 
+            //     $operator, $this->trip_no, $this->supplier, $trsa_ver), __FILE__, __LINE__);
             $query = "UPDATE TRANSACTIONS SET TRSA_PSN = :oper 
                 WHERE (TRSALDID_LD_TRM, TRSALDID_LOAD_ID) IN 
                     (SELECT SHLSLOAD_LD_TRM, SHLSLOAD_LOAD_ID FROM SCHEDULE 
                     WHERE SHLS_TRIP_NO = :trip_no AND SHLS_SUPP = :supplier) AND TRSA_VERSION = :trsa_ver";
             $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':oper', $this->operator);
-            oci_bind_by_name($stmt, ':trsa_ver', $this->trsa_ver);
+            oci_bind_by_name($stmt, ':oper', $operator);
+            oci_bind_by_name($stmt, ':trsa_ver', $trsa_ver);
             oci_bind_by_name($stmt, ':trip_no', $this->trip_no);
             oci_bind_by_name($stmt, ':supplier', $this->supplier);
             if (!oci_execute($stmt, $this->commit_mode)) {
