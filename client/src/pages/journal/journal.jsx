@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import moment from 'moment';
 import { Tabs, Radio } from 'antd';
@@ -11,11 +11,13 @@ import Historical from './historical';
 import { Page, Calendar, Download, WindowSearch } from '../../components';
 import { JournalContainer } from './style';
 import { SETTINGS } from '../../constants';
-import { useAuth } from 'hooks';
+import { useAuth, useConfig } from 'hooks';
 import { FileSearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
+import { getDateRangeOffset, getCurrentTime } from 'utils';
 
 const Journal = () => {
+  const { journalDateRange, serverTime } = useConfig();
   const { t } = useTranslation();
 
   const access = useAuth('M_JOURNALREPORT');
@@ -45,10 +47,38 @@ const Journal = () => {
     setSearch(null);
   };
 
+  const onRefresh = async () => {
+    if (journalDateRange !== false) {
+      const ranges = getDateRangeOffset(String(journalDateRange), '0.125');
+      
+      const currTime = await getCurrentTime();
+      const startTime = moment(currTime, SETTINGS.DATE_TIME_FORMAT).subtract(ranges.beforeToday*24, 'hour').format(SETTINGS.DATE_TIME_FORMAT);
+      const endTime = moment(currTime, SETTINGS.DATE_TIME_FORMAT).add(ranges.afterToday*24, 'hour').format(SETTINGS.DATE_TIME_FORMAT);
+      setStart(startTime);
+      setEnd(endTime);
+    }
+
+    revalidate();
+  }
+
+  useEffect(() => {
+    if (journalDateRange !== false && serverTime) {
+      const ranges = getDateRangeOffset(String(journalDateRange), '0.125');
+
+      if (ranges.beforeToday !== -1) {
+        setStart(moment(serverTime, SETTINGS.DATE_TIME_FORMAT).subtract(ranges.beforeToday*24, 'hour').format(SETTINGS.DATE_TIME_FORMAT));
+      }
+
+      if (ranges.afterToday !== -1) {
+        setEnd(moment(serverTime, SETTINGS.DATE_TIME_FORMAT).add(ranges.afterToday*24, 'hour').format(SETTINGS.DATE_TIME_FORMAT));
+      }
+    }
+  }, [journalDateRange, serverTime]);
+
   const modifiers = (
     <>
       <Calendar handleChange={setRange} start={start} end={end} disabled={selected === '1'} max={31} />
-      <Button icon={<SyncOutlined />} onClick={() => revalidate()} disabled={selected === '1'}>
+      <Button icon={<SyncOutlined />} onClick={() => onRefresh()} disabled={selected === '1'}>
         {t('operations.refresh')}
       </Button>
 
