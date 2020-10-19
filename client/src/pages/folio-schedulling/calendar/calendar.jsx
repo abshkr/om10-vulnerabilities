@@ -90,6 +90,7 @@ const FolioCalendar = ({ access, value }) => {
   };
 
   const checkDate = (v) => {
+    v.locale('en'); //Must use en here, otherwise in CHN, v.format('dddd') returns like '星期一'
     const ret = {};
     ret.closeoutEnabled = true;
 
