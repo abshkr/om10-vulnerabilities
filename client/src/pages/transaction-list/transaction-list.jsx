@@ -13,10 +13,10 @@ import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
 import { useAuth, useConfig } from 'hooks';
-import { getDateRangeOffset } from 'utils';
+import { getDateRangeOffset, getCurrentTime } from 'utils';
 
 const TransactionList = () => {
-  const { transactionsDateRange } = useConfig();
+  const { transactionsDateRange, serverTime } = useConfig();
   const { t } = useTranslation();
 
   const access = useAuth('M_TRANSACTIONLIST');
@@ -77,30 +77,36 @@ const TransactionList = () => {
     });
   };
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     if (transactionsDateRange !== false) {
       const ranges = getDateRangeOffset(String(transactionsDateRange), '7');
-
-      setStart(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-      setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      
+      const currTime = await getCurrentTime();
+      const startTime = moment(currTime, SETTINGS.DATE_TIME_FORMAT).subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT);
+      const endTime = moment(currTime, SETTINGS.DATE_TIME_FORMAT).add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT);
+      setStart(startTime);
+      setEnd(endTime);
+      // setStart(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      // setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     }
 
-    revalidate();
+    // Don't need revalidate, let useSWR handle itself while parameter changes
+    // revalidate();
   }
 
   useEffect(() => {
-    if (transactionsDateRange !== false) {
+    if (transactionsDateRange !== false && serverTime) {
       const ranges = getDateRangeOffset(String(transactionsDateRange), '7');
 
-      if (ranges.beforeToday !== 7) {
-        setStart(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      if (ranges.beforeToday !== -1) {
+        setStart(moment(serverTime, SETTINGS.DATE_TIME_FORMAT).subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
       }
 
-      if (ranges.afterToday !== 7) {
-        setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+      if (ranges.afterToday !== -1) {
+        setEnd(moment(serverTime, SETTINGS.DATE_TIME_FORMAT).add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
       }
     }
-  }, [transactionsDateRange]);
+  }, [transactionsDateRange, serverTime]);
 
   useEffect(() => {
     if (payload?.records) {

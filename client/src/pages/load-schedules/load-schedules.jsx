@@ -58,7 +58,8 @@ const LoadSchedules = () => {
       // setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
     }
 
-    revalidate();
+    // Don't need revalidate, let useSWR handle itself while parameter changes
+    // revalidate();
   }
 
   const locateTrip = (value) => {
