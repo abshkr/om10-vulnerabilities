@@ -84,7 +84,7 @@ const FormModal = ({
 
   */
 
-  console.log('value', value);
+  // console.log('value', value);
 
   const { data: units } = useSWR(NOMINATION_TRANSACTIONS.UNIT_TYPES);
   const { data: products } = useSWR(MOVEMENT_NOMIATIONS.NOM_PRODUCTS, { revalidateOnFocus: false });
@@ -471,6 +471,30 @@ const FormModal = ({
 
   };
 
+  const modifiers = (
+    <>
+      <Button
+        type="primary"
+        icon={<SaveOutlined />}
+        htmlType="button"
+        disabled={isUpdating}
+        onClick={onSubmit}
+        style={{ float: 'right', marginRight: 5 }}
+      >
+        {t('operations.submit')}
+      </Button>
+
+      <Button
+        htmlType="button"
+        icon={<CloseOutlined />}
+        style={{ float: 'right', marginRight: 5 }}
+        onClick={() => {Modal.destroyAll(); onComplete();}}
+      >
+        {t('operations.cancel')}
+      </Button>
+    </>
+  );
+
   useEffect(() => {
     if (!value && !visible) {
       resetFields();
@@ -502,7 +526,7 @@ const FormModal = ({
       const item = _.find(products?.records, (o) => (
         o.prod_cmpy === value?.mvitm_prodcmpy_from && o.prod_code === value?.mvitm_prodcode_from
       ));
-      console.log('products && value && !productItemFrom && pageState', item);
+      // console.log('products && value && !productItemFrom && pageState', item);
       setProductItemFrom(item);
     }
   }, [products, value, productItemFrom, setProductItemFrom, pageState]);
@@ -552,7 +576,7 @@ const FormModal = ({
   }, [productItemFrom, pageState]);
 
   return (
-    <Tabs defaultActiveKey="1" animated={false}>
+    <Tabs defaultActiveKey="1" animated={false} tabBarExtraContent={modifiers}>
       <Tabs.TabPane tab={t('tabColumns.transactionForNomination')} forceRender={true} key="1">
         <Form
           layout="vertical"
@@ -831,27 +855,8 @@ const FormModal = ({
             </Row>
           </Card>
 
-          <>
-            <Button
-              type="primary"
-              icon={<SaveOutlined />}
-              htmlType="button"
-              disabled={isUpdating}
-              onClick={onSubmit}
-              style={{ float: 'right', marginRight: 5 }}
-            >
-              {t('operations.submit')}
-            </Button>
-
-            <Button
-              htmlType="button"
-              icon={<CloseOutlined />}
-              style={{ float: 'right' }}
-              onClick={() => {Modal.destroyAll(); onComplete();}}
-            >
-              {t('operations.cancel')}
-            </Button>
-          </>
+          <Divider style={{ margin: '0px 0' }} />
+          {modifiers}
         </Form>
       </Tabs.TabPane>
     </Tabs>
