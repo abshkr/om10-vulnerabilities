@@ -19,9 +19,11 @@ import { Gauging, General, Calculation, Levels } from './fields';
 import { TANKS, TANK_STATUS } from '../../../api';
 import { VCFManager } from '../../../utils';
 
+import TankStrapping from '../strapping';
+
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, config, setFilterValue }) => {
+const FormModal = ({ value, visible, handleFormState, access, config, setFilterValue, tanks }) => {
   const { data: counter} = useSWR(`${TANK_STATUS.COUNT_STRAPS}?tank_code=${value?.tank_code}&tank_terminal=${value?.tank_terminal}`);
   
   const [quantitySource, setQuantitySource] = useState(null);
@@ -577,7 +579,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             htmlType="submit"
             style={{ float: 'right', marginRight: 5 }}
             onClick={onFinish}
-            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
+            disabled={(IS_CREATING ? !access?.canCreate : !access?.canUpdate) || tab === '5'}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -645,6 +647,17 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
           {config?.manageTankLevelAlarms && (
             <TabPane tab={t('tabColumns.alarms')} key="4">
               <Levels form={form} value={value} />
+            </TabPane>
+          )}
+
+          {config.manageTankStrapping && (
+            <TabPane key="5" tab={t('tabColumns.strapping')}>
+              <TankStrapping
+                terminal={value?.tank_terminal}
+                code={value?.tank_code}
+                tanks={tanks}
+                access={access}
+              />
             </TabPane>
           )}
         </Tabs>
