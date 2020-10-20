@@ -173,7 +173,7 @@ const Tanks = () => {
                 <TankStrapping
                   terminal={selected?.tank_terminal}
                   code={selected?.tank_code}
-                  tanks={read}
+                  tanks={read?.records}
                   access={access}
                 />
               </TabPane>

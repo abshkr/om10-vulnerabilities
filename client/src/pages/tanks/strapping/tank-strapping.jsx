@@ -262,7 +262,7 @@ const TankStrapping = ({ terminal, code, isLoading, access, tanks }) => {
                     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {tanks?.records.map((item, index) => (
+                  {tanks.map((item, index) => (
                     <Select.Option key={index} value={item.tank_code}>
                       {item.tank_code +
                         ': ' +

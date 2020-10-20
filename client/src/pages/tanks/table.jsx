@@ -40,6 +40,7 @@ const Table = ({ data, access, visible, setVisible, selected, setSelected, confi
         access={access}
         setFilterValue={setFilterValue}
         config={config}
+        tanks={data}
       />
     </>
   );
