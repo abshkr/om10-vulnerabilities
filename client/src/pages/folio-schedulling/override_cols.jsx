@@ -1,4 +1,4 @@
-const overrideCols = t => [
+const overrideCols = (t, months) => [
   {
     headerName: t('fields.override'),
     field: 'repeat_interval',
@@ -7,10 +7,7 @@ const overrideCols = t => [
     resizable: true,
     valueGetter: function(params) {
       let data = params.data.repeat_interval.split("_");
-      return t("generic.overriderun") + " " + data[2] + " " + 
-        ["January","February","March","April","May","June","July",
-        "August","September","October","November","December"][data[1] - 1] + 
-        " " + data[0];
+      return t("generic.overriderun") + " " + data[2] + " " + months[data[1] - 1] + " " + data[0];
     }
   },
   {

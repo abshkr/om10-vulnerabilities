@@ -30,8 +30,46 @@ const FolioSummary = () => {
   // const {data, setData} = useState(payload?.records)
   // const { data: overrides } = useSWR(FOLIO_SCHEDULING.OVERRIDES);
 
-  const fields = columns(t);
-  const overrideFileds = overrideCols(t);
+  const weekdays = {
+    "Monday" : t('fields.folioPlannerWeekMon'),
+    "Tuesday" : t('fields.folioPlannerWeekTue'),
+    "Wednesday" : t('fields.folioPlannerWeekWed'),
+    "Thursday" : t('fields.folioPlannerWeekThu'),
+    "Friday" : t('fields.folioPlannerWeekFri'),
+    "Saturday" : t('fields.folioPlannerWeekSat'),
+    "Sunday" : t('fields.folioPlannerWeekSun'),
+  };
+  const months = [
+    t('fields.folioPlannerMonthJan'),
+    t('fields.folioPlannerMonthFeb'),
+    t('fields.folioPlannerMonthMar'),
+    t('fields.folioPlannerMonthApr'),
+    t('fields.folioPlannerMonthMay'),
+    t('fields.folioPlannerMonthJun'),
+    t('fields.folioPlannerMonthJul'),
+    t('fields.folioPlannerMonthAug'),
+    t('fields.folioPlannerMonthSep'),
+    t('fields.folioPlannerMonthOct'),
+    t('fields.folioPlannerMonthNov'),
+    t('fields.folioPlannerMonthDec'),
+  ];
+  const numths = [
+    t('fields.folioPlannerNumth1st'),
+    t('fields.folioPlannerNumth2nd'),
+    t('fields.folioPlannerNumth3rd'),
+    t('fields.folioPlannerNumth4th'),
+    t('fields.folioPlannerNumth5th'),
+  ];
+  const windows = {
+    "ONCE_WINDOW": t('fields.folioPlannerRulesOnceWindow'),
+    "WEEK_WINDOW": t('fields.folioPlannerRulesWeekWindow'),
+    "MONTH_WINDOW": t('fields.folioPlannerRulesMonthWindow'),
+    "DATE_YEAR_WINDOW": t('fields.folioPlannerRulesDateYearWindow'),
+    "YEAR_WINDOW": t('fields.folioPlannerRulesYearWindow'),
+  };
+  
+  const fields = columns(t, windows, weekdays, months, numths);
+  const overrideFileds = overrideCols(t, months);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);

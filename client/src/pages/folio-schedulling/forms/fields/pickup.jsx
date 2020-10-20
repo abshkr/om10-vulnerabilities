@@ -13,12 +13,14 @@ const Pickup = ({ form, value }) => {
   
   const parseValue = ()=>{
     if (value.window_name == "DATE_YEAR_WINDOW") {
+      // date_month
       let array = value.repeat_interval.split("_");
       setData({
         day: array[0],
         month: array[1]
       })
     } else if (value.window_name == "YEAR_WINDOW") {
+      // seqDay_weekDay_month
       let array = value.repeat_interval.split("_");
       setData({
         sequenceDay: array[0],
@@ -53,7 +55,7 @@ const Pickup = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   function sequenceDayChanged(v) {
-    data.day = v;
+    data.sequenceDay = v;
     if (data.weekDay !== undefined && data.month !== undefined) {
       setFieldsValue({
         repeat_interval: data.sequenceDay + "_" + data.weekDay + "_" + data.month,
@@ -63,7 +65,7 @@ const Pickup = ({ form, value }) => {
 
   function weekDayChanged(v) {
     data.weekDay = v;
-    if (data.day !== undefined && data.month !== undefined) {
+    if (data.sequenceDay !== undefined && data.month !== undefined) {
       setFieldsValue({
         repeat_interval: data.sequenceDay + "_" + data.weekDay + "_" + data.month,
       });
@@ -79,9 +81,9 @@ const Pickup = ({ form, value }) => {
         });
       }
     } else if (value.window_name == "YEAR_WINDOW") {
-      if (data.day !== undefined && data.weekDay !== undefined) {
+      if (data.sequenceDay !== undefined && data.weekDay !== undefined) {
         setFieldsValue({
-          repeat_interval: data.day + "_" + data.weekDay + "_" + data.month,
+          repeat_interval: data.sequenceDay + "_" + data.weekDay + "_" + data.month,
         });
       }
     }
@@ -95,13 +97,13 @@ const Pickup = ({ form, value }) => {
           repeat_interval: data.day + "_" + data.month,
         });
       }
-    } else if (value.window_name == "YEAR_WINDOW") {
+    } /* else if (value.window_name == "YEAR_WINDOW") {
       if (data.month !== undefined && data.weekDay !== undefined) {
         setFieldsValue({
           repeat_interval: data.day + "_" + data.weekDay + "_" + data.month,
         });
       }
-    }
+    } */
   }
 
   const validate = (rule, input, callback) => {
@@ -134,13 +136,13 @@ const Pickup = ({ form, value }) => {
             disabled={!IS_CREATING}
             // defaultValue="Monday"
           >
-            <Option key="1" value="Monday">Monday</Option>
-            <Option key="2" value="Tuesday">Tuesday</Option>
-            <Option key="3" value="Wednesday">Wednesday</Option>
-            <Option key="4" value="Thursday">Thursday</Option>
-            <Option key="5" value="Friday">Friday</Option>
-            <Option key="6" value="Saturday">Saturday</Option>
-            <Option key="7" value="Sunday">Sunday</Option>
+            <Option key="1" value="Monday">{t('fields.folioPlannerWeekMon')}</Option>
+            <Option key="2" value="Tuesday">{t('fields.folioPlannerWeekTue')}</Option>
+            <Option key="3" value="Wednesday">{t('fields.folioPlannerWeekWed')}</Option>
+            <Option key="4" value="Thursday">{t('fields.folioPlannerWeekThu')}</Option>
+            <Option key="5" value="Friday">{t('fields.folioPlannerWeekFri')}</Option>
+            <Option key="6" value="Saturday">{t('fields.folioPlannerWeekSat')}</Option>
+            <Option key="7" value="Sunday">{t('fields.folioPlannerWeekSun')}</Option>
           </Select>
       ) :
         (
@@ -189,18 +191,18 @@ const Pickup = ({ form, value }) => {
                     onChange={monthChanged}
                     // rules={[{ required: true }]}
                   >
-                    <Option key="1" value="1">January</Option>
-                    <Option key="2" value="2">February</Option>
-                    <Option key="3" value="3">March</Option>
-                    <Option key="4" value="4">April</Option>
-                    <Option key="5" value="5">May</Option>
-                    <Option key="6" value="6">June</Option>
-                    <Option key="7" value="7" >July</Option>
-                    <Option key="8" value="8">August</Option>
-                    <Option key="9" value="9">September</Option>
-                    <Option key="10" value="10" >October</Option>
-                    <Option key="11" value="11">November</Option>
-                    <Option key="12" value="12">December</Option>
+                    <Option key="1" value="1">{t('fields.folioPlannerMonthJan')}</Option>
+                    <Option key="2" value="2">{t('fields.folioPlannerMonthFeb')}</Option>
+                    <Option key="3" value="3">{t('fields.folioPlannerMonthMar')}</Option>
+                    <Option key="4" value="4">{t('fields.folioPlannerMonthApr')}</Option>
+                    <Option key="5" value="5">{t('fields.folioPlannerMonthMay')}</Option>
+                    <Option key="6" value="6">{t('fields.folioPlannerMonthJun')}</Option>
+                    <Option key="7" value="7">{t('fields.folioPlannerMonthJul')}</Option>
+                    <Option key="8" value="8">{t('fields.folioPlannerMonthAug')}</Option>
+                    <Option key="9" value="9">{t('fields.folioPlannerMonthSep')}</Option>
+                    <Option key="10" value="10">{t('fields.folioPlannerMonthOct')}</Option>
+                    <Option key="11" value="11">{t('fields.folioPlannerMonthNov')}</Option>
+                    <Option key="12" value="12">{t('fields.folioPlannerMonthDec')}</Option>
                   </Select>
                 </div>
               ) : (
@@ -214,11 +216,11 @@ const Pickup = ({ form, value }) => {
                     disabled={!IS_CREATING}
                     onChange={sequenceDayChanged}
                   >
-                    <Option key="1" value="0">First</Option>
-                    <Option key="2" value="1">Second</Option>
-                    <Option key="3" value="2">Thrid</Option>
-                    <Option key="4" value="3">Fourth</Option>
-                    <Option key="5" value="4">Fifth</Option>
+                    <Option key="1" value="0">{t('fields.folioPlannerNumth1st')}</Option>
+                    <Option key="2" value="1">{t('fields.folioPlannerNumth2nd')}</Option>
+                    <Option key="3" value="2">{t('fields.folioPlannerNumth3rd')}</Option>
+                    <Option key="4" value="3">{t('fields.folioPlannerNumth4th')}</Option>
+                    <Option key="5" value="4">{t('fields.folioPlannerNumth5th')}</Option>
                   </Select>
                   <Select 
                     dropdownMatchSelectWidth={false}
@@ -229,13 +231,13 @@ const Pickup = ({ form, value }) => {
                     value={data.weekDay}
                     onChange={weekDayChanged}
                   >
-                    <Option key="1" value="Monday">Monday</Option>
-                    <Option key="2" value="Tuesday">Tuesday</Option>
-                    <Option key="3" value="Wednesday">Wednesday</Option>
-                    <Option key="4" value="Thursday">Thursday</Option>
-                    <Option key="5" value="Friday">Friday</Option>
-                    <Option key="6" value="Saturday">Saturday</Option>
-                    <Option key="7" value="Sunday">Sunday</Option>
+                    <Option key="1" value="Monday">{t('fields.folioPlannerWeekMon')}</Option>
+                    <Option key="2" value="Tuesday">{t('fields.folioPlannerWeekTue')}</Option>
+                    <Option key="3" value="Wednesday">{t('fields.folioPlannerWeekWed')}</Option>
+                    <Option key="4" value="Thursday">{t('fields.folioPlannerWeekThu')}</Option>
+                    <Option key="5" value="Friday">{t('fields.folioPlannerWeekFri')}</Option>
+                    <Option key="6" value="Saturday">{t('fields.folioPlannerWeekSat')}</Option>
+                    <Option key="7" value="Sunday">{t('fields.folioPlannerWeekSun')}</Option>
                   </Select>
                   <Select 
                     dropdownMatchSelectWidth={false}
@@ -245,18 +247,18 @@ const Pickup = ({ form, value }) => {
                     value={data?.month}
                     onChange={monthChanged}
                   >
-                    <Option key="1" value="1">January</Option>
-                    <Option key="2" value="2">February</Option>
-                    <Option key="3" value="3">March</Option>
-                    <Option key="4" value="4">April</Option>
-                    <Option key="5" value="5">May</Option>
-                    <Option key="6" value="6">June</Option>
-                    <Option key="7" value="7" >July</Option>
-                    <Option key="8" value="8">August</Option>
-                    <Option key="9" value="9">September</Option>
-                    <Option key="10" value="10" >October</Option>
-                    <Option key="11" value="11">November</Option>
-                    <Option key="12" value="12">December</Option>
+                    <Option key="1" value="1">{t('fields.folioPlannerMonthJan')}</Option>
+                    <Option key="2" value="2">{t('fields.folioPlannerMonthFeb')}</Option>
+                    <Option key="3" value="3">{t('fields.folioPlannerMonthMar')}</Option>
+                    <Option key="4" value="4">{t('fields.folioPlannerMonthApr')}</Option>
+                    <Option key="5" value="5">{t('fields.folioPlannerMonthMay')}</Option>
+                    <Option key="6" value="6">{t('fields.folioPlannerMonthJun')}</Option>
+                    <Option key="7" value="7">{t('fields.folioPlannerMonthJul')}</Option>
+                    <Option key="8" value="8">{t('fields.folioPlannerMonthAug')}</Option>
+                    <Option key="9" value="9">{t('fields.folioPlannerMonthSep')}</Option>
+                    <Option key="10" value="10">{t('fields.folioPlannerMonthOct')}</Option>
+                    <Option key="11" value="11">{t('fields.folioPlannerMonthNov')}</Option>
+                    <Option key="12" value="12">{t('fields.folioPlannerMonthDec')}</Option>
                   </Select>
                 </div>
               )

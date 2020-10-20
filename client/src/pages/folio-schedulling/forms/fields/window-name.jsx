@@ -43,11 +43,11 @@ const WindowName = ({ form, value, onTypeChange }) => {
           <Option value="ONCE_WINDOW" disabled >Once off Date</Option> :
           <Option value="ONCE_WINDOW" >Once off Date</Option>
           } */}
-        <Option value="ONCE_WINDOW" >Once off Date</Option>
-        <Option value="WEEK_WINDOW">Day of Week</Option>
-        <Option value="MONTH_WINDOW">Date of Month</Option>
-        <Option value="DATE_YEAR_WINDOW">Date of Year</Option>
-        <Option value="YEAR_WINDOW">Day of Year</Option>
+        <Option value="ONCE_WINDOW">{t('fields.folioPlannerRulesOnceWindow')}</Option>
+        <Option value="WEEK_WINDOW">{t('fields.folioPlannerRulesWeekWindow')}</Option>
+        <Option value="MONTH_WINDOW">{t('fields.folioPlannerRulesMonthWindow')}</Option>
+        <Option value="DATE_YEAR_WINDOW">{t('fields.folioPlannerRulesDateYearWindow')}</Option>
+        <Option value="YEAR_WINDOW">{t('fields.folioPlannerRulesYearWindow')}</Option>
       </Select>
     </Form.Item>
   );
