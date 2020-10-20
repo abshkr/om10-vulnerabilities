@@ -146,7 +146,13 @@ const Overview = () => {
         Object.keys(transformed).forEach((key) => {
           payload.push({
             name: key,
-            data: [transformed[key]],
+            type: 'bar',
+            data: [
+              {
+                x: 'Litres',
+                y: transformed[key],
+              },
+            ],
           });
         });
       }
@@ -157,7 +163,13 @@ const Overview = () => {
         if (base.bclass_desc === storageClass) {
           payload.push({
             name: base.base_name,
-            data: [_.toNumber(base.qty_cor)],
+            type: 'bar',
+            data: [
+              {
+                x: 'Litres',
+                y: _.toNumber(base.qty_cor),
+              },
+            ],
           });
         }
       }
@@ -174,8 +186,9 @@ const Overview = () => {
             columnWidth: '100%',
           },
         },
-        dataLabels: {
-          enabled: false,
+
+        stroke: {
+          width: 0,
         },
 
         legend: {
@@ -188,8 +201,7 @@ const Overview = () => {
         },
 
         yaxis: {
-          forceNiceScale: true,
-
+          logarithmic: true,
           labels: {
             formatter: function (value, timestamp) {
               return value?.toFixed(2);
@@ -203,6 +215,10 @@ const Overview = () => {
           labels: {
             show: false,
           },
+        },
+
+        tooltip: {
+          shared: false,
         },
       };
 
@@ -414,7 +430,7 @@ const Overview = () => {
                 },
               }}
               series={storageSeries}
-              type="bar"
+              type="line"
               height={285}
             />
           </Card>
