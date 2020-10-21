@@ -413,12 +413,18 @@ class ManualTrans extends CommonClass
                     RPTOBJ_PROD_RATIOS_VW R,
                     GUI_PIPENODE B,
                     BA_ARMS BA,
+                    BAY_AREA BAY,
+                    BA_DEVICE BAD,
                     BASE_PRODS BP
                 WHERE 
                     B.STREAM_BASECODE = R.RATIO_BASE(+)
                     AND B.STREAM_BASECODE = BP.BASE_CODE(+) 
                     AND B.STREAM_ARMCODE = BA.BAA_CODE(+)
                     AND BA.BAA_LOCK = 'N'
+                    AND B.STREAM_BAYCODE = BAY.BA_CODE(+)
+                    AND B.STREAM_BAYCODE = BAD.BAD_PHYSCODE(+)
+                    AND BAY.BA_LOCK = 'N'
+                    AND BAD.BAD_LOCK = 'N'
                     AND R.RAT_PROD_PRODCMPY = :prod_cmpy 
                     AND R.RAT_PROD_PRODCODE IN (" . $comma_separated_prods . ") 
                 ORDER BY R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE, R.RAT_SEQ, B.STREAM_BASECODE
@@ -462,12 +468,18 @@ class ManualTrans extends CommonClass
                     RPTOBJ_PROD_RATIOS_VW R,
                     GUI_PIPENODE B,
                     BA_ARMS BA,
+                    BAY_AREA BAY,
+                    BA_DEVICE BAD,
                     BASE_PRODS BP
                 WHERE 
                     B.STREAM_BASECODE = R.RATIO_BASE(+)
                     AND B.STREAM_BASECODE = BP.BASE_CODE(+) 
                     AND B.STREAM_ARMCODE = BA.BAA_CODE(+)
                     AND BA.BAA_LOCK = 'N'
+                    AND B.STREAM_BAYCODE = BAY.BA_CODE(+)
+                    AND B.STREAM_BAYCODE = BAD.BAD_PHYSCODE(+)
+                    AND BAY.BA_LOCK = 'N'
+                    AND BAD.BAD_LOCK = 'N'
                     AND R.RAT_PROD_PRODCMPY = :prod_cmpy 
                     AND R.RAT_PROD_PRODCODE = :prod_code 
                 ORDER BY R.RAT_PROD_PRODCMPY, B.STREAM_ARMCODE, R.RAT_SEQ, B.STREAM_BASECODE
