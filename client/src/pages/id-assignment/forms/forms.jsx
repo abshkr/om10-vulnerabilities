@@ -367,7 +367,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               <>
                 <Row gutter={[8, 3]}>
                   <Col span={12}>
-                    <EquipmentCarrier form={form} value={value} />
+                    <EquipmentCarrier form={form} value={value} onChange={setCarrier}/>
                   </Col>
                   <Col span={12}>
                     <TransportEquipment form={form} value={value} type={type} carrier={carrier} />

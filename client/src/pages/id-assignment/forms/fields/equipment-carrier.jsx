@@ -6,7 +6,7 @@ import { Form, Select } from 'antd';
 
 import { ID_ASSIGNMENT } from '../../../../api';
 
-const EquipmentCarrier = ({ form, value }) => {
+const EquipmentCarrier = ({ form, value, onChange }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -39,6 +39,7 @@ const EquipmentCarrier = ({ form, value }) => {
         dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
+        onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectEquipmentCarrier') : null}
         filterOption={(input, option) =>
