@@ -73,6 +73,11 @@ class Tank extends CommonClass
         "TANK_LL_LEVEL",
         "TANK_UH_LEVEL",
         "TANK_UL_LEVEL",
+        "TANK_DTOL_VOLUME",
+        "TANK_DTOL_PERCENT",
+        "TANK_MTOL_VOLUME",
+        "TANK_MTOL_PERCENT",
+        "TANK_SG"
     );
 
     protected $primary_keys = array("tank_code");
