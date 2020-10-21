@@ -364,6 +364,8 @@ const ManualTransactions = ({ popup, params }) => {
           await api
             .post(MANUAL_TRANSACTIONS.SUBMIT, preparePayloadToSubmit(values))
             .then((response) => {
+              form.resetFields();
+
               resetLoadData();
               setSourceType(null);
               resetFormData();
