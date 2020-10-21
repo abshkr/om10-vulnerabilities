@@ -113,6 +113,7 @@
 		"omSubmitOff": "发送信息的提交目前已被禁止。",
 		"onceOffDate": "一次性",
 		"oneCompartmentRequired": "如果运输设备既非车头亦非平板，则至少需要配置一个油仓",
+    	"or": " 或 ",
 		"overrideRules": "盘点例外否决规则(决定何时例外无效，运行盘点):",
 		"passwordDoesntMatch": "确认密码不匹配",
 		"patternWeekWindow": "每个[[WEEK_DAY]]",

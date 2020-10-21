@@ -113,6 +113,7 @@
     "omSubmitOff": "Submit outgoing message is currently disabled.",
     "onceOffDate": "Once off Date",
     "oneCompartmentRequired": "At least one compartment required if the equipment is neither Prime Mover nor Flatbed",
+    "or": " or ",
     "overrideRules": "Exception Override Rules (List of events whereby Closeout will run regardless of Exception)",
     "passwordDoesntMatch": "Confirm password does not match",
     "patternWeekWindow": "Every [[WEEK_DAY]]",

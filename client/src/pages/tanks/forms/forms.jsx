@@ -408,7 +408,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       String(payload?.tank_liquid_kg).trim().length === 0) {
       notification.error({
         message: t('validate.set'),
-        description: t('fields.ambientVolume')+' or '+t('fields.standardVolume')+' or '+t('fields.liquidMass'),
+        description: t('fields.ambientVolume')+t('descriptions.or')+t('fields.standardVolume')+t('descriptions.or')+t('fields.liquidMass'),
       });
       return;
     }
@@ -417,7 +417,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       notification.error({
         message: t('validate.set'),
         description: !quantitySource 
-          ? (t('fields.observedQuantity')+' or '+t('fields.standardQuantity')+' or '+t('fields.observedMass'))
+          ? (t('fields.observedQuantity')+t('descriptions.or')+t('fields.standardQuantity')+t('descriptions.or')+t('fields.observedMass'))
           : quantitySource?.title,
       });
       return;

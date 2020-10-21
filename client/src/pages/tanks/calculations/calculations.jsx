@@ -379,7 +379,7 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
       String(payload?.tank_liquid_kg).trim().length === 0) {
       notification.error({
         message: t('validate.set'),
-        description: t('fields.ambientVolume')+' or '+t('fields.standardVolume')+' or '+t('fields.liquidMass'),
+        description: t('fields.ambientVolume')+t('descriptions.or')+t('fields.standardVolume')+t('descriptions.or')+t('fields.liquidMass'),
       });
       return;
     }
@@ -388,7 +388,7 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
       notification.error({
         message: t('validate.set'),
         description: !quantitySource 
-          ? (t('fields.observedQuantity')+' or '+t('fields.standardQuantity')+' or '+t('fields.observedMass'))
+          ? (t('fields.observedQuantity')+t('descriptions.or')+t('fields.standardQuantity')+t('descriptions.or')+t('fields.observedMass'))
           : quantitySource?.title,
       });
       return;

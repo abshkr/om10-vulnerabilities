@@ -279,6 +279,15 @@ const FormModal = ({
   };
 
   const onCalculate = () => {
+    console.log('....................onCalculate', tank, arm);
+    if ( !(tank && tank.length > 0) && !(arm && arm.length > 0) ) {
+      notification.error({
+        message: t('validate.select'),
+        description: t('fields.fromTank')+t('descriptions.or')+t('fields.nomtranFromArm')+t('descriptions.or')+t('fields.toTank'),
+      });
+      return;
+    }
+
     const payload = form.getFieldsValue([
       'mlitm_qty_amb',
       'mlitm_qty_cor',
@@ -292,7 +301,7 @@ const FormModal = ({
       String(payload?.mlitm_qty_kg).trim().length === 0) {
       notification.error({
         message: t('validate.set'),
-        description: t('fields.observedQuantity')+' or '+t('fields.standardQuantity')+' or '+t('fields.observedMass'),
+        description: t('fields.observedQuantity')+t('descriptions.or')+t('fields.standardQuantity')+t('descriptions.or')+t('fields.observedMass'),
       });
       return;
     }
@@ -300,7 +309,7 @@ const FormModal = ({
     if (!payload?.mlitm_qty_amb && !payload?.mlitm_qty_cor && !payload?.mlitm_qty_kg) {
       notification.error({
         message: t('validate.set'),
-        description: t('fields.observedQuantity')+' or '+t('fields.standardQuantity')+' or '+t('fields.observedMass'),
+        description: t('fields.observedQuantity')+t('descriptions.or')+t('fields.standardQuantity')+t('descriptions.or')+t('fields.observedMass'),
       });
       return;
     }
@@ -310,7 +319,7 @@ const FormModal = ({
       notification.error({
         message: t('validate.set'),
         description: !calcSource 
-          ? (t('fields.observedQuantity')+' or '+t('fields.standardQuantity')+' or '+t('fields.observedMass'))
+          ? (t('fields.observedQuantity')+t('descriptions.or')+t('fields.standardQuantity')+t('descriptions.or')+t('fields.observedMass'))
           : calcSource?.title,
       });
       return;
@@ -397,7 +406,7 @@ const FormModal = ({
             notification.error({
               message: t('descriptions.calculateFailed') + ': ' 
                 + (pageState === 'receipt' ? value?.mvitm_prodcode_to : value?.mvitm_prodcode_from),
-              description: response?.data?.msg_code + ': ' + response?.data?.msg_desc,
+              description: response?.data?.msg_code||' ' + ': ' + response?.data?.msg_desc||' ',
             });
           } else {
             form.setFieldsValue({
@@ -415,12 +424,12 @@ const FormModal = ({
             value.mlitm_temp_amb = values?.mlitm_temp_amb;
             value.mlitm_dens_cor = values?.mlitm_dens_cor;
             console.log('after change value', value); */
-          }
 
-          notification.success({
-            message: t('messages.calculateSuccess'),
-            description: t('descriptions.calculateSuccess'),
-          });
+            notification.success({
+              message: t('messages.calculateSuccess'),
+              description: t('descriptions.calculateSuccess'),
+            });
+          }
         });
     } catch (error) {
       message.error({

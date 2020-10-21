@@ -251,7 +251,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       String(payload?.mlitm_qty_kg).trim().length === 0) {
       notification.error({
         message: t('validate.set'),
-        description: t('fields.observedQuantity')+' or '+t('fields.standardQuantity')+' or '+t('fields.observedMass'),
+        description: t('fields.observedQuantity')+t('descriptions.or')+t('fields.standardQuantity')+t('descriptions.or')+t('fields.observedMass'),
       });
       return;
     }
@@ -259,7 +259,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
     if (!payload?.mlitm_qty_amb && !payload?.mlitm_qty_cor && !payload?.mlitm_qty_kg) {
       notification.error({
         message: t('validate.set'),
-        description: t('fields.observedQuantity')+' or '+t('fields.standardQuantity')+' or '+t('fields.observedMass'),
+        description: t('fields.observedQuantity')+t('descriptions.or')+t('fields.standardQuantity')+t('descriptions.or')+t('fields.observedMass'),
       });
       return;
     }
@@ -269,7 +269,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       notification.error({
         message: t('validate.set'),
         description: !quantitySource 
-          ? (t('fields.observedQuantity')+' or '+t('fields.standardQuantity')+' or '+t('fields.observedMass'))
+          ? (t('fields.observedQuantity')+t('descriptions.or')+t('fields.standardQuantity')+t('descriptions.or')+t('fields.observedMass'))
           : quantitySource?.title,
       });
       return;
