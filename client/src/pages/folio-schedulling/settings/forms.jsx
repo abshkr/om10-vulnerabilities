@@ -449,6 +449,7 @@ const Settings = ({ value, access }) => {
 
   useEffect(() => {
     setFields(payload?.records);
+    closeoutIsBusy();
   });
 
   const layout = {
