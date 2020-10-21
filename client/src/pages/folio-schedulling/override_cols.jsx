@@ -6,8 +6,14 @@ const overrideCols = (t, months) => [
     filter: 'FuzzyFilter',
     resizable: true,
     valueGetter: function(params) {
+      // "patternOverride": "盘点将于[[YEAR]]年[[MONTH]][[MONTH_DAY]]号当日进行",
+      let txt = t('descriptions.patternOverride')
       let data = params.data.repeat_interval.split("_");
-      return t("generic.overriderun") + " " + data[2] + " " + months[data[1] - 1] + " " + data[0];
+      // txt = t("generic.overriderun") + " " + data[2] + " " + months[data[1] - 1] + " " + data[0];
+      txt = txt.replace('[[YEAR]]', data[2]);
+      txt = txt.replace('[[MONTH]]', months[data[1] - 1]);
+      txt = txt.replace('[[MONTH_DAY]]', data[0]);
+      return txt;
     }
   },
   {

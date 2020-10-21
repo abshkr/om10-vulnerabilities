@@ -10,6 +10,7 @@ import moment from 'moment';
 import _ from 'lodash';
 
 import api, { FOLIO_SCHEDULING } from '../../../api';
+import { describeExceptionRule } from '../../../utils';
 
 const FolioCalendar = ({ access, value }) => {
   const { t } = useTranslation();
@@ -44,7 +45,7 @@ const FolioCalendar = ({ access, value }) => {
           }
         : {
             window_name: 'ONCE_WINDOW',
-            description: 'Set From Calendar',
+            description: t('descriptions.setFromCalendar'), // 'Set From Calendar',
             repeat_interval: curDate,
             status: 1,
           };
@@ -99,9 +100,10 @@ const FolioCalendar = ({ access, value }) => {
       return item.window_name === 'OVERRIDE';
     });
     for (let i = 0; i < overrides.length; i++) {
+      const descOverride = describeExceptionRule(t, overrides[i].window_name, overrides[i].repeat_interval);
       if (v.format('D_M_YYYY') === overrides[i].repeat_interval) {
         ret.closeoutEnabled = true;
-        ret.override = t('fields.override') + ': ' + overrides[i].description;
+        ret.override = t('fields.override') + ': ' + descOverride; // overrides[i].description;
       }
     }
 
@@ -109,10 +111,11 @@ const FolioCalendar = ({ access, value }) => {
       return item.window_name != 'OVERRIDE';
     });
     for (let i = 0; i < exceptions.length; i++) {
+      const descRule = describeExceptionRule(t, exceptions[i].window_name, exceptions[i].repeat_interval);
       if (exceptions[i].window_name === 'MONTH_WINDOW') {
         if (v.format('D') === exceptions[i].repeat_interval) {
           ret.closeoutEnabled = false;
-          ret.exception = t('fields.exception') + ': ' + exceptions[i].description;
+          ret.exception = t('fields.exception') + ': ' + descRule; // exceptions[i].description;
           break;
         }
       }
@@ -120,7 +123,7 @@ const FolioCalendar = ({ access, value }) => {
       if (exceptions[i].window_name === 'WEEK_WINDOW') {
         if (v.format('dddd') === exceptions[i].repeat_interval) {
           ret.closeoutEnabled = false;
-          ret.exception = t('fields.exception') + ': ' + exceptions[i].description;
+          ret.exception = t('fields.exception') + ': ' + descRule; // exceptions[i].description;
           break;
         }
       }
@@ -128,7 +131,7 @@ const FolioCalendar = ({ access, value }) => {
       if (exceptions[i].window_name === 'DATE_YEAR_WINDOW') {
         if (v.format('D_M') === exceptions[i].repeat_interval) {
           ret.closeoutEnabled = false;
-          ret.exception = t('fields.exception') + ': ' + exceptions[i].description;
+          ret.exception = t('fields.exception') + ': ' + descRule; // exceptions[i].description;
           break;
         }
       }
@@ -153,7 +156,7 @@ const FolioCalendar = ({ access, value }) => {
 
         if (sequnceOfMonth === parseInt(interval[0]) + 1) {
           ret.closeoutEnabled = false;
-          ret.exception = t('fields.exception') + ': ' + exceptions[i].description;
+          ret.exception = t('fields.exception') + ': ' + descRule; // exceptions[i].description;
           break;
         }
       }
@@ -161,7 +164,7 @@ const FolioCalendar = ({ access, value }) => {
       if (exceptions[i].window_name === 'ONCE_WINDOW') {
         if (v.format('D_M_YYYY') === exceptions[i].repeat_interval) {
           ret.closeoutEnabled = false;
-          ret.exception = t('fields.exception') + ': ' + exceptions[i].description;
+          ret.exception = t('fields.exception') + ': ' + descRule; // exceptions[i].description;
           break;
         }
       }

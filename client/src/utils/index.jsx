@@ -14,6 +14,7 @@ import calcBaseQuantity from './calculate-base-quantity';
 import calcArmQuantity from './calculate-arm-quantity';
 import { pwdComplexity, complexityDesc } from './pwd-complexity';
 import csvToJSON from './csv-to-json';
+import describeExceptionRule from './describe-exception-rule';
 import fetcher from './fetcher';
 import getServerTime from './get-server-time';
 import getCurrentTime from './get-current-time';
@@ -44,6 +45,7 @@ export {
   calcBaseQuantity,
   calcArmQuantity,
   csvToJSON,
+  describeExceptionRule,
   fetcher,
   getServerTime,
   getCurrentTime,

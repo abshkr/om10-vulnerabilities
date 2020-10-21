@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 const columns = (t, windows, weekdays, months, numths) => [
   {
     headerName: t('fields.window'),
@@ -35,7 +33,7 @@ const columns = (t, windows, weekdays, months, numths) => [
         // "patternWeekWindow": "每个[[WEEK_DAY]]",
         let txt = t('descriptions.patternWeekWindow');
         // txt = t("generic.every") + weekdays[params.data.repeat_interval];
-        txt = _.replace(txt, '[[WEEK_DAY]]', weekdays[params.data.repeat_interval]);
+        txt = txt.replace('[[WEEK_DAY]]', weekdays[params.data.repeat_interval]);
         return txt;
       } else if (params.data.window_name === "MONTH_WINDOW") {
         // "patternMonthWindow": "每个月的[[MONTH_DAY]]号",
