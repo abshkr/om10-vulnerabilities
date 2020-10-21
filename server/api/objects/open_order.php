@@ -1054,6 +1054,8 @@ class OpenOrder extends CommonClass
                 , sd.SHLS_CALDATE as SCHD_DATE
                 , NVL (sd.STATS, 'F') as SCHD_STATUS_CODE
                 , DECODE(st.STATUS_TEXT, NULL, 'UNKNOWN', st.STATUS_TEXT) as SCHD_STATUS
+                , DECODE(ld.LOAD_REVERSE_FLAG, 1, 'Y', 3, 'Y', 'N') as REVERSED
+                , LOAD_REVERSE_COUNT
             from 
                 CUST_ORDER co
                 , ORD_SCHEDULE os
@@ -1062,6 +1064,7 @@ class OpenOrder extends CommonClass
                 , TANKERS tk
                 , COMPANYS ca
                 , SCHEDULE_STATUS_SHORT_LOOKUP st
+                , LOADS ld
             where 
                 co.ORDER_NO = os.OS_ORDER_NO
                 and os.OS_SHL_SHLSTRIP =  sd.SHLS_TRIP_NO
@@ -1070,6 +1073,8 @@ class OpenOrder extends CommonClass
                 and sd.SHL_TANKER = tk.TNKR_CODE
                 and tk.TNKR_CARRIER = ca.CMPY_CODE
                 and NVL (sd.STATS, 'F') = st.STATUS_CODE(+)
+                and sd.SHLSLOAD_LOAD_ID = ld.LOAD_ID(+)
+                and sd.SHLSLOAD_LD_TRM = ld.LD_TERMINAL(+)
                 and co.ORDER_NO=:order_id 
             order by
                 sd.SHLS_SUPP, sd.SHLS_TRIP_NO

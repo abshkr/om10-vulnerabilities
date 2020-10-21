@@ -111,6 +111,25 @@ const columns = (t) => [
     editable: false,
     width: 100,
   },
+  {
+    headerName: t('fields.reversed'),
+    field: 'reversed',
+    sortable: true,
+    resizable: true,
+    width: 120,
+    suppressSizeToFit: true,
+    cellRenderer: 'BooleanRenderer',
+  },
+  {
+    headerName: t('fields.countTripReverse'),
+    field: 'load_reverse_count',
+    filter: 'MultiFilter',
+    sortable: true,
+    resizable: true,
+    hide: true,
+    editable: false,
+    width: 100,
+  },
 ];
 
 export default columns;
