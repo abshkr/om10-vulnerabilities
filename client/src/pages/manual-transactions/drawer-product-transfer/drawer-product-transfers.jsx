@@ -1090,13 +1090,15 @@ const DrawerProductTransfers = ({
         item.trsf_prod_name === t('placeholder.selectDrawerProduct')) && 
         !(!item.trsf_density || String(item.trsf_density).trim()==='')) {
         if (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') {
-          item.trsf_qty_amb = item.trsf_qty_plan;
+          // item.trsf_qty_amb = item.trsf_qty_plan;
+          item.trsf_qty_amb = String(_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left));
           // console.log('DrawerProductTransfers: onCopy in loop after1', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
           // tableAPI.updateRowData({ update: [item] });
           updateTransferRow(item);
         } else {
           if (item.trsf_cmpt_capacit) {
-            item.trsf_qty_amb = item.trsf_cmpt_capacit;
+            // item.trsf_qty_amb = item.trsf_cmpt_capacit;
+            item.trsf_qty_amb = String(_.toNumber(item.trsf_cmpt_capacit) - _.toNumber(item.trsf_qty_left));
             // console.log('DrawerProductTransfers: onCopy in loop after2', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
             // tableAPI.updateRowData({ update: [item] });
             updateTransferRow(item);

@@ -19,12 +19,23 @@ const buildDrawTransfersByArm = (record, productArms, t, sourceType, loadType, r
       }
     }
 
+    // let qtyOnboard = record?.allowed_qty==='' ? null : String(_.toNumber(record?.allowed_qty) - _.toNumber(record?.load_qty));
+    // let qtyOnboard = record?.load_qty === '' ? null : record?.load_qty,
+    let qtyOnboard =  
+      record?.load_qty === '' 
+      ? null 
+      : record?.load_qty === '0'
+        ? record?.qty_loaded
+        : record?.load_qty;
+
     let ambDefault = null;
     if (repost){
       if (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') {
-        ambDefault = record?.allowed_qty;
+        // ambDefault = record?.allowed_qty;
+        ambDefault = String(_.toNumber(record?.allowed_qty) - _.toNumber(qtyOnboard));
       } else {
-        ambDefault = record?.cmpt_capacit;
+        // ambDefault = record?.cmpt_capacit;
+        ambDefault = String(_.toNumber(record?.cmpt_capacit) - _.toNumber(qtyOnboard));
       }
     }
 
@@ -41,8 +52,9 @@ const buildDrawTransfersByArm = (record, productArms, t, sourceType, loadType, r
       trsf_prod_cmpy: record?.shls_supp,
       trsf_arm_cd: armClnValue,
       trsf_qty_plan: record?.allowed_qty === '' ? null : record?.allowed_qty,
-      //trsf_qty_left: record?.allowed_qty==='' ? null : String(_.toNumber(record?.allowed_qty) - _.toNumber(record?.load_qty)),
-      trsf_qty_left: record?.load_qty === '' ? null : record?.load_qty,
+      // trsf_qty_left: record?.allowed_qty==='' ? null : String(_.toNumber(record?.allowed_qty) - _.toNumber(record?.load_qty)),
+      // trsf_qty_left: record?.load_qty === '' ? null : record?.load_qty,
+      trsf_qty_left: qtyOnboard,
       trsf_density: densClnValue,
       trsf_temp: null,
       trsf_qty_amb: ambDefault,
