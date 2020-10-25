@@ -72,18 +72,15 @@ const FormModal = ({
   const [deliveryNumber, setDeliveryNumber] = useState(undefined);
 
   // 1: PREORDER; 2: PRESCHEDULE; 3: OPENORDER
-  const productUrl = ( loadType === '1' 
-    ? `${DELIVERY_DETAILS.TRIP_PRODUCTS}?supp_code=${supplier}&trip_no=${loadNumber}`
-    : ( loadType === '2' 
+  const productUrl =
+    loadType === '1'
+      ? `${DELIVERY_DETAILS.TRIP_PRODUCTS}?supp_code=${supplier}&trip_no=${loadNumber}`
+      : loadType === '2'
       ? `${DELIVERY_DETAILS.TRIP_COMPARTMENTS}?supp_code=${supplier}&trip_no=${loadNumber}`
-      : ( loadType === '3'
-        ? `${DELIVERY_DETAILS.ORDER_PRODUCTS}?supp_code=${supplier}&order_no=${loadNumber}`
-        : null
-      )
-    )
-  );
+      : loadType === '3'
+      ? `${DELIVERY_DETAILS.ORDER_PRODUCTS}?supp_code=${supplier}&order_no=${loadNumber}`
+      : null;
   const { data: products } = useSWR(productUrl);
-
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -142,12 +139,12 @@ const FormModal = ({
       values.dd_veh_arr_time = values.dd_veh_arr_time?.format(SETTINGS.DATE_TIME_FORMAT);
     }
 
-    const ddi_items=[];
+    const ddi_items = [];
     ddiTableAPI.forEachNode((rowNode, index) => {
       rowNode.data.ddi_dd_number = values?.dd_number;
       ddi_items.push(rowNode?.data);
     });
-    const ddd_items=[];
+    const ddd_items = [];
     dddTableAPI.forEachNode((rowNode, index) => {
       rowNode.data.ddd_dd_number = values?.dd_number;
       ddd_items.push(rowNode?.data);
@@ -227,6 +224,7 @@ const FormModal = ({
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
@@ -269,11 +267,7 @@ const FormModal = ({
         </>
       }
     >
-      <Form
-        layout="vertical"
-        form={form}
-        scrollToFirstError
-      >
+      <Form layout="vertical" form={form} scrollToFirstError>
         <Tabs defaultActiveKey="1" onChange={doTabChanges}>
           <TabPane tab={t('tabColumns.general')} key="1">
             <Row gutter={[8, 2]}>
@@ -290,7 +284,12 @@ const FormModal = ({
               </Col>
 
               <Col span={6}>
-                <DeliveryNumber form={form} value={value} onChange={setDeliveryNumber} pageState={pageState} />
+                <DeliveryNumber
+                  form={form}
+                  value={value}
+                  onChange={setDeliveryNumber}
+                  pageState={pageState}
+                />
               </Col>
             </Row>
 
@@ -313,7 +312,9 @@ const FormModal = ({
                   required={true}
                   allowClear={true}
                   maxLength={20}
-                  disabled={(pageState==='create'||pageState==='edit'||pageState==='detail')? false : true}
+                  disabled={
+                    pageState === 'create' || pageState === 'edit' || pageState === 'detail' ? false : true
+                  }
                   onChange={setSoldTo}
                   popupManager={PartnershipManager}
                   popupTitle={t('fields.ddSoldTo') + ' - ' + t('pageNames.partnership')}
@@ -324,7 +325,7 @@ const FormModal = ({
                     partner_code: soldTo,
                     partner_type: 'AG',
                     partner_cmpy_code: supplier,
-                    partner_cust_acct: ''
+                    partner_cust_acct: '',
                   }}
                 />
               </Col>
@@ -339,7 +340,9 @@ const FormModal = ({
                   required={true}
                   allowClear={true}
                   maxLength={20}
-                  disabled={(pageState==='create'||pageState==='edit'||pageState==='detail')? false : true}
+                  disabled={
+                    pageState === 'create' || pageState === 'edit' || pageState === 'detail' ? false : true
+                  }
                   onChange={setShipTo}
                   popupManager={PartnershipManager}
                   popupTitle={t('fields.ddShipTo') + ' - ' + t('pageNames.partnership')}
@@ -350,7 +353,7 @@ const FormModal = ({
                     partner_code: shipTo,
                     partner_type: 'WE',
                     partner_cmpy_code: supplier,
-                    partner_cust_acct: ''
+                    partner_cust_acct: '',
                   }}
                 />
               </Col>

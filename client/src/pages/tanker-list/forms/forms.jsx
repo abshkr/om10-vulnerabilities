@@ -43,7 +43,15 @@ import { SETTINGS } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, setFilterValue, expiryDateMode, expiryTypes }) => {
+const FormModal = ({
+  value,
+  visible,
+  handleFormState,
+  access,
+  setFilterValue,
+  expiryDateMode,
+  expiryTypes,
+}) => {
   console.log(expiryTypes);
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -210,6 +218,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
@@ -264,12 +273,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
         </>
       }
     >
-      <Form 
-        layout="vertical" 
-        form={form} 
-        onFinish={onFinish} 
-        scrollToFirstError
-      >
+      <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane
             tab={t('tabColumns.identification')}
@@ -303,13 +307,13 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
 
             <Row gutter={[8, 2]}>
               <Col span={8}>
-              <LastTrip form={form} value={value} />
+                <LastTrip form={form} value={value} />
               </Col>
               <Col span={16}>
-              <Comments form={form} value={value} />
+                <Comments form={form} value={value} />
               </Col>
             </Row>
-            
+
             <Row gutter={[8, 2]}>
               <Col span={8}>
                 <TankerPrompt form={form} value={value} />
@@ -330,7 +334,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
                 <Locks form={form} value={value} />
               </Col>
             </Row>
-            
+
             <Divider>{t('tabColumns.configuration')} </Divider>
 
             <EquipmentType form={form} value={value} onChange={setEquipment} />
@@ -338,11 +342,11 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
 
             <Divider>{t('tabColumns.expiryDates')} </Divider>
 
-            {expiryDateMode === '1' ?
+            {expiryDateMode === '1' ? (
               <LegacyExpires form={form} value={value} expiryTypes={expiryTypes?.records}></LegacyExpires>
-              :
+            ) : (
               <Expiry form={form} value={value} type={TANKER_LIST.EXPIRY} />
-            }
+            )}
           </TabPane>
         </Tabs>
       </Form>

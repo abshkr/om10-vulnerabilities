@@ -274,6 +274,7 @@ const Period = ({ visible, setVisibility, selected, order, form }) => {
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       width="40vw"
       onClose={() => setVisibility(false)}
       visible={visible}

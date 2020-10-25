@@ -5,7 +5,7 @@ import {
   PlusOutlined,
   CloseOutlined,
   RedoOutlined,
-  QuestionCircleOutlined
+  QuestionCircleOutlined,
 } from '@ant-design/icons';
 
 import { Form, Button, Tabs, notification, Modal, Drawer } from 'antd';
@@ -24,8 +24,10 @@ import TankStrapping from '../strapping';
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, config, setFilterValue, tanks }) => {
-  const { data: counter} = useSWR(`${TANK_STATUS.COUNT_STRAPS}?tank_code=${value?.tank_code}&tank_terminal=${value?.tank_terminal}`);
-  
+  const { data: counter } = useSWR(
+    `${TANK_STATUS.COUNT_STRAPS}?tank_code=${value?.tank_code}&tank_terminal=${value?.tank_terminal}`
+  );
+
   const [quantitySource, setQuantitySource] = useState(null);
   const [densitySource, setDensitySource] = useState(null);
   const { t } = useTranslation();
@@ -59,9 +61,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       {
         ...values,
         tank_temp:
-          values?.tank_temp_unit !== 'degF'
-            ? values.tank_temp
-            : VCFManager.temperatureF2C(values.tank_temp),
+          values?.tank_temp_unit !== 'degF' ? values.tank_temp : VCFManager.temperatureF2C(values.tank_temp),
       },
       ['tank_temp_unit']
     );
@@ -77,21 +77,21 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
         await api
           .post(IS_CREATING ? TANKS.CREATE : TANKS.UPDATE, payload)
           .then(() => {
-              onComplete(values.tank_code);
+            onComplete(values.tank_code);
 
-              notification.success({
-                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
-              });
-            })
-            .catch((errors) => {
-              _.forEach(errors.response.data.errors, (error) => {
-                notification.error({
-                  message: error.type,
-                  description: error.message,
-                });
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
               });
             });
+          });
       },
     });
   };
@@ -194,7 +194,13 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
 
   const onCalculateByDensity = () => {
     Modal.confirm({
-      title: t('prompts.calculate') + ' (' + t('descriptions.lastFieldChanged') + ': ' + densitySource?.title + ')',
+      title:
+        t('prompts.calculate') +
+        ' (' +
+        t('descriptions.lastFieldChanged') +
+        ': ' +
+        densitySource?.title +
+        ')',
       okText: t('operations.calculate'),
       okType: 'primary',
       width: '30vw',
@@ -220,9 +226,10 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
         const type = densitySource?.type;
         //const payload = handleDensityType(type);
         const payload = handleDensitySource(densitySource);
-        
+
         if (base !== '6') {
-          if (payload.type === 'D15C') { // tank_density as source
+          if (payload.type === 'D15C') {
+            // tank_density as source
             const densityAtXC = VCFManager.densityAtXC(payload.value, payload.reference);
             const densityAt60F = VCFManager.densityAt60F(payload.value, payload.reference, 'C');
             const api = VCFManager.api(densityAt60F);
@@ -233,8 +240,13 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             });
           }
 
-          if (payload.type === 'D30C') { // tank_15_density as source
-            const density15C = VCFManager.density15CFromXC(payload.value, payload.reference, config.precisionDensity);
+          if (payload.type === 'D30C') {
+            // tank_15_density as source
+            const density15C = VCFManager.density15CFromXC(
+              payload.value,
+              payload.reference,
+              config.precisionDensity
+            );
             const densityAt60F = VCFManager.densityAt60F(density15C);
             const api = VCFManager.api(densityAt60F);
             // console.log('D30C', density15C, densityAt60F, api);
@@ -255,7 +267,8 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             });
           }
         } else {
-          if (payload.type === 'D15C') { // tank_density as source
+          if (payload.type === 'D15C') {
+            // tank_density as source
             const density = payload.value;
             const densityAt60F = VCFManager.densityAt60F(density);
             const api = VCFManager.api(densityAt60F);
@@ -266,7 +279,8 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             });
           }
 
-          if (payload.type === 'D30C') { // tank_15_density as source
+          if (payload.type === 'D30C') {
+            // tank_15_density as source
             const density = payload.value;
             const densityAt60F = VCFManager.densityAt60F(density);
             const api = VCFManager.api(densityAt60F);
@@ -292,7 +306,13 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
   const onCalculateByLevel = () => {
     const { getFieldsValue, setFieldsValue } = form;
 
-    const payload = getFieldsValue(['tank_amb_vol', 'tank_temp', 'tank_density', 'tank_15_density', 'tank_prod_lvl']);
+    const payload = getFieldsValue([
+      'tank_amb_vol',
+      'tank_temp',
+      'tank_density',
+      'tank_15_density',
+      'tank_prod_lvl',
+    ]);
 
     if (!payload?.tank_prod_lvl || String(payload?.tank_prod_lvl).trim().length === 0) {
       notification.error({
@@ -367,12 +387,20 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
                 message: t('descriptions.calculateFailed'),
                 description: response?.data?.MSG_CODE + ': ' + response?.data?.MSG_DESC,
               });
-            }
-            else {
+            } else {
               setFieldsValue({
-                tank_amb_vol: _.round(response?.data?.REAL_LITRE, isAdtv ? config.precisionAdditive : config.precisionVolume),
-                tank_cor_vol: _.round(response?.data?.REAL_LITRE15, isAdtv ? config.precisionAdditive : config.precisionVolume),
-                tank_liquid_kg: _.round(response?.data?.REAL_KG, isAdtv ? config.precisionAdditive : config.precisionMass),
+                tank_amb_vol: _.round(
+                  response?.data?.REAL_LITRE,
+                  isAdtv ? config.precisionAdditive : config.precisionVolume
+                ),
+                tank_cor_vol: _.round(
+                  response?.data?.REAL_LITRE15,
+                  isAdtv ? config.precisionAdditive : config.precisionVolume
+                ),
+                tank_liquid_kg: _.round(
+                  response?.data?.REAL_KG,
+                  isAdtv ? config.precisionAdditive : config.precisionMass
+                ),
               });
               notification.success({
                 message: t('messages.calculateSuccess'),
@@ -403,12 +431,19 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       'tank_liquid_kg',
     ]);
 
-    if (String(payload?.tank_amb_vol).trim().length === 0 && 
-      String(payload?.tank_cor_vol).trim().length === 0 && 
-      String(payload?.tank_liquid_kg).trim().length === 0) {
+    if (
+      String(payload?.tank_amb_vol).trim().length === 0 &&
+      String(payload?.tank_cor_vol).trim().length === 0 &&
+      String(payload?.tank_liquid_kg).trim().length === 0
+    ) {
       notification.error({
         message: t('validate.set'),
-        description: t('fields.ambientVolume')+t('descriptions.or')+t('fields.standardVolume')+t('descriptions.or')+t('fields.liquidMass'),
+        description:
+          t('fields.ambientVolume') +
+          t('descriptions.or') +
+          t('fields.standardVolume') +
+          t('descriptions.or') +
+          t('fields.liquidMass'),
       });
       return;
     }
@@ -416,8 +451,12 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     if (!quantitySource || String(quantitySource?.qty).trim().length === 0) {
       notification.error({
         message: t('validate.set'),
-        description: !quantitySource 
-          ? (t('fields.observedQuantity')+t('descriptions.or')+t('fields.standardQuantity')+t('descriptions.or')+t('fields.observedMass'))
+        description: !quantitySource
+          ? t('fields.observedQuantity') +
+            t('descriptions.or') +
+            t('fields.standardQuantity') +
+            t('descriptions.or') +
+            t('fields.observedMass')
           : quantitySource?.title,
       });
       return;
@@ -461,7 +500,13 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     const isAdtv = value?.tank_base_class === '6';
 
     Modal.confirm({
-      title: t('prompts.calculate') + ' (' + t('descriptions.lastFieldChanged') + ': ' + quantitySource?.title + ')',
+      title:
+        t('prompts.calculate') +
+        ' (' +
+        t('descriptions.lastFieldChanged') +
+        ': ' +
+        quantitySource?.title +
+        ')',
       okText: t('operations.calculate'),
       okType: 'primary',
       width: '30vw',
@@ -520,12 +565,20 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
                 message: t('descriptions.calculateFailed'),
                 description: response?.data?.MSG_CODE + ': ' + response?.data?.MSG_DESC,
               });
-            }
-            else {
+            } else {
               setFieldsValue({
-                tank_amb_vol: _.round(response?.data?.REAL_LITRE, isAdtv ? config.precisionAdditive : config.precisionVolume),
-                tank_cor_vol: _.round(response?.data?.REAL_LITRE15, isAdtv ? config.precisionAdditive : config.precisionVolume),
-                tank_liquid_kg: _.round(response?.data?.REAL_KG, isAdtv ? config.precisionAdditive : config.precisionMass),
+                tank_amb_vol: _.round(
+                  response?.data?.REAL_LITRE,
+                  isAdtv ? config.precisionAdditive : config.precisionVolume
+                ),
+                tank_cor_vol: _.round(
+                  response?.data?.REAL_LITRE15,
+                  isAdtv ? config.precisionAdditive : config.precisionVolume
+                ),
+                tank_liquid_kg: _.round(
+                  response?.data?.REAL_KG,
+                  isAdtv ? config.precisionAdditive : config.precisionMass
+                ),
               });
               notification.success({
                 message: t('messages.calculateSuccess'),
@@ -555,6 +608,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
@@ -586,10 +640,10 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
 
           {CAN_CALCULATE && (
             <>
-              {(config?.manageAPI || (
-                config?.temperatureUnit === 'degC' &&
-                config?.referenceTemperature === '15' &&
-                config?.vsmCompensation === '30')) && (
+              {(config?.manageAPI ||
+                (config?.temperatureUnit === 'degC' &&
+                  config?.referenceTemperature === '15' &&
+                  config?.vsmCompensation === '30')) && (
                 <Button
                   type="primary"
                   icon={<RedoOutlined />}
@@ -630,11 +684,11 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
           </TabPane>
 
           <TabPane tab={t('tabColumns.calculations')} key="2">
-            <Calculation 
-              form={form} 
-              value={value} 
-              range={range} 
-              config={config} 
+            <Calculation
+              form={form}
+              value={value}
+              range={range}
+              config={config}
               pinQuantity={setQuantitySource}
               pinDensity={setDensitySource}
             />

@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-import { EditOutlined, PlusOutlined, CloseOutlined, QuestionCircleOutlined, DeleteOutlined, FormOutlined } from '@ant-design/icons';
+import {
+  EditOutlined,
+  PlusOutlined,
+  CloseOutlined,
+  QuestionCircleOutlined,
+  DeleteOutlined,
+  FormOutlined,
+} from '@ant-design/icons';
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Space } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate, SWRConfig } from 'swr';
@@ -15,14 +22,16 @@ import columns from './fields/columns';
 const TabPane = Tabs.TabPane;
 
 const PartnerForm = ({ value, visible, handleFormState, access }) => {
-  console.log(value)
+  console.log(value);
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
 
   const [company, setCompany] = useState(value?.partner_cmpy_code);
-  const { data: payload, isValidating } = useSWR(`${PARTNERSHIP.PARTNERSHIPS}?supplier=${value?.partner_cmpy_code}&partner_cust_acct=${value?.partner_cust_acct}`);
-  
+  const { data: payload, isValidating } = useSWR(
+    `${PARTNERSHIP.PARTNERSHIPS}?supplier=${value?.partner_cmpy_code}&partner_cust_acct=${value?.partner_cust_acct}`
+  );
+
   const [selected, setSelected] = useState([]);
   const [partners, setPartners] = useState(null);
 
@@ -42,8 +51,8 @@ const PartnerForm = ({ value, visible, handleFormState, access }) => {
   const onFinish = async () => {
     if (IS_CREATING && partners.length <= 0) {
       notification.error({
-        message: t("messages.validationFailed"),
-        description: t("messages.noPartners"),
+        message: t('messages.validationFailed'),
+        description: t('messages.noPartners'),
       });
       return;
     }
@@ -82,32 +91,33 @@ const PartnerForm = ({ value, visible, handleFormState, access }) => {
   };
 
   const deletePartners = () => {
-    setPartners(_.filter(partners, (item) => {
-      for (let i = 0; i < selected.length; i += 1) {
-        if (item.partner_seq === selected[i].partner_seq) {
-          return false;
+    setPartners(
+      _.filter(partners, (item) => {
+        for (let i = 0; i < selected.length; i += 1) {
+          if (item.partner_seq === selected[i].partner_seq) {
+            return false;
+          }
         }
-      }
-      return true;
-    }));
+        return true;
+      })
+    );
     setSelected([]);
-  }
+  };
 
   const addPartnershipCallBack = (values) => {
-    const newPartners = [
-      ...partners,
-      ...values,
-    ];
-    
-    setPartners(_.orderBy(newPartners, (item) => {
-      return parseInt(item.partner_seq);
-    }));
+    const newPartners = [...partners, ...values];
+
+    setPartners(
+      _.orderBy(newPartners, (item) => {
+        return parseInt(item.partner_seq);
+      })
+    );
   };
 
   const addPartnership = (v) => {
     Modal.info({
       className: 'form-container',
-      title: t("descriptions.selectPartners"),
+      title: t('descriptions.selectPartners'),
       centered: true,
       width: '40vw',
       icon: <FormOutlined />,
@@ -143,6 +153,7 @@ const PartnerForm = ({ value, visible, handleFormState, access }) => {
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
@@ -178,9 +189,9 @@ const PartnerForm = ({ value, visible, handleFormState, access }) => {
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
             <Company form={form} value={value} onChange={setCompany} disable={!IS_CREATING} />
-            <Customer form={form} value={value} company={company} disable={!IS_CREATING}/>
+            <Customer form={form} value={value} company={company} disable={!IS_CREATING} />
             <Divider>{t('pageNames.partners')}</Divider>
-            <Form.Item name="partners" noStyle >
+            <Form.Item name="partners" noStyle>
               <DataTable
                 data={partners}
                 isLoading={isValidating}

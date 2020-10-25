@@ -54,13 +54,12 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     mutate(BASE_PRODUCTS.READ);
     handleFormState(false, null);
     if (base_code) {
-      setFilterValue("" + base_code);
+      setFilterValue('' + base_code);
     }
   };
 
   const onFinish = async () => {
     try {
-
       const values = await form.validateFields();
 
       Modal.confirm({
@@ -91,7 +90,6 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             });
         },
       });
-
     } catch (error) {
       message.error({
         key: 'submit',
@@ -140,6 +138,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
@@ -199,10 +198,8 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             <Group form={form} value={value} />
             <Color form={form} value={value} />
 
-            <Divider/>
-            {manageHotProduct && (
-              <HotTempFlag form={form} value={value} />
-            )}
+            <Divider />
+            {manageHotProduct && <HotTempFlag form={form} value={value} />}
             <RefSpecTemp form={form} value={value} />
             <CorrectionMethod form={form} value={value} />
           </TabPane>

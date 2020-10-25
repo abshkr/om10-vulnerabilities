@@ -8,7 +8,20 @@ import {
   CloseOutlined,
   TrademarkOutlined,
 } from '@ant-design/icons';
-import { Form, Button, Tabs, Modal, notification, message, Drawer, Checkbox, Col, Row, Input, Card } from 'antd';
+import {
+  Form,
+  Button,
+  Tabs,
+  Modal,
+  notification,
+  message,
+  Drawer,
+  Checkbox,
+  Col,
+  Row,
+  Input,
+  Card,
+} from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import { SWRConfig } from 'swr';
@@ -16,7 +29,7 @@ import { fetcher } from 'utils';
 
 import _ from 'lodash';
 import api, { DRAWER_PRODUCTS } from '../../../api';
-import GenericForm from '../generics/forms'
+import GenericForm from '../generics/forms';
 
 import {
   DrawerCompany,
@@ -47,7 +60,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
   const [prod_is_compliant, setCompliant] = useState(value?.prod_ldtol_flag);
   const [prod_is_locked, setLocked] = useState(value?.prod_is_locked);
   const [selected, setSelected] = useState(null);
-  const [hotFlag, setHotFlag] = useState(value?.prod_check_hot_volume)
+  const [hotFlag, setHotFlag] = useState(value?.prod_check_hot_volume);
 
   const [baseLoading, setBaseLoading] = useState(true);
   const [genericFlag, setGenericFlag] = useState(false);
@@ -72,7 +85,11 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
             fetcher,
           }}
         >
-          <GenericForm onClose={()=>{setGenericFlag(true);}}/>
+          <GenericForm
+            onClose={() => {
+              setGenericFlag(true);
+            }}
+          />
         </SWRConfig>
       ),
       okButtonProps: {
@@ -82,21 +99,21 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
   };
 
   const adjustHotTempCheckFlag = (bases) => {
-    let hotFound=false;
+    let hotFound = false;
 
-    for (let i=0; i<bases.length; i++) {
+    for (let i = 0; i < bases.length; i++) {
       const base = bases[i];
-      if ( !!base && base?.pitem_hot_check && _.toNumber(base?.pitem_ratio_value) > 0 ) {
+      if (!!base && base?.pitem_hot_check && _.toNumber(base?.pitem_ratio_value) > 0) {
         hotFound = true;
         break;
       }
     }
-    
+
     setHotFlag(hotFound);
     setFieldsValue({
       prod_check_hot_volume: hotFound,
     });
-  }
+  };
 
   const handleBaseCallBack = (values) => {
     if (values.to_delete) {
@@ -248,7 +265,6 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
 
   const onFinish = async () => {
     try {
-
       const values = await form.validateFields();
 
       if (values.bases === undefined || values.bases.length <= 0) {
@@ -287,7 +303,6 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
             });
         },
       });
-
     } catch (error) {
       message.error({
         key: 'submit',
@@ -348,13 +363,13 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
   }, [resetFields, value, visible]);
 
   useEffect(() => {
-    console.log('Base has been changed!.......', bases)
+    console.log('Base has been changed!.......', bases);
     form.setFieldsValue({
       bases: bases,
     });
 
     adjustHotTempCheckFlag(bases);
-  }, [bases]);//, adjustHotTempCheckFlag, setFieldsValue]);
+  }, [bases]); //, adjustHotTempCheckFlag, setFieldsValue]);
 
   const layout = {
     labelCol: {
@@ -368,6 +383,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
@@ -428,7 +444,6 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
       >
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-
             <Row gutter={[8, 2]}>
               <Col span={8}>
                 <DrawerCompany form={form} value={value} />
@@ -453,15 +468,11 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
               </Col>
             </Row>
 
-            <LoadTolerance form={form} value={value} config={config}/>
+            <LoadTolerance form={form} value={value} config={config} />
 
-            {config.manageHotProduct && (
-              <HotLitresForm value={value} form={form} hotFlag={hotFlag} />
-            )}
+            {config.manageHotProduct && <HotLitresForm value={value} form={form} hotFlag={hotFlag} />}
 
-            {config.manageDCS && (
-              <LinkedDrawerProducts value={value} form={form} />
-            )}
+            {config.manageDCS && <LinkedDrawerProducts value={value} form={form} />}
 
             <Row gutter={[8, 0]}>
               <Col span={8}>
@@ -553,7 +564,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
                 </Form.Item>
               </Col>
             </Row> */}
-            
+
             <Card
               size="small"
               title={t('fields.baseProducts')}

@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
-import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
+import {
+  EditOutlined,
+  PlusOutlined,
+  DeleteOutlined,
+  QuestionCircleOutlined,
+  CloseOutlined,
+} from '@ant-design/icons';
 import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
@@ -29,71 +35,66 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   const addressCode = value?.db_address_key;
 
   // use onSuccess option to handle some settings after data is retrieved successfully.
-  // note: Tne component of Table Transfer requires the data source to have an index key. 
-  const { data: payload, isValidating } = useSWR(
-    `${ADDRESSES.LINES}?address_code=${addressCode}`,
-    { refreshInterval: 0,
-      onSuccess: 
-        (data, key, config) => {
-          console.log('Entered onSuccess!!!'); 
-          console.log({data}); 
-          data.records.forEach((item) => {
-            item.db_addr_line_type = _.toNumber(item.db_addr_line_type);
-          });
-          setLines(data?.records);
-      }
-    }
-  );
+  // note: Tne component of Table Transfer requires the data source to have an index key.
+  const { data: payload, isValidating } = useSWR(`${ADDRESSES.LINES}?address_code=${addressCode}`, {
+    refreshInterval: 0,
+    onSuccess: (data, key, config) => {
+      console.log('Entered onSuccess!!!');
+      console.log({ data });
+      data.records.forEach((item) => {
+        item.db_addr_line_type = _.toNumber(item.db_addr_line_type);
+      });
+      setLines(data?.records);
+    },
+  });
 
   const onFormClosed = () => {
     resetFields();
     handleFormState(false, null);
   };
 
-  const onItemValidation = items => {
+  const onItemValidation = (items) => {
     const errors = [];
 
-    _.forEach(items, item => {
+    _.forEach(items, (item) => {
       //check the column 'db_addr_line_type' and column 'db_addr_line'
       if (item.db_addrline_no) {
         if (!item.db_addr_line_type || item.db_addr_line_type === t('placeholder.selectAddressLineType')) {
           errors.push({
-            key: String(item.db_addrline_no)+':'+t('fields.addressLineType'),
+            key: String(item.db_addrline_no) + ':' + t('fields.addressLineType'),
             field: t('fields.addressLineType'),
-            message: `${t('descriptions.pleaseFillLineField')}${item.db_addrline_no}`
+            message: `${t('descriptions.pleaseFillLineField')}${item.db_addrline_no}`,
           });
         }
         if (!item.db_addr_line || item.db_addr_line === t('placeholder.enterAddressLineText')) {
           errors.push({
-            key: String(item.db_addrline_no)+':'+t('fields.addressLineText'),
+            key: String(item.db_addrline_no) + ':' + t('fields.addressLineText'),
             field: t('fields.addressLineText'),
-            message: `${t('descriptions.pleaseFillLineField')}${item.db_addrline_no}`
+            message: `${t('descriptions.pleaseFillLineField')}${item.db_addrline_no}`,
           });
-        }
-        else {
-          const len = (new TextEncoder().encode(item.db_addr_line)).length;
+        } else {
+          const len = new TextEncoder().encode(item.db_addr_line).length;
           if (len > 210) {
             errors.push({
-              key: String(item.db_addrline_no)+':'+t('fields.addressLineText'),
+              key: String(item.db_addrline_no) + ':' + t('fields.addressLineText'),
               field: t('fields.addressLineText'),
-              message: `${t('placeholder.maxCharacters')}: 210 ─ ${t('descriptions.maxCharacters')}`
+              message: `${t('placeholder.maxCharacters')}: 210 ─ ${t('descriptions.maxCharacters')}`,
             });
           }
         }
       }
 
       // TODO, validate the 'db_addr_line' according to the line type in 'db_addr_line_type'
-
     });
 
     if (errors.length > 0) {
       const lines = (
         <>
-        {errors?.map((error, index) => (
-          <Card size="small" title={error.field}>
-            {error.message}
-          </Card>
-        ))}      
+          {errors?.map((error, index) => (
+            <Card size="small" title={error.field}>
+              {error.message}
+            </Card>
+          ))}
         </>
       );
 
@@ -123,7 +124,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     handleFormState(false, null);
     mutate(ADDRESSES.READ);
     if (db_address_key) {
-      setFilterValue("" + db_address_key);
+      setFilterValue('' + db_address_key);
     } else {
       setFilterValue(' ');
     }
@@ -225,9 +226,8 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     tableAPI.forEachNodeAfterFilterAndSort((rowNode, index) => {
       if (rowNode?.data?.address_action !== '-') {
         const item = rowNode.data;
-        if ( template.length > 0 )
-        {
-          template += ",";	
+        if (template.length > 0) {
+          template += ',';
         }
         template += String(item.db_addr_line_type);
       }
@@ -242,7 +242,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       centered: true,
       onOk: async () => {
         await api
-          .post(ADDRESSES.UPDATE_TEMPLATE, {config_key: 'SITE_ADDRESS_TEMPLATE', config_value: template})
+          .post(ADDRESSES.UPDATE_TEMPLATE, { config_key: 'SITE_ADDRESS_TEMPLATE', config_value: template })
           .then(() => {
             //onComplete();
 
@@ -272,6 +272,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}

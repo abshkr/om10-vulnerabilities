@@ -1,6 +1,12 @@
 import React, { useEffect } from 'react';
 
-import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
+import {
+  EditOutlined,
+  PlusOutlined,
+  DeleteOutlined,
+  QuestionCircleOutlined,
+  CloseOutlined,
+} from '@ant-design/icons';
 import { Form, Button, Tabs, Modal, notification, Drawer, Tag, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
@@ -16,7 +22,8 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
   const [form] = Form.useForm();
 
   const IS_CREATING = !value;
-  const IS_COMBINATION = isCombination || value?.image?.split(',')?.length > 1 || _.toNumber(value?.etyp_class) > 0;
+  const IS_COMBINATION =
+    isCombination || value?.image?.split(',')?.length > 1 || _.toNumber(value?.etyp_class) > 0;
 
   const { resetFields } = form;
 
@@ -24,9 +31,9 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
     handleFormState(false, null);
     mutate(EQUIPMENT_TYPES.READ);
     if (etyp_title) {
-      setFilterValue("" + etyp_title);
+      setFilterValue('' + etyp_title);
     } else {
-      setFilterValue(" ");
+      setFilterValue(' ');
     }
   };
 
@@ -72,7 +79,8 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
       values = {
         etyp_id: value.etyp_id,
         etyp_category: record.etyp_category?.toUpperCase(),
-        etyp_isrigid: record.etyp_category?.toUpperCase() === "R" || record.etyp_category?.toUpperCase() === "S",
+        etyp_isrigid:
+          record.etyp_category?.toUpperCase() === 'R' || record.etyp_category?.toUpperCase() === 'S',
       };
     }
 
@@ -86,15 +94,16 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
       values = {
         etyp_title: record.etyp_title,
         etyp_category: record.etyp_category?.toUpperCase(),
-        etyp_isrigid: record.etyp_category?.toUpperCase() === "R" || record.etyp_category?.toUpperCase() === "S",
+        etyp_isrigid:
+          record.etyp_category?.toUpperCase() === 'R' || record.etyp_category?.toUpperCase() === 'S',
         etyp_schedul: compartments.length > 0,
         compartments,
       };
     }
 
     if (IS_CREATING && IS_COMBINATION) {
-      let sum = 0
-      for (let i = 0; i < record.composition.length; i ++) {
+      let sum = 0;
+      for (let i = 0; i < record.composition.length; i++) {
         sum += record.composition[i].cmptnu;
       }
 
@@ -117,7 +126,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
         await api
           .post(IS_CREATING ? EQUIPMENT_TYPES.CREATE : EQUIPMENT_TYPES.UPDATE, values)
           .then(() => {
-            onComplete(value? value.etyp_title : values.etyp_title);
+            onComplete(value ? value.etyp_title : values.etyp_title);
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
@@ -176,6 +185,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
@@ -186,21 +196,19 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
       footer={
         <>
           {!IS_CREATING && (
-            <div
-              style={{ float: 'left', marginRight: 5 }}
-            >
-              <Tooltip placement="topRight" title={t("descriptions.countEtypEquipment")} >
-                <Tag color={value?.eqpt_count>0 ? 'red' : 'green'}>
+            <div style={{ float: 'left', marginRight: 5 }}>
+              <Tooltip placement="topRight" title={t('descriptions.countEtypEquipment')}>
+                <Tag color={value?.eqpt_count > 0 ? 'red' : 'green'}>
                   {t('fields.countEtypEquipment') + ': ' + value?.eqpt_count}
                 </Tag>
               </Tooltip>
-              <Tooltip placement="topRight" title={t("descriptions.countEtypTanker")} >
-                <Tag color={value?.tnkr_count>0 ? 'red' : 'green'}>
+              <Tooltip placement="topRight" title={t('descriptions.countEtypTanker')}>
+                <Tag color={value?.tnkr_count > 0 ? 'red' : 'green'}>
                   {t('fields.countEtypTanker') + ': ' + value?.tnkr_count}
                 </Tag>
               </Tooltip>
-              <Tooltip placement="topRight" title={t("descriptions.countEtypEquiptype")} >
-                <Tag color={value?.etyp_count>0 ? 'red' : 'green'}>
+              <Tooltip placement="topRight" title={t('descriptions.countEtypEquiptype')}>
+                <Tag color={value?.etyp_count > 0 ? 'red' : 'green'}>
                   {t('fields.countEtypEquiptype') + ': ' + value?.etyp_count}
                 </Tag>
               </Tooltip>
@@ -215,7 +223,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
           >
             {t('operations.cancel')}
           </Button>
-          
+
           <Button
             type="primary"
             icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
@@ -233,7 +241,9 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={!access?.canUpdate || value?.etyp_count>0 || value?.eqpt_count>0 || value?.tnkr_count>0}
+              disabled={
+                !access?.canUpdate || value?.etyp_count > 0 || value?.eqpt_count > 0 || value?.tnkr_count > 0
+              }
               onClick={onDelete}
             >
               {t('operations.delete')}

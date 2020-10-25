@@ -5,12 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Form, Button, Tabs, Modal, Checkbox, notification, Tooltip, Drawer, Input } from 'antd';
 import _ from 'lodash';
 
-import {
-  EditOutlined,
-  PlusOutlined,
-  CloseOutlined,
-  QuestionCircleOutlined,
-} from '@ant-design/icons';
+import { EditOutlined, PlusOutlined, CloseOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 
 import api, { EXPIRY_DATES } from '../../../api';
 import { SETTINGS } from '../../../constants';
@@ -114,6 +109,7 @@ const FormModal = ({ value, visible, handleFormState, access, all }) => {
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
@@ -148,24 +144,15 @@ const FormModal = ({ value, visible, handleFormState, access, all }) => {
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane tab={t('tabColumns.general')} key="1">
-            <Form.Item
-              name="expiry_date_no"
-              label={t('fields.columnNo')}
-            >
+            <Form.Item name="expiry_date_no" label={t('fields.columnNo')}>
               <Input disabled></Input>
             </Form.Item>
 
-            <Form.Item
-              name="expiry_date_desc"
-              label={t('fields.expiryDate')}
-            >
+            <Form.Item name="expiry_date_desc" label={t('fields.expiryDate')}>
               <Input disabled></Input>
             </Form.Item>
 
-            <Form.Item
-              name="expiry_date_titl"
-              label={t('fields.title')}
-            >
+            <Form.Item name="expiry_date_titl" label={t('fields.title')}>
               <Input />
             </Form.Item>
 

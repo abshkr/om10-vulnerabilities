@@ -13,7 +13,19 @@ import {
   FilePdfOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col, Radio, Checkbox, InputNumber } from 'antd';
+import {
+  Form,
+  Button,
+  Tabs,
+  Modal,
+  notification,
+  Drawer,
+  Row,
+  Col,
+  Radio,
+  Checkbox,
+  InputNumber,
+} from 'antd';
 
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
@@ -59,7 +71,12 @@ const TabPane = Tabs.TabPane;
 const FormModal = ({ value, visible, handleFormState, access, url, locateTrip }) => {
   // const { manageMakeManualTransaction, showSeals, manageAdditionalHostData, manageViewDeliveryDetails } = useConfig();
   const config = useConfig();
-  const { manageMakeManualTransaction, showSeals, manageAdditionalHostData, manageViewDeliveryDetails } = config;
+  const {
+    manageMakeManualTransaction,
+    showSeals,
+    manageAdditionalHostData,
+    manageViewDeliveryDetails,
+  } = config;
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -81,7 +98,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const [shipTo, setShipTo] = useState(value?.shls_ship_to_num);
   const [soldTo, setSoldTo] = useState(value?.shls_sold_to_num);
   const [expHour, setExpHour] = useState(undefined); // SITE.SITE_SHLS_EXP_H
-  
+
   /*
     1	F	NEW SCHEDULE
     2	S	SPECED
@@ -95,24 +112,29 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const READ_ONLY = value?.status !== 'F' && !IS_CREATING;
   const CAN_VIEW_REPORTS = value?.shlsload_load_id !== '0';
   const CAN_VIEW_TRANSACTIONS = value?.status !== 'F';
-  const CAN_DELIVERY_DETAIL = 
-    value !== null && value !== undefined && manageViewDeliveryDetails;
+  const CAN_DELIVERY_DETAIL = value !== null && value !== undefined && manageViewDeliveryDetails;
 
-  const CAN_REVERSE = 
+  const CAN_REVERSE =
     (value?.load_reverse_flag === '0' || value?.load_reverse_flag === '2') &&
-    (value?.status !== 'A' && value?.status !== 'L')&&
+    value?.status !== 'A' &&
+    value?.status !== 'L' &&
     value?.cmpy_schd_rev_repost;
-  const CAN_ARCHIVE = 
-    (value?.load_reverse_flag === '0' || value?.load_reverse_flag === '1' || value?.load_reverse_flag === '2') &&
-    (value?.status !== 'A' && value?.status !== 'L') &&
+  const CAN_ARCHIVE =
+    (value?.load_reverse_flag === '0' ||
+      value?.load_reverse_flag === '1' ||
+      value?.load_reverse_flag === '2') &&
+    value?.status !== 'A' &&
+    value?.status !== 'L' &&
     value?.cmpy_schd_archive;
-  const CAN_MAKE = 
-    access.canCreate && 
-    (value?.load_reverse_flag === '' || value?.load_reverse_flag === '0') && 
-    (value?.status !== 'D' && value?.status !== 'E');
-  const CAN_REPOST = 
-    value?.load_reverse_flag === '1' && 
-    (value?.status !== 'A' && value?.status !== 'L') &&
+  const CAN_MAKE =
+    access.canCreate &&
+    (value?.load_reverse_flag === '' || value?.load_reverse_flag === '0') &&
+    value?.status !== 'D' &&
+    value?.status !== 'E';
+  const CAN_REPOST =
+    value?.load_reverse_flag === '1' &&
+    value?.status !== 'A' &&
+    value?.status !== 'L' &&
     value?.cmpy_schd_rev_repost;
 
   const CAN_MAKE_TRANSACTIONS = CAN_MAKE && manageMakeManualTransaction;
@@ -164,14 +186,14 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
   const onFinish = async () => {
     const record = await form.validateFields();
-    if (record?.shls_ld_type === "3" /* Preorder*/) {
+    if (record?.shls_ld_type === '3' /* Preorder*/) {
       let findResult = _.find(record.products, (item) => {
         return item.qty_scheduled > 0;
       });
       if (!findResult) {
         notification.error({
-          message: t("messages.validationFailed"),
-          description: t("descriptions.preOrderReady"),
+          message: t('messages.validationFailed'),
+          description: t('descriptions.preOrderReady'),
         });
         return;
       }
@@ -181,56 +203,58 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       });
       if (findResult) {
         notification.error({
-          message: t("messages.validationFailed"),
-          description: t("descriptions.scheduledTooHigh") + ": " + findResult.qty_scheduled,
+          message: t('messages.validationFailed'),
+          description: t('descriptions.scheduledTooHigh') + ': ' + findResult.qty_scheduled,
         });
         return;
       }
 
       findResult = _.find(record.products, (item) => {
-        return item.qty_scheduled > 0 && item.unit_code === "";
+        return item.qty_scheduled > 0 && item.unit_code === '';
       });
-      
+
       if (findResult) {
         notification.error({
-          message: t("messages.validationFailed"),
-          description: `${t("descriptions.preOrderProdUnit")} ${findResult.prod_code}/${findResult.prod_name} `,
+          message: t('messages.validationFailed'),
+          description: `${t('descriptions.preOrderProdUnit')} ${findResult.prod_code}/${
+            findResult.prod_name
+          } `,
         });
         return;
       }
-    } else if (record?.shls_ld_type === "2" /* PreSchedule*/) {
+    } else if (record?.shls_ld_type === '2' /* PreSchedule*/) {
       let findResult = _.find(record.compartments, (item) => {
-        return item.prod_code !== "";
+        return item.prod_code !== '';
       });
 
       if (!findResult) {
         notification.error({
-          message: t("messages.validationFailed"),
-          description: t("descriptions.prescheduleReady"),
+          message: t('messages.validationFailed'),
+          description: t('descriptions.prescheduleReady'),
         });
         return;
       }
 
       findResult = _.find(record.compartments, (item) => {
-        return item.qty_scheduled > 0 && item.unit_code === "";
+        return item.qty_scheduled > 0 && item.unit_code === '';
       });
-      
+
       if (findResult) {
         notification.error({
-          message: t("messages.validationFailed"),
-          description: `${t("descriptions.preSchedProdUnit")} ${findResult.compartment} `,
+          message: t('messages.validationFailed'),
+          description: `${t('descriptions.preSchedProdUnit')} ${findResult.compartment} `,
         });
         return;
       }
 
       findResult = _.find(record.compartments, (item) => {
-        return item.qty_scheduled > 0 && item.prod_code === "";
+        return item.qty_scheduled > 0 && item.prod_code === '';
       });
-      
+
       if (findResult) {
         notification.error({
-          message: t("messages.validationFailed"),
-          description: `${t("descriptions.preSchedProd")} ${findResult.compartment} `,
+          message: t('messages.validationFailed'),
+          description: `${t('descriptions.preSchedProd')} ${findResult.compartment} `,
         });
         return;
       }
@@ -243,7 +267,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
     const values = {
       ...record,
       shls_caldate: record?.shls_caldate?.format(SETTINGS.DATE_TIME_FORMAT),
-      shls_exp2: !record?.shls_exp2? '' : record?.shls_exp2?.format(SETTINGS.DATE_TIME_FORMAT),
+      shls_exp2: !record?.shls_exp2 ? '' : record?.shls_exp2?.format(SETTINGS.DATE_TIME_FORMAT),
     };
 
     Modal.confirm({
@@ -377,30 +401,30 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   };
 
   const onExport = () => {
-    if (tab === "3") {
+    if (tab === '3') {
       setExportBOL(exportBOL + 1);
-    } else if (tab === "4") {
+    } else if (tab === '4') {
       setExportLDReport(exportLDReport + 1);
-    } else if (tab === "2") {
+    } else if (tab === '2') {
       setExportDLI(exportDLI + 1);
     }
-  }
+  };
 
   const onPrint = () => {
     const printEnumerator = {
-      '2': {
+      2: {
         prompt: t('prompts.printDriverInstruction'),
         url: LOAD_SCHEDULES.PRINT_DLI,
         message: t('messages.printDriverInstructionSuccess'),
       },
 
-      '3': {
+      3: {
         prompt: t('prompts.printBOL'),
         url: LOAD_SCHEDULES.PRINT_BOL,
         message: t('messages.printBOLSuccess'),
       },
 
-      '4': {
+      4: {
         prompt: t('prompts.printLoadReport'),
         url: LOAD_SCHEDULES.PRINT_LOAD_REPORT,
         message: t('messages.printLoadReportSuccess'),
@@ -422,8 +446,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             params: {
               supplier: value.supplier_code,
               trip_no: value.shls_trip_no,
-              supermode: !!form.getFieldValue('supermode') ? "on":"off",
-              dcsmode: !!form.getFieldValue('dcsmode') ? "on":"off",
+              supermode: !!form.getFieldValue('supermode') ? 'on' : 'off',
+              dcsmode: !!form.getFieldValue('dcsmode') ? 'on' : 'off',
             },
           })
           .then(() => {
@@ -444,20 +468,20 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   };
 
   const onView = () => {
-    if (tab === "3") {
+    if (tab === '3') {
       setRedoBOL(redoBOL + 1);
     }
   };
 
   const onSealUpdate = () => {
     setRedoDLI(!redoDLI);
-  } 
+  };
 
   const setCurStatus = (status) => {
     if (value) {
       value.status = status;
     }
-  }
+  };
 
   const onTabChange = (v) => {
     if (v === '3' || v === '4') {
@@ -470,7 +494,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
           // content: 'Some descriptions',
           onOk() {
             setTab(v);
-          }
+          },
         });
       } else {
         setTab(v);
@@ -484,8 +508,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
     } else {
       setDrawerWidth('75vw');
     }
-
-  }
+  };
 
   //Unload is preorder only, confirmed with old flash screen
   const onUnload = (v) => {
@@ -497,7 +520,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
     }
 
     setUnload(v.target.checked);
-  }
+  };
 
   useEffect(() => {
     if (!value) {
@@ -516,11 +539,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       setTab('0');
 
       setFieldsValue({
-        shls_ld_type: value.shls_ld_type? value.shls_ld_type : "4",
-        unload: value?.shls_ld_type === "6",
+        shls_ld_type: value.shls_ld_type ? value.shls_ld_type : '4',
+        unload: value?.shls_ld_type === '6',
         shls_trip_no: value?.shls_trip_no,
       });
-      setMode(value.shls_ld_type === '6'? '3': value.shls_ld_type);
+      setMode(value.shls_ld_type === '6' ? '3' : value.shls_ld_type);
     }
   }, [setFieldsValue, value]);
 
@@ -533,7 +556,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
       resetFields();
 
-      setMode('2');   //By default, set preschedule
+      setMode('2'); //By default, set preschedule
       setUnload(false);
       setFieldsValue({
         shls_ld_type: '2',
@@ -549,6 +572,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={() => onFormClosed()}
       maskClosable={IS_CREATING}
       mask={IS_CREATING}
@@ -567,7 +591,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             {t('operations.cancel')}
           </Button>
 
-          {!READ_ONLY && tab !== "6" && tab !== "7" && tab !== "8" && tab !== "9" && (
+          {!READ_ONLY && tab !== '6' && tab !== '7' && tab !== '8' && tab !== '9' && (
             <Button
               type="primary"
               icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
@@ -579,7 +603,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             </Button>
           )}
 
-          {!IS_CREATING && !READ_ONLY && tab !== "6" && tab !== "7" && tab !== "8" && tab !== "9" && (
+          {!IS_CREATING && !READ_ONLY && tab !== '6' && tab !== '7' && tab !== '8' && tab !== '9' && (
             <>
               <Button
                 type="danger"
@@ -603,12 +627,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             <Checkbox onChange={(e) => setFieldsValue({ dcsmode: e.target.checked })}>
               {t('descriptions.ignoreDCSCheck')}
             </Checkbox>
-          )}  
+          )}
 
-          {CAN_PRINT && !IS_CREATING && tab === "3" && (
-            <Button type="primary" 
-              icon={<AuditOutlined />} 
-              onClick={onView} 
+          {CAN_PRINT && !IS_CREATING && tab === '3' && (
+            <Button
+              type="primary"
+              icon={<AuditOutlined />}
+              onClick={onView}
               style={{ marginRight: 5 }}
               disabled={!access?.canUpdate}
             >
@@ -617,10 +642,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
           )}
 
           {CAN_PRINT && !IS_CREATING && (
-            <Button 
-              type="primary" 
-              icon={<PrinterOutlined />} 
-              onClick={onPrint} 
+            <Button
+              type="primary"
+              icon={<PrinterOutlined />}
+              onClick={onPrint}
               style={{ marginRight: 5 }}
               disabled={!access?.canUpdate}
             >
@@ -629,10 +654,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
           )}
 
           {CAN_PRINT && !IS_CREATING && config?.bolVersion !== 'JASPER' && (
-            <Button 
-              type="primary" 
-              icon={<FilePdfOutlined />} 
-              onClick={onExport} 
+            <Button
+              type="primary"
+              icon={<FilePdfOutlined />}
+              onClick={onExport}
               style={{ marginRight: 5 }}
               disabled={!access?.canUpdate}
             >
@@ -675,42 +700,42 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       }
     >
       <Form layout="vertical" form={form} scrollToFirstError initialValues={{ shls_ld_type: '3' }}>
-        <Tabs 
-          defaultActiveKey="1" 
-          activeKey={tab} 
-          onChange={onTabChange} 
-          animated={false}
-        >
+        <Tabs defaultActiveKey="1" activeKey={tab} onChange={onTabChange} animated={false}>
           <TabPane tab={t('tabColumns.general')} key="0">
             <Form.Item name="supermode" noStyle />
             <Form.Item name="dcsmode" noStyle />
 
             <Row gutter={[8, 8]}>
               <Col span={12}>
-                <Form.Item name="shls_ld_type" style={{display: "inline-block"}}>
+                <Form.Item name="shls_ld_type" style={{ display: 'inline-block' }}>
                   <Radio.Group
                     buttonStyle="solid"
                     style={{ marginBottom: 10 }}
                     onChange={(event) => setMode(event.target.value)}
                     disabled={!!value}
                   >
-                    {
-                      (IS_CREATING || (value?.shls_ld_type === '3' || value?.shls_ld_type === '6')) &&
+                    {(IS_CREATING || value?.shls_ld_type === '3' || value?.shls_ld_type === '6') && (
                       <Radio.Button value="3">{t('operations.preOrder')}</Radio.Button>
-                    }
-                    {
-                      (IS_CREATING || value?.shls_ld_type === '2') && !unload && <Radio.Button value="2">
-                      {t('operations.preSchedule')}</Radio.Button>
-                    }
+                    )}
+                    {(IS_CREATING || value?.shls_ld_type === '2') && !unload && (
+                      <Radio.Button value="2">{t('operations.preSchedule')}</Radio.Button>
+                    )}
                     {/* {(IS_CREATING || value?.shls_ld_type === '6') && <Radio.Button value="6">{t('fields.unload')}</Radio.Button>} */}
-                    {(!IS_CREATING && !['2', '3', '6'].includes(value?.shls_ld_type)) && 
-                      <Radio.Button value="4">{t('operations.openOrder')}</Radio.Button>}
+                    {!IS_CREATING && !['2', '3', '6'].includes(value?.shls_ld_type) && (
+                      <Radio.Button value="4">{t('operations.openOrder')}</Radio.Button>
+                    )}
                     {/* <Radio.Button value="3">{t('operations.preOrder')}</Radio.Button>
                     <Radio.Button value="2">{t('operations.preSchedule')}</Radio.Button> */}
                   </Radio.Group>
                 </Form.Item>
-                <Form.Item name="unload" style={{marginLeft: 20, display: "inline-block"}} valuePropName="checked">
-                  <Checkbox disabled={!IS_CREATING} onChange={onUnload}>{t('fields.unload')}</Checkbox>
+                <Form.Item
+                  name="unload"
+                  style={{ marginLeft: 20, display: 'inline-block' }}
+                  valuePropName="checked"
+                >
+                  <Checkbox disabled={!IS_CREATING} onChange={onUnload}>
+                    {t('fields.unload')}
+                  </Checkbox>
                 </Form.Item>
               </Col>
 
@@ -763,7 +788,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
                     partner_code: soldTo,
                     partner_type: 'AG',
                     partner_cmpy_code: supplier,
-                    partner_cust_acct: ''
+                    partner_cust_acct: '',
                   }}
                 />
               </Col>
@@ -789,7 +814,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
                     partner_code: shipTo,
                     partner_type: 'WE',
                     partner_cmpy_code: supplier,
-                    partner_cust_acct: ''
+                    partner_cust_acct: '',
                   }}
                 />
               </Col>
@@ -823,10 +848,19 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             </Row>
 
             {mode === '2' && !READ_ONLY && (
-              <Compartments form={form} value={value} drawer={drawer} tanker={tanker} supplier={supplier} config={config} />
+              <Compartments
+                form={form}
+                value={value}
+                drawer={drawer}
+                tanker={tanker}
+                supplier={supplier}
+                config={config}
+              />
             )}
 
-            {mode === '3' && !READ_ONLY && <Products form={form} value={value} drawer={drawer} access={access} />}
+            {mode === '3' && !READ_ONLY && (
+              <Products form={form} value={value} drawer={drawer} access={access} />
+            )}
 
             {READ_ONLY && <Summary value={value} />}
           </TabPane>
@@ -840,16 +874,16 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
           </TabPane>
 
           <TabPane tab={t('tabColumns.driverInstructions')} disabled={IS_CREATING} key="2">
-            <DriverInstructions value={value} redoDLI={redoDLI} exportPDF={exportDLI}/>
+            <DriverInstructions value={value} redoDLI={redoDLI} exportPDF={exportDLI} />
           </TabPane>
 
           <TabPane tab={t('tabColumns.bol')} disabled={IS_CREATING || !CAN_VIEW_REPORTS} key="3">
-            <BOL 
-              value={value} 
-              redo={redoBOL} 
-              supermode={form.getFieldValue('supermode')} 
-              dcsmode={form.getFieldValue('dcsmode')} 
-              locateTrip={locateTrip} 
+            <BOL
+              value={value}
+              redo={redoBOL}
+              supermode={form.getFieldValue('supermode')}
+              dcsmode={form.getFieldValue('dcsmode')}
+              locateTrip={locateTrip}
               setCurStatus={setCurStatus}
               exportPDF={exportBOL}
             />
@@ -859,13 +893,17 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             <LoadReport value={value} exportPDF={exportLDReport} />
           </TabPane>
 
-          <TabPane tab={t('tabColumns.seals')} disabled={IS_CREATING || !showSeals || value.shls_ld_type === '6'} key="5">
+          <TabPane
+            tab={t('tabColumns.seals')}
+            disabled={IS_CREATING || !showSeals || value.shls_ld_type === '6'}
+            key="5"
+          >
             <Seals value={value} sealUpated={onSealUpdate} />
           </TabPane>
 
-          <TabPane 
-            tab={t('tabColumns.deliveryDetails')} 
-            disabled={IS_CREATING || !CAN_DELIVERY_DETAIL} 
+          <TabPane
+            tab={t('tabColumns.deliveryDetails')}
+            disabled={IS_CREATING || !CAN_DELIVERY_DETAIL}
             key="6"
           >
             <DeliveryDetails
@@ -886,12 +924,14 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             <AdditionalHostData value={value} />
           </TabPane>
 
-          <TabPane 
-            tab={t('tabColumns.createTripTransactions')} 
-            disabled={IS_CREATING || !CAN_MAKE_TRANSACTIONS || !access.canCreate || value.shls_ld_type === '6'} 
+          <TabPane
+            tab={t('tabColumns.createTripTransactions')}
+            disabled={
+              IS_CREATING || !CAN_MAKE_TRANSACTIONS || !access.canCreate || value.shls_ld_type === '6'
+            }
             key="8"
           >
-            <ManualTransactionsPopup 
+            <ManualTransactionsPopup
               popup={true}
               params={{
                 supplier: value?.supplier_code,
@@ -906,12 +946,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             />
           </TabPane>
 
-          <TabPane 
-            tab={t('tabColumns.repostTripTransactions')} 
-            disabled={IS_CREATING || !CAN_REPOST_TRANSACTIONS || !access.canUpdate} 
+          <TabPane
+            tab={t('tabColumns.repostTripTransactions')}
+            disabled={IS_CREATING || !CAN_REPOST_TRANSACTIONS || !access.canUpdate}
             key="9"
           >
-            <ManualTransactionsPopup 
+            <ManualTransactionsPopup
               popup={true}
               params={{
                 supplier: value?.supplier_code,

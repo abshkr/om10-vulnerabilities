@@ -36,7 +36,18 @@ import OrderItemTrips from './item-trips';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, config, pageState, item, setItem, onClose, modal, params }) => {
+const FormModal = ({
+  value,
+  visible,
+  handleFormState,
+  config,
+  pageState,
+  item,
+  setItem,
+  onClose,
+  modal,
+  params,
+}) => {
   const [drawerWidth, setDrawerWidth] = useState('80vw');
   const [tableAPI, setTableAPI] = useState(undefined);
 
@@ -80,33 +91,34 @@ const FormModal = ({ value, visible, handleFormState, config, pageState, item, s
   const token = sessionStorage.getItem('token');
   const decoded = jwtDecode(token);
   const user_code = decoded?.per_code;
-  console.log("jwtDecode", decoded);
-  const site_code = decoded?.site_code
-			
+  console.log('jwtDecode', decoded);
+  const site_code = decoded?.site_code;
+
   const checkOrder = () => {
-    let is_available=false;
-    let is_approved=value?.order_approved;
-    let stat_id=value?.order_stat_id;
-    let error='';
-    
+    let is_available = false;
+    let is_approved = value?.order_approved;
+    let stat_id = value?.order_stat_id;
+    let error = '';
+
     // check if the open order has been approved
-    if ( is_approved === false ) {
+    if (is_approved === false) {
       is_available = false;
-      error = t('descriptions.schdOrderRejectNotApproved')
+      error = t('descriptions.schdOrderRejectNotApproved');
     } else {
       // check if the open order has been expired
-      if ( stat_id === '6' ) { //6	EXPIRED
+      if (stat_id === '6') {
+        //6	EXPIRED
         is_available = false;
-        error = t('descriptions.schdOrderRejectExpired')
+        error = t('descriptions.schdOrderRejectExpired');
       } else {
         // check if the open order still has enough amount to use
         const qtyTotal = item?.oitem_prod_qty;
         const qtyUsed = item?.oitem_schd_qty;
         const qtyLeft = _.toNumber(qtyTotal) - _.toNumber(qtyUsed);
-    
-        if ( qtyLeft < 0.1 ) {
+
+        if (qtyLeft < 0.1) {
           is_available = false;
-          error = t('descriptions.schdOrderRejectNotEnoughAmount')
+          error = t('descriptions.schdOrderRejectNotEnoughAmount');
         } else {
           is_available = true;
 
@@ -146,11 +158,11 @@ const FormModal = ({ value, visible, handleFormState, config, pageState, item, s
           else {
             is_available = false;
             error = t('descriptions.schdOrderRejectUnknownStatus')
-          } */							
+          } */
         }
       }
     }
-    
+
     if (error.length > 0) {
       notification.error({
         message: t('descriptions.schdOrderReject'),
@@ -158,7 +170,7 @@ const FormModal = ({ value, visible, handleFormState, config, pageState, item, s
       });
     }
     return is_available;
-  }
+  };
 
   const onFormClosed = () => {
     setItem(null);
@@ -249,6 +261,7 @@ const FormModal = ({ value, visible, handleFormState, config, pageState, item, s
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={onFormClosed}
       destroyOnClose={true}
       placement="right"
@@ -353,10 +366,7 @@ const FormModal = ({ value, visible, handleFormState, config, pageState, item, s
 
         <Form.Item name="order_items">
           <DataTable
-            data={value?.order_approved 
-              ? orderItems.filter((item)=>(item.oitem_prod_qty>0)) 
-              : orderItems
-            }
+            data={value?.order_approved ? orderItems.filter((item) => item.oitem_prod_qty > 0) : orderItems}
             height="60vh"
             minimal
             columns={fields}

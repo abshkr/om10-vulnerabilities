@@ -139,7 +139,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       return Promise.reject(t('descriptions.alreadyExists'));
     }
 
-    const len = (new TextEncoder().encode(input)).length;
+    const len = new TextEncoder().encode(input).length;
     if (input && len > 40) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
@@ -165,9 +165,11 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       }
     }
 
-    const len = (new TextEncoder().encode(input)).length;
+    const len = new TextEncoder().encode(input).length;
     if (input && len > rule.maxLength) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: ${rule.maxLength} ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${rule.maxLength} ─ ${t('descriptions.maxCharacters')}`
+      );
     }
 
     return Promise.resolve();
@@ -183,6 +185,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
@@ -237,7 +240,9 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             <Form.Item
               name="material"
               label={t('fields.material')}
-              rules={[{ required: true, title: t('fields.material'), maxLength: 40, validator: materialValidate }]}
+              rules={[
+                { required: true, title: t('fields.material'), maxLength: 40, validator: materialValidate },
+              ]}
             >
               <Input />
             </Form.Item>
@@ -266,88 +271,109 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               <Input />
             </Form.Item>
 
-            <Form.Item 
-              name="adr_desc2" 
+            <Form.Item
+              name="adr_desc2"
               label={t('fields.adrDesc2')}
               rules={[{ required: false, title: t('fields.adrDesc2'), maxLength: 256, validator: validate }]}
             >
               <Input />
             </Form.Item>
 
-            <Form.Item 
-              name="adr_desc3" 
+            <Form.Item
+              name="adr_desc3"
               label={t('fields.adrDesc3')}
               rules={[{ required: false, title: t('fields.adrDesc3'), maxLength: 256, validator: validate }]}
             >
               <Input />
             </Form.Item>
 
-            <Form.Item 
-              name="adr_fareklasse" 
+            <Form.Item
+              name="adr_fareklasse"
               label={t('fields.adrFareklasse')}
-              rules={[{ required: false, title: t('fields.adrFareklasse'), maxLength: 16, validator: validate }]}
+              rules={[
+                { required: false, title: t('fields.adrFareklasse'), maxLength: 16, validator: validate },
+              ]}
             >
               <Input />
             </Form.Item>
 
-            <Form.Item 
-              name="protect_freeze" 
+            <Form.Item
+              name="protect_freeze"
               label={t('fields.protectFreeze')}
-              rules={[{ required: false, title: t('fields.protectFreeze'), maxLength: 64, validator: validate }]}
+              rules={[
+                { required: false, title: t('fields.protectFreeze'), maxLength: 64, validator: validate },
+              ]}
             >
               <Input />
             </Form.Item>
 
-            <Form.Item 
-              name="certific_of_analysis" 
+            <Form.Item
+              name="certific_of_analysis"
               label={t('fields.certificOfAnalysis')}
-              rules={[{ required: false, title: t('fields.certificOfAnalysis'), maxLength: 16, validator: validate }]}
+              rules={[
+                {
+                  required: false,
+                  title: t('fields.certificOfAnalysis'),
+                  maxLength: 16,
+                  validator: validate,
+                },
+              ]}
             >
               <Input />
             </Form.Item>
 
-            <Form.Item 
-              name="additional_txt" 
+            <Form.Item
+              name="additional_txt"
               label={t('fields.additionalTxt')}
-              rules={[{ required: false, title: t('fields.additionalTxt'), maxLength: 256, validator: validate }]}
+              rules={[
+                { required: false, title: t('fields.additionalTxt'), maxLength: 256, validator: validate },
+              ]}
             >
               <Input />
             </Form.Item>
 
-            <Form.Item 
-              name="placard_notation1" 
+            <Form.Item
+              name="placard_notation1"
               label={t('fields.placardNotation1')}
-              rules={[{ required: false, title: t('fields.placardNotation1'), maxLength: 16, validator: validate }]}
+              rules={[
+                { required: false, title: t('fields.placardNotation1'), maxLength: 16, validator: validate },
+              ]}
             >
               <Input />
             </Form.Item>
 
-            <Form.Item 
-              name="placard_notation2" 
+            <Form.Item
+              name="placard_notation2"
               label={t('fields.placardNotation2')}
-              rules={[{ required: false, title: t('fields.placardNotation2'), maxLength: 16, validator: validate }]}
+              rules={[
+                { required: false, title: t('fields.placardNotation2'), maxLength: 16, validator: validate },
+              ]}
             >
               <Input />
             </Form.Item>
 
-            <Form.Item 
-              name="placard_notation3" 
+            <Form.Item
+              name="placard_notation3"
               label={t('fields.placardNotation3')}
-              rules={[{ required: false, title: t('fields.placardNotation3'), maxLength: 16, validator: validate }]}
+              rules={[
+                { required: false, title: t('fields.placardNotation3'), maxLength: 16, validator: validate },
+              ]}
             >
               <Input />
             </Form.Item>
 
-            <Form.Item 
-              name="placard_notation4" 
+            <Form.Item
+              name="placard_notation4"
               label={t('fields.placardNotation4')}
-              rules={[{ required: false, title: t('fields.placardNotation4'), maxLength: 16, validator: validate }]}
+              rules={[
+                { required: false, title: t('fields.placardNotation4'), maxLength: 16, validator: validate },
+              ]}
             >
               <Input />
             </Form.Item>
 
-            <Form.Item 
-              name="stcc_code" 
+            <Form.Item
+              name="stcc_code"
               label={t('fields.stccCode')}
               rules={[{ required: false, title: t('fields.stccCode'), maxLength: 32, validator: validate }]}
             >

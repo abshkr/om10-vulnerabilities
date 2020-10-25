@@ -19,10 +19,9 @@ const Forms = ({ value, visible, handleFormState, closeoutIsIdle, access }) => {
   const [calculateTrigger, setCalculateTrigger] = useState(0);
   const [isRegenerating, setRegenerate] = useState(false);
   const [tab, setTab] = useState('1');
-  
+
   const showCloseoutStatus = () => {
-    if (!closeoutIsIdle)
-    {
+    if (!closeoutIsIdle) {
       return t('descriptions.closeoutIsBusy');
     }
   };
@@ -30,7 +29,7 @@ const Forms = ({ value, visible, handleFormState, closeoutIsIdle, access }) => {
   const onTabChange = (v) => {
     console.log(v);
     setTab(v);
-  }
+  };
 
   useEffect(() => {
     setMeterTrigger(0);
@@ -44,6 +43,7 @@ const Forms = ({ value, visible, handleFormState, closeoutIsIdle, access }) => {
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={() => handleFormState(false, null)}
       // maskClosable={IS_CREATING}
       destroyOnClose={true}
@@ -62,7 +62,7 @@ const Forms = ({ value, visible, handleFormState, closeoutIsIdle, access }) => {
             {t('operations.cancel')}
           </Button>
 
-          {tab === '1' &&
+          {tab === '1' && (
             <Button
               title={showCloseoutStatus()}
               type="primary"
@@ -70,94 +70,89 @@ const Forms = ({ value, visible, handleFormState, closeoutIsIdle, access }) => {
               style={{ float: 'right', marginRight: 5 }}
               loading={isRegenerating}
               disabled={!enabled || !closeoutIsIdle}
-              onClick={()=>setReportTrigger(reportTrigger + 1)}
+              onClick={() => setReportTrigger(reportTrigger + 1)}
             >
               {t('operations.regenerate')}
             </Button>
-          }
+          )}
 
-          {tab === '2' &&
+          {tab === '2' && (
             <Button
               type="primary"
               icon={<EditOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              onClick={()=>setMeterTrigger(meterTrigger + 1)}
+              onClick={() => setMeterTrigger(meterTrigger + 1)}
               disabled={!enabled || !access.canUpdate}
             >
               {t('operations.update')}
             </Button>
-          }
+          )}
 
-          {tab === '3' &&
-          <>
-            <Button
-              type="primary"
-              icon={<RedoOutlined />}
-              style={{ float: 'right', marginRight: 5 }}
-              onClick={()=>setCalculateTrigger(calculateTrigger + 1)}
-              disabled={!enabled}
-            >
-              {t('operations.calculate')}
-            </Button>
+          {tab === '3' && (
+            <>
+              <Button
+                type="primary"
+                icon={<RedoOutlined />}
+                style={{ float: 'right', marginRight: 5 }}
+                onClick={() => setCalculateTrigger(calculateTrigger + 1)}
+                disabled={!enabled}
+              >
+                {t('operations.calculate')}
+              </Button>
 
-            <Button
-              type="primary"
-              icon={<SaveOutlined />}
-              style={{ float: 'right', marginRight: 5 }}
-              onClick={()=>setSaveToTanksTrigger(saveToTanksTrigger + 1)}
-              disabled={!enabled || !access.canUpdate}
-            >
-              {t('operations.saveToTanks')}
-            </Button>
+              <Button
+                type="primary"
+                icon={<SaveOutlined />}
+                style={{ float: 'right', marginRight: 5 }}
+                onClick={() => setSaveToTanksTrigger(saveToTanksTrigger + 1)}
+                disabled={!enabled || !access.canUpdate}
+              >
+                {t('operations.saveToTanks')}
+              </Button>
 
-            <Button
-              type="primary"
-              icon={<EditOutlined />}
-              style={{ float: 'right', marginRight: 5 }}
-              onClick={()=>setSaveToFolioTrigger(saveToFolioTrigger + 1)}
-              disabled={!enabled || !access.canUpdate}
-            >
-              {t('operations.saveToFolio')}
-            </Button>
-          </>
-          }
+              <Button
+                type="primary"
+                icon={<EditOutlined />}
+                style={{ float: 'right', marginRight: 5 }}
+                onClick={() => setSaveToFolioTrigger(saveToFolioTrigger + 1)}
+                disabled={!enabled || !access.canUpdate}
+              >
+                {t('operations.saveToFolio')}
+              </Button>
+            </>
+          )}
         </>
       }
     >
-      <Tabs 
-        defaultActiveKey="1" 
-        animated={false}
-        activeKey={tab} 
-        onChange={onTabChange} 
-      >
+      <Tabs defaultActiveKey="1" animated={false} activeKey={tab} onChange={onTabChange}>
         <TabPane style={{ paddingRight: 0 }} tab={t('tabColumns.reports')} key="1">
-          <Reports 
-            id={value?.closeout_nr} 
-            enabled={enabled} 
-            access={access} 
+          <Reports
+            id={value?.closeout_nr}
+            enabled={enabled}
+            access={access}
             handleFormState={handleFormState}
-            reportTrigger={reportTrigger} 
+            reportTrigger={reportTrigger}
             setRegenerate={setRegenerate}
           />
         </TabPane>
 
         <TabPane style={{ paddingRight: 0 }} tab={t('tabColumns.meters')} key="2">
-          <Meters 
-            id={value?.closeout_nr} 
-            enabled={enabled} 
-            access={access} 
-            handleFormState={handleFormState} 
+          <Meters
+            id={value?.closeout_nr}
+            enabled={enabled}
+            access={access}
+            handleFormState={handleFormState}
             meterTrigger={meterTrigger}
             setMeterTrigger={setMeterTrigger}
           />
         </TabPane>
 
         <TabPane tab={t('tabColumns.tanks')} key="3">
-          <Tanks 
-            id={value?.closeout_nr} 
-            enabled={enabled} 
-            access={access} 
-            handleFormState={handleFormState} 
+          <Tanks
+            id={value?.closeout_nr}
+            enabled={enabled}
+            access={access}
+            handleFormState={handleFormState}
             saveToFolioTrigger={saveToFolioTrigger}
             saveToTanksTrigger={saveToTanksTrigger}
             calculateTrigger={calculateTrigger}

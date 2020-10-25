@@ -9,16 +9,7 @@ import {
   RedoOutlined,
 } from '@ant-design/icons';
 
-import { 
-  MovementType, 
-  Unit, 
-  Source, 
-  Destination, 
-  BatchCode, 
-  Quantity, 
-  Class,
-  BaseProduct,
-} from './fields';
+import { MovementType, Unit, Source, Destination, BatchCode, Quantity, Class, BaseProduct } from './fields';
 
 import { Form, Button, Tabs, Modal, notification, Drawer, Input, InputNumber } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -35,10 +26,10 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   const { resetFields } = form;
 
   const IS_CREATING = !value;
-  
+
   const [base, setBase] = useState(null);
-  const [movementType, setMovementType] = useState("NEW");
-  
+  const [movementType, setMovementType] = useState('NEW');
+
   /** Status:
   0	NEW
   1 In progress
@@ -49,9 +40,9 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   const onComplete = (pmv_batchcode) => {
     handleFormState(false, null);
     mutate(PRODUCT_MOVEMENTS.READ);
-    setMovementType("NEW");
+    setMovementType('NEW');
     if (pmv_batchcode) {
-      setFilterValue("" + pmv_batchcode);
+      setFilterValue('' + pmv_batchcode);
     }
   };
 
@@ -244,7 +235,6 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
 
     return Promise.resolve();
   };
-  
 
   useEffect(() => {
     if (!value && !visible) {
@@ -264,6 +254,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
@@ -295,7 +286,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             </Button>
           )}
 
-          {!IS_CREATING && (value.pmv_status === "0" || value.pmv_status === "2") /* New Or Halted */ && (
+          {!IS_CREATING && (value.pmv_status === '0' || value.pmv_status === '2') /* New Or Halted */ && (
             <Button
               type="primary"
               icon={<RedoOutlined />}
@@ -307,7 +298,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             </Button>
           )}
 
-          {!IS_CREATING && value.pmv_status === "0" /* New */ && (
+          {!IS_CREATING && value.pmv_status === '0' /* New */ && (
             <Button
               type="danger"
               icon={<DeleteOutlined />}
@@ -319,7 +310,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             </Button>
           )}
 
-          {!IS_CREATING && value.pmv_status === "3" /* Complete */ && (
+          {!IS_CREATING && value.pmv_status === '3' /* Complete */ && (
             <Button
               type="primary"
               icon={<WarningOutlined />}
@@ -330,7 +321,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             </Button>
           )}
 
-          {!IS_CREATING && value.pmv_status === "1" /* In Progress */ && (
+          {!IS_CREATING && value.pmv_status === '1' /* In Progress */ && (
             <Button
               type="danger"
               icon={<WarningOutlined />}
@@ -365,7 +356,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             <Class form={form} value={value} />
             <Quantity form={form} value={value} />
             <Unit form={form} value={value} />
-            {IS_CREATING && movementType === "COMPLETE" && 
+            {IS_CREATING && movementType === 'COMPLETE' && (
               <Form.Item
                 name="pmv_opening_qty"
                 label={t('fields.initialStandardVolume')}
@@ -373,8 +364,8 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               >
                 <Input disabled={!!value} />
               </Form.Item>
-            }
-            {IS_CREATING && movementType === "COMPLETE" && 
+            )}
+            {IS_CREATING && movementType === 'COMPLETE' && (
               <Form.Item
                 name="pmv_obsvd_dens"
                 label={t('fields.prodMovDens')}
@@ -382,7 +373,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               >
                 <InputNumber min={0} disabled={!!value} />
               </Form.Item>
-            }
+            )}
           </TabPane>
         </Tabs>
       </Form>

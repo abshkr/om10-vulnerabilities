@@ -233,6 +233,7 @@ const Period = ({ selected, setVisibility, visible }) => {
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       width="33vw"
       onClose={() => setVisibility(false)}
       visible={visible}

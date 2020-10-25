@@ -113,10 +113,10 @@ const FormModal = ({ value, length, visible, handleFormState, access }) => {
     }
   }, [value, visible]);
 
-
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
@@ -127,11 +127,9 @@ const FormModal = ({ value, length, visible, handleFormState, access }) => {
       footer={
         <>
           {!IS_CREATING && value?.mr_status !== '2' && (
-            <div
-              style={{ float: 'left', marginRight: 5 }}
-            >
-              <Tooltip placement="topRight" title={t("descriptions.countReasonSpecmove")} >
-                <Tag color={value?.mlitm_count>0 ? 'red' : 'green'}>
+            <div style={{ float: 'left', marginRight: 5 }}>
+              <Tooltip placement="topRight" title={t('descriptions.countReasonSpecmove')}>
+                <Tag color={value?.mlitm_count > 0 ? 'red' : 'green'}>
                   {t('fields.countReasonSpecmove') + ': ' + value?.mlitm_count}
                 </Tag>
               </Tooltip>
@@ -177,11 +175,19 @@ const FormModal = ({ value, length, visible, handleFormState, access }) => {
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
             <p>ID: {value ? value?.mr_id : length + 1}</p>
-            {value?.mr_status === '2' && (<p><b>{value?.mr_flag_desc}</b></p>)}
+            {value?.mr_status === '2' && (
+              <p>
+                <b>{value?.mr_flag_desc}</b>
+              </p>
+            )}
 
             <Row>
-              <Col><SendToHost form={form} onChange={setSend} value={value} /></Col>
-              <Col><ShowComment form={form} onChange={setShowComment} value={value} /></Col>
+              <Col>
+                <SendToHost form={form} onChange={setSend} value={value} />
+              </Col>
+              <Col>
+                <ShowComment form={form} onChange={setShowComment} value={value} />
+              </Col>
             </Row>
 
             <Type form={form} value={value} />

@@ -1,11 +1,6 @@
 import React, { useEffect } from 'react';
 
-import {
-  EditOutlined,
-  PlusOutlined,
-  QuestionCircleOutlined,
-  CloseOutlined,
-} from '@ant-design/icons';
+import { EditOutlined, PlusOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
 import { Form, Button, Tabs, Modal, notification, Drawer, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
@@ -22,10 +17,10 @@ const TimecodeForm = ({ value, visible, handleFormState, setCode }) => {
   const { setFieldsValue } = form;
 
   const IS_CREATING = !value;
-  
+
   const onComplete = (title) => {
     setCode(title);
-    handleFormState(false, null); 
+    handleFormState(false, null);
     mutate(TIME_CODES.READ);
   };
 
@@ -67,7 +62,7 @@ const TimecodeForm = ({ value, visible, handleFormState, setCode }) => {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.timeCode')}`);
     }
 
-    const len = (new TextEncoder().encode(input)).length;
+    const len = new TextEncoder().encode(input).length;
     if (input && len > 4) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 4 ─ ${t('descriptions.maxCharacters')}`);
     }
@@ -77,13 +72,14 @@ const TimecodeForm = ({ value, visible, handleFormState, setCode }) => {
 
   useEffect(() => {
     setFieldsValue({
-      tcd_title: "",
-    })
+      tcd_title: '',
+    });
   }, [value, visible]);
 
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
@@ -113,18 +109,22 @@ const TimecodeForm = ({ value, visible, handleFormState, setCode }) => {
         </>
       }
     >
-      <Form 
-        layout="vertical" 
-        form={form} 
-        scrollToFirstError 
+      <Form
+        layout="vertical"
+        form={form}
+        scrollToFirstError
         initialValues={{
-          tcd_title: "",
+          tcd_title: '',
         }}
       >
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-            <Form.Item name="tcd_title" label={t('fields.timeCode')} rules={[{ required: true, validator: validate }]}>
-                <Input></Input>
+            <Form.Item
+              name="tcd_title"
+              label={t('fields.timeCode')}
+              rules={[{ required: true, validator: validate }]}
+            >
+              <Input></Input>
             </Form.Item>
           </TabPane>
         </Tabs>

@@ -69,7 +69,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     handleFormState(false, null);
     mutate(PARTNERS.READ);
     if (prtnr_code) {
-      setFilterValue("" + prtnr_code);
+      setFilterValue('' + prtnr_code);
     }
   };
 
@@ -163,6 +163,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
@@ -173,11 +174,9 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       footer={
         <>
           {!IS_CREATING && value?.mr_status !== '2' && (
-            <div
-              style={{ float: 'left', marginRight: 5 }}
-            >
-              <Tooltip placement="topRight" title={t("descriptions.countPartnerPartnership")} >
-                <Tag color={value?.pshp_count>0 ? 'red' : 'green'}>
+            <div style={{ float: 'left', marginRight: 5 }}>
+              <Tooltip placement="topRight" title={t('descriptions.countPartnerPartnership')}>
+                <Tag color={value?.pshp_count > 0 ? 'red' : 'green'}>
                   {t('fields.countPartnerPartnership') + ': ' + value?.pshp_count}
                 </Tag>
               </Tooltip>

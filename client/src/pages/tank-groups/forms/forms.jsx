@@ -27,7 +27,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   const [tanks, setTanks] = useState([]);
   const [selected, setSelected] = useState([]);
   const [pickups, setPicks] = useState([]);
-  
+
   const tgr_name = value?.tgr_name;
   const old_active = value?.tgr_tankcode;
 
@@ -216,6 +216,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
@@ -239,7 +240,12 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               htmlType="button"
               icon={<CheckOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={IS_CREATING || selected.length <= 0 || selected[0].tank_code == old_active || !access.canUpdate}
+              disabled={
+                IS_CREATING ||
+                selected.length <= 0 ||
+                selected[0].tank_code == old_active ||
+                !access.canUpdate
+              }
               onClick={onActivate}
             >
               {t('operations.activate')}
@@ -278,9 +284,9 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               <Input disabled={!!value}></Input>
             </Form.Item>
 
-            <Divider >{t('fields.availableTanks')}</Divider>
+            <Divider>{t('fields.availableTanks')}</Divider>
 
-            <Form.Item name="tgr_tanklist" >
+            <Form.Item name="tgr_tanklist">
               <Select
                 dropdownMatchSelectWidth={false}
                 showSearch
@@ -294,7 +300,9 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               >
                 {pickups.map((item, index) => (
                   <Select.Option key={index} value={item.tank_code}>
-                    {`${t('fields.baseProduct')}: [ ${item.tank_basecode} - ${item.tank_basename} ] - ${t('fields.tank')}: [ ${item.tank_code} ]`}
+                    {`${t('fields.baseProduct')}: [ ${item.tank_basecode} - ${item.tank_basename} ] - ${t(
+                      'fields.tank'
+                    )}: [ ${item.tank_code} ]`}
                   </Select.Option>
                 ))}
               </Select>

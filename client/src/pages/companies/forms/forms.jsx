@@ -177,13 +177,20 @@ const FormModal = ({
 
   const onFinish = async () => {
     const values = await form.validateFields();
-    
-    if (!values.carrier && !values.customer &&  !values.drawer &&
-      !values.employer && !values.host && !values.issuer &&
-      !values.site_manager && !values.supplier) {
+
+    if (
+      !values.carrier &&
+      !values.customer &&
+      !values.drawer &&
+      !values.employer &&
+      !values.host &&
+      !values.issuer &&
+      !values.site_manager &&
+      !values.supplier
+    ) {
       notification.error({
-        message: t("messages.validationFailed"),
-        description: t("descriptions.noCompanyType"),
+        message: t('messages.validationFailed'),
+        description: t('descriptions.noCompanyType'),
       });
       return;
     }
@@ -258,7 +265,7 @@ const FormModal = ({
       }
     }
 
-    const len = (new TextEncoder().encode(input)).length;
+    const len = new TextEncoder().encode(input).length;
     if (input && len > 16) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 16 ─ ${t('descriptions.maxCharacters')}`);
     }
@@ -273,7 +280,7 @@ const FormModal = ({
       }
     }
 
-    const len = (new TextEncoder().encode(input)).length;
+    const len = new TextEncoder().encode(input).length;
     if (input && len > 300) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 300 ─ ${t('descriptions.maxCharacters')}`);
     }
@@ -284,6 +291,7 @@ const FormModal = ({
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
@@ -305,7 +313,7 @@ const FormModal = ({
               {t('operations.specialAction')}
             </Button>
           )}
-          
+
           {!IS_CREATING && (
             <Button
               type="primary"
@@ -356,19 +364,27 @@ const FormModal = ({
       <Form layout="vertical" form={form} scrollToFirstError>
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1" style={{ height: '60vh' }}>
-            <Form.Item name="cmpy_code" label={t('fields.companyCode')} rules={[{ required: true, validator: validateCode }]}>
+            <Form.Item
+              name="cmpy_code"
+              label={t('fields.companyCode')}
+              rules={[{ required: true, validator: validateCode }]}
+            >
               <Input disabled={!IS_CREATING}></Input>
             </Form.Item>
             <Form.Item name="cmpy_plant" label={t('fields.plantCode')}>
               <Input></Input>
             </Form.Item>
-            <Form.Item name="cmpy_name" label={t('fields.companyName')} rules={[{ required: true, validator: validateName }]}>
+            <Form.Item
+              name="cmpy_name"
+              label={t('fields.companyName')}
+              rules={[{ required: true, validator: validateName }]}
+            >
               <Input></Input>
             </Form.Item>
             {/* <Form.Item name="cmpy_aoi" label={t('fields.aoiNumber')}>
               <InputNumber maxLength={4} min={0} max={9999} precision={0} style={{ width: '100%' }}></InputNumber>
             </Form.Item> */}
-            <InputNumber 
+            <InputNumber
               form={form}
               value={value?.cmpy_aoi}
               name="cmpy_aoi"
@@ -403,7 +419,11 @@ const FormModal = ({
               <Row gutter={[8, 10]}>
                 <Col span={6}>
                   <Form.Item name="site_manager" noStyle>
-                    <Checkbox checked={site_manager && !IS_CREATING} disabled={true} onChange={onManagerChange}>
+                    <Checkbox
+                      checked={site_manager && !IS_CREATING}
+                      disabled={true}
+                      onChange={onManagerChange}
+                    >
                       {t('fields.siteManager')}
                     </Checkbox>
                   </Form.Item>

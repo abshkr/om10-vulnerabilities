@@ -159,7 +159,7 @@ const GatePermForm = ({ value, visible, handleFormState, access }) => {
         rule_auth: values.rule_auth,
         rule_authname: values.rule_authname,
         rule_first: rules.length === 1,
-        rule_parent: value? value.prmssn_k : next_id,
+        rule_parent: value ? value.prmssn_k : next_id,
         rule_expiry_check: values.rule_expiry_check,
         is_new: true,
       };
@@ -217,6 +217,7 @@ const GatePermForm = ({ value, visible, handleFormState, access }) => {
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       destroyOnClose={true}

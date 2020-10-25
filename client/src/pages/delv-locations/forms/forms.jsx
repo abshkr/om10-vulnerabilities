@@ -82,11 +82,10 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, cu
     setDrawerWidth('50vw');
     setMainTabOn(true);
     if (delv_code) {
-      setFilterValue("" + delv_code);
+      setFilterValue('' + delv_code);
     } else {
       setFilterValue(' ');
     }
-
   };
 
   const createOneLink = async (location) => {
@@ -95,22 +94,22 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, cu
       cust_acnt: customer,
     };
     await api
-    .post(DELV_LOCATIONS.CREATE_LINK, item)
-    .then(() => {
-      onComplete(location);
-      notification.success({
-        message: t('messages.createSuccess'),
-        description: t('descriptions.createSuccess'),
-      });
-    })
-    .catch((errors) => {
-      _.forEach(errors.response.data.errors, (error) => {
-        notification.error({
-          message: error.type,
-          description: error.message,
+      .post(DELV_LOCATIONS.CREATE_LINK, item)
+      .then(() => {
+        onComplete(location);
+        notification.success({
+          message: t('messages.createSuccess'),
+          description: t('descriptions.createSuccess'),
+        });
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
         });
       });
-    });
   };
 
   const onFinish = async () => {
@@ -152,23 +151,23 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, cu
 
   const deleteLocation = async (value) => {
     await api
-    .post(DELV_LOCATIONS.DELETE, value)
-    .then(() => {
-      onComplete();
+      .post(DELV_LOCATIONS.DELETE, value)
+      .then(() => {
+        onComplete();
 
-      notification.success({
-        message: t('messages.deleteSuccess'),
-        description: `${t('descriptions.deleteSuccess')}`,
-      });
-    })
-    .catch((errors) => {
-      _.forEach(errors.response.data.errors, (error) => {
-        notification.error({
-          message: error.type,
-          description: error.message,
+        notification.success({
+          message: t('messages.deleteSuccess'),
+          description: `${t('descriptions.deleteSuccess')}`,
+        });
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
         });
       });
-    });
   };
 
   const deleteOneLink = async (value) => {
@@ -177,18 +176,18 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, cu
       cust_acnt: customer,
     };
     await api
-    .post(DELV_LOCATIONS.DELETE_LINK, item)
-    .then(() => {
-      deleteLocation(value);
-    })
-    .catch((errors) => {
-      _.forEach(errors.response.data.errors, (error) => {
-        notification.error({
-          message: error.type,
-          description: error.message,
+      .post(DELV_LOCATIONS.DELETE_LINK, item)
+      .then(() => {
+        deleteLocation(value);
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
         });
       });
-    });
   };
 
   const onDelete = () => {
@@ -218,6 +217,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, cu
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
@@ -255,10 +255,10 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, cu
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               disabled={
-                !access?.canDelete || 
-                !mainTabOn || 
-                (!customer && value?.delv_cust_count > 0) || 
-                (customer && value?.delv_cust_count > 1) || 
+                !access?.canDelete ||
+                !mainTabOn ||
+                (!customer && value?.delv_cust_count > 0) ||
+                (customer && value?.delv_cust_count > 1) ||
                 value?.delv_order_count > 0
               }
               onClick={onDelete}

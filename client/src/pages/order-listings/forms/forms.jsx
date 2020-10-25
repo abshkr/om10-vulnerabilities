@@ -52,7 +52,16 @@ import { ManualTransactionsPopup } from '../../manual-transactions';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, config, pageState, revalidate, locateOrder }) => {
+const FormModal = ({
+  value,
+  visible,
+  handleFormState,
+  access,
+  config,
+  pageState,
+  revalidate,
+  locateOrder,
+}) => {
   const [drawerWidth, setDrawerWidth] = useState('80vw');
   const [mainTabOn, setMainTabOn] = useState(true);
   const [tableAPI, setTableAPI] = useState(undefined);
@@ -102,22 +111,26 @@ const FormModal = ({ value, visible, handleFormState, access, config, pageState,
     { "ordstat_type_id": "8",         "ordstat_type_name": "PARTIALLY DELIVERED" }
   */
   const IS_CREATING = !value;
-  const CAN_MAKE_TRANSACTIONS = 
-    access.canCreate && config.manageMakeManualTransaction && value?.order_approved && 
-    (value?.order_stat_id === '0' || value?.order_stat_id === '1' || value?.order_stat_id === '7' || value?.order_stat_id === '2');
+  const CAN_MAKE_TRANSACTIONS =
+    access.canCreate &&
+    config.manageMakeManualTransaction &&
+    value?.order_approved &&
+    (value?.order_stat_id === '0' ||
+      value?.order_stat_id === '1' ||
+      value?.order_stat_id === '7' ||
+      value?.order_stat_id === '2');
 
   //const CAN_ORDER_PERIOD = !!selected && !!value;
   const CAN_ORDER_PERIOD =
     selected !== null && selected !== undefined && value !== null && value !== undefined;
-  const CAN_DELIVERY_DETAIL = 
-    value !== null && value !== undefined && config.manageViewDeliveryDetails;
+  const CAN_DELIVERY_DETAIL = value !== null && value !== undefined && config.manageViewDeliveryDetails;
   const fields = columns(t, pageState, form, units);
 
   const token = sessionStorage.getItem('token');
   const decoded = jwtDecode(token);
   const user_code = decoded?.per_code;
-  console.log("jwtDecode", decoded);
-  const site_code = decoded?.site_code
+  console.log('jwtDecode', decoded);
+  const site_code = decoded?.site_code;
 
   const doTabChanges = (tabPaneKey) => {
     if (tabPaneKey === '1') {
@@ -398,7 +411,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, pageState,
   const handleItemSelect = (value) => {
     // console.log('handleItemSelect', value);
     if (value) {
-      value.editable = pageState==='detail'? false : true;
+      value.editable = pageState === 'detail' ? false : true;
     }
     // console.log('handleItemSelect222', value);
     setSelected(value);
@@ -407,6 +420,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, pageState,
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
@@ -588,7 +602,9 @@ const FormModal = ({ value, visible, handleFormState, access, config, pageState,
                   required={false}
                   allowClear={true}
                   maxLength={20}
-                  disabled={(pageState==='create'||pageState==='edit'||pageState==='detail')? false : true}
+                  disabled={
+                    pageState === 'create' || pageState === 'edit' || pageState === 'detail' ? false : true
+                  }
                   onChange={setSoldTo}
                   popupManager={PartnershipManager}
                   popupTitle={t('fields.orderSoldTo') + ' - ' + t('pageNames.partnership')}
@@ -599,7 +615,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, pageState,
                     partner_code: soldTo,
                     partner_type: 'AG',
                     partner_cmpy_code: supplier,
-                    partner_cust_acct: ''
+                    partner_cust_acct: '',
                   }}
                 />
               </Col>
@@ -614,7 +630,9 @@ const FormModal = ({ value, visible, handleFormState, access, config, pageState,
                   required={false}
                   allowClear={true}
                   maxLength={20}
-                  disabled={(pageState==='create'||pageState==='edit'||pageState==='detail')? false : true}
+                  disabled={
+                    pageState === 'create' || pageState === 'edit' || pageState === 'detail' ? false : true
+                  }
                   onChange={setShipTo}
                   popupManager={PartnershipManager}
                   popupTitle={t('fields.orderShipTo') + ' - ' + t('pageNames.partnership')}
@@ -625,7 +643,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, pageState,
                     partner_code: shipTo,
                     partner_type: 'WE',
                     partner_cmpy_code: supplier,
-                    partner_cust_acct: ''
+                    partner_cust_acct: '',
                   }}
                 />
               </Col>
@@ -654,9 +672,8 @@ const FormModal = ({ value, visible, handleFormState, access, config, pageState,
 
             <Form.Item name="order_items">
               <DataTable
-                data={value?.order_approved 
-                  ? orderItems.filter((item)=>(item.oitem_prod_qty>0)) 
-                  : orderItems
+                data={
+                  value?.order_approved ? orderItems.filter((item) => item.oitem_prod_qty > 0) : orderItems
                 }
                 height="60vh"
                 minimal
@@ -675,9 +692,9 @@ const FormModal = ({ value, visible, handleFormState, access, config, pageState,
           <TabPane tab={t('tabColumns.orderItemTrips')} disabled={IS_CREATING || !selected} key="3">
             <OrderItemTrips value={value} orderItem={selected} />
           </TabPane>
-          <TabPane 
-            tab={t('tabColumns.deliveryDetails')} 
-            disabled={IS_CREATING || !CAN_DELIVERY_DETAIL} 
+          <TabPane
+            tab={t('tabColumns.deliveryDetails')}
+            disabled={IS_CREATING || !CAN_DELIVERY_DETAIL}
             key="4"
           >
             <DeliveryDetails
@@ -694,7 +711,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, pageState,
             disabled={IS_CREATING || !CAN_MAKE_TRANSACTIONS}
             key="5"
           >
-            <ManualTransactionsPopup 
+            <ManualTransactionsPopup
               popup={true}
               params={{
                 supplier: value?.order_supp_code,

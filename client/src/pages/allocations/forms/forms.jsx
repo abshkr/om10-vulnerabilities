@@ -59,7 +59,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal 
 
     api.get(url).then((response) => {
       const payload = response.data?.records || [];
-      
+
       form.setFieldsValue({
         allocs: payload,
       });
@@ -211,6 +211,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal 
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       destroyOnClose={true}

@@ -108,6 +108,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       destroyOnClose={true}

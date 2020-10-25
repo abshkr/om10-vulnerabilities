@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
-import { EditOutlined, PlusOutlined, DeleteOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
+import {
+  EditOutlined,
+  PlusOutlined,
+  DeleteOutlined,
+  QuestionCircleOutlined,
+  CloseOutlined,
+} from '@ant-design/icons';
 import { Form, Button, Tabs, Modal, notification, Drawer, Row, Col, Tag, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
@@ -71,7 +77,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     setDrawerWidth('60vw');
     setMainTabOn(true);
     if (cust_account) {
-      setFilterValue("" + cust_account);
+      setFilterValue('' + cust_account);
     } else {
       setFilterValue(' ');
     }
@@ -147,18 +153,21 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     }
   }, [resetFields, value]); */
 
-  const layout = IS_CREATING ? {layout:"vertical"} : {
-    labelCol: {
-      span: 6,
-    },
-    wrapperCol: {
-      span: 18,
-    },
-  };
+  const layout = IS_CREATING
+    ? { layout: 'vertical' }
+    : {
+        labelCol: {
+          span: 6,
+        },
+        wrapperCol: {
+          span: 18,
+        },
+      };
 
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
@@ -169,16 +178,14 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       footer={
         <>
           {!IS_CREATING && (
-            <div
-              style={{ float: 'left', marginRight: 5 }}
-            >
-              <Tooltip placement="topRight" title={t("descriptions.countCustOrder")} >
-                <Tag color={value?.cust_order_count>0 ? 'red' : 'green'}>
+            <div style={{ float: 'left', marginRight: 5 }}>
+              <Tooltip placement="topRight" title={t('descriptions.countCustOrder')}>
+                <Tag color={value?.cust_order_count > 0 ? 'red' : 'green'}>
                   {t('fields.countCustOrder') + ': ' + value?.cust_order_count}
                 </Tag>
               </Tooltip>
-              <Tooltip placement="topRight" title={t("descriptions.countCustLocation")} >
-                <Tag color={value?.cust_dloc_count>0 ? 'red' : 'green'}>
+              <Tooltip placement="topRight" title={t('descriptions.countCustLocation')}>
+                <Tag color={value?.cust_dloc_count > 0 ? 'red' : 'green'}>
                   {t('fields.countCustLocation') + ': ' + value?.cust_dloc_count}
                 </Tag>
               </Tooltip>
@@ -209,7 +216,9 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={!access?.canDelete || !mainTabOn || value?.cust_order_count>0 || value?.cust_dloc_count>0}
+              disabled={
+                !access?.canDelete || !mainTabOn || value?.cust_order_count > 0 || value?.cust_dloc_count > 0
+              }
               onClick={onDelete}
             >
               {t('operations.delete')}
@@ -261,95 +270,71 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               </Col>
             </Row>
             <Row gutter={[8, 2]}>
-              <Col span={12}>
-                {!IS_CREATING && <Category form={form} value={value} reload={mainTabOn} />}
-              </Col>
-              <Col span={12}>
-                {!IS_CREATING && <Location form={form} value={value} reload={mainTabOn} />}
-              </Col>
+              <Col span={12}>{!IS_CREATING && <Category form={form} value={value} reload={mainTabOn} />}</Col>
+              <Col span={12}>{!IS_CREATING && <Location form={form} value={value} reload={mainTabOn} />}</Col>
             </Row>
             <Row gutter={[8, 2]}>
-              <Col span={12}>
-                {!IS_CREATING && <Contact form={form} value={value} />}
-              </Col>
-              <Col span={12}>
-                {!IS_CREATING && <Phone form={form} value={value} />}
-              </Col>
+              <Col span={12}>{!IS_CREATING && <Contact form={form} value={value} />}</Col>
+              <Col span={12}>{!IS_CREATING && <Phone form={form} value={value} />}</Col>
             </Row>
             <Row gutter={[8, 2]}>
-              <Col span={12}>
-                {!IS_CREATING && <PriceType form={form} value={value} />}
-              </Col>
-              <Col span={12}>
-                {!IS_CREATING && <InvoiceType form={form} value={value} />}
-              </Col>
+              <Col span={12}>{!IS_CREATING && <PriceType form={form} value={value} />}</Col>
+              <Col span={12}>{!IS_CREATING && <InvoiceType form={form} value={value} />}</Col>
             </Row>
             <Row gutter={[8, 2]}>
-              <Col span={12}>
-                {!IS_CREATING && <SaleType form={form} value={value} />}
-              </Col>
-              <Col span={12}>
-                {!IS_CREATING && <TermsType form={form} value={value} />}
-              </Col>
+              <Col span={12}>{!IS_CREATING && <SaleType form={form} value={value} />}</Col>
+              <Col span={12}>{!IS_CREATING && <TermsType form={form} value={value} />}</Col>
             </Row>
             <Row gutter={[8, 2]}>
-              <Col span={12}>
-                {!IS_CREATING && <OrderDays form={form} value={value} />}
-              </Col>
-              <Col span={12}>
-                {!IS_CREATING && <CreditDays form={form} value={value} />}
-              </Col>
+              <Col span={12}>{!IS_CREATING && <OrderDays form={form} value={value} />}</Col>
+              <Col span={12}>{!IS_CREATING && <CreditDays form={form} value={value} />}</Col>
             </Row>
             <Row gutter={[8, 2]}>
-              <Col span={12}>
-                {!IS_CREATING && <AccountBalance form={form} value={value} />}
-              </Col>
-              <Col span={12}>
-                {!IS_CREATING && <CreditLimit form={form} value={value} />}
-              </Col>
+              <Col span={12}>{!IS_CREATING && <AccountBalance form={form} value={value} />}</Col>
+              <Col span={12}>{!IS_CREATING && <CreditLimit form={form} value={value} />}</Col>
             </Row>
           </TabPane>
           <TabPane tab={t('tabColumns.addresses')} key="2">
             <AddressesPopup popup={true} />
           </TabPane>
-          {!IS_CREATING && 
-          <TabPane tab={t('tabColumns.customerCategories')} key="3">
-            <CustomerCategoriesPopup popup={true} />
-          </TabPane> 
-          }
-          {!IS_CREATING && 
-          <TabPane tab={t('tabColumns.allocations')} key="4">
-            <AllocationsPopup
-              popup={true}
-              params={{
-                alloc_type: '3',
-                alloc_cmpycode: value?.cust_cmpy_code,
-              }}
-            />
-          </TabPane>
-          }
-          {!IS_CREATING && 
-          <TabPane tab={t('tabColumns.orderListing')} key="5">
-            <OrderListingsPopup
-              popup={true}
-              params={{
-                order_supp_code: value?.cust_supp_code,
-                order_cust_acnt: value?.cust_account,
-              }}
-            />
-          </TabPane>
-          }
-          {!IS_CREATING && 
-          <TabPane tab={t('tabColumns.deliveryLocations')} key="6">
-            <DelvLocationsPopup
-              popup={true}
-              params={{
-                delv_cust_suppcode: value?.cust_supp_code,
-                delv_cust_acct: value?.cust_account,
-              }}
-            />
-          </TabPane>
-          }
+          {!IS_CREATING && (
+            <TabPane tab={t('tabColumns.customerCategories')} key="3">
+              <CustomerCategoriesPopup popup={true} />
+            </TabPane>
+          )}
+          {!IS_CREATING && (
+            <TabPane tab={t('tabColumns.allocations')} key="4">
+              <AllocationsPopup
+                popup={true}
+                params={{
+                  alloc_type: '3',
+                  alloc_cmpycode: value?.cust_cmpy_code,
+                }}
+              />
+            </TabPane>
+          )}
+          {!IS_CREATING && (
+            <TabPane tab={t('tabColumns.orderListing')} key="5">
+              <OrderListingsPopup
+                popup={true}
+                params={{
+                  order_supp_code: value?.cust_supp_code,
+                  order_cust_acnt: value?.cust_account,
+                }}
+              />
+            </TabPane>
+          )}
+          {!IS_CREATING && (
+            <TabPane tab={t('tabColumns.deliveryLocations')} key="6">
+              <DelvLocationsPopup
+                popup={true}
+                params={{
+                  delv_cust_suppcode: value?.cust_supp_code,
+                  delv_cust_acct: value?.cust_account,
+                }}
+              />
+            </TabPane>
+          )}
         </Tabs>
       </Form>
     </Drawer>

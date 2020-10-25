@@ -50,7 +50,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
   const token = sessionStorage.getItem('token');
   const decoded = jwtDecode(token);
   const user_code = decoded?.per_code;
-  const site_code = decoded?.site_code
+  const site_code = decoded?.site_code;
 
   const IS_CREATING = !value;
   // status: 0 - 'Entering', 5 - 'Completed', 9 - 'Reversed', 4 - 'Outstanding'
@@ -62,12 +62,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
   const changeTankTo = (value) => {
     setTankTo(value);
     setLastChangedTank(value);
-  }
+  };
 
   const changeTankFrom = (value) => {
     setTankFrom(value);
     setLastChangedTank(value);
-  }
+  };
 
   const onTypeChange = (value) => {
     setType(value);
@@ -126,16 +126,21 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
     const values = await form.validateFields();
     let found = false;
     console.log('spec onFinish', values);
-    if (values?.mlitm_qty_amb && _.toNumber(values?.mlitm_qty_amb) > 0 &&
-      values?.mlitm_qty_cor && _.toNumber(values?.mlitm_qty_cor) > 0 && 
-      values?.mlitm_qty_kg && _.toNumber(values?.mlitm_qty_kg) > 0 && 
-      (values?.mlitm_temp_amb===0 || values?.mlitm_temp_amb) && 
-      values?.mlitm_dens_cor) {
+    if (
+      values?.mlitm_qty_amb &&
+      _.toNumber(values?.mlitm_qty_amb) > 0 &&
+      values?.mlitm_qty_cor &&
+      _.toNumber(values?.mlitm_qty_cor) > 0 &&
+      values?.mlitm_qty_kg &&
+      _.toNumber(values?.mlitm_qty_kg) > 0 &&
+      (values?.mlitm_temp_amb === 0 || values?.mlitm_temp_amb) &&
+      values?.mlitm_dens_cor
+    ) {
       found = true;
     }
     if (found === false) {
       notification.warning({
-        message: IS_CREATING ? t('descriptions.createFailed') :  t('descriptions.updateFailed'),
+        message: IS_CREATING ? t('descriptions.createFailed') : t('descriptions.updateFailed'),
         description: t('descriptions.noTransferDetailsSpec'),
       });
       return;
@@ -166,10 +171,9 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
           values.mlitm_prodcode_to = '';
         }
         values.mlitm_terminal = site_code;
-  
+
         if (IS_CREATING) {
-          await api.get(`${SPECIAL_MOVEMENTS.NEXT_ID}`)
-          .then((response) => {
+          await api.get(`${SPECIAL_MOVEMENTS.NEXT_ID}`).then((response) => {
             const payload = response.data?.records || [];
             values.mlitm_id = payload[0].next_id;
           });
@@ -177,16 +181,14 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
 
         await api
           .post(IS_CREATING ? SPECIAL_MOVEMENTS.CREATE : SPECIAL_MOVEMENTS.UPDATE, values)
-          .then(
-            () => {
-              onComplete(values?.mlitm_id);
+          .then(() => {
+            onComplete(values?.mlitm_id);
 
-              notification.success({
-                message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-                description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.createSuccess'),
-              });
-            }
-          )
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.createSuccess'),
+            });
+          })
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
@@ -210,23 +212,22 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       onOk: async () => {
         await api
           .post(SPECIAL_MOVEMENTS.DELETE, value)
-          .then(
-            () => {
-              onComplete();
+          .then(() => {
+            onComplete();
 
-              notification.success({
-                message: t('messages.deleteSuccess'),
-                description: `${t('descriptions.deleteSuccess')}`,
-              });
-            })
-            .catch((errors) => {
-              _.forEach(errors.response.data.errors, (error) => {
-                notification.error({
-                  message: error.type,
-                  description: error.message,
-                });
+            notification.success({
+              message: t('messages.deleteSuccess'),
+              description: `${t('descriptions.deleteSuccess')}`,
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
               });
             });
+          });
       },
     });
   };
@@ -246,12 +247,19 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
 
     console.log('spec onCalculate', payload, quantitySource);
 
-    if (String(payload?.mlitm_qty_amb).trim().length === 0 && 
-      String(payload?.mlitm_qty_cor).trim().length === 0 && 
-      String(payload?.mlitm_qty_kg).trim().length === 0) {
+    if (
+      String(payload?.mlitm_qty_amb).trim().length === 0 &&
+      String(payload?.mlitm_qty_cor).trim().length === 0 &&
+      String(payload?.mlitm_qty_kg).trim().length === 0
+    ) {
       notification.error({
         message: t('validate.set'),
-        description: t('fields.observedQuantity')+t('descriptions.or')+t('fields.standardQuantity')+t('descriptions.or')+t('fields.observedMass'),
+        description:
+          t('fields.observedQuantity') +
+          t('descriptions.or') +
+          t('fields.standardQuantity') +
+          t('descriptions.or') +
+          t('fields.observedMass'),
       });
       return;
     }
@@ -259,17 +267,29 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
     if (!payload?.mlitm_qty_amb && !payload?.mlitm_qty_cor && !payload?.mlitm_qty_kg) {
       notification.error({
         message: t('validate.set'),
-        description: t('fields.observedQuantity')+t('descriptions.or')+t('fields.standardQuantity')+t('descriptions.or')+t('fields.observedMass'),
+        description:
+          t('fields.observedQuantity') +
+          t('descriptions.or') +
+          t('fields.standardQuantity') +
+          t('descriptions.or') +
+          t('fields.observedMass'),
       });
       return;
     }
 
-
-    if (!quantitySource || String(quantitySource?.qty).trim().length === 0 || _.toNumber(quantitySource?.qty) === 0) {
+    if (
+      !quantitySource ||
+      String(quantitySource?.qty).trim().length === 0 ||
+      _.toNumber(quantitySource?.qty) === 0
+    ) {
       notification.error({
         message: t('validate.set'),
-        description: !quantitySource 
-          ? (t('fields.observedQuantity')+t('descriptions.or')+t('fields.standardQuantity')+t('descriptions.or')+t('fields.observedMass'))
+        description: !quantitySource
+          ? t('fields.observedQuantity') +
+            t('descriptions.or') +
+            t('fields.standardQuantity') +
+            t('descriptions.or') +
+            t('fields.observedMass')
           : quantitySource?.title,
       });
       return;
@@ -281,7 +301,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       });
       return;
     }
-    if ((!payload?.mlitm_temp_amb && payload?.mlitm_temp_amb !== 0) || String(payload?.mlitm_temp_amb).trim().length === 0) {
+    if (
+      (!payload?.mlitm_temp_amb && payload?.mlitm_temp_amb !== 0) ||
+      String(payload?.mlitm_temp_amb).trim().length === 0
+    ) {
       notification.error({
         message: t('validate.set'),
         description: t('fields.observedTemperature'),
@@ -355,11 +378,16 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
   const onSubmit = async () => {
     const values = await form.validateFields();
     let found = false;
-    if (values?.mlitm_qty_amb && _.toNumber(values?.mlitm_qty_amb) > 0 &&
-      values?.mlitm_qty_cor && _.toNumber(values?.mlitm_qty_cor) > 0 && 
-      values?.mlitm_qty_kg && _.toNumber(values?.mlitm_qty_kg) > 0 && 
-      (values?.mlitm_temp_amb===0 || values?.mlitm_temp_amb) && 
-      values?.mlitm_dens_cor) {
+    if (
+      values?.mlitm_qty_amb &&
+      _.toNumber(values?.mlitm_qty_amb) > 0 &&
+      values?.mlitm_qty_cor &&
+      _.toNumber(values?.mlitm_qty_cor) > 0 &&
+      values?.mlitm_qty_kg &&
+      _.toNumber(values?.mlitm_qty_kg) > 0 &&
+      (values?.mlitm_temp_amb === 0 || values?.mlitm_temp_amb) &&
+      values?.mlitm_dens_cor
+    ) {
       found = true;
     }
     if (found === false) {
@@ -386,7 +414,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
           } else {
             values.mlitm_dtim_start = values?.mlitm_dtim_start?.format(SETTINGS.DATE_TIME_FORMAT);
           }
-          
+
           if (type === '0') {
             values.mlitm_prodcmpy = '';
             values.mlitm_tankcode = '';
@@ -399,20 +427,17 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
           }
 
           if (IS_CREATING) {
-            await api.get(`${SPECIAL_MOVEMENTS.NEXT_ID}`)
-              .then((response) => {
-                const payload = response.data?.records || [];
-                values.mlitm_id = payload[0].next_id;
-              });
+            await api.get(`${SPECIAL_MOVEMENTS.NEXT_ID}`).then((response) => {
+              const payload = response.data?.records || [];
+              values.mlitm_id = payload[0].next_id;
+            });
 
             // values.mlitm_dtim_start = values?.mlitm_dtim_start?.format(SETTINGS.DATE_TIME_FORMAT);
             await api
               .post(SPECIAL_MOVEMENTS.CREATE, values)
-              .then(
-                () => {
-                  // console.log("Created");
-                }
-              )
+              .then(() => {
+                // console.log("Created");
+              })
               .catch((errors) => {
                 _.forEach(errors.response.data.errors, (error) => {
                   notification.error({
@@ -426,11 +451,9 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
             // values.mlitm_dtim_start = values?.mlitm_dtim_start?.format(SETTINGS.DATE_TIME_FORMAT);
             await api
               .post(SPECIAL_MOVEMENTS.UPDATE, values)
-              .then(
-                () => {
-                  // console.log("Created");
-                }
-              )
+              .then(() => {
+                // console.log("Created");
+              })
               .catch((errors) => {
                 _.forEach(errors.response.data.errors, (error) => {
                   notification.error({
@@ -441,25 +464,25 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
                 return;
               });
           }
-  
+
           await api
             .post(SPECIAL_MOVEMENTS.SUBMIT, values)
-            .then(()=> {
-                onComplete(values?.mlitm_id);
+            .then(() => {
+              onComplete(values?.mlitm_id);
 
-                notification.success({
-                  message: t('messages.submitSuccess'),
-                  description: t('descriptions.submitSuccess'),
-                });
-              })
-              .catch((errors) => {
-                _.forEach(errors.response.data.errors, (error) => {
-                  notification.error({
-                    message: error.type,
-                    description: error.message,
-                  });
+              notification.success({
+                message: t('messages.submitSuccess'),
+                description: t('descriptions.submitSuccess'),
+              });
+            })
+            .catch((errors) => {
+              _.forEach(errors.response.data.errors, (error) => {
+                notification.error({
+                  message: error.type,
+                  description: error.message,
                 });
               });
+            });
         } catch (error) {
           message.error({
             key: 'submit',
@@ -481,23 +504,22 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       onOk: async () => {
         await api
           .post(SPECIAL_MOVEMENTS.REVERSE, value)
-          .then(
-            () => {
-              onComplete(value?.mlitm_id);
+          .then(() => {
+            onComplete(value?.mlitm_id);
 
-              notification.success({
-                message: t('messages.movementReverseSuccess'),
-                description: `${t('descriptions.movementReverseSuccess')}`,
-              });
-            })
-            .catch((errors) => {
-              _.forEach(errors.response.data.errors, (error) => {
-                notification.error({
-                  message: error.type,
-                  description: error.message,
-                });
+            notification.success({
+              message: t('messages.movementReverseSuccess'),
+              description: `${t('descriptions.movementReverseSuccess')}`,
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
               });
             });
+          });
       },
     });
   };
@@ -511,6 +533,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
@@ -529,7 +552,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
             {t('operations.cancel')}
           </Button>
 
-          {!DISABLED && (value?.mlitm_status !== '9') && (
+          {!DISABLED && value?.mlitm_status !== '9' && (
             <Button
               htmlType="button"
               icon={<CalculatorOutlined />}
@@ -540,10 +563,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
             </Button>
           )}
 
-          {(value?.mlitm_status === '5') && (
-            <Button 
-              htmlType="button" 
-              onClick={onReverse} 
+          {value?.mlitm_status === '5' && (
+            <Button
+              htmlType="button"
+              onClick={onReverse}
               icon={<ReloadOutlined />}
               disabled={!access?.canUpdate || value?.mlitm_status !== '5'}
             >

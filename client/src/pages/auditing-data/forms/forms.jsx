@@ -55,6 +55,7 @@ const FormModal = ({ value, visible, handleFormState }) => {
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={() => handleFormState(false, null)}
       destroyOnClose={true}
       placement="right"
@@ -82,43 +83,43 @@ const FormModal = ({ value, visible, handleFormState }) => {
             style={{ height: '80vh' }}
           >
             <Form.Item name="audit_record_key" label={t('fields.recordKey')}>
-              <Input disabled={true}/>
+              <Input disabled={true} />
             </Form.Item>
 
             <Form.Item name="audit_datetime" label={t('fields.dateTime')}>
-              <Input disabled={true}/>
+              <Input disabled={true} />
             </Form.Item>
-    
+
             <Form.Item name="audit_action_name" label={t('fields.action')}>
-              <Input disabled={true}/>
+              <Input disabled={true} />
             </Form.Item>
 
             <Form.Item name="audit_category_name" label={t('fields.category')}>
-              <Input disabled={true}/>
+              <Input disabled={true} />
             </Form.Item>
 
             <Form.Item name="audit_table" label={t('fields.table')}>
-              <Input disabled={true}/>
+              <Input disabled={true} />
             </Form.Item>
 
             <Form.Item name="audit_column" label={t('fields.column')}>
-              <Input disabled={true}/>
+              <Input disabled={true} />
             </Form.Item>
 
             <Form.Item name="audit_pkeys" label={t('fields.primaryKey')}>
-              <Input disabled={true}/>
+              <Input disabled={true} />
             </Form.Item>
 
             <Form.Item name="audit_description" label={t('fields.description')}>
-              <Input disabled={true}/>
+              <Input disabled={true} />
             </Form.Item>
 
             <Form.Item name="audit_value_before" label={t('fields.valueBefore')}>
-              <Input.TextArea rows={3} disabled={true}/>
+              <Input.TextArea rows={3} disabled={true} />
             </Form.Item>
 
             <Form.Item name="audit_value_after" label={t('fields.valueAfter')}>
-              <Input.TextArea rows={3} disabled={true}/>
+              <Input.TextArea rows={3} disabled={true} />
             </Form.Item>
 
             {/* <Form.Item name="audit_user_code" label={t('fields.userId')}>
@@ -138,15 +139,15 @@ const FormModal = ({ value, visible, handleFormState }) => {
             </Form.Item> */}
 
             <Form.Item name="audit_company" label={t('fields.company')}>
-              <Input disabled={true}/>
+              <Input disabled={true} />
             </Form.Item>
 
             <Form.Item name="audit_user" label={t('fields.user')}>
-              <Input disabled={true}/>
+              <Input disabled={true} />
             </Form.Item>
 
             <Form.Item name="audit_ip" label={t('fields.locationId')}>
-              <Input disabled={true}/>
+              <Input disabled={true} />
             </Form.Item>
           </TabPane>
         </Tabs>

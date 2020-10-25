@@ -32,9 +32,9 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     handleFormState(false, null);
     mutate(REPORT_PROFILE.READ);
     if (report_name) {
-      setFilterValue("" + report_name);
+      setFilterValue('' + report_name);
     } else {
-      setFilterValue(" ");
+      setFilterValue(' ');
     }
   };
 
@@ -116,6 +116,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       destroyOnClose={true}

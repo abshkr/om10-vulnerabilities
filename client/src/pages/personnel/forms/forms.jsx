@@ -38,7 +38,15 @@ import { SETTINGS } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, setFilterValue, expiryDateMode, expiryTypes }) => {
+const FormModal = ({
+  value,
+  visible,
+  handleFormState,
+  access,
+  setFilterValue,
+  expiryDateMode,
+  expiryTypes,
+}) => {
   const [passwordResetVisible, setPasswordResetVisible] = useState(false);
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -54,9 +62,9 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
     handleFormState(false, null);
     mutate(PERSONNEL.READ);
     if (per_code) {
-      setFilterValue("" + per_code);
+      setFilterValue('' + per_code);
     } else {
-      setFilterValue(" ");
+      setFilterValue(' ');
     }
   };
 
@@ -186,6 +194,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
+      forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
@@ -272,12 +281,11 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
               visible={passwordResetVisible}
               width="36vw"
             >
-              <Form layout="vertical" >
+              <Form layout="vertical">
                 <PasswordReset value={value} />
               </Form>
             </Drawer>
           )}
-
         </>
       }
     >
@@ -335,12 +343,11 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
 
             <Divider>{t('tabColumns.expiryDates')}</Divider>
 
-            {expiryDateMode === '1' ?
+            {expiryDateMode === '1' ? (
               <LegacyExpires form={form} value={value} expiryTypes={expiryTypes}></LegacyExpires>
-              :
+            ) : (
               <Expiry form={form} value={value} type={PERSONNEL.EXPIRY_TYPES} />
-            }
-            
+            )}
           </TabPane>
 
           {/* access?.canUpdate && 
