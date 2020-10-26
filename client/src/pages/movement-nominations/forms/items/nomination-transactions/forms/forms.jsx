@@ -67,7 +67,7 @@ const FormModal = ({
   defaultTanker,
   config,
   cbFunction,
-  closeForm
+  closeForm,
 }) => {
   const [drawerWidth, setDrawerWidth] = useState('80vw');
   const [mainTabOn, setMainTabOn] = useState(true);
@@ -119,6 +119,22 @@ const FormModal = ({
   const token = sessionStorage.getItem('token');
   const decoded = jwtDecode(token);
   const user_code = decoded?.per_code;
+
+  // This function does not work for unknown reason and needs further investigation
+  const changeTankTo = (value) => {
+    setTankTo(value);
+    if (pageState === 'receipt' || (pageState === 'transfer' && config?.siteTransferTankSource === 'TO')) {
+      setTank(value);
+    }
+  };
+
+  // This function does not work for unknown reason and needs further investigation
+  const changeTankFrom = (value) => {
+    setTankFrom(value);
+    if (pageState === 'disposal' || (pageState === 'transfer' && config?.siteTransferTankSource !== 'TO')) {
+      setTank(value);
+    }
+  };
 
   const doTabChanges = (tabPaneKey) => {
     if (tabPaneKey === '1') {
@@ -217,11 +233,16 @@ const FormModal = ({
     const values = await form.validateFields();
     console.log('..................onSubmit', values, arm);
     let found = false;
-    if (values?.mlitm_qty_amb && _.toNumber(values?.mlitm_qty_amb) > 0 &&
-      values?.mlitm_qty_cor && _.toNumber(values?.mlitm_qty_cor) > 0 && 
-      values?.mlitm_qty_kg && _.toNumber(values?.mlitm_qty_kg) > 0 && 
-      (values?.mlitm_temp_amb===0 || values?.mlitm_temp_amb) && 
-      values?.mlitm_dens_cor) {
+    if (
+      values?.mlitm_qty_amb &&
+      _.toNumber(values?.mlitm_qty_amb) > 0 &&
+      values?.mlitm_qty_cor &&
+      _.toNumber(values?.mlitm_qty_cor) > 0 &&
+      values?.mlitm_qty_kg &&
+      _.toNumber(values?.mlitm_qty_kg) > 0 &&
+      (values?.mlitm_temp_amb === 0 || values?.mlitm_temp_amb) &&
+      values?.mlitm_dens_cor
+    ) {
       found = true;
     }
     if (found === false) {
@@ -280,10 +301,15 @@ const FormModal = ({
 
   const onCalculate = () => {
     console.log('....................onCalculate', tank, arm);
-    if ( !(tank && tank.length > 0) && !(arm && arm.length > 0) ) {
+    if (!(tank && tank.length > 0) && !(arm && arm.length > 0)) {
       notification.error({
         message: t('validate.select'),
-        description: t('fields.fromTank')+t('descriptions.or')+t('fields.nomtranFromArm')+t('descriptions.or')+t('fields.toTank'),
+        description:
+          t('fields.fromTank') +
+          t('descriptions.or') +
+          t('fields.nomtranFromArm') +
+          t('descriptions.or') +
+          t('fields.toTank'),
       });
       return;
     }
@@ -296,12 +322,19 @@ const FormModal = ({
       'mlitm_dens_cor',
     ]);
 
-    if (String(payload?.mlitm_qty_amb).trim().length === 0 && 
-      String(payload?.mlitm_qty_cor).trim().length === 0 && 
-      String(payload?.mlitm_qty_kg).trim().length === 0) {
+    if (
+      String(payload?.mlitm_qty_amb).trim().length === 0 &&
+      String(payload?.mlitm_qty_cor).trim().length === 0 &&
+      String(payload?.mlitm_qty_kg).trim().length === 0
+    ) {
       notification.error({
         message: t('validate.set'),
-        description: t('fields.observedQuantity')+t('descriptions.or')+t('fields.standardQuantity')+t('descriptions.or')+t('fields.observedMass'),
+        description:
+          t('fields.observedQuantity') +
+          t('descriptions.or') +
+          t('fields.standardQuantity') +
+          t('descriptions.or') +
+          t('fields.observedMass'),
       });
       return;
     }
@@ -309,17 +342,25 @@ const FormModal = ({
     if (!payload?.mlitm_qty_amb && !payload?.mlitm_qty_cor && !payload?.mlitm_qty_kg) {
       notification.error({
         message: t('validate.set'),
-        description: t('fields.observedQuantity')+t('descriptions.or')+t('fields.standardQuantity')+t('descriptions.or')+t('fields.observedMass'),
+        description:
+          t('fields.observedQuantity') +
+          t('descriptions.or') +
+          t('fields.standardQuantity') +
+          t('descriptions.or') +
+          t('fields.observedMass'),
       });
       return;
     }
 
-
     if (!calcSource || String(calcSource?.qty).trim().length === 0 || _.toNumber(calcSource?.qty) === 0) {
       notification.error({
         message: t('validate.set'),
-        description: !calcSource 
-          ? (t('fields.observedQuantity')+t('descriptions.or')+t('fields.standardQuantity')+t('descriptions.or')+t('fields.observedMass'))
+        description: !calcSource
+          ? t('fields.observedQuantity') +
+            t('descriptions.or') +
+            t('fields.standardQuantity') +
+            t('descriptions.or') +
+            t('fields.observedMass')
           : calcSource?.title,
       });
       return;
@@ -331,7 +372,10 @@ const FormModal = ({
       });
       return;
     }
-    if ((!payload?.mlitm_temp_amb && payload?.mlitm_temp_amb !== 0) || String(payload?.mlitm_temp_amb).trim().length === 0) {
+    if (
+      (!payload?.mlitm_temp_amb && payload?.mlitm_temp_amb !== 0) ||
+      String(payload?.mlitm_temp_amb).trim().length === 0
+    ) {
       notification.error({
         message: t('validate.set'),
         description: t('fields.observedTemperature'),
@@ -363,12 +407,7 @@ const FormModal = ({
     Modal.confirm({
       title: t('prompts.calculate'),
       title:
-        t('prompts.calculate') +
-        ' (' +
-        t('descriptions.lastFieldChanged') +
-        ': ' +
-        calcSource?.title +
-        ')',
+        t('prompts.calculate') + ' (' + t('descriptions.lastFieldChanged') + ': ' + calcSource?.title + ')',
       okText: t('operations.calculate'),
       okType: 'primary',
       cancelText: t('operations.no'),
@@ -381,8 +420,7 @@ const FormModal = ({
         } else {
           if (arm && arm?.length > 1) {
             await onCalculateByMultiBases();
-          }
-          else {
+          } else {
             await onCalculateByOneBase();
           }
         }
@@ -404,9 +442,11 @@ const FormModal = ({
         .then((response) => {
           if (!response?.data?.real_litre) {
             notification.error({
-              message: t('descriptions.calculateFailed') + ': ' 
-                + (pageState === 'receipt' ? value?.mvitm_prodcode_to : value?.mvitm_prodcode_from),
-              description: response?.data?.msg_code||' ' + ': ' + response?.data?.msg_desc||' ',
+              message:
+                t('descriptions.calculateFailed') +
+                ': ' +
+                (pageState === 'receipt' ? value?.mvitm_prodcode_to : value?.mvitm_prodcode_from),
+              description: response?.data?.msg_code || ' ' + ': ' + response?.data?.msg_desc || ' ',
             });
           } else {
             form.setFieldsValue({
@@ -437,17 +477,16 @@ const FormModal = ({
         content: t('descriptions.validationFailed'),
       });
     }
-
   };
 
   const onCalculateByMultiBases = async () => {
     try {
       const values = await form.validateFields();
       const response = await calcArmQuantity(
-        arm?.[0]?.stream_armcode, 
-        arm, 
-        calcSource?.qty, 
-        calcSource?.type, 
+        arm?.[0]?.stream_armcode,
+        arm,
+        calcSource?.qty,
+        calcSource?.type,
         values?.mlitm_temp_amb
       );
       if (response?.result === false) {
@@ -477,7 +516,6 @@ const FormModal = ({
         content: t('descriptions.validationFailed'),
       });
     }
-
   };
 
   const modifiers = (
@@ -497,7 +535,10 @@ const FormModal = ({
         htmlType="button"
         icon={<CloseOutlined />}
         style={{ float: 'right', marginRight: 5 }}
-        onClick={() => {Modal.destroyAll(); onComplete();}}
+        onClick={() => {
+          Modal.destroyAll();
+          onComplete();
+        }}
       >
         {t('operations.cancel')}
       </Button>
@@ -532,9 +573,10 @@ const FormModal = ({
   useEffect(() => {
     if (products && value && !productItemFrom && pageState !== 'receipt') {
       // console.log('products && value && !productItemFrom && pageState', products, value);
-      const item = _.find(products?.records, (o) => (
-        o.prod_cmpy === value?.mvitm_prodcmpy_from && o.prod_code === value?.mvitm_prodcode_from
-      ));
+      const item = _.find(
+        products?.records,
+        (o) => o.prod_cmpy === value?.mvitm_prodcmpy_from && o.prod_code === value?.mvitm_prodcode_from
+      );
       // console.log('products && value && !productItemFrom && pageState', item);
       setProductItemFrom(item);
     }
@@ -542,9 +584,10 @@ const FormModal = ({
 
   useEffect(() => {
     if (products && value && !productItemTo && pageState !== 'disposal') {
-      const item = _.find(products?.records, (o) => (
-        o.prod_cmpy === value?.mvitm_prodcmpy_to && o.prod_code === value?.mvitm_prodcode_to
-      ));
+      const item = _.find(
+        products?.records,
+        (o) => o.prod_cmpy === value?.mvitm_prodcmpy_to && o.prod_code === value?.mvitm_prodcode_to
+      );
       setProductItemTo(item);
     }
   }, [products, value, productItemTo, setProductItemTo, pageState]);
@@ -553,12 +596,18 @@ const FormModal = ({
     if (productItemTo && pageState !== 'disposal') {
       if (_.toNumber(productItemTo?.rat_count) > 1) {
         notification.error({
-          // message: _.capitalize(pageState) + ': ' 
-          message: value?.mvitm_type_name + ': ' 
-            + productItemTo.prod_cmpy + ' - ' 
-            + productItemTo.prod_code + ' - ' 
-            + productItemTo.prod_name + ' ['
-            + productItemTo.rat_count + ']',
+          // message: _.capitalize(pageState) + ': '
+          message:
+            value?.mvitm_type_name +
+            ': ' +
+            productItemTo.prod_cmpy +
+            ' - ' +
+            productItemTo.prod_code +
+            ' - ' +
+            productItemTo.prod_name +
+            ' [' +
+            productItemTo.rat_count +
+            ']',
           description: t('descriptions.toProductNotBase'),
         });
         onComplete();
@@ -571,13 +620,19 @@ const FormModal = ({
     if (productItemFrom && pageState === 'transfer') {
       if (_.toNumber(productItemFrom?.rat_count) > 1) {
         notification.error({
-          // message: _.capitalize(pageState) + ': ' 
-          message: value?.mvitm_type_name + ': ' 
-            + productItemFrom.prod_cmpy + ' - ' 
-            + productItemFrom.prod_code + ' - ' 
-            + productItemFrom.prod_name + ' ['
-            + productItemFrom.rat_count + ']',
-          description:  t('descriptions.fromProductNotBase'),
+          // message: _.capitalize(pageState) + ': '
+          message:
+            value?.mvitm_type_name +
+            ': ' +
+            productItemFrom.prod_cmpy +
+            ' - ' +
+            productItemFrom.prod_code +
+            ' - ' +
+            productItemFrom.prod_name +
+            ' [' +
+            productItemFrom.rat_count +
+            ']',
+          description: t('descriptions.fromProductNotBase'),
         });
         onComplete();
       }
@@ -709,13 +764,28 @@ const FormModal = ({
 
                     <Row gutter={[8, 1]}>
                       <Col span={24}>
-                        <SourceArm form={form} value={value} setArms={setProductArms} onChange={setArm} tank={tank} pageState={pageState} />
+                        <SourceArm
+                          form={form}
+                          value={value}
+                          setArms={setProductArms}
+                          onChange={setArm}
+                          tank={tank}
+                          pageState={pageState}
+                        />
                       </Col>
                     </Row>
 
                     <Row gutter={[8, 1]}>
                       <Col span={24}>
-                        <SourceTank form={form} value={value} onChange={setTank} arm={arm} product={productItemFrom} pageState={pageState} />
+                        <SourceTank
+                          form={form}
+                          value={value}
+                          onChange={setTank}
+                          arm={arm}
+                          product={productItemFrom}
+                          pageState={pageState}
+                          config={config}
+                        />
                       </Col>
                     </Row>
                   </Card>
@@ -741,7 +811,13 @@ const FormModal = ({
 
                     <Row gutter={[8, 1]}>
                       <Col span={24}>
-                        <DestinationTank form={form} value={value} onChange={setTank} pageState={pageState} />
+                        <DestinationTank
+                          form={form}
+                          value={value}
+                          onChange={setTank}
+                          pageState={pageState}
+                          config={config}
+                        />
                       </Col>
                     </Row>
                   </Card>
@@ -769,7 +845,14 @@ const FormModal = ({
 
                 <Row gutter={[8, 1]}>
                   <Col span={12}>
-                    <ObsQty form={form} value={value} onChange={setCalcSource} setValue={setAmbient} pageState={pageState} config={config} />
+                    <ObsQty
+                      form={form}
+                      value={value}
+                      onChange={setCalcSource}
+                      setValue={setAmbient}
+                      pageState={pageState}
+                      config={config}
+                    />
                   </Col>
 
                   <Col span={12}>
@@ -798,28 +881,63 @@ const FormModal = ({
 
                 <Row gutter={[8, 1]}>
                   <Col span={12}>
-                    <StdQty form={form} value={value} onChange={setCalcSource} setValue={setCorrected} pageState={pageState} config={config} />
+                    <StdQty
+                      form={form}
+                      value={value}
+                      onChange={setCalcSource}
+                      setValue={setCorrected}
+                      pageState={pageState}
+                      config={config}
+                    />
                   </Col>
 
                   <Col span={12}>
-                    <ObsMass form={form} value={value} onChange={setCalcSource} setValue={setMass} pageState={pageState} config={config} />
+                    <ObsMass
+                      form={form}
+                      value={value}
+                      onChange={setCalcSource}
+                      setValue={setMass}
+                      pageState={pageState}
+                      config={config}
+                    />
                   </Col>
                 </Row>
 
                 <Row gutter={[8, 1]}>
                   <Col span={12}>
-                    <ObsTemp form={form} value={value} setValue={setTemperature} tank={tank} arm={arm} pageState={pageState} config={config} />
+                    <ObsTemp
+                      form={form}
+                      value={value}
+                      setValue={setTemperature}
+                      tank={tank}
+                      arm={arm}
+                      pageState={pageState}
+                      config={config}
+                    />
                   </Col>
 
                   <Col span={12}>
-                    <StdDensity form={form} value={value} tank={tank} arm={arm} pageState={pageState} config={config} />
+                    <StdDensity
+                      form={form}
+                      value={value}
+                      tank={tank}
+                      arm={arm}
+                      pageState={pageState}
+                      config={config}
+                    />
                   </Col>
                 </Row>
               </Card>
 
               <Row gutter={[8, 1]}>
                 <Col span={12}>
-                  <AltQty form={form} value={value} onChange={setAltQty} pageState={pageState} config={config} />
+                  <AltQty
+                    form={form}
+                    value={value}
+                    onChange={setAltQty}
+                    pageState={pageState}
+                    config={config}
+                  />
                 </Col>
 
                 <Col span={12}>

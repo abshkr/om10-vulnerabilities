@@ -37,8 +37,11 @@ const NominationTransactions = ({ access, params, config, cbFunction, closeForm 
   }; */
   //const [pageState, setPageState] = useState(_.toLower(params?.mvitm_type));
   const [pageState, setPageState] = useState(
-    String(params?.mvitm_type) === '0'? 'receipt' 
-                              : (String(params?.mvitm_type) === '1'? 'disposal' : 'transfer')
+    String(params?.mvitm_type) === '0'
+      ? 'receipt'
+      : String(params?.mvitm_type) === '1'
+      ? 'disposal'
+      : 'transfer'
   );
   const [visible, setVisible] = useState(true);
   const [nomTanker, setNomTanker] = useState(null);
@@ -48,15 +51,14 @@ const NominationTransactions = ({ access, params, config, cbFunction, closeForm 
   );
 
   useEffect(() => {
-    if (!!options && options?.records?.length>0) {
+    if (!!options && options?.records?.length > 0) {
       setNomTanker(options?.records?.[0]);
-      console.log("nomTanker", nomTanker);
+      console.log('nomTanker', nomTanker);
     }
   }, [options, nomTanker, setNomTanker]);
 
-
-  console.log('access', access);
-  console.log('params in MOT4NOM', params);
+  // console.log('access', access);
+  // console.log('params in MT4NOM', params);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);

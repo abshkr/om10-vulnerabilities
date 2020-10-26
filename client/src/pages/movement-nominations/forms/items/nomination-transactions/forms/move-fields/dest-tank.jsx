@@ -7,7 +7,7 @@ import _ from 'lodash';
 
 import { NOMINATION_TRANSACTIONS } from '../../../../../../../api';
 
-const DestinationTank = ({ form, value, onChange, pageState }) => {
+const DestinationTank = ({ form, value, onChange, pageState, config }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -35,24 +35,30 @@ const DestinationTank = ({ form, value, onChange, pageState }) => {
     let tank_item = _.filter(list, (item) => {
       return item.tank_code === code;
     });
-
+    console.log('dest tank, getTankItem', code, list, tank_item);
     return tank_item;
   };
 
   const onTankChange = (value) => {
-    onChange(getTankItem(value, options?.records));
+    // console.log('dest tank, onTankChange', value);
+    if (pageState === 'receipt' || (pageState === 'transfer' && config?.siteTransferTankSource === 'TO')) {
+      onChange(getTankItem(value, options?.records));
+    }
   };
 
   useEffect(() => {
-    if (value) {
+    if (value && options) {
       setFieldsValue({
         mvitm_tank_to: value.mvitm_tank_to,
       });
 
+      console.log('dest tank, useEffect', value, options?.records);
       //onChange(value.mvitm_tank_to);
-      onChange(getTankItem(value.mvitm_tank_to, options?.records));
+      if (pageState === 'receipt' || (pageState === 'transfer' && config?.siteTransferTankSource === 'TO')) {
+        onChange(getTankItem(value.mvitm_tank_to, options?.records));
+      }
     }
-  }, [value, options, setFieldsValue, onChange]);
+  }, [value, setFieldsValue, onChange, options, pageState, config]);
 
   return (
     <Form.Item
