@@ -37,7 +37,7 @@ import * as actions from '../../actions/auth';
 import { ROUTES, SETTINGS } from '../../constants';
 import { Icons } from '../../components/';
 import ChangePassword from './change-password';
-
+import FaAuth from './fa-auth';
 
 const LoginOutlined = (props) => (
   <Icon className="key-icon" style={{ transform: 'scale(1.8)' }} component={LoginIcon} {...props} />
@@ -136,6 +136,79 @@ const Login = ({ handleLogin, auth }) => {
     return null;
   };
 
+  const onFaAuth = (ret) => {
+    if (ret.ret_code === "cancel") {
+      history.push(ROUTES.LOG_OUT);
+    } else {
+      const {dispatch} = ret;
+      api
+        .post(AUTH.FA_AUTH, {
+          per_code: ret.user_code,
+          two_factor_code: ret.two_factor_code,
+          refresh_token: false,
+        })
+        .then(() => {
+          const token = sessionStorage.getItem('token');
+          dispatch({ type: AUTHORIZED, payload: token});
+          history.push(ROUTES.HOME);
+          
+          notification.success({
+            placement: 'bottomRight',
+            message: t('messages.loginSuccess'),
+            description: `${t('descriptions.loginSuccess')} ${ret.user_code}`,
+            icon: <SmileOutlined style={{ color: '#0054A4' }} />,
+          });
+        })
+        .catch((errors) => {
+          _.forEach(errors.response.data.errors, (error) => {
+            console.log(error.message);
+            notification.error({
+              message: error.message,
+              description: t('messages.loginFailed'),
+            });
+          });
+          history.push(ROUTES.LOG_OUT);
+        });
+    }
+  }
+
+  const faAuth = (
+    language,
+    user_code,
+    password,
+    dispatch
+  ) => {
+    Modal.info({
+      className: 'form-container',
+      title: t("operations.faCode"),
+      centered: true,
+      width: '25vw',
+      icon: <SafetyCertificateOutlined />,
+      keyboard: false,
+      content: (
+      // <SWRConfig
+      //     value={{
+      //     refreshInterval: 0,
+      //     fetcher,
+      //     }}
+      // >
+        <FaAuth 
+          language={language} 
+          user_code={user_code} 
+          old={password} 
+          dispatch={dispatch} 
+          onReturn={onFaAuth} 
+        />
+      // </SWRConfig>
+      ),
+      okButtonProps: {
+      style: { display: 'none' },
+      },
+    });
+
+    return null;
+  };
+
   const handleSubmit = (values) => {
     setLoading(true);
 
@@ -179,9 +252,12 @@ const Login = ({ handleLogin, auth }) => {
               history.push(ROUTES.LOG_OUT);
             },
           });
-        } else if (response.data.user_status_flag ==='0') {
+        } else if (response.data.user_status_flag === '0') {
           sessionStorage.setItem('token', response.data.token);
           changePwd(values.language, response.data.userid, values.password, dispatch);
+        } else if (response.data.twofa_result === 'AUTH 2FA') {
+          sessionStorage.setItem('token', response.data.token);
+          faAuth(values.language, response.data.userid, values.password, dispatch);
         } else {
           history.push(ROUTES.HOME);
 

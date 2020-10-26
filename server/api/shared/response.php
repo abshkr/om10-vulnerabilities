@@ -389,6 +389,18 @@ function response($case_name, $default = null, $params = null)
             "ENG" => "Current user is locked, cannot log in",
             "CHN" => "当前用户被锁定，不能登录"
         ),
+        "__ACTION_SUCCEED__" => array(
+            "ENG" => "Action succeeded",
+            "CHN" => "成功"
+        ),
+        "__2FA_FAILED__" => array(
+            "ENG" => "2FA authentication failed",
+            "CHN" => "验证失败"
+        ),
+        "__2FA_TIMEOUT__" => array(
+            "ENG" => "2FA authentication time out",
+            "CHN" => "验证超时"
+        ),
     );
 
     $lang = Utilities::getCurrLang();

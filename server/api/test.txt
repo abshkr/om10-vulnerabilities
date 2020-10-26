@@ -6,6 +6,7 @@ Validate. Check Laravel validate function.
 
 //--------------------------------------------------------- Genrel PHPs ---------------------------------------------------------//
 https://10.1.10.66/api/session/getenv.php
+https://10.1.10.66/api/session/fa_auth.php?two_factor_code=ACS31F
 https://10.1.10.66/api/session/modules.php
 https://10.1.10.66/api/session/session_data.php
 https://10.1.10.66/api/session/sys_date.php

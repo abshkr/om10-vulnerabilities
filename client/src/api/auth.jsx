@@ -13,3 +13,4 @@ export const SITE_CONFIG = '/api/config.php';
 
 export const SETUP = '/api/session/person_setups.php';
 export const UPDATE_SETUP = '/api/session/change_person_setups.php';
+export const FA_AUTH = '/api/session/fa_auth.php';

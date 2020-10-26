@@ -20,6 +20,9 @@ export const login = (values, callback) => async (dispatch) => {
           } else if (response.data.user_status_flag ==='0') {
             callback(response, dispatch);
             return;
+          } else if (response.data.twofa_result ==='AUTH 2FA') {
+            callback(response, dispatch);
+            return;
           }
           sessionStorage.setItem('token', response.data.token);
 

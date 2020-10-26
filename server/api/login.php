@@ -49,7 +49,7 @@ include_once './config/setups.php';
 include_once './config/jwt.php';
 include_once './shared/utilities.php';
 include_once './service/site_service.php';
-
+include_once './objects/fa_auth.php';
 
 // initialize object
 $object = new stdClass();
@@ -119,9 +119,24 @@ if ($array['MSG_CODE'] === "0") {
     //     $exp_min = intval($exp_min);
     // }
 
+    //Some old screens like bay view still need session. 2FA needs session too
+    if (!isset($_SESSION)) {
+        session_start();
+    }
+    
+    $twofa_result = 'NA';
+    if ($object->user !== '9999') {
+        write_log("FAMailService check", __FILE__, __LINE__);
+        $database = new Database();
+        $db = $database->getConnection2();
+        $fa_auth = new FaAuth($db);
+        $twofa_result = $fa_auth->pre_check($object->user);
+    }
+    
     $exp_min = 180; 
     $login_result = array();
     $login_result['userid'] = $object->user;
+    $login_result['twofa_result'] = $twofa_result;
     $login_result['email'] = "";
     $login_result['displayName'] = $object->user;
     $login_result['token'] = get_token($object->user, $array['USER_DETAIL']['USER_SESSION'], 
@@ -134,11 +149,6 @@ if ($array['MSG_CODE'] === "0") {
     $login_result['max_http_session_allowed'] = $array['USER_DETAIL']['MAX_HTTP_SESSION_ALLOWED'];
     $login_result['sess_id'] = $array['USER_DETAIL']['USER_SESSION'];
 
-    //Some old screens like bay view still need session
-    if (!isset($_SESSION)) {
-        session_start();
-    }
-    
     session_regenerate_id(true);
     $_SESSION['SESSION'] = $array['USER_DETAIL']['USER_SESSION'];
     $_SESSION['MANAGER'] = $array['USER_DETAIL']['ISMANAGER_CMPY'];

@@ -1742,6 +1742,7 @@
     "calculateQuantityByLevel": "Calculate Quantity By Level",
     "cancel": "Cancel",
     "changePassword": "Change Password",
+    "faCode": "Please enter your 6 character authentication code",
     "clear": "Clear",
     "clearFilter": "Clear Filters",
     "clearTransfer": "Clear Transfer",
