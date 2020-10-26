@@ -93,9 +93,9 @@ const MeterTotals = ({
       setData(adjustMeterTotals(meters));
     } else {
       setData(dataLoaded?.meter_totals);
-      const loaded = _.clone(dataLoaded);
-      loaded.meter_totals = [];
-      setDataLoaded(loaded);
+      // const loaded = _.clone(dataLoaded);
+      // loaded.meter_totals = [];
+      // // setDataLoaded(loaded);
       // console.log('MT 6 - MeterTotals: data are loaded!');
     }
   }

@@ -34,8 +34,8 @@ const buildDrawTransfersByArm = (record, productArms, t, sourceType, loadType, r
         // ambDefault = record?.allowed_qty;
         ambDefault = String(_.toNumber(record?.allowed_qty) - _.toNumber(qtyOnboard));
       } else {
-        // ambDefault = record?.cmpt_capacit;
-        ambDefault = String(_.toNumber(record?.cmpt_capacit) - _.toNumber(qtyOnboard));
+        ambDefault = record?.cmpt_capacit;
+        // ambDefault = String(_.toNumber(record?.cmpt_capacit) - _.toNumber(qtyOnboard));
       }
     }
 

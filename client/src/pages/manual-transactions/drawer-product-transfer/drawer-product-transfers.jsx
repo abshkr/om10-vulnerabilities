@@ -721,8 +721,8 @@ const DrawerProductTransfers = ({
           updateTransferRow(item);
         } else {
           if (item.trsf_cmpt_capacit) {
-            // item.trsf_qty_amb = item.trsf_cmpt_capacit;
-            item.trsf_qty_amb = String(_.toNumber(item.trsf_cmpt_capacit) - _.toNumber(item.trsf_qty_left));
+            item.trsf_qty_amb = item.trsf_cmpt_capacit;
+            // item.trsf_qty_amb = String(_.toNumber(item.trsf_cmpt_capacit) - _.toNumber(item.trsf_qty_left));
             // console.log('DrawerProductTransfers: onCopy in loop after2', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
             // tableAPI.updateRowData({ update: [item] });
             updateTransferRow(item);
@@ -826,6 +826,25 @@ const DrawerProductTransfers = ({
       ...value?.data,
     });
 
+    // It is necessary to clean the dataLoaded so that manual changes can take effect after data is loaded/
+    if (dataLoaded) {
+      if (dataLoaded.transfers && dataLoaded?.transfers?.length > 0) {
+        dataLoaded.transfers = [];
+      }
+      if (dataLoaded.base_transfers && dataLoaded?.base_transfers?.length > 0) {
+        dataLoaded.base_transfers = [];
+      }
+      if (dataLoaded.base_totals && dataLoaded?.base_totals?.length > 0) {
+        dataLoaded.base_totals = [];
+      }
+      if (dataLoaded.meter_transfers && dataLoaded?.meter_transfers?.length > 0) {
+        dataLoaded.meter_transfers = [];
+      }
+      if (dataLoaded.meter_totals && dataLoaded?.meter_totals?.length > 0) {
+        dataLoaded.meter_totals = [];
+      }
+    }
+
     toggleCalcButton();
     toggleRestoreButton();
     toggleCopyButton();
@@ -909,7 +928,7 @@ const DrawerProductTransfers = ({
         // const loaded = _.clone(dataLoaded);
         // loaded.transfers = [];
         // setDataLoaded(loaded);
-        dataLoaded.transfers=[];
+        // // dataLoaded.transfers=[];
       }
       setLoading(false);
     }

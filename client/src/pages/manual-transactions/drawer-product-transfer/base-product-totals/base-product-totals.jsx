@@ -93,9 +93,9 @@ const BaseProductTotals = ({
     } else {
       setData(dataLoaded.base_totals);
       sumBaseTotals(dataLoaded.base_totals);
-      const loaded = _.clone(dataLoaded);
-      loaded.base_totals = [];
-      setDataLoaded(loaded);
+      // const loaded = _.clone(dataLoaded);
+      // loaded.base_totals = [];
+      // // setDataLoaded(loaded);
       // console.log('MT 4 - BaseTotals: data are loaded!');
     }
   };
