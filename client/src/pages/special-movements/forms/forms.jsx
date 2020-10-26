@@ -61,12 +61,16 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
 
   const changeTankTo = (value) => {
     setTankTo(value);
-    setLastChangedTank(value);
+    if (type === '0' || (type === '2' && config?.siteTransferTankSource === 'TO')) {
+      setLastChangedTank(value);
+    }
   };
 
   const changeTankFrom = (value) => {
     setTankFrom(value);
-    setLastChangedTank(value);
+    if (type === '1' || (type === '2' && config?.siteTransferTankSource !== 'TO')) {
+      setLastChangedTank(value);
+    }
   };
 
   const onTypeChange = (value) => {

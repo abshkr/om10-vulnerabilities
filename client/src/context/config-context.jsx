@@ -87,6 +87,8 @@ const ConfigProvider = ({ children }) => {
     maxDensity: 2000,
     maxLengthTankCode: 10,
     siteUseSG: false,
+    load_tolerance_type: 'PERCENT',
+    siteTransferTankSource: "FROM",
   });
 
   const { data: configuration, revalidate: revalidateConfiguration } = useSWR(SITE_CONFIGURATION.READ, {
@@ -236,6 +238,8 @@ const ConfigProvider = ({ children }) => {
         precisionSG: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_SG) || 6,
         maxLengthTankCode: _.toNumber(configurationObject?.SITE_MAXLEN_TANKCODE) || 10,
         siteUseSG: configurationObject?.SITE_USE_SG,
+        load_tolerance_type: configurationObject?.LOAD_TOLERANCE_TYPE,
+        siteTransferTankSource: configurationObject?.SITE_TRANSFER_TANK_SOURCE || "FROM",
         revalidate: () => onRevalidate(),
       });
     }
