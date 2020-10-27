@@ -117,11 +117,13 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
   }, [value, setFieldsValue]);
 
   useEffect(() => {
-    if (tank) {
+    const disabledStatus =
+      value?.mlitm_status === '5' || value?.mlitm_status === '9' || value?.mlitm_status === '4';
+    if (tank && !disabledStatus) {
       setLimit(null);
       getLimit(tank);
     }
-  }, [getLimit, tank]);
+  }, [getLimit, tank, value]);
 
   const handleAmbVolFieldChange = (value) => {
     if (value !== undefined && value !== null && String(value).trim().length > 0) {
