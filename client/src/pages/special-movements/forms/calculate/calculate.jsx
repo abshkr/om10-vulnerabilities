@@ -37,17 +37,24 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
         if (response?.data?.records?.length > 0) {
           setLimit(response.data.records[0]);
           const prod = response.data.records[0];
-          const densL = prod ? _.round(_.toNumber(prod?.density_lo), config.precisionDensity) : prod?.density_lo;
-          const densH = prod ? _.round(_.toNumber(prod?.density_hi), config.precisionDensity) : prod?.density_hi;
+          const densL = prod
+            ? _.round(_.toNumber(prod?.density_lo), config.precisionDensity)
+            : prod?.density_lo;
+          const densH = prod
+            ? _.round(_.toNumber(prod?.density_hi), config.precisionDensity)
+            : prod?.density_hi;
           setMinDens(densL);
           setMaxDens(densH);
           // console.log('I am here 111');
           // const temp_dens = getFieldValue('mlitm_dens_cor');
           // if (!temp_dens) {
           //   console.log('I am here 222');
-            setFieldsValue({
-              mlitm_dens_cor: response.data.records[0].tank_density,
-            });
+          setFieldsValue({
+            mlitm_dens_cor: response.data.records[0].tank_density,
+          });
+          setFieldsValue({
+            mlitm_temp_amb: response.data.records[0].tank_temp,
+          });
           // }
           setLoading(false);
           //console.log('validateFields([mlitm_dens_cor]);222');
@@ -172,10 +179,7 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
     <>
       <Row gutter={[8, 8]}>
         <Col span={12}>
-          <Form.Item 
-            name="mlitm_qty_amb" 
-            label={t('fields.observedQuantity') + '(' + t('units.ltr') + ')'}
-          >
+          <Form.Item name="mlitm_qty_amb" label={t('fields.observedQuantity') + '(' + t('units.ltr') + ')'}>
             <InputNumber
               min={0}
               max={999999999}
@@ -186,16 +190,12 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
             />
           </Form.Item>
         </Col>
-        <Col span={12}>
-        </Col>
+        <Col span={12}></Col>
       </Row>
 
       <Row gutter={[8, 8]}>
         <Col span={12}>
-          <Form.Item 
-            name="mlitm_qty_cor" 
-            label={t('fields.standardQuantity') + '(' + t('units.ltr') + ')'}
-          >
+          <Form.Item name="mlitm_qty_cor" label={t('fields.standardQuantity') + '(' + t('units.ltr') + ')'}>
             <InputNumber
               min={0}
               max={999999999}
@@ -207,10 +207,7 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item 
-            name="mlitm_qty_kg" 
-            label={t('fields.observedMass') + '(' + t('units.kg') + ')'}
-          >
+          <Form.Item name="mlitm_qty_kg" label={t('fields.observedMass') + '(' + t('units.kg') + ')'}>
             <InputNumber
               min={0}
               max={999999999}
@@ -227,11 +224,16 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
         <Col span={12}>
           <Form.Item
             name="mlitm_dens_cor"
-            label={`${t('fields.standardDensity')} ${limit ? `[${limit.density_lo} - ${limit.density_hi}]` : ''}` + '(' + t('units.kg/m3') + ')'}
+            label={
+              `${t('fields.standardDensity')} ${limit ? `[${limit.density_lo} - ${limit.density_hi}]` : ''}` +
+              '(' +
+              t('units.kg/m3') +
+              ')'
+            }
             rules={[{ required: false, validator: validateDensity }]}
           >
             <InputNumber
-              precision={densDecimals>config.precisionDensity ? config.precisionDensity : densDecimals}
+              precision={densDecimals > config.precisionDensity ? config.precisionDensity : densDecimals}
               // min={limit ? _.round(_.toNumber(limit?.density_lo), config.precisionDensity) : limit?.density_lo}
               // max={limit ? _.round(_.toNumber(limit?.density_hi), config.precisionDensity) : limit?.density_hi}
               disabled={IS_DISALBED}
@@ -243,10 +245,17 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
         <Col span={12}>
           <Form.Item
             name="mlitm_temp_amb"
-            label={`${t('fields.observedTemperature')} ${limit ? `[${limit.temp_lo} - ${limit.temp_hi}]` : ''}`+ '(' + t('units.degC') + ')'}
+            label={
+              `${t('fields.observedTemperature')} ${limit ? `[${limit.temp_lo} - ${limit.temp_hi}]` : ''}` +
+              '(' +
+              t('units.degC') +
+              ')'
+            }
           >
             <InputNumber
-              precision={tempDecimals>config.precisionTemperature ? config.precisionTemperature : tempDecimals}
+              precision={
+                tempDecimals > config.precisionTemperature ? config.precisionTemperature : tempDecimals
+              }
               min={limit ? _.round(_.toNumber(limit?.temp_lo), config.precisionTemperature) : limit?.temp_lo}
               max={limit ? _.round(_.toNumber(limit?.temp_hi), config.precisionTemperature) : limit?.temp_hi}
               disabled={IS_DISALBED}
@@ -259,7 +268,7 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
 
       <Row gutter={[8, 8]}>
         <Col span={12}>
-          <Form.Item name="mlitm_qty_rpt" label={t('fields.alternateQuantity')} >
+          <Form.Item name="mlitm_qty_rpt" label={t('fields.alternateQuantity')}>
             <InputNumber
               min={0}
               max={999999999}
@@ -270,7 +279,7 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item name="mlitm_unit_rpt" label={t('fields.alternateUnit')} >
+          <Form.Item name="mlitm_unit_rpt" label={t('fields.alternateUnit')}>
             <Select
               dropdownMatchSelectWidth={false}
               showSearch

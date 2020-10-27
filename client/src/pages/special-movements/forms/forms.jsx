@@ -109,6 +109,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
     setType(null);
     setTankFrom(undefined);
     setTankTo(undefined);
+    setLastChangedTank(undefined);
     resetFields();
     handleFormState(false, null);
   };
@@ -117,6 +118,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
     setType(null);
     setTankFrom(undefined);
     setTankTo(undefined);
+    setLastChangedTank(undefined);
     resetFields();
     handleFormState(false, null);
     if (mlitm_id) {
@@ -551,7 +553,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={onFormClosed}
           >
             {t('operations.cancel')}
           </Button>
