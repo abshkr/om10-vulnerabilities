@@ -47,7 +47,7 @@ const Printer = ({ form, value }) => {
       >
         {options?.records.map((item, index) => (
           <Select.Option key={index} value={item.prntr}>
-            {item.sys_prntr}
+            {item.prntr} - {item.sys_prntr}
           </Select.Option>
         ))}
       </Select>

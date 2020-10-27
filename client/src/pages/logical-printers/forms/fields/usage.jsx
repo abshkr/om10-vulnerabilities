@@ -44,7 +44,7 @@ const Usage = ({ form, value, company }) => {
       >
         {options?.records.map((item, index) => (
           <Select.Option key={index} value={item.use_id}>
-            {item.use_name}
+            {item.use_id} - {item.use_name}
           </Select.Option>
         ))}
       </Select>

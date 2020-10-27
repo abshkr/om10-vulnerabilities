@@ -17,7 +17,8 @@ class LogicalPrinter extends CommonClass
 
     protected $primary_keys = array(    
         "cmpy",
-        "usage"
+        "usage",
+        "prntr"
     );
 
     protected $table_view_map = array(
