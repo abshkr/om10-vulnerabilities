@@ -851,7 +851,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               <Compartments
                 form={form}
                 value={value}
-                drawer={drawer}
+                drawer={supplier} //Same as v9, when supplier != drawer, use supplier product
                 tanker={tanker}
                 supplier={supplier}
                 config={config}
@@ -859,7 +859,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             )}
 
             {mode === '3' && !READ_ONLY && (
-              <Products form={form} value={value} drawer={drawer} access={access} />
+              <Products form={form} value={value} drawer={supplier} access={access} />
             )}
 
             {READ_ONLY && <Summary value={value} />}
