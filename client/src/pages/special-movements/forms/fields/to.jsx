@@ -14,7 +14,7 @@ const To = ({
   // onChange,
   form,
   value,
-  disabled
+  disabled,
 }) => {
   const { t } = useTranslation();
 
@@ -33,62 +33,62 @@ const To = ({
 
     api
       .get(SPECIAL_MOVEMENTS.PLANT_SUPPLIERS)
-      .then(response => {
+      .then((response) => {
         setSuppliers(response.data.records);
         setLoading(false);
       })
-      .catch(errors => {
+      .catch((errors) => {
         setLoading(false);
       });
   }, []);
 
-  const getTanks = useCallback(id => {
+  const getTanks = useCallback((id) => {
     setLoading(true);
 
     api
       .get(SPECIAL_MOVEMENTS.TANKS, {
         params: {
-          supplier: id
-        }
+          supplier: id,
+        },
       })
-      .then(response => {
+      .then((response) => {
         setTanks(response.data.records);
         setLoading(false);
       })
-      .catch(errors => {
+      .catch((errors) => {
         setLoading(false);
       });
   }, []);
 
   const getProducts = useCallback(
-    id => {
+    (id) => {
       setLoading(true);
 
       api
         .get(SPECIAL_MOVEMENTS.PRODUCTS, {
           params: {
-            tank_code: id
-          }
+            tank_code: id,
+          },
         })
-        .then(response => {
+        .then((response) => {
           setProducts(response.data.records);
           setLoading(false);
 
           if (response.data.records.length > 0) {
             setProduct(response.data.records?.[0]?.tank_base);
             setFieldsValue({
-              mlitm_prodcode_to: response.data.records?.[0]?.tank_base
+              mlitm_prodcode_to: response.data.records?.[0]?.tank_base,
             });
           }
         })
-        .catch(errors => {
+        .catch((errors) => {
           setLoading(false);
         });
     },
     [setProduct, setFieldsValue]
   );
 
-  const onSupplierChange = value => {
+  const onSupplierChange = (value) => {
     setSupplier(value);
     setTank(undefined);
     setProduct(undefined);
@@ -97,11 +97,11 @@ const To = ({
 
     setFieldsValue({
       mlitm_tankcode_to: undefined,
-      mlitm_prodcode_to: undefined
+      mlitm_prodcode_to: undefined,
     });
   };
 
-  const onTankChange = value => {
+  const onTankChange = (value) => {
     setTank(value);
     setProduct(undefined);
     getProducts(value);
@@ -127,11 +127,11 @@ const To = ({
       setFieldsValue({
         mlitm_prodcmpy_to: prodCompany,
         mlitm_tankcode_to: tankCode,
-        mlitm_prodcode_to: prodCode
+        mlitm_prodcode_to: prodCode,
       });
     }
-  // }, [value, setFieldsValue, onChange]);
-  }, [value, setFieldsValue, setSupplier, setTank, setProduct]);
+  }, [value, setFieldsValue]);
+  // }, [value, setFieldsValue, setSupplier, setTank, setProduct]);
 
   useEffect(() => {
     getSuppliers();
@@ -161,7 +161,7 @@ const To = ({
       return;
     }
 
-    let title = "Supplier or Tank or Base Product";
+    let title = 'Supplier or Tank or Base Product';
     if (rule.field === 'mlitm_prodcmpy_to') {
       title = t('fields.toPlantSupplier');
     }
@@ -187,7 +187,7 @@ const To = ({
             name="mlitm_prodcmpy_to"
             label={t('fields.toPlantSupplier')}
             style={{ width: '100%', marginRight: 5 }}
-            rules={[{ required: type==='0'||type==='2', validator: validate }]}
+            rules={[{ required: type === '0' || type === '2', validator: validate }]}
           >
             <Select
               dropdownMatchSelectWidth={false}
@@ -214,7 +214,7 @@ const To = ({
             name="mlitm_tankcode_to"
             label={t('fields.toTank')}
             style={{ width: '100%', marginRight: 5 }}
-            rules={[{ required: type==='0'||type==='2', validator: validate }]}
+            rules={[{ required: type === '0' || type === '2', validator: validate }]}
           >
             <Select
               dropdownMatchSelectWidth={false}
@@ -230,7 +230,8 @@ const To = ({
             >
               {tanks.map((item, index) => (
                 <Select.Option key={index} value={item.tank_code}>
-                  {item.tank_code} - {item.tank_name}{/*  [{item.base_code} - {item.prod_code} - {item.prod_name}] */}
+                  {item.tank_code} - {item.tank_name}
+                  {/*  [{item.base_code} - {item.prod_code} - {item.prod_name}] */}
                 </Select.Option>
               ))}
             </Select>
@@ -241,7 +242,7 @@ const To = ({
             name="mlitm_prodcode_to"
             label={t('fields.toProduct')}
             style={{ width: '100%' }}
-            rules={[{ required: type==='0'||type==='2', validator: validate }]}
+            rules={[{ required: type === '0' || type === '2', validator: validate }]}
           >
             <Select
               dropdownMatchSelectWidth={false}
@@ -256,7 +257,8 @@ const To = ({
             >
               {products.map((item, index) => (
                 <Select.Option key={index} value={item.tank_base}>
-                  {item.tank_base} - {item.tank_base_name}{/*  [{item.tank_bclass_name}] */}
+                  {item.tank_base} - {item.tank_base_name}
+                  {/*  [{item.tank_bclass_name}] */}
                 </Select.Option>
               ))}
             </Select>
