@@ -367,5 +367,13 @@ const AntdStyleProvider = createGlobalStyle`
     font-weight: 500 !important;
   }
 
+  .ant-table-thead {
+    white-space: nowrap !important;
+  }
+  
+  .ant-table-cell {
+    padding-right: 15px !important;
+  }
+
 `;
 export default AntdStyleProvider;
