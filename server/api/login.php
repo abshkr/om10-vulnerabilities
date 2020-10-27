@@ -83,6 +83,22 @@ if (isset($data->lang)) {
     }
 }
 
+$database = new Database();
+$db = $database->getConnection2();
+    
+if ($object->user !== '9999') {
+    $fa_auth = new FaAuth($db);
+    $fa_pre_check = $fa_auth->pre_check($object->user);
+    if ($fa_pre_check != 'OK') {
+        http_response_code(400);
+        $login_result = array(
+            'msg_desc' => $fa_pre_check);
+        
+        echo json_encode($login_result, JSON_PRETTY_PRINT);
+        return;
+    }
+}
+
 $query_string = "lang=" . $object->langcode . 
             "&usr=" . rawurlencode(strip_tags($object->user)) .
             "&pwd=" . rawurlencode(strip_tags($object->psw)) . 
@@ -126,11 +142,8 @@ if ($array['MSG_CODE'] === "0") {
     
     $twofa_result = 'NA';
     if ($object->user !== '9999') {
-        write_log("FAMailService check", __FILE__, __LINE__);
-        $database = new Database();
-        $db = $database->getConnection2();
         $fa_auth = new FaAuth($db);
-        $twofa_result = $fa_auth->pre_check($object->user);
+        $twofa_result = $fa_auth->sendout_factor($object->user);
     }
     
     $exp_min = 180; 

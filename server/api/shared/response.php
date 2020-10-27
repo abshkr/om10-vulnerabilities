@@ -401,6 +401,14 @@ function response($case_name, $default = null, $params = null)
             "ENG" => "2FA authentication time out",
             "CHN" => "验证超时"
         ),
+        "__2FA_EMAIL_NOT_SET__" => array(
+            "ENG" => "2FA authentication: email not set",
+            "CHN" => "验证码失败：邮件地址未设置"
+        ),
+        "__2FA_EMAIL_NOT_VALID__" => array(
+            "ENG" => "2FA authentication: email not valid",
+            "CHN" => "验证码失败：不正确的邮件地址"
+        ),
     );
 
     $lang = Utilities::getCurrLang();

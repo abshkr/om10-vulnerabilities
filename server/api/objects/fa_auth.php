@@ -8,7 +8,9 @@ include_once 'common_class.php';
 
 class FaAuth extends CommonClass
 {
-    public function TwoFA_mail($user)
+    protected $TABLE_NAME = "PERSONNEL";
+
+    private function check_TwoFA_mail($user)
     {
         $query = "
             SELECT NVL(PER_EMAIL, '-1') PER_EMAIL FROM PERSONNEL WHERE PER_CODE = :per_code";
@@ -17,19 +19,46 @@ class FaAuth extends CommonClass
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return null;
+            return "Database error:" . $e['message'];
         }
 
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         $email = $row['PER_EMAIL'];
         if ($email === '-1') {
             write_log(sprintf("Email not set for user %s", $user), __FILE__, __LINE__, LogLevel::ERROR);
-            return "2FA NOEMAIL";
+            return "2FA authentication: email not set";
         }
 
         //email validateion
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return "2FA INVALIDMAIL";
+            return "2FA authentication: email not valid";
+        }
+
+        return "OK";
+    }
+
+    private function TwoFA_mail($user)
+    {
+        $query = "
+            SELECT NVL(PER_EMAIL, '-1') PER_EMAIL FROM PERSONNEL WHERE PER_CODE = :per_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':per_code', $user);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return "Database error:" . $e['message'];
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $email = $row['PER_EMAIL'];
+        if ($email === '-1') {
+            write_log(sprintf("Email not set for user %s", $user), __FILE__, __LINE__, LogLevel::ERROR);
+            return response("__2FA_EMAIL_NOT_SET__");
+        }
+
+        //email validateion
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return response("__2FA_EMAIL_NOT_VALID__");
         }
 
         return $email;
@@ -45,7 +74,7 @@ class FaAuth extends CommonClass
         return $randstring;
     }
 
-    public function TwoFA_mailout($mail)
+    private function TwoFA_mailout($mail)
     {
         $to = $mail;
         $subject = "DKI-TAS verification Code";
@@ -102,14 +131,35 @@ Team DKI", $auth_code);
         }
     }
 
+    //If 2FA not needed, return "NA", or if email not correctly set
     public function pre_check($user)
     {
-        write_log(sprintf("%s::%s() START. user:%s", __CLASS__, __FUNCTION__, $user),
-            __FILE__, __LINE__);
+        // write_log(sprintf("%s::%s() START. user:%s", __CLASS__, __FUNCTION__, $user),
+        //     __FILE__, __LINE__);
+        $serv = new SiteService($this->conn);
+        if ($serv->FA2_enabled()) {
+            $mail = $this->TwoFA_mail($user);
+            if (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
+                return $mail;
+            } 
+        }
+
+        return "OK";
+    }
+
+    //Send out a mail that includes the factor. If 2FA not enabled, returns NA
+    public function sendout_factor($user)
+    {
+        // write_log(sprintf("%s::%s() START. user:%s", __CLASS__, __FUNCTION__, $user),
+        //     __FILE__, __LINE__);
         $serv = new SiteService($this->conn);
         if ($serv->FA2_enabled()) {
             write_log("2FA enabled, start 2FA auth process. " . $user, __FILE__, __LINE__);
             $mail = $this->TwoFA_mail($user);
+            if (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
+                return $mail;
+            }
+            
             $auth_code = $this->TwoFA_mailout($mail);
             
             if (!isset($_SESSION)) {

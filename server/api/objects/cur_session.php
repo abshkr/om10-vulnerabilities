@@ -8,6 +8,7 @@ include_once 'common_class.php';
 class CurSession extends CommonClass
 {
     protected $VIEW_NAME = 'DUMMY';
+    protected $TABLE_NAME = "DUMMY";
     
     public function server_date()
     {
