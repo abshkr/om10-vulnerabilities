@@ -83,7 +83,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, config }) => {
       api
         .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
           params: {
-            drawer_code: value.drawer_code,
+            drawer_code: value.supplier_code,
           },
         })
         .then((res) => setProducts(res.data.records));

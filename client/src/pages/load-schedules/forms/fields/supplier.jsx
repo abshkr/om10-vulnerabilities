@@ -27,9 +27,9 @@ const Supplier = ({ form, value, onChange }) => {
         supplier_code: value.supplier_code,
       });
 
-      onChange(value.supplier_code);
+      // onChange(value.supplier_code);
     }
-  }, [value, setFieldsValue, onChange]);
+  }, [value, setFieldsValue]);
 
   return (
     <Form.Item

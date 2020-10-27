@@ -6,7 +6,7 @@ import { Form, Select } from 'antd';
 
 import { LOAD_SCHEDULES } from '../../../../api';
 
-const Drawer = ({ form, value, onChange }) => {
+const Drawer = ({ form, drawer, value, onChange }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -22,14 +22,14 @@ const Drawer = ({ form, value, onChange }) => {
   };
 
   useEffect(() => {
-    if (value) {
+    if (drawer) {
       setFieldsValue({
-        drawer_code: value.drawer_code,
+        drawer_code: drawer,
       });
 
-      onChange(value.drawer_code);
+      // onChange(drawer);
     }
-  }, [value, setFieldsValue, onChange]);
+  }, [drawer, setFieldsValue]);
 
   return (
     <Form.Item
@@ -44,7 +44,7 @@ const Drawer = ({ form, value, onChange }) => {
         onChange={onChange}
         disabled={!!value}
         optionFilterProp="children"
-        placeholder={!value ? t('placeholder.selectDrawer') : null}
+        placeholder={!drawer ? t('placeholder.selectDrawer') : null}
         filterOption={(value, option) =>
           option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
         }

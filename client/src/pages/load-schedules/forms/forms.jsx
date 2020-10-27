@@ -179,9 +179,6 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
     setSupplier(supplier);
     setDrawer(supplier);
-    setFieldsValue({
-      drawer_code: supplier,
-    });
   };
 
   const onFinish = async () => {
@@ -750,7 +747,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               </Col>
 
               <Col span={12}>
-                <DrawerForm form={form} value={value} onChange={setDrawer} />
+                <DrawerForm form={form} drawer={drawer? drawer: value?.drawer_code} value = {value} onChange={setDrawer} />
               </Col>
             </Row>
 

@@ -565,6 +565,24 @@ class Schedule extends CommonClass
             throw new DatabaseException(response("__CGI_FAILED__"));
         }
 
+        //When supplier != drawer
+        if (isset($this->supplier_code) && isset($this->drawer_code)
+            && $this->supplier_code != $this->drawer_code) {
+            $query = "UPDATE SCHEDULE 
+                SET SHLS_DRAWER = :drawer
+                WHERE SHLS_TRIP_NO = :trip 
+                    AND SHLS_SUPP = :supp";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':supp', $this->supplier_code);
+            oci_bind_by_name($stmt, ':drawer', $this->drawer_code);
+            oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+            }
+        }
+
         if (isset($this->compartments)) {
             foreach ($this->compartments as $compartment) {
                 if ($cmd == "MOD") {
@@ -844,8 +862,8 @@ class Schedule extends CommonClass
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
-        $sched_service = new ScheduleService($this->conn);
-        $this->drawer_code = $sched_service->shls_drawer($this->shls_trip_no, $this->supplier_code);
+        // $sched_service = new ScheduleService($this->conn);
+        // $this->drawer_code = $sched_service->shls_drawer($this->shls_trip_no, $this->supplier_code);
 
         write_log(json_encode($this), __FILE__, __LINE__);
 
@@ -948,12 +966,12 @@ class Schedule extends CommonClass
         ) LOADED
         WHERE PRODUCTS.PROD_CMPY = LOADED.PROD_CMPY(+)
             AND PRODUCTS.PROD_CODE = LOADED.PROD_CODE(+)
-            AND PRODUCTS.PROD_CMPY = :drawer_code
+            AND PRODUCTS.PROD_CMPY = :shls_supp
         ORDER BY PRODUCTS.PROD_CODE";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':shls_trip_no', $this->shls_trip_no);
         oci_bind_by_name($stmt, ':shls_supp', $this->supplier_code);
-        oci_bind_by_name($stmt, ':drawer_code', $this->drawer_code);
+        // oci_bind_by_name($stmt, ':drawer_code', $this->drawer_code);
         
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
