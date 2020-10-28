@@ -13,7 +13,7 @@ const Code = ({ form, value, data }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tnkr_code: value.tnkr_code
+        tnkr_code: value.tnkr_code,
       });
     }
   }, [value, setFieldsValue]);
@@ -29,14 +29,18 @@ const Code = ({ form, value, data }) => {
       return Promise.reject(t('descriptions.alreadyExists'));
     }
 
-    const regex = new RegExp(REGEX.ALPHANUMERIC_SPECIAL_NOSQ);
+    // const regex = new RegExp(REGEX.ALPHANUMERIC_SPECIAL_NOSQ);
+    const regex = new RegExp(REGEX.DOCUMENT);
     const validated = regex.exec(input);
 
     if (!validated) {
-      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextAlphaNumericSpecialNoSingleQuote')}`);
+      return Promise.reject(
+        `${t('validate.invalidInput')}: ${t('validate.regexpTextAlphaNumericSpecialNoSingleQuote')}`
+      );
     }
 
-    if (input && input.length > 20) {
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 20) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
     }
 

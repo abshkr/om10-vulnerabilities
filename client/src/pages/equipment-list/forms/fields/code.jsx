@@ -7,14 +7,16 @@ import _ from 'lodash';
 import { EQUIPMENT_LIST } from '../../../../api';
 import { REGEX } from '../../../../constants';
 
-import {validatorStatus} from '../../../../utils';
+import { validatorStatus } from '../../../../utils';
 
 const Code = ({ form, value }) => {
   const [eqptCode, setEqptCode] = useState(value?.eqpt_code);
   const [matched, setMatched] = useState(false);
   const { t } = useTranslation();
 
-  const { data, isValidating, revalidate } = useSWR(`${EQUIPMENT_LIST.CHECK_EQPT_CODE}?eqpt_code=${eqptCode}`);
+  const { data, isValidating, revalidate } = useSWR(
+    `${EQUIPMENT_LIST.CHECK_EQPT_CODE}?eqpt_code=${eqptCode}`
+  );
 
   const { setFieldsValue, validateFields } = form;
 
@@ -46,13 +48,13 @@ const Code = ({ form, value }) => {
 
   // this part is crucial for the instant verification of value
   useEffect(() => {
-    if (eqptCode?.length>0) {
+    if (eqptCode?.length > 0) {
       validateFields(['eqpt_code']);
     }
   }, [matched, eqptCode, validateFields]);
 
   const validate = (rule, input) => {
-    console.log("eqpt code validate")
+    console.log('eqpt code validate');
     if (matched && !value) {
       return Promise.reject(t('descriptions.alreadyExists'));
     }
@@ -60,14 +62,18 @@ const Code = ({ form, value }) => {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.code')}`);
     }
 
-    const regex = new RegExp(REGEX.ALPHANUMERIC_SPECIAL_NOSQ);
+    // const regex = new RegExp(REGEX.ALPHANUMERIC_SPECIAL_NOSQ);
+    const regex = new RegExp(REGEX.DOCUMENT);
     const validated = regex.exec(input);
 
     if (!validated) {
-      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextAlphaNumericSpecialNoSingleQuote')}`);
+      return Promise.reject(
+        `${t('validate.invalidInput')}: ${t('validate.regexpTextAlphaNumericSpecialNoSingleQuote')}`
+      );
     }
 
-    if (input && input.length > 40) {
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 40) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
     return Promise.resolve();
@@ -77,9 +83,9 @@ const Code = ({ form, value }) => {
 
   return (
     <div>
-      <Form.Item 
-        name="eqpt_code" 
-        label={t('fields.code')} 
+      <Form.Item
+        name="eqpt_code"
+        label={t('fields.code')}
         hasFeedback
         rules={[{ required: true, validator: validate }]}
         validateStatus={eqptCode ? status : null}
