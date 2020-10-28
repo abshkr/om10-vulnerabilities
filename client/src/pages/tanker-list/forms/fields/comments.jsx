@@ -10,13 +10,14 @@ const Comments = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        remarks: value.remarks
+        remarks: value.remarks,
       });
     }
   }, [value, setFieldsValue]);
 
   const validate = (rule, input) => {
-    if (input && input.length > 4000) {
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 4000) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 4000 ─ ${t('descriptions.maxCharacters')}`);
     }
     return Promise.resolve();

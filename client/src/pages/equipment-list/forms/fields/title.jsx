@@ -10,7 +10,7 @@ const Title = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        eqpt_title: value.eqpt_title
+        eqpt_title: value.eqpt_title,
       });
     }
   }, [value, setFieldsValue]);
@@ -20,7 +20,8 @@ const Title = ({ form, value }) => {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.title')}`);
     }
 
-    if (input && input.length > 40) {
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 40) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
 

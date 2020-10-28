@@ -10,14 +10,15 @@ const Name = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tnkr_name: value.tnkr_name
+        tnkr_name: value.tnkr_name,
       });
     }
   }, [value, setFieldsValue]);
 
   const validate = (rule, input) => {
-    if (input && input.length > 20) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 40) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();
