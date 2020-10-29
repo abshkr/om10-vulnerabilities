@@ -23,7 +23,10 @@ const MovementTime = ({ form, value, type, disabled }) => {
     const serverCurrent = moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT);
     if (value) {
       setFieldsValue({
-        mlitm_dtim_start: '' ? serverCurrent : moment(value.mlitm_dtim_start, SETTINGS.DATE_TIME_FORMAT),
+        mlitm_dtim_start:
+          value.mlitm_dtim_start === ''
+            ? serverCurrent
+            : moment(value.mlitm_dtim_start, SETTINGS.DATE_TIME_FORMAT),
       });
     } else {
       setFieldsValue({

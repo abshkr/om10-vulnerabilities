@@ -3,8 +3,10 @@ import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import { Form, DatePicker } from 'antd';
 import { SETTINGS } from '../../../../constants';
+import { useConfig } from '../../../../hooks';
 
 const ExpiredAfter = ({ form, value }) => {
+  const config = useConfig();
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
@@ -32,19 +34,20 @@ const ExpiredAfter = ({ form, value }) => {
   };
 
   useEffect(() => {
+    const serverCurrent = moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT);
     if (value) {
       setFieldsValue({
         mv_dtim_expiry:
           value.mv_dtim_expiry === '' ? null : moment(value.mv_dtim_expiry, SETTINGS.DATE_TIME_FORMAT),
       });
-    }
-    else {
+    } else {
       setFieldsValue({
-        //mv_dtim_expiry: moment(),
-        mv_dtim_expiry: moment().add(60,'days'),//.format(SETTINGS.DATE_TIME_FORMAT),
+        // mv_dtim_expiry: moment(),
+        // mv_dtim_expiry: moment().add(60,'days'),//.format(SETTINGS.DATE_TIME_FORMAT),
+        mv_dtim_expiry: serverCurrent.add(60, 'days'),
       });
     }
-  }, [value, setFieldsValue]);
+  }, [value, config, setFieldsValue]);
 
   return (
     <Form.Item
