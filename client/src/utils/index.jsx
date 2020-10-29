@@ -21,6 +21,7 @@ import getCurrentTime from './get-current-time';
 import getRealColor from './get-real-color';
 import hexToRGB from './hex-to-rbg';
 import validateField from './validate-field';
+import validateRegexp from './validate-regexp';
 import validateNumber from './validate-number';
 import validatorStatus from './validator-status';
 import responseType from './response-type';
@@ -53,6 +54,7 @@ export {
   hexToRGB,
   VCFManager,
   validateField,
+  validateRegexp,
   validateNumber,
   validatorStatus,
   responseType,

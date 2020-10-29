@@ -12,27 +12,31 @@ const Name = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        base_name: value.base_name
+        base_name: value.base_name,
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item 
-      name="base_name" 
-      label={t('fields.baseProdName')} 
-      rules={[{ 
-        required: true,
-        title: t('fields.baseProdName'), 
-        dataType: 'STRING',
-        maxLength: 40, 
-        precision: null,
-        min: null, 
-        max: null,
-        prompts: t,
-        // returnType: 'notice',
-        validator: validateField 
-      }]}
+    <Form.Item
+      name="base_name"
+      label={t('fields.baseProdName')}
+      rules={[
+        {
+          required: true,
+          title: t('fields.baseProdName'),
+          dataType: 'STRING',
+          maxLength: 40,
+          precision: null,
+          min: null,
+          max: null,
+          prompts: t,
+          // regexp: 'ALPHANUMERIC',
+          // regexp: 'DOCUMENT',
+          // returnType: 'notice',
+          validator: validateField,
+        },
+      ]}
     >
       <Input />
     </Form.Item>
