@@ -26,7 +26,8 @@ const MessageId = ({ form, value }) => {
       return Promise.reject(t('descriptions.alreadyExists'));
     }
 
-    if (input && input.length > 16) {
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 16) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 16 ─ ${t('descriptions.maxCharacters')}`);
     }
 

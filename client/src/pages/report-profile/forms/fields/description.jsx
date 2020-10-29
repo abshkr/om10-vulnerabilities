@@ -10,13 +10,14 @@ const Description = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        report_desc: value.report_desc
+        report_desc: value.report_desc,
       });
     }
   }, [value, setFieldsValue]);
 
   const validate = (rule, input) => {
-    if (input && input.length > 100) {
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 100) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 100 ─ ${t('descriptions.maxCharacters')}`);
     }
 

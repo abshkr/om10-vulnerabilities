@@ -26,8 +26,9 @@ const Code = ({ form, value }) => {
       return Promise.reject(t('descriptions.alreadyExists'));
     }
 
-    if (input && input.length > 32) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 32 ─ ${t('descriptions.maxCharacters')}`);
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 16) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 16 ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();

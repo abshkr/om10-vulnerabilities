@@ -213,6 +213,19 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     }
   }, [value, setFieldsValue]);
 
+  const validate = (rule, input) => {
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.groupName')}`);
+    }
+
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 16) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 16 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    return Promise.resolve();
+  };
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -280,7 +293,11 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError initialValues={value}>
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane className="ant-tab-window" tab={t('tabColumns.general')} forceRender={true} key="1">
-            <Form.Item name="tgr_name" label={t('fields.groupName')}>
+            <Form.Item
+              name="tgr_name"
+              label={t('fields.groupName')}
+              rules={[{ required: true, validator: validate }]}
+            >
               <Input disabled={!!value}></Input>
             </Form.Item>
 

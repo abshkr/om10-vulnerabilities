@@ -8,8 +8,9 @@ const MessageDetails = ({ form, value }) => {
   const { t } = useTranslation();
 
   const validate = (rule, input) => {
-    if (input && input.length > 300) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 300 ─ ${t('descriptions.maxCharacters')}`);
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 2048) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 2048 ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();
