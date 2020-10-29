@@ -10,13 +10,14 @@ const Department = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        per_department: value.per_department
+        per_department: value.per_department,
       });
     }
   }, [value, setFieldsValue]);
 
   const validate = (rule, input, callback) => {
-    if (input && input.length > 16) {
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 16) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 16 ─ ${t('descriptions.maxCharacters')}`);
     }
     return Promise.resolve();

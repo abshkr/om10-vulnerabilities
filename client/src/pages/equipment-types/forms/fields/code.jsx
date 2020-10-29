@@ -4,6 +4,7 @@ import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
 import _ from 'lodash';
+import { REGEX } from '../../../../constants';
 
 import { EQUIPMENT_TYPES } from '../../../../api';
 
@@ -35,8 +36,16 @@ const Code = ({ form, value }) => {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.equipmentTypeCode')}`);
     }
 
-    if (input && input.length > 16) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 16 ─ ${t('descriptions.maxCharacters')}`);
+    const regex = new RegExp(REGEX.DOCUMENT);
+    const validated = regex.exec(input);
+
+    if (!validated) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextDocument')}`);
+    }
+
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 40) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();

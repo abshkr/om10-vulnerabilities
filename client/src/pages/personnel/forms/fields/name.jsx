@@ -10,7 +10,7 @@ const Name = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        per_name: value.per_name
+        per_name: value.per_name,
       });
     }
   }, [value, setFieldsValue]);
@@ -20,7 +20,8 @@ const Name = ({ form, value }) => {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.name')}`);
     }
 
-    if (input && input.length > 100) {
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 100) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 100 ─ ${t('descriptions.maxCharacters')}`);
     }
 

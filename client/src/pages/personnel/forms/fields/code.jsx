@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
+import { REGEX } from '../../../../constants';
 
 import { PERSONNEL } from '../../../../api';
 
@@ -15,13 +16,13 @@ const Code = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        per_code: value.per_code
+        per_code: value.per_code,
       });
     }
   }, [value, setFieldsValue]);
 
   const validate = (rule, input) => {
-    const match = _.find(data?.records, object => {
+    const match = _.find(data?.records, (object) => {
       const result = object.per_code.toLowerCase() === input?.toLowerCase();
 
       return result;
@@ -35,7 +36,15 @@ const Code = ({ form, value }) => {
       return Promise.reject(t('descriptions.alreadyExists'));
     }
 
-    if (input && input.length > 12) {
+    const regex = new RegExp(REGEX.ALPHANUMERIC);
+    const validated = regex.exec(input);
+
+    if (!validated) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextAlphaNumeric')}`);
+    }
+
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 12) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 12 ─ ${t('descriptions.maxCharacters')}`);
     }
 
