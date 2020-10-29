@@ -34,9 +34,7 @@ const Code = ({ form, value, data }) => {
     const validated = regex.exec(input);
 
     if (!validated) {
-      return Promise.reject(
-        `${t('validate.invalidInput')}: ${t('validate.regexpTextAlphaNumericSpecialNoSingleQuote')}`
-      );
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextDocument')}`);
     }
 
     const len = new TextEncoder().encode(input).length;

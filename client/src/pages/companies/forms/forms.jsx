@@ -31,6 +31,7 @@ import { mutate } from 'swr';
 
 import api, { COMPANIES } from '../../../api';
 import { InputNumber } from '../../../components';
+import { REGEX } from '../../../constants';
 import useSWR from 'swr';
 import _ from 'lodash';
 
@@ -265,6 +266,35 @@ const FormModal = ({
       }
     }
 
+    const regex = new RegExp(REGEX.ALPHANUMERIC);
+    const validated = regex.exec(input);
+
+    if (!validated) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextAlphaNumeric')}`);
+    }
+
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 16) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 16 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    return Promise.resolve();
+  };
+
+  const validatePlant = (rule, input) => {
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.set')} ─ ${t('fields.plantCode')}`);
+      }
+    }
+
+    const regex = new RegExp(REGEX.ALPHANUMERIC);
+    const validated = regex.exec(input);
+
+    if (!validated) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextAlphaNumeric')}`);
+    }
+
     const len = new TextEncoder().encode(input).length;
     if (input && len > 16) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 16 ─ ${t('descriptions.maxCharacters')}`);
@@ -278,6 +308,13 @@ const FormModal = ({
       if (input === '' || !input) {
         return Promise.reject(`${t('validate.set')} ─ ${t('fields.companyName')}`);
       }
+    }
+
+    const regex = new RegExp(REGEX.DOCUMENT);
+    const validated = regex.exec(input);
+
+    if (!validated) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextDocument')}`);
     }
 
     const len = new TextEncoder().encode(input).length;
@@ -371,7 +408,11 @@ const FormModal = ({
             >
               <Input disabled={!IS_CREATING}></Input>
             </Form.Item>
-            <Form.Item name="cmpy_plant" label={t('fields.plantCode')}>
+            <Form.Item
+              name="cmpy_plant"
+              label={t('fields.plantCode')}
+              rules={[{ required: true, validator: validatePlant }]}
+            >
               <Input></Input>
             </Form.Item>
             <Form.Item
