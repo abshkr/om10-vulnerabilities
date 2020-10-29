@@ -5,7 +5,13 @@ import { SWRConfig } from 'swr';
 import { Button, Tabs, Modal } from 'antd';
 import { fetcher } from 'utils';
 import { useTranslation } from 'react-i18next';
-import { SyncOutlined, PlusOutlined, ReconciliationOutlined, EditOutlined, TrademarkOutlined } from '@ant-design/icons';
+import {
+  SyncOutlined,
+  PlusOutlined,
+  ReconciliationOutlined,
+  EditOutlined,
+  TrademarkOutlined,
+} from '@ant-design/icons';
 
 import { Page, DataTable, Download, FormModal } from 'components';
 import { DRAWER_PRODUCTS } from '../../api';
@@ -15,21 +21,21 @@ import auth from '../../auth';
 import { useConfig } from '../../hooks';
 
 import Forms from './forms';
-import Assets from './assets/assets'
-import ManageImgForm from './assets/manage-images'
-import GenericForm from './generics/forms'
+import Assets from './assets/assets';
+import ManageImgForm from './assets/manage-images';
+import GenericForm from './generics/forms';
 
 const DrawerProduct = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [filterValue, setFilterValue] = useState('');
   const [mainTabOn, setMainTabOn] = useState(true);
-  
+
   const { t } = useTranslation();
   const config = useConfig();
 
   const access = useAuth('M_DRAWERPRODUCTS');
-  
+
   const { data: payload, isValidating, revalidate } = useSWR(DRAWER_PRODUCTS.READ);
 
   const doTabChanges = (tabPaneKey) => {
@@ -141,13 +147,13 @@ const DrawerProduct = () => {
 
   return (
     <Page page={page} name={name} modifiers={modifiers} access={access} avatar="drawerProducts">
-      <Tabs 
-        // defaultActiveKey={PRODUCT_GROUPS.READ_GROUPS} 
-        defaultActiveKey="1" 
-        onChange={doTabChanges} 
+      <Tabs
+        // defaultActiveKey={PRODUCT_GROUPS.READ_GROUPS}
+        defaultActiveKey="1"
+        onChange={doTabChanges}
         animated={false}
       >
-        <Tabs.TabPane tab={t('tabColumns.drawerProducts')} key="1">
+        <Tabs.TabPane tab={t('tabColumns.drawerProducts')} key="1" disabled={visible}>
           <DataTable
             data={data}
             columns={fields}
@@ -158,17 +164,19 @@ const DrawerProduct = () => {
             autoColWidth
             filterValue={filterValue}
           />
-          <Forms 
-            value={selected} 
-            visible={visible} 
-            handleFormState={handleFormState} 
-            access={access}
-            config={config}
-            setFilterValue={setFilterValue}
-          />
+          {visible && (
+            <Forms
+              value={selected}
+              visible={visible}
+              handleFormState={handleFormState}
+              access={access}
+              config={config}
+              setFilterValue={setFilterValue}
+            />
+          )}
         </Tabs.TabPane>
-        <Tabs.TabPane tab={t('tabColumns.drawerProductAssets')} key="2">
-          <Assets access={access} tabFlag={mainTabOn}/>
+        <Tabs.TabPane tab={t('tabColumns.drawerProductAssets')} key="2" disabled={visible}>
+          <Assets access={access} tabFlag={mainTabOn} />
         </Tabs.TabPane>
       </Tabs>
     </Page>
