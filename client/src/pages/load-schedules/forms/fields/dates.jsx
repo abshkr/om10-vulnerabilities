@@ -5,10 +5,12 @@ import { Form, DatePicker, Col } from 'antd';
 import moment from 'moment';
 import _ from 'lodash';
 
+import { useConfig } from '../../../../hooks';
 import { SETTINGS } from '../../../../constants';
 import { getDateTimeFormat } from '../../../../utils';
 
 const Dates = ({ form, value, expiry }) => {
+  const config = useConfig();
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -67,39 +69,67 @@ const Dates = ({ form, value, expiry }) => {
   };
 
   useEffect(() => {
+    const serverCurrent = moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT);
     if (value) {
-      console.log('...................trip exp date', value);
+      // console.log('...................trip exp date', value);
       // const baseDate = moment();
-      const baseDate = value.shls_caldate === '' ? moment() : moment(value.shls_caldate, SETTINGS.DATE_TIME_FORMAT);
+      // const baseDate = value.shls_caldate === '' ? moment() : moment(value.shls_caldate, SETTINGS.DATE_TIME_FORMAT);
+      const baseDate =
+        value.shls_caldate === '' ? serverCurrent : moment(value.shls_caldate, SETTINGS.DATE_TIME_FORMAT);
       setFieldsValue({
-        shls_caldate: value.shls_caldate === '' ? null : moment(value.shls_caldate, SETTINGS.DATE_TIME_FORMAT),
-        shls_exp2: value.shls_exp2 === '' 
-          ? (!NEED_EXPIRY ? null : baseDate.add(_.toNumber(expiry), 'hours')) 
-          : moment(value.shls_exp2, SETTINGS.DATE_TIME_FORMAT),
+        shls_caldate:
+          value.shls_caldate === '' ? null : moment(value.shls_caldate, SETTINGS.DATE_TIME_FORMAT),
+        shls_exp2:
+          value.shls_exp2 === ''
+            ? !NEED_EXPIRY
+              ? null
+              : baseDate.add(_.toNumber(expiry), 'hours')
+            : moment(value.shls_exp2, SETTINGS.DATE_TIME_FORMAT),
+      });
+    } else {
+      // console.log('.............dates', serverCurrent, value, expiry);
+      const serverCurrent2 = moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT);
+      setFieldsValue({
+        // shls_caldate: moment(),
+        // shls_exp2: !expiry ? moment() : moment().add(_.toNumber(expiry), 'hours'),
+        shls_caldate: serverCurrent,
+        shls_exp2: !expiry ? serverCurrent : serverCurrent2.add(_.toNumber(expiry), 'hours'),
       });
     }
-  }, [value, setFieldsValue]);
+  }, [value, config, expiry, setFieldsValue]);
 
   return (
     <>
       <Col span={6}>
-        <Form.Item 
-          name="shls_caldate" 
+        <Form.Item
+          name="shls_caldate"
           label={t('fields.scheduleDate')}
           rules={[{ required: true, validator: validateScheduleDate }]}
         >
-          <DatePicker disabled={IS_DISABLED} showTime format={FORMAT} style={{ width: '100%' }} onChange={onChange} />
+          <DatePicker
+            disabled={IS_DISABLED}
+            showTime
+            format={FORMAT}
+            style={{ width: '100%' }}
+            onChange={onChange}
+          />
         </Form.Item>
       </Col>
 
       <Col span={6}>
         {NEED_EXPIRY && (
-          <Form.Item 
-            name="shls_exp2" 
+          <Form.Item
+            name="shls_exp2"
             label={t('fields.expiryDate')}
             rules={[{ required: false, validator: validateExpiryDate }]}
           >
-            <DatePicker disabled={IS_DISABLED} showTime format={FORMAT} style={{ width: '100%' }} onChange={onChange} />
+            <DatePicker
+              disabled={IS_DISABLED}
+              showTime
+              format={FORMAT}
+              style={{ width: '100%' }}
+              onChange={onChange}
+            />
           </Form.Item>
         )}
       </Col>

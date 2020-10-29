@@ -559,12 +559,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
         shls_ld_type: '2',
       });
 
-      setFieldsValue({
+      /* setFieldsValue({
         shls_caldate: moment(),
         shls_exp2: !expHour ? moment() : moment().add(_.toNumber(expHour), 'hours'),
-      });
+      }); */
     }
-  }, [resetFields, visible, value, expHour]);
+  }, [resetFields, setFieldsValue, visible, value, expHour]);
 
   return (
     <Drawer
@@ -747,7 +747,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               </Col>
 
               <Col span={12}>
-                <DrawerForm form={form} drawer={drawer? drawer: value?.drawer_code} value = {value} onChange={setDrawer} />
+                <DrawerForm
+                  form={form}
+                  drawer={drawer ? drawer : value?.drawer_code}
+                  value={value}
+                  onChange={setDrawer}
+                />
               </Col>
             </Row>
 
