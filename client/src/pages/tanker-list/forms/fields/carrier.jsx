@@ -13,7 +13,7 @@ const Carrier = ({ form, value }) => {
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.carrier')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.schdCarrier')}`);
     }
 
     return Promise.resolve();
@@ -22,7 +22,7 @@ const Carrier = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tnkr_carrier: value.tnkr_carrier
+        tnkr_carrier: value.tnkr_carrier,
       });
     }
   }, [value, setFieldsValue]);
@@ -30,7 +30,7 @@ const Carrier = ({ form, value }) => {
   return (
     <Form.Item
       name="tnkr_carrier"
-      label={t('fields.carrier')}
+      label={t('fields.schdCarrier')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select

@@ -4,7 +4,7 @@ const columns = (expiryTypes, t, expiryDateMode) => {
   if (expiryDateMode === '1') {
     expiryColumns.push({
       headerName: expiryTypes ? expiryTypes[0]?.expiry_date_titl : '',
-      field: "tnkr_lic_exp",
+      field: 'tnkr_lic_exp',
       sortable: true,
       resizable: true,
       // filter: 'FuzzyFilter',
@@ -14,7 +14,7 @@ const columns = (expiryTypes, t, expiryDateMode) => {
     });
     expiryColumns.push({
       headerName: expiryTypes ? expiryTypes[1]?.expiry_date_titl : '',
-      field: "tnkr_dglic_exp",
+      field: 'tnkr_dglic_exp',
       sortable: true,
       resizable: true,
       // filter: 'FuzzyFilter',
@@ -24,7 +24,7 @@ const columns = (expiryTypes, t, expiryDateMode) => {
     });
     expiryColumns.push({
       headerName: expiryTypes ? expiryTypes[2]?.expiry_date_titl : '',
-      field: "tnkr_ins_exp",
+      field: 'tnkr_ins_exp',
       sortable: true,
       resizable: true,
       // filter: 'FuzzyFilter',
@@ -37,7 +37,7 @@ const columns = (expiryTypes, t, expiryDateMode) => {
       for (let i = 0; i < expiryTypes?.length; i++) {
         expiryColumns.push({
           headerName: expiryTypes[i].edt_type_desc,
-          field: "expiry_dates",
+          field: 'expiry_dates',
           sortable: true,
           resizable: true,
           // filter: 'FuzzyFilter',
@@ -46,12 +46,12 @@ const columns = (expiryTypes, t, expiryDateMode) => {
           width: 180,
           cellRendererParams: {
             edt_type_code: expiryTypes[i].edt_type_code,
-          }
+          },
         });
       }
     }
   }
-  
+
   return [
     {
       headerName: t('fields.code'),
@@ -61,7 +61,7 @@ const columns = (expiryTypes, t, expiryDateMode) => {
       filter: 'FuzzyFilter',
       suppressSizeToFit: true,
       width: 110,
-      pinned: "left",
+      pinned: 'left',
     },
     {
       headerName: t('fields.name'),
@@ -71,10 +71,10 @@ const columns = (expiryTypes, t, expiryDateMode) => {
       filter: 'FuzzyFilter',
       suppressSizeToFit: true,
       width: 120,
-      pinned: "left",
+      pinned: 'left',
     },
     {
-      headerName: t('fields.carrier'),
+      headerName: t('fields.schdCarrier'),
       field: 'tnkr_carrier_name',
       sortable: true,
       resizable: true,
@@ -168,7 +168,7 @@ const columns = (expiryTypes, t, expiryDateMode) => {
       suppressSizeToFit: true,
       width: 160,
     },
-  ]
+  ];
 };
 
 export default columns;

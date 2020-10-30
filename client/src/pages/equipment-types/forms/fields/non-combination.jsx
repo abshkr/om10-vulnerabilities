@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { Form, Select, Radio, Row, Col, Input, Button, InputNumber } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -41,6 +41,15 @@ const NonCombination = ({ form, value }) => {
 
   const IS_DISABLED = ['p', 'f'].includes(selected);
   const IS_CREATING = !value;
+
+  useEffect(() => {
+    if (units) {
+      const item = _.find(units?.records, (o) => o.unit_id === '5');
+      if (item !== undefined) {
+        setUnit(item?.description);
+      }
+    }
+  }, [units]);
 
   if (IS_CREATING) {
     return (
@@ -118,8 +127,8 @@ const NonCombination = ({ form, value }) => {
             {(fields, { add, remove }) => {
               return (
                 <div>
-                  <div style={{display: "flex"}}>
-                  <Button
+                  <div style={{ display: 'flex' }}>
+                    <Button
                       type="primary"
                       style={{ marginTop: 10, marginBottom: 10, flex: 4 }}
                       onClick={() => {
@@ -129,15 +138,17 @@ const NonCombination = ({ form, value }) => {
                       }}
                       block
                     >
-                      Add Compartment
+                      {t('operations.addCompartment')}
                     </Button>
-                    
-                    <InputNumber 
+
+                    <InputNumber
                       style={{ marginTop: 10, marginBottom: 10, marginLeft: 10, flex: 1 }}
                       defaultValue={1}
-                      min={1} 
+                      min={1}
                       max={10}
-                      onChange={(v)=>{setToAdd(v)}}
+                      onChange={(v) => {
+                        setToAdd(v);
+                      }}
                     />
                   </div>
 
@@ -154,7 +165,11 @@ const NonCombination = ({ form, value }) => {
                             <Form.Item {...field} validateTrigger={['onChange', 'onBlur']}>
                               <Input
                                 type="number"
-                                addonBefore={<div style={{ width: 120 }}>{`Compartment: ${index + 1}`}</div>}
+                                addonBefore={
+                                  <div style={{ width: 120 }}>{`${t('fields.compartment')}: ${
+                                    index + 1
+                                  }`}</div>
+                                }
                                 addonAfter={unit}
                                 defaultValue={0}
                                 style={{ width: '99%' }}
@@ -170,7 +185,7 @@ const NonCombination = ({ form, value }) => {
                                   remove(field.name);
                                 }}
                               >
-                                Remove
+                                {t('operations.removeCompartment')}
                               </Button>
                             ) : null}
                           </Col>
