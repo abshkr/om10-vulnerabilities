@@ -652,6 +652,19 @@ class Journal
 		return $map_value;
 	}
 
+    private function getUserName($user_code)
+    {
+        $query = "SELECT PER_NAME FROM PERSONNEL WHERE PER_CODE = :user_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':user_code', $user_code);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            return $user_code;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        return $row['PER_NAME'];
+    }
+
     private function getEventStr($jnl_event, $lang)
     {
         $query = "SELECT B.MESSAGE
@@ -716,6 +729,28 @@ class Journal
         return rtrim($new_id, ', ');
     }
 
+    /*
+        RECORD_ADDED      22	CHN	[%] 新增 [%] 记录 [%]: [%]
+        RECORD_ADDED      22	ENG	[%] added [%] record with [%]: [%] 
+        RECORD_CHANGED    23	CHN	[%] 改变 [%] 记录 [%] [%] [%] 到 [%]
+        RECORD_CHANGED    23	ENG	[%] changed [%] of record [%] with [%]  [%] to [%] 
+        RECORD_DELETED    24	CHN	[%] 删除 [%] 记录 [%]: [%]
+        RECORD_DELETED    24	ENG	[%] deleted [%] record with [%]: [%] 
+        RECORD_ALTERED  1872	CHN	[%] 修改 [%] 记录 [%]
+        RECORD_ALTERED  1872	ENG	[%] altered [%] record [%]
+        RECORD_ADD      1873	CHN	[%] 新增 [%] 记录 [%]
+        RECORD_ADD      1873	ENG	[%] added [%] record [%]
+        RECORD_DELETE   1874	CHN	[%] 删除 [%] 记录 [%]
+        RECORD_DELETE   1874	ENG	[%] deleted [%] record [%]
+
+        RECORD_ADDED:   0 - User, 1 - Table, 2 - Record Key, 3 - Record Details
+        RECORD_CHANGED: 0 - User, 1 - Table, 2 - Record Key, 3 - Changed Column, 4 - Old Value, 5 - New Value
+        RECORD_DELETED: 0 - User, 1 - Table, 2 - Record Key, 3 - Record Details
+        RECORD_ALTERED: 0 - User, 1 - Table, 2 - Record Key
+        RECORD_ADD:     0 - User, 1 - Table, 2 - Record Key
+        RECORD_DELETE:  0 - User, 1 - Table, 2 - Record Key
+        
+    */
     //For example: RECORD_ALTERED, userTxt, recordnmTxt, keyTxt
     public function jnlLogEvent($template, $data, $jnl_event, $jnl_class)
     {
@@ -728,6 +763,7 @@ class Journal
             return null;
         }
 
+        $curr_user = $this->getUserName($data[0]);
         $curr_table = $data[1];
         if (isset($this->tvmaps[$data[1]])) {
             $curr_table = $this->tvmaps[$data[1]];
@@ -747,6 +783,9 @@ class Journal
                         $data[$hit] = "";
                     }
                     $msg_data[$hit] = $data[$hit];
+                    if ($hit === 0) {
+                        $msg_data[0] = $curr_user;
+                    }
                     if ($hit === 1 && (
                         $template == Lookup::RECORD_ALTERED
                         || $template == Lookup::RECORD_ADD
@@ -764,13 +803,13 @@ class Journal
                         }
                     }
                     if ($hit === 2) {
-                        $msg_data[$hit] = $this->translate_primary_key_identifier($data[2], $lang, $curr_table);
+                        $msg_data[2] = $this->translate_primary_key_identifier($data[2], $lang, $curr_table);
                     }
                     if ($hit === 3 && (
                         $template == Lookup::RECORD_ADDED
                         || $template == Lookup::RECORD_DELETED
                     )) {
-                        $msg_data[$hit] = $this->translate_primary_key_identifier($data[3], $lang, $curr_table);
+                        $msg_data[3] = $this->translate_primary_key_identifier($data[3], $lang, $curr_table);
                     }
                     if ($template == Lookup::RECORD_CHANGED) {
                         // 0: user, 1: table/view, 2: record key, 3: column, 4: orig value, 5: new value
