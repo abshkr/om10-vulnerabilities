@@ -7,7 +7,17 @@ import _ from 'lodash';
 
 import { SPECIAL_MOVEMENTS } from 'api';
 
-const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) => {
+const Calculate = ({
+  form,
+  value,
+  disabled,
+  type,
+  tank,
+  config,
+  pinQuantity,
+  tankSelected,
+  setTankSelected,
+}) => {
   const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(SPECIAL_MOVEMENTS.UNITS);
@@ -119,11 +129,13 @@ const Calculate = ({ form, value, disabled, type, tank, config, pinQuantity }) =
   useEffect(() => {
     const disabledStatus =
       value?.mlitm_status === '5' || value?.mlitm_status === '9' || value?.mlitm_status === '4';
-    if (tank && !disabledStatus) {
+    // console.log('I am here 999', tankSelected, disabledStatus, tank, value);
+    if (tank && !disabledStatus && tankSelected) {
+      setTankSelected(false);
       setLimit(null);
       getLimit(tank);
     }
-  }, [getLimit, tank, value]);
+  }, [getLimit, tank, value, tankSelected]);
 
   const handleAmbVolFieldChange = (value) => {
     if (value !== undefined && value !== null && String(value).trim().length > 0) {

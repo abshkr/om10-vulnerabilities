@@ -41,6 +41,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
   const [productFrom, setProductFrom] = useState(undefined);
   const [productTo, setProductTo] = useState(undefined);
   const [quantitySource, setQuantitySource] = useState(null);
+  const [tankSelected, setTankSelected] = useState(false);
 
   /* const changeToTank = (tank) => {
     if (type !== '2') {
@@ -652,6 +653,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
                 form={form}
                 value={value}
                 disabled={DISABLED}
+                setTankSelected={setTankSelected}
               />
             )}
 
@@ -668,6 +670,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
                 form={form}
                 value={value}
                 disabled={DISABLED}
+                setTankSelected={setTankSelected}
               />
             )}
 
@@ -681,6 +684,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
               tank={lastChangedTank}
               config={config}
               pinQuantity={setQuantitySource}
+              tankSelected={tankSelected}
+              setTankSelected={setTankSelected}
             />
           </TabPane>
         </Tabs>

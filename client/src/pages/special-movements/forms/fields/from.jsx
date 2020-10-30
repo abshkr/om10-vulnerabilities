@@ -15,6 +15,7 @@ const From = ({
   form,
   value,
   disabled,
+  setTankSelected,
 }) => {
   const { t } = useTranslation();
 
@@ -106,6 +107,7 @@ const From = ({
     setTank(value);
     setProduct(undefined);
     getProducts(value);
+    setTankSelected(true);
 
     // setFieldsValue({
     //   mlitm_dens_cor: undefined,
