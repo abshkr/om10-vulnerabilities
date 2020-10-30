@@ -359,7 +359,7 @@ class Journal
                 "BASE_DENS_LO" => "density low",
                 "BASE_CAT" => "classification",
                 "BASE_REF_TUNT" => "base ref tunt",
-                "BASE_LIMIT_PRESET_HT" => "limit_preset_ht",
+                "BASE_LIMIT_PRESET_HT" => "limit preset high temp",
                 "BASE_REF_TEMP_SPEC" => "ref temp spec",
             ),
             "EXPIRY_DATE_TYPES" => array(
@@ -690,6 +690,32 @@ class Journal
         return $row['MESSAGE'];
     }
 
+    private function translate_primary_key_identifier($identifier, $lang, $tbl) {
+        if (!isset($identifier)) {
+            return "";
+        }
+
+        $new_id = "";
+        $items = explode(', ', $identifier);
+        foreach ($items as $item) {
+            $pairs = explode(':', $item);
+            if (count($pairs) >= 2) {
+                $key = strtoupper($pairs[0]);
+                $value = $pairs[1];
+                // translate the key
+                $new_key = $key;
+                if (isset($this->langColumns[$lang][$tbl][$key])) {
+                    $new_key = $this->langColumns[$lang][$tbl][$key];
+                }
+                $new_id .= $new_key . ':' . $value . ', ';
+            } else {
+                $new_id .= $item . ', ';
+            }
+        }
+
+        return rtrim($new_id, ', ');
+    }
+
     //For example: RECORD_ALTERED, userTxt, recordnmTxt, keyTxt
     public function jnlLogEvent($template, $data, $jnl_event, $jnl_class)
     {
@@ -736,6 +762,15 @@ class Journal
                                 $msg_data[1] = $this->langMessages[$lang]["SCREENS"][$curr_table];
                             }
                         }
+                    }
+                    if ($hit === 2) {
+                        $msg_data[$hit] = $this->translate_primary_key_identifier($data[2], $lang, $curr_table);
+                    }
+                    if ($hit === 3 && (
+                        $template == Lookup::RECORD_ADDED
+                        || $template == Lookup::RECORD_DELETED
+                    )) {
+                        $msg_data[$hit] = $this->translate_primary_key_identifier($data[3], $lang, $curr_table);
                     }
                     if ($template == Lookup::RECORD_CHANGED) {
                         // 0: user, 1: table/view, 2: record key, 3: column, 4: orig value, 5: new value

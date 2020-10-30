@@ -109,8 +109,8 @@ class CustomerCategory extends CommonClass
 
         $journal = new Journal($this->conn, false);
         $jnl_data[0] = Utilities::getCurrPsn();
-        $jnl_data[1] = "customer catetory";
-        $jnl_data[2] = $this->category_code;
+        $jnl_data[1] = $this->TABLE_NAME; // "customer catetory";
+        $jnl_data[2] = sprintf("categ_code:%s", $this->category_code); // $this->category_code;
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ADD, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
@@ -156,8 +156,8 @@ class CustomerCategory extends CommonClass
 
         $journal = new Journal($this->conn, $autocommit = false);
         $jnl_data[0] = Utilities::getCurrPsn();
-        $jnl_data[1] = "customer category";
-        $jnl_data[2] = $this->category_code;
+        $jnl_data[1] = $this->TABLE_NAME; // "customer category";
+        $jnl_data[2] = sprintf("categ_code:%s", $this->category_code); // $this->category_code;
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
@@ -167,12 +167,19 @@ class CustomerCategory extends CommonClass
             return false;
         }
 
-        $module = "customer category";
-        $record = sprintf("code:%s", $this->category_code);
+        $module = $this->TABLE_NAME; // "customer category";
+        $record = sprintf("categ_code:%s", $this->category_code);
         foreach ($this as $key => $value) {
+            $clnkey = $key;
+            foreach ($this->table_view_map as $code => $alias ) {
+                if (strtoupper($key) === strtoupper($alias)) {
+                    $clnkey = $code;
+                    break;
+                }
+            }
             if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] &&
                 !$journal->valueChange(
-                    $module, $record, $key, $row[strtoupper($key)], $value)) {
+                    $module, $record, $clnkey, $row[strtoupper($key)], $value)) {
                 return false;
             }
         }
@@ -196,8 +203,8 @@ class CustomerCategory extends CommonClass
 
         $journal = new Journal($this->conn, $autocommit = false);
         $jnl_data[0] = Utilities::getCurrPsn();
-        $jnl_data[1] = "customer category";
-        $jnl_data[2] = $this->category_code;
+        $jnl_data[1] = $this->TABLE_NAME; // "customer category";
+        $jnl_data[2] = sprintf("categ_code:%s", $this->category_code); // $this->category_code;
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {

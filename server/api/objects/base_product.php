@@ -263,10 +263,10 @@ class BaseProduct extends CommonClass
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
         $jnl_data[0] = $curr_psn;
-        $jnl_data[1] = "BASE_PRODS";
-        $jnl_data[2] = $this->base_code;
+        $jnl_data[1] = $this->TABLE_NAME; // "BASE_PRODS";
+        $jnl_data[2] = sprintf("base_code:%s", $this->base_code); // $this->base_code;
         $jnl_data[3] = sprintf(
-            "name:%s, group:%s", $this->base_name, $this->base_prod_group);
+            "base_name:%s, base_prod_group:%s", $this->base_name, $this->base_prod_group);
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
@@ -332,8 +332,8 @@ class BaseProduct extends CommonClass
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
         $jnl_data[0] = $curr_psn;
-        $jnl_data[1] = "BASE_PRODS";
-        $jnl_data[2] = $this->base_code;
+        $jnl_data[1] = $this->TABLE_NAME; // "BASE_PRODS";
+        $jnl_data[2] = sprintf("base_code:%s", $this->base_code); // $this->base_code;
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
@@ -356,8 +356,8 @@ class BaseProduct extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
-        $module = "BASE_PRODS";
-        $record = sprintf("code:%s", $this->base_code);
+        $module = $this->TABLE_NAME; // "BASE_PRODS";
+        $record = sprintf("base_code:%s", $this->base_code);
         if (!$journal->updateChanges($row, $row2, $module, $record)) {
             oci_rollback($this->conn);
             return false;
@@ -428,8 +428,8 @@ class BaseProduct extends CommonClass
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
         $jnl_data[0] = $curr_psn;
-        $jnl_data[1] = "BASE_PRODS";
-        $jnl_data[2] = $this->base_code;
+        $jnl_data[1] = $this->TABLE_NAME; // "BASE_PRODS";
+        $jnl_data[2] = sprintf("base_code:%s", $this->base_code); // $this->base_code;
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {

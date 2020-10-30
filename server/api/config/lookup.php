@@ -5220,13 +5220,13 @@ class Lookup
     /* Couldn't open spool file in % errno=% */
 
     const RECORD_ALTERED = 1872;
-    /* % altered % record % */
+    /* [%] altered [%] record [%] */
 
     const RECORD_ADD = 1873;
-    /* % added % record % */
+    /* [%] added [%] record [%] */
 
     const RECORD_DELETE = 1874;
-    /* % deleted % record % */
+    /* [%] deleted [%] record [%] */
 
     const OLD_LOAD_CLEANUP = 1875;
     /* Cleaning up old loads */
