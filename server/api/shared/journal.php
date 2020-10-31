@@ -91,23 +91,23 @@ class Journal
             "URBAC_ROLE_DOMAINS_PRIVILEGES" => "角色访问权限"
         ),
         "ENG" => array(
-            "GUI_TANKS" => "tank",
-            "GUI_REPORT_COMPANY" => "report configuration",
-            "GUI_REPORT_PROFILE" => "report profile",
-            "GUI_PERSONNEL" => "personnel",
-            "EXPIRY_DATE_PERSONNEL" => "personnel expiry date",
-            "TIMECODE" => "time code",
-            "PRINTER" => "physical printer",
-            "GUI_TANKERS" => "tanker",
-            "EXPIRY_DATE_TANKERS" => "tanker expiry date",
-            "TRANSP_EQUIP" => "equipment",
-            "EXPIRY_DATE_TRANSP_EQUIP" => "equipment expiry",
-            "EXPIRY_DATE_TANKERS" => "tanker expiry",
-            "EXPIRY_DATE_PERSONNEL" => "personnel expiry",
-            "GUI_ACCESS_KEYS" => "id assignment",
-            "BASE_PRODS" => "base product",
-            "EXPIRY_DATE_TYPES" => "expiry date type",
-            "URBAC_ROLE_DOMAINS_PRIVILEGES" => "role access privilege"
+            "GUI_TANKS" => "Tank",
+            "GUI_REPORT_COMPANY" => "Report Configuration",
+            "GUI_REPORT_PROFILE" => "Report Profile",
+            "GUI_PERSONNEL" => "Personnel",
+            "EXPIRY_DATE_PERSONNEL" => "Personnel Expiry Date",
+            "TIMECODE" => "Time Code",
+            "PRINTER" => "Physical Printer",
+            "GUI_TANKERS" => "Tanker",
+            "EXPIRY_DATE_TANKERS" => "Tanker Expiry Date",
+            "TRANSP_EQUIP" => "Equipment",
+            "EXPIRY_DATE_TRANSP_EQUIP" => "Equipment Expiry",
+            "EXPIRY_DATE_TANKERS" => "Tanker Expiry",
+            "EXPIRY_DATE_PERSONNEL" => "Personnel Expiry",
+            "GUI_ACCESS_KEYS" => "ID Assignment",
+            "BASE_PRODS" => "Base Product",
+            "EXPIRY_DATE_TYPES" => "Expiry Date Type",
+            "URBAC_ROLE_DOMAINS_PRIVILEGES" => "Role Access Privilege"
         )
     );
 
@@ -247,6 +247,9 @@ class Journal
                 "PRIV_UPDATE" => "修改权限",
                 "PRIV_DELETE" => "删除权限",
                 "PRIV_PROTECT" => "密码保护",
+                "PRIV_EXTRA" => "额外权限",
+                "PRIV_SCHEDPROD" => "调度油品权限",
+                "PRIV_FREEZEFOLIO" => "结束/冻结预盘权限",
             )
         ),
         "ENG" => array(
@@ -378,11 +381,14 @@ class Journal
                 "RULE_EXPIRY_CHECK" => "expiry check"
             ),
             "URBAC_ROLE_DOMAINS_PRIVILEGES" => array(
-                "PRIV_VIEW" => "view privilege",
-                "PRIV_CREATE" => "create privilege",
-                "PRIV_UPDATE" => "update privilege",
-                "PRIV_DELETE" => "delete privilege",
-                "PRIV_PROTECT" => "password",
+                "PRIV_VIEW" => "View Privilege",
+                "PRIV_CREATE" => "Create Privilege",
+                "PRIV_UPDATE" => "Update Privilege",
+                "PRIV_DELETE" => "Delete Privilege",
+                "PRIV_PROTECT" => "Password",
+                "PRIV_EXTRA" => "Extra Privilege",
+                "PRIV_SCHEDPROD" => "Schedule Product",
+                "PRIV_FREEZEFOLIO" => "Close/Freeze Folio",
             )
         )
     );

@@ -4703,7 +4703,11 @@
       "DOMAIN_OBJECT_ID": "Domain Object Id",
       "DOMAIN_ID": "Domain Id",
       "OBJECT_ID": "Object Id",
-      "DOMAIN_OBJECT_ACTIVE": "Domain Object Active"
+      "DOMAIN_CODE": "Domain Code",
+      "OBJECT_CODE": "Object Code",
+      "DOMAIN_TEXT": "Domain",
+      "OBJECT_TEXT": "Object",
+      "DOMAIN_OBJECT_ACTIVE": "Active Flag"
     },
     "URBAC_OBJECTS": {
       "OBJECT_ID": "Object Id",
@@ -4732,13 +4736,17 @@
       "PRIVILEGE_ACTION_ID": "Privilege Action Id",
       "PRIVILEGE_ID": "Privilege Id",
       "ACTION_ID": "Action Id",
-      "PRIVILEGE_ACTION_ACTIVE": "Privilege Action Active"
+      "PRIVILEGE_CODE": "Privilege Code",
+      "ACTION_CODE": "Action Code",
+      "PRIVILEGE_TEXT": "Privilege",
+      "ACTION_TEXT": "Action",
+      "PRIVILEGE_ACTION_ACTIVE": "Active Flag"
     },
     "URBAC_PWD_TRACES": {
-      "PWDTRACE_ID": "Pwdtrace Id",
-      "PWDTRACE_USERID": "Pwdtrace Userid",
-      "PWDTRACE_PWD": "Pwdtrace Pwd",
-      "PWDTRACE_LAST_CHG": "Pwdtrace Last Chg"
+      "PWDTRACE_ID": "Password Trace Id",
+      "PWDTRACE_USERID": "User Id",
+      "PWDTRACE_PWD": "User Password",
+      "PWDTRACE_LAST_CHG": "Last Changed on"
     },
     "URBAC_ROLES": {
       "ROLE_ID": "Role Id",
@@ -4748,16 +4756,26 @@
       "ROLE_RANK": "Role Rank",
       "ROLE_TYPE": "Role Type",
       "ROLE_STATUS": "Role Status",
+      "LOCK_CHECK": "Lock Check",
+      "DELETE_CHECK": "Delete Check",
       "RECORD_SWITCH": "Record Switch",
       "RECORD_ORDER": "Record Order"
     },
     "URBAC_ROLE_DOMAINS_PRIVILEGES": {
-      "ROLE_DMN_PRVLG_ID": "Role Dmn Prvlg Id",
+      "ROLE_DMN_PRVLG_ID": "Role Access Privilege Id",
       "ROLE_ID": "Role Id",
       "DOMAIN_ID": "Domain Id",
       "OBJECT_ID": "Object Id",
       "PRIVILEGE_ID": "Privilege Id",
-      "DOMAIN_ROLE_ACTIVE": "Domain Role Active"
+      "ROLE_CODE": "Role Code",
+      "DOMAIN_CODE": "Domain Code",
+      "OBJECT_CODE": "Object Code",
+      "PRIVILEGE_CODE": "Privilege Code",
+      "ROLE_TEXT": "Role",
+      "DOMAIN_TEXT": "Domain",
+      "OBJECT_TEXT": "Object",
+      "PRIVILEGE_TEXT": "Privilege",
+      "DOMAIN_ROLE_ACTIVE": "Active Flag"
     },
     "URBAC_USERS": {
       "USER_ID": "User Id",
@@ -4776,24 +4794,34 @@
       "LAST_ATTEMPT": "Last Attempt"
     },
     "URBAC_USER_DOMAINS_PRIVILEGES": {
-      "USER_DMN_PRVLG_ID": "User Dmn Prvlg Id",
+      "USER_DMN_PRVLG_ID": "User Access Privilege Id",
       "USER_ID": "User Id",
       "DOMAIN_ID": "Domain Id",
       "PRIVILEGE_ID": "Privilege Id",
-      "DOMAIN_USER_ACTIVE": "Domain User Active"
+      "USER_CODE": "User Code",
+      "DOMAIN_CODE": "Domain Code",
+      "PRIVILEGE_CODE": "Privilege Code",
+      "USER_TEXT": "User",
+      "DOMAIN_TEXT": "Domain",
+      "PRIVILEGE_TEXT": "Privilege",
+      "DOMAIN_USER_ACTIVE": "Active Flag"
     },
     "URBAC_USER_ROLES": {
       "USER_ROLE_ID": "User Role Id",
       "USER_ID": "User Id",
       "ROLE_ID": "Role Id",
-      "USER_ROLE_ACTIVE": "User Role Active"
+      "USER_CODE": "User Code",
+      "ROLE_CODE": "Role Code",
+      "USER_TEXT": "User",
+      "ROLE_TEXT": "Role",
+      "USER_ROLE_ACTIVE": "Active Flag"
     },
     "URBAC_USER_TRACES": {
-      "USERTRACE_ID": "Usertrace Id",
-      "USERTRACE_USERID": "Usertrace Userid",
-      "USERTRACE_ACTION": "Usertrace Action",
-      "USERTRACE_ACTION_TIME": "Usertrace Action Time",
-      "USERTRACE_LOCATION": "Usertrace Location"
+      "USERTRACE_ID": "User Trace Id",
+      "USERTRACE_USERID": "User Id",
+      "USERTRACE_ACTION": "User Action",
+      "USERTRACE_ACTION_TIME": "User Action Time",
+      "USERTRACE_LOCATION": "User Location"
     },
     "Z_DB_PATCH": {
       "DP_PATCH_SEQ": "Dp Patch Seq",
@@ -9489,63 +9517,71 @@
       "TRNT_METER": "油品交易流量计"
     },
     "URBAC_ACTIONS": {
-      "ACTION_ID": "Action Id",
-      "ACTION_CODE": "Action Code",
-      "ACTION_TEXT": "Action Text",
-      "ACTION_NOTE": "Action Note",
-      "ACTION_TYPE": "Action Type",
-      "RECORD_SWITCH": "Record Switch",
-      "RECORD_ORDER": "Record Order"
+      "ACTION_ID": "操作编号",
+      "ACTION_CODE": "操作代码",
+      "ACTION_TEXT": "操作描述",
+      "ACTION_NOTE": "操作备注",
+      "ACTION_TYPE": "操作类型",
+      "RECORD_SWITCH": "操作记录开关",
+      "RECORD_ORDER": "操作记录顺序"
     },
     "URBAC_DOMAINS": {
-      "DOMAIN_ID": "Domain Id",
-      "DOMAIN_CODE": "Domain Code",
-      "DOMAIN_TEXT": "Domain Text",
-      "DOMAIN_NOTE": "Domain Note",
-      "RECORD_SWITCH": "Record Switch",
-      "RECORD_ORDER": "Record Order",
-      "IS_SINGULAR": "Is Singular"
+      "DOMAIN_ID": "界面模块编号",
+      "DOMAIN_CODE": "界面模块代码",
+      "DOMAIN_TEXT": "界面模块描述",
+      "DOMAIN_NOTE": "界面模块备注",
+      "RECORD_SWITCH": "界面模块记录开关",
+      "RECORD_ORDER": "界面模块记录顺序",
+      "IS_SINGULAR": "界面模块是否单数"
     },
     "URBAC_DOMAIN_OBJECTS": {
-      "DOMAIN_OBJECT_ID": "Domain Object Id",
-      "DOMAIN_ID": "Domain Id",
-      "OBJECT_ID": "Object Id",
-      "DOMAIN_OBJECT_ACTIVE": "Domain Object Active"
+      "DOMAIN_OBJECT_ID": "界面模块单元编号",
+      "DOMAIN_ID": "界面模块编号",
+      "OBJECT_ID": "界面单元编号",
+      "DOMAIN_CODE": "界面模块代码",
+      "OBJECT_CODE": "界面单元代码",
+      "DOMAIN_TEXT": "界面模块",
+      "OBJECT_TEXT": "界面单元",
+      "DOMAIN_OBJECT_ACTIVE": "启用标记"
     },
     "URBAC_OBJECTS": {
-      "OBJECT_ID": "Object Id",
-      "OBJECT_CODE": "Object Code",
-      "OBJECT_TEXT": "Object Text",
-      "OBJECT_NOTE": "Object Note",
-      "OBJECT_TYPE": "Object Type",
-      "OBJECT_PARENT_ID": "Object Parent Id",
-      "OBJECT_MODULE_ID": "Object Module Id",
-      "OBJECT_ICON_ID": "Object Icon Id",
-      "OBJECT_CGI_NAME": "Object Cgi Name",
-      "OBJECT_SOURCE": "Object Source",
-      "RECORD_SWITCH": "Record Switch",
-      "RECORD_ORDER": "Record Order"
+      "OBJECT_ID": "界面单元编号",
+      "OBJECT_CODE": "界面单元代码",
+      "OBJECT_TEXT": "界面单元描述",
+      "OBJECT_NOTE": "界面单元备注",
+      "OBJECT_TYPE": "界面单元类型",
+      "OBJECT_PARENT_ID": "界面单元上级编号",
+      "OBJECT_MODULE_ID": "界面单元模块编号",
+      "OBJECT_ICON_ID": "界面单元图标编号",
+      "OBJECT_CGI_NAME": "界面单元CGI名称",
+      "OBJECT_SOURCE": "界面单元来源",
+      "RECORD_SWITCH": "界面单元记录开关",
+      "RECORD_ORDER": "界面单元记录顺序"
     },
     "URBAC_PRIVILEGES": {
-      "PRIVILEGE_ID": "Privilege Id",
-      "PRIVILEGE_CODE": "Privilege Code",
-      "PRIVILEGE_TEXT": "Privilege Text",
-      "PRIVILEGE_NOTE": "Privilege Note",
-      "RECORD_SWITCH": "Record Switch",
-      "RECORD_ORDER": "Record Order",
-      "IS_SINGULAR": "Is Singular"
+      "PRIVILEGE_ID": "权限编号",
+      "PRIVILEGE_CODE": "权限代码",
+      "PRIVILEGE_TEXT": "权限描述",
+      "PRIVILEGE_NOTE": "权限备注",
+      "RECORD_SWITCH": "权限记录开关",
+      "RECORD_ORDER": "权限记录顺序",
+      "IS_SINGULAR": "权限是否单数"
     },
     "URBAC_PRIVILEGE_ACTIONS": {
-      "PRIVILEGE_ACTION_ID": "Privilege Action Id",
-      "PRIVILEGE_ID": "Privilege Id",
-      "ACTION_ID": "Action Id",
-      "PRIVILEGE_ACTION_ACTIVE": "Privilege Action Active"
+      "PRIVILEGE_ACTION_ID": "权限操作编号",
+      "PRIVILEGE_ID": "权限编号",
+      "ACTION_ID": "操作编号",
+      "PRIVILEGE_CODE": "权限代码",
+      "ACTION_CODE": "操作代码",
+      "PRIVILEGE_TEXT": "权限",
+      "ACTION_TEXT": "操作",
+      "PRIVILEGE_ACTION_ACTIVE": "启用标记"
     },
     "URBAC_PWD_TRACES": {
-      "PWDTRACE_ID": "Pwdtrace Id",
-      "PWDTRACE_USERID": "Pwdtrace Userid",
-      "PWDTRACE_PWD": "Pwdtrace Pwd",
-      "PWDTRACE_LAST_CHG": "Pwdtrace Last Chg"
+      "PWDTRACE_ID": "用户密码修改记录编号",
+      "PWDTRACE_USERID": "用户编号",
+      "PWDTRACE_PWD": "用户密码",
+      "PWDTRACE_LAST_CHG": "最后修改时间"
     },
     "URBAC_ROLES": {
       "ROLE_ID": "角色编号",
@@ -9555,16 +9591,26 @@
       "ROLE_RANK": "角色排名",
       "ROLE_TYPE": "角色类型",
       "ROLE_STATUS": "角色状态",
+      "LOCK_CHECK": "用户锁定检查",
+      "DELETE_CHECK": "用户删除检查",
       "RECORD_SWITCH": "角色记录开关",
       "RECORD_ORDER": "角色记录顺序"
     },
     "URBAC_ROLE_DOMAINS_PRIVILEGES": {
-      "ROLE_DMN_PRVLG_ID": "Role Dmn Prvlg Id",
-      "ROLE_ID": "Role Id",
-      "DOMAIN_ID": "Domain Id",
-      "OBJECT_ID": "Object Id",
-      "PRIVILEGE_ID": "Privilege Id",
-      "DOMAIN_ROLE_ACTIVE": "Domain Role Active"
+      "ROLE_DMN_PRVLG_ID": "角色访问权限编号",
+      "ROLE_ID": "角色编号",
+      "DOMAIN_ID": "界面模块编号",
+      "OBJECT_ID": "界面单元编号",
+      "PRIVILEGE_ID": "权限编号",
+      "ROLE_CODE": "角色代码",
+      "DOMAIN_CODE": "界面模块代码",
+      "OBJECT_CODE": "界面单元代码",
+      "PRIVILEGE_CODE": "权限代码",
+      "ROLE_TEXT": "角色",
+      "DOMAIN_TEXT": "界面模块",
+      "OBJECT_TEXT": "界面单元",
+      "PRIVILEGE_TEXT": "权限",
+      "DOMAIN_ROLE_ACTIVE": "启用标记"
     },
     "URBAC_USERS": {
       "USER_ID": "用户编号",
@@ -9578,21 +9624,31 @@
       "VALID_TIME": "用户生效时间",
       "EXPIRE_TIME": "用户失效时间",
       "RECORD_SWITCH": "用户记录开关",
-      "RECORD_ORDER": "用户记录位序",
+      "RECORD_ORDER": "用户记录顺序",
       "LOGIN_ATTEMPTS": "尝试登录次数",
       "LAST_ATTEMPT": "最近尝试登录时间"
     },
     "URBAC_USER_DOMAINS_PRIVILEGES": {
-      "USER_DMN_PRVLG_ID": "User Dmn Prvlg Id",
-      "USER_ID": "User Id",
-      "DOMAIN_ID": "Domain Id",
-      "PRIVILEGE_ID": "Privilege Id",
-      "DOMAIN_USER_ACTIVE": "Domain User Active"
+      "USER_DMN_PRVLG_ID": "用户访问权限编号",
+      "USER_ID": "用户编号",
+      "DOMAIN_ID": "界面模块编号",
+      "PRIVILEGE_ID": "权限编号",
+      "USER_CODE": "用户代码",
+      "DOMAIN_CODE": "界面模块代码",
+      "PRIVILEGE_CODE": "权限代码",
+      "USER_TEXT": "用户",
+      "DOMAIN_TEXT": "界面模块",
+      "PRIVILEGE_TEXT": "权限",
+      "DOMAIN_USER_ACTIVE": "启用标记"
     },
     "URBAC_USER_ROLES": {
       "USER_ROLE_ID": "用户角色编号",
       "USER_ID": "用户编号",
       "ROLE_ID": "角色编号",
+      "USER_CODE": "用户代码",
+      "ROLE_CODE": "角色代码",
+      "USER_TEXT": "用户",
+      "ROLE_TEXT": "角色",
       "USER_ROLE_ACTIVE": "启用标记"
     },
     "URBAC_USER_TRACES": {

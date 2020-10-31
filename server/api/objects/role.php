@@ -247,8 +247,8 @@ class Role extends CommonClass
 
         $journal = new Journal($this->conn, false);
         $jnl_data[0] = Utilities::getCurrPsn();
-        $jnl_data[1] = "URBAC_ROLES";
-        $jnl_data[2] = $this->role_code;
+        $jnl_data[1] = $this->TABLE_NAME; // "URBAC_ROLES";
+        $jnl_data[2] = sprintf("role_code:%s", $this->role_code); // $this->role_code;
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
@@ -385,7 +385,10 @@ class Role extends CommonClass
                 AND E.DOMAIN_ID = A.DOMAIN_ID AND E.OBJECT_ID = A.OBJECT_ID) PRIV_DELETE,
             (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES F
             WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 5
-                AND F.DOMAIN_ID = A.DOMAIN_ID AND F.OBJECT_ID = A.OBJECT_ID) PRIV_PROTECT
+                AND F.DOMAIN_ID = A.DOMAIN_ID AND F.OBJECT_ID = A.OBJECT_ID) PRIV_PROTECT,
+            (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES G
+            WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 6
+                AND G.DOMAIN_ID = A.DOMAIN_ID AND G.OBJECT_ID = A.OBJECT_ID) PRIV_EXTRA
         FROM URBAC_DOMAIN_OBJECTS A, URBAC_DOMAINS, URBAC_OBJECTS
         WHERE A.DOMAIN_ID != 1
             AND A.DOMAIN_ID = URBAC_DOMAINS.DOMAIN_ID
@@ -419,33 +422,56 @@ class Role extends CommonClass
         foreach ($old as $OBJECT_ID => $priv) {
             // write_log(sprintf("Check object %s, prev:%s", $OBJECT_ID, $priv['PRIV_VIEW']), __FILE__, __LINE__);
             if ($priv['PRIV_VIEW'] != $new[$OBJECT_ID]['PRIV_VIEW']) {
-                $record = sprintf("role code:%s, object:%s",
+                $record = sprintf("role_code:%s, object_text:%s",
                     $this->role_code, $priv['OBJECT_TEXT']);
                 $journal->valueChange($module, $record, "PRIV_VIEW", $priv['PRIV_VIEW'], $new[$OBJECT_ID]['PRIV_VIEW']);
             }
 
             if ($priv['PRIV_UPDATE'] != $new[$OBJECT_ID]['PRIV_UPDATE']) {
-                $record = sprintf("role code:%s, object:%s",
+                $record = sprintf("role_code:%s, object_text:%s",
                     $this->role_code, $priv['OBJECT_TEXT']);
                 $journal->valueChange($module, $record, "PRIV_UPDATE", $priv['PRIV_UPDATE'], $new[$OBJECT_ID]['PRIV_UPDATE']);
             }
 
             if ($priv['PRIV_CREATE'] != $new[$OBJECT_ID]['PRIV_CREATE']) {
-                $record = sprintf("role code:%s, object:%s",
+                $record = sprintf("role_code:%s, object_text:%s",
                     $this->role_code, $priv['OBJECT_TEXT']);
                 $journal->valueChange($module, $record, "PRIV_CREATE", $priv['PRIV_CREATE'], $new[$OBJECT_ID]['PRIV_CREATE']);
             }
 
             if ($priv['PRIV_DELETE'] != $new[$OBJECT_ID]['PRIV_DELETE']) {
-                $record = sprintf("role code:%s, object:%s",
+                $record = sprintf("role_code:%s, object_text:%s",
                     $this->role_code, $priv['OBJECT_TEXT']);
                 $journal->valueChange($module, $record, "PRIV_DELETE", $priv['PRIV_DELETE'], $new[$OBJECT_ID]['PRIV_DELETE']);
             }
 
             if ($priv['PRIV_PROTECT'] != $new[$OBJECT_ID]['PRIV_PROTECT']) {
-                $record = sprintf("role code:%s, object:%s",
+                $record = sprintf("role_code:%s, object_text:%s",
                     $this->role_code, $priv['OBJECT_TEXT']);
                 $journal->valueChange($module, $record, "PRIV_PROTECT", $priv['PRIV_PROTECT'], $new[$OBJECT_ID]['PRIV_PROTECT']);
+            }
+
+            if ($priv['OBJECT_TEXT'] == "M_LOADSCHEDULES" || 
+                $priv['OBJECT_TEXT'] == "M_FOLIOSCHEDULING" || 
+                $priv['OBJECT_TEXT'] == "M_FOLIOMANAGEMENT") {
+                $priv_option = "PRIV_EXTRA";
+                if ($priv['OBJECT_TEXT'] == "M_LOADSCHEDULES") {
+                    $priv_option = "PRIV_SCHEDPROD";
+                }
+                if ($priv['OBJECT_TEXT'] == "M_FOLIOSCHEDULING") {
+                    $priv_option = "PRIV_FREEZEFOLIO";
+                }
+                if ($priv['OBJECT_TEXT'] == "M_FOLIOMANAGEMENT") {
+                    $priv_option = "PRIV_FREEZEFOLIO";
+                }
+                // write_log(sprintf("%s Check object %s, prev:%s", $priv_option, $priv['OBJECT_TEXT'], print_r($priv, TRUE)), __FILE__, __LINE__);
+                // write_log(sprintf("%s Check object %s, new prev:%s", $priv_option, $priv['OBJECT_TEXT'], $new[$OBJECT_ID]['PRIV_EXTRA']), __FILE__, __LINE__);
+                // write_log(sprintf("%s Check object %s, view prev:%s", $priv_option, $priv['OBJECT_TEXT'], $priv['PRIV_VIEW']), __FILE__, __LINE__);
+                if (isset($priv['PRIV_EXTRA']) && $priv['PRIV_EXTRA'] != $new[$OBJECT_ID]['PRIV_EXTRA']) {
+                    $record = sprintf("role_code:%s, object_text:%s",
+                        $this->role_code, $priv['OBJECT_TEXT']);
+                    $journal->valueChange($module, $record, $priv_option, $priv['PRIV_EXTRA'], $new[$OBJECT_ID]['PRIV_EXTRA']);
+                }
             }
         }
     }
