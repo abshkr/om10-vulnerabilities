@@ -96,7 +96,8 @@ const Compartments = ({ form, value, equipment }) => {
     }
   };
 
-  const changeType = (tanker, code) => {
+  // need use seq to locate the correct sub eqpt type when combo type is made of more than one same eqpt type
+  const changeType = (tanker, code, seq) => {
     api.get(`${TANKER_LIST.COMPARTMENT}?eqpt_id=${code}`).then((response) => {
       const payload = [...data];
       let index = 0;
@@ -112,7 +113,8 @@ const Compartments = ({ form, value, equipment }) => {
         payload.splice(index, 1, compartment);
         setdata(payload);
       } else {
-        index = _.findIndex(payload, ['etyp_id', tanker.etyp_id]);
+        console.log('...................changeType', seq, code);
+        index = seq; //_.findIndex(payload, ['etyp_id', tanker.etyp_id]);
         let compartment = _.find(tanker.eqpt_list, ['eqpt_id', code]);
         compartment['compartments'] = response.data.records;
         compartment['eqpt_list'] = tanker.eqpt_list;
@@ -168,7 +170,7 @@ const Compartments = ({ form, value, equipment }) => {
               </div> */}
               <Select
                 dropdownMatchSelectWidth={false}
-                onChange={(value) => changeType(item, value)}
+                onChange={(value) => changeType(item, value, index)}
                 // value={item.tc_eqpt || undefined}
                 // placeholder={t('placeholder.selectEquipment')}
                 placeholder={
