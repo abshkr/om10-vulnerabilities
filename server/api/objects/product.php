@@ -285,6 +285,20 @@ class Product extends CommonClass
         return true;
     }
 
+    public function post_update()
+    {
+        $query = "UPDATE SITE SET SITE_BAI_UPDATE = SITE_BAI_UPDATE + 1";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return true;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+    }
+
     public function drawers()
     {
         $serv = new CompanyService($this->conn);
