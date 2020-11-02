@@ -285,7 +285,7 @@ class Product extends CommonClass
         return true;
     }
 
-    public function post_update()
+    private function increment_site()
     {
         $query = "UPDATE SITE SET SITE_BAI_UPDATE = SITE_BAI_UPDATE + 1";
         $stmt = oci_parse($this->conn, $query);
@@ -297,6 +297,21 @@ class Product extends CommonClass
             oci_rollback($this->conn);
             return false;
         }
+    }
+
+    protected function post_create()
+    {
+        return $this->increment_site();
+    }
+
+    protected function post_update()
+    {
+        return $this->increment_site();
+    }
+
+    protected function post_delete()
+    {
+        return $this->increment_site();
     }
 
     public function drawers()
