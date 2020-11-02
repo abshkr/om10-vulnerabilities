@@ -51,6 +51,19 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
 
   const IS_CREATING = !value;
 
+  /*
+    The list of nomination status:  
+    0	NEW
+    1	PARTIALLY SCHEDULED
+    2	FULLY SCHEDULED
+    3	FULLY MOVED
+    4	OUTSTANDING
+    5	FULLY DELIVERED
+    6	EXPIRED
+    7	PARTIALLY MOVED
+    8	PARTIALLY DELIVERED
+  */
+
   const onFormClosed = () => {
     resetFields();
     handleFormState(false, null);
@@ -306,7 +319,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={!access?.canDelete}
+              disabled={!access?.canDelete || value?.mv_status !== '0'}
               onClick={onDelete}
             >
               {t('operations.delete')}
