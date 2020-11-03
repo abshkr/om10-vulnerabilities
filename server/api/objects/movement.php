@@ -2363,7 +2363,7 @@ class Movement extends CommonClass
 
         $serv = new SiteService($this->conn);
         $site_code = $serv->site_code();
-        $query_string = "tankTerm=" . $site_code . "&supp=" . $this->supplier .
+        $query_string = "rpt_type=1&tankTerm=" . $site_code . "&supp=" . $this->supplier .
             "&tripNo=" . $this->trip_no . "&op=18";
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/load_scheds/bill_of_lading.cgi", $query_string);
