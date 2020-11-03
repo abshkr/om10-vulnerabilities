@@ -97,10 +97,22 @@ class FolioOverride extends CommonClass
 
     protected function post_create()
     {
-        return $this->post_update();
+        $this->update_last_chg();
+        $this->changeExceptionToLiveTable("ADD");
     }
 
     protected function post_update()
+    {
+        $this->update_last_chg();
+        $this->changeExceptionToLiveTable("ADD");
+    }
+
+    protected function post_delete()
+    {
+        $this->changeExceptionToLiveTable("DELETE");
+    }
+
+    private function update_last_chg()
     {
         $query = "UPDATE FOLIOCALENDAR
             SET LAST_CHG_TIME = SYSDATE
@@ -109,6 +121,33 @@ class FolioOverride extends CommonClass
         oci_bind_by_name($stmt, ':seq', $this->seq);
         
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        return true;
+    }
+
+    private function changeExceptionToLiveTable($action)
+    {
+        write_log(sprintf("%s::%s() START. action:%s", __CLASS__, __FUNCTION__, $action),
+            __FILE__, __LINE__);
+
+        $flag = 1;
+        if ($action == "DELETE") {
+            $flag = 0;
+        }
+
+        $strExplode = explode('_', $this->repeat_interval);
+        $date  = $strExplode[0];
+        $month = $strExplode[1];
+        $year  = $strExplode[2];
+            
+        $query = "UPDATE FILTERCALENDAR SET OVERRIDE = " . $flag . " 
+            WHERE C_DATE = TO_DATE('" . $date . "/" . $month ."/" . $year . "', 'DD/MM/YYYY') AND C_DATE >= SYSDATE - 1";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
