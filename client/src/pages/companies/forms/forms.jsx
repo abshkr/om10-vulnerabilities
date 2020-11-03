@@ -34,6 +34,7 @@ import { InputNumber } from '../../../components';
 import { REGEX } from '../../../constants';
 import useSWR from 'swr';
 import _ from 'lodash';
+import { useConfig } from 'hooks';
 
 const TabPane = Tabs.TabPane;
 
@@ -47,6 +48,7 @@ const FormModal = ({
   setFilterValue,
 }) => {
   const { t } = useTranslation();
+  const { siteCompanyRelationAllowed } = useConfig();
   const { data: addresses, isValidating } = useSWR(COMPANIES.ADDRESSES);
 
   const [form] = Form.useForm();
@@ -351,14 +353,14 @@ const FormModal = ({
             </Button>
           )}
 
-          {!IS_CREATING && (
+          {!IS_CREATING && siteCompanyRelationAllowed && (
             <Button
               type="primary"
               icon={<ApiOutlined />}
               style={{ float: 'left', marginLeft: 5 }}
               loading={isValidating}
               onClick={() => companyRelations()}
-              disabled={!auth.canUpdate}
+              disabled={!auth.canUpdate || value?.supplier !== true}
             >
               {t('operations.companyRelation')}
             </Button>

@@ -10,7 +10,7 @@ import { COMPANIES } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
 import { Forms } from './forms';
-import { useAuth } from '../../hooks';
+import { useAuth, useConfig } from '../../hooks';
 import { SpecialActionForm } from './specials';
 import { RelationsForm } from './relations';
 
@@ -21,6 +21,7 @@ const Companies = () => {
   const [selected, setSelected] = useState(null);
   const [currentCmpy, setCurrentCmpy] = useState(null);
   const [filterValue, setFilterValue] = useState('');
+  const { siteCompanyRelationAllowed } = useConfig();
 
   const { data: payload, isValidating, revalidate } = useSWR(COMPANIES.READ);
 
@@ -73,16 +74,18 @@ const Companies = () => {
       >
         {t('operations.specialAction')}
       </Button>
-      <Button
-        type="primary"
-        icon={<ApiOutlined />}
-        loading={isValidating}
-        // style={{float:"left", marginRight:500}}
-        onClick={() => companyRelations()}
-        disabled={!currentCmpy || !auth.canUpdate}
-      >
-        {t('operations.companyRelation')}
-      </Button>
+      {siteCompanyRelationAllowed ? 
+        <Button
+          type="primary"
+          icon={<ApiOutlined />}
+          loading={isValidating}
+          // style={{float:"left", marginRight:500}}
+          onClick={() => companyRelations()}
+          disabled={!currentCmpy || currentCmpy?.supplier !== true || !auth.canUpdate}
+        >
+          {t('operations.companyRelation')}
+        </Button> : null 
+      }
       <Button
         type="primary"
         icon={<PlusOutlined />}
