@@ -263,7 +263,7 @@ class FolioSchedule extends CommonClass
             case "YEAR_WINDOW":     //For example 2_Saturday_9, the third Saturday of Sep
                 $strExplode = explode('_', $this->repeat_interval);
                 $dayCount = $strExplode[0] * 7;
-                $day = intval($strExplode[1]) < 10 ? "0" . $strExplode[1] : $strExplode[1];;	
+                $day = $strExplode[1];
                 $month = intval($strExplode[2]) < 10 ? "0" . $strExplode[2] : $strExplode[2];
 
                 $query = "UPDATE FILTERCALENDAR SET YEAR_WINDOW = " . $flag . " 
