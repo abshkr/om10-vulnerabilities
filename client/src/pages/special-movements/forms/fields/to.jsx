@@ -220,7 +220,7 @@ const To = ({
               optionFilterProp="children"
               placeholder={t('placeholder.selectToPlantSupplier')}
               filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                option?.props?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0
               }
             >
               {suppliers.map((item, index) => (
@@ -247,12 +247,13 @@ const To = ({
               optionFilterProp="children"
               placeholder={t('placeholder.selectToTank')}
               filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                option?.props?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0
               }
             >
               {getBaseTanks(tanks).map((item, index) => (
                 <Select.Option key={index} value={item.tank_code}>
-                  {item.tank_code} - {item.tank_name}
+                  {`${item.tank_code} - ${item.tank_name}`}
+
                   {/*  [{item.base_code} - {item.prod_code} - {item.prod_name}] */}
                 </Select.Option>
               ))}
@@ -274,12 +275,12 @@ const To = ({
               optionFilterProp="children"
               placeholder={t('placeholder.selectToProduct')}
               filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                option?.props?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0
               }
             >
               {products.map((item, index) => (
                 <Select.Option key={index} value={item.prod_code}>
-                  {item.prod_code} - {item.prod_name}
+                  {`${item.prod_code} - ${item.prod_name}`}
                 </Select.Option>
               ))}
             </Select>
