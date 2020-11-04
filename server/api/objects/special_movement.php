@@ -480,6 +480,52 @@ class SpecialMovement extends CommonClass
         }
     }
 
+    public function supp_tank_products()
+    {
+        $query = "
+            SELECT 
+                GT.TANK_BASE,
+                GT.TANK_BASE_NAME,
+                GT.TANK_BASE_CLASS,
+                GT.TANK_BCLASS_NAME,
+                GT.TANK_DENSITY,
+                NVL(GT.TANK_BASE_DENS_LO, GT.TANK_BCLASS_DENS_LO) DENSITY_LO,
+                NVL(GT.TANK_BASE_DENS_HI, GT.TANK_BCLASS_DENS_HI) DENSITY_HI,
+                GT.TANK_TEMP,
+                GT.TANK_BCLASS_TEMP_LO TEMP_LO,
+                GT.TANK_BCLASS_TEMP_HI TEMP_HI,
+                GT.TANK_CODE, 
+                GT.TANK_NAME, 
+                GT.TANK_TERMINAL TERM_CODE,  
+                GT.TANK_SITENAME TERM_NAME,
+                DP.PROD_CMPY, 
+                DP.PROD_CODE, 
+                DP.PROD_NAME
+            FROM 
+                PRODUCTS DP, 
+                RPTOBJ_PROD_RATIOS_VW PR, 
+                GUI_TANKS GT
+            WHERE 
+                DP.PROD_CMPY = :supplier
+                AND GT.TANK_CODE = :tank_code
+                AND DP.PROD_CMPY  = PR.RAT_PROD_PRODCMPY 
+                AND DP.PROD_CODE  = PR.RAT_PROD_PRODCODE 
+                AND PR.RATIO_BASE = GT.TANK_BASE 
+                AND PR.RAT_COUNT  = 1 
+                AND DP.PROD_CMPY  != 'BaSePrOd'
+        ORDER BY DP.PROD_CMPY, GT.TANK_TERMINAL, GT.TANK_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     //Adjust data in the record that special movement created in MOVEMENTS table 
     private function adjust_movement()
     {

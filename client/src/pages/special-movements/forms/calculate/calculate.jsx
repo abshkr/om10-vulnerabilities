@@ -22,7 +22,7 @@ const Calculate = ({
 
   const { data: options, isValidating } = useSWR(SPECIAL_MOVEMENTS.UNITS);
 
-  const [isLoading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(false);
   const [limit, setLimit] = useState(null);
   const [tempDecimals, setTempDecimals] = useState(2);
   const [densDecimals, setDensDecimals] = useState(3);
@@ -32,7 +32,7 @@ const Calculate = ({
 
   const { setFieldsValue, validateFields, getFieldValue } = form;
 
-  const IS_DISALBED = disabled || !type || isLoading;
+  const IS_DISALBED = disabled || !type || !tank || isLoading;
 
   const getLimit = useCallback((tank) => {
     setLoading(true);

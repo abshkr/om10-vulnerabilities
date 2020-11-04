@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Select, Row, Col } from 'antd';
+import _ from 'lodash';
 import api, { SPECIAL_MOVEMENTS } from 'api';
 
 const To = ({
@@ -19,15 +20,29 @@ const To = ({
 }) => {
   const { t } = useTranslation();
 
-  const { setFieldsValue } = form;
+  const { getFieldValue, setFieldsValue } = form;
 
   const [suppliers, setSuppliers] = useState([]);
   const [tanks, setTanks] = useState([]);
+  const [baseTanks, setBaseTanks] = useState([]);
   const [products, setProducts] = useState([]);
 
   const [isLoading, setLoading] = useState(false);
 
   const IS_DISABLED = disabled;
+
+  const getBaseTanks = (tanks) => {
+    // There might be multiple drawer products sharing one tank
+    const baseTanks = [];
+    for (let i = 0; i < tanks.length; i++) {
+      const tank = tanks[i];
+      const item = _.find(baseTanks, (o) => o.tank_code === tank.tank_code);
+      if (!item) {
+        baseTanks.push(tank);
+      }
+    }
+    return baseTanks;
+  };
 
   const getSuppliers = useCallback(() => {
     setLoading(true);
@@ -62,23 +77,27 @@ const To = ({
   }, []);
 
   const getProducts = useCallback(
-    (id) => {
+    (suppCode, tankCode, fromTank) => {
       setLoading(true);
 
       api
-        .get(SPECIAL_MOVEMENTS.PRODUCTS, {
+        .get(SPECIAL_MOVEMENTS.SUPP_TANK_PRODUCTS, {
           params: {
-            tank_code: id,
+            supplier: suppCode,
+            tank_code: tankCode,
           },
         })
         .then((response) => {
           setProducts(response.data.records);
           setLoading(false);
 
-          if (response.data.records.length > 0) {
-            setProduct(response.data.records?.[0]?.tank_base);
+          // const prodSelected = getFieldValue('mlitm_prodcode_to');
+          if (response.data.records.length > 0 && fromTank) {
+            // setProduct(response.data.records?.[0]?.tank_base);
+            setProduct(response.data.records?.[0]?.prod_code);
             setFieldsValue({
-              mlitm_prodcode_to: response.data.records?.[0]?.tank_base,
+              // mlitm_prodcode_to: response.data.records?.[0]?.tank_base,
+              mlitm_prodcode_to: response.data.records?.[0]?.prod_code,
             });
           }
         })
@@ -105,7 +124,8 @@ const To = ({
   const onTankChange = (value) => {
     setTank(value);
     setProduct(undefined);
-    getProducts(value);
+    const supp = getFieldValue('mlitm_prodcmpy_to');
+    getProducts(supp, value, true);
     setTankSelected(true);
 
     // setFieldsValue({
@@ -154,7 +174,7 @@ const To = ({
       console.log('here I am!....');
       // getSuppliers();
       getTanks(prodCompany);
-      getProducts(tankCode);
+      getProducts(prodCompany, tankCode, false);
     }
   }, [value, getTanks, getProducts]);
 
@@ -230,7 +250,7 @@ const To = ({
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
             >
-              {tanks.map((item, index) => (
+              {getBaseTanks(tanks).map((item, index) => (
                 <Select.Option key={index} value={item.tank_code}>
                   {item.tank_code} - {item.tank_name}
                   {/*  [{item.base_code} - {item.prod_code} - {item.prod_name}] */}
@@ -258,9 +278,8 @@ const To = ({
               }
             >
               {products.map((item, index) => (
-                <Select.Option key={index} value={item.tank_base}>
-                  {item.tank_base} - {item.tank_base_name}
-                  {/*  [{item.tank_bclass_name}] */}
+                <Select.Option key={index} value={item.prod_code}>
+                  {item.prod_code} - {item.prod_name}
                 </Select.Option>
               ))}
             </Select>
