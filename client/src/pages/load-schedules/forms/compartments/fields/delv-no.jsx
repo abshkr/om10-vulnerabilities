@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { InputNumber } from 'antd';
+import { Input } from 'antd';
+import { ALPHANUMERIC_NOSPACE } from 'constants/regex';
 
 const KEY_BACKSPACE = 8;
 const KEY_DELETE = 46;
@@ -100,20 +101,27 @@ export default class Schedule extends Component {
     return [37, 39].indexOf(event.keyCode) > -1;
   }
 
-  handleChange(value) {
-    const { form, rowIndex } = this.props;
+  handleChange(event) {
+    const { value } = event.target;
 
-    let current = form.getFieldValue('compartments');
+    const regex = new RegExp(ALPHANUMERIC_NOSPACE);
+    const validated = regex.exec(value);
 
-    current[rowIndex].schd_deliv_num = value;
+    if (validated) {
+      const { form, rowIndex } = this.props;
 
-    form.setFieldsValue({
-      compartments: current,
-    });
+      let current = form.getFieldValue('compartments');
 
-    this.setState({
-      value,
-    });
+      current[rowIndex].schd_deliv_num = value;
+
+      form.setFieldsValue({
+        compartments: current,
+      });
+
+      this.setState({
+        value,
+      });
+    }
   }
 
   getCharCodeFromEvent(event) {
@@ -127,12 +135,7 @@ export default class Schedule extends Component {
 
   render() {
     return (
-      <InputNumber
-        ref="input"
-        value={this.state.value}
-        onChange={this.handleChange}
-        style={{ width: '100%' }}
-      />
+      <Input ref="input" value={this.state.value} onChange={this.handleChange} style={{ width: '100%' }} />
     );
   }
 
