@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
 import _ from 'lodash';
-import { calcArmDensity } from '../../../../../../../utils'
+import { calcArmDensity } from '../../../../../../../utils';
 import { validateField } from '../../../../../../../utils';
 
 const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
@@ -56,8 +56,16 @@ const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
       setFieldsValue({
         mlitm_dens_cor: tank?.[0]?.tank_density,
       });
-      setMinDens(tank?.[0]?.bclass_dens_lo);
-      setMaxDens(tank?.[0]?.bclass_dens_hi);
+      if (!tank?.[0]?.base_dens_lo) {
+        setMinDens(tank?.[0]?.bclass_dens_lo);
+      } else {
+        setMinDens(tank?.[0]?.base_dens_lo);
+      }
+      if (!tank?.[0]?.base_dens_hi) {
+        setMaxDens(tank?.[0]?.bclass_dens_hi);
+      } else {
+        setMaxDens(tank?.[0]?.base_dens_hi);
+      }
     } else {
       if (arm) {
         if (arm.length <= 1) {
@@ -77,7 +85,7 @@ const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
           // setMaxDens(tank?.[0]?.bclass_dens_hi);
           setMinDens(config.minDensity);
           setMaxDens(config.maxDensity);
-        }    
+        }
       } else {
         setFieldsValue({
           mlitm_dens_cor: null,
@@ -85,29 +93,40 @@ const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
         setMinDens(config.minDensity);
         setMaxDens(config.maxDensity);
       }
-    } 
-    
+    }
+
     // console.log('validateFields([mlitm_dens_cor]);222');
     validateFields(['mlitm_dens_cor']);
-}, [tank, arm, config, setFieldsValue, setMinDens, setMaxDens, validateFields]);
+  }, [tank, arm, config, setFieldsValue, setMinDens, setMaxDens, validateFields]);
 
   return (
     <Form.Item
       name="mlitm_dens_cor"
-      label={t('fields.nomtranStdDens') + '[' + String(minDens) + ' ~ ' + String(maxDens) + '](' + t('units.kg/m3') + ')'}
+      label={
+        t('fields.nomtranStdDens') +
+        '[' +
+        String(minDens) +
+        ' ~ ' +
+        String(maxDens) +
+        '](' +
+        t('units.kg/m3') +
+        ')'
+      }
       // rules={[{ required: false, validator: validate }]}
-      rules={[{ 
-        required: false,
-        title: t('fields.nomtranStdDens'), 
-        dataType: 'NUMBER',
-        // maxLength: 9, 
-        precision: null, // config.precisionDensity,
-        min: _.toNumber(minDens), 
-        max: _.toNumber(maxDens),
-        prompts: t,
-        // returnType: 'notice',
-        validator: validateField 
-      }]}
+      rules={[
+        {
+          required: false,
+          title: t('fields.nomtranStdDens'),
+          dataType: 'NUMBER',
+          // maxLength: 9,
+          precision: null, // config.precisionDensity,
+          min: _.toNumber(minDens),
+          max: _.toNumber(maxDens),
+          prompts: t,
+          // returnType: 'notice',
+          validator: validateField,
+        },
+      ]}
     >
       <InputNumber
         style={{ width: '100%' }}

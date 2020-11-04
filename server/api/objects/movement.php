@@ -208,6 +208,8 @@ class Movement extends CommonClass
             DP.PROD_NAME, 
             BP.BASE_CODE, 
             BP.BASE_NAME, 
+            BP.BASE_DENS_LO,
+            BP.BASE_DENS_HI,
             PR.RATIO_VALUE, 
             PR.RAT_PROD_PRODCODE,
             BS.BCLASS_DESC,
