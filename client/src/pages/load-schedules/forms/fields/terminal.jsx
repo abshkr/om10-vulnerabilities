@@ -13,7 +13,7 @@ const Terminal = ({ form, value }) => {
 
   const token = sessionStorage.getItem('token');
   const decoded = jwtDecode(token);
-  const site_code = decoded?.site_code
+  const site_code = decoded?.site_code;
 
   const { data: options, isValidating } = useSWR(SITE_CONFIGURATION.TERMINALS);
 
@@ -57,7 +57,7 @@ const Terminal = ({ form, value }) => {
       >
         {options?.records?.map((item, index) => (
           <Select.Option key={index} value={item.term_code}>
-            {item.term_code} - {item.term_name}
+            {`${item.term_code} - ${item.term_name}`}
           </Select.Option>
         ))}
       </Select>
