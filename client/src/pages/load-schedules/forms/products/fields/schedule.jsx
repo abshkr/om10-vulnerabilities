@@ -112,7 +112,7 @@ export default class Schedule extends Component {
     }
     let max = colDef?.cellEditorParams?.max;
     if (max === undefined) {
-      max = 999999999;
+      max = 99999999;
     }
 
     if (value < min) {
@@ -152,6 +152,7 @@ export default class Schedule extends Component {
         onChange={this.handleChange}
         style={{ width: '100%' }}
         min={0}
+        max={99999999}
         precision={0}
       />
     );

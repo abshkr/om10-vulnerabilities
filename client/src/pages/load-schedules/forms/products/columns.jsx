@@ -12,7 +12,7 @@ const columns = (t, form, units, access) => [
     field: 'prod_name',
     resizable: true,
     width: 400,
-    cellRenderer: 'ProductRender', 
+    cellRenderer: 'ProductRender',
   },
   {
     headerName: t('fields.schedule'),
@@ -26,7 +26,7 @@ const columns = (t, form, units, access) => [
     cellEditorParams: {
       form: form,
       min: 0,
-      max: 999999999,
+      max: 99999999,
     },
   },
 
