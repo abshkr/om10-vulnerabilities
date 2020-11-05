@@ -1,4 +1,5 @@
 export { default as Calendar } from './calendar';
+export { default as RangeCalendar } from './range-calendar';
 export { default as Expiry } from './expiry';
 export { default as Download } from './download';
 export { default as Loading } from './loading';

@@ -4,6 +4,7 @@ import generateOptions from './generate-options';
 import convertToLocale from './convert-to-locale';
 import getDateTimeFormat from './get-date-time-format';
 import getDateRangeOffset from './get-date-range-offset';
+import getRangeDays from './get-range-days';
 import adjustProductArms from './adjust-product-arms';
 import getAvailableArms from './get-available-arms';
 import calcApiFromSg from './calculate-api-from-sg';
@@ -37,6 +38,7 @@ export {
   massConverter,
   getDateTimeFormat,
   getDateRangeOffset,
+  getRangeDays,
   adjustProductArms,
   getAvailableArms,
   calcApiFromSg,
