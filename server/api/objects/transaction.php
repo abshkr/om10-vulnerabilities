@@ -222,6 +222,42 @@ class Transaction extends CommonClass
 
     public function read()
     {
+        $query = "
+            SELECT * FROM " . $this->VIEW_NAME . "
+            WHERE 1 = 1
+        ";
+        if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1') {
+            $query .= "
+                AND TRSA_ST_DMY > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')
+            ";
+        }
+        if (isset($this->end_date) && $this->end_date != -1 && $this->end_date != '-1') {
+            $query .= "
+                AND TRSA_ST_DMY < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS')
+            ";
+        }
+        $query .= "
+            ORDER BY TRSA_ST_DMY DESC
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1') {
+            oci_bind_by_name($stmt, ':start_date', $this->start_date);
+        }
+        if (isset($this->end_date) && $this->end_date != -1 && $this->end_date != '-1') {
+            oci_bind_by_name($stmt, ':end_date', $this->end_date);
+        }
+        
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function read_old()
+    {
         if (!isset($this->start_date)) {
             $query = "
                 SELECT * FROM " . $this->VIEW_NAME . "

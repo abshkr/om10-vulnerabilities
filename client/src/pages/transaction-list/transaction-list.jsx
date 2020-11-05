@@ -6,14 +6,14 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, FileSearchOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, Calendar, FormModal, WindowSearch } from '../../components';
+import { Page, DataTable, Download, RangeCalendar, FormModal, WindowSearch } from '../../components';
 import api, { TRANSACTION_LIST } from '../../api';
 import { SETTINGS } from '../../constants';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
 import { useAuth, useConfig } from 'hooks';
-import { getDateRangeOffset, getCurrentTime } from 'utils';
+import { getRangeDays, getCurrentTime } from 'utils';
 
 const TransactionList = () => {
   const { transactionsDateRange, serverTime } = useConfig();
@@ -42,11 +42,13 @@ const TransactionList = () => {
   };
 
   const setSearch = (values) => {
-    if (!values.shls_trip_no && 
-      !values.trsa_id && 
+    if (
+      !values.shls_trip_no &&
+      !values.trsa_id &&
       !values.tnkr_code &&
       !values.load_id &&
-      !values.use_date_range) {
+      !values.use_date_range
+    ) {
       return;
     }
     api
@@ -78,8 +80,26 @@ const TransactionList = () => {
   };
 
   const onRefresh = async () => {
-    if (transactionsDateRange !== false) {
-      const ranges = getDateRangeOffset(String(transactionsDateRange), '7');
+    const ranges = getRangeDays(String(transactionsDateRange), '7');
+
+    const currTime = await getCurrentTime();
+    let startTime = '-1';
+    if (ranges.beforeToday !== -1) {
+      startTime = moment(currTime, SETTINGS.DATE_TIME_FORMAT)
+        .subtract(ranges.beforeToday, 'days')
+        .format(SETTINGS.DATE_TIME_FORMAT);
+    }
+    let endTime = '-1';
+    if (ranges.afterToday !== -1) {
+      endTime = moment(currTime, SETTINGS.DATE_TIME_FORMAT)
+        .add(ranges.afterToday, 'days')
+        .format(SETTINGS.DATE_TIME_FORMAT);
+    }
+    setStart(startTime);
+    setEnd(endTime);
+
+    /* if (transactionsDateRange !== false) {
+      const ranges = getRangeDays(String(transactionsDateRange), '7');
       
       const currTime = await getCurrentTime();
       const startTime = moment(currTime, SETTINGS.DATE_TIME_FORMAT).subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT);
@@ -88,15 +108,38 @@ const TransactionList = () => {
       setEnd(endTime);
       // setStart(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
       // setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-    }
+    } */
 
     // Don't need revalidate, let useSWR handle itself while parameter changes
     // revalidate();
-  }
+  };
 
   useEffect(() => {
-    if (transactionsDateRange !== false && serverTime) {
-      const ranges = getDateRangeOffset(String(transactionsDateRange), '7');
+    if (serverTime) {
+      const ranges = getRangeDays(String(transactionsDateRange), '7');
+
+      if (ranges.beforeToday !== -1) {
+        setStart(
+          moment(serverTime, SETTINGS.DATE_TIME_FORMAT)
+            .subtract(ranges.beforeToday, 'days')
+            .format(SETTINGS.DATE_TIME_FORMAT)
+        );
+      } else {
+        setStart('-1');
+      }
+
+      if (ranges.afterToday !== -1) {
+        setEnd(
+          moment(serverTime, SETTINGS.DATE_TIME_FORMAT)
+            .add(ranges.afterToday, 'days')
+            .format(SETTINGS.DATE_TIME_FORMAT)
+        );
+      } else {
+        setEnd('-1');
+      }
+    }
+    /* if (transactionsDateRange !== false && serverTime) {
+      const ranges = getRangeDays(String(transactionsDateRange), '7');
 
       if (ranges.beforeToday !== -1) {
         setStart(moment(serverTime, SETTINGS.DATE_TIME_FORMAT).subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
@@ -105,7 +148,7 @@ const TransactionList = () => {
       if (ranges.afterToday !== -1) {
         setEnd(moment(serverTime, SETTINGS.DATE_TIME_FORMAT).add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
       }
-    }
+    } */
   }, [transactionsDateRange, serverTime]);
 
   useEffect(() => {
@@ -117,7 +160,14 @@ const TransactionList = () => {
 
   const modifiers = (
     <>
-      <Calendar handleChange={setRange} start={start} end={end} max={1000} />
+      <RangeCalendar
+        handleChange={setRange}
+        handleClear={setRange}
+        start={start}
+        end={end}
+        max={1000}
+        enableClear={true}
+      />
 
       <Button icon={<SyncOutlined />} onClick={() => onRefresh()} loading={isLoading}>
         {t('operations.refresh')}
@@ -150,7 +200,13 @@ const TransactionList = () => {
       avatar="transactionList"
       access={access}
     >
-      <DataTable columns={fields} data={data} isLoading={isLoading} onClick={handleClick} clearFilterPlus={revalidate}/>
+      <DataTable
+        columns={fields}
+        data={data}
+        isLoading={isLoading}
+        onClick={handleClick}
+        clearFilterPlus={revalidate}
+      />
     </Page>
   );
 };
