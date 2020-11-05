@@ -20,8 +20,8 @@ const RelationForm = ({ value, handleFormState }) => {
   const { data: payload, isValidating } = useSWR(
     `${COMPANIES.RELATIONS}?parent_cmpy_code=${value.cmpy_code}`
   );
-  const [children, setChildren] = useState(payload?.records);
-
+  const [children, setChildren] = useState(_.sortBy(payload?.records, ['child_cmpy_code', 'child_cmpy_role']));
+  
   const { t } = useTranslation();
   const fields = columns(t);
   const [form] = Form?.useForm();
@@ -91,16 +91,19 @@ const RelationForm = ({ value, handleFormState }) => {
         });
         return;
       }
-      setChildren([...children, v]);
+      const newChildren = _.sortBy([...children, v], ['child_cmpy_code', 'child_cmpy_role']);
+      setChildren(newChildren);
       setFieldsValue({
         relations: [...children, v],
       });
     } else {
       const filtered = _.filter(children, (item) => {
-        return item.child_cmpy_code !== v.child_cmpy_code && 
-          item.child_cmpy_role === v.child_cmpy_role;
+        return item.child_cmpy_code !== v.child_cmpy_code || 
+          item.child_cmpy_role !== v.child_cmpy_role;
       });
-      setChildren([...filtered, v]);
+      const newChildren = _.sortBy([...filtered, v], ['child_cmpy_code', 'child_cmpy_role']);
+      setChildren(newChildren);
+      
       setFieldsValue({
         relations: [...filtered, v],
       });
