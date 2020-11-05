@@ -15,7 +15,7 @@ import Forms from './forms';
 import api from 'api';
 import _ from 'lodash';
 
-const Allocations = ({popup, params}) => {
+const Allocations = ({ popup, params }) => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [alloctype, setAlloctype] = useState(null);
@@ -31,16 +31,12 @@ const Allocations = ({popup, params}) => {
 
   const url =
     popup && alloctype && company
-      ? (
-        start && end
+      ? start && end
         ? `${ALLOCATIONS.READ}?start_date=${start}&end_date=${end}&alloc_type=${alloctype}&alloc_cmpycode=${company}`
         : null // `${ALLOCATIONS.READ}?alloc_type=${alloctype}&alloc_cmpycode=${company}`
-      )
-      : (
-        start && end
-        ? `${ALLOCATIONS.READ}?start_date=${start}&end_date=${end}`
-        : null
-      );
+      : start && end
+      ? `${ALLOCATIONS.READ}?start_date=${start}&end_date=${end}`
+      : null;
 
   const { data: payload, isValidating, revalidate } = useSWR(url);
 
@@ -50,10 +46,7 @@ const Allocations = ({popup, params}) => {
   };
 
   const locateLockal = (values) => {
-    if (!values.alloc_type && 
-      !values.alloc_cmpycode &&
-      !values.alloc_suppcode && 
-      !values.alloc_lock) {
+    if (!values.alloc_type && !values.alloc_cmpycode && !values.alloc_suppcode && !values.alloc_lock) {
       return;
     }
 
@@ -65,7 +58,7 @@ const Allocations = ({popup, params}) => {
           alloc_type: values.alloc_type,
           alloc_cmpycode: values.alloc_cmpycode,
           alloc_suppcode: values.alloc_suppcode,
-          alloc_lock: values.alloc_lock
+          alloc_lock: values.alloc_lock,
         },
       })
       .then((res) => {
@@ -105,8 +98,7 @@ const Allocations = ({popup, params}) => {
       setData(payload?.records);
       // setLoading(false);
       payload.records = null;
-    } 
-    
+    }
   }, [payload]);
 
   const modifiers = (
@@ -130,7 +122,7 @@ const Allocations = ({popup, params}) => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access} standalone={popup} >
+    <Page page={page} name={name} modifiers={modifiers} access={access} standalone={popup}>
       <DataTable
         minimal={false}
         data={data}
@@ -141,14 +133,16 @@ const Allocations = ({popup, params}) => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         clearFilterPlus={revalidate}
       />
-      <Forms 
-        value={selected} 
-        visible={visible} 
-        handleFormState={handleFormState} 
-        access={access} 
-        url={url}
-        locateLockal={locateLockal} />
-      />
+      {visible && (
+        <Forms
+          value={selected}
+          visible={visible}
+          handleFormState={handleFormState}
+          access={access}
+          url={url}
+          locateLockal={locateLockal}
+        />
+      )}
     </Page>
   );
 };

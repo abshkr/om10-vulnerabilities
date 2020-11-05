@@ -13,12 +13,22 @@ const Period = ({ form, value, lockType }) => {
   const { data: options, isValidating } = useSWR(ALLOCATIONS.PERIOD);
 
   const validate = (rule, input) => {
-    if (input === '' || !input) {
-      return Promise.resolve(`${t('validate.select')} ─ ${t('fields.lockType')}`);
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.select')} ─ ${t('fields.period')}`);
+      }
     }
 
-    return Promise.reject();
+    return Promise.resolve();
   };
+
+  useEffect(() => {
+    if (String(lockType) !== '3') {
+      setFieldsValue({
+        alloc_period: undefined,
+      });
+    }
+  }, [lockType]);
 
   useEffect(() => {
     if (value) {
@@ -46,7 +56,7 @@ const Period = ({ form, value, lockType }) => {
       >
         {options?.records.map((item, index) => (
           <Select.Option key={index} value={item.alloc_period_id}>
-            {item.alloc_period_name||' '}
+            {item.alloc_period_name || ' '}
           </Select.Option>
         ))}
       </Select>

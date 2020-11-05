@@ -15,16 +15,16 @@ const Employer = ({ form, value, onChange }) => {
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.resolve(`${t('validate.select')} ─ ${t('fields.employer')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.employer')}`);
     }
 
-    return Promise.reject();
+    return Promise.resolve();
   };
 
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        kya_psnl_cmpy: value.kya_psnl_cmpy
+        kya_psnl_cmpy: value.kya_psnl_cmpy,
       });
 
       onChange(value.kya_psnl_cmpy);
