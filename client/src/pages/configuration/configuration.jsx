@@ -419,8 +419,6 @@ const HostMessagingItems = ({ data, onChange, t }) => (
   />
 );
 
-
-
 const Configuration = ({ user, config }) => {
   const { data: configPayload } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
   const { data: featuresPayload } = useSWR(SITE_CONFIGURATION.FEATURES, { revalidateOnFocus: false });
@@ -428,6 +426,7 @@ const Configuration = ({ user, config }) => {
   const access = useAuth('M_SITECONFIG');
 
   const [configuration, setConfiguration] = useState([]);
+  const [origConfigs, setOrigConfigs] = useState([]);
   const [features, setFeatures] = useState([]);
   const [tab, setTab] = useState('1');
 
@@ -487,6 +486,7 @@ const Configuration = ({ user, config }) => {
   useEffect(() => {
     if (configPayload?.records) {
       setConfiguration(configPayload.records);
+      setOrigConfigs(_.cloneDeep(configPayload.records));
     }
 
     if (featuresPayload?.records) {
@@ -496,7 +496,19 @@ const Configuration = ({ user, config }) => {
 
   const onUpdate = () => {
     const values = UPDATING_FEATURES ? features : _.filter(configuration, (item) => {
-      return item.config_required_by_gui !== "";
+      if (item.config_required_by_gui === "") {
+        return false;
+      }
+
+      const target = _.find(origConfigs, origItem => {
+        return origItem.config_key === item.config_key;
+      });
+      
+      if (target?.config_value === item.config_value) {
+        return false;
+      }
+      
+      return true;
     });
 
     Modal.confirm({
