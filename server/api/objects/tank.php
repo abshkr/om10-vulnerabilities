@@ -559,6 +559,16 @@ class Tank extends CommonClass
             return false;
         }
 
+        $query = "
+            UPDATE SITE SET SITE_BAI_UPDATE = SITE_BAI_UPDATE + 1";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
         $jnl_data[0] = $curr_psn;
@@ -607,6 +617,16 @@ class Tank extends CommonClass
             throw new DatabaseException($e['message']);
         }
 
+        $query = "
+            UPDATE SITE SET SITE_BAI_UPDATE = SITE_BAI_UPDATE + 1";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            throw new DatabaseException($e['message']);
+        }
+
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
         $jnl_data[0] = $curr_psn;
@@ -624,6 +644,21 @@ class Tank extends CommonClass
         }
 
         oci_commit($this->conn);
+        return true;
+    }
+
+    protected function post_update()
+    {
+        $query = "
+            UPDATE SITE SET SITE_BAI_UPDATE = SITE_BAI_UPDATE + 1";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
         return true;
     }
 }
