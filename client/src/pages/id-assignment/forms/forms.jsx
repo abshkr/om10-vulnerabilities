@@ -293,7 +293,6 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
           <TabPane
             //className="ant-tab-window"
             tab={t('tabColumns.general')}
-            style={{ height: 'calc(100vh - 150px)' }}
             forceRender={true}
             key="1"
           >
@@ -329,62 +328,64 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
 
             <Divider />
 
-            {['1', '3', '5'].includes(type) && (
-              <>
-                <Employer form={form} value={value} onChange={setEmployer} />
-              </>
-            )}
+            <div>
+              {['1', '3', '5'].includes(type) && (
+                <div>
+                  <Employer form={form} value={value} onChange={setEmployer} />
+                </div>
+              )}
 
-            {['1', '3', '5'].includes(type) && (
-              <>
-                <Role form={form} value={value} onChange={setRole} />
-              </>
-            )}
+              {['1', '3', '5'].includes(type) && (
+                <div>
+                  <Role form={form} value={value} onChange={setRole} />
+                </div>
+              )}
 
-            {['1', '3', '5'].includes(type) && (
-              <>
-                <Personnel form={form} value={value} employer={employer} role={role} />
-              </>
-            )}
+              {['1', '3', '5'].includes(type) && (
+                <div>
+                  <Personnel form={form} value={value} employer={employer} role={role} />
+                </div>
+              )}
 
-            {['3', '5'].includes(type) && (
-              <>
-                <Row gutter={[8, 3]}>
-                  <Col span={12}>
-                    <DrawerField form={form} value={value} />
-                  </Col>
-                  <Col span={12}>
-                    <Supplier form={form} value={value} />
-                  </Col>
-                </Row>
-              </>
-            )}
+              {['3', '5'].includes(type) && (
+                <div>
+                  <Row gutter={[8, 3]}>
+                    <Col span={12}>
+                      <DrawerField form={form} value={value} />
+                    </Col>
+                    <Col span={12}>
+                      <Supplier form={form} value={value} />
+                    </Col>
+                  </Row>
+                </div>
+              )}
 
-            {['4', '5'].includes(type) && (
-              <>
-                <Row gutter={[8, 3]}>
-                  <Col span={12}>
-                    <Carrier form={form} value={value} onChange={setCarrier} />
-                  </Col>
-                  <Col span={12}>
-                    <Tanker form={form} value={value} carrier={carrier} />
-                  </Col>
-                </Row>
-              </>
-            )}
+              {['4', '5'].includes(type) && (
+                <div>
+                  <Row gutter={[8, 3]}>
+                    <Col span={12}>
+                      <Carrier form={form} value={value} onChange={setCarrier} />
+                    </Col>
+                    <Col span={12}>
+                      <Tanker form={form} value={value} carrier={carrier} />
+                    </Col>
+                  </Row>
+                </div>
+              )}
 
-            {['8', '9'].includes(type) && (
-              <>
-                <Row gutter={[8, 3]}>
-                  <Col span={12}>
-                    <EquipmentCarrier form={form} value={value} onChange={setCarrier} />
-                  </Col>
-                  <Col span={12}>
-                    <TransportEquipment form={form} value={value} type={type} carrier={carrier} />
-                  </Col>
-                </Row>
-              </>
-            )}
+              {['8', '9'].includes(type) && (
+                <div>
+                  <Row gutter={[8, 3]}>
+                    <Col span={12}>
+                      <EquipmentCarrier form={form} value={value} onChange={setCarrier} />
+                    </Col>
+                    <Col span={12}>
+                      <TransportEquipment form={form} value={value} type={type} carrier={carrier} />
+                    </Col>
+                  </Row>
+                </div>
+              )}
+            </div>
           </TabPane>
 
           {/* <TabPane className="ant-tab-window" tab={t('tabColumns.assignments')} forceRender={true} key="2">
