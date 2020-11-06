@@ -785,6 +785,64 @@ class Schedule extends CommonClass
 
     public function read()
     {
+        $query = "
+            SELECT " . $this->VIEW_NAME . ".*, 
+                DECODE(LOAD_REVERSE_FLAG, 
+                    1, 'Y',
+                    3, 'Y',
+                    'N'
+                ) REVERSED,
+                DECODE(LOAD_REVERSE_FLAG, 
+                    3, 'Y',
+                    'N'
+                ) ARCHIVED,
+                DECODE(SHLS_LD_TYPE, 
+                    6, 'Y',
+                    'N'
+                ) UNLOAD,
+                SHL_SOURCE_TYPES.SOURCE_TYPE_NAME as SHLS_SRCTYPE_DESC,
+                DECODE(SHLS_SRCTYPE, 
+                    1, 'Manually Created',
+                    2, 'From Host',
+                    3, 'Open Order',
+                    4, 'Standalone or Special',
+                    'Unknown'
+                ) SHLS_SRCTYPE_DESC2 
+            FROM " . $this->VIEW_NAME . ", SHL_SOURCE_TYPES
+            WHERE SHLS_SRCTYPE = SHL_SOURCE_TYPES.SOURCE_TYPE_ID
+        ";
+        if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1') {
+            $query .= "
+                AND SHLS_CALDATE > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')
+            ";
+        }
+        if (isset($this->end_date) && $this->end_date != -1 && $this->end_date != '-1') {
+            $query .= "
+                AND SHLS_CALDATE < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS')
+            ";
+        }
+        $query .= "
+            ORDER BY SHLS_CALDATE DESC
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1') {
+            oci_bind_by_name($stmt, ':start_date', $this->start_date);
+        }
+        if (isset($this->end_date) && $this->end_date != -1 && $this->end_date != '-1') {
+            oci_bind_by_name($stmt, ':end_date', $this->end_date);
+        }
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function read_old()
+    {
         if (!isset($this->start_date)) {
             $query = "
             SELECT " . $this->VIEW_NAME . ".*, 

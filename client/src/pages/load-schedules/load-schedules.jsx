@@ -6,11 +6,10 @@ import { Button, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, Calendar, WindowSearch } from '../../components';
+import { Page, DataTable, Download, DateTimeRangePicker, WindowSearch } from '../../components';
 import { LOAD_SCHEDULES } from '../../api';
 import { SETTINGS } from '../../constants';
 import { useAuth, useConfig } from 'hooks';
-import { getDateRangeOffset, getCurrentTime } from 'utils';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
@@ -19,8 +18,8 @@ import SourceRender from './source-render';
 import _ from 'lodash';
 
 const LoadSchedules = () => {
-  const { scheduleDateRange, serverTime } = useConfig();
-  
+  const { scheduleDateRange } = useConfig();
+
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [isSearching, setSearching] = useState(false);
@@ -28,14 +27,15 @@ const LoadSchedules = () => {
   const { t } = useTranslation();
 
   const access = useAuth('M_LOADSCHEDULES');
-  
+
+  const [refreshed, setRefreshed] = useState(false);
   const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
   const url = `${LOAD_SCHEDULES.READ}?start_date=${start}&end_date=${end}`;
 
   const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
-  
+
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
     setSelected(value);
@@ -47,35 +47,26 @@ const LoadSchedules = () => {
     // revalidate();
   };
 
-  const onRefresh = async () => {
-    if (scheduleDateRange !== false) {
-      const ranges = getDateRangeOffset(String(scheduleDateRange), '7');
-      
-      const currTime = await getCurrentTime();
-      setStart(moment(currTime, SETTINGS.DATE_TIME_FORMAT).subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-      setEnd(moment(currTime, SETTINGS.DATE_TIME_FORMAT).add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-      // setStart(moment().subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-      // setEnd(moment().add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-    }
-
-    // Don't need revalidate, let useSWR handle itself while parameter changes
-    // revalidate();
-  }
+  const onRefresh = () => {
+    setRefreshed(true);
+  };
 
   const locateTrip = (value) => {
     setSearch({
       shls_trip_no: value.shls_trip_no,
       supplier_code: value.supplier_code,
-    })
-  }
+    });
+  };
 
   const setSearch = (values) => {
-    if (!values.shls_trip_no && 
+    if (
+      !values.shls_trip_no &&
       !values.supplier_code &&
-      !values.tnkr_code && 
-      !values.carrier_code && 
+      !values.tnkr_code &&
+      !values.carrier_code &&
       !values.trip_status &&
-      !values.use_date_range) {
+      !values.use_date_range
+    ) {
       return;
     }
 
@@ -128,45 +119,41 @@ const LoadSchedules = () => {
       setData(payload?.records);
       // setLoading(false);
       payload.records = null;
-    } 
-    
-  }, [payload]);
-
-  useEffect(() => {
-    if (scheduleDateRange !== false && serverTime) {
-      const ranges = getDateRangeOffset(String(scheduleDateRange), '7');
-      
-      if (ranges.beforeToday !== -1) {
-        setStart(moment(serverTime, SETTINGS.DATE_TIME_FORMAT).subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-      }
-
-      if (ranges.afterToday !== -1) {
-        setEnd(moment(serverTime, SETTINGS.DATE_TIME_FORMAT).add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-      }
     }
-  }, [scheduleDateRange, serverTime]);
+  }, [payload]);
 
   const modifiers = (
     <>
-      
-      <Calendar handleChange={setRange} start={start} end={end} max={720}/>
+      <DateTimeRangePicker
+        handleChange={setRange}
+        rangeSetting={scheduleDateRange}
+        refreshed={refreshed}
+        setRefreshed={setRefreshed}
+        disabled={false}
+        enableClear={true}
+        max={720}
+        // localBased={true}
+      />
+
       <Button icon={<SyncOutlined />} onClick={() => onRefresh()} loading={isLoading}>
         {t('operations.refresh')}
       </Button>
 
       <Download data={data} isLoading={isLoading} columns={fields} />
 
-      <Button 
+      <Button
         type="primary"
-        icon={<FileSearchOutlined />} 
-        onClick={() => WindowSearch(setSearch, t('operations.search'), {
-          terminal: true,
-          shls_trip_no: true,
-          supplier_code: true,
-          trip_status: true,
-          tnkr_code: true,
-          carrier_code: true,
-        })}
+        icon={<FileSearchOutlined />}
+        onClick={() =>
+          WindowSearch(setSearch, t('operations.search'), {
+            terminal: true,
+            shls_trip_no: true,
+            supplier_code: true,
+            trip_status: true,
+            tnkr_code: true,
+            carrier_code: true,
+          })
+        }
       >
         {t('operations.search')}
       </Button>
@@ -197,12 +184,16 @@ const LoadSchedules = () => {
         clearFilterPlus={revalidate}
       />
 
-      <Forms 
-        value={selected} 
-        visible={visible} 
-        handleFormState={handleFormState} 
-        access={access} url={url}
-        locateTrip={locateTrip} />
+      {visible && (
+        <Forms
+          value={selected}
+          visible={visible}
+          handleFormState={handleFormState}
+          access={access}
+          url={url}
+          locateTrip={locateTrip}
+        />
+      )}
     </Page>
   );
 };
