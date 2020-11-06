@@ -96,7 +96,16 @@ const DateTimeRangePicker = ({
       const difference = dates[1]?.diff(dates[0], 'days');
 
       if (difference <= limit) {
-        setRangeValue(dates);
+        const diffSeconds = dates[1]?.diff(dates[0], 'seconds');
+        if (diffSeconds >= 0) {
+          setRangeValue(dates);
+        } else {
+          notification.warning({
+            key: 'date-range-warning',
+            message: t('messages.seqDateRange'),
+            description: `${t('descriptions.seqDateRange')}`,
+          });
+        }
       } else {
         notification.warning({
           key: 'date-range-warning',
