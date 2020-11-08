@@ -6,23 +6,24 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, Calendar, WindowSearch } from '../../components';
+import { Page, DataTable, Download, DateTimeRangePicker, WindowSearch } from '../../components';
 import api, { SPECIAL_MOVEMENTS } from '../../api';
 import { SETTINGS } from '../../constants';
 import columns from './columns';
 import auth from '../../auth';
 import { useAuth, useConfig } from 'hooks';
 import Forms from './forms';
-import { getCurrentTime } from 'utils';
 
 const SpecialMovements = () => {
   const config = useConfig();
+  const rangeSetting = config.nominationDateRange;
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
   const access = useAuth('M_SPECIALMOVEMENTS');
 
+  const [refreshed, setRefreshed] = useState(false);
   const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const url = `${SPECIAL_MOVEMENTS.READ}?start_date=${start}&end_date=${end}`;
@@ -40,22 +41,24 @@ const SpecialMovements = () => {
   const setRange = (start, end) => {
     setStart(start);
     setEnd(end);
-    revalidate();
+    // revalidate();
   };
 
   const locateSpecialMv = (value) => {
     setSearch({
       mlitm_id: value,
-    })
-  }
+    });
+  };
 
   const setSearch = (values) => {
-    if (!values.mlitm_id && 
-      !values.mlitm_status && 
-      !values.mlitm_type && 
-      !values.mlitm_prodcmpy && 
+    if (
+      !values.mlitm_id &&
+      !values.mlitm_status &&
+      !values.mlitm_type &&
+      !values.mlitm_prodcmpy &&
       !values.mlitm_reason_code &&
-      !values.use_date_range) {
+      !values.use_date_range
+    ) {
       return;
     }
 
@@ -77,24 +80,12 @@ const SpecialMovements = () => {
       });
   };
 
-  const onRefresh = async () => {
-      
-    const currTime = await getCurrentTime();
-    setStart(moment(currTime, SETTINGS.DATE_TIME_FORMAT).subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-    setEnd(moment(currTime, SETTINGS.DATE_TIME_FORMAT).add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-    // setStart(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-    // setEnd(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+  const onRefresh = () => {
+    setRefreshed(true);
 
     // Don't need revalidate, let useSWR handle itself while parameter changes
     // revalidate();
-  }
-
-  useEffect(() => {
-    if (config?.serverTime) {
-      setStart(moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT).subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-      setEnd(moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT).add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-    }
-  }, [config?.serverTime]);
+  };
 
   useEffect(() => {
     if (payload?.records) {
@@ -105,7 +96,16 @@ const SpecialMovements = () => {
 
   const modifiers = (
     <>
-      <Calendar handleChange={setRange} start={start} end={end} max={1000} />
+      <DateTimeRangePicker
+        handleChange={setRange}
+        rangeSetting={rangeSetting}
+        refreshed={refreshed}
+        setRefreshed={setRefreshed}
+        disabled={false}
+        enableClear={true}
+        max={1000}
+        // localBased={true}
+      />
 
       <Button icon={<SyncOutlined />} onClick={() => onRefresh()} loading={isValidating}>
         {t('operations.refresh')}
@@ -157,12 +157,12 @@ const SpecialMovements = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         clearFilterPlus={revalidate}
       />
-      <Forms 
-        value={selected} 
-        visible={visible} 
-        handleFormState={handleFormState} 
-        access={access} 
-        url={url} 
+      <Forms
+        value={selected}
+        visible={visible}
+        handleFormState={handleFormState}
+        access={access}
+        url={url}
         locateSpecialMv={locateSpecialMv}
         config={config}
       />

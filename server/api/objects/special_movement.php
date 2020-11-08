@@ -129,99 +129,67 @@ class SpecialMovement extends CommonClass
 
     public function read()
     {
-        if (!isset($this->start_date)) {
-            $query = "
-                SELECT MLITM_ID, 
-                    MLITM_TERMINAL, 
-                    MLITM_MOV_NUM, 
-                    MLITM_TYPE, 
-                    MOVITEM_TYPE_NAME MLITM_TYPE_NAME,
-                    MLITM_PRODCODE, 
-                    MLITM_TANKCODE, 
-                    MLITM_QTY_AMB, 
-                    MLITM_MOV_TYPE, 
-                    MLITM_MOV_KEY,
-                    MLITM_UNIT_AMB, 
-                    MLITM_TEMP_AMB, 
-                    MLITM_TMPUNIT_AMB, 
-                    MLITM_DENS_COR, 
-                    MLITM_DNSUNIT_COR, 
-                    MLITM_DTIM_START, 
-                    MLITM_REASON_CODE,  
-                    MR_ACTION MLITM_REASON,
-                    MLITM_TANKDEPO, 
-                    MLITM_PRODCMPY_TO, 
-                    MLITM_PRODCMPY, 
-                    MLITM_TANKDEPO_TO, 
-                    MLITM_PRODCODE_TO, 
-                    MLITM_TANKCODE_TO, 
-                    MLITM_QTY_COR, 
-                    MLITM_QTY_KG, 
-                    MLITM_UNIT_COR, 
-                    MLITM_TEMP_COR, 
-                    MLITM_TMPUNIT_COR,  
-                    MLITM_QTY_RPT, 
-                    MLITM_UNIT_RPT, 
-                    MLITM_STATUS, 
-                    DECODE(MLITM_STATUS, 0, 'Entering', 5, 'Completed', 9, 'Reversed', 'Invalid') MV_STATUS_NAME2,
-                    SPECIAL_MOVSTATUS_TYPE_NAME   as MV_STATUS_NAME,
-                    MLITM_DTIM_POSTED, 
-                    MLITM_OPER_POSTED, 
-                    MLITM_COMMENT 
-                FROM " . $this->VIEW_NAME . ", MOVITEM_TYPES, MOV_REASONS, SPECIAL_MOVSTATUS_TYPE
-                WHERE MLITM_TYPE = MOVITEM_TYPES.MOVITEM_TYPE_ID (+)
-                    AND MLITM_REASON_CODE = MOV_REASONS.MR_ID(+)
-                    AND DECODE(MLITM_STATUS, 0, 0, 5, 1, 9, 2, MLITM_STATUS) = SPECIAL_MOVSTATUS_TYPE.SPECIAL_MOVSTATUS_TYPE_ID(+)
-                ORDER BY MLITM_DTIM_START DESC";
-            $stmt = oci_parse($this->conn, $query);
-        } else {
-            $query = "
-                SELECT MLITM_ID, 
-                    MLITM_TERMINAL, 
-                    MLITM_MOV_NUM, 
-                    MLITM_TYPE, 
-                    MOVITEM_TYPE_NAME MLITM_TYPE_NAME,
-                    MLITM_PRODCODE, 
-                    MLITM_TANKCODE, 
-                    MLITM_QTY_AMB, 
-                    MLITM_MOV_TYPE, 
-                    MLITM_MOV_KEY,
-                    MLITM_UNIT_AMB, 
-                    MLITM_TEMP_AMB, 
-                    MLITM_TMPUNIT_AMB, 
-                    MLITM_DENS_COR, 
-                    MLITM_DNSUNIT_COR, 
-                    MLITM_DTIM_START, 
-                    MLITM_REASON_CODE,  
-                    MR_ACTION MLITM_REASON,
-                    MLITM_TANKDEPO, 
-                    MLITM_PRODCMPY_TO, 
-                    MLITM_PRODCMPY, 
-                    MLITM_TANKDEPO_TO, 
-                    MLITM_PRODCODE_TO, 
-                    MLITM_TANKCODE_TO, 
-                    MLITM_QTY_COR, 
-                    MLITM_QTY_KG, 
-                    MLITM_UNIT_COR, 
-                    MLITM_TEMP_COR, 
-                    MLITM_TMPUNIT_COR,  
-                    MLITM_QTY_RPT, 
-                    MLITM_UNIT_RPT, 
-                    MLITM_STATUS, 
-                    DECODE(MLITM_STATUS, 0, 'Entering', 5, 'Completed', 9, 'Reversed', 'Invalid') MV_STATUS_NAME2,
-                    SPECIAL_MOVSTATUS_TYPE_NAME   as MV_STATUS_NAME,
-                    MLITM_DTIM_POSTED, 
-                    MLITM_OPER_POSTED, 
-                    MLITM_COMMENT 
-                FROM " . $this->VIEW_NAME . ", MOVITEM_TYPES, MOV_REASONS, SPECIAL_MOVSTATUS_TYPE
-                WHERE MLITM_TYPE = MOVITEM_TYPES.MOVITEM_TYPE_ID (+)
-                    AND MLITM_REASON_CODE = MOV_REASONS.MR_ID(+)
-                    AND DECODE(MLITM_STATUS, 0, 0, 5, 1, 9, 2, MLITM_STATUS) = SPECIAL_MOVSTATUS_TYPE.SPECIAL_MOVSTATUS_TYPE_ID(+)
-                    AND MLITM_DTIM_START > :start_date
-                    AND MLITM_DTIM_START < :end_date
-                ORDER BY MLITM_DTIM_START DESC";
-            $stmt = oci_parse($this->conn, $query);
+        $query = "
+            SELECT MLITM_ID, 
+                MLITM_TERMINAL, 
+                MLITM_MOV_NUM, 
+                MLITM_TYPE, 
+                MOVITEM_TYPE_NAME MLITM_TYPE_NAME,
+                MLITM_PRODCODE, 
+                MLITM_TANKCODE, 
+                MLITM_QTY_AMB, 
+                MLITM_MOV_TYPE, 
+                MLITM_MOV_KEY,
+                MLITM_UNIT_AMB, 
+                MLITM_TEMP_AMB, 
+                MLITM_TMPUNIT_AMB, 
+                MLITM_DENS_COR, 
+                MLITM_DNSUNIT_COR, 
+                MLITM_DTIM_START, 
+                MLITM_REASON_CODE,  
+                MR_ACTION MLITM_REASON,
+                MLITM_TANKDEPO, 
+                MLITM_PRODCMPY_TO, 
+                MLITM_PRODCMPY, 
+                MLITM_TANKDEPO_TO, 
+                MLITM_PRODCODE_TO, 
+                MLITM_TANKCODE_TO, 
+                MLITM_QTY_COR, 
+                MLITM_QTY_KG, 
+                MLITM_UNIT_COR, 
+                MLITM_TEMP_COR, 
+                MLITM_TMPUNIT_COR,  
+                MLITM_QTY_RPT, 
+                MLITM_UNIT_RPT, 
+                MLITM_STATUS, 
+                DECODE(MLITM_STATUS, 0, 'Entering', 5, 'Completed', 9, 'Reversed', 'Invalid') MV_STATUS_NAME2,
+                SPECIAL_MOVSTATUS_TYPE_NAME   as MV_STATUS_NAME,
+                MLITM_DTIM_POSTED, 
+                MLITM_OPER_POSTED, 
+                MLITM_COMMENT 
+            FROM " . $this->VIEW_NAME . ", MOVITEM_TYPES, MOV_REASONS, SPECIAL_MOVSTATUS_TYPE
+            WHERE MLITM_TYPE = MOVITEM_TYPES.MOVITEM_TYPE_ID (+)
+                AND MLITM_REASON_CODE = MOV_REASONS.MR_ID(+)
+                AND DECODE(MLITM_STATUS, 0, 0, 5, 1, 9, 2, MLITM_STATUS) = SPECIAL_MOVSTATUS_TYPE.SPECIAL_MOVSTATUS_TYPE_ID(+)
+        ";
+        if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1') {
+            $query .= "
+                AND MLITM_DTIM_START > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')
+            ";
+        }
+        if (isset($this->end_date) && $this->end_date != -1 && $this->end_date != '-1') {
+            $query .= "
+                AND MLITM_DTIM_START < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS')
+            ";
+        }
+        $query .= "
+            ORDER BY MLITM_DTIM_START DESC
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1') {
             oci_bind_by_name($stmt, ':start_date', $this->start_date);
+        }
+        if (isset($this->end_date) && $this->end_date != -1 && $this->end_date != '-1') {
             oci_bind_by_name($stmt, ':end_date', $this->end_date);
         }
 
