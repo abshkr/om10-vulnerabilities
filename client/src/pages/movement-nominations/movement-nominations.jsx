@@ -6,7 +6,7 @@ import { Button, Select, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, FileSearchOutlined, EyeOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, Calendar, WindowSearch } from '../../components';
+import { Page, DataTable, Download, DateTimeRangePicker, WindowSearch } from '../../components';
 import api, { MOVEMENT_NOMIATIONS } from '../../api';
 import { SETTINGS } from '../../constants';
 import columns from './columns';
@@ -15,24 +15,17 @@ import auth from '../../auth';
 import Forms from './forms';
 import { useAuth } from '../../hooks';
 import { useConfig } from '../../hooks';
-import { getDateRangeOffset, getCurrentTime } from '../../utils';
 import Schedules from './forms/items/schedules';
 
 const MovementNominations = () => {
-  const [rangeStart, setRangeStart] = useState(0);
-  const [rangeEnd, setRangeEnd] = useState(0);
-
   const config = useConfig();
   const rangeSetting = config.nominationDateRange;
-  const ranges = getDateRangeOffset(config.nominationDateRange, '30');
-  //const ranges = getDateRangeOffset(false, '30');
-  //const ranges = getDateRangeOffset("7~~0", '30');
   const filterByExpiry = config.filterNominationByExpiry;
   console.log('filterByExpiry', filterByExpiry);
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [timeOption, setTimeOption] = useState(filterByExpiry?'MV_DTIM_EXPIRY':'MV_DTIM_CREATE'); //'MV_DTIM_EFFECT');
+  const [timeOption, setTimeOption] = useState(filterByExpiry ? 'MV_DTIM_EXPIRY' : 'MV_DTIM_CREATE'); //'MV_DTIM_EFFECT');
   const [data, setData] = useState(null);
   const [scheduleOpen, setScheduleOpen] = useState(false);
 
@@ -63,10 +56,11 @@ const MovementNominations = () => {
 
   const access = useAuth('M_NOMINATION');
 
+  const [refreshed, setRefreshed] = useState(false);
+  // const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+  // const [end, setEnd] = useState(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [start, setStart] = useState(null);
   const [end, setEnd] = useState(null);
-  //const [start, setStart] = useState(moment().subtract(60, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-  //const [end, setEnd] = useState(moment().add(360, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
   const url =
     start && end
@@ -88,37 +82,16 @@ const MovementNominations = () => {
   };
 
   const setRange = (start, end) => {
-    // setStart(start);
-    // setEnd(end);
-    if (rangeSetting !== '-1~~-1') {
-      setStart(start);
-      setEnd(end);
-    } else {
-      setStart('-1');
-      setEnd('-1');
-    }
+    setStart(start);
+    setEnd(end);
   };
 
-  const onRefresh = async () => {
-    if (rangeSetting !== '-1~~-1') {
-      const currTime = await getCurrentTime();
-      // console.log('.....................', rangeStart, rangeEnd, currTime);
-      /*
-        NOTE: do not use something like:
-          const currMoment = moment(currTime, SETTINGS.DATE_TIME_FORMAT);
-          setStart(currMoment.subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-          setEnd(currMoment.add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-        Somehow, currMoment will be updated after subtract()
-      */
-      setStart(moment(currTime, SETTINGS.DATE_TIME_FORMAT).subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-      setEnd(moment(currTime, SETTINGS.DATE_TIME_FORMAT).add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-      // setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-      // setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-    } else {
-      setStart('-1');
-      setEnd('-1');
-      revalidate();
-    }
+  const onRefresh = () => {
+    setRefreshed(true);
+    // setTimeOption(filterByExpiry?'MV_DTIM_EXPIRY':'MV_DTIM_CREATE');
+
+    // Don't need revalidate, let useSWR handle itself while parameter changes
+    // revalidate();
   };
 
   const locateNomination = (value) => {
@@ -158,53 +131,9 @@ const MovementNominations = () => {
   };
 
   useEffect(() => {
-    // console.log('I am here: rangeStart, start', start, rangeStart);
-    if (rangeSetting !== '-1~~-1') {
-      // const currTime = await getCurrentTime();
-      // setStart(moment(currTime, SETTINGS.DATE_TIME_FORMAT).subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-      let currTime = moment();
-      if (config.serverTime) {
-        currTime = moment(config.serverTime, SETTINGS.DATE_TIME_FORMAT);
-      }
-      setStart(currTime.subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-      // setStart(moment().subtract(rangeStart, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-    } else {
-      setStart('-1');
-    }
-  }, [rangeStart, rangeSetting, config]);
-
-  useEffect(() => {
-    // console.log('I am here: rangeEnd, end', end, rangeEnd);
-    if (rangeSetting !== '-1~~-1') {
-      // const currTime = await getCurrentTime();
-      // setEnd(moment(currTime, SETTINGS.DATE_TIME_FORMAT).add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-      let currTime = moment();
-      if (config.serverTime) {
-        currTime = moment(config.serverTime, SETTINGS.DATE_TIME_FORMAT);
-      }
-      setEnd(currTime.add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-      // setEnd(moment().add(rangeEnd, 'days').format(SETTINGS.DATE_TIME_FORMAT));
-    } else {
-      setEnd('-1');
-    }
-  }, [rangeEnd, rangeSetting, config]);
-
-  useEffect(() => {
-    if (ranges) {
-      if (rangeSetting !== '-1~~-1') {
-        setRangeStart(ranges?.beforeToday);
-        setRangeEnd(ranges?.afterToday);
-      } else {
-        setRangeStart(-1);
-        setRangeEnd(-1);
-      }
-    }
-  }, [ranges, rangeSetting]);
-
-  useEffect(() => {
     if (filterByExpiry) {
       setTimeOption('MV_DTIM_EXPIRY');
-    }else {
+    } else {
       setTimeOption('MV_DTIM_CREATE');
     }
   }, [filterByExpiry]);
@@ -218,37 +147,37 @@ const MovementNominations = () => {
 
   const modifiers = (
     <>
-      {rangeSetting !== '-1~~-1' && (
-        <div style={{ float: 'left' }}>
-          <Select
-            dropdownMatchSelectWidth={false}
-            defaultValue={filterByExpiry?'MV_DTIM_EXPIRY':'MV_DTIM_CREATE'}
-            onChange={setTimeOption}
-            optionFilterProp="children"
-            placeholder={null}
-            filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }
-          >
-            {timeOptions.map((item, index) => (
-              <Select.Option key={index} value={item.code}>
-                {item.name}
-              </Select.Option>
-            ))}
-          </Select>
-        </div>
-      )}
+      <div style={{ float: 'left' }}>
+        <Select
+          dropdownMatchSelectWidth={false}
+          defaultValue={filterByExpiry ? 'MV_DTIM_EXPIRY' : 'MV_DTIM_CREATE'}
+          onChange={setTimeOption}
+          optionFilterProp="children"
+          placeholder={null}
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }
+        >
+          {timeOptions.map((item, index) => (
+            <Select.Option key={index} value={item.code}>
+              {item.name}
+            </Select.Option>
+          ))}
+        </Select>
+      </div>
 
-      {rangeSetting !== '-1~~-1' && (
-        <Calendar handleChange={setRange} start={start} end={end} max={2000} />
-      )}
-
-      <Button
-        type="primary"
-        icon={<EyeOutlined />}
+      <DateTimeRangePicker
+        handleChange={setRange}
+        rangeSetting={rangeSetting}
+        refreshed={refreshed}
+        setRefreshed={setRefreshed}
         disabled={false}
-        onClick={() => setScheduleOpen(true)}
-      >
+        enableClear={true}
+        max={2000}
+        // localBased={true}
+      />
+
+      <Button type="primary" icon={<EyeOutlined />} disabled={false} onClick={() => setScheduleOpen(true)}>
         {t('pageMenu.schedules')}
       </Button>
 
@@ -268,7 +197,7 @@ const MovementNominations = () => {
             mv_srctype: true,
             mv_terminal: true,
             mv_number: true,
-            time_option: "movement_nomination",
+            time_option: 'movement_nomination',
           })
         }
       >
