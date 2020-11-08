@@ -32,9 +32,9 @@ const DriverInstructions = ({ value, redoDLI, exportPDF }) => {
 
       // console.log(data.substring(start , end))
       doc.setFont('courier');   //courier font gives all character same width in PDF
-      doc.setFontSize(12);
+      doc.setFontSize(11);
       
-      doc.text(data.substring(start , end), 10, 15);
+      doc.text(data.substring(start , end), 20, 15);
       
       doc.save("DLI_" + value.shls_trip_no + ".pdf");
     }

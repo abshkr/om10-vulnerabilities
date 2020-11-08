@@ -519,6 +519,26 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
     setUnload(v.target.checked);
   };
 
+  const exportPDF = () => {
+    if (IS_CREATING) {
+      return false;
+    }
+
+    if (tab === '2') {  //DLI
+      return true;
+    }
+
+    if (tab === '3') {  //BOL
+      return config?.bolVersion !== 'JASPER';
+    }
+
+    if (tab === '4') {  //BOL
+      return config?.ldReportVersion !== 'JASPER';
+    }
+    
+    return false;
+  }
+
   useEffect(() => {
     if (!value) {
       setTab('0');
@@ -650,7 +670,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             </Button>
           )}
 
-          {CAN_PRINT && !IS_CREATING && config?.bolVersion !== 'JASPER' && (
+          {exportPDF() && (
             <Button
               type="primary"
               icon={<FilePdfOutlined />}

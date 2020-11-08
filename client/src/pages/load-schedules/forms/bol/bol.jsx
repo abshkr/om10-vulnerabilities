@@ -53,9 +53,9 @@ const BOL = ({ value, redo, supermode, dcsmode, locateTrip, setCurStatus, export
 
       // console.log(data.substring(start , end))
       doc.setFont('courier');   //courier font gives all character same width in PDF
-      doc.setFontSize(12);
+      doc.setFontSize(11);
       
-      doc.text(data.substring(start , end), 10, 15);
+      doc.text(data.substring(start , end), 20, 15);
       
       doc.save("BOL_" + value.shls_trip_no + ".pdf");
     }

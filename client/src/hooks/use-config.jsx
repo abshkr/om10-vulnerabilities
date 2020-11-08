@@ -164,6 +164,7 @@ const useConfig = () => {
         manageAdaptiveFlow: featuresObject?.VIEW_ADAPTIVE_FLOW,
         autoLogOut: configurationObject?.URBAC_AUTO_LOGOFF,
         bolVersion: configurationObject?.BOL_VERSION,
+        ldReportVersion: configurationObject?.LDREPORT_VERSION,
         showBOL: configurationObject?.BOL_DN_TEMPLATE_GUI_ENABLED,
         showDOR: configurationObject?.SITE_DOR_HISTORY_AVAILABLE,
         manageADHOC: configurationObject?.ID_ADHOC_FLAG_ENABLED,
