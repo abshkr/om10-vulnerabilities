@@ -5,9 +5,10 @@ import { Button, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download } from '../../components';
+import { Page, DataTable, Download, DateTimeRangePicker } from '../../components';
 import { ALLOCATIONS } from '../../api';
-import { useAuth } from '../../hooks';
+import { SETTINGS } from '../../constants';
+import { useAuth, useConfig } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 
@@ -16,6 +17,9 @@ import api from 'api';
 import _ from 'lodash';
 
 const Allocations = ({ popup, params }) => {
+  const config = useConfig();
+  const rangeSetting = config.allocationsDateRange;
+
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [alloctype, setAlloctype] = useState(null);
@@ -25,6 +29,7 @@ const Allocations = ({ popup, params }) => {
 
   const access = useAuth('M_ALLOCATIONS');
 
+  const [refreshed, setRefreshed] = useState(false);
   const [start, setStart] = useState('-1');
   const [end, setEnd] = useState('-1');
   const [isSearching, setSearching] = useState(false);
@@ -43,6 +48,19 @@ const Allocations = ({ popup, params }) => {
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
     setSelected(value);
+  };
+
+  const setRange = (start, end) => {
+    setStart(start);
+    setEnd(end);
+    // revalidate();
+  };
+
+  const onRefresh = () => {
+    setRefreshed(true);
+
+    // Don't need revalidate, let useSWR handle itself while parameter changes
+    // revalidate();
   };
 
   const locateLockal = (values) => {
@@ -103,7 +121,18 @@ const Allocations = ({ popup, params }) => {
 
   const modifiers = (
     <>
-      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
+      <DateTimeRangePicker
+        handleChange={setRange}
+        rangeSetting={rangeSetting}
+        refreshed={refreshed}
+        setRefreshed={setRefreshed}
+        disabled={false}
+        enableClear={true}
+        max={1000}
+        // localBased={true}
+      />
+
+      <Button icon={<SyncOutlined />} onClick={() => onRefresh()} loading={isLoading}>
         {t('operations.refresh')}
       </Button>
 
