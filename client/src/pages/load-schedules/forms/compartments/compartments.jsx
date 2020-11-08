@@ -145,7 +145,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, config }) => {
     form,
     products,
     units,
-    supplier,
+    supplier || value?.supplier_code,
     PartnershipManager,
     OrderManager,
     tableAPI,
