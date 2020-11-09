@@ -1,6 +1,17 @@
 import _ from 'lodash';
 
-const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms) => [
+const columns = (
+  t,
+  form,
+  sourceType,
+  loadType,
+  loadNumber,
+  setPayload,
+  payload,
+  products,
+  composition,
+  productArms
+) => [
   {
     headerName: t('fields.compartment'),
     field: 'trsf_cmpt_no',
@@ -68,19 +79,28 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
     cellClass: 'editable-ag-grid-cell',
     cellEditorParams: {
       // values: composition?.records?.filter((o)=>(o.cmpt_count>0)) || [],
-      values: _.uniqBy(
-        _.map(composition?.records, (item) => {
-          return { 
-            tc_eqpt: item.tc_eqpt,
-            tc_seqno: item.tc_seqno,
-            eqpt_code: item.eqpt_code,
-            eqpt_title: item.eqpt_title,
-            eqpt_etyp: item.eqpt_etp
-          };
-        }), 'tc_eqpt'
-      ) || [],
+      values:
+        _.uniqBy(
+          _.map(composition?.records, (item) => {
+            return {
+              tc_eqpt: item.tc_eqpt,
+              tc_seqno: item.tc_seqno,
+              eqpt_code: item.eqpt_code,
+              eqpt_title: item.eqpt_title,
+              eqpt_etyp: item.eqpt_etp,
+            };
+          }),
+          'tc_eqpt'
+        ) || [],
       form,
     },
+  },
+
+  {
+    headerName: t('fields.safeFill'),
+    field: 'trsf_cmpt_capacit',
+    hide: false,
+    width: 100,
   },
 
   {
@@ -150,7 +170,10 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
       values: _.uniq(
         _.map(productArms, (item) => {
           // return { code: item.stream_armcode, name: item.stream_baycode + ' - ' + item.stream_armcode };
-          return { code: item.stream_armcode, name: item.stream_baycode + ' - ARM' + item.stream_armcode.substr(4,2) };
+          return {
+            code: item.stream_armcode,
+            name: item.stream_baycode + ' - ARM' + item.stream_armcode.substr(4, 2),
+          };
         })
       ),
     },
@@ -291,12 +314,6 @@ const columns = (t, form, sourceType, loadType, loadNumber, setPayload, payload,
       digits: '0',
       min: '100',
     },
-  },
-
-  {
-    headerName: 'Capacity',
-    field: 'trsf_cmpt_capacit',
-    hide: true,
   },
 ];
 
