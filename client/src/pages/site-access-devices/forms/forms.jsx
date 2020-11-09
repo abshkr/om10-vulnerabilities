@@ -28,6 +28,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   const onComplete = () => {
     handleFormState(false, null);
     mutate(SITE_ACCESS_DEVICES.READ);
+    mutate(SITE_ACCESS_DEVICES.DEVICE_CODES);
   };
 
   const onFinish = async () => {
