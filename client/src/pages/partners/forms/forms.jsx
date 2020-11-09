@@ -48,6 +48,18 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       prtnr_addr: t('validate.select'),
     };
 
+    const lengths = {
+      prtnr_code: 20,
+      prtnr_cmpy: 16,
+      prtnr_type: 2,
+      prtnr_addr: 40,
+      prtnr_name1: 210,
+      prtnr_name2: 210,
+      prtnr_name3: 210,
+      prtnr_name4: 210,
+      prtnr_name5: 210,
+    };
+
     if (rule.field === 'prtnr_code') {
       const match = _.find(payload?.records, (record) => {
         return record?.prtnr_code === input;
@@ -58,8 +70,17 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       }
     }
 
-    if (input === '' || !input) {
-      return Promise.reject(`${action[rule.field]} ─ ${map[rule.field]}`);
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${action[rule.field]} ─ ${map[rule.field]}`);
+      }
+    }
+
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > lengths[rule.field]) {
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${lengths[rule.field]} ─ ${t('descriptions.maxCharacters')}`
+      );
     }
 
     return Promise.resolve();
@@ -284,19 +305,19 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               <Input />
             </Form.Item>
 
-            <Form.Item name="prtnr_name2">
+            <Form.Item name="prtnr_name2" rules={[{ required: false, validator: validate }]}>
               <Input />
             </Form.Item>
 
-            <Form.Item name="prtnr_name3">
+            <Form.Item name="prtnr_name3" rules={[{ required: false, validator: validate }]}>
               <Input />
             </Form.Item>
 
-            <Form.Item name="prtnr_name4">
+            <Form.Item name="prtnr_name4" rules={[{ required: false, validator: validate }]}>
               <Input />
             </Form.Item>
 
-            <Form.Item name="prtnr_name5">
+            <Form.Item name="prtnr_name5" rules={[{ required: false, validator: validate }]}>
               <Input />
             </Form.Item>
 
