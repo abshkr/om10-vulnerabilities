@@ -14,6 +14,7 @@ import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
 
 import api, { PARTNERS } from '../../../api';
+import { REGEX } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
@@ -67,6 +68,12 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
 
       if (!!match && !value) {
         return Promise.reject(t('descriptions.alreadyExists'));
+      }
+
+      const regex = new RegExp(REGEX.ALPHANUMERIC);
+      const validated = regex.exec(input);
+      if (input?.length > 0 && !validated) {
+        return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextAlphaNumeric')}`);
       }
     }
 
