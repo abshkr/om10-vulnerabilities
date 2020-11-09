@@ -86,11 +86,19 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     return Promise.resolve();
   };
 
+  const onFormClosed = () => {
+    resetFields();
+    handleFormState(false, null);
+  };
+
   const onComplete = (prtnr_code) => {
+    resetFields();
     handleFormState(false, null);
     mutate(PARTNERS.READ);
     if (prtnr_code) {
       setFilterValue('' + prtnr_code);
+    } else {
+      setFilterValue(' ');
     }
   };
 
@@ -185,7 +193,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
       forceRender
-      onClose={() => handleFormState(false, null)}
+      onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
       mask={IS_CREATING}
@@ -208,7 +216,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={onFormClosed}
           >
             {t('operations.cancel')}
           </Button>

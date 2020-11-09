@@ -55,6 +55,8 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     handleFormState(false, null);
     if (base_code) {
       setFilterValue('' + base_code);
+    } else {
+      setFilterValue(' ');
     }
   };
 
