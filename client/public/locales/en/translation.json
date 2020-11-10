@@ -83,6 +83,8 @@
     "invalidDecimals": "Invalid decimal places",
     "inventoryManagement": "Scale your ability to manage multiple inventories using bulk editing in OMEGA.",
     "isNegative": " is negative",
+    "keyReaderDeviceNotUsed": "This Key Reader Device is not used by any Site Access Devices so can be deleted.",
+    "keyReaderDeviceUsed": "This Key Reader Device is used by a Site Access Device so cannot be deleted.",
     "lastFieldChanged": "Last field changed",
     "loadFailed": "Failed to load the values",
     "loadSuccess": "You have loaded the values successfully",

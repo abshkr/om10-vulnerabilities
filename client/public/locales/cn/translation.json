@@ -83,6 +83,8 @@
     "invalidDecimals": "小数点后位数无效",
     "inventoryManagement": "Omega系统的批量管理可以同时管理多个库存",
     "isNegative": "，为负数",
+    "keyReaderDeviceNotUsed": "该标识密钥设备尚未被任何油库出入安检设备使用，可以删除。",
+    "keyReaderDeviceUsed": "该标识密钥设备已被油库出入安检设备使用，不可删除。",
     "lastFieldChanged": "最后修改的字段",
     "loadFailed": "数据读取失败",
     "loadSuccess": "您已成功读取了数据",

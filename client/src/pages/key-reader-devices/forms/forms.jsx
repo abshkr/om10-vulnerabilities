@@ -7,7 +7,7 @@ import {
   QuestionCircleOutlined,
   CloseOutlined,
 } from '@ant-design/icons';
-import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import _ from 'lodash';
@@ -134,15 +134,24 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
           </Button>
 
           {!IS_CREATING && (
-            <Button
-              type="danger"
-              icon={<DeleteOutlined />}
-              style={{ float: 'right', marginRight: 5 }}
-              disabled={!access?.canDelete}
-              onClick={onDelete}
+            <Tooltip
+              placement="topRight"
+              title={
+                !value?.dev_type
+                  ? t('descriptions.keyReaderDeviceNotUsed')
+                  : t('descriptions.keyReaderDeviceUsed')
+              }
             >
-              {t('operations.delete')}
-            </Button>
+              <Button
+                type="danger"
+                icon={<DeleteOutlined />}
+                style={{ float: 'right', marginRight: 5 }}
+                disabled={!access?.canDelete || value?.dev_type}
+                onClick={onDelete}
+              >
+                {t('operations.delete')}
+              </Button>
+            </Tooltip>
           )}
         </>
       }
