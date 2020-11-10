@@ -1,13 +1,20 @@
-const columns = t => [
+import _ from 'lodash';
+
+function sortByAssignmentNumber(prev, next) {
+  return _.toNumber(next) - _.toNumber(prev);
+}
+
+const columns = (t) => [
   {
     headerName: t('fields.assignmentNo'),
     field: 'kya_key_no',
     sortable: true,
     filter: 'FuzzyFilter',
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 140,
-    pinned: "left",
+    pinned: 'left',
+    comparator: sortByAssignmentNumber,
   },
   {
     headerName: t('fields.issuer'),
@@ -15,7 +22,7 @@ const columns = t => [
     sortable: true,
     filter: 'MultiFilter',
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 110,
   },
   {
@@ -24,7 +31,7 @@ const columns = t => [
     sortable: true,
     filter: 'MultiFilter',
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 150,
   },
   {
@@ -33,7 +40,7 @@ const columns = t => [
     sortable: true,
     filter: 'MultiFilter',
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 150,
   },
   {
@@ -42,7 +49,7 @@ const columns = t => [
     sortable: true,
     filter: 'MultiFilter',
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 110,
   },
   {
@@ -52,7 +59,7 @@ const columns = t => [
     filter: 'BooleanFilter',
     cellRenderer: 'LockRenderer',
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 100,
   },
   {
@@ -62,7 +69,7 @@ const columns = t => [
     filter: 'BooleanFilter',
     cellRenderer: 'LockRenderer',
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 100,
   },
   {
@@ -71,7 +78,7 @@ const columns = t => [
     sortable: true,
     filter: 'FuzzyFilter',
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 160,
   },
   {
@@ -80,7 +87,7 @@ const columns = t => [
     sortable: true,
     filter: 'FuzzyFilter',
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 140,
   },
   {
@@ -89,7 +96,7 @@ const columns = t => [
     sortable: true,
     filter: 'FuzzyFilter',
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 110,
   },
   {
@@ -98,7 +105,7 @@ const columns = t => [
     sortable: true,
     filter: 'MultiFilter',
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 100,
   },
   {
@@ -107,7 +114,7 @@ const columns = t => [
     sortable: true,
     filter: 'MultiFilter',
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 110,
   },
   {
@@ -116,7 +123,7 @@ const columns = t => [
     sortable: true,
     filter: 'MultiFilter',
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 110,
   },
   {
@@ -125,7 +132,7 @@ const columns = t => [
     sortable: true,
     filter: 'FuzzyFilter',
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 140,
   },
   {
@@ -134,7 +141,7 @@ const columns = t => [
     sortable: true,
     filter: 'FuzzyFilter',
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 140,
   },
   {
@@ -143,7 +150,7 @@ const columns = t => [
     sortable: true,
     filter: 'FuzzyFilter',
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 140,
   },
 ];
