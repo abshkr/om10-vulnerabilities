@@ -53,7 +53,7 @@ class SiteConfig extends CommonClass
         "MONTHLY_REPORT_INCLUSIVE" => "月度总计报表是否包括该月之前开始该月中结束的FOLIO",
         "THIRD_PARTY_LOADING" => "第三方提油必须使用属于油库管理公司的开放客户订单",
         "LIVE_JOURNAL_SORT" => "显示实时日志记录时把最新发生的事件列在底部",
-        "HOT_LITRE_SFL_FACTOR" => "油库范围生效的百分比，用以减少高温提油时的预设发油亮，有效数值：0.0 - 1.0。",
+        "HOT_LITRE_SFL_FACTOR" => "油库范围生效的百分比，用以减少高温提油时的预设发油量，有效数值：0.0 - 1.0。",
         "SAFEFILL_TOLERANCE_QTY" => "车辆安全容量允许误差数量 (0 - 10000 L)",
         "SAFEFILL_TOLERANCE_PERCENT" => "车辆安全容量允许误差百分比(0.00 - 100.00%)",
         "HOST_MESSAGING_IN_EDIT_ON" => "编辑接收信息",
@@ -264,7 +264,7 @@ class SiteConfig extends CommonClass
             $this->config_key === "SITE_SEAL_MODE" ||
             $this->config_key === "SITE_LD_RETNPRD_USED_MOV") {
             
-            $query = "SELECT SITE_NEXT_SEAL, SITE_AL_ADJ, SITE_CL_ADJ, SITE_KG_ADJ, SITE_LD_RETNPRD, 
+            $query = "SELECT SITE_CODE, SITE_NEXT_SEAL, SITE_AL_ADJ, SITE_CL_ADJ, SITE_KG_ADJ, SITE_LD_RETNPRD, 
                 SITE_EXP_MONTHS, SITE_LD_RETN_NEWLDS, SITE_LD_RETNPRD_NEW_MOV, SITE_LD_RETNPRD_USED_MOV,
                 SITE_SEAL_MODE FROM SITE";
             $stmt = oci_parse($this->conn, $query);
@@ -294,8 +294,10 @@ class SiteConfig extends CommonClass
             if ($old_row[$this->config_key] != $this->config_value) {
                 $journal = new Journal($this->conn, false);
                 $curr_psn = Utilities::getCurrPsn();
-                $module = $this->VIEW_NAME;
-                $record = "SITE";
+                // $module = $this->VIEW_NAME;
+                // $record = "SITE";
+                $module = "SITE";
+                $record = sprintf("site_code:%s", $old_row['SITE_CODE']);
                 if (!$journal->valueChange(
                     $module, $record, $this->config_key, $old_row[$this->config_key], $this->config_value)) {
                     oci_rollback($this->conn);
