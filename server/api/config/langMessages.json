@@ -21,7 +21,7 @@
       "DB_FAILURE": "Failure"
     },
     "SCREENS": {
-      "ACCDEV": "Accdev",
+      "ACCDEV": "Site Access Device",
       "ACCESS_CHANGES": "Access Changes",
       "ACCESS_KEYS": "Access Keys",
       "ACCESS_KEYS_HISTORY": "Access Keys History",
@@ -179,7 +179,7 @@
       "INV_PRODUCT": "Inv Product",
       "JNLTYPE": "Jnltype",
       "KRDT_KEYRDR": "Krdt Keyrdr",
-      "KRD_CFG": "Krd Cfg",
+      "KRD_CFG": "Key Reader Device",
       "K_FACTOR_HISTORY": "K Factor History",
       "LANGUAGES": "Languages",
       "LANG_TYP": "Lang Typ",
@@ -402,7 +402,7 @@
       "DB_FAILURE": "失败"
     },
     "SCREENS": {
-      "ACCDEV": "出入安检设备",
+      "ACCDEV": "油库出入安检设备",
       "ACCESS_CHANGES": "Access Changes",
       "ACCESS_KEYS": "身份标识",
       "ACCESS_KEYS_HISTORY": "Access Keys History",
@@ -560,7 +560,7 @@
       "INV_PRODUCT": "发票油品",
       "JNLTYPE": "日志类别",
       "KRDT_KEYRDR": "Krdt Keyrdr",
-      "KRD_CFG": "Krd Cfg",
+      "KRD_CFG": "标识密钥设备",
       "K_FACTOR_HISTORY": "K Factor History",
       "LANGUAGES": "Languages",
       "LANG_TYP": "Lang Typ",
