@@ -30,7 +30,7 @@ const OnDemandReports = () => {
   const [start, setStart] = useState(moment().subtract(15, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
 
-  const { data: suppliers, isValidating: suppliersLoading } = useSWR(ON_DEMAND_REPORTS.SUPPLIERS);
+  const { data: suppliers, isValidating: suppliersLoading } = useSWR(ON_DEMAND_REPORTS.SUPPLIERS, {});
 
   const onRetrieveCloseouts = () => {
     api
@@ -47,18 +47,19 @@ const OnDemandReports = () => {
           });
         });
       });
-  }
+  };
 
   const onSupplier = (value) => {
     setSupplier(value);
-    api.get(ON_DEMAND_REPORTS.REPORTS, {
-      params: {
-        cmpy_code: value,
-      },
-    })
-    .then((res) => {
-      setReports(res.data.records);
-    });
+    api
+      .get(ON_DEMAND_REPORTS.REPORTS, {
+        params: {
+          cmpy_code: value,
+        },
+      })
+      .then((res) => {
+        setReports(res.data.records);
+      });
   };
 
   const onReport = (value) => {
@@ -67,7 +68,7 @@ const OnDemandReports = () => {
     });
 
     setUseFolio(find?.folio_number_parameters);
-  }
+  };
 
   const onFinish = (values) => {
     let payload = null;
@@ -84,7 +85,7 @@ const OnDemandReports = () => {
         end_date: end,
       };
     }
-    
+
     setLoading(true);
 
     api
@@ -132,6 +133,16 @@ const OnDemandReports = () => {
   const isLoading = suppliersLoading || loading;
   const fields = columns(t);
 
+  const sortedSupplier = suppliers?.records?.sort(function (a, b) {
+    if (a.cmpy_name < b.cmpy_name) {
+      return -1;
+    }
+    if (a.cmpy_name > b.cmpy_name) {
+      return 1;
+    }
+    return 0;
+  });
+
   useEffect(() => {
     if ((start || end) && fromDatePicker) {
       onRetrieveCloseouts();
@@ -164,7 +175,7 @@ const OnDemandReports = () => {
               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
             }
           >
-            {suppliers?.records.map((item, index) => (
+            {sortedSupplier?.map((item, index) => (
               <Select.Option key={index} value={item.cmpy_code}>
                 {item.cmpy_name}
               </Select.Option>
@@ -202,7 +213,7 @@ const OnDemandReports = () => {
           name="dateRange"
           label={t('fields.dateRange')}
           // rules={!usefolioRange && [{ required: true }]}
-        > 
+        >
           <Calendar handleChange={onRangeSelect} start={start} end={end} />
         </Form.Item>
 
@@ -218,13 +229,17 @@ const OnDemandReports = () => {
           />
         </Form.Item>
 
-        {usefolioRange && 
+        {usefolioRange && (
           <Form.Item noStyle>
-            <Form.Item 
-              name="close_out_from" 
+            <Form.Item
+              name="close_out_from"
               label={t('fields.fromCloseOutId')}
               style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}
-              rules={usefolioRange && [{ required: true, message: `${t('validate.select')} ─ ${t('fields.fromCloseOutId')}` }]}
+              rules={
+                usefolioRange && [
+                  { required: true, message: `${t('validate.select')} ─ ${t('fields.fromCloseOutId')}` },
+                ]
+              }
             >
               <InputNumber min={0} placeholder={t('fields.fromCloseOutId')} style={{ width: '100%' }} />
             </Form.Item>
@@ -233,12 +248,16 @@ const OnDemandReports = () => {
               name="close_out_to"
               label={t('fields.toCloseOutId')}
               style={{ display: 'inline-block', width: 'calc(50% - 8px)', margin: '0 8px' }}
-              rules={usefolioRange && [{ required: true, message: `${t('validate.select')} ─ ${t('fields.toCloseOutId')}` }]}
+              rules={
+                usefolioRange && [
+                  { required: true, message: `${t('validate.select')} ─ ${t('fields.toCloseOutId')}` },
+                ]
+              }
             >
               <InputNumber min={0} placeholder={t('fields.toCloseOutId')} style={{ width: '100%' }} />
             </Form.Item>
           </Form.Item>
-        }
+        )}
 
         <Form.Item
           name="output"

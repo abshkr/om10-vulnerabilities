@@ -1,3 +1,4 @@
 /releases
 client/src/setupProxy.js
 .vscode/
+client/src/setupProxy.js
