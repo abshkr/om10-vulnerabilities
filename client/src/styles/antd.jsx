@@ -376,7 +376,7 @@ const AntdStyleProvider = createGlobalStyle`
   }
   
   .ant-table-cell {
-    padding-right: 15px !important;
+    padding-right: 0px !important;
   }
 
   .ant-menu.ant-menu-dark,

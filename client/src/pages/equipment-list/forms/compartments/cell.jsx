@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Form, Checkbox, InputNumber, message } from 'antd';
 import _ from 'lodash';
 
+import { FormWrapper } from './style';
 import Context from './context';
 
 const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, ...restProps }) => {
@@ -88,14 +89,18 @@ const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, 
         </Form.Item>
       );
     } else {
-      childNode = editing ? (
-        <Form.Item name={dataIndex} style={{ margin: 0 }}>
-          <InputNumber ref={inputRef} onPressEnter={save} onBlur={save} style={{ width: '100%' }} />
-        </Form.Item>
-      ) : (
-        <div className="editable-cell-value-wrap" style={{ paddingRight: 24 }} onClick={onEdit}>
-          {children}
-        </div>
+      childNode = (
+        <FormWrapper>
+          <Form.Item name={dataIndex} style={{ margin: 0 }}>
+            <InputNumber
+              ref={inputRef}
+              defaultValue={record[dataIndex]}
+              onPressEnter={save}
+              onBlur={save}
+              style={{ width: '100%' }}
+            />
+          </Form.Item>
+        </FormWrapper>
       );
     }
   }
