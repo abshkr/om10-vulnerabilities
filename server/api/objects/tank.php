@@ -211,7 +211,23 @@ class Tank extends CommonClass
                 } //else if ($item === "tank_temp") {
                     // $result_array[$key]["tank_temp_f"] = ((float)$item_value) * 1.8 + 32;
                 // }
+                // this part will be useful when null-number-not-return defect is fixed
+                // Always check if tank base prod density range is available, if not, use tank base class density range.
+                if ( $item === "tank_base_dens_lo"  && ($item_value === null || $item_value === "")) {
+                    $result_array[$key][$item] = $result_array[$key]["tank_bclass_dens_lo"];
+                } 
+                if ( $item === "tank_base_dens_hi"  && ($item_value === null || $item_value === "")) {
+                    $result_array[$key][$item] = $result_array[$key]["tank_bclass_dens_hi"];
+                } 
             }
+            // this part will be useful when null-number-not-return defect is not fixed
+            // Always check if tank base prod density range is available, if not, use tank base class density range.
+            if ( !isset($tank_item["tank_base_dens_lo"]) ) {
+                $result_array[$key]["tank_base_dens_lo"] = $result_array[$key]["tank_bclass_dens_lo"];
+            } 
+            if ( !isset($tank_item["tank_base_dens_hi"]) ) {
+                $result_array[$key]["tank_base_dens_hi"] = $result_array[$key]["tank_bclass_dens_hi"];
+            } 
         }
     }
 

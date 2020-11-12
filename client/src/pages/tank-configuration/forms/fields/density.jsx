@@ -11,7 +11,7 @@ const Density = ({ form, value, product }) => {
   const { data: payload, isValidating } = useSWR(BASE_PRODUCTS.READ);
 
   const [low, setLow] = useState(0);
-  const [high, setHigh] = useState(0);
+  const [high, setHigh] = useState(2000);
 
   const { setFieldsValue } = form;
 
@@ -41,20 +41,36 @@ const Density = ({ form, value, product }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tank_density: value.tank_density
+        tank_density: value.tank_density,
       });
     }
   }, [value, setFieldsValue]);
 
   useEffect(() => {
     if (payload) {
-      const base = _.find(payload?.records, record => {
+      const base = _.find(payload?.records, (record) => {
         return record.base_code === product;
       });
 
       if (base) {
-        setLow(base.base_dens_lo);
-        setHigh(base.base_dens_hi);
+        if (base.base_dens_lo) {
+          setLow(base.base_dens_lo);
+        } else {
+          if (base.base_class_dens_lo) {
+            setLow(base.base_class_dens_lo);
+          } else {
+            setLow(0);
+          }
+        }
+        if (base.base_dens_hi) {
+          setHigh(base.base_dens_hi);
+        } else {
+          if (base.base_class_dens_hi) {
+            setHigh(base.base_class_dens_hi);
+          } else {
+            setHigh(2000);
+          }
+        }
       }
     }
   }, [payload, product]);
