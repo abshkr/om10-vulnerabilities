@@ -12,6 +12,26 @@ const data = [
     content: (
       <>
         <>
+          <p>OM5K-8194 - <a href="https://dev.diamondkey.com/browse/OM5K-8194">https://dev.diamondkey.com/browse/OM5K-8194</a></p>
+          <p>OM5K-8003 - <a href="https://dev.diamondkey.com/browse/OM5K-8003">https://dev.diamondkey.com/browse/OM5K-8003</a></p>
+          <p>OM5K-8085 - <a href="https://dev.diamondkey.com/browse/OM5K-8085">https://dev.diamondkey.com/browse/OM5K-8085</a></p>
+          <p>OM5K-8096 - <a href="https://dev.diamondkey.com/browse/OM5K-8096">https://dev.diamondkey.com/browse/OM5K-8096</a></p>
+          <p>OM5K-8097 - <a href="https://dev.diamondkey.com/browse/OM5K-8097">https://dev.diamondkey.com/browse/OM5K-8097</a></p>
+          <p>OM5K-8182 - <a href="https://dev.diamondkey.com/browse/OM5K-8182">https://dev.diamondkey.com/browse/OM5K-8182</a></p>
+          <p>OM5K-8205 - <a href="https://dev.diamondkey.com/browse/OM5K-8205">https://dev.diamondkey.com/browse/OM5K-8205</a></p>
+          <p>OM5K-8206 - <a href="https://dev.diamondkey.com/browse/OM5K-8206">https://dev.diamondkey.com/browse/OM5K-8206</a></p>
+          <p>OM5K-8215 - <a href="https://dev.diamondkey.com/browse/OM5K-8215">https://dev.diamondkey.com/browse/OM5K-8215</a></p>
+          <p>OM5K-8180 - <a href="https://dev.diamondkey.com/browse/OM5K-8180">https://dev.diamondkey.com/browse/OM5K-8180</a></p>
+          <p>OM5K-8181 - <a href="https://dev.diamondkey.com/browse/OM5K-8181">https://dev.diamondkey.com/browse/OM5K-8181</a></p>
+        </>
+      </>
+    ),
+  },
+  {
+    title: `Release Notes (10.1.13) - 09/11/2020`,
+    content: (
+      <>
+        <>
           <p>OM5K-8157 - <a href="https://dev.diamondkey.com/browse/OM5K-8157">https://dev.diamondkey.com/browse/OM5K-8157</a></p>
           <p>OM5K-8166 - <a href="https://dev.diamondkey.com/browse/OM5K-8166">https://dev.diamondkey.com/browse/OM5K-8166</a></p>
           <p>OM5K-8077 - <a href="https://dev.diamondkey.com/browse/OM5K-8077">https://dev.diamondkey.com/browse/OM5K-8077</a></p>
