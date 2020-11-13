@@ -178,6 +178,7 @@
     "searchTrip": "Type in trip number to search",
     "selectAllocationItem": "Select allocation product item to reset",
     "selectPartners": "Select partners",
+    "selectSuppProd": "Select supplier products",
     "seqDateRange": "The End Date Time should not be earlier than Start Date Time",
     "setFromCalendar": "Set From Calendar",
     "shouldBe": "Should be ",
@@ -2277,7 +2278,8 @@
     "transferDetails": "Transfer Details",
     "transportationDoc": "Transportation Documents",
     "tripSeals": "Schedule Seals",
-    "summary": "Summary"
+    "summary": "Summary",
+	"customerProduct": "Customer Products"
   },
   "types": {
     "float": "Float",

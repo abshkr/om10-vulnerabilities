@@ -6,6 +6,7 @@ include_once __DIR__ . '/../shared/utilities.php';
 include_once __DIR__ . '/../service/enum_service.php';
 include_once 'common_class.php';
 
+
 class Customer extends CommonClass
 {
     protected $TABLE_NAME = 'CUSTOMER';
@@ -139,6 +140,58 @@ class Customer extends CommonClass
             return null;
         }
     }
+
+    public function customer_products()
+    {
+        $query = "SELECT CUSTOMER_PRODUCT.CUST_ACCT,
+                CUSTOMER.CUST_CODE CUST_CODE,
+                PRODUCTS.PROD_CODE,
+                PRODUCTS.PROD_CMPY,
+                PRODUCTS.PROD_NAME,
+                CUSTOMER.CUST_SUPP SUPPLIER_CODE,
+                SUPP.CMPY_NAME SUPPLIER_NAME,
+                CCMP.CMPY_NAME CUSTOMER_NAME
+            FROM CUSTOMER_PRODUCT, CUSTOMER, PRODUCTS, COMPANYS SUPP, COMPANYS CCMP
+            WHERE CUSTOMER.CUST_SUPP = SUPP.CMPY_CODE
+                AND CUSTOMER.CUST_CODE = CCMP.CMPY_CODE
+                AND CUSTOMER_PRODUCT.CUST_ACCT = CUSTOMER.CUST_ACCT
+                AND CUSTOMER_PRODUCT.PROD_CODE = PRODUCTS.PROD_CODE
+                AND CUSTOMER_PRODUCT.PROD_CMPY = PRODUCTS.PROD_CMPY
+            ORDER BY PRODUCTS.PROD_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function supplier_products()
+    {
+        $query = "
+            SELECT 
+                PROD_CODE, 
+                PROD_NAME,
+                CMPY_CODE PROD_CMPY,
+                CMPY_CODE SUPPLIER_CODE,
+                CMPY_NAME SUPPLIER_NAME
+            FROM PRODUCTS, COMPANYS
+            WHERE PROD_CMPY = :cmpy_code
+                AND CMPY_CODE = :cmpy_code
+            ORDER BY PROD_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':cmpy_code', $this->supplier_code);
+        
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
     
     public function read()
     {
@@ -239,7 +292,165 @@ class Customer extends CommonClass
             return null;
         }
     }
+
+    protected function delete_children()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        $query = "DELETE FROM CUSTOMER_PRODUCT WHERE CUST_ACCT = :cust_account";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':cust_account', $this->cust_account);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+
+            throw new DatabaseException($e['message']);
+            return false;
+        }
+        
+        return true;
+    }
+
+    protected function insert_children()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        if (!isset($this->products)) {
+            return true;
+        }
+        
+        foreach ($this->products as $value) {
+            // write_log(json_encode($value), __FILE__, __LINE__);
+            $query = "INSERT INTO CUSTOMER_PRODUCT 
+                (
+                    CUST_ACCT,
+                    PROD_CODE,
+                    PROD_CMPY
+                )
+            VALUES 
+                (
+                    :cust_acct,
+                    :prod_code,
+                    :prod_cmpy
+                )";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':cust_acct', $value->cust_acct);
+            oci_bind_by_name($stmt, ':prod_code', $value->prod_code);
+            oci_bind_by_name($stmt, ':prod_cmpy', $value->prod_cmpy);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+        }
+
+        return true;
+    }
     
+    protected function retrieve_children_data()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        $query = "SELECT PROD_CODE, PROD_CMPY
+                FROM CUSTOMER_PRODUCT
+                WHERE CUST_ACCT = :cust_acct
+                ORDER BY PROD_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':cust_acct', $this->cust_account);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        $ret_obj = new stdClass();
+        $prod_array = array();
+        while ($item = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            array_push($prod_array, $item);
+        }
+
+        $ret_obj->products = $prod_array;
+        write_log(json_encode($ret_obj), __FILE__, __LINE__);
+        return $ret_obj;
+    }
+
+    protected function journal_children_change($journal, $old, $new)
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        write_log(json_encode($old), __FILE__, __LINE__);
+        write_log(json_encode($new), __FILE__, __LINE__);
+
+        $module = "customer product";
+        if (isset($new->products)) {
+            foreach ($old->products as $old_product) {
+                write_log(json_encode($old_product), __FILE__, __LINE__);
+                $still_exist = false;
+                foreach ($new->products as $new_product) {
+                    write_log(json_encode($new_product), __FILE__, __LINE__);
+                    // write_log($old_product->PROD_CODE, __FILE__, __LINE__);
+                    // write_log($old_product->PROD_CMPY, __FILE__, __LINE__);
+                    // write_log($new_product->PROD_CODE, __FILE__, __LINE__);
+                    // write_log($new_product->PROD_CMPY, __FILE__, __LINE__);
+                    if ($old_product['PROD_CODE'] === $new_product['PROD_CODE'] &&
+                        $old_product['PROD_CMPY'] === $new_product['PROD_CMPY']) {
+                        $still_exist = true;
+                        break;
+                    }
+                }
+
+                if (!$still_exist) {
+                    $jnl_data[0] = Utilities::getCurrPsn();
+                    $jnl_data[1] = $module;
+                    $jnl_data[2] = sprintf("customer account:%s", $this->cust_account);
+                    $jnl_data[3] = sprintf("product code:%s, product company:%s", $old_product['PROD_CODE'], $old_product['PROD_CMPY']);
+    
+                    if (!$journal->jnlLogEvent(
+                        Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                        $e = oci_error($stmt);
+                        write_log("DB error:" . $e['message'],
+                            __FILE__, __LINE__, LogLevel::ERROR);
+                        oci_rollback($this->conn);
+                        return false;
+                    }
+                }
+            }
+
+            //In new but not in old.
+            foreach ($new->products as $new_product) {
+                $was_there = false;
+                foreach ($old->products as $old_product) {
+                    if ($old_product['PROD_CODE'] === $new_product['PROD_CODE'] &&
+                        $old_product['PROD_CMPY'] === $new_product['PROD_CMPY']) {
+                        $was_there = true;
+                        break;
+                    }
+                }
+
+                if (!$was_there) {
+                    $jnl_data[0] = Utilities::getCurrPsn();
+                    $jnl_data[1] = $module;
+                    $jnl_data[2] = sprintf("customer account:%s", $this->cust_account);
+                    $jnl_data[3] = sprintf("product code:%s, product company:%s", $new_product['PROD_CODE'], $new_product['PROD_CMPY']);
+    
+                    if (!$journal->jnlLogEvent(
+                        Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                        $e = oci_error($stmt);
+                        write_log("DB error:" . $e['message'],
+                            __FILE__, __LINE__, LogLevel::ERROR);
+                        oci_rollback($this->conn);
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+
     public function read_customer_company_by_mode($supplier, $mode)
     {
         if ($mode > 0) {

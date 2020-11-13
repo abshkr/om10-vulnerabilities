@@ -17,3 +17,7 @@ export const TERMS_TYPES = '/api/pages/customer/terms_types.php';
 export const CREATE = '/api/pages/customer/create.php';
 export const UPDATE = '/api/pages/customer/update.php';
 export const DELETE = '/api/pages/customer/delete.php';
+
+
+export const CUSTOMER_PRODUCTS = '/api/pages/customer/customer_products.php';
+export const SUPPLIER_PRODUCTS = '/api/pages/customer/supplier_products.php';

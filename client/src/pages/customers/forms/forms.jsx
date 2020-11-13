@@ -31,6 +31,7 @@ import {
   AccountBalance,
   CreditLimit,
 } from './fields';
+import CustomerProduct from './customer_product/customer_product'
 
 import api, { CUSTOMERS } from '../../../api';
 import { AllocationsPopup } from '../../../pages/allocations';
@@ -43,6 +44,7 @@ const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
   const [supplier, setSupplier] = useState(undefined);
+  const [products, setProducts] = useState(undefined);
   const [drawerWidth, setDrawerWidth] = useState('60vw');
   const [mainTabOn, setMainTabOn] = useState(true);
 
@@ -54,7 +56,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   const { resetFields } = form;
 
   const doTabChanges = (tabPaneKey) => {
-    if (tabPaneKey === '1') {
+    if (['1', '2', '3', '4'].includes(tabPaneKey)) {
       setDrawerWidth('60vw');
       setMainTabOn(true);
     } else {
@@ -85,7 +87,8 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
 
   const onFinish = async () => {
     const values = await form.validateFields();
-
+    values.products = products;
+    
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -294,16 +297,20 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               <Col span={12}>{!IS_CREATING && <CreditLimit form={form} value={value} />}</Col>
             </Row>
           </TabPane>
-          <TabPane tab={t('tabColumns.addresses')} key="2">
+          {!IS_CREATING && <TabPane tab={t('tabColumns.customerProduct')} key="2">
+            <CustomerProduct form={form} value={value} changeProducts={setProducts} />
+          </TabPane> 
+          }
+          <TabPane tab={t('tabColumns.addresses')} key="3">
             <AddressesPopup popup={true} />
           </TabPane>
           {!IS_CREATING && (
-            <TabPane tab={t('tabColumns.customerCategories')} key="3">
+            <TabPane tab={t('tabColumns.customerCategories')} key="4">
               <CustomerCategoriesPopup popup={true} />
             </TabPane>
           )}
           {!IS_CREATING && (
-            <TabPane tab={t('tabColumns.allocations')} key="4">
+            <TabPane tab={t('tabColumns.allocations')} key="5">
               <AllocationsPopup
                 popup={true}
                 params={{
@@ -314,7 +321,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             </TabPane>
           )}
           {!IS_CREATING && (
-            <TabPane tab={t('tabColumns.orderListing')} key="5">
+            <TabPane tab={t('tabColumns.orderListing')} key="6">
               <OrderListingsPopup
                 popup={true}
                 params={{
@@ -325,7 +332,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             </TabPane>
           )}
           {!IS_CREATING && (
-            <TabPane tab={t('tabColumns.deliveryLocations')} key="6">
+            <TabPane tab={t('tabColumns.deliveryLocations')} key="7">
               <DelvLocationsPopup
                 popup={true}
                 params={{

@@ -22,7 +22,6 @@ import columns from './fields/columns';
 const TabPane = Tabs.TabPane;
 
 const PartnerForm = ({ value, visible, handleFormState, access }) => {
-  console.log(value);
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;

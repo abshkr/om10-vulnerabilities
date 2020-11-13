@@ -178,6 +178,7 @@
     "searchTrip": "输入提单号查找",
     "selectAllocationItem": "请选择配额油品条目以重置",
     "selectPartners": "请选择合作伙伴",
+    "selectSuppProd": "请选择供应商油品",
     "seqDateRange": "结束日期时间不应该早于开始日期时间",
     "setFromCalendar": "由盘点日历设置",
     "shouldBe": "应该是",
@@ -2277,7 +2278,8 @@
     "transferDetails": "调配油品转移明细",
     "transportationDoc": "运输文件参数设置",
     "tripSeals": "提单封签",
-    "summary": "总计"
+    "summary": "总计",
+	"customerProduct": "客户油品"
   },
   "types": {
     "float": "浮点数",
