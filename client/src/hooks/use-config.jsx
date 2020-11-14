@@ -166,6 +166,7 @@ const useConfig = () => {
         bolVersion: configurationObject?.BOL_VERSION,
         ldReportVersion: configurationObject?.LDREPORT_VERSION,
         site_customer_product: configurationObject?.SITE_CUSTOMER_PRODUCT,
+        site_customer_carrier: configurationObject?.SITE_CUSTOMER_CARRIER,
         showBOL: configurationObject?.BOL_DN_TEMPLATE_GUI_ENABLED,
         showDOR: configurationObject?.SITE_DOR_HISTORY_AVAILABLE,
         manageADHOC: configurationObject?.ID_ADHOC_FLAG_ENABLED,

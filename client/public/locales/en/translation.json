@@ -2279,7 +2279,8 @@
     "transportationDoc": "Transportation Documents",
     "tripSeals": "Schedule Seals",
     "summary": "Summary",
-	"customerProduct": "Customer Products"
+	"customerProduct": "Customer Products",
+	"customerCarrier": "Customer Carriers"
   },
   "types": {
     "float": "Float",

@@ -2279,7 +2279,8 @@
     "transportationDoc": "运输文件参数设置",
     "tripSeals": "提单封签",
     "summary": "总计",
-	"customerProduct": "客户油品"
+	"customerProduct": "客户油品",
+	"customerCarrier": "客户承运商"
   },
   "types": {
     "float": "浮点数",

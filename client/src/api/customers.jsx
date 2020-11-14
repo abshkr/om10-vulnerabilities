@@ -21,3 +21,5 @@ export const DELETE = '/api/pages/customer/delete.php';
 
 export const CUSTOMER_PRODUCTS = '/api/pages/customer/customer_products.php';
 export const SUPPLIER_PRODUCTS = '/api/pages/customer/supplier_products.php';
+export const CUSTOMER_CARRIERS = '/api/pages/customer/customer_carriers.php';
+export const CARRIERS = '/api/pages/customer/carriers.php';

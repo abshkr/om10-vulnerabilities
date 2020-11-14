@@ -194,6 +194,26 @@ class Customer extends CommonClass
             return null;
         }
     }
+
+    public function customer_carriers()
+    {
+        $query = "SELECT CARRIER.CMPY_CODE,
+                CARRIER.CMPY_NAME,
+                CUST_ACCT
+            FROM CUSTOMER_CARRIER, COMPANYS CARRIER
+            WHERE CUSTOMER_CARRIER.CMPY_CODE = CARRIER.CMPY_CODE
+                AND CUST_ACCT = :cust_account
+            ORDER BY CARRIER.CMPY_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, 'cust_account', $this->customer);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
     
     public function read()
     {
@@ -311,6 +331,18 @@ class Customer extends CommonClass
             throw new DatabaseException($e['message']);
             return false;
         }
+
+        $query = "DELETE FROM CUSTOMER_CARRIER WHERE CUST_ACCT = :cust_account";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':cust_account', $this->cust_account);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+
+            throw new DatabaseException($e['message']);
+            return false;
+        }
         
         return true;
     }
@@ -320,32 +352,54 @@ class Customer extends CommonClass
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
-        if (!isset($this->products)) {
-            return true;
+        if (isset($this->products)) {
+            foreach ($this->products as $value) {
+                // write_log(json_encode($value), __FILE__, __LINE__);
+                $query = "INSERT INTO CUSTOMER_PRODUCT 
+                    (
+                        CUST_ACCT,
+                        PROD_CODE,
+                        PROD_CMPY
+                    )
+                VALUES 
+                    (
+                        :cust_acct,
+                        :prod_code,
+                        :prod_cmpy
+                    )";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':cust_acct', $value->cust_acct);
+                oci_bind_by_name($stmt, ':prod_code', $value->prod_code);
+                oci_bind_by_name($stmt, ':prod_cmpy', $value->prod_cmpy);
+                if (!oci_execute($stmt, $this->commit_mode)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    return false;
+                }
+            }
         }
-        
-        foreach ($this->products as $value) {
-            // write_log(json_encode($value), __FILE__, __LINE__);
-            $query = "INSERT INTO CUSTOMER_PRODUCT 
-                (
-                    CUST_ACCT,
-                    PROD_CODE,
-                    PROD_CMPY
-                )
-            VALUES 
-                (
-                    :cust_acct,
-                    :prod_code,
-                    :prod_cmpy
-                )";
-            $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':cust_acct', $value->cust_acct);
-            oci_bind_by_name($stmt, ':prod_code', $value->prod_code);
-            oci_bind_by_name($stmt, ':prod_cmpy', $value->prod_cmpy);
-            if (!oci_execute($stmt, $this->commit_mode)) {
-                $e = oci_error($stmt);
-                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-                return false;
+
+        if (isset($this->carriers)) {
+            foreach ($this->carriers as $value) {
+                // write_log(json_encode($value), __FILE__, __LINE__);
+                $query = "INSERT INTO CUSTOMER_CARRIER 
+                    (
+                        CUST_ACCT,
+                        CMPY_CODE
+                    )
+                VALUES 
+                    (
+                        :cust_acct,
+                        :cmpy_code
+                    )";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':cust_acct', $value->cust_acct);
+                oci_bind_by_name($stmt, ':cmpy_code', $value->cmpy_code);
+                if (!oci_execute($stmt, $this->commit_mode)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    return false;
+                }
             }
         }
 
@@ -359,8 +413,7 @@ class Customer extends CommonClass
 
         $query = "SELECT PROD_CODE, PROD_CMPY
                 FROM CUSTOMER_PRODUCT
-                WHERE CUST_ACCT = :cust_acct
-                ORDER BY PROD_CODE";
+                WHERE CUST_ACCT = :cust_acct";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':cust_acct', $this->cust_account);
         if (!oci_execute($stmt, $this->commit_mode)) {
@@ -376,7 +429,26 @@ class Customer extends CommonClass
         }
 
         $ret_obj->products = $prod_array;
-        write_log(json_encode($ret_obj), __FILE__, __LINE__);
+
+        $query = "SELECT CMPY_CODE
+                FROM CUSTOMER_CARRIER
+                WHERE CUST_ACCT = :cust_acct";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':cust_acct', $this->cust_account);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        $carrier_array = array();
+        while ($item = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            array_push($carrier_array, $item);
+        }
+
+        $ret_obj->carriers = $carrier_array;
+
+        // write_log(json_encode($ret_obj), __FILE__, __LINE__);
         return $ret_obj;
     }
 
@@ -388,8 +460,8 @@ class Customer extends CommonClass
         write_log(json_encode($old), __FILE__, __LINE__);
         write_log(json_encode($new), __FILE__, __LINE__);
 
-        $module = "customer product";
         if (isset($new->products)) {
+            $module = "customer product";
             foreach ($old->products as $old_product) {
                 $still_exist = false;
                 foreach ($new->products as $new_product) {
@@ -435,6 +507,64 @@ class Customer extends CommonClass
                     $jnl_data[1] = $module;
                     $jnl_data[2] = sprintf("customer account:%s", $this->cust_account);
                     $jnl_data[3] = sprintf("product code:%s, product company:%s", $new_product['PROD_CODE'], $new_product['PROD_CMPY']);
+    
+                    if (!$journal->jnlLogEvent(
+                        Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                        $e = oci_error($stmt);
+                        write_log("DB error:" . $e['message'],
+                            __FILE__, __LINE__, LogLevel::ERROR);
+                        oci_rollback($this->conn);
+                        return false;
+                    }
+                }
+            }
+        }
+
+        if (isset($new->carriers)) {
+            $module = "customer carrier";
+            foreach ($old->carriers as $old_product) {
+                $still_exist = false;
+                foreach ($new->carriers as $new_product) {
+                    if ($old_product['CMPY_CODE'] === $new_product['CMPY_CODE']) {
+                        $still_exist = true;
+                        break;
+                    }
+                }
+
+                if (!$still_exist) {
+                    $jnl_data[0] = Utilities::getCurrPsn();
+                    $jnl_data[1] = $module;
+                    $jnl_data[2] = sprintf("customer account:%s", $this->cust_account);
+                    $jnl_data[3] = sprintf("carrier code:%s", $old_product['CMPY_CODE']);
+    
+                    if (!$journal->jnlLogEvent(
+                        Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                        $e = oci_error($stmt);
+                        write_log("DB error:" . $e['message'],
+                            __FILE__, __LINE__, LogLevel::ERROR);
+                        oci_rollback($this->conn);
+                        return false;
+                    }
+                }
+            }
+
+            //In new but not in old.
+            foreach ($new->carriers as $new_product) {
+                // write_log(json_encode($new_product), __FILE__, __LINE__);
+                $was_there = false;
+                foreach ($old->carriers as $old_product) {
+                    // write_log(json_encode($old_product), __FILE__, __LINE__);
+                    if ($old_product['CMPY_CODE'] === $new_product['CMPY_CODE']) {
+                        $was_there = true;
+                        break;
+                    }
+                }
+
+                if (!$was_there) {
+                    $jnl_data[0] = Utilities::getCurrPsn();
+                    $jnl_data[1] = $module;
+                    $jnl_data[2] = sprintf("customer account:%s", $this->cust_account);
+                    $jnl_data[3] = sprintf("carrier code:%s", $new_product['CMPY_CODE']);
     
                     if (!$journal->jnlLogEvent(
                         Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
