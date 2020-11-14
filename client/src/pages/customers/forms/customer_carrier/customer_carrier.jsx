@@ -55,7 +55,7 @@ const CustomerCarrier = ({ form, value, changeCarriers }) => {
   const addProduct = (v) => {
     Modal.info({
       className: 'form-container',
-      title: t('descriptions.selectSuppProd') + " " + v?.cust_supp_code + "/" + v?.cust_supp_name,
+      title: t('placeholder.selectCarriers'),
       centered: true,
       width: '40vw',
       icon: <FormOutlined />,
