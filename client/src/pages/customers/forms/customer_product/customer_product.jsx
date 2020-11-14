@@ -16,7 +16,7 @@ import { Form, Button, Space, Modal } from 'antd';
 const CustomerProduct = ({ form, value, changeProducts }) => {
   const { t } = useTranslation();
 
-  const { data: payload, isValidating } = useSWR(`${CUSTOMERS.CUSTOMER_PRODUCTS}?customer=${value?.partner_cmpy_code}`,
+  const { data: payload, isValidating } = useSWR(`${CUSTOMERS.CUSTOMER_PRODUCTS}?customer=${value?.cust_account}`,
     { revalidateOnFocus: false });
 
   const [products, setProducts] = useState(null);
@@ -26,7 +26,9 @@ const CustomerProduct = ({ form, value, changeProducts }) => {
     _.forEach(values, (v) => {
       v.cust_acct = value?.cust_account
     }); 
-    const newPartners = [...products, ...values];
+    const newPartners = _.uniqBy([...products, ...values], function (e) {
+      return e.prod_code + e.prod_cmpy;
+    });
     
     setProducts(
       _.sortBy(newPartners, ["prod_cmpy", "prod_code"])
@@ -46,14 +48,13 @@ const CustomerProduct = ({ form, value, changeProducts }) => {
     });
     setProducts(news);
     changeProducts(news);
-    console.log(news);
     setSelected([]);
   };
     
   const addProduct = (v) => {
     Modal.info({
       className: 'form-container',
-      title: t('descriptions.selectSuppProd'),
+      title: t('descriptions.selectSuppProd') + " " + v?.cust_supp_code + "/" + v?.cust_supp_name,
       centered: true,
       width: '40vw',
       icon: <FormOutlined />,
@@ -64,7 +65,7 @@ const CustomerProduct = ({ form, value, changeProducts }) => {
             fetcher,
           }}
         >
-          <Product addProductCallBack={addProductCallBack}/>
+          <Product supplier={v?.cust_supp_code} addProductCallBack={addProductCallBack}/>
         </SWRConfig>
       ),
       okButtonProps: {
@@ -97,7 +98,7 @@ const CustomerProduct = ({ form, value, changeProducts }) => {
             type="primary"
             icon={<PlusOutlined />}
             loading={isValidating}
-            onClick={() => addProduct(value?.supplier)}
+            onClick={() => addProduct(value)}
             style={{ float: 'right', marginRight: 5 }}
           >
             {t('operations.add')}

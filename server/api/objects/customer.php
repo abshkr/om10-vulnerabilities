@@ -157,8 +157,10 @@ class Customer extends CommonClass
                 AND CUSTOMER_PRODUCT.CUST_ACCT = CUSTOMER.CUST_ACCT
                 AND CUSTOMER_PRODUCT.PROD_CODE = PRODUCTS.PROD_CODE
                 AND CUSTOMER_PRODUCT.PROD_CMPY = PRODUCTS.PROD_CMPY
+                AND CUSTOMER.CUST_ACCT = :cust_account
             ORDER BY PRODUCTS.PROD_CODE";
         $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, 'cust_account', $this->customer);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
@@ -389,14 +391,8 @@ class Customer extends CommonClass
         $module = "customer product";
         if (isset($new->products)) {
             foreach ($old->products as $old_product) {
-                write_log(json_encode($old_product), __FILE__, __LINE__);
                 $still_exist = false;
                 foreach ($new->products as $new_product) {
-                    write_log(json_encode($new_product), __FILE__, __LINE__);
-                    // write_log($old_product->PROD_CODE, __FILE__, __LINE__);
-                    // write_log($old_product->PROD_CMPY, __FILE__, __LINE__);
-                    // write_log($new_product->PROD_CODE, __FILE__, __LINE__);
-                    // write_log($new_product->PROD_CMPY, __FILE__, __LINE__);
                     if ($old_product['PROD_CODE'] === $new_product['PROD_CODE'] &&
                         $old_product['PROD_CMPY'] === $new_product['PROD_CMPY']) {
                         $still_exist = true;
@@ -423,8 +419,10 @@ class Customer extends CommonClass
 
             //In new but not in old.
             foreach ($new->products as $new_product) {
+                // write_log(json_encode($new_product), __FILE__, __LINE__);
                 $was_there = false;
                 foreach ($old->products as $old_product) {
+                    // write_log(json_encode($old_product), __FILE__, __LINE__);
                     if ($old_product['PROD_CODE'] === $new_product['PROD_CODE'] &&
                         $old_product['PROD_CMPY'] === $new_product['PROD_CMPY']) {
                         $was_there = true;
