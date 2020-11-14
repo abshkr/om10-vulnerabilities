@@ -70,8 +70,6 @@ import { ManualTransactionsPopup } from '../../manual-transactions';
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, url, locateTrip }) => {
-  console.log(value);
-
   // const { manageMakeManualTransaction, showSeals, manageAdditionalHostData, manageViewDeliveryDetails } = useConfig();
   const config = useConfig();
   const {

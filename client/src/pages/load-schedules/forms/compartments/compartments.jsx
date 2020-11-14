@@ -114,7 +114,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
     const rowNode = tableAPI.getRowNode(index);
     const data = rowNode.data;
 
-    console.log('.......onDragFinished', index, value, data);
+    // console.log('.......onDragFinished', index, value, data);
 
     rowNode.setDataValue('prod_code', value?.prod_code);
 
@@ -137,7 +137,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
       compartments: payload,
     });
 
-    console.log(payload);
+    // console.log(payload);
 
     setCompartments(payload);
   };

@@ -7,7 +7,6 @@ import { Form, Select } from 'antd';
 import { LOAD_SCHEDULES } from '../../../../api';
 
 const Carrier = ({ form, customer, value, onChange }) => {
-  console.log(customer)
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
