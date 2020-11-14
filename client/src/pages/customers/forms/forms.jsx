@@ -50,7 +50,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   const [carriers, setCarriers] = useState(undefined);
   const [drawerWidth, setDrawerWidth] = useState('60vw');
   const [mainTabOn, setMainTabOn] = useState(true);
-  const { site_customer_product } = useConfig();
+  const { site_customer_carrier, site_customer_product } = useConfig();
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -306,7 +306,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             <CustomerProduct form={form} value={value} changeProducts={setProducts} />
           </TabPane> 
           }
-          {!IS_CREATING && site_customer_product && <TabPane tab={t('tabColumns.customerProduct')} key="3">
+          {!IS_CREATING && site_customer_carrier && <TabPane tab={t('tabColumns.customerProduct')} key="3">
             <CustomerCarrier form={form} value={value} changeCarriers={setCarriers} />
           </TabPane> 
           }
