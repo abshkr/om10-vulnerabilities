@@ -320,28 +320,32 @@ class Customer extends CommonClass
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
-        $query = "DELETE FROM CUSTOMER_PRODUCT WHERE CUST_ACCT = :cust_account";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':cust_account', $this->cust_account);
-        if (!oci_execute($stmt, $this->commit_mode)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
+        if (isset($this->products)) {
+            $query = "DELETE FROM CUSTOMER_PRODUCT WHERE CUST_ACCT = :cust_account";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':cust_account', $this->cust_account);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
 
-            throw new DatabaseException($e['message']);
-            return false;
+                throw new DatabaseException($e['message']);
+                return false;
+            }
         }
+        
+        if (isset($this->carriers)) {
+            $query = "DELETE FROM CUSTOMER_CARRIER WHERE CUST_ACCT = :cust_account";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':cust_account', $this->cust_account);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
 
-        $query = "DELETE FROM CUSTOMER_CARRIER WHERE CUST_ACCT = :cust_account";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':cust_account', $this->cust_account);
-        if (!oci_execute($stmt, $this->commit_mode)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-
-            throw new DatabaseException($e['message']);
-            return false;
+                throw new DatabaseException($e['message']);
+                return false;
+            }
         }
         
         return true;

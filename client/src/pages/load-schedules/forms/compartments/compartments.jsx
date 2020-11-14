@@ -13,7 +13,7 @@ import { ProductEditor, UnitEditor, ScheduleEditor, DelvNoEditor } from './field
 
 import useSWR from 'swr';
 
-const Compartments = ({ form, value, tanker, drawer, supplier, config }) => {
+const Compartments = ({ form, value, tanker, drawer, supplier, customer, config }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
@@ -53,11 +53,12 @@ const Compartments = ({ form, value, tanker, drawer, supplier, config }) => {
         .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
           params: {
             drawer_code: drawer,
+            customer: value ? value.shls_cust : customer,
           },
         })
         .then((res) => setProducts(res.data.records));
     }
-  }, [drawer, tanker]);
+  }, [drawer, tanker, customer]);
 
   useEffect(() => {
     setCompartments([]);
@@ -84,6 +85,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, config }) => {
         .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
           params: {
             drawer_code: value.supplier_code,
+            customer: value ? value.shls_cust : customer,
           },
         })
         .then((res) => setProducts(res.data.records));

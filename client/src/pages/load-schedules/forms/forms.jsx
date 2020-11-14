@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 
 import {
   EditOutlined,
@@ -36,6 +36,7 @@ import _ from 'lodash';
 import {
   Supplier,
   Drawer as DrawerForm,
+  Customer,
   Carrier,
   Tanker,
   Priority,
@@ -69,6 +70,8 @@ import { ManualTransactionsPopup } from '../../manual-transactions';
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, url, locateTrip }) => {
+  console.log(value);
+
   // const { manageMakeManualTransaction, showSeals, manageAdditionalHostData, manageViewDeliveryDetails } = useConfig();
   const config = useConfig();
   const {
@@ -76,6 +79,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
     showSeals,
     manageAdditionalHostData,
     manageViewDeliveryDetails,
+    site_customer_product,
+    site_customer_carrier
   } = config;
 
   const { t } = useTranslation();
@@ -88,6 +93,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const [unload, setUnload] = useState(false);
   const [supplier, setSupplier] = useState(undefined);
   const [drawer, setDrawer] = useState(undefined);
+  const [customer, setCustomer] = useState(undefined);
   const [carrier, setCarrier] = useState(undefined);
   const [tanker, setTanker] = useState(undefined);
   const [redoBOL, setRedoBOL] = useState(0);
@@ -766,6 +772,26 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
                 <Supplier form={form} value={value} onChange={changeSupplier} />
               </Col>
 
+              {site_customer_product || site_customer_carrier ?
+              <Fragment>
+                <Col span={6}>
+                  <DrawerForm
+                    form={form}
+                    drawer={drawer ? drawer : value?.drawer_code}
+                    value={value}
+                    onChange={setDrawer}
+                  />
+                </Col>
+                <Col span={6}>
+                  <Customer
+                    form={form}
+                    supplier={value? value.supplier_code : supplier}
+                    value={value}
+                    onChange={setCustomer}
+                  />
+                </Col>
+              </Fragment>
+              :
               <Col span={12}>
                 <DrawerForm
                   form={form}
@@ -774,11 +800,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
                   onChange={setDrawer}
                 />
               </Col>
+              }
             </Row>
 
             <Row gutter={[8, 8]}>
               <Col span={12}>
-                <Carrier form={form} value={value} onChange={setCarrier} />
+                <Carrier form={form} customer={site_customer_carrier ? customer : undefined} value={value} onChange={setCarrier} />
               </Col>
 
               <Col span={12}>
@@ -876,12 +903,19 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
                 drawer={supplier} //Same as v9, when supplier != drawer, use supplier product
                 tanker={tanker}
                 supplier={supplier}
+                customer={site_customer_product ? customer : undefined} 
                 config={config}
               />
             )}
 
             {mode === '3' && !READ_ONLY && (
-              <Products form={form} value={value} drawer={supplier} access={access} />
+              <Products 
+                form={form} 
+                value={value} 
+                drawer={supplier} 
+                customer={site_customer_product ? customer : undefined} 
+                access={access}
+              />
             )}
 
             {READ_ONLY && <Summary value={value} />}

@@ -61,6 +61,27 @@ class Schedule extends CommonClass
 
     public function carriers()
     {
+        //Because Reactjs can call carriers.php?customer=undefined, so undefined becomes a string
+        if (isset($this->customer) && $this->customer !== "undefined") {
+            $query = "SELECT CARRIER.CMPY_CODE,
+                        CARRIER.CMPY_NAME,
+                        CARRIER.CMPY_CODE||' - '||CARRIER.CMPY_NAME AS CMPY_DESC,
+                        CUST_ACCT
+                    FROM CUSTOMER_CARRIER, COMPANYS CARRIER
+                    WHERE CUSTOMER_CARRIER.CMPY_CODE = CARRIER.CMPY_CODE
+                        AND CUST_ACCT = :cust_account
+                    ORDER BY CARRIER.CMPY_CODE";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':cust_account', $this->customer);
+            
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return null;
+            } 
+
+            return $stmt;
+        }
         $company_service = new CompanyService($this->conn);
         return $company_service->carriers();
     }
@@ -114,6 +135,33 @@ class Schedule extends CommonClass
 
     public function drawer_products()
     {
+        //Because Reactjs can call carriers.php?customer=undefined, so undefined becomes a string
+        if (isset($this->customer) && $this->customer !== "undefined") {
+            $query = "SELECT 
+                        PRODUCTS.PROD_CODE, 
+                        PRODUCTS.PROD_NAME, 
+                        PRODUCTS.PROD_IMAGE,
+                        '5' as UNIT_CODE, 
+                        (SELECT DESCRIPTION FROM UNIT_SCALE_VW WHERE UNIT_ID=5) as UNIT_NAME
+                    FROM PRODUCTS, CUSTOMER_PRODUCT
+                    WHERE PRODUCTS.PROD_CMPY = :cmpy_code
+                        AND CUST_ACCT = :customer
+                        AND PRODUCTS.PROD_CODE = CUSTOMER_PRODUCT.PROD_CODE
+                        AND PRODUCTS.PROD_CMPY = CUSTOMER_PRODUCT.PROD_CMPY
+                    ORDER BY PROD_CODE";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':cmpy_code', $this->drawer_code);
+            oci_bind_by_name($stmt, ':customer', $this->customer);
+            
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return null;
+            } 
+
+            return $stmt;
+        }
+
         $query = "
             SELECT 
                 PROD_CODE, 
@@ -775,7 +823,32 @@ class Schedule extends CommonClass
             return false;
         }
 
+        $this->set_cust();
         return $this->setSHLS_SRCTYPE();
+    }
+
+    protected function set_cust()
+    {
+        write_log(sprintf("%s::%s() START. cust:%s", __CLASS__, __FUNCTION__, $this->shls_cust),
+            __FILE__, __LINE__);
+
+        $query = "
+            UPDATE SCHEDULE 
+            SET SHLS_CUST = :shls_cust
+            WHERE SHLS_TRIP_NO = :trip 
+                AND SHLS_SUPP = :supp ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supp', $this->supplier_code);
+        oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+        oci_bind_by_name($stmt, ':shls_cust', $this->shls_cust);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return true;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
     }
 
     public function update()

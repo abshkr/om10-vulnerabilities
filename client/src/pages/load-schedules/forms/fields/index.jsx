@@ -1,5 +1,6 @@
 import Supplier from './supplier';
 import Drawer from './drawer';
+import Customer from './customer';
 import Carrier from './carrier';
 import Tanker from './tanker';
 import Priority from './priority';
@@ -14,6 +15,7 @@ import Terminal from './terminal';
 export {
   Supplier,
   Drawer,
+  Customer,
   Carrier,
   Tanker,
   Priority,

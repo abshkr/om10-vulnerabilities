@@ -6,12 +6,14 @@ import { Form, Select } from 'antd';
 
 import { LOAD_SCHEDULES } from '../../../../api';
 
-const Carrier = ({ form, value, onChange }) => {
+const Carrier = ({ form, customer, value, onChange }) => {
+  console.log(customer)
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
 
-  const { data: options, isValidating } = useSWR(LOAD_SCHEDULES.CARRIERS);
+  const curCust = value ? value.shls_cust : customer;
+  const { data: options, isValidating } = useSWR(`${LOAD_SCHEDULES.CARRIERS}?customer=${curCust}`);
 
   /*
     1	F	NEW SCHEDULE
