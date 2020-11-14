@@ -39,6 +39,7 @@ import { OrderListingsPopup } from '../../../pages/order-listings';
 import { DelvLocationsPopup } from 'pages/delv-locations';
 import { CustomerCategoriesPopup } from 'pages/customer-categories';
 import { AddressesPopup } from 'pages/addresses';
+import { useConfig } from 'hooks';
 
 const TabPane = Tabs.TabPane;
 
@@ -47,6 +48,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   const [products, setProducts] = useState(undefined);
   const [drawerWidth, setDrawerWidth] = useState('60vw');
   const [mainTabOn, setMainTabOn] = useState(true);
+  const { site_customer_product } = useConfig();
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -297,7 +299,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               <Col span={12}>{!IS_CREATING && <CreditLimit form={form} value={value} />}</Col>
             </Row>
           </TabPane>
-          {!IS_CREATING && <TabPane tab={t('tabColumns.customerProduct')} key="2">
+          {!IS_CREATING && site_customer_product && <TabPane tab={t('tabColumns.customerProduct')} key="2">
             <CustomerProduct form={form} value={value} changeProducts={setProducts} />
           </TabPane> 
           }
