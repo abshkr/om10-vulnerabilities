@@ -41,7 +41,7 @@ import {
 
 import { DataTable, SelectInput, PartnershipManager } from '../../../components';
 import { SETTINGS } from '../../../constants';
-import api, { ORDER_LISTINGS } from '../../../api';
+import api, { ORDER_LISTINGS, LOAD_SCHEDULES } from 'api';
 import columns from './columns';
 import Period from './item-periods';
 import OrderTrips from './order-trips';
@@ -49,6 +49,7 @@ import OrderItemTrips from './item-trips';
 
 import DeliveryDetails from '../../delivery-details';
 import { ManualTransactionsPopup } from '../../manual-transactions';
+import { useConfig } from 'hooks';
 
 const TabPane = Tabs.TabPane;
 
@@ -62,6 +63,8 @@ const FormModal = ({
   revalidate,
   locateOrder,
 }) => {
+  const { site_customer_product, site_customer_carrier } = useConfig();
+
   const [drawerWidth, setDrawerWidth] = useState('80vw');
   const [mainTabOn, setMainTabOn] = useState(true);
   const [tableAPI, setTableAPI] = useState(undefined);
@@ -75,6 +78,7 @@ const FormModal = ({
 
   const [orderNo, setOrderNo] = useState(value?.order_sys_no);
   const [supplier, setSupplier] = useState(undefined);
+  const [customer, setCustomer] = useState(undefined);
   const [drawer, setDrawer] = useState(value?.order_drwr_code);
   const [selected, setSelected] = useState(null);
   const [approved, setApproved] = useState(value?.order_approved);
@@ -129,7 +133,6 @@ const FormModal = ({
   const token = sessionStorage.getItem('token');
   const decoded = jwtDecode(token);
   const user_code = decoded?.per_code;
-  console.log('jwtDecode', decoded);
   const site_code = decoded?.site_code;
 
   const doTabChanges = (tabPaneKey) => {
@@ -149,7 +152,7 @@ const FormModal = ({
   };
 
   const onComplete = (order) => {
-    console.log('start of onComplete');
+    // console.log('start of onComplete');
     setDrawerWidth('80vw');
     setMainTabOn(true);
     if (order) {
@@ -161,7 +164,7 @@ const FormModal = ({
     setDrawer(undefined);
     setSelected(null);
     handleFormState(false, null);
-    console.log('end of onComplete');
+    // console.log('end of onComplete');
   };
 
   const getOrderItems = useCallback(() => {
@@ -174,11 +177,10 @@ const FormModal = ({
     api.get(url).then((response) => {
       const payload = response.data?.records || [];
 
-      /* setFieldsValue({
-        order_items: payload,
-      }); */
-
       setOrderItems(payload);
+      if (value) {
+        setCustomer(value?.order_cust_acnt)
+      }
     });
   }, [orderNo, supplier, pageState]);
 
@@ -207,13 +209,13 @@ const FormModal = ({
 
   const onFinish = async () => {
     const values = await validateFields();
-    console.log('order items', values);
+    // console.log('order items', values);
 
     const gridItems = [];
     tableAPI.forEachNodeAfterFilterAndSort((rowNode, index) => {
       gridItems.push(rowNode.data);
     });
-    console.log('order items2', gridItems);
+    // console.log('order items2', gridItems);
 
     const newItems = [];
     _.forEach(gridItems, (order_item) => {
@@ -237,12 +239,12 @@ const FormModal = ({
     } else {
       values.order_sys_no = value?.order_sys_no;
     }
-    console.log('values:', value?.order_sys_no, orderNo, values);
-    console.log('date before', values.order_ord_time, values.order_dlv_time, values.order_exp_time);
+    // console.log('values:', value?.order_sys_no, orderNo, values);
+    // console.log('date before', values.order_ord_time, values.order_dlv_time, values.order_exp_time);
     values.order_ord_time = values?.order_ord_time?.format(SETTINGS.DATE_TIME_FORMAT);
     values.order_dlv_time = values?.order_dlv_time?.format(SETTINGS.DATE_TIME_FORMAT);
     values.order_exp_time = values?.order_exp_time?.format(SETTINGS.DATE_TIME_FORMAT);
-    console.log('date after', values.order_ord_time, values.order_dlv_time, values.order_exp_time);
+    // console.log('date after', values.order_ord_time, values.order_dlv_time, values.order_exp_time);
 
     values.order_styp_id = 0;
     values.order_totals = 0;
@@ -392,9 +394,34 @@ const FormModal = ({
   }, [value, visible, resetFields, setOrderItems, setSupplier, setDrawer, setSelected]);
 
   useEffect(() => {
-    console.log('getOrderItems by', orderNo, supplier, pageState);
+    // console.log('getOrderItems by', orderNo, supplier, pageState);
     getOrderItems();
   }, [orderNo, supplier, pageState, getOrderItems]);
+
+  useEffect(() => {
+    if (site_customer_product && customer) {
+      api
+        .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
+          params: {
+            drawer_code: supplier,
+            customer: value ? value.order_cust_acnt: customer,
+          },
+        })
+        .then((res) => {
+          const cust_prods = res?.data?.records;
+          
+          const filtered = _.filter(orderItems, (item) => {
+            for (let i = 0; i < cust_prods.length; i += 1) {
+              if (item.oitem_prod_code === cust_prods[i].prod_code) {
+                return true;
+              }
+            }
+            return false;
+          });
+          setOrderItems(filtered);
+        });
+    }
+  }, [customer]);
 
   useEffect(() => {
     if (value !== null && value !== undefined) {
@@ -409,11 +436,10 @@ const FormModal = ({
   }, [orderItems, setFieldsValue]);
 
   const handleItemSelect = (value) => {
-    // console.log('handleItemSelect', value);
     if (value) {
       value.editable = pageState === 'detail' ? false : true;
     }
-    // console.log('handleItemSelect222', value);
+    
     setSelected(value);
   };
 
@@ -529,7 +555,7 @@ const FormModal = ({
               </Col>
 
               <Col span={6}>
-                <Customer form={form} value={value} supplier={supplier} pageState={pageState} />
+                <Customer form={form} value={value} supplier={supplier} onChange={setCustomer} pageState={pageState} />
               </Col>
 
               <Col span={6}>
@@ -561,7 +587,13 @@ const FormModal = ({
 
             <Row gutter={[8, 8]}>
               <Col span={6}>
-                <Carrier form={form} value={value} onChange={setCarrier} pageState={pageState} />
+                <Carrier 
+                  form={form} 
+                  customer={site_customer_carrier ? customer : undefined} 
+                  value={value} 
+                  onChange={setCarrier} 
+                  pageState={pageState} 
+                />
               </Col>
 
               <Col span={6}>

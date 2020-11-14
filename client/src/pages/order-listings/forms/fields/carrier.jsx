@@ -6,12 +6,12 @@ import { Form, Select } from 'antd';
 
 import { ORDER_LISTINGS } from '../../../../api';
 
-const Carrier = ({ form, value, onChange, pageState }) => {
+const Carrier = ({ form, customer, value, onChange, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
-
-  const { data: options, isValidating } = useSWR(ORDER_LISTINGS.CARRIERS);
+  const curCust = value ? value.order_cust_acnt : customer;
+  const { data: options, isValidating } = useSWR(`${ORDER_LISTINGS.CARRIERS}?customer=${curCust}`);
 
   const validate = (rule, input) => {
     if (rule.required) {

@@ -6,7 +6,7 @@ import useSWR from 'swr';
 
 import { ORDER_LISTINGS } from '../../../../api';
 
-const Customer = ({ form, value, supplier, pageState }) => {
+const Customer = ({ form, value, supplier, onChange, pageState }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
@@ -46,6 +46,7 @@ const Customer = ({ form, value, supplier, pageState }) => {
         //disabled={!!value || !supplier}
         disabled={(pageState==='create'&&!!supplier)? false : true}
         showSearch
+        onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectCustomerAccount') : null}
         filterOption={(input, option) =>
