@@ -15,7 +15,7 @@ const Customer = ({ form, supplier, value, onChange }) => {
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.drawer')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.customer')}`);
     }
 
     return Promise.resolve();
@@ -35,7 +35,7 @@ const Customer = ({ form, supplier, value, onChange }) => {
     <Form.Item
       name="shls_cust"
       label={t('fields.customer')}
-      // rules={[{ required: true, validator: validate }]}
+      rules={[{ required: true, validator: validate }]}
     >
       <Select
         dropdownMatchSelectWidth={false}
@@ -51,7 +51,7 @@ const Customer = ({ form, supplier, value, onChange }) => {
         }
       >
         {options?.records.map((item, index) => (
-          <Select.Option key={index} value={item.cust_cmpy_code}>
+          <Select.Option key={index} value={item.cust_acnt}>
             {item.cust_desc}
           </Select.Option>
         ))}

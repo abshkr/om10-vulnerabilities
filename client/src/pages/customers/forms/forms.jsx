@@ -306,7 +306,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             <CustomerProduct form={form} value={value} changeProducts={setProducts} />
           </TabPane> 
           }
-          {!IS_CREATING && site_customer_carrier && <TabPane tab={t('tabColumns.customerProduct')} key="3">
+          {!IS_CREATING && site_customer_carrier && <TabPane tab={t('tabColumns.customerCarrier')} key="3">
             <CustomerCarrier form={form} value={value} changeCarriers={setCarriers} />
           </TabPane> 
           }
