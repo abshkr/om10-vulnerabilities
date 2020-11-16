@@ -62,6 +62,7 @@ const FormModal = ({
   const [issuer, setIssuer] = useState(value?.issuer);
   const [employer, setEmployer] = useState(value?.employer);
   const [host, setHost] = useState(value?.host);
+  const [plantRequired, setPlantRquired] = useState(value?.cmpy_plant);
 
   const IS_CREATING = !value;
 
@@ -284,16 +285,22 @@ const FormModal = ({
   };
 
   const validatePlant = (rule, input) => {
-    if (rule.required) {
+    /* if (rule.required && input?.length > 0) {
       if (input === '' || !input) {
         return Promise.reject(`${t('validate.set')} ─ ${t('fields.plantCode')}`);
       }
+    } */
+
+    if (input === '' || !input) {
+      setPlantRquired(false);
+    } else {
+      setPlantRquired(true);
     }
 
     const regex = new RegExp(REGEX.ALPHANUMERIC);
     const validated = regex.exec(input);
 
-    if (!validated) {
+    if (!validated && input?.length > 0) {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextAlphaNumeric')}`);
     }
 
@@ -413,9 +420,9 @@ const FormModal = ({
             <Form.Item
               name="cmpy_plant"
               label={t('fields.plantCode')}
-              rules={[{ required: true, validator: validatePlant }]}
+              rules={[{ required: plantRequired, validator: validatePlant }]}
             >
-              <Input></Input>
+              <Input disabled={!supplier}></Input>
             </Form.Item>
             <Form.Item
               name="cmpy_name"
