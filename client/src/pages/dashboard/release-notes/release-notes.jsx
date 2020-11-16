@@ -8,21 +8,26 @@ const { Panel } = Collapse;
 
 const data = [
   {
-    title: `Release Notes (10.1.13-rc.3) - 13/11/2020`,
+    title: `Release Notes (10.1.14-rc.1) - 16/11/2020`,
     content: (
       <>
         <>
-          <p>OM5K-8170 - <a href="https://dev.diamondkey.com/browse/OM5K-8170">https://dev.diamondkey.com/browse/OM5K-8170</a></p>
-          <p>OM5K-8229 - <a href="https://dev.diamondkey.com/browse/OM5K-8229">https://dev.diamondkey.com/browse/OM5K-8229</a></p>
+          <p>OM5K-8234 - <a href="https://dev.diamondkey.com/browse/OM5K-8234">https://dev.diamondkey.com/browse/OM5K-8234</a></p>
+          <p>OM5K-8236 - <a href="https://dev.diamondkey.com/browse/OM5K-8236">https://dev.diamondkey.com/browse/OM5K-8236</a></p>
+          <p>OM5K-8241 - <a href="https://dev.diamondkey.com/browse/OM5K-8241">https://dev.diamondkey.com/browse/OM5K-8241</a></p>
+          <p>OM5K-8242 - <a href="https://dev.diamondkey.com/browse/OM5K-8242">https://dev.diamondkey.com/browse/OM5K-8242</a></p>
+          <p>OM5K-8243 - <a href="https://dev.diamondkey.com/browse/OM5K-8243">https://dev.diamondkey.com/browse/OM5K-8243</a></p>
         </>
       </>
     ),
   },
   {
-    title: `Release Notes (10.1.13-rc.2) - 12/11/2020`,
+    title: `Release Notes (10.1.13) - 13/11/2020`,
     content: (
       <>
         <>
+          <p>OM5K-8170 - <a href="https://dev.diamondkey.com/browse/OM5K-8170">https://dev.diamondkey.com/browse/OM5K-8170</a></p>
+          <p>OM5K-8229 - <a href="https://dev.diamondkey.com/browse/OM5K-8229">https://dev.diamondkey.com/browse/OM5K-8229</a></p>
           <p>OM5K-8194 - <a href="https://dev.diamondkey.com/browse/OM5K-8194">https://dev.diamondkey.com/browse/OM5K-8194</a></p>
           <p>OM5K-8003 - <a href="https://dev.diamondkey.com/browse/OM5K-8003">https://dev.diamondkey.com/browse/OM5K-8003</a></p>
           <p>OM5K-8085 - <a href="https://dev.diamondkey.com/browse/OM5K-8085">https://dev.diamondkey.com/browse/OM5K-8085</a></p>
@@ -34,15 +39,6 @@ const data = [
           <p>OM5K-8215 - <a href="https://dev.diamondkey.com/browse/OM5K-8215">https://dev.diamondkey.com/browse/OM5K-8215</a></p>
           <p>OM5K-8180 - <a href="https://dev.diamondkey.com/browse/OM5K-8180">https://dev.diamondkey.com/browse/OM5K-8180</a></p>
           <p>OM5K-8181 - <a href="https://dev.diamondkey.com/browse/OM5K-8181">https://dev.diamondkey.com/browse/OM5K-8181</a></p>
-        </>
-      </>
-    ),
-  },
-  {
-    title: `Release Notes (10.1.13-rc.1) - 09/11/2020`,
-    content: (
-      <>
-        <>
           <p>OM5K-8157 - <a href="https://dev.diamondkey.com/browse/OM5K-8157">https://dev.diamondkey.com/browse/OM5K-8157</a></p>
           <p>OM5K-8166 - <a href="https://dev.diamondkey.com/browse/OM5K-8166">https://dev.diamondkey.com/browse/OM5K-8166</a></p>
           <p>OM5K-8077 - <a href="https://dev.diamondkey.com/browse/OM5K-8077">https://dev.diamondkey.com/browse/OM5K-8077</a></p>
@@ -85,7 +81,6 @@ const data = [
           <p>OM5K-8168 - <a href="https://dev.diamondkey.com/browse/OM5K-8168">https://dev.diamondkey.com/browse/OM5K-8168</a></p>
           <p>OM5K-8176 - <a href="https://dev.diamondkey.com/browse/OM5K-8176">https://dev.diamondkey.com/browse/OM5K-8176</a></p>
           <p>OM5K-8177 - <a href="https://dev.diamondkey.com/browse/OM5K-8177">https://dev.diamondkey.com/browse/OM5K-8177</a></p>
-
         </>
       </>
     ),
