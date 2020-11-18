@@ -211,7 +211,7 @@ class FolioSchedule extends CommonClass
                     case "FRI":		
                         $dayNum = 5;	
                         break;
-                    case "SATDAY":	
+                    case "SATURDAY":	
                     case "SAT":		
                         $dayNum = 6;	
                         break;
