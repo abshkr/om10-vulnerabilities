@@ -36,11 +36,11 @@ const Code = ({ form, value }) => {
       return Promise.reject(t('descriptions.alreadyExists'));
     }
 
-    const regex = new RegExp(REGEX.ALPHANUMERIC);
+    const regex = new RegExp(REGEX.ALPHANUMERIC_DOT);
     const validated = regex.exec(input);
 
     if (!validated) {
-      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextAlphaNumeric')}`);
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextAlphaNumericDot')}`);
     }
 
     const len = new TextEncoder().encode(input).length;
