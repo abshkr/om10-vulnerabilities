@@ -109,44 +109,44 @@ const Forms = ({ value, isFromNomination, start, end, access }) => {
   };
 
   return (
-    <Tabs defaultActiveKey="1" animated={false}>
-      <TabPane className="ant-tab-window-no-margin" tab={t('tabColumns.transactionProductDetail')} key="1">
-        <DataTable
-          columns={transferFields}
-          data={transferData}
-          height="42vh"
-          selectionMode="single"
-          handleSelect={setSelected}
-          apiContext={setTableContextAPI}
-        />
-      </TabPane>
+    <div>
+      <Tabs defaultActiveKey="1" animated={false}>
+        <TabPane className="ant-tab-window-no-margin" tab={t('tabColumns.transactionProductDetail')} key="1">
+          <DataTable
+            columns={transferFields}
+            data={transferData}
+            height="42vh"
+            selectionMode="single"
+            handleSelect={setSelected}
+            apiContext={setTableContextAPI}
+          />
+        </TabPane>
 
-      <TabPane className="ant-tab-window-no-margin" tab={t('tabColumns.meterDetail')} key="2">
-        <DataTable columns={detailFields} data={meterData} height="42vh" />
-      </TabPane>
+        <TabPane className="ant-tab-window-no-margin" tab={t('tabColumns.meterDetail')} key="2">
+          <DataTable columns={detailFields} data={meterData} height="42vh" />
+        </TabPane>
+      </Tabs>
 
-      <>
-        <Button
-          htmlType="button"
-          icon={<CloseOutlined />}
-          style={{ marginRight: 5, float: 'right' }}
-          onClick={() => Modal.destroyAll()}
-        >
-          {t('operations.cancel')}
-        </Button>
+      <Button
+        htmlType="button"
+        icon={<CloseOutlined />}
+        style={{ marginRight: 5, float: 'right' }}
+        onClick={() => Modal.destroyAll()}
+      >
+        {t('operations.cancel')}
+      </Button>
 
-        <Button
-          type="danger"
-          icon={<WarningOutlined />}
-          style={{ marginRight: 5, float: 'right' }}
-          onClick={onClose}
-          disabled={value.trsa_ed_dmy !== '' || !access.canUpdate}
-          loading={isLoading}
-        >
-          {t('operations.closeTransaction')}
-        </Button>
-      </>
-    </Tabs>
+      <Button
+        type="danger"
+        icon={<WarningOutlined />}
+        style={{ marginRight: 5, float: 'right' }}
+        onClick={onClose}
+        disabled={value.trsa_ed_dmy !== '' || !access.canUpdate}
+        loading={isLoading}
+      >
+        {t('operations.closeTransaction')}
+      </Button>
+    </div>
   );
 };
 
