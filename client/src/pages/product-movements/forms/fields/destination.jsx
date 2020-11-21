@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
-import { Form, Input, Select } from 'antd';
+import { Form, Input, Select, Col } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
 
@@ -45,6 +45,68 @@ const Destination = ({ form, value, base }) => {
   }, [value, setFieldsValue]);
 
   return (
+    value ? 
+    <>
+      <Col span={6}>
+        <Form.Item
+          name="pmv_dsttype"
+          label={t('fields.destinationType')}
+          rules={[{ required: true, validator: validateType }]}
+        >
+          <Select
+            dropdownMatchSelectWidth={false}
+            loading={isLoading}
+            showSearch
+            disabled={value}
+            onChange={setSource}
+            optionFilterProp="children"
+            placeholder={t('placeholder.selectDestinationType')}
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {types?.records.map((item, index) => (
+              <Select.Option key={index} value={item.pmv_id}>
+                {item.pmv_name}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+      </Col>
+
+      <Col span={6}>
+        <Form.Item
+          name="pmv_dstcode"
+          label={t('fields.destinationUnit')}
+          rules={[{ required: true, validator: validateCode }]}
+        >
+          {source === '3' ? (
+            <Select
+              dropdownMatchSelectWidth={false}
+              loading={isLoading}
+              showSearch
+              disabled={!source}
+              optionFilterProp="children"
+              placeholder={t('placeholder.setDestinationUnit')}
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {_.filter(tanks?.records, (item) => {
+                return item.tank_base === base
+              }).map((item, index) => (
+                <Select.Option key={index} value={item.tank_code}>
+                  {item.tank_code}
+                </Select.Option>
+              ))}
+            </Select>
+          ) : (
+            <Input disabled={!source} />
+          )}
+        </Form.Item>
+      </Col>
+    </>
+    :
     <>
       <Form.Item
         name="pmv_dsttype"

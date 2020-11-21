@@ -16,9 +16,26 @@ class ProdMovement extends CommonClass
         "PMV_EXPCTD_DENS",
         "PMV_OBSVD_DENS",
         "PMV_OPENING_QTY",
-        "PMV_MOVED_QTY"
+        "PMV_MOVED_QTY",
+        "PMV_OPEN_AMB",
+        "OPEN_TEMP",
+        "PMV_OPEN_COR",
+        "OPEN_DENSITY",
+        "CLOSE_STD_TOT",
+        "CLOSE_TEMP", 
+        "CLOSE_AMB_TOT",
+        "CLOSE_DENSITY"
     );
 
+    /*
+        PMV_ROAD = 0,
+        PMV_RAIL,
+        PMV_MARINE,
+        PMV_TANK,
+        PMV_PIPELINE,
+        PMV_REFINERY,
+        PMV_N_TYPES
+     */
     public function target_types()
     {
         $serv = new EnumService($this->conn);
@@ -31,6 +48,14 @@ class ProdMovement extends CommonClass
         return $serv->prod_movement_classes();
     }
 
+    /*
+        PMV_NEW = 0,
+        PMV_IN_PROGRESS,
+        PMV_HALTED,
+        PMV_COMPLETE,
+        PMV_DOES_NOT_EXIST,
+        PMV_N_STATUS
+    */
     public function prodmvnt_states()
     {
         $serv = new EnumService($this->conn);
@@ -80,6 +105,47 @@ class ProdMovement extends CommonClass
             $error = new EchoSchema(400, response("__PRODUCTMOVEMENT_START_FAIL__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
             return;
+        }
+
+        //Doing some copy
+        $query = "
+            SELECT TANK_COR_VOL,
+                TANK_AMB_VOL,
+                TANK_DENSITY,
+                TANK_TEMP,
+                TANK_PROD_LVL
+            FROM TANKS
+            WHERE TANK_CODE = (
+                    SELECT DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)
+                    FROM PRODUCT_MVMNTS
+                    WHERE PMV_NUMBER = :pmv_number
+                )";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $tank_cor_vol = $row["TANK_COR_VOL"];
+        $tank_amb_vol = $row["TANK_AMB_VOL"];
+        $tank_density = $row["TANK_DENSITY"];
+        $tank_temp = $row["TANK_TEMP"];
+        $tank_prod_lvl = $row["TANK_PROD_LVL"];
+
+        $query = "UPDATE PRODUCT_MVMNTS
+            SET PMV_OPEN_AMB = :tank_amb_vol,
+                PMV_OPEN_COR = :tank_cor_vol,
+                PMV_OPEN_TANKLEVEL = :pmv_open_tanklevel
+            WHERE PMV_NUMBER = :pmv_number";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
+        oci_bind_by_name($stmt, ':tank_amb_vol', $tank_amb_vol);
+        oci_bind_by_name($stmt, ':tank_cor_vol', $tank_cor_vol);
+        oci_bind_by_name($stmt, ':pmv_open_tanklevel', $tank_prod_lvl);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
         
         $error = new EchoSchema(200, response("__PRODUCTMOVEMENT_STARTED__"));
@@ -391,6 +457,135 @@ class ProdMovement extends CommonClass
             ORDER BY NVL(PMV.PMV_DATE2, SYSDATE) DESC, PMV.PMV_STATUS DESC";
 
         $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function start_folio()
+    {
+        $query = "
+            SELECT CLOSEOUT_NR, 
+                DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE, 
+                PMV_OPEN_COR, 
+                PMV_TEMPERATURE OPEN_TEMP, 
+                PMV_OPEN_AMB,
+                PMV_OBSVD_DENS OPEN_DENSITY, 
+                PMV_DATE1, 
+                PMV_OPEN_TANKLEVEL TANK_LEVEL
+            FROM PRODUCT_MVMNTS, 
+                (SELECT CLOSEOUT_NR, PMV_NUMBER FROM CLOSEOUTS, PRODUCT_MVMNTS
+                WHERE PMV_NUMBER = :pmv_number
+                AND PMV_DATE1 > PREV_CLOSEOUT_DATE AND PMV_DATE1 < CLOSEOUT_DATE) TMP
+            WHERE PRODUCT_MVMNTS.PMV_NUMBER = :pmv_number AND PRODUCT_MVMNTS.PMV_NUMBER = TMP.PMV_NUMBER(+)";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function bay_loaded()
+    {
+        if (!isset($this->pmv_number)) {
+            return null;
+        }
+
+        $query = "
+            SELECT NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_AVL / 1000, TRSB_AVL)), 0) AVL_SUM,
+                NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_CVL / 1000, TRSB_CVL)), 0) CVL_SUM,
+                DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE
+            FROM TRANBASE, TRANSFERS, TRANSACTIONS, PRODUCT_MVMNTS
+            WHERE TRSB_ID_TRSF_ID = TRSF_ID AND TRSB_ID_TRSF_TRM = TRSF_TERMINAL
+                AND TRSFTRID_TRSA_ID = TRSA_ID AND TRSFTRID_TRSA_TRM = TRSA_TERMINAL
+                AND PMV_NUMBER = :pmv_number
+                AND TRSA_ED_DMY > NVL(PMV_DATE1, SYSDATE)
+                AND TRSA_ED_DMY < NVL(PMV_DATE2, SYSDATE)
+                AND TRSB_TK_TANKCODE = DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)
+            GROUP BY PMV_SRCTYPE, PMV_SRCCODE, PMV_DSTCODE";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function end_folio()
+    {
+        $query = "
+            SELECT CLOSEOUT_NR, 
+                DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE, 
+                PMV_CLOSE_COR, 
+                PMV_CLOSE_TEMP CLOSE_TEMP, 
+                PMV_CLOSE_AMB,
+                PMV_CLOSE_DENS CLOSE_DENSITY, 
+                PMV_DATE2, 
+                PMV_CLOSE_TANKLEVEL TANK_LEVEL,
+                AVL_SUM,
+                CVL_SUM
+            FROM PRODUCT_MVMNTS, 
+            (
+                SELECT CLOSEOUT_NR, PMV_NUMBER FROM CLOSEOUTS, PRODUCT_MVMNTS
+                WHERE PMV_NUMBER = :pmv_number
+                AND PMV_DATE2 > PREV_CLOSEOUT_DATE AND PMV_DATE2 < CLOSEOUT_DATE
+            ) TMP,
+            (
+                SELECT NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_AVL / 1000, TRSB_AVL)), 0) AVL_SUM,
+                    NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_CVL / 1000, TRSB_CVL)), 0) CVL_SUM,
+                    DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE,
+                    PMV_NUMBER
+                FROM TRANBASE, TRANSFERS, TRANSACTIONS, PRODUCT_MVMNTS
+                WHERE TRSB_ID_TRSF_ID = TRSF_ID AND TRSB_ID_TRSF_TRM = TRSF_TERMINAL
+                    AND TRSFTRID_TRSA_ID = TRSA_ID AND TRSFTRID_TRSA_TRM = TRSA_TERMINAL
+                    AND PMV_NUMBER = :pmv_number
+                    AND TRSA_ED_DMY > NVL(PMV_DATE1, SYSDATE)
+                    AND TRSA_ED_DMY < NVL(PMV_DATE2, SYSDATE)
+                    AND TRSB_TK_TANKCODE = DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)
+                GROUP BY PMV_SRCTYPE, PMV_SRCCODE, PMV_DSTCODE, PMV_NUMBER
+            ) LOADED
+            WHERE PRODUCT_MVMNTS.PMV_NUMBER = :pmv_number
+                AND PRODUCT_MVMNTS.PMV_NUMBER = TMP.PMV_NUMBER(+)
+                AND PRODUCT_MVMNTS.PMV_NUMBER = LOADED.PMV_NUMBER(+)";
+        // $query = "
+        //     SELECT CLOSEOUTS.CLOSEOUT_NR, 
+        //         DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE, 
+        //         PMV_CLOSE_COR, 
+        //         PMV_CLOSE_TEMP CLOSE_TEMP, 
+        //         PMV_CLOSE_AMB,
+        //         PMV_CLOSE_DENS CLOSE_DENSITY, 
+        //         PREV_CLOSEOUT_DATE, 
+        //         PMV_CLOSE_TANKLEVEL TANK_LEVEL
+        //     FROM PRODUCT_MVMNTS, CLOSEOUTS
+        //     WHERE PMV_NUMBER = :pmv_number
+        //         AND PMV_DATE2 > PREV_CLOSEOUT_DATE AND PMV_DATE2 < CLOSEOUT_DATE";
+        // $query = "
+        //     SELECT CLOSEOUTS.CLOSEOUT_NR, 
+        //         TANK_CODE, 
+        //         CLOSE_STD_TOT, 
+        //         CLOSE_TEMP, 
+        //         CLOSE_AMB_TOT,
+        //         CLOSE_DENSITY, 
+        //         PREV_CLOSEOUT_DATE, 
+        //         TANK_LEVEL
+        //     FROM PRODUCT_MVMNTS, CLOSEOUTS, CLOSEOUT_TANK
+        //     WHERE PMV_NUMBER = :pmv_number
+        //         AND PMV_DATE2 > PREV_CLOSEOUT_DATE AND PMV_DATE2 < CLOSEOUT_DATE
+        //         AND CLOSEOUTS.CLOSEOUT_NR = CLOSEOUT_TANK.CLOSEOUT_NR
+        //         AND DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) = TANK_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {

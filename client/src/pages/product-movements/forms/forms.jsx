@@ -9,14 +9,41 @@ import {
   RedoOutlined,
 } from '@ant-design/icons';
 
-import { MovementType, Unit, Source, Destination, BatchCode, Quantity, Class, BaseProduct } from './fields';
+import { 
+  MovementType, 
+  Unit, 
+  Source, 
+  Destination,
+  BatchCode, 
+  Quantity, 
+  Class, 
+  BaseProduct,
+  StartFolio,
+  EndFolio,
+  BayLoaded
+} from './fields';
 
-import { Form, Button, Tabs, Modal, notification, Drawer, Input, InputNumber } from 'antd';
+import { 
+  Form, 
+  Button, 
+  Tabs, 
+  Modal, 
+  notification, 
+  Drawer, 
+  Input, 
+  InputNumber, 
+  Divider, 
+  Row, 
+  Col,
+  Progress,
+  Tag
+} from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import _ from 'lodash';
 
-import api, { PRODUCT_MOVEMENTS } from '../../../api';
+import api, { PRODUCT_MOVEMENTS } from 'api';
+import useSWR from 'swr';
 
 const TabPane = Tabs.TabPane;
 
@@ -252,6 +279,101 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   // };
 
   return (
+    IS_CREATING || value?.pmv_status === '0' ? 
+      <Drawer
+        bodyStyle={{ paddingTop: 5 }}
+        forceRender
+        onClose={() => handleFormState(false, null)}
+        maskClosable={IS_CREATING}
+        destroyOnClose={true}
+        mask={IS_CREATING}
+        placement="right"
+        width="50vw"
+        visible={visible}
+        footer={
+          <>
+            <Button
+              htmlType="button"
+              icon={<CloseOutlined />}
+              style={{ float: 'right' }}
+              onClick={() => handleFormState(false, null)}
+            >
+              {t('operations.cancel')}
+            </Button>
+
+            {IS_CREATING && (
+              <Button
+                type="primary"
+                icon={<EditOutlined />}
+                htmlType="submit"
+                style={{ float: 'right', marginRight: 5 }}
+                onClick={onFinish}
+                disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
+              >
+                {t('operations.create')}
+              </Button>
+            )}
+
+            {!IS_CREATING && (value.pmv_status === '0') /* New */ && (
+              <Button
+                type="primary"
+                icon={<RedoOutlined />}
+                onClick={onStart}
+                style={{ float: 'right', marginRight: 5 }}
+                disabled={!access?.canDelete}
+              >
+                {t('operations.start')}
+              </Button>
+            )}
+          </>
+        }
+      >
+        <Form
+          layout="vertical"
+          // layout={{...layout}}
+          form={form}
+          onFinish={onFinish}
+          scrollToFirstError
+          initialValues={{
+            pmv_state_name: 'NEW',
+            pmv_unit_name: 'l',
+            pmv_unit: '28',
+          }}
+        >
+          <Tabs defaultActiveKey="1">
+            <TabPane tab={t('tabColumns.general')} key="1">
+              <MovementType value={value} onChange={setMovementType} />
+              <BaseProduct form={form} value={value} setBase={setBase} />
+              <Source form={form} value={value} base={base} />
+              <Destination form={form} value={value} base={base} />
+              <BatchCode form={form} value={value} />
+              <Class form={form} value={value} />
+              <Quantity form={form} value={value} />
+              <Unit form={form} value={value} />
+              {IS_CREATING && movementType === 'COMPLETE' && (
+                <Form.Item
+                  name="pmv_opening_qty"
+                  label={t('fields.initialStandardVolume')}
+                  rules={[{ required: true, validator: validateInitial }]}
+                >
+                  <Input disabled={!!value} />
+                </Form.Item>
+              )}
+              {IS_CREATING && movementType === 'COMPLETE' && (
+                <Form.Item
+                  name="pmv_obsvd_dens"
+                  label={t('fields.prodMovDens')}
+                  rules={[{ required: true, validator: validateDens }]}
+                >
+                  <InputNumber min={0} disabled={!!value} />
+                </Form.Item>
+              )}
+            </TabPane>
+          </Tabs>
+        </Form>
+      </Drawer>
+    :
+    //Modify/View
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
       forceRender
@@ -348,32 +470,49 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       >
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-            <MovementType value={value} onChange={setMovementType} />
-            <BaseProduct form={form} value={value} setBase={setBase} />
-            <Source form={form} value={value} base={base} />
-            <Destination form={form} value={value} base={base} />
-            <BatchCode form={form} value={value} />
-            <Class form={form} value={value} />
-            <Quantity form={form} value={value} />
-            <Unit form={form} value={value} />
-            {IS_CREATING && movementType === 'COMPLETE' && (
-              <Form.Item
-                name="pmv_opening_qty"
-                label={t('fields.initialStandardVolume')}
-                rules={[{ required: true, validator: validateInitial }]}
-              >
-                <Input disabled={!!value} />
-              </Form.Item>
-            )}
-            {IS_CREATING && movementType === 'COMPLETE' && (
-              <Form.Item
-                name="pmv_obsvd_dens"
-                label={t('fields.prodMovDens')}
-                rules={[{ required: true, validator: validateDens }]}
-              >
-                <InputNumber min={0} disabled={!!value} />
-              </Form.Item>
-            )}
+            <Divider orientation="left">{t('fields.beginMovement')}</Divider>
+            {/* <StartFolioDes form={form} value={value} /> */}
+            <StartFolio form={form} value={value} />
+            <Divider orientation="left">{t('fields.details')}</Divider>
+            <Row gutter={[8, 8]}>
+              <Col span={8}>
+                <BaseProduct form={form} value={value} setBase={setBase} />
+              </Col>
+              <BayLoaded form={form} value={value} />
+            </Row>
+            <Row gutter={[8, 8]}>
+              <Source form={form} value={value} base={base} />
+              <Destination form={form} value={value} base={base} />
+            </Row>
+            <Row gutter={[8, 8]}>
+              <Col span={6}>
+                <BatchCode form={form} value={value} />
+              </Col>
+              <Col span={6}>
+                <Class form={form} value={value} />
+              </Col>
+              <Col span={6}>
+                <Quantity form={form} value={value} />
+              </Col>
+              <Col span={6}>
+                <Unit form={form} value={value} />
+              </Col>
+            </Row>
+            <Row gutter={[8, 8]}>
+              <Col span={4}>
+                <Tag color="#0097df" style={{width: '100%', textAlign: 'center'}}>{t('fields.progress')}</Tag>
+              </Col>
+              <Col span={20}>
+                <Progress 
+                  strokeWidth={15} 
+                  // strokeColor="#0097df"
+                  percent={value?.percentage} 
+                  status={value?.percentage < 100 ? 'active' : 'success'}
+                />
+              </Col>
+            </Row>
+            <Divider orientation="left">{t('fields.endMovement')}</Divider>
+            <EndFolio form={form} value={value} />
           </TabPane>
         </Tabs>
       </Form>

@@ -11,3 +11,7 @@ export const PROGRESS = '/api/pages/prod_movement/progress.php';
 export const START = '/api/pages/prod_movement/start.php';
 export const HALT = '/api/pages/prod_movement/halt.php';
 export const COMPLETE_BATCH = '/api/pages/prod_movement/complete_batch.php';
+
+export const START_FOLIO = '/api/pages/prod_movement/start_folio.php';
+export const END_FOLIO = '/api/pages/prod_movement/end_folio.php';
+export const BAY_LOADED = '/api/pages/prod_movement/bay_loaded.php';
