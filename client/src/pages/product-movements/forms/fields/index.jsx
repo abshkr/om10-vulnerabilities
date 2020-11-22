@@ -7,8 +7,7 @@ import Quantity from './quantity';
 import Class from './class';
 import BaseProduct from './base-product';
 import StartFolio from './start_folio';
-import StartFolioDes from './start_folio_des';
 import EndFolio from './end_folio';
 import BayLoaded from './bay_loaded';
 
-export { MovementType, Unit, Source, Destination, BatchCode, Quantity, Class, BaseProduct, StartFolio, StartFolioDes, EndFolio, BayLoaded };
+export { MovementType, Unit, Source, Destination, BatchCode, Quantity, Class, BaseProduct, StartFolio, EndFolio, BayLoaded };
