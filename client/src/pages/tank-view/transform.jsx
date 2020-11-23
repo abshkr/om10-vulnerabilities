@@ -1,12 +1,12 @@
 import _ from 'lodash';
 
 const statusColourMap = {
-  '0': 'rgba(220,220,220,0.3)',
-  '4': 'rgba(255,255,224,0.9)',
-  '3': 'rgba(148,205,108,0.3)',
-  '2': 'rgba(255,191,0,0.2)',
-  '1': 'rgba(155,136,233,0.2)',
-  '5': 'rgba(103,164,236,0.2)',
+  0: 'rgba(220,220,220,0.3)',
+  4: 'rgba(255,255,224,0.9)',
+  3: 'rgba(148,205,108,0.3)',
+  2: 'rgba(255,191,0,0.2)',
+  1: 'rgba(155,136,233,0.2)',
+  5: 'rgba(103,164,236,0.2)',
 };
 
 function getLevelStatus(level, hhValue, hValue, lValue, llValue, userH, userL) {
@@ -136,8 +136,10 @@ function transform(data, showAdditives) {
 
       const fill = (volume * 100) / capacity;
 
+      const baseProduct = value?.[0]?.tank_base + ' - ' + value?.[0]?.tank_base_name;
+
       summary.push({
-        base_name: key,
+        base_name: baseProduct, //key,
         tank_count: value.length,
         total_capacity: capacity,
         observed_quantity: volume,
