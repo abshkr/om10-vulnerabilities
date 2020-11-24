@@ -7,15 +7,15 @@ include_once 'common_class.php';
 
 class PersonnelOnsite extends CommonClass
 {
-    protected $TABLE_NAME = 'REPORT_CMPY';
+    protected $TABLE_NAME = 'PERS_IN_AREA';
 
     public function read()
     {
         $query = "
-            SELECT PER_CODE, PER_NAME ,CMPY_NAME, AREA_K, AREA_NAME, PERL_ENTER_TIME
+            SELECT PER_CODE, PER_NAME ,CMPY_NAME, AREA_K, AREA_NAME, PERL_ENTER_TIME, PERL_PSN
             FROM GUI_PERSONNEL, AREA_RC
             WHERE PER_CODE = PERL_PSN AND PERL_ARA <> 9999 AND PERL_ARA = AREA_K
-            ORDER BY PER_CODE";
+            ORDER BY PERL_ARA";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;

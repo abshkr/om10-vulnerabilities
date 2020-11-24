@@ -15,6 +15,13 @@ const columns = t => {
       filter: 'MultiFilter'
     },
     {
+      headerName: t('fields.companyName'),
+      field: 'cmpy_name',
+      sortable: true,
+      resizable: true,
+      filter: 'FuzzyFilter'
+    },
+    {
       headerName: t('fields.enterTime'),
       field: 'perl_enter_time',
       sortable: true,
