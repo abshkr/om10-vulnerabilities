@@ -435,7 +435,7 @@ class ProdMovement extends CommonClass
                 PMV_INTENDED_QTY,
                 PMV_OPENING_QTY,
                 PMV_MOVED_QTY,
-                PMV_MOVED_QTY / PMV_INTENDED_QTY PERCENT,
+                DECODE(PMV_INTENDED_QTY, 0, 0, PMV_MOVED_QTY / PMV_INTENDED_QTY) PERCENT,
                 PMV_EXPCTD_DENS,
                 PMV_OBSVD_DENS,
                 PMV.PMV_DST_TERMINAL,
