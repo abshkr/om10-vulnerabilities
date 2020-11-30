@@ -927,6 +927,86 @@ class Journal
         return rtrim($new_id, ', ');
     }
 
+    private function jnlLogEvent2($template, $data, $jnl_event, $jnl_class)
+    {
+        $query = "SELECT MESSAGE, LANG_ID FROM MSG_LOOKUP 
+            WHERE MSG_ID = :msg_id AND LANG_ID IN (SELECT LANG_ID from LANG_TYP)";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':msg_id', $template);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+        // $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            $template_str = $row['MESSAGE'];
+            $lang = $row['LANG_ID'];
+
+            $hit = 0;
+            $message = "";
+            for ($i = 0; $i < strlen($template_str); $i++) {
+                if ($template_str[$i] === '%') {
+                    if ($hit === 1 && (
+                        $template == Lookup::RECORD_ALTERED
+                        || $template == Lookup::RECORD_ADD
+                        || $template == Lookup::RECORD_DELETE
+                    )) {
+                        if (isset($this->modules[$data[1]])) {
+                            $data[1] = $this->modules[$data[1]];
+                        }
+                    }
+                    $message = $message . $data[$hit];
+                    $hit += 1;
+                } else {
+                    $message = $message . $template_str[$i];
+                }
+            }
+            write_log("Write journal: " . $message, __FILE__, __LINE__, LogLevel::INFO);
+            
+            $jnl_event_str = $this->getEventStr($jnl_event, $lang);
+            $jnl_class_str = $this->getClassStr($jnl_class, $lang);
+            
+            $query = "INSERT INTO SITE_JOURNAL
+                    (GEN_DATE,
+                    REGION_CODE,
+                    COMPANY_CODE,
+                    MSG_EVENT,
+                    MSG_CLASS,
+                    MESSAGE,
+                    SEQ)
+            SELECT SYSDATE,
+                    :lang,
+                    SITE_MNGR,
+                    :jnl_event,
+                    :jnl_class,
+                    :message,
+                    JOURNAL_SEQ.NEXTVAL
+            FROM SITE";
+            $stmt2 = oci_parse($this->conn, $query);
+
+            oci_bind_by_name($stmt2, ':lang', $lang);
+            oci_bind_by_name($stmt2, ':jnl_event', $jnl_event_str);
+            oci_bind_by_name($stmt2, ':jnl_class', $jnl_class_str);
+            oci_bind_by_name($stmt2, ':message', $message);
+
+            if ($this->autoCommit) {
+                $mode = OCI_COMMIT_ON_SUCCESS;
+            } else {
+                $mode = OCI_NO_AUTO_COMMIT;
+            }
+
+            if (!oci_execute($stmt2, $mode)) {
+                $e = oci_error($stmt2);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                write_log("Failed to write journal", __FILE__, __LINE__);
+                oci_free_statement($stmt);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /*
         RECORD_ADDED      22	CHN	[%] 新增 [%] 记录 [%]: [%]
         RECORD_ADDED      22	ENG	[%] added [%] record with [%]: [%] 
@@ -952,6 +1032,15 @@ class Journal
     //For example: RECORD_ALTERED, userTxt, recordnmTxt, keyTxt
     public function jnlLogEvent($template, $data, $jnl_event, $jnl_class)
     {
+        if ($template !== Lookup::RECORD_ALTERED
+            && $template !== Lookup::RECORD_ADD
+            && $template !== Lookup::RECORD_DELETE
+            && $template !== Lookup::RECORD_ADDED
+            && $template !== Lookup::RECORD_DELETED
+            && $template !== Lookup::RECORD_CHANGED) {
+            return $this->jnlLogEvent2($template, $data, $jnl_event, $jnl_class);
+        }
+
         $query = "SELECT MESSAGE, LANG_ID FROM MSG_LOOKUP 
             WHERE MSG_ID = :msg_id AND LANG_ID IN (SELECT LANG_ID from LANG_TYP)";
         $stmt = oci_parse($this->conn, $query);
@@ -980,10 +1069,12 @@ class Journal
                     if (!isset($data[$hit])) {
                         $data[$hit] = "";
                     }
+
                     $msg_data[$hit] = $data[$hit];
                     if ($hit === 0) {
                         $msg_data[0] = $curr_user;
                     }
+                    
                     if ($hit === 1 && (
                         $template == Lookup::RECORD_ALTERED
                         || $template == Lookup::RECORD_ADD
@@ -1000,15 +1091,18 @@ class Journal
                             }
                         }
                     }
+
                     if ($hit === 2) {
                         $msg_data[2] = $this->translate_primary_key_identifier($data[2], $lang, $curr_table);
                     }
+
                     if ($hit === 3 && (
                         $template == Lookup::RECORD_ADDED
                         || $template == Lookup::RECORD_DELETED
                     )) {
                         $msg_data[3] = $this->translate_primary_key_identifier($data[3], $lang, $curr_table);
                     }
+
                     if ($template == Lookup::RECORD_CHANGED) {
                         // 0: user, 1: table/view, 2: record key, 3: column, 4: orig value, 5: new value
                         if ($hit === 3) {

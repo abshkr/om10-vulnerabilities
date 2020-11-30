@@ -5864,4 +5864,9 @@ class Lookup
     const DEL_USED_MOV = 2092;
     /* Deleting expired used movements */
 
+    const END_TRANSACTION = 4000;
+    /* User % ended transaction % */
+
+    const CLOSE_FIRST_FROZEN_FOLIO = 4009;
+    /* User % triggers to close first frozen folio */
 }

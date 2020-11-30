@@ -99,8 +99,9 @@ class Transaction extends CommonClass
         }
 
         $journal = new Journal($this->conn, false);
-        $jnl_data[0] = sprintf("User %s ended transaction %d", $cur_user, $this->trsa_id);
-        if (!$journal->jnlLogEvent(Lookup::TMM_TEXT_ONLY, $jnl_data,
+        $jnl_data[0] = $cur_user;
+        $jnl_data[1] = $this->trsa_id;
+        if (!$journal->jnlLogEvent(Lookup::END_TRANSACTION, $jnl_data,
             JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
