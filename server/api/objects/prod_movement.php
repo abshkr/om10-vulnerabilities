@@ -480,7 +480,7 @@ class ProdMovement extends CommonClass
             FROM PRODUCT_MVMNTS, 
                 (SELECT CLOSEOUT_NR, PMV_NUMBER FROM CLOSEOUTS, PRODUCT_MVMNTS
                 WHERE PMV_NUMBER = :pmv_number
-                AND PMV_DATE1 > PREV_CLOSEOUT_DATE AND PMV_DATE1 < CLOSEOUT_DATE) TMP
+                AND PMV_DATE1 > PREV_CLOSEOUT_DATE AND (PMV_DATE1 < CLOSEOUT_DATE || CLOSEOUT_DATE IS NULL)) TMP
             WHERE PRODUCT_MVMNTS.PMV_NUMBER = :pmv_number AND PRODUCT_MVMNTS.PMV_NUMBER = TMP.PMV_NUMBER(+)";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
