@@ -5884,4 +5884,10 @@ class Lookup
 
     const PIN_RESET_FROM_KEY = 4014;
     /* % reset pin for key [%] % */
+
+    const EQTP_CMPT_LOCK_TOGGLED = 4015;
+    /* Compartment lock status of equipment ID:% toggled */
+
+    const EQTP_UNLOCK_ALL_CMPTS = 4016;
+    /* %s unlocked all compartments in :%s */
 }

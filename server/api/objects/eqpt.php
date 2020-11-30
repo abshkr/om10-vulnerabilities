@@ -91,10 +91,10 @@ class Equipment extends CommonClass
         }
 
         $journal = new Journal($this->conn);
-        $jnl_data[0] = sprintf("%s unlocked all compartments in :%s", Utilities::getCurrPsn(), $eqpt);
-
+        $jnl_data[0] = Utilities::getCurrPsn();
+        $jnl_data[1] = $eqpt;
         if (!$journal->jnlLogEvent(
-            Lookup::TMM_TEXT_ONLY, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+            Lookup::EQTP_UNLOCK_ALL_CMPTS, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
@@ -120,10 +120,9 @@ class Equipment extends CommonClass
         }
 
         $journal = new Journal($this->conn);
-        $jnl_data[0] = sprintf("Compartment lock status of equipment ID:%s toggled", $eqpt);
-
+        $jnl_data[0] = $eqpt;
         if (!$journal->jnlLogEvent(
-            Lookup::TMM_TEXT_ONLY, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+            Lookup::EQTP_CMPT_LOCK_TOGGLED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
