@@ -5875,4 +5875,10 @@ class Lookup
 
     const OPEN_ORDER_APPROVIED_BY = 4011;
     /* Open order % approved by % */
+
+    const PIN_REMOVED_FROM_KEY = 4012;
+    /* % removed pin for key [%] % */
+
+    const PIN_RESET_FROM_KEY = 4013;
+    /* % reset pin for key [%] % */
 }

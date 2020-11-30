@@ -847,9 +847,10 @@ class IDAssignment extends CommonClass
                 return false;
             }
 
-            $jnl_data[0] = sprintf("%s removed pin for key [%s]", $curr_psn, $record);
+            $jnl_data[0] = $curr_psn;
+            $jnl_data[0] = $record;
             if (!$journal->jnlLogEvent(
-                Lookup::TMM_TEXT_ONLY, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                Lookup::PIN_REMOVED_FROM_KEY, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
                 $e = oci_error($stmt);
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 oci_rollback($this->conn);
@@ -874,9 +875,10 @@ class IDAssignment extends CommonClass
                 return false;
             }
 
-            $jnl_data[0] = sprintf("%s reset pin for key [%s]", $curr_psn, $record);
+            $jnl_data[0] = $curr_psn;
+            $jnl_data[1] = $record;
             if (!$journal->jnlLogEvent(
-                Lookup::TMM_TEXT_ONLY, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                Lookup::PIN_RESET_FROM_KEY, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
                 $e = oci_error($stmt);
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 oci_rollback($this->conn);
