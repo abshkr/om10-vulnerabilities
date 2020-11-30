@@ -178,8 +178,8 @@ class FolioSetting extends CommonClass
         }
 
         $journal = new Journal($this->conn, false);
-        $jnl_data[0] = sprintf("User %s triggers to run manual closeout freeze", Utilities::getCurrPsn());
-        if (!$journal->jnlLogEvent(Lookup::TMM_TEXT_ONLY, $jnl_data,
+        $jnl_data[0] = Utilities::getCurrPsn();
+        if (!$journal->jnlLogEvent(Lookup::CLOSE_MANUAL_FREEZE_FOLIO, $jnl_data,
             JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -252,8 +252,8 @@ class FolioSetting extends CommonClass
         }
 
         $journal = new Journal($this->conn, false);
-        $jnl_data[0] = sprintf("User %s triggers to close first frozen folio", Utilities::getCurrPsn());
-        if (!$journal->jnlLogEvent(Lookup::TMM_TEXT_ONLY, $jnl_data,
+        $jnl_data[0] = Utilities::getCurrPsn();
+        if (!$journal->jnlLogEvent(Lookup::CLOSE_FIRST_FROZEN_FOLIO, $jnl_data,
             JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);

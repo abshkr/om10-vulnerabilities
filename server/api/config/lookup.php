@@ -5870,15 +5870,18 @@ class Lookup
     const CLOSE_FIRST_FROZEN_FOLIO = 4009;
     /* User % triggers to close first frozen folio */
 
-    const TANK_STRAP_IMPORTED = 4010;
+    const CLOSE_MANUAL_FREEZE_FOLIO = 4010;
+    /* User % triggers to run manual closeout freeze */
+
+    const TANK_STRAP_IMPORTED = 4011;
     /* Tank strap data imported by % */
 
-    const OPEN_ORDER_APPROVIED_BY = 4011;
+    const OPEN_ORDER_APPROVIED_BY = 4012;
     /* Open order % approved by % */
 
-    const PIN_REMOVED_FROM_KEY = 4012;
+    const PIN_REMOVED_FROM_KEY = 4013;
     /* % removed pin for key [%] % */
 
-    const PIN_RESET_FROM_KEY = 4013;
+    const PIN_RESET_FROM_KEY = 4014;
     /* % reset pin for key [%] % */
 }
