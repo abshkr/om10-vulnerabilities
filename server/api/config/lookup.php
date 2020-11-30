@@ -5869,4 +5869,7 @@ class Lookup
 
     const CLOSE_FIRST_FROZEN_FOLIO = 4009;
     /* User % triggers to close first frozen folio */
+
+    const TANK_STRAP_IMPORTED = 4010;
+    /* Tank strap data imported by % */
 }

@@ -175,10 +175,10 @@ class TankStrap extends CommonClass
         }
 
         $journal = new Journal($this->conn, false);
-        $jnl_data[0] = sprintf("Tank strap data imported by %s", Utilities::getCurrPsn());
+        $jnl_data[0] = Utilities::getCurrPsn();
 
         if (!$journal->jnlLogEvent(
-            Lookup::TMM_TEXT_ONLY, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+            Lookup::TANK_STRAP_IMPORTED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", sprintf("database storage error:%s", $e['message'])));
