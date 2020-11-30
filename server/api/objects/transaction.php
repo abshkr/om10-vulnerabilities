@@ -71,11 +71,13 @@ class Transaction extends CommonClass
             return;
         }
 
+        $cur_user = Utilities::getCurrPsn();
         $query = "UPDATE TRANSACTIONS
-            SET TRSA_ED_DMY = SYSDATE
+            SET TRSA_ED_DMY = SYSDATE, TRSA_PSN = :trsa_psn
             WHERE TRSA_ID = :trsa_id";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':trsa_id', $this->trsa_id);
+        oci_bind_by_name($stmt, ':trsa_psn', $cur_user);
 
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
@@ -97,7 +99,7 @@ class Transaction extends CommonClass
         }
 
         $journal = new Journal($this->conn, false);
-        $jnl_data[0] = sprintf("User %s ended transaction %d", Utilities::getCurrPsn(), $this->trsa_id);
+        $jnl_data[0] = sprintf("User %s ended transaction %d", $cur_user, $this->trsa_id);
         if (!$journal->jnlLogEvent(Lookup::TMM_TEXT_ONLY, $jnl_data,
             JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
             $e = oci_error($stmt);
