@@ -5872,4 +5872,7 @@ class Lookup
 
     const TANK_STRAP_IMPORTED = 4010;
     /* Tank strap data imported by % */
+
+    const OPEN_ORDER_APPROVIED_BY = 4011;
+    /* Open order % approved by % */
 }

@@ -821,10 +821,10 @@ class OpenOrder extends CommonClass
 
         if ($old == 'N') {
             $journal = new Journal($this->conn);
-            $jnl_data[0] = sprintf("Open order %d approved by %s", $this->order_sys_no, Utilities::getCurrPsn());
-
+            $jnl_data[0] = $this->order_sys_no;
+            $jnl_data[1] = Utilities::getCurrPsn();
             if (!$journal->jnlLogEvent(
-                Lookup::TMM_TEXT_ONLY, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                Lookup::OPEN_ORDER_APPROVIED_BY, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
                 $e = oci_error($stmt);
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 oci_rollback($this->conn);
