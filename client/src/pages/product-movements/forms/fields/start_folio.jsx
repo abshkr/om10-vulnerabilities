@@ -14,9 +14,9 @@ const StartFolio = ({ form, value }) => {
   useEffect(() => {
     if (payload && payload.records.length > 0) {
       setFieldsValue({
-        closeout_nr: payload.records[0].closeout_nr,
+        start_nr: payload.records[0].closeout_nr,
         pmv_date1: payload.records[0].pmv_date1,
-        tank_level: payload.records[0].tank_level,
+        start_tank_level: payload.records[0].tank_level,
         pmv_open_amb: payload.records[0].pmv_open_amb,
         pmv_open_cor: payload.records[0].pmv_open_cor,
         open_temp: payload.records[0].open_temp,
@@ -30,7 +30,7 @@ const StartFolio = ({ form, value }) => {
       <Row gutter={[8, 8]}>
         <Col span={6}>
           <Form.Item
-            name="closeout_nr"
+            name="start_nr"
             label={t('fields.startCloseout')}
           >
             <Input disabled={!!value} />
@@ -46,7 +46,7 @@ const StartFolio = ({ form, value }) => {
         </Col>
         <Col span={6}>
           <Form.Item
-            name="tank_level"
+            name="start_tank_level"
             label={t('fields.startLevel')}
           >
             <Input disabled={!!value} />
