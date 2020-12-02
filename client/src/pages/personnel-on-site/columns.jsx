@@ -22,7 +22,7 @@ const columns = t => {
       filter: 'FuzzyFilter'
     },
     {
-      headerName: t('fields.enterTime'),
+      headerName: t('fields.updateTime'),
       field: 'perl_enter_time',
       sortable: true,
       resizable: true,

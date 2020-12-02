@@ -697,6 +697,7 @@
     "endAt": "End At",
     "endDate": "End Date",
     "enterTime": "Enter Time",
+    "updateTime": "Update Time",
     "equipMustInArea": "Equipment must be in area of load authorisation",
     "equipment": "Equipment",
     "equipmentCarrier": "Equipment Carrier",
