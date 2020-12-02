@@ -2,18 +2,23 @@ import React, { useEffect } from 'react';
 
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
-import { Form, Select } from 'antd';
+import { Form, Select, Button, Row, Col, notification } from 'antd';
+import { SecurityScanOutlined } from '@ant-design/icons';
+import _ from 'lodash';
 
-import { LOAD_SCHEDULES } from '../../../../api';
+import { AdhocKey } from '../../../../components';
+import api, { LOAD_SCHEDULES, ID_ASSIGNMENT } from '../../../../api';
 
 const Tanker = ({ form, value, carrier, onChange }) => {
   const { t } = useTranslation();
 
-  const { setFieldsValue } = form;
+  const { setFieldsValue, getFieldValue } = form;
 
   const { data: options, isValidating } = useSWR(
     `${LOAD_SCHEDULES.TANKERS_BY_CARRIER}?tnkr_carrier=${carrier}`
   );
+
+  const { data: adhocKeys } = useSWR(ID_ASSIGNMENT.ADHOC_KEYS);
 
   /*
     1	F	NEW SCHEDULE
@@ -23,8 +28,38 @@ const Tanker = ({ form, value, carrier, onChange }) => {
     5	E	ENDED
     6	D	DELIVERED OK
   */
-  const IS_DISABLED = !value ? false : (value?.status !== 'F' || value?.shls_ld_type === '2');
+  const IS_DISABLED = !value ? false : value?.status !== 'F' || value?.shls_ld_type === '2';
   // const IS_DISABLED = !value ? false : (value?.shls_status !== 'NEW SCHEDULE' || value?.shls_ld_type === '2');
+
+  const handleTagLookUp = () => {
+    AdhocKey({
+      assignAdhocKey: assignAdhocKeyToTanker,
+      t: t,
+      options: adhocKeys?.records,
+    });
+  };
+
+  const assignAdhocKeyToTanker = (txt) => {
+    const tnkr = getFieldValue('tnkr_code');
+    if (txt) {
+      api
+        .post(ID_ASSIGNMENT.UPDATE_ADHOC_KEY, { kya_txt: txt, kya_tanker: tnkr })
+        .then(() => {
+          notification.success({
+            message: t('messages.updateSuccess'),
+            description: t('messages.updateSuccess'),
+          });
+        })
+        .catch((errors) => {
+          _.forEach(errors.response.data.errors, (error) => {
+            notification.error({
+              message: error.type,
+              description: error.message,
+            });
+          });
+        });
+    }
+  };
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
@@ -45,26 +80,41 @@ const Tanker = ({ form, value, carrier, onChange }) => {
   }, [value, setFieldsValue, onChange]);
 
   return (
-    <Form.Item name="tnkr_code" label={t('fields.tanker')} rules={[{ required: true, validator: validate }]}>
-      <Select
-        dropdownMatchSelectWidth={false}
-        loading={isValidating}
-        showSearch
-        onChange={onChange}
-        disabled={IS_DISABLED || !carrier}
-        optionFilterProp="children"
-        placeholder={!value ? t('placeholder.selectTanker') : null}
-        filterOption={(value, option) =>
-          option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
-        }
-      >
-        {options?.records.map((item, index) => (
-          <Select.Option key={index} value={item.tnkr_code}>
-            {`${item.tnkr_code}${item.tnkr_name && (' - ' + item.tnkr_name)}`}
-          </Select.Option>
-        ))}
-      </Select>
-    </Form.Item>
+    <Row gutter={[8, 8]}>
+      <Col span={!value ? 24 : 19}>
+        <Form.Item
+          name="tnkr_code"
+          label={t('fields.tanker')}
+          rules={[{ required: true, validator: validate }]}
+        >
+          <Select
+            dropdownMatchSelectWidth={false}
+            loading={isValidating}
+            showSearch
+            onChange={onChange}
+            disabled={IS_DISABLED || !carrier}
+            optionFilterProp="children"
+            placeholder={!value ? t('placeholder.selectTanker') : null}
+            filterOption={(value, option) =>
+              option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
+            }
+          >
+            {options?.records.map((item, index) => (
+              <Select.Option key={index} value={item.tnkr_code}>
+                {`${item.tnkr_code}${item.tnkr_name && ' - ' + item.tnkr_name}`}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+      </Col>
+      {value && (
+        <Col span={5} style={{ paddingTop: '35px' }}>
+          <Button icon={<SecurityScanOutlined />} onClick={() => handleTagLookUp()}>
+            {t('operations.tagLookUp')}
+          </Button>
+        </Col>
+      )}
+    </Row>
   );
 };
 

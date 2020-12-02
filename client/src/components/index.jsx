@@ -13,6 +13,7 @@ export { default as NavBar } from './nav-bar';
 export { default as Interface } from './interface';
 export { default as FormModal } from './form-modal';
 export { default as IButton } from './i-button';
+export { default as AdhocKey } from './adhoc-key';
 export { default as CheckList } from './check-list';
 export { default as PasswordReset } from './password-reset';
 export { default as Icons } from './icons';

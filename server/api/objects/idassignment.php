@@ -72,6 +72,30 @@ class IDAssignment extends CommonClass
         }
     }
 
+    public function adhoc_keys()
+    {
+        $query = "
+            SELECT 
+                kya_key_no
+                , kya_txt
+                , kya_tanker 
+            FROM 
+                gui_access_keys 
+            WHERE 
+                kya_type=4 
+                and kya_lock='N'
+                and kya_adhoc='Y'
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     // read personnel
     public function read()
     {
@@ -924,7 +948,7 @@ class IDAssignment extends CommonClass
         }
 
         $module = "GUI_ACCESS_KEYS";
-        $record = sprintf("id:%s", $this->kya_key_no);
+        $record = sprintf("kya_key_no:%s", $this->kya_key_no);
         if (!$journal->updateChanges($row, $row2, $module, $record)) {
             oci_rollback($this->conn);
             return false;
@@ -1091,5 +1115,107 @@ class IDAssignment extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    // This function links the tanker with an adhoc tanker key
+    // The data sent from GUI include kya_txt and kya_tanker
+    public function update_adhoc_key()
+    {
+        $journal = new Journal($this->conn, false);
+
+        if (isset($this->kya_txt)) {
+            $this->kya_txt = strtoupper($this->kya_txt);
+        }
+
+        // use kya_txt as a key to find a tag record
+        $query = "
+            SELECT *
+            FROM GUI_ACCESS_KEYS
+            WHERE KYA_TXT = :kya_txt and ROWNUM=1
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':kya_txt', $this->kya_txt);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
+        // get the PKEY from the tag record found
+        $this->kya_key_no = $row['KYA_KEY_NO'];
+        $this->kya_key_issuer = $row['KYA_KEY_ISSUER'];
+
+        $curr_psn = Utilities::getCurrPsn();
+        $this->key_history("MODIFIED", "BEFORE");
+        
+        // update the link of tanker and adhoc key
+        $query = "
+            UPDATE ACCESS_KEYS SET
+                KYA_TANKER = :kya_tanker,
+                KYA_DMY = SYSDATE
+            WHERE KYA_KEY_ISSUER = :kya_key_issuer AND KYA_KEY_NO = :kya_key_no AND KYA_TXT = :kya_txt";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':kya_key_no', $this->kya_key_no);
+        oci_bind_by_name($stmt, ':kya_key_issuer', $this->kya_key_issuer);
+        oci_bind_by_name($stmt, ':kya_txt', $this->kya_txt);
+        oci_bind_by_name($stmt, ':kya_tanker', $this->kya_tanker);
+
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        $this->key_history("MODIFIED", "AFTER");
+
+        // This is to notify the process to upload the changes to RTC/OBP
+        $query = "
+            UPDATE SITE
+            SET KYA_CHANGE_DMY = SYSDATE, SITE_KYA_UPDATE = SITE_KYA_UPDATE + 1";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        $jnl_data[0] = $curr_psn;
+        $jnl_data[1] = $this->kya_key_issuer;
+        $jnl_data[2] = $this->kya_key_no;
+
+        if (!$journal->jnlLogEvent(
+            Lookup::ID_KEY_UPDATE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        $query = "
+            SELECT *
+            FROM GUI_ACCESS_KEYS
+            WHERE KYA_KEY_ISSUER = :kya_key_issuer AND KYA_KEY_NO = :kya_key_no";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':kya_key_no', $this->kya_key_no);
+        oci_bind_by_name($stmt, ':kya_key_issuer', $this->kya_key_issuer);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $row2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
+        $module = "GUI_ACCESS_KEYS";
+        $record = sprintf("kya_key_no:%s", $this->kya_key_no);
+        if (!$journal->updateChanges($row, $row2, $module, $record)) {
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        oci_commit($this->conn);
+        return true;
     }
 }

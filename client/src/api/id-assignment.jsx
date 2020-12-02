@@ -17,3 +17,6 @@ export const CARRIERS = '/api/pages/idassignment/carriers.php';
 export const TANKERS = '/api/pages/idassignment/tankers.php';
 export const SCHEDULABLE = '/api/pages/idassignment/schedulables.php';
 export const NON_SCHEDULABLE = '/api/pages/idassignment/non_schedulables.php';
+
+export const ADHOC_KEYS = '/api/pages/idassignment/adhoc_keys.php';
+export const UPDATE_ADHOC_KEY = '/api/pages/idassignment/update_adhoc_key.php';

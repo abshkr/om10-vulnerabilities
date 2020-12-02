@@ -76,7 +76,8 @@
     "haltSuccess": "您已成功停止了进程",
     "hostEditOff": "接受信息的编辑目前已被禁止。",
     "hostSubmitOff": "接受信息的提交目前已被禁止。",
-    "iButtonLookUp": "请将光标置于文本输入框，然后刷卡或触摸按钮。点击确认按钮表示读取成功。",
+    "iButtonLookUp": "请将光标置于文本输入框，然后刷卡或触摸按钮，标识序列码读取成功之后，按回车键确认。",
+    "iButtonLookUpInList": "请将光标置于下拉框的文本输入区，然后刷卡或触摸按钮，标识序列码读取成功之后，按回车键确认，若下拉菜单项中包含该序列码，按钮“标识赋予车辆”将被启用，否则禁用。也可以在下拉菜单项中直接选取序列码。",
     "ignoreTolerance": "忽略容许偏差的检查",
     "ignoreDCSCheck": "忽略DCS检查",
     "inLine": "，行号：",
@@ -1739,6 +1740,7 @@
     "allocationPeriod": "油品配额有效周期",
     "approve": "批准",
     "archive": "归档",
+    "assignToTanker": "标识赋予车辆",
     "authenticate": "认证",
     "calculate": "计算",
     "calculateDensity": "计算密度",
@@ -2279,8 +2281,8 @@
     "transportationDoc": "运输文件参数设置",
     "tripSeals": "提单封签",
     "summary": "总计",
-	"customerProduct": "客户油品",
-	"customerCarrier": "客户承运商"
+    "customerProduct": "客户油品",
+    "customerCarrier": "客户承运商"
   },
   "types": {
     "float": "浮点数",
