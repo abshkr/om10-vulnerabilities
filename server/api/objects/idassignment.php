@@ -1054,6 +1054,20 @@ class IDAssignment extends CommonClass
         $this->key_history("DELETED");
 
         $query = "
+            DELETE ACCESS_MOVEMENT
+            WHERE ACM_KEY_ISSUER = :kya_key_issuer AND ACM_KEY_NO = :kya_key_no";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':kya_key_no', $this->kya_key_no);
+        oci_bind_by_name($stmt, ':kya_key_issuer', $this->kya_key_issuer);
+
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        $query = "
             DELETE ACCESS_KEYS
             WHERE KYA_KEY_ISSUER = :kya_key_issuer AND KYA_KEY_NO = :kya_key_no";
         $stmt = oci_parse($this->conn, $query);
