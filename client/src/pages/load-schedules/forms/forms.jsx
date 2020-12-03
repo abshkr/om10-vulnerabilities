@@ -78,7 +78,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
     manageAdditionalHostData,
     manageViewDeliveryDetails,
     site_customer_product,
-    site_customer_carrier
+    site_customer_carrier,
   } = config;
 
   const { t } = useTranslation();
@@ -528,20 +528,23 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       return false;
     }
 
-    if (tab === '2') {  //DLI
+    if (tab === '2') {
+      //DLI
       return true;
     }
 
-    if (tab === '3') {  //BOL
+    if (tab === '3') {
+      //BOL
       return config?.bolVersion !== 'JASPER';
     }
 
-    if (tab === '4') {  //BOL
+    if (tab === '4') {
+      //BOL
       return config?.ldReportVersion !== 'JASPER';
     }
-    
+
     return false;
-  }
+  };
 
   useEffect(() => {
     if (!value) {
@@ -656,7 +659,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               icon={<AuditOutlined />}
               onClick={onView}
               style={{ marginRight: 5 }}
-              disabled={!access?.canUpdate}
+              // disabled={!access?.canUpdate}
+              disabled={!CAN_VIEW_REPORTS}
             >
               {t('operations.view')}
             </Button>
@@ -668,7 +672,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               icon={<PrinterOutlined />}
               onClick={onPrint}
               style={{ marginRight: 5 }}
-              disabled={!access?.canUpdate}
+              // disabled={!access?.canUpdate}
+              disabled={!CAN_VIEW_REPORTS}
             >
               {t('operations.print')}
             </Button>
@@ -680,7 +685,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               icon={<FilePdfOutlined />}
               onClick={onExport}
               style={{ marginRight: 5 }}
-              disabled={!access?.canUpdate}
+              // disabled={!access?.canUpdate}
+              disabled={!CAN_VIEW_REPORTS}
             >
               {t('operations.exportPDF')}
             </Button>
@@ -770,9 +776,27 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
                 <Supplier form={form} value={value} onChange={changeSupplier} />
               </Col>
 
-              {site_customer_product || site_customer_carrier ?
-              <Fragment>
-                <Col span={6}>
+              {site_customer_product || site_customer_carrier ? (
+                <Fragment>
+                  <Col span={6}>
+                    <DrawerForm
+                      form={form}
+                      drawer={drawer ? drawer : value?.drawer_code}
+                      value={value}
+                      onChange={setDrawer}
+                    />
+                  </Col>
+                  <Col span={6}>
+                    <Customer
+                      form={form}
+                      supplier={value ? value.supplier_code : supplier}
+                      value={value}
+                      onChange={setCustomer}
+                    />
+                  </Col>
+                </Fragment>
+              ) : (
+                <Col span={12}>
                   <DrawerForm
                     form={form}
                     drawer={drawer ? drawer : value?.drawer_code}
@@ -780,30 +804,17 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
                     onChange={setDrawer}
                   />
                 </Col>
-                <Col span={6}>
-                  <Customer
-                    form={form}
-                    supplier={value? value.supplier_code : supplier}
-                    value={value}
-                    onChange={setCustomer}
-                  />
-                </Col>
-              </Fragment>
-              :
-              <Col span={12}>
-                <DrawerForm
-                  form={form}
-                  drawer={drawer ? drawer : value?.drawer_code}
-                  value={value}
-                  onChange={setDrawer}
-                />
-              </Col>
-              }
+              )}
             </Row>
 
             <Row gutter={[8, 8]}>
               <Col span={12}>
-                <Carrier form={form} customer={site_customer_carrier ? customer : undefined} value={value} onChange={setCarrier} />
+                <Carrier
+                  form={form}
+                  customer={site_customer_carrier ? customer : undefined}
+                  value={value}
+                  onChange={setCarrier}
+                />
               </Col>
 
               <Col span={12}>
@@ -901,17 +912,17 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
                 drawer={supplier} //Same as v9, when supplier != drawer, use supplier product
                 tanker={tanker}
                 supplier={supplier}
-                customer={site_customer_product ? customer : undefined} 
+                customer={site_customer_product ? customer : undefined}
                 config={config}
               />
             )}
 
             {mode === '3' && !READ_ONLY && (
-              <Products 
-                form={form} 
-                value={value} 
-                drawer={supplier} 
-                customer={site_customer_product ? customer : undefined} 
+              <Products
+                form={form}
+                value={value}
+                drawer={supplier}
+                customer={site_customer_product ? customer : undefined}
                 access={access}
               />
             )}
