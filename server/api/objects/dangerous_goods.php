@@ -25,7 +25,7 @@ class DangerousGoods extends CommonClass
     public function read_brief()
     {
         $query = "
-            SELECT MATERIAL, ADR_DESC1, ADR_NAME, ADR_TYPE
+            SELECT MATERIAL, ADR_DESC1, ADR_NAME, ADR_TYPE, MATERIAL || ' - ' || ADR_NAME ADR_DESC
             FROM DANGEROUS_GOODS 
             ORDER BY MATERIAL
         ";
