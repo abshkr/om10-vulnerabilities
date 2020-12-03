@@ -48,7 +48,7 @@ const FormModal = ({
   setFilterValue,
 }) => {
   const { t } = useTranslation();
-  const { siteCompanyRelationAllowed } = useConfig();
+  const { siteCompanyRelationAllowed, maxLengthCmpyCode } = useConfig();
   const { data: addresses, isValidating } = useSWR(COMPANIES.ADDRESSES);
 
   const [form] = Form.useForm();
@@ -277,8 +277,10 @@ const FormModal = ({
     }
 
     const len = new TextEncoder().encode(input).length;
-    if (input && len > 16) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 16 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && len > maxLengthCmpyCode) {
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${maxLengthCmpyCode} ─ ${t('descriptions.maxCharacters')}`
+      );
     }
 
     return Promise.resolve();
