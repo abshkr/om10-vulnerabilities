@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
 import { REGEX } from '../../../../constants';
 
-const ProductCode = ({ form, value }) => {
+const ProductCode = ({ form, value, config }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
@@ -22,8 +22,10 @@ const ProductCode = ({ form, value }) => {
     }
 
     const len = new TextEncoder().encode(input).length;
-    if (input && len > 36) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 36 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && len > config?.maxLengthProdCode) {
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${config?.maxLengthProdCode} ─ ${t('descriptions.maxCharacters')}`
+      );
     }
 
     return Promise.resolve();

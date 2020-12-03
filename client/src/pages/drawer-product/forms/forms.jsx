@@ -469,7 +469,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
                 <DrawerCompany form={form} value={value} />
               </Col>
               <Col span={8}>
-                <ProductCode form={form} value={value} />
+                <ProductCode form={form} value={value} config={config} />
               </Col>
               <Col span={8}>
                 <ProductName form={form} value={value} />

@@ -14,7 +14,9 @@ import Forms from './forms';
 // import { useEffect } from 'react';
 
 const TankerList = () => {
-  const { expiryDateMode } = useConfig();
+  const config = useConfig();
+  const expiryDateMode = config.expiryDateMode;
+  // const { expiryDateMode } = useConfig();
 
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
@@ -85,6 +87,8 @@ const TankerList = () => {
         setFilterValue={setFilterValue}
         expiryDateMode={expiryDateMode}
         expiryTypes={expiryTypes}
+        config={config}
+        tankers={data}
       />
     </Page>
   );
