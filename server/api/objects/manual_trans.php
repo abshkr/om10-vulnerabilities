@@ -960,6 +960,30 @@ class ManualTrans extends CommonClass
         return $stmt;
     }
 
+    //Update a tanker of a PreOrder schedule
+    private function update_tanker() 
+    {
+        if (!isset($this->new_tanker)) {
+            return;
+        }
+
+        $query = "
+            UPDATE SCHEDULE SET SHL_TANKER = :tanker 
+            WHERE SHLS_TRIP_NO = :trip and SHLS_SUPP = :supplier
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        oci_bind_by_name($stmt, ':trip', $this->trip_no);
+        oci_bind_by_name($stmt, ':tanker', $this->new_tanker);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            throw new DatabaseException($e['message']);;
+        }
+
+        return;
+    }
+
     //Old code: ManualTransactions.class.php::getScheduleDetailsBySuppTrip
     public function get_sched_details()
     {
@@ -981,6 +1005,15 @@ class ManualTrans extends CommonClass
 
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         $tanker = $row["TNKR_CODE"];
+
+        // if user has changed the tanker of a PreOrder schedule, update the schedule with new tanker
+        if (strtoupper($row['LD_TYPE']) === "PREORDER" 
+        && isset($this->new_tanker) && strlen($this->new_tanker) > 0
+        && $tanker !== $this->new_tanker) {
+            $this->update_tanker();
+            $tanker = $this->new_tanker;
+        }
+
         if (strtoupper($row['LD_TYPE']) === "PRESCHEDULE") {
             $query = "SELECT
                     'BY_COMPARTMENT' as SCHD_TYPE,

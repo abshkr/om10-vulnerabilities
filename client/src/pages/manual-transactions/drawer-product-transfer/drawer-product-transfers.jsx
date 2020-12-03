@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { UndoOutlined, DeleteOutlined, CopyOutlined, ClearOutlined, CalculatorOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import {
+  UndoOutlined,
+  DeleteOutlined,
+  CopyOutlined,
+  ClearOutlined,
+  CalculatorOutlined,
+  ExclamationCircleOutlined,
+} from '@ant-design/icons';
 import { Button, Form, Tabs, Divider, Card, Row, Col, notification, Modal, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -10,7 +17,13 @@ import columns from './columns';
 import useSWR from 'swr';
 
 import api, { MANUAL_TRANSACTIONS } from '../../../api';
-import {calcBaseRatios, calcArmDensity, getAvailableArms, adjustProductArms, calcArmQuantity} from '../../../utils'
+import {
+  calcBaseRatios,
+  calcArmDensity,
+  getAvailableArms,
+  adjustProductArms,
+  calcArmQuantity,
+} from '../../../utils';
 
 import BaseProductTransfers from './base-product-transfers';
 import BaseProductTotals from './base-product-totals';
@@ -22,8 +35,8 @@ import {
   buildBaseTransfers,
   buildBaseTotals,
   adjustBaseTotals,
-  buildMeterTransfers, 
-  buildMeterTotals
+  buildMeterTransfers,
+  buildMeterTotals,
 } from '../data-builder';
 
 const components = {
@@ -41,13 +54,13 @@ const { TabPane } = Tabs;
 const { confirm } = Modal;
 
 const DrawerProductTransfers = ({
-  form, 
-  sourceType, 
-  loadType, 
-  loadNumber, 
-  supplier, 
-  trip, 
-  order, 
+  form,
+  sourceType,
+  loadType,
+  loadNumber,
+  supplier,
+  trip,
+  order,
   tanker,
   repost,
   dataBoard,
@@ -70,28 +83,37 @@ const DrawerProductTransfers = ({
   setDrawerChanges,
 }) => {
   // console.log('--------------------------', sourceType, supplier, trip, order, tanker);
-  const { data } = useSWR((
-      sourceType === 'SCHEDULE' && supplier && trip && 
-      `${MANUAL_TRANSACTIONS.TRIP_DETAILS}?supplier=${supplier}&trip_no=${trip}`
-    ) || (
-      sourceType === 'OPENORDER' && supplier && order && tanker && 
-      `${MANUAL_TRANSACTIONS.ORDER_DETAILS}?supplier=${supplier}&order_cust_no=${order}&tanker=${tanker}`
-    )
+  const { data } = useSWR(
+    (sourceType === 'SCHEDULE' &&
+      supplier &&
+      trip &&
+      tanker &&
+      `${MANUAL_TRANSACTIONS.TRIP_DETAILS}?supplier=${supplier}&trip_no=${trip}&new_tanker=${tanker}`) ||
+      (sourceType === 'OPENORDER' &&
+        supplier &&
+        order &&
+        tanker &&
+        `${MANUAL_TRANSACTIONS.ORDER_DETAILS}?supplier=${supplier}&order_cust_no=${order}&tanker=${tanker}`)
   );
 
-  const { data: products } = useSWR((
-      sourceType === 'SCHEDULE' && supplier && trip && 
-      `${MANUAL_TRANSACTIONS.TRIP_PRODUCTS}?supplier_code=${supplier}&shls_trip_no=${trip}`
-    ) || (
-      sourceType === 'OPENORDER' && supplier && order && 
-      `${MANUAL_TRANSACTIONS.ORDER_PRODUCTS}?supplier=${supplier}&order_cust_no=${order}`
-    )
+  const { data: products } = useSWR(
+    (sourceType === 'SCHEDULE' &&
+      supplier &&
+      trip &&
+      `${MANUAL_TRANSACTIONS.TRIP_PRODUCTS}?supplier_code=${supplier}&shls_trip_no=${trip}`) ||
+      (sourceType === 'OPENORDER' &&
+        supplier &&
+        order &&
+        `${MANUAL_TRANSACTIONS.ORDER_PRODUCTS}?supplier=${supplier}&order_cust_no=${order}`)
   );
 
-  const { data: transactions } = useSWR((
-    sourceType === 'SCHEDULE' && supplier && trip && repost &&
-    `${MANUAL_TRANSACTIONS.TRANSACTIONS}?supplier=${supplier}&trip_no=${trip}`
-  ));
+  const { data: transactions } = useSWR(
+    sourceType === 'SCHEDULE' &&
+      supplier &&
+      trip &&
+      repost &&
+      `${MANUAL_TRANSACTIONS.TRANSACTIONS}?supplier=${supplier}&trip_no=${trip}`
+  );
 
   // const { data: composition } = useSWR(tanker && `${MANUAL_TRANSACTIONS.COMPOSITION}?tnkr_code=${tanker}`);
   const { data: composition } = useSWR(tanker && `${MANUAL_TRANSACTIONS.TANKER_DETAILS}?tanker=${tanker}`);
@@ -114,7 +136,6 @@ const DrawerProductTransfers = ({
   const [loadingArms, setLoadingArms] = useState(false);
   const [updating, setUpdating] = useState(false);
 
-  
   const getProductArms = (supplier, products) => {
     setLoadingArms(true);
     const prod_codes = [];
@@ -125,18 +146,18 @@ const DrawerProductTransfers = ({
     });
 
     api
-    .get(MANUAL_TRANSACTIONS.GET_PROD_ARMS, {
-      params: {
-        prod_cmpy: supplier,
-        prod_code: prod_codes,
-      },
-    })
-    .then((res) => {
-      setProductArms(res.data?.records);
-      setLoadingArms(false);
-    });
+      .get(MANUAL_TRANSACTIONS.GET_PROD_ARMS, {
+        params: {
+          prod_cmpy: supplier,
+          prod_code: prod_codes,
+        },
+      })
+      .then((res) => {
+        setProductArms(res.data?.records);
+        setLoadingArms(false);
+      });
   };
-  
+
   const refreshProductArms = async (supplier, products) => {
     setLoadingArms(true);
     const prod_codes = [];
@@ -146,8 +167,7 @@ const DrawerProductTransfers = ({
       }
     });
 
-    const results = await api
-    .get(MANUAL_TRANSACTIONS.GET_PROD_ARMS, {
+    const results = await api.get(MANUAL_TRANSACTIONS.GET_PROD_ARMS, {
       params: {
         prod_cmpy: supplier,
         prod_code: prod_codes,
@@ -181,9 +201,11 @@ const DrawerProductTransfers = ({
   const updateBaseTransferRow = (item) => {
     const payload = [];
     tableBaseTransfersAPI.forEachNode((rowNode) => {
-      if (rowNode.data.trsf_bs_cmpt_no === item.trsf_bs_cmpt_no &&
+      if (
+        rowNode.data.trsf_bs_cmpt_no === item.trsf_bs_cmpt_no &&
         rowNode.data.trsf_bs_prodcd === item.trsf_bs_prodcd &&
-        rowNode.data.trsf_bs_tk_cd === item.trsf_bs_tk_cd) {
+        rowNode.data.trsf_bs_tk_cd === item.trsf_bs_tk_cd
+      ) {
         const selected = rowNode.data;
         Object.keys(item).forEach((key) => {
           if (selected.hasOwnProperty(key)) {
@@ -201,8 +223,10 @@ const DrawerProductTransfers = ({
   const updateBaseTotalRow = (item) => {
     const payload = [];
     tableBaseTotalsAPI.forEachNode((rowNode) => {
-      if (rowNode.data.trsf_bs_prodcd_tot === item.trsf_bs_prodcd_tot &&
-        rowNode.data.trsf_bs_tk_cd_tot === item.trsf_bs_tk_cd_tot) {
+      if (
+        rowNode.data.trsf_bs_prodcd_tot === item.trsf_bs_prodcd_tot &&
+        rowNode.data.trsf_bs_tk_cd_tot === item.trsf_bs_tk_cd_tot
+      ) {
         const selected = rowNode.data;
         Object.keys(item).forEach((key) => {
           if (selected.hasOwnProperty(key)) {
@@ -245,7 +269,7 @@ const DrawerProductTransfers = ({
   };
 
   const getPrevTransactionsForRepost = (transactions) => {
-    const notReversed = _.filter(transactions, (o) => (o.trsa_reverse_flag === false));
+    const notReversed = _.filter(transactions, (o) => o.trsa_reverse_flag === false);
     if (notReversed?.length === 0) {
       return null;
     } else if (notReversed?.length === 1) {
@@ -253,22 +277,24 @@ const DrawerProductTransfers = ({
     } else {
       // The trip has been reversed and reposted for multiple times
       // find the last non-reversed transaction which must have the maximium transaction ID
-      const sorted = _.sortBy(notReversed, (o) => (o.trsa_id));
-      return sorted?.[sorted?.length-1];
-    } 
+      const sorted = _.sortBy(notReversed, (o) => o.trsa_id);
+      return sorted?.[sorted?.length - 1];
+    }
   };
 
   const getPrevTransaction = (transactions, composition) => {
     const transaction = getPrevTransactionsForRepost(transactions?.records);
     // get tanker compartment number
     _.forEach(transaction?.transfers, (item) => {
-      const cmpt = _.find(composition?.records, (o) => (
-        o.eqpt_code === item.eqpt_code && o.cmpt_no === item.trsf_trailercomp
-      ));
+      const cmpt = _.find(
+        composition?.records,
+        (o) => o.eqpt_code === item.eqpt_code && o.cmpt_no === item.trsf_trailercomp
+      );
       if (cmpt !== undefined) {
         item.trsf_cmpt_unit = cmpt.cmpt_units;
         item.trsf_cmpt_no = cmpt.tnkr_cmpt;
-        item.trsf_cmpt_capacit = cmpt.adj_capacity > cmpt.adj_safefill ? cmpt.adj_safefill : cmpt.adj_capacity;
+        item.trsf_cmpt_capacit =
+          cmpt.adj_capacity > cmpt.adj_safefill ? cmpt.adj_safefill : cmpt.adj_capacity;
       }
       // console.log('---------- check repost transactions0', cmpt, item);
     });
@@ -280,10 +306,10 @@ const DrawerProductTransfers = ({
   const updateDrawerProductTransfers = (transfers, transaction) => {
     _.forEach(transfers, (item) => {
       // get the matched transfer from transaction
-      const cmpt = _.find(transaction?.transfers, (o) => (
-        o.eqpt_code === item.trsf_equip_id && 
-        o.trsf_cmpt_no === item.trsf_cmpt_no
-      ));
+      const cmpt = _.find(
+        transaction?.transfers,
+        (o) => o.eqpt_code === item.trsf_equip_id && o.trsf_cmpt_no === item.trsf_cmpt_no
+      );
       if (cmpt !== undefined) {
         // item.trsf_equip_id = cmpt.eqpt_code;
         // item.trsf_cmpt_no = cmpt.trsf_cmpt_no;
@@ -313,7 +339,7 @@ const DrawerProductTransfers = ({
       }
       // console.log('---------- updateDrawerProductTransfers', cmpt, item);
     });
-  
+
     return transfers;
   };
 
@@ -329,18 +355,20 @@ const DrawerProductTransfers = ({
 
     _.forEach(arms, (arm) => {
       // get the matched base product from repost bases
-      const repostBase = _.find(repostBases, (o) => (
-        o.trsb_tk_tankcode === arm?.stream_tankcode &&
-        o.base_cat === arm?.stream_bclass_code &&
-        o.base_code === arm?.stream_basecode
-      ));
+      const repostBase = _.find(
+        repostBases,
+        (o) =>
+          o.trsb_tk_tankcode === arm?.stream_tankcode &&
+          o.base_cat === arm?.stream_bclass_code &&
+          o.base_code === arm?.stream_basecode
+      );
 
       if (repostBase !== undefined) {
         arm.stream_tankden = repostBase?.trsb_dns;
       }
       // console.log('---------- updateBaseProductTransfers', arm, repostBase);
     });
-  
+
     return arms;
   };
 
@@ -356,10 +384,10 @@ const DrawerProductTransfers = ({
 
     _.forEach(bases, (base) => {
       // get the matched base product from repost bases
-      const repostBase = _.find(repostBases, (o) => (
-        o.trsf_bs_cmpt_no === base?.trsf_bs_cmpt_no &&
-        o.base_code === base?.trsf_bs_prodcd
-      ));
+      const repostBase = _.find(
+        repostBases,
+        (o) => o.trsf_bs_cmpt_no === base?.trsf_bs_cmpt_no && o.base_code === base?.trsf_bs_prodcd
+      );
       if (repostBase !== undefined) {
         // base.trsf_bs_cmpt_no = repostBase.trsf_bs_cmpt_no;
         // base.trsf_bs_prodcd = repostBase.base_code;
@@ -379,7 +407,7 @@ const DrawerProductTransfers = ({
       }
       // console.log('---------- updateBaseProductTransfers', base, repostBase);
     });
-  
+
     return bases;
   };
 
@@ -393,9 +421,8 @@ const DrawerProductTransfers = ({
       });
     });
 
-    // TODO 
+    // TODO
 
-  
     return meters;
   };
 
@@ -420,25 +447,22 @@ const DrawerProductTransfers = ({
     if (transfer?.trsf_qty_amb) {
       type = 'LT';
       amount = transfer?.trsf_qty_amb;
-    }
-    else if (transfer?.trsf_qty_cor) {
+    } else if (transfer?.trsf_qty_cor) {
       type = 'L15';
       amount = transfer?.trsf_qty_cor;
-    }
-    else if (transfer?.trsf_load_kg) {
+    } else if (transfer?.trsf_load_kg) {
       type = 'KG';
       amount = transfer?.trsf_load_kg;
-    }
-    else {
+    } else {
       type = 'LT';
       amount = transfer?.trsf_qty_amb;
     }
 
     const response = await calcArmQuantity(
-      transfer?.trsf_arm_cd, 
-      prodArms, 
-      amount, 
-      type, 
+      transfer?.trsf_arm_cd,
+      prodArms,
+      amount,
+      type,
       transfer?.trsf_temp
     );
     if (response?.result === false) {
@@ -465,20 +489,24 @@ const DrawerProductTransfers = ({
     for (tidx = 0; tidx < draws.length; tidx++) {
       const transfer = draws[tidx];
 
-      if (transfer.trsf_arm_cd === t('placeholder.selectArmCode') || 
+      if (
+        transfer.trsf_arm_cd === t('placeholder.selectArmCode') ||
         transfer.trsf_arm_cd === t('placeholder.noArmAvailable') ||
-        transfer.trsf_prod_name === t('placeholder.selectDrawerProduct') ) {
+        transfer.trsf_prod_name === t('placeholder.selectDrawerProduct')
+      ) {
         continue;
       }
-      if (!transfer.trsf_density || String(transfer.trsf_density).trim()==='') {
+      if (!transfer.trsf_density || String(transfer.trsf_density).trim() === '') {
         continue;
       }
-      if ((transfer.trsf_temp!==0 && !transfer.trsf_temp) || String(transfer.trsf_temp).trim()==='') {
+      if ((transfer.trsf_temp !== 0 && !transfer.trsf_temp) || String(transfer.trsf_temp).trim() === '') {
         continue;
       }
-      if ((!transfer.trsf_qty_amb || String(transfer.trsf_qty_amb).trim()==='') &&
-        (!transfer.trsf_qty_cor || String(transfer.trsf_qty_cor).trim()==='') &&
-        (!transfer.trsf_load_kg || String(transfer.trsf_load_kg).trim()==='') ) {
+      if (
+        (!transfer.trsf_qty_amb || String(transfer.trsf_qty_amb).trim() === '') &&
+        (!transfer.trsf_qty_cor || String(transfer.trsf_qty_cor).trim() === '') &&
+        (!transfer.trsf_load_kg || String(transfer.trsf_load_kg).trim() === '')
+      ) {
         continue;
       }
 
@@ -499,14 +527,18 @@ const DrawerProductTransfers = ({
     let found = false;
     for (let tidx = 0; tidx < payload.length; tidx++) {
       const titem = payload?.[tidx];
-      if ((titem.trsf_arm_cd !== t('placeholder.selectArmCode') && 
+      if (
+        titem.trsf_arm_cd !== t('placeholder.selectArmCode') &&
         titem.trsf_arm_cd !== t('placeholder.noArmAvailable') &&
-        titem.trsf_prod_name !== t('placeholder.selectDrawerProduct')) &&
-        (titem.trsf_density && String(titem.trsf_density).trim() !== '') &&
-        ((titem.trsf_temp===0 || titem.trsf_temp) && String(titem.trsf_temp).trim() !=='') &&
+        titem.trsf_prod_name !== t('placeholder.selectDrawerProduct') &&
+        titem.trsf_density &&
+        String(titem.trsf_density).trim() !== '' &&
+        (titem.trsf_temp === 0 || titem.trsf_temp) &&
+        String(titem.trsf_temp).trim() !== '' &&
         ((titem.trsf_qty_amb && String(titem.trsf_qty_amb).trim() !== '') ||
-        (titem.trsf_qty_cor && String(titem.trsf_qty_cor).trim() !== '') ||
-        (titem.trsf_load_kg && String(titem.trsf_load_kg).trim() !== '') ) ) {
+          (titem.trsf_qty_cor && String(titem.trsf_qty_cor).trim() !== '') ||
+          (titem.trsf_load_kg && String(titem.trsf_load_kg).trim() !== ''))
+      ) {
         found = true;
         break;
       }
@@ -520,7 +552,7 @@ const DrawerProductTransfers = ({
     }
 
     setUpdating(true);
-    //const items = form.getFieldsValue(['transfers', 'base_transfers', 'base_totals', 'meter_totals'])    
+    //const items = form.getFieldsValue(['transfers', 'base_transfers', 'base_totals', 'meter_totals'])
     //console.log('DrawerProductTransfers: onCalculate', items);
 
     await calcTankerQuantity();
@@ -543,20 +575,22 @@ const DrawerProductTransfers = ({
     const arms = await refreshProductArms(supplier, products?.records);
 
     _.forEach(productArms, (o) => {
-      const item = _.find(arms, (arm) => (
-        arm.rat_prod_prodcmpy === o.rat_prod_prodcmpy &&
-        arm.rat_prod_prodcode === o.rat_prod_prodcode &&
-        arm.stream_baycode === o.stream_baycode &&
-        arm.stream_armcode === o.stream_armcode &&
-        arm.stream_tankcode === o.stream_tankcode &&
-        arm.stream_basecode === o.stream_basecode
-      ));
+      const item = _.find(
+        arms,
+        (arm) =>
+          arm.rat_prod_prodcmpy === o.rat_prod_prodcmpy &&
+          arm.rat_prod_prodcode === o.rat_prod_prodcode &&
+          arm.stream_baycode === o.stream_baycode &&
+          arm.stream_armcode === o.stream_armcode &&
+          arm.stream_tankcode === o.stream_tankcode &&
+          arm.stream_basecode === o.stream_basecode
+      );
       o.stream_tankden = item?.stream_tankden;
     });
 
     const transfers = form.getFieldValue('transfers');
     _.forEach(transfers, (item) => {
-      const prodArms = adjustProductArms(productArms, item?.trsf_prod_cmpy, item?.trsf_prod_code);;
+      const prodArms = adjustProductArms(productArms, item?.trsf_prod_cmpy, item?.trsf_prod_code);
       item.trsf_density = calcArmDensity(item?.trsf_arm_cd, prodArms);
       // tableAPI.updateRowData({ update: [item] });
       updateTransferRow(item);
@@ -581,18 +615,20 @@ const DrawerProductTransfers = ({
     // setDataBaseTotals([]);
 
     _.forEach(bases, (item) => {
-      const arm = _.find(tanks, (o) => (
-        o.base_code === item.trsf_bs_prodcd && o.tank_code === item.trsf_bs_tk_cd
-      ));
+      const arm = _.find(
+        tanks,
+        (o) => o.base_code === item.trsf_bs_prodcd && o.tank_code === item.trsf_bs_tk_cd
+      );
       item.trsf_bs_den = arm?.tank_density;
       // tableBaseTransfersAPI.updateRowData({ update: [item] });
       updateBaseTransferRow(item);
     });
 
     _.forEach(totals, (item) => {
-      const arm = _.find(tanks, (o) => (
-        o.base_code === item.trsf_bs_prodcd_tot && o.tank_code === item.trsf_bs_tk_cd_tot
-      ));
+      const arm = _.find(
+        tanks,
+        (o) => o.base_code === item.trsf_bs_prodcd_tot && o.tank_code === item.trsf_bs_tk_cd_tot
+      );
       item.trsf_bs_den_tot = arm?.tank_density;
       // tableBaseTotalsAPI.updateRowData({ update: [item] });
       updateBaseTotalRow(item);
@@ -616,13 +652,25 @@ const DrawerProductTransfers = ({
     const payload = form.getFieldValue('transfers');
     let found = false;
     if (clicked) {
-      if ( (clicked.trsf_temp===0 || clicked.trsf_temp) || clicked.trsf_qty_amb || clicked.trsf_qty_cor || clicked.trsf_load_kg) {
+      if (
+        clicked.trsf_temp === 0 ||
+        clicked.trsf_temp ||
+        clicked.trsf_qty_amb ||
+        clicked.trsf_qty_cor ||
+        clicked.trsf_load_kg
+      ) {
         found = true;
       }
     } else {
       for (let tidx = 0; tidx < payload.length; tidx++) {
         const titem = payload?.[tidx];
-        if ( (titem.trsf_temp===0 || titem.trsf_temp) || titem.trsf_qty_amb || titem.trsf_qty_cor || titem.trsf_load_kg) {
+        if (
+          titem.trsf_temp === 0 ||
+          titem.trsf_temp ||
+          titem.trsf_qty_amb ||
+          titem.trsf_qty_cor ||
+          titem.trsf_load_kg
+        ) {
           found = true;
           break;
         }
@@ -631,7 +679,9 @@ const DrawerProductTransfers = ({
     if (found === false) {
       notification.warning({
         message: '',
-        description: !clicked ? t('descriptions.cannotClearTransfer') : t('descriptions.cannotClearOneTransfer'),
+        description: !clicked
+          ? t('descriptions.cannotClearTransfer')
+          : t('descriptions.cannotClearOneTransfer'),
       });
       return;
     }
@@ -673,7 +723,6 @@ const DrawerProductTransfers = ({
     toggleCalcButton();
     // toggleRestoreButton();
     toggleCopyButton();
-    
   };
 
   const onCopy = async () => {
@@ -682,10 +731,14 @@ const DrawerProductTransfers = ({
     let found = false;
     for (let tidx = 0; tidx < payload.length; tidx++) {
       const item = payload?.[tidx];
-      if (!(item.trsf_arm_cd === t('placeholder.selectArmCode') || 
-        item.trsf_arm_cd === t('placeholder.noArmAvailable') ||
-        item.trsf_prod_name === t('placeholder.selectDrawerProduct')) && 
-        !(!item.trsf_density || String(item.trsf_density).trim()==='')) {
+      if (
+        !(
+          item.trsf_arm_cd === t('placeholder.selectArmCode') ||
+          item.trsf_arm_cd === t('placeholder.noArmAvailable') ||
+          item.trsf_prod_name === t('placeholder.selectDrawerProduct')
+        ) &&
+        !(!item.trsf_density || String(item.trsf_density).trim() === '')
+      ) {
         found = true;
         break;
       }
@@ -703,16 +756,20 @@ const DrawerProductTransfers = ({
       description: (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') 
         ? t('descriptions.copyScheduledQuantity') : t('descriptions.copyCompartmentCapacity'),
     }); */
-  
+
     // console.log('DrawerProductTransfers: onCopy');
-    
+
     // const payload = form.getFieldValue('transfers');
     _.forEach(payload, (item) => {
       // console.log('DrawerProductTransfers: onCopy in loop before', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
-      if (!(item.trsf_arm_cd === t('placeholder.selectArmCode') || 
-        item.trsf_arm_cd === t('placeholder.noArmAvailable') ||
-        item.trsf_prod_name === t('placeholder.selectDrawerProduct')) && 
-        !(!item.trsf_density || String(item.trsf_density).trim()==='')) {
+      if (
+        !(
+          item.trsf_arm_cd === t('placeholder.selectArmCode') ||
+          item.trsf_arm_cd === t('placeholder.noArmAvailable') ||
+          item.trsf_prod_name === t('placeholder.selectDrawerProduct')
+        ) &&
+        !(!item.trsf_density || String(item.trsf_density).trim() === '')
+      ) {
         if (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') {
           // item.trsf_qty_amb = item.trsf_qty_plan;
           item.trsf_qty_amb = String(_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left));
@@ -735,8 +792,10 @@ const DrawerProductTransfers = ({
 
     notification.success({
       message: t('messages.copyQuantitySuccess'),
-      description: (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') 
-        ? t('descriptions.copyScheduledQuantitySuccess') : t('descriptions.copyCompartmentCapacitySuccess'),
+      description:
+        sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT'
+          ? t('descriptions.copyScheduledQuantitySuccess')
+          : t('descriptions.copyCompartmentCapacitySuccess'),
     });
 
     toggleCalcButton();
@@ -749,9 +808,13 @@ const DrawerProductTransfers = ({
     const payload = form.getFieldValue('transfers');
 
     if (payload) {
-      const item = _.find(payload, (o) => (
-        (o?.trsf_temp===0 || o?.trsf_temp) && o?.trsf_density && (o?.trsf_qty_amb || o?.trsf_qty_cor || o?.trsf_load_kg)
-      ));
+      const item = _.find(
+        payload,
+        (o) =>
+          (o?.trsf_temp === 0 || o?.trsf_temp) &&
+          o?.trsf_density &&
+          (o?.trsf_qty_amb || o?.trsf_qty_cor || o?.trsf_load_kg)
+      );
       if (item) {
         setCanCalc(true);
       } else {
@@ -760,7 +823,7 @@ const DrawerProductTransfers = ({
     } else {
       setCanCalc(false);
     }
-  }
+  };
 
   const toggleRestoreButton = () => {
     // console.log('DrawerProductTransfers: toggle button Get Tank Densities ', canRestore);
@@ -768,7 +831,7 @@ const DrawerProductTransfers = ({
     // console.log('DrawerProductTransfers: toggle button Get Tank Densities ', payload);
 
     if (payload) {
-      const item = _.find(payload, (o) => (o?.trsf_density));
+      const item = _.find(payload, (o) => o?.trsf_density);
       if (item) {
         setCanRestore(true);
       } else {
@@ -777,7 +840,7 @@ const DrawerProductTransfers = ({
     } else {
       setCanRestore(false);
     }
-  }
+  };
 
   const toggleCopyButton = () => {
     // console.log('DrawerProductTransfers: toggle button Copy ', canCopy);
@@ -785,12 +848,15 @@ const DrawerProductTransfers = ({
     // console.log('DrawerProductTransfers: toggle button Copy ', payload);
 
     if (payload) {
-      const item = _.find(payload, (o) => (
-        !(o.trsf_arm_cd === t('placeholder.selectArmCode') || 
-        o.trsf_arm_cd === t('placeholder.noArmAvailable') ||
-        o.trsf_prod_name === t('placeholder.selectDrawerProduct')) && 
-        !(!o.trsf_density || String(o.trsf_density).trim()==='')
-      ));
+      const item = _.find(
+        payload,
+        (o) =>
+          !(
+            o.trsf_arm_cd === t('placeholder.selectArmCode') ||
+            o.trsf_arm_cd === t('placeholder.noArmAvailable') ||
+            o.trsf_prod_name === t('placeholder.selectDrawerProduct')
+          ) && !(!o.trsf_density || String(o.trsf_density).trim() === '')
+      );
       // console.log('DrawerProductTransfers: toggle button Copy item', item);
       if (item) {
         setCanCopy(true);
@@ -800,23 +866,33 @@ const DrawerProductTransfers = ({
     } else {
       setCanCopy(false);
     }
-  }
+  };
 
   const onCellUpdate = (value) => {
     // console.log('DrawerProductTransfers: onCellUpdate', value);
     // console.log('DrawerProductTransfers: onCellUpdate2', value?.colDef?.field, value?.colDef?.headerName, value?.value, value?.newValue, value?.data.trsf_cmpt_capacit);
-    if (value?.colDef?.field === 'trsf_arm_cd' || 
-      value?.colDef?.field === 'trsf_temp' || 
-      value?.colDef?.field === 'trsf_qty_amb' || 
+    if (
+      value?.colDef?.field === 'trsf_arm_cd' ||
+      value?.colDef?.field === 'trsf_temp' ||
+      value?.colDef?.field === 'trsf_qty_amb' ||
       value?.colDef?.field === 'trsf_qty_cor' ||
-      value?.colDef?.field === 'trsf_load_kg') {
+      value?.colDef?.field === 'trsf_load_kg'
+    ) {
       // user has changed something, remind that re-calc may be required
       // if (value?.newValue !== value?.oldValue)
       const changes = drawerChanges;
       const id = `${value?.colDef?.field}${value?.data.trsf_cmpt_no}`;
-      _.remove(changes, (o) => (o.key === id));
+      _.remove(changes, (o) => o.key === id);
       changes.push({
-        field: value?.colDef?.headerName + ' [' + t('fields.compartment') + ' ' + value?.data.trsf_cmpt_no + ': ' + value?.newValue + ']',
+        field:
+          value?.colDef?.headerName +
+          ' [' +
+          t('fields.compartment') +
+          ' ' +
+          value?.data.trsf_cmpt_no +
+          ': ' +
+          value?.newValue +
+          ']',
         message: t('prompts.valueChangeNeedRecalc'),
         key: id,
       });
@@ -889,7 +965,18 @@ const DrawerProductTransfers = ({
   }, [supplier, trip, repost, transactions, composition]); */
 
   useEffect(() => {
-    const values = columns(t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms);
+    const values = columns(
+      t,
+      form,
+      sourceType,
+      loadType,
+      loadNumber,
+      setPayload,
+      payload,
+      products,
+      composition,
+      productArms
+    );
     // console.log('!!!!!!!!!!!!!!!!!!!!!!!I am here !!!!!', sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms);
     setFields(values);
   }, [t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms]);
@@ -957,11 +1044,10 @@ const DrawerProductTransfers = ({
     setDataBoard(board);
   }, [payload]);
 
-
   return (
     <>
       <Card size="small" title={t('divider.drawerProductTransfer')}>
-        <Row gutter={[1,8]}>
+        <Row gutter={[1, 8]}>
           <Col span={24}>
             <Button
               type="danger"
@@ -973,31 +1059,28 @@ const DrawerProductTransfers = ({
               {t('operations.deleteTransfer')}
             </Button>
 
-            <Tooltip 
-              placement="topLeft" 
-              title={
-                !clicked 
-                ? t('descriptions.clearAllTransfer') 
-                : t('descriptions.clearLineTransfer')                  
-              }
+            <Tooltip
+              placement="topLeft"
+              title={!clicked ? t('descriptions.clearAllTransfer') : t('descriptions.clearLineTransfer')}
             >
               <Button
                 type="danger"
                 icon={<ClearOutlined />}
                 style={{ marginRight: 5 }}
                 onClick={onClear}
-                disabled={updating || !payload || payload?.length===0}
+                disabled={updating || !payload || payload?.length === 0}
               >
                 {t('operations.clearTransfer')}
               </Button>
             </Tooltip>
 
-            <Button 
-              type="primary" 
-              icon={<UndoOutlined />} 
+            <Button
+              type="primary"
+              icon={<UndoOutlined />}
               onClick={onRestore}
-              style={{ float: 'right', marginRight: 5 }} 
-              disabled={!canRestore || updating}>
+              style={{ float: 'right', marginRight: 5 }}
+              disabled={!canRestore || updating}
+            >
               {t('operations.getTankDensities')}
             </Button>
 
@@ -1018,12 +1101,12 @@ const DrawerProductTransfers = ({
             </Button>
 
             {true && (
-              <Tooltip 
-                placement="topLeft" 
+              <Tooltip
+                placement="topLeft"
                 title={
-                  (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') 
-                  ? t('descriptions.copyScheduledQuantity') 
-                  : t('descriptions.copyCompartmentCapacity')                  
+                  sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT'
+                    ? t('descriptions.copyScheduledQuantity')
+                    : t('descriptions.copyCompartmentCapacity')
                 }
               >
                 <Button
@@ -1046,7 +1129,7 @@ const DrawerProductTransfers = ({
             isLoading={updating}
             minimal={true}
             // parentHeight="200px"
-            parentHeight={!!payload ? `${payload.length*25+90}px`:"200px"}
+            parentHeight={!!payload ? `${payload.length * 25 + 90}px` : '200px'}
             data={payload}
             // extra={modifiers}
             columns={fields}
@@ -1059,18 +1142,17 @@ const DrawerProductTransfers = ({
         </Form.Item>
       </Card>
 
-      <Row gutter={[1,8]}>
-        <Col span={24}>
-        </Col>
+      <Row gutter={[1, 8]}>
+        <Col span={24}></Col>
       </Row>
       <Card size="small" title={t('divider.baseProducts')}>
         <Tabs defaultActiveKey="1" animated={false} type="card">
           <TabPane tab={t('tabColumns.baseProductDetails')} key="1" forceRender={true}>
-            <BaseProductTransfers 
-              form={form} 
-              sourceType={sourceType} 
-              selected={selected} 
-              transfers={payload} 
+            <BaseProductTransfers
+              form={form}
+              sourceType={sourceType}
+              selected={selected}
+              transfers={payload}
               productArms={productArms}
               clicked={clicked}
               updating={updating}
@@ -1085,11 +1167,11 @@ const DrawerProductTransfers = ({
             />
           </TabPane>
           <TabPane tab={t('tabColumns.cumulativeBaseProduct')} key="2" forceRender={true}>
-            <BaseProductTotals 
-              form={form} 
-              sourceType={sourceType} 
-              selected={selected} 
-              transfers={payload} 
+            <BaseProductTotals
+              form={form}
+              sourceType={sourceType}
+              selected={selected}
+              transfers={payload}
               productArms={productArms}
               clicked={clicked}
               updating={updating}
@@ -1106,18 +1188,17 @@ const DrawerProductTransfers = ({
         </Tabs>
       </Card>
 
-      <Row gutter={[1,8]}>
-        <Col span={24}>
-        </Col>
+      <Row gutter={[1, 8]}>
+        <Col span={24}></Col>
       </Row>
       <Card size="small" title={t('divider.meters')}>
         <Tabs defaultActiveKey="1" animated={false} type="card">
           <TabPane tab={t('tabColumns.meterDetail')} key="1" forceRender={true}>
-            <MeterTransfers 
-              form={form} 
-              sourceType={sourceType} 
-              selected={selected} 
-              transfers={payload} 
+            <MeterTransfers
+              form={form}
+              sourceType={sourceType}
+              selected={selected}
+              transfers={payload}
               productArms={productArms}
               dataBoard={dataBoard}
               setDataBoard={setDataBoard}
@@ -1128,11 +1209,11 @@ const DrawerProductTransfers = ({
             />
           </TabPane>
           <TabPane tab={t('tabColumns.cumulativeMeterTotals')} key="2" forceRender={true}>
-            <MeterTotals 
-              form={form} 
-              sourceType={sourceType} 
-              selected={selected} 
-              transfers={payload} 
+            <MeterTotals
+              form={form}
+              sourceType={sourceType}
+              selected={selected}
+              transfers={payload}
               productArms={productArms}
               dataBoard={dataBoard}
               setDataBoard={setDataBoard}
