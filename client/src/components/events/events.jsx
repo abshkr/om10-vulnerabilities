@@ -4,16 +4,29 @@ import { Menu, List, Dropdown, Button, Badge } from 'antd';
 import { BellOutlined, CloseOutlined } from '@ant-design/icons';
 
 import useSWR from 'swr';
+import { useAudio } from 'hooks';
 import _ from 'lodash';
 
-import { AUTH } from '../../api';
+import { AUTH, COMMON } from '../../api';
 
 const Events = () => {
+  const [playing, toggle] = useAudio(COMMON.WARNING_SOUND);
+
   const { data } = useSWR(AUTH.SESSION);
 
   const [events, setEvents] = useState([]);
   const [visible, setVisible] = useState(false);
   const [seen, setSeen] = useState([]);
+
+  const onVisibleChange = (value) => {
+    // stop playing the noise if the sound is playing and the menu is opened.
+
+    if (playing) {
+      toggle();
+    }
+
+    setVisible(value);
+  };
 
   const onRemove = (message) => {
     let payload = [...seen, message];
@@ -31,9 +44,18 @@ const Events = () => {
     setEvents(filtered.slice(0, 4));
   }, [data, seen]);
 
+  useEffect(() => {
+    // play if there are events and the sound is not playing
+
+    if (events.length > 0 && !playing && !visible) {
+      toggle();
+    }
+  }, [events, playing, visible]);
+
   const menu = (
     <Menu style={{ display: events.length === 0 && 'none' }}>
       <List
+        style={{ minWidth: 300 }}
         itemLayout="horizontal"
         dataSource={events}
         size="small"
@@ -60,7 +82,7 @@ const Events = () => {
     <Dropdown
       visible={visible}
       overlay={menu}
-      onVisibleChange={setVisible}
+      onVisibleChange={onVisibleChange}
       trigger={['click']}
       disabled={events.length === 0}
     >
