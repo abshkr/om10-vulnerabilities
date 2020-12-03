@@ -46,6 +46,7 @@ const FormModal = ({
   setFilterValue,
   expiryDateMode,
   expiryTypes,
+  config,
 }) => {
   const [passwordResetVisible, setPasswordResetVisible] = useState(false);
   const { t } = useTranslation();
@@ -297,7 +298,7 @@ const FormModal = ({
                 <Employer form={form} value={value} />
               </Col>
               <Col span={8}>
-                <Code form={form} value={value} />
+                <Code form={form} value={value} config={config} />
               </Col>
               <Col span={8}>
                 <Name form={form} value={value} />

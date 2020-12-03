@@ -14,7 +14,9 @@ import Forms from './forms';
 import { useAuth, useConfig } from 'hooks';
 
 const Personnel = () => {
-  const { expiryDateMode } = useConfig();
+  const config = useConfig();
+  const expiryDateMode = config.expiryDateMode;
+  // const { expiryDateMode } = useConfig();
   const { t } = useTranslation();
 
   const access = useAuth('M_PERSONNEL');
@@ -73,14 +75,15 @@ const Personnel = () => {
         autoColWidth
         filterValue={filterValue}
       />
-      <Forms 
-        value={selected} 
-        visible={visible} 
-        handleFormState={handleFormState} 
-        access={access} 
+      <Forms
+        value={selected}
+        visible={visible}
+        handleFormState={handleFormState}
+        access={access}
         setFilterValue={setFilterValue}
         expiryDateMode={expiryDateMode}
         expiryTypes={expiryTypes?.records}
+        config={config}
       />
     </Page>
   );
