@@ -961,7 +961,7 @@ class ManualTrans extends CommonClass
     }
 
     //Update a tanker of a PreOrder schedule
-    private function update_tanker() 
+    private function update_tanker($tanker) 
     {
         if (!isset($this->new_tanker)) {
             return;
@@ -979,6 +979,12 @@ class ManualTrans extends CommonClass
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             throw new DatabaseException($e['message']);;
+        }
+
+        $journal = new Journal($this->conn, false);
+        if (isset($tanker) && $tanker != $this->new_tanker) {
+            $record = sprintf("shls_supp:%s, shls_trip_no:%d", $this->supplier, $this->trip_no);
+            $journal->valueChange("SCHEDULE", $record, "SHL_TANKER", $tanker, $this->new_tanker);
         }
 
         return;
@@ -1010,7 +1016,7 @@ class ManualTrans extends CommonClass
         if (strtoupper($row['LD_TYPE']) === "PREORDER" 
         && isset($this->new_tanker) && strlen($this->new_tanker) > 0
         && $tanker !== $this->new_tanker) {
-            $this->update_tanker();
+            $this->update_tanker($tanker);
             $tanker = $this->new_tanker;
         }
 
