@@ -283,7 +283,7 @@ const FormModal = ({
               width="36vw"
             >
               <Form layout="vertical">
-                <PasswordReset value={value} />
+                <PasswordReset value={value} setHide={() => setPasswordResetVisible(false)}/>
               </Form>
             </Drawer>
           )}
