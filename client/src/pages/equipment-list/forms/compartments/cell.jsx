@@ -22,6 +22,14 @@ const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, 
   const save = async (e) => {
     let values = await form.validateFields();
 
+    if (values?.safefill === undefined) {
+      values.safefill = record?.safefill;
+    }
+
+    if (values?.sfl === undefined) {
+      values.sfl = record?.sfl;
+    }
+
     if (values?.safefill) {
       if (!record?.sfl || _.toNumber(values?.safefill) <= record?.sfl) {
         onEdit();
