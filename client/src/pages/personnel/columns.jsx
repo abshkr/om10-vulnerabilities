@@ -6,7 +6,7 @@ const columns = (expiryTypes, t, expiryDateMode) => {
       if (expiryDateMode === '1') {
         expiryColumns.push({
           headerName: expiryTypes[i].expiry_date_titl,
-          field: "per_exp_d" + (i + 1) + "_dmy",
+          field: 'per_exp_d' + (i + 1) + '_dmy',
           sortable: true,
           resizable: true,
           // filter: 'FuzzyFilter',
@@ -17,7 +17,7 @@ const columns = (expiryTypes, t, expiryDateMode) => {
       } else {
         expiryColumns.push({
           headerName: expiryTypes[i].edt_type_desc,
-          field: "expiry_dates",
+          field: 'expiry_dates',
           sortable: true,
           resizable: true,
           // filter: 'FuzzyFilter',
@@ -26,12 +26,13 @@ const columns = (expiryTypes, t, expiryDateMode) => {
           width: 180,
           cellRendererParams: {
             edt_type_code: expiryTypes[i].edt_type_code,
-          }
+            edt_time_enabled: expiryTypes[i].edt_time_enabled,
+          },
         });
       }
     }
   }
-  
+
   return [
     {
       headerName: t('fields.code'),
@@ -41,7 +42,7 @@ const columns = (expiryTypes, t, expiryDateMode) => {
       resizable: true,
       suppressSizeToFit: true,
       width: 110,
-      pinned: "left",
+      pinned: 'left',
     },
     {
       headerName: t('fields.name'),
@@ -51,7 +52,7 @@ const columns = (expiryTypes, t, expiryDateMode) => {
       resizable: true,
       suppressSizeToFit: true,
       width: 140,
-      pinned: "left",
+      pinned: 'left',
     },
     {
       headerName: t('fields.employerCode'),

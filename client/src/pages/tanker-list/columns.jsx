@@ -46,6 +46,7 @@ const columns = (expiryTypes, t, expiryDateMode) => {
           width: 180,
           cellRendererParams: {
             edt_type_code: expiryTypes[i].edt_type_code,
+            edt_time_enabled: expiryTypes[i].edt_time_enabled,
           },
         });
       }
