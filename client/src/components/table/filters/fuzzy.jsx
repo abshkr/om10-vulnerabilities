@@ -5,7 +5,7 @@ export default class FuzzyFilter extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      text: ''
+      text: '',
     };
   }
 
@@ -13,27 +13,21 @@ export default class FuzzyFilter extends Component {
     return this.state.text !== null && this.state.text !== undefined && this.state.text !== '';
   };
 
-  doesFilterPass = params => {
+  doesFilterPass = (params) => {
     return this.state.text
       .toLowerCase()
       .split(' ')
-      .every(filterWord => {
-        return (
-          this.props
-            .valueGetter(params.node)
-            .toString()
-            .toLowerCase()
-            .indexOf(filterWord) >= 0
-        );
+      .every((filterWord) => {
+        return this.props?.valueGetter(params.node)?.toString()?.toLowerCase()?.indexOf(filterWord) >= 0;
       });
   };
 
-  onChange = event => {
+  onChange = (event) => {
     let newValue = event?.target?.value || '';
     if (this.state.text !== newValue) {
       this.setState(
         {
-          text: newValue
+          text: newValue,
         },
         () => {
           this.props.filterChangedCallback();
@@ -52,7 +46,9 @@ export default class FuzzyFilter extends Component {
 
     return (
       <div className="search-tab">
-        <div className="filter-header">{t('fields.filterBy')} {colDef.headerName}</div>
+        <div className="filter-header">
+          {t('fields.filterBy')} {colDef.headerName}
+        </div>
         <Input.Search
           size="small"
           placeholder={`${t('operations.search')} ${colDef.headerName}`}
