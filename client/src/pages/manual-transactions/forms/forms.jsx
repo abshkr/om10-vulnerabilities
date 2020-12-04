@@ -58,6 +58,7 @@ const Forms = ({
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [tankersLoading, setTankersLoading] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState(null);
+  const [activeFlag, setActiveFlag] = useState(false);
 
   /* const { data: suppliers, isValidating: suppliersLoading } = useSWR(
     // sourceType === 'SCHEDULE' ? MANUAL_TRANSACTIONS.SCHEDULE_SUPPLIERS : MANUAL_TRANSACTIONS.ORDER_SUPPLIERS
@@ -82,7 +83,6 @@ const Forms = ({
     } else {
       return [];
     }
-
   };
 
   const getTripsBySupplier = async (supplier) => {
@@ -104,17 +104,19 @@ const Forms = ({
   };
 
   const getOrdersByCustomer = async (supplier, customer) => {
-    const results = await api.get(
-      `${MANUAL_TRANSACTIONS.ORDERS}?supplier=${supplier}&customer=${customer}`
-    );
+    const results = await api.get(`${MANUAL_TRANSACTIONS.ORDERS}?supplier=${supplier}&customer=${customer}`);
 
     return results?.data;
   };
 
   const getTripTypeByTrip = async (supplier, trip) => {
-    const results = await api.get(
-      `${MANUAL_TRANSACTIONS.TRIP_TYPE}?supplier=${supplier}&trip_no=${trip}`
-    );
+    const results = await api.get(`${MANUAL_TRANSACTIONS.TRIP_TYPE}?supplier=${supplier}&trip_no=${trip}`);
+
+    return results?.data;
+  };
+
+  const getTripBriefsByTrip = async (supplier, trip) => {
+    const results = await api.get(`${MANUAL_TRANSACTIONS.TRIP_BRIEFS}?supplier=${supplier}&trip_no=${trip}`);
 
     return results?.data;
   };
@@ -128,9 +130,7 @@ const Forms = ({
   };
 
   const getTripBasicsByTrip = async (supplier, trip) => {
-    const results = await api.get(
-      `${MANUAL_TRANSACTIONS.TRIP_BASICS}?supplier=${supplier}&trip_no=${trip}`
-    );
+    const results = await api.get(`${MANUAL_TRANSACTIONS.TRIP_BASICS}?supplier=${supplier}&trip_no=${trip}`);
 
     return results?.data;
   };
@@ -166,10 +166,12 @@ const Forms = ({
     setTankersLoading(false);
 
     const typeResults = await getTripTypeByTrip(selectedSupplier, trip);
+    const briefsResults = await getTripBriefsByTrip(selectedSupplier, trip);
 
     const sealResults = await getTripSealByTrip(selectedSupplier, trip);
 
     setLoadType(typeResults?.records?.[0]?.schd_type);
+    setActiveFlag(briefsResults?.records?.[0]?.schd_status !== 'F' ? true : false);
     setLoadNumber(trip);
 
     setTankers(tankerResults);
@@ -321,7 +323,7 @@ const Forms = ({
     const suppliers = await getSuppliersByType(type);
     setSuppliers(suppliers);
     setSuppliersLoading(false);
-    
+
     setSourceType(type);
 
     setFieldsValue({
@@ -362,18 +364,17 @@ const Forms = ({
     setFieldsValue({
       seal_range: sealResults?.records?.[0]?.shls_seal_no,
     });
-
-  }
+  };
 
   const onViewTripSeals = () => {
     // pop up the dialog to manage seals for the schedule
     //alert('TODO: manage seals for the schedule');
     TripSealManager(
       t('tabColumns.tripSeals'),
-      {supplier_code: selectedSupplier, shls_trip_no: selectedTrip},
+      { supplier_code: selectedSupplier, shls_trip_no: selectedTrip },
       loadTripSeal,
       '80vw',
-      '40vh',
+      '40vh'
     );
   };
 
@@ -384,17 +385,17 @@ const Forms = ({
     });
 
     setOrderSeals(value?.sealList);
-  }
+  };
 
   const onViewOrderSeals = () => {
     // pop up the dialog to manage seals for the open order
     //alert('TODO: manage seals for the open order');
     OrderSealManager(
       t('tabColumns.orderSeals'),
-      {supplier_code: selectedSupplier, order_no: selectedOrder},
+      { supplier_code: selectedSupplier, order_no: selectedOrder },
       loadOrderSeal,
       '80vw',
-      '40vh',
+      '40vh'
     );
   };
 
@@ -402,7 +403,7 @@ const Forms = ({
     setFormLoading(true);
 
     handleTypeSelect(params?.trans_type);
-    
+
     if (params?.trans_type === 'SCHEDULE') {
       setTripsLoading(true);
       const trips = await getTripsBySupplier(params?.supplier);
@@ -429,7 +430,7 @@ const Forms = ({
     } else {
       setOrders(null);
     }
-    
+
     setTankersLoading(true);
     const tankers = await getTankersByCarrier(params?.carrier);
     setTankers(tankers);
@@ -444,9 +445,11 @@ const Forms = ({
       const value = results?.records?.[0];
 
       const typeResults = await getTripTypeByTrip(params?.supplier, params?.trip_no);
+      const briefsResults = await getTripBriefsByTrip(params?.supplier, params?.trip_no);
       const sealResults = await getTripSealByTrip(params?.supplier, params?.trip_no);
 
       setLoadType(typeResults?.records?.[0]?.schd_type);
+      setActiveFlag(briefsResults?.records?.[0]?.schd_status !== 'F' ? true : false);
       setLoadNumber(params?.trip_no);
       setSelectedTrip(params?.trip_no);
       setSelectedTanker(params?.tanker ? params?.tanker : value?.tnkr_code);
@@ -458,7 +461,11 @@ const Forms = ({
         trip_no: params?.trip_no,
         tanker: params?.tanker ? params?.tanker : value?.tnkr_code,
         carrier: params?.carrier ? params?.carrier : value?.carrier,
-        driver: params?.driver ? params?.driver : (!value?.driver ? drivers?.records?.[0]?.per_code : value?.driver),
+        driver: params?.driver
+          ? params?.driver
+          : !value?.driver
+          ? drivers?.records?.[0]?.per_code
+          : value?.driver,
         seal_range: params?.seal_range ? params?.seal_range : sealResults?.records?.[0]?.shls_seal_no,
       });
     }
@@ -492,7 +499,8 @@ const Forms = ({
 
   // get all the list in one place
   useEffect(() => {
-    if (params && 
+    if (
+      params &&
       !sourceType &&
       !loadType &&
       !selectedSupplier &&
@@ -503,7 +511,16 @@ const Forms = ({
     ) {
       getFormLists(params);
     }
-  }, [params, sourceType, loadType, selectedSupplier, selectedCustomer, selectedTrip, selectedOrder, selectedTanker]);
+  }, [
+    params,
+    sourceType,
+    loadType,
+    selectedSupplier,
+    selectedCustomer,
+    selectedTrip,
+    selectedOrder,
+    selectedTanker,
+  ]);
 
   // get all the list in one place
   useEffect(() => {
@@ -521,7 +538,6 @@ const Forms = ({
       }
     }
   }, [drivers, selectedDriver, selectedTrip, selectedOrder, setSelectedDriver]);
-
 
   /* useEffect(() => {
     if (params && !sourceType) {
@@ -576,7 +592,7 @@ const Forms = ({
     // const interval = setInterval(() => {
     //   if (serverTime) {
     //     const current = moment().add(diff / 1000, 'seconds').format(dateTimeFormat);
-    
+
     setFieldsValue({
       start_date: serverCurrent, // moment(),
       end_date: serverCurrent, // moment(),
@@ -608,7 +624,8 @@ const Forms = ({
               dropdownMatchSelectWidth={false}
               allowClear
               showSearch
-              disabled={sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT'}
+              // disabled={sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT'}
+              disabled={sourceType === 'SCHEDULE' && (loadType === 'BY_COMPARTMENT' || activeFlag === true)}
               loading={carriersLoading}
               onChange={handleCarrierSelect}
               optionFilterProp="children"
@@ -627,7 +644,11 @@ const Forms = ({
         </Col>
 
         <Col span={8}>
-          <Form.Item name="user_comments" label={t('fields.mtDataUserComments')} rules={[{ required: false }]}>
+          <Form.Item
+            name="user_comments"
+            label={t('fields.mtDataUserComments')}
+            rules={[{ required: false }]}
+          >
             <Input />
           </Form.Item>
         </Col>
@@ -664,7 +685,7 @@ const Forms = ({
               dropdownMatchSelectWidth={false}
               allowClear
               showSearch
-              disabled={sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT'}
+              disabled={sourceType === 'SCHEDULE' && (loadType === 'BY_COMPARTMENT' || activeFlag === true)}
               loading={tankersLoading}
               onChange={handleTankerSelect}
               optionFilterProp="children"

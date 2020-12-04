@@ -17,6 +17,7 @@ class Area extends CommonClass
             SELECT 
                 ar.AREA_K,
                 ar.AREA_NAME,
+                ar.AREA_K || ' - ' || ar.AREA_NAME AREA_DESC,
                 ag.GATE_COUNT,
                 ag.GATE_LIST
             FROM 

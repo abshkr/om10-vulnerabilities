@@ -48,7 +48,7 @@ const Terminal = ({ form, value }) => {
       >
         {options?.records?.map((item, index) => (
           <Select.Option key={index} value={item.term_code}>
-            {item.term_code} - {item.term_name}
+            {item.term_desc}
           </Select.Option>
         ))}
       </Select>

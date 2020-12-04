@@ -61,6 +61,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
   const [prod_is_locked, setLocked] = useState(value?.prod_is_locked);
   const [selected, setSelected] = useState(null);
   const [hotFlag, setHotFlag] = useState(value?.prod_check_hot_volume);
+  const [blendFlag, setBlendFlag] = useState(value?.prod_is_blend);
 
   const [baseLoading, setBaseLoading] = useState(true);
   const [genericFlag, setGenericFlag] = useState(false);
@@ -113,6 +114,22 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
     setFieldsValue({
       prod_check_hot_volume: hotFound,
     });
+  };
+
+  const adjustBlendFlag = (bases) => {
+    let countMainBase = 0;
+
+    for (let i = 0; i < bases.length; i++) {
+      const base = bases[i];
+      if (!!base && base?.pitem_adtv_flag === false) {
+        countMainBase += 1;
+      }
+    }
+
+    const isBlend = countMainBase > 1 ? true : false;
+    setBlendFlag(isBlend);
+
+    return isBlend;
   };
 
   const handleBaseCallBack = (values) => {
@@ -275,6 +292,8 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
         return;
       }
 
+      values.prod_is_blend = adjustBlendFlag(values?.bases);
+
       Modal.confirm({
         title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
         okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -369,6 +388,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
     });
 
     adjustHotTempCheckFlag(bases);
+    adjustBlendFlag(bases);
   }, [bases]); //, adjustHotTempCheckFlag, setFieldsValue]);
 
   const layout = {
@@ -449,7 +469,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
                 <DrawerCompany form={form} value={value} />
               </Col>
               <Col span={8}>
-                <ProductCode form={form} value={value} />
+                <ProductCode form={form} value={value} config={config} />
               </Col>
               <Col span={8}>
                 <ProductName form={form} value={value} />

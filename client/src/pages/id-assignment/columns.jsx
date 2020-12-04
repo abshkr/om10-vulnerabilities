@@ -67,7 +67,7 @@ const columns = (t) => [
     field: 'kya_adhoc',
     sortable: true,
     filter: 'BooleanFilter',
-    cellRenderer: 'LockRenderer',
+    cellRenderer: 'BooleanRenderer',
     resizable: true,
     suppressSizeToFit: true,
     width: 100,

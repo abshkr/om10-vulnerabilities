@@ -13,7 +13,7 @@ import { ConfigurationContainer } from './styles';
 import api, { SITE_CONFIGURATION } from '../../api';
 import { Page } from '../../components';
 import auth from '../../auth';
-import { complexityDesc } from 'utils'
+import { complexityDesc } from 'utils';
 
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -28,10 +28,10 @@ const FormSwitch = ({ config, onChange }) => {
   switch (config.config_key) {
     case 'URBAC_PWD_COMPLEXITY':
       return (
-        <Select 
+        <Select
           dropdownMatchSelectWidth={false}
-          defaultValue={config.config_value} 
-          style={{ width: 280 }} 
+          defaultValue={config.config_value}
+          style={{ width: 280 }}
           onChange={(value) => onChange(config, value)}
         >
           <Option value="6">{complexityDesc('6', t)}</Option>
@@ -42,23 +42,23 @@ const FormSwitch = ({ config, onChange }) => {
 
     case 'SHLS_SEAL_FMT':
       return (
-        <Select 
+        <Select
           // dropdownMatchSelectWidth={false}
-          defaultValue={config.config_value} 
-          style={{ width: 280 }} 
+          defaultValue={config.config_value}
+          style={{ width: 280 }}
           onChange={(value) => onChange(config, value)}
         >
           <Option value="RANGE">{t('descriptions.sealRangeWithRange')}</Option>
           <Option value="COMMA">{t('descriptions.sealRangeWithComma')}</Option>
         </Select>
       );
-  
+
     case 'SITE_SEAL_MODE':
       return (
-        <Select 
+        <Select
           // dropdownMatchSelectWidth={false}
-          defaultValue={config.config_value} 
-          style={{ width: 280 }} 
+          defaultValue={config.config_value}
+          style={{ width: 280 }}
           onChange={(value) => onChange(config, value)}
         >
           <Option value="0">{t('descriptions.sealModeNoAuto')}</Option>
@@ -379,7 +379,7 @@ const FeatureItems = ({ data, onChange, t }) => (
               />
             }
             // eslint-disable-next-line
-            title={<a>{t('features.'+item.feature_code)}</a>}
+            title={<a>{t('features.' + item.feature_code)}</a>}
           />
         </List.Item>
       );
@@ -495,21 +495,23 @@ const Configuration = ({ user, config }) => {
   }, [configPayload, featuresPayload]);
 
   const onUpdate = () => {
-    const values = UPDATING_FEATURES ? features : _.filter(configuration, (item) => {
-      if (item.config_required_by_gui === "") {
-        return false;
-      }
+    const values = UPDATING_FEATURES
+      ? features
+      : _.filter(configuration, (item) => {
+          if (item.config_required_by_gui === '') {
+            return false;
+          }
 
-      const target = _.find(origConfigs, origItem => {
-        return origItem.config_key === item.config_key;
-      });
-      
-      if (target?.config_value === item.config_value) {
-        return false;
-      }
-      
-      return true;
-    });
+          const target = _.find(origConfigs, (origItem) => {
+            return origItem.config_key === item.config_key;
+          });
+
+          if (target?.config_value === item.config_value) {
+            return false;
+          }
+
+          return true;
+        });
 
     Modal.confirm({
       title: t('prompts.update'),
@@ -638,7 +640,10 @@ const Configuration = ({ user, config }) => {
 
           <TabPane tab={t('tabColumns.seals')} key="6">
             <ConfigurationItems
-              data={_.sortBy(_.filter(configuration, ['config_required_by_gui', 'S']), ['config_key', 'config_comment'])}
+              data={_.sortBy(_.filter(configuration, ['config_required_by_gui', 'S']), [
+                'config_key',
+                'config_comment',
+              ])}
               onChange={onConfigurationEdit}
               t={t}
             />
@@ -650,13 +655,15 @@ const Configuration = ({ user, config }) => {
             </TabPane>
           )}
 
-          <TabPane tab={t('tabColumns.hostMessaging')} key="8">
-            <HostMessagingItems
-              data={_.filter(configuration, ['config_required_by_gui', 'H'])}
-              onChange={onConfigurationEdit}
-              t={t}
-            />
-          </TabPane>
+          {user?.per_code === '9999' && (
+            <TabPane tab={t('tabColumns.hostMessaging')} key="8">
+              <HostMessagingItems
+                data={_.filter(configuration, ['config_required_by_gui', 'H'])}
+                onChange={onConfigurationEdit}
+                t={t}
+              />
+            </TabPane>
+          )}
         </Tabs>
       </Page>
     </ConfigurationContainer>

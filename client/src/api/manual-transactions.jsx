@@ -23,7 +23,6 @@ export const GET_PROD_ARMS = '/api/pages/manual_trans/get_prod_arms.php';
 export const TRANSACTIONS = '/api/pages/manual_trans/transactions.php';
 export const TANKER_DETAILS = '/api/pages/manual_trans/get_tanker_details.php';
 
-
 export const CALCULATE = '/api/pages/manual_trans/calc_vcf.php';
 export const SUBMIT = '/api/pages/manual_trans/submit.php';
 export const SAVE = '/api/pages/manual_trans/save.php ';
@@ -34,3 +33,4 @@ export const SAVE_MT_DATA = '/api/pages/manual_trans/save_mt_data.php';
 export const DELETE_MT_DATA = '/api/pages/manual_trans/delete_mt_data.php';
 
 export const GET_TRIP_SEAL = '/api/pages/manual_trans/get_trip_seal.php';
+export const TRIP_BRIEFS = '/api/pages/manual_trans/get_trip_briefs.php';

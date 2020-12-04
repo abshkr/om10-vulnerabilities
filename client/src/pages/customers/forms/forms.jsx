@@ -31,8 +31,8 @@ import {
   AccountBalance,
   CreditLimit,
 } from './fields';
-import CustomerProduct from './customer_product/customer_product'
-import CustomerCarrier from './customer_carrier/customer_carrier'
+import CustomerProduct from './customer_product/customer_product';
+import CustomerCarrier from './customer_carrier/customer_carrier';
 
 import api, { CUSTOMERS } from '../../../api';
 import { AllocationsPopup } from '../../../pages/allocations';
@@ -50,7 +50,10 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   const [carriers, setCarriers] = useState(undefined);
   const [drawerWidth, setDrawerWidth] = useState('60vw');
   const [mainTabOn, setMainTabOn] = useState(true);
-  const { site_customer_carrier, site_customer_product } = useConfig();
+  const config = useConfig();
+  const site_customer_carrier = config.site_customer_carrier;
+  const site_customer_product = config.site_customer_product;
+  // const { site_customer_carrier, site_customer_product } = useConfig();
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -93,7 +96,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     const values = await form.validateFields();
     values.products = products;
     values.carriers = carriers;
-    
+
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -263,7 +266,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
           <TabPane tab={t('tabColumns.general')} key="1">
             <Row gutter={[8, 2]}>
               <Col span={12}>
-                <Account form={form} value={value} />
+                <Account form={form} value={value} config={config} />
               </Col>
               <Col span={12}>
                 <Supplier form={form} value={value} onChange={setSupplier} />
@@ -302,14 +305,16 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               <Col span={12}>{!IS_CREATING && <CreditLimit form={form} value={value} />}</Col>
             </Row>
           </TabPane>
-          {!IS_CREATING && site_customer_product && <TabPane tab={t('tabColumns.customerProduct')} key="2">
-            <CustomerProduct form={form} value={value} changeProducts={setProducts} />
-          </TabPane> 
-          }
-          {!IS_CREATING && site_customer_carrier && <TabPane tab={t('tabColumns.customerCarrier')} key="3">
-            <CustomerCarrier form={form} value={value} changeCarriers={setCarriers} />
-          </TabPane> 
-          }
+          {!IS_CREATING && site_customer_product && (
+            <TabPane tab={t('tabColumns.customerProduct')} key="2">
+              <CustomerProduct form={form} value={value} changeProducts={setProducts} />
+            </TabPane>
+          )}
+          {!IS_CREATING && site_customer_carrier && (
+            <TabPane tab={t('tabColumns.customerCarrier')} key="3">
+              <CustomerCarrier form={form} value={value} changeCarriers={setCarriers} />
+            </TabPane>
+          )}
           <TabPane tab={t('tabColumns.addresses')} key="4">
             <AddressesPopup popup={true} />
           </TabPane>

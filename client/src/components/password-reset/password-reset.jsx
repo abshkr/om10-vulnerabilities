@@ -8,7 +8,7 @@ import _ from 'lodash';
 import api, { PERSONNEL } from '../../api';
 import generatePassword from 'utils/generate-password';
 
-const PasswordReset = ({ value }) => {
+const PasswordReset = ({ value, setHide }) => {
   const { t } = useTranslation();
 
   const [password, setPassword] = useState(generatePassword());
@@ -35,6 +35,7 @@ const PasswordReset = ({ value }) => {
             message: t('messages.updateSuccess'),
             description: response.data.message,
           });
+          setHide();
         })
         .catch((errors) => {
           _.forEach(errors.response.data.errors, (error) => {

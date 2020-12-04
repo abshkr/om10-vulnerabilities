@@ -7,7 +7,7 @@ import { REGEX } from '../../../../constants';
 
 import { PERSONNEL } from '../../../../api';
 
-const Code = ({ form, value }) => {
+const Code = ({ form, value, config }) => {
   const { t } = useTranslation();
   const { data, isValidating } = useSWR(PERSONNEL.READ);
 
@@ -44,8 +44,10 @@ const Code = ({ form, value }) => {
     }
 
     const len = new TextEncoder().encode(input).length;
-    if (input && len > 12) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 12 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && len > config?.maxLengthPsnlCode) {
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${config?.maxLengthPsnlCode} ─ ${t('descriptions.maxCharacters')}`
+      );
     }
 
     return Promise.resolve();

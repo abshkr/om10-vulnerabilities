@@ -15,8 +15,8 @@ const BayLoaded = ({ form, value }) => {
     if (payload && payload.records.length > 0) {
       console.log(payload.records)
       setFieldsValue({
-        avl_sum: payload.records[0].avl_sum,
-        cvl_sum: payload.records[0].cvl_sum,
+        bay_avl_sum: payload.records[0].avl_sum,
+        bay_cvl_sum: payload.records[0].cvl_sum,
       });
     }
   }, [payload]);
@@ -25,7 +25,7 @@ const BayLoaded = ({ form, value }) => {
     <>
       <Col span={8}>
           <Form.Item
-            name="avl_sum"
+            name="bay_avl_sum"
             label={t('fields.bayAmb')}
           >
             <Input disabled={!!value} />
@@ -33,7 +33,7 @@ const BayLoaded = ({ form, value }) => {
         </Col>
         <Col span={8}>
           <Form.Item
-            name="cvl_sum"
+            name="bay_cvl_sum"
             label={t('fields.bayStd')}
           >
             <Input disabled={!!value} />

@@ -8,7 +8,7 @@ import _ from 'lodash';
 import { BASE_PRODUCTS } from '../../../../api';
 import { REGEX } from '../../../../constants';
 
-const Code = ({ form, value }) => {
+const Code = ({ form, value, config }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -43,15 +43,21 @@ const Code = ({ form, value }) => {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.baseProdCode')}`);
     }
 
-    if (input && input.length > 10) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 10 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && input.length > config?.maxLengthBaseCode) {
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${config?.maxLengthBaseCode} ─ ${t('descriptions.maxCharacters')}`
+      );
     }
 
     return Promise.resolve();
   };
 
   return (
-    <Form.Item name="base_code" label={t('fields.baseProdCode')} rules={[{ required: true, validator: validate }]}>
+    <Form.Item
+      name="base_code"
+      label={t('fields.baseProdCode')}
+      rules={[{ required: true, validator: validate }]}
+    >
       <Input disabled={!!value || isValidating} />
     </Form.Item>
   );

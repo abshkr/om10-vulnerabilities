@@ -52,13 +52,14 @@ const Generic = ({ form, value }) => {
       >
         {options?.records.map((item, index) => (
           <Select.Option key={index} value={item.material}>
-            {item.material}{!item.adr_desc1?'':' - '}{item.adr_desc1}{!item.adr_name?'':' - '}{item.adr_name}{!item.adr_type?'':' - '}{item.adr_type}
+            {/* {item.material}{!item.adr_desc1?'':' - '}{item.adr_desc1}{!item.adr_name?'':' - '}{item.adr_name}{!item.adr_type?'':' - '}{item.adr_type} */}
             {/* <Row gutter={[8, 0]}>
               <Col span={5}>{item.material}</Col>
               <Col span={9}>{item.adr_desc1}</Col>
               <Col span={5}>{item.adr_name}</Col>
               <Col span={5}>{item.adr_type}</Col>
             </Row> */}
+            {item.adr_desc}
           </Select.Option>
         ))}
       </Select>

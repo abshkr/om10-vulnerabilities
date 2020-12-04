@@ -86,9 +86,15 @@ const ConfigProvider = ({ children }) => {
     minDensity: 0,
     maxDensity: 2000,
     maxLengthTankCode: 10,
+    maxLengthBaseCode: 20,
+    maxLengthProdCode: 18,
+    maxLengthTnkrCode: 20,
+    maxLengthPsnlCode: 12,
+    maxLengthCmpyCode: 16,
+    maxLengthCustAcct: 40,
     siteUseSG: false,
     load_tolerance_type: 'PERCENT',
-    siteTransferTankSource: "FROM",
+    siteTransferTankSource: 'FROM',
   });
 
   const { data: configuration, revalidate: revalidateConfiguration } = useSWR(SITE_CONFIGURATION.READ, {
@@ -236,10 +242,17 @@ const ConfigProvider = ({ children }) => {
         precisionMass: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_MASS) || 0,
         precisionAdditive: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_ADDITIVE) || 3,
         precisionSG: _.toNumber(configurationObject?.SITE_DEFAULT_PRECISION_SG) || 6,
-        maxLengthTankCode: _.toNumber(configurationObject?.SITE_MAXLEN_TANKCODE) || 10,
+        // maxLengthTankCode: _.toNumber(configurationObject?.SITE_MAXLEN_TANKCODE) || 10,
+        maxLengthTankCode: _.min([_.toNumber(configurationObject?.SITE_MAXLEN_TANKCODE) || 10, 24]),
+        maxLengthBaseCode: _.min([_.toNumber(configurationObject?.SITE_MAXLEN_BASECODE) || 20, 20]),
+        maxLengthProdCode: _.min([_.toNumber(configurationObject?.SITE_MAXLEN_PRODCODE) || 18, 36]),
+        maxLengthTnkrCode: _.min([_.toNumber(configurationObject?.SITE_MAXLEN_TNKRCODE) || 20, 40]),
+        maxLengthPsnlCode: _.min([_.toNumber(configurationObject?.SITE_MAXLEN_PSNLCODE) || 12, 12]),
+        maxLengthCmpyCode: _.min([_.toNumber(configurationObject?.SITE_MAXLEN_CMPYCODE) || 16, 16]),
+        maxLengthCustAcct: _.min([_.toNumber(configurationObject?.SITE_MAXLEN_CUSTACCT) || 40, 40]),
         siteUseSG: configurationObject?.SITE_USE_SG,
         load_tolerance_type: configurationObject?.LOAD_TOLERANCE_TYPE,
-        siteTransferTankSource: configurationObject?.SITE_TRANSFER_TANK_SOURCE || "FROM",
+        siteTransferTankSource: configurationObject?.SITE_TRANSFER_TANK_SOURCE || 'FROM',
         revalidate: () => onRevalidate(),
       });
     }

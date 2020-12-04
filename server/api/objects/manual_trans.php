@@ -299,23 +299,23 @@ class ManualTrans extends CommonClass
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 return null;
             }
-            } else {
-                $query = "
-                    SELECT C.CMPY_CODE CARRIER, 
-                        C.CMPY_NAME CARRIER_NAME,
-                        T.TNKR_CODE,
-                        S.SHLS_DRIVER DRIVER
-                    FROM SCHEDULE S, COMPANYS C, TANKERS T 
-                    WHERE S.SHL_TANKER = T.TNKR_CODE 
-                        AND T.TNKR_CARRIER = C.CMPY_CODE 
-                        AND S.SHLS_SUPP = :supplier 
-                        AND S.SHLS_TRIP_NO = :trip_no
-                ";
-                $stmt = oci_parse($this->conn, $query);
-                oci_bind_by_name($stmt, ':supplier', $this->supplier);
-                oci_bind_by_name($stmt, ':trip_no', $this->trip_no);
-                if (oci_execute($stmt, $this->commit_mode)) {
-                    return $stmt;
+        } else {
+            $query = "
+                SELECT C.CMPY_CODE CARRIER, 
+                    C.CMPY_NAME CARRIER_NAME,
+                    T.TNKR_CODE,
+                    S.SHLS_DRIVER DRIVER
+                FROM SCHEDULE S, COMPANYS C, TANKERS T 
+                WHERE S.SHL_TANKER = T.TNKR_CODE 
+                    AND T.TNKR_CARRIER = C.CMPY_CODE 
+                    AND S.SHLS_SUPP = :supplier 
+                    AND S.SHLS_TRIP_NO = :trip_no
+            ";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':supplier', $this->supplier);
+            oci_bind_by_name($stmt, ':trip_no', $this->trip_no);
+            if (oci_execute($stmt, $this->commit_mode)) {
+                return $stmt;
             } else {
                 $e = oci_error($stmt);
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -960,6 +960,36 @@ class ManualTrans extends CommonClass
         return $stmt;
     }
 
+    //Update a tanker of a PreOrder schedule
+    private function update_tanker($tanker) 
+    {
+        if (!isset($this->new_tanker)) {
+            return;
+        }
+
+        $query = "
+            UPDATE SCHEDULE SET SHL_TANKER = :tanker 
+            WHERE SHLS_TRIP_NO = :trip and SHLS_SUPP = :supplier
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        oci_bind_by_name($stmt, ':trip', $this->trip_no);
+        oci_bind_by_name($stmt, ':tanker', $this->new_tanker);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            throw new DatabaseException($e['message']);;
+        }
+
+        $journal = new Journal($this->conn, false);
+        if (isset($tanker) && $tanker != $this->new_tanker) {
+            $record = sprintf("shls_supp:%s, shls_trip_no:%d", $this->supplier, $this->trip_no);
+            $journal->valueChange("SCHEDULE", $record, "SHL_TANKER", $tanker, $this->new_tanker);
+        }
+
+        return;
+    }
+
     //Old code: ManualTransactions.class.php::getScheduleDetailsBySuppTrip
     public function get_sched_details()
     {
@@ -981,6 +1011,15 @@ class ManualTrans extends CommonClass
 
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         $tanker = $row["TNKR_CODE"];
+
+        // if user has changed the tanker of a PreOrder schedule, update the schedule with new tanker
+        if (strtoupper($row['LD_TYPE']) === "PREORDER" 
+        && isset($this->new_tanker) && strlen($this->new_tanker) > 0
+        && $tanker !== $this->new_tanker) {
+            $this->update_tanker($tanker);
+            $tanker = $this->new_tanker;
+        }
+
         if (strtoupper($row['LD_TYPE']) === "PRESCHEDULE") {
             $query = "SELECT
                     'BY_COMPARTMENT' as SCHD_TYPE,
@@ -1211,7 +1250,7 @@ class ManualTrans extends CommonClass
                     0.0 SCHORDER_QTY,
                     DECODE(pr.PROD_CODE,'-1',NULL,pr.PROD_CODE) PREV_PRODCODE,
                     et.TC_EQPT,
-                    null as SHLSLOAD_LOAD_ID,
+                    sd.SHLSLOAD_LOAD_ID,
                     null as ARM_NAME,
                     null as ARMCODE,
                     NVL(DECODE(sd.SCHD_UNITS, 5, trsf.TRIP_QTY_AMB, 11, trsf.TRIP_QTY_STD, 17, trsf.TRIP_QTY_KG, trsf.TRIP_QTY_DELIVERED),0) as QTY_LOADED,
@@ -1547,5 +1586,36 @@ class ManualTrans extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    public function get_trip_briefs()
+    {
+        $query = "
+            SELECT 
+                DECODE(
+                    UPPER(LD_TYPE), 
+                    'PRESCHEDULE', 'BY_COMPARTMENT', 
+                    'PREORDER', 'BY_PRODUCT', 
+                    UPPER(LD_TYPE)
+                ) as SCHD_TYPE,
+                SHLSLOAD_LOAD_ID  as SCHD_LOAD_ID,
+                STATUS  as SCHD_STATUS,
+                CARRIER_CODE  as SCHD_CARRIER,
+                TNKR_CODE  as SCHD_TANKER
+            FROM GUI_SCHEDULES 
+            WHERE 
+                SUPPLIER_CODE = :supplier 
+                AND SHLS_TRIP_NO = :trip_no
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        oci_bind_by_name($stmt, ':trip_no', $this->trip_no);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        return $stmt;
     }
 }

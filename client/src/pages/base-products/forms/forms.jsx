@@ -186,7 +186,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       <Form layout="vertical" form={form} scrollToFirstError>
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-            <Code form={form} value={value} />
+            <Code form={form} value={value} config={config} />
             <Name form={form} value={value} />
             <Classification
               form={form}

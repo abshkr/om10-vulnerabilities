@@ -7,6 +7,7 @@ import {
   QuestionCircleOutlined,
   DeleteOutlined,
   RedoOutlined,
+  StepForwardOutlined,
 } from '@ant-design/icons';
 
 import { 
@@ -183,6 +184,38 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     });
   };
 
+  const onCompletePmv = () => {
+    Modal.confirm({
+      title: t('prompts.pmvComplete'),
+      okText: t('operations.complete'),
+      okType: 'primary',
+      icon: <RedoOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await api
+          .post(PRODUCT_MOVEMENTS.COMPLETE, value)
+          .then((response) => {
+            onComplete(value?.pmv_batchcode);
+
+            notification.success({
+              message: t('messages.startSuccess'),
+              description: t('descriptions.startSuccess'),
+            });
+          })
+
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
+            });
+          });
+      },
+    });
+  };
+
   const onCompleteBatch = () => {
     Modal.confirm({
       title: t('prompts.pmvCompleteBatch'),
@@ -325,6 +358,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
                 {t('operations.start')}
               </Button>
             )}
+
           </>
         }
       >
@@ -407,6 +441,18 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               {t('operations.create')}
             </Button>
           )}
+
+          {!IS_CREATING && (value.pmv_status === '2') /* Halted */ && (
+              <Button
+                type="primary"
+                icon={<StepForwardOutlined />}
+                onClick={onCompletePmv}
+                style={{ float: 'right', marginRight: 5 }}
+                disabled={!access?.canDelete}
+              >
+                {t('operations.complete')}
+              </Button>
+            )}
 
           {!IS_CREATING && (value.pmv_status === '0' || value.pmv_status === '2') /* New Or Halted */ && (
             <Button

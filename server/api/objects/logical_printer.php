@@ -56,7 +56,8 @@ class LogicalPrinter extends CommonClass
     public function printers()
     {
         $query = "
-            SELECT PRNTR, SYS_PRNTR
+            SELECT PRNTR, SYS_PRNTR,
+                PRNTR || ' - ' || SYS_PRNTR PRNTR_DESC
             FROM PRINTER
             ORDER BY PRNTR";
         $stmt = oci_parse($this->conn, $query);
@@ -72,7 +73,8 @@ class LogicalPrinter extends CommonClass
     public function usages()
     {
         $query = "
-            SELECT *
+            SELECT PRINT_USE.*,
+                USE_ID || ' - ' || USE_NAME USE_DESC
             FROM PRINT_USE
             ORDER BY USE_ID";
         $stmt = oci_parse($this->conn, $query);

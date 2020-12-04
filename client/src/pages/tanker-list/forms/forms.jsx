@@ -51,6 +51,8 @@ const FormModal = ({
   setFilterValue,
   expiryDateMode,
   expiryTypes,
+  config,
+  tankers,
 }) => {
   console.log(expiryTypes);
   const { t } = useTranslation();
@@ -295,7 +297,7 @@ const FormModal = ({
 
             <Row gutter={[8, 2]}>
               <Col span={8}>
-                <Code form={form} value={value} />
+                <Code form={form} value={value} tankers={tankers} config={config} />
               </Col>
               <Col span={8}>
                 <Name form={form} value={value} />

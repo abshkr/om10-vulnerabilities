@@ -201,6 +201,10 @@ function response($case_name, $default = null, $params = null)
             "ENG" => "Product movment started",
             "CHN" => "油品入库开始"
         ),
+        "__PRODUCTMOVEMENT_COMPLETED__" => array(
+            "ENG" => "Product movment completed",
+            "CHN" => "油品入库已结束"
+        ),
         "__PRODUCTMOVEMENT_START_FAIL3__" => array(
             "ENG" => "A movement is already in progress for an associated tank",
             "CHN" => "一个相关的油罐正在进行中，不能开始新的油品入库"

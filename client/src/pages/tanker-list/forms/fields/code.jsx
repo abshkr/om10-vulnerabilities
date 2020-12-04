@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { REGEX } from '../../../../constants';
 
-const Code = ({ form, value, data }) => {
+const Code = ({ form, value, tankers, config }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -19,7 +19,7 @@ const Code = ({ form, value, data }) => {
   }, [value, setFieldsValue]);
 
   const validate = (rule, input) => {
-    const match = _.find(data, ['tnkr_code', input]);
+    const match = _.find(tankers, ['tnkr_code', input]);
 
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.code')}`);
@@ -38,8 +38,10 @@ const Code = ({ form, value, data }) => {
     }
 
     const len = new TextEncoder().encode(input).length;
-    if (input && len > 20) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && len > config?.maxLengthTnkrCode) {
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${config?.maxLengthTnkrCode} ─ ${t('descriptions.maxCharacters')}`
+      );
     }
 
     return Promise.resolve();

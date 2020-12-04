@@ -5,9 +5,9 @@ import { Form, Input } from 'antd';
 import _ from 'lodash';
 import { CUSTOMERS } from '../../../../api';
 
-import {validatorStatus} from '../../../../utils';
+import { validatorStatus } from '../../../../utils';
 
-const Account = ({ form, value }) => {
+const Account = ({ form, value, config }) => {
   const [account, setAccount] = useState(value?.cust_account);
   const [matched, setMatched] = useState(false);
   const { t } = useTranslation();
@@ -48,21 +48,23 @@ const Account = ({ form, value }) => {
 
   // this part is crucial for the instant verification of value
   useEffect(() => {
-    if (account?.length>0) {
+    if (account?.length > 0) {
       validateFields(['cust_account']);
     }
   }, [matched, account, validateFields]);
 
   const validate = (rule, input) => {
-    console.log("account validate")
+    console.log('account validate');
     if (matched && !value) {
       return Promise.reject(t('descriptions.alreadyExists'));
     }
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.custAccount')}`);
     }
-    if (input && input.length > 40) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && input.length > config?.maxLengthCustAcct) {
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${config?.maxLengthCustAcct} ─ ${t('descriptions.maxCharacters')}`
+      );
     }
     return Promise.resolve();
   };
@@ -75,7 +77,7 @@ const Account = ({ form, value }) => {
       label={t('fields.custAccount')}
       hasFeedback
       rules={[{ required: true, validator: validate }]}
-      validateStatus={account ? status : null}
+      // validateStatus={account ? status : null}
       shouldUpdate
     >
       <Input disabled={!!value} onChange={handleFieldChange} />
