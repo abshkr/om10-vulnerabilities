@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Select, notification } from 'antd';
 import _ from 'lodash';
 
-import {calcBaseRatios, calcArmDensity, getAvailableArms, adjustProductArms} from '../../../../utils'
+import { calcBaseRatios, calcArmDensity, getAvailableArms, adjustProductArms } from '../../../../utils';
 
 export default class DrawerProducts extends Component {
   constructor(props) {
@@ -36,13 +36,16 @@ export default class DrawerProducts extends Component {
 
     const items = getAvailableArms(arms, record?.item?.prod_cmpy, record?.item?.prod_code);
     const prodArms = adjustProductArms(arms, record?.item?.prod_cmpy, record?.item?.prod_code);
+    // console.log('DrawerProducts, onClick, Arms', items, prodArms);
 
     current[index].trsf_prod_code = record?.item?.prod_code;
     current[index].trsf_prod_name = record.children;
     // current[index].trsf_prod_name = record?.item?.prod_desc;
     current[index].trsf_prod_cmpy = record?.item?.prod_cmpy;
     // current[index].trsf_arm_cd = items?.length>0 ? t('placeholder.selectArmCode') : t('placeholder.noArmAvailable');
-    current[index].trsf_arm_cd = items?.length>0 ? items?.[0]?.stream_armcode : t('placeholder.noArmAvailable');
+    current[index].trsf_arm_cd =
+      items?.length > 0 ? items?.[0]?.stream_armcode : t('placeholder.noArmAvailable');
+    // console.log('DrawerProducts, onClick, current', current);
     if (sourceType === 'OPENORDER' || (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT')) {
       current[index].trsf_qty_plan = record?.item?.qty_planned;
       current[index].trsf_qty_left = record?.item?.qty_loaded;
@@ -56,7 +59,8 @@ export default class DrawerProducts extends Component {
         });
       }
     }
-    current[index].trsf_density = items?.length>0 ? this.calcDensity(items?.[0]?.stream_armcode, prodArms) : null;
+    current[index].trsf_density =
+      items?.length > 0 ? this.calcDensity(items?.[0]?.stream_armcode, prodArms) : null;
     current[index].trsf_temp = null;
     current[index].trsf_qty_cor = null;
     current[index].trsf_qty_amb = null;
@@ -79,26 +83,26 @@ export default class DrawerProducts extends Component {
   render() {
     const { values, t } = this.props;
 
-    _.forEach(values, (item) => (
-      // `${item.prod_desc} (Planned: ${sourceType==='SCHEDULE' ? item.qty_scheduled : item.schp_specqty} | Loaded: ${item.qty_loaded||0} | ${item.unit_name})`
-      item.prod_text = `${item.prod_desc} (${t('fields.planned')}: ${item.qty_planned||0} | ${t('fields.loaded')}: ${item.qty_loaded||0} | ${item.unit_name})`
-    ));
+    _.forEach(
+      values,
+      (item) =>
+        // `${item.prod_desc} (Planned: ${sourceType==='SCHEDULE' ? item.qty_scheduled : item.schp_specqty} | Loaded: ${item.qty_loaded||0} | ${item.unit_name})`
+        (item.prod_text = `${item.prod_desc} (${t('fields.planned')}: ${item.qty_planned || 0} | ${t(
+          'fields.loaded'
+        )}: ${item.qty_loaded || 0} | ${item.unit_name})`)
+    );
 
     return (
       <div style={{ display: 'flex' }}>
-        <Select 
+        <Select
           dropdownMatchSelectWidth={false}
-          value={this.state.value} 
-          style={{ width: '100%' }} 
-          onChange={this.onClick} 
+          value={this.state.value}
+          style={{ width: '100%' }}
+          onChange={this.onClick}
           bordered={false}
-       >
+        >
           {values?.map((item) => (
-            <Select.Option 
-              key={item.prod_code} 
-              value={item.prod_desc} 
-              item={item}
-            >
+            <Select.Option key={item.prod_code} value={item.prod_desc} item={item}>
               {item.prod_text}
             </Select.Option>
           ))}
