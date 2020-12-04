@@ -83,6 +83,39 @@ const Details = ({ selected, access, isLoading, config, setSelected }) => {
     });
   };
 
+  const getTankDensHi = (value, config) => {
+    let density_hi = 2000;
+    if (!value?.tank_base_dens_hi) {
+      density_hi = value?.tank_bclass_dens_hi;
+    } else {
+      if (config.manageBaseProductDensityRange && config.useBaseProductDensityRange) {
+        density_hi = value?.tank_base_dens_hi;
+      } else {
+        density_hi = value?.tank_bclass_dens_hi;
+      }
+    }
+    return density_hi;
+  };
+
+  const getTankDensLo = (value, config) => {
+    let density_lo = 0;
+    if (!value?.tank_base_dens_lo) {
+      density_lo = value?.tank_bclass_dens_lo;
+    } else {
+      if (config.manageBaseProductDensityRange && config.useBaseProductDensityRange) {
+        density_lo = value?.tank_base_dens_lo;
+      } else {
+        density_lo = value?.tank_bclass_dens_lo;
+      }
+    }
+    return density_lo;
+  };
+
+  const densRange = {
+    min: getTankDensLo(selected, config),
+    max: getTankDensHi(selected, config),
+  };
+
   return (
     <Form layout="vertical" onFinish={onFinish} form={form} scrollToFirstError initialValues={selected}>
       <Card
@@ -111,7 +144,14 @@ const Details = ({ selected, access, isLoading, config, setSelected }) => {
           </Form.Item>,
         ]}
       >
-        <General form={form} value={selected} refTempC={0} refTempF={30} config={config} />
+        <General
+          form={form}
+          value={selected}
+          refTempC={0}
+          refTempF={30}
+          config={config}
+          densRange={densRange}
+        />
       </Card>
     </Form>
   );

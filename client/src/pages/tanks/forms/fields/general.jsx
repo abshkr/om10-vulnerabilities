@@ -7,7 +7,7 @@ import { ORDER_LISTINGS, TANK_STATUS, TANKS } from '../../../../api';
 import { VCFManager } from '../../../../utils';
 import { InputNumber as OmegaInputNumber } from '../../../../components';
 
-const General = ({ form, value, config }) => {
+const General = ({ form, value, config, densRange }) => {
   const { t } = useTranslation();
 
   const { data: areas, isValidating: areasLoading } = useSWR(TANK_STATUS.AREAS);
@@ -148,13 +148,13 @@ const General = ({ form, value, config }) => {
             form={form}
             value={value?.tank_density}
             name="tank_density"
-            label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${
-              value?.tank_base_dens_hi
-            })${t('units.kg/m3')} ${`@ ${t('fields.referenceTemperature')} ${
+            label={`${t('fields.standardDensity')} (${densRange?.min} - ${densRange?.max})${t(
+              'units.kg/m3'
+            )} ${`@ ${t('fields.referenceTemperature')} ${
               config?.referenceTemperature
             }ºC/${VCFManager.temperatureC2F(config?.referenceTemperature)}ºF`}`}
-            min={value?.tank_base_dens_lo}
-            max={value?.tank_base_dens_hi}
+            min={densRange?.min}
+            max={densRange?.max}
             style={{ width: '100%' }}
             precision={config.precisionDensity}
           />

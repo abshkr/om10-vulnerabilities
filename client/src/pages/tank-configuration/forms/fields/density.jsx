@@ -6,7 +6,7 @@ import _ from 'lodash';
 
 import { BASE_PRODUCTS } from '../../../../api';
 
-const Density = ({ form, value, product }) => {
+const Density = ({ form, value, product, config }) => {
   const { t } = useTranslation();
   const { data: payload, isValidating } = useSWR(BASE_PRODUCTS.READ);
 
@@ -53,7 +53,7 @@ const Density = ({ form, value, product }) => {
       });
 
       if (base) {
-        if (base.base_dens_lo) {
+        if (base.base_dens_lo && config.manageBaseProductDensityRange && config.useBaseProductDensityRange) {
           setLow(base.base_dens_lo);
         } else {
           if (base.base_class_dens_lo) {
@@ -62,7 +62,7 @@ const Density = ({ form, value, product }) => {
             setLow(0);
           }
         }
-        if (base.base_dens_hi) {
+        if (base.base_dens_hi && config.manageBaseProductDensityRange && config.useBaseProductDensityRange) {
           setHigh(base.base_dens_hi);
         } else {
           if (base.base_class_dens_hi) {

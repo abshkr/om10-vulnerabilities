@@ -603,7 +603,40 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     }
   }, [config]);
 
-  const range = handleAPIRange(value?.tank_base_dens_lo, value?.tank_base_dens_hi);
+  const getTankDensHi = (value, config) => {
+    let density_hi = 2000;
+    if (!value?.tank_base_dens_hi) {
+      density_hi = value?.tank_bclass_dens_hi;
+    } else {
+      if (config.manageBaseProductDensityRange && config.useBaseProductDensityRange) {
+        density_hi = value?.tank_base_dens_hi;
+      } else {
+        density_hi = value?.tank_bclass_dens_hi;
+      }
+    }
+    return density_hi;
+  };
+
+  const getTankDensLo = (value, config) => {
+    let density_lo = 0;
+    if (!value?.tank_base_dens_lo) {
+      density_lo = value?.tank_bclass_dens_lo;
+    } else {
+      if (config.manageBaseProductDensityRange && config.useBaseProductDensityRange) {
+        density_lo = value?.tank_base_dens_lo;
+      } else {
+        density_lo = value?.tank_bclass_dens_lo;
+      }
+    }
+    return density_lo;
+  };
+
+  // const range = handleAPIRange(value?.tank_base_dens_lo, value?.tank_base_dens_hi);
+  const densRange = {
+    min: getTankDensLo(value, config),
+    max: getTankDensHi(value, config),
+  };
+  const range = handleAPIRange(densRange.min, densRange.max);
 
   return (
     <Drawer
@@ -680,7 +713,14 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey={tab} animated={false} onChange={setTab}>
           <TabPane tab={t('tabColumns.general')} key="1">
-            <General form={form} value={value} refTempC={refTempC} refTempF={refTempF} config={config} />
+            <General
+              form={form}
+              value={value}
+              refTempC={refTempC}
+              refTempF={refTempF}
+              config={config}
+              densRange={densRange}
+            />
           </TabPane>
 
           <TabPane tab={t('tabColumns.calculations')} key="2">
@@ -688,6 +728,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
               form={form}
               value={value}
               range={range}
+              densRange={densRange}
               config={config}
               pinQuantity={setQuantitySource}
               pinDensity={setDensitySource}

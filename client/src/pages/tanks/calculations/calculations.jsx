@@ -188,7 +188,8 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
         console.log('calculation simple', payload);
 
         if (base !== '6') {
-          if (payload.type === 'D15C') { // tank_density as source
+          if (payload.type === 'D15C') {
+            // tank_density as source
             const densityAtXC = VCFManager.densityAtXC(payload.value, payload.reference);
             const densityAt60F = VCFManager.densityAt60F(payload.value, payload.reference, 'C');
             const api = VCFManager.api(densityAt60F);
@@ -199,8 +200,13 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
             });
           }
 
-          if (payload.type === 'D30C') { // tank_15_density as source
-            const density15C = VCFManager.density15CFromXC(payload.value, payload.reference, config.precisionDensity);
+          if (payload.type === 'D30C') {
+            // tank_15_density as source
+            const density15C = VCFManager.density15CFromXC(
+              payload.value,
+              payload.reference,
+              config.precisionDensity
+            );
             const densityAt60F = VCFManager.densityAt60F(density15C);
             const api = VCFManager.api(densityAt60F);
             console.log('D30C', density15C, densityAt60F, api);
@@ -221,7 +227,8 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
             });
           }
         } else {
-          if (payload.type === 'D15C') { // tank_density as source
+          if (payload.type === 'D15C') {
+            // tank_density as source
             const density = payload.value;
             const densityAt60F = VCFManager.densityAt60F(density);
             const api = VCFManager.api(densityAt60F);
@@ -232,7 +239,8 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
             });
           }
 
-          if (payload.type === 'D30C') { // tank_15_density as source
+          if (payload.type === 'D30C') {
+            // tank_15_density as source
             const density = payload.value;
             const densityAt60F = VCFManager.densityAt60F(density);
             const api = VCFManager.api(densityAt60F);
@@ -341,9 +349,18 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
               });
             } else {
               setFieldsValue({
-                tank_amb_vol: _.round(response?.data?.REAL_LITRE, isAdtv ? config.precisionAdditive : config.precisionVolume),
-                tank_cor_vol: _.round(response?.data?.REAL_LITRE15, isAdtv ? config.precisionAdditive : config.precisionVolume),
-                tank_liquid_kg: _.round(response?.data?.REAL_KG, isAdtv ? config.precisionAdditive : config.precisionMass),
+                tank_amb_vol: _.round(
+                  response?.data?.REAL_LITRE,
+                  isAdtv ? config.precisionAdditive : config.precisionVolume
+                ),
+                tank_cor_vol: _.round(
+                  response?.data?.REAL_LITRE15,
+                  isAdtv ? config.precisionAdditive : config.precisionVolume
+                ),
+                tank_liquid_kg: _.round(
+                  response?.data?.REAL_KG,
+                  isAdtv ? config.precisionAdditive : config.precisionMass
+                ),
               });
               notification.success({
                 message: t('messages.calculateSuccess'),
@@ -374,12 +391,19 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
       'tank_liquid_kg',
     ]);
 
-    if (String(payload?.tank_amb_vol).trim().length === 0 && 
-      String(payload?.tank_cor_vol).trim().length === 0 && 
-      String(payload?.tank_liquid_kg).trim().length === 0) {
+    if (
+      String(payload?.tank_amb_vol).trim().length === 0 &&
+      String(payload?.tank_cor_vol).trim().length === 0 &&
+      String(payload?.tank_liquid_kg).trim().length === 0
+    ) {
       notification.error({
         message: t('validate.set'),
-        description: t('fields.ambientVolume')+t('descriptions.or')+t('fields.standardVolume')+t('descriptions.or')+t('fields.liquidMass'),
+        description:
+          t('fields.ambientVolume') +
+          t('descriptions.or') +
+          t('fields.standardVolume') +
+          t('descriptions.or') +
+          t('fields.liquidMass'),
       });
       return;
     }
@@ -387,8 +411,12 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
     if (!quantitySource || String(quantitySource?.qty).trim().length === 0) {
       notification.error({
         message: t('validate.set'),
-        description: !quantitySource 
-          ? (t('fields.observedQuantity')+t('descriptions.or')+t('fields.standardQuantity')+t('descriptions.or')+t('fields.observedMass'))
+        description: !quantitySource
+          ? t('fields.observedQuantity') +
+            t('descriptions.or') +
+            t('fields.standardQuantity') +
+            t('descriptions.or') +
+            t('fields.observedMass')
           : quantitySource?.title,
       });
       return;
@@ -499,9 +527,18 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
               });
             } else {
               setFieldsValue({
-                tank_amb_vol: _.round(response?.data?.REAL_LITRE, isAdtv ? config.precisionAdditive : config.precisionVolume),
-                tank_cor_vol: _.round(response?.data?.REAL_LITRE15, isAdtv ? config.precisionAdditive : config.precisionVolume),
-                tank_liquid_kg: _.round(response?.data?.REAL_KG, isAdtv ? config.precisionAdditive : config.precisionMass),
+                tank_amb_vol: _.round(
+                  response?.data?.REAL_LITRE,
+                  isAdtv ? config.precisionAdditive : config.precisionVolume
+                ),
+                tank_cor_vol: _.round(
+                  response?.data?.REAL_LITRE15,
+                  isAdtv ? config.precisionAdditive : config.precisionVolume
+                ),
+                tank_liquid_kg: _.round(
+                  response?.data?.REAL_KG,
+                  isAdtv ? config.precisionAdditive : config.precisionMass
+                ),
               });
               // selected.tank_amb_vol = _.round(response?.data?.REAL_LITRE, isAdtv ? config.precisionAdditive : config.precisionVolume);
               // selected.tank_cor_vol = _.round(response?.data?.REAL_LITRE15, isAdtv ? config.precisionAdditive : config.precisionVolume);
@@ -523,7 +560,40 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
     });
   };
 
-  const range = handleAPIRange(selected?.tank_base_dens_lo, selected?.tank_base_dens_hi);
+  const getTankDensHi = (value, config) => {
+    let density_hi = 2000;
+    if (!value?.tank_base_dens_hi) {
+      density_hi = value?.tank_bclass_dens_hi;
+    } else {
+      if (config.manageBaseProductDensityRange && config.useBaseProductDensityRange) {
+        density_hi = value?.tank_base_dens_hi;
+      } else {
+        density_hi = value?.tank_bclass_dens_hi;
+      }
+    }
+    return density_hi;
+  };
+
+  const getTankDensLo = (value, config) => {
+    let density_lo = 0;
+    if (!value?.tank_base_dens_lo) {
+      density_lo = value?.tank_bclass_dens_lo;
+    } else {
+      if (config.manageBaseProductDensityRange && config.useBaseProductDensityRange) {
+        density_lo = value?.tank_base_dens_lo;
+      } else {
+        density_lo = value?.tank_bclass_dens_lo;
+      }
+    }
+    return density_lo;
+  };
+
+  // const range = handleAPIRange(selected?.tank_base_dens_lo, selected?.tank_base_dens_hi);
+  const densRange = {
+    min: getTankDensLo(selected, config),
+    max: getTankDensHi(selected, config),
+  };
+  const range = handleAPIRange(densRange.min, densRange.max);
 
   return (
     <Form layout="vertical" onFinish={onFinish} form={form} scrollToFirstError initialValues={selected}>
@@ -541,10 +611,10 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
               {t('operations.update')}
             </Button>
 
-            {(config?.manageAPI || (
-              config?.temperatureUnit === 'degC' &&
-              config?.referenceTemperature === '15' &&
-              config?.vsmCompensation === '30')) && (
+            {(config?.manageAPI ||
+              (config?.temperatureUnit === 'degC' &&
+                config?.referenceTemperature === '15' &&
+                config?.vsmCompensation === '30')) && (
               <Button
                 type="primary"
                 icon={<RedoOutlined />}
@@ -580,6 +650,7 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
           form={form}
           value={selected}
           range={range}
+          densRange={densRange}
           config={config}
           pinQuantity={setQuantitySource}
           pinDensity={setDensitySource}

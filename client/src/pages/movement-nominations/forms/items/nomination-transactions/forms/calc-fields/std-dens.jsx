@@ -59,12 +59,20 @@ const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
       if (!tank?.[0]?.base_dens_lo) {
         setMinDens(tank?.[0]?.bclass_dens_lo);
       } else {
-        setMinDens(tank?.[0]?.base_dens_lo);
+        if (config.manageBaseProductDensityRange && config.useBaseProductDensityRange) {
+          setMinDens(tank?.[0]?.base_dens_lo);
+        } else {
+          setMinDens(tank?.[0]?.bclass_dens_lo);
+        }
       }
       if (!tank?.[0]?.base_dens_hi) {
         setMaxDens(tank?.[0]?.bclass_dens_hi);
       } else {
-        setMaxDens(tank?.[0]?.base_dens_hi);
+        if (config.manageBaseProductDensityRange && config.useBaseProductDensityRange) {
+          setMaxDens(tank?.[0]?.base_dens_hi);
+        } else {
+          setMaxDens(tank?.[0]?.bclass_dens_hi);
+        }
       }
     } else {
       if (arm) {

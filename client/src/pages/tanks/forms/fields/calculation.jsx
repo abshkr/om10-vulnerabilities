@@ -8,7 +8,7 @@ import { InputNumber as OmegaInputNumber } from '../../../../components';
 
 const { Option } = Select;
 
-const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) => {
+const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDensity }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -171,13 +171,13 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
         form={form}
         value={value?.tank_density}
         name="tank_density"
-        label={`${t('fields.standardDensity')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi})${t(
+        label={`${t('fields.standardDensity')} (${densRange?.min} - ${densRange?.max})${t(
           'units.kg/m3'
         )} ${`@ ${t('fields.referenceTemperature')} ${
           config?.referenceTemperature
         }ºC/${VCFManager.temperatureC2F(config?.referenceTemperature)}ºF`}`}
-        min={value?.tank_base_dens_lo}
-        max={value?.tank_base_dens_hi}
+        min={densRange?.min}
+        max={densRange?.max}
         style={{ width: '100%' }}
         precision={config.precisionDensity}
         onChange={handleStdDensFieldChange} // D15C
@@ -204,13 +204,13 @@ const Calculation = ({ form, value, range, config, pinQuantity, pinDensity }) =>
             form={form}
             value={value?.tank_15_density}
             name="tank_15_density"
-            label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi})${t(
+            label={`${t('fields.density')} (${densRange?.min} - ${densRange?.max})${t(
               'units.kg/m3'
             )} ${`@ ${t('fields.compensationTemperature')} ${
               config?.vsmCompensation || config?.referenceTemperature
             }ºC/${VCFManager.temperatureC2F(config?.vsmCompensation || config?.referenceTemperature)}ºF`}`}
-            min={value?.tank_base_dens_lo}
-            max={value?.tank_base_dens_hi}
+            min={densRange?.min}
+            max={densRange?.max}
             style={{ width: '100%' }}
             precision={config.precisionDensity}
             onChange={handleCorDensFieldChange} // D30C

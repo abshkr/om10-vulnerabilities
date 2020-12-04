@@ -28,6 +28,10 @@ class TankService
                 TANK_DENSITY,
                 NVL(TANK_BASE_DENS_LO, TANK_BCLASS_DENS_LO) DENSITY_LO,
                 NVL(TANK_BASE_DENS_HI, TANK_BCLASS_DENS_HI) DENSITY_HI,
+                TANK_BASE_DENS_LO, 
+                TANK_BASE_DENS_HI, 
+                TANK_BCLASS_DENS_LO,
+                TANK_BCLASS_DENS_HI,
                 TANK_TEMP,
                 TANK_BCLASS_TEMP_LO TEMP_LO,
                 TANK_BCLASS_TEMP_HI TEMP_HI

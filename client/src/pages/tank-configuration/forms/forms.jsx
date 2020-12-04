@@ -162,7 +162,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             <Code form={form} value={value} config={config} />
             <Name form={form} value={value} />
             <Product form={form} value={value} onChange={setProduct} />
-            <Density form={form} value={value} product={product} />
+            <Density form={form} value={value} product={product} config={config} />
             <Divider>{t('divider.variances')}</Divider>
             <DailyVariance form={form} value={value} />
             <MontlhyVariance form={form} value={value} />

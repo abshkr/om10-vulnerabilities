@@ -45,8 +45,35 @@ const Calculate = ({
       })
       .then((response) => {
         if (response?.data?.records?.length > 0) {
-          setLimit(response.data.records[0]);
           const prod = response.data.records[0];
+          setFieldsValue({
+            mlitm_dens_cor: prod?.tank_density,
+          });
+          setFieldsValue({
+            mlitm_temp_amb: prod?.tank_temp,
+          });
+
+          if (!prod?.tank_base_dens_lo) {
+            prod.density_lo = prod?.tank_bclass_dens_lo;
+          } else {
+            if (config.manageBaseProductDensityRange && config.useBaseProductDensityRange) {
+              prod.density_lo = prod?.tank_base_dens_lo;
+            } else {
+              prod.density_lo = prod?.tank_bclass_dens_lo;
+            }
+          }
+          if (!prod?.tank_base_dens_hi) {
+            prod.density_hi = prod?.tank_bclass_dens_hi;
+          } else {
+            if (config.manageBaseProductDensityRange && config.useBaseProductDensityRange) {
+              prod.density_hi = prod?.tank_base_dens_hi;
+            } else {
+              prod.density_hi = prod?.tank_bclass_dens_hi;
+            }
+          }
+
+          // setLimit(response.data.records[0]);
+          setLimit(prod);
           const densL = prod
             ? _.round(_.toNumber(prod?.density_lo), config.precisionDensity)
             : prod?.density_lo;
@@ -59,12 +86,12 @@ const Calculate = ({
           // const temp_dens = getFieldValue('mlitm_dens_cor');
           // if (!temp_dens) {
           //   console.log('I am here 222');
-          setFieldsValue({
+          /* setFieldsValue({
             mlitm_dens_cor: response.data.records[0].tank_density,
           });
           setFieldsValue({
             mlitm_temp_amb: response.data.records[0].tank_temp,
-          });
+          }); */
           // }
           setLoading(false);
           //console.log('validateFields([mlitm_dens_cor]);222');
@@ -80,7 +107,7 @@ const Calculate = ({
 
   useEffect(() => {
     if (limit) {
-      console.log('validateFields([mlitm_dens_cor]);');
+      console.log('validateFields([mlitm_dens_cor]);', minDens, maxDens, limit);
       validateFields(['mlitm_dens_cor']);
     }
   }, [limit, minDens, maxDens, validateFields]);
@@ -178,6 +205,7 @@ const Calculate = ({
 
     const number = _.toNumber(input);
     const invalid = _.isNaN(number);
+    console.log('...............validateDensity', input, invalid, minDens, maxDens, limit);
     if (limit && maxDens !== undefined && input !== '' && !invalid && number > _.toNumber(maxDens)) {
       return Promise.reject(`${t('validate.outOfRangeMax')} ${maxDens} ─ ${t('descriptions.maxNumber')}`);
     }
