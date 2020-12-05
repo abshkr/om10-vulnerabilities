@@ -139,12 +139,14 @@ class ProdMovement extends CommonClass
         $query = "UPDATE PRODUCT_MVMNTS
             SET PMV_OPEN_AMB = :tank_amb_vol,
                 PMV_OPEN_COR = :tank_cor_vol,
+                PMV_TEMPERATURE = :tank_temp,
                 PMV_OPEN_TANKLEVEL = :pmv_open_tanklevel
             WHERE PMV_NUMBER = :pmv_number";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
         oci_bind_by_name($stmt, ':tank_amb_vol', $tank_amb_vol);
         oci_bind_by_name($stmt, ':tank_cor_vol', $tank_cor_vol);
+        oci_bind_by_name($stmt, ':tank_temp', $tank_temp);
         oci_bind_by_name($stmt, ':pmv_open_tanklevel', $tank_prod_lvl);
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
