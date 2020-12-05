@@ -5,6 +5,7 @@ import useSWR from 'swr';
 import _ from 'lodash';
 
 import { BASE_PRODUCTS } from '../../../../api';
+import { getDensityRange } from '../../../../utils';
 
 const Density = ({ form, value, product, config }) => {
   const { t } = useTranslation();
@@ -53,7 +54,20 @@ const Density = ({ form, value, product, config }) => {
       });
 
       if (base) {
-        if (base.base_dens_lo && config.manageBaseProductDensityRange && config.useBaseProductDensityRange) {
+        const densRange = getDensityRange({
+          manageFlag: config.manageBaseProductDensityRange,
+          useFlag: config.useBaseProductDensityRange,
+          minDefaultDensity: config.minDensity,
+          maxDefaultDensity: config.maxDensity,
+          minClassDensity: base.base_class_dens_lo,
+          maxClassDensity: base.base_class_dens_hi,
+          minBaseDensity: base.base_dens_lo,
+          maxBaseDensity: base.base_dens_hi,
+        });
+        setLow(densRange.min);
+        setHigh(densRange.max);
+
+        /* if (base.base_dens_lo && config.manageBaseProductDensityRange && config.useBaseProductDensityRange) {
           setLow(base.base_dens_lo);
         } else {
           if (base.base_class_dens_lo) {
@@ -70,7 +84,10 @@ const Density = ({ form, value, product, config }) => {
           } else {
             setHigh(2000);
           }
-        }
+        } */
+      } else {
+        setLow(config.minDensity);
+        setHigh(config.maxDensity);
       }
     }
   }, [payload, product]);

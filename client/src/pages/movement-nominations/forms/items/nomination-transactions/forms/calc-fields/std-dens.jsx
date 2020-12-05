@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
 import _ from 'lodash';
-import { calcArmDensity } from '../../../../../../../utils';
-import { validateField } from '../../../../../../../utils';
+import { calcArmDensity, getDensityRange, validateField } from '../../../../../../../utils';
 
 const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
   const [minDens, setMinDens] = useState(config.minDensity);
@@ -56,7 +55,21 @@ const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
       setFieldsValue({
         mlitm_dens_cor: tank?.[0]?.tank_density,
       });
-      if (!tank?.[0]?.base_dens_lo) {
+
+      const densRange = getDensityRange({
+        manageFlag: config.manageBaseProductDensityRange,
+        useFlag: config.useBaseProductDensityRange,
+        minDefaultDensity: config.minDensity,
+        maxDefaultDensity: config.maxDensity,
+        minClassDensity: tank?.[0]?.bclass_dens_lo,
+        maxClassDensity: tank?.[0]?.bclass_dens_hi,
+        minBaseDensity: tank?.[0]?.base_dens_lo,
+        maxBaseDensity: tank?.[0]?.base_dens_hi,
+      });
+      setMinDens(densRange.min);
+      setMaxDens(densRange.max);
+
+      /* if (!tank?.[0]?.base_dens_lo) {
         setMinDens(tank?.[0]?.bclass_dens_lo);
       } else {
         if (config.manageBaseProductDensityRange && config.useBaseProductDensityRange) {
@@ -73,7 +86,7 @@ const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
         } else {
           setMaxDens(tank?.[0]?.bclass_dens_hi);
         }
-      }
+      } */
     } else {
       if (arm) {
         if (arm.length <= 1) {

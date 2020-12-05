@@ -4,6 +4,7 @@ import generateOptions from './generate-options';
 import convertToLocale from './convert-to-locale';
 import getDateTimeFormat from './get-date-time-format';
 import getDateRangeOffset from './get-date-range-offset';
+import getDensityRange from './get-density-range';
 import getRangeDays from './get-range-days';
 import adjustProductArms from './adjust-product-arms';
 import getAvailableArms from './get-available-arms';
@@ -38,6 +39,7 @@ export {
   massConverter,
   getDateTimeFormat,
   getDateRangeOffset,
+  getDensityRange,
   getRangeDays,
   adjustProductArms,
   getAvailableArms,

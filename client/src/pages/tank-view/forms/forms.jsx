@@ -35,7 +35,13 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, 
 
   const [product, setProduct] = useState(undefined);
 
+  const onFormClosed = () => {
+    setProduct(undefined);
+    handleFormState(false, null);
+  };
+
   const onComplete = () => {
+    setProduct(undefined);
     handleFormState(false, null);
     handleRevalidate();
   };
@@ -83,7 +89,7 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, 
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
       forceRender
-      onClose={() => handleFormState(false, null)}
+      onClose={() => onFormClosed()}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
       mask={IS_CREATING}
@@ -96,7 +102,7 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, 
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={() => onFormClosed()}
           >
             {t('operations.cancel')}
           </Button>

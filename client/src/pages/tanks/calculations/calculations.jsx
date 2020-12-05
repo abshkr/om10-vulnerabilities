@@ -8,7 +8,7 @@ import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
 
 import Calculation from '../forms/fields/calculation';
-import { VCFManager } from '../../../utils';
+import { VCFManager, getDensityRange } from '../../../utils';
 import api, { TANKS, TANK_STATUS } from '../../../api';
 
 const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
@@ -560,7 +560,7 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
     });
   };
 
-  const getTankDensHi = (value, config) => {
+  /* const getTankDensHi = (value, config) => {
     let density_hi = 2000;
     if (!value?.tank_base_dens_hi) {
       density_hi = value?.tank_bclass_dens_hi;
@@ -588,12 +588,23 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
     return density_lo;
   };
 
-  // const range = handleAPIRange(selected?.tank_base_dens_lo, selected?.tank_base_dens_hi);
   const densRange = {
     min: getTankDensLo(selected, config),
     max: getTankDensHi(selected, config),
-  };
+  }; */
+
+  const densRange = getDensityRange({
+    manageFlag: config.manageBaseProductDensityRange,
+    useFlag: config.useBaseProductDensityRange,
+    minDefaultDensity: config.minDensity,
+    maxDefaultDensity: config.maxDensity,
+    minClassDensity: selected?.tank_bclass_dens_lo,
+    maxClassDensity: selected?.tank_bclass_dens_hi,
+    minBaseDensity: selected?.tank_base_dens_lo,
+    maxBaseDensity: selected?.tank_base_dens_hi,
+  });
   const range = handleAPIRange(densRange.min, densRange.max);
+  // const range = handleAPIRange(selected?.tank_base_dens_lo, selected?.tank_base_dens_hi);
 
   return (
     <Form layout="vertical" onFinish={onFinish} form={form} scrollToFirstError initialValues={selected}>

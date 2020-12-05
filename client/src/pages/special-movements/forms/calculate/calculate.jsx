@@ -6,6 +6,7 @@ import { Form, InputNumber, Select, Row, Col } from 'antd';
 import _ from 'lodash';
 
 import { SPECIAL_MOVEMENTS } from 'api';
+import { getDensityRange } from 'utils';
 
 const Calculate = ({
   form,
@@ -53,7 +54,20 @@ const Calculate = ({
             mlitm_temp_amb: prod?.tank_temp,
           });
 
-          if (!prod?.tank_base_dens_lo) {
+          const densRange = getDensityRange({
+            manageFlag: config.manageBaseProductDensityRange,
+            useFlag: config.useBaseProductDensityRange,
+            minDefaultDensity: config.minDensity,
+            maxDefaultDensity: config.maxDensity,
+            minClassDensity: prod?.tank_bclass_dens_lo,
+            maxClassDensity: prod?.tank_bclass_dens_hi,
+            minBaseDensity: prod?.tank_base_dens_lo,
+            maxBaseDensity: prod?.tank_base_dens_hi,
+          });
+          prod.density_lo = densRange.min;
+          prod.density_hi = densRange.max;
+
+          /* if (!prod?.tank_base_dens_lo) {
             prod.density_lo = prod?.tank_bclass_dens_lo;
           } else {
             if (config.manageBaseProductDensityRange && config.useBaseProductDensityRange) {
@@ -70,7 +84,7 @@ const Calculate = ({
             } else {
               prod.density_hi = prod?.tank_bclass_dens_hi;
             }
-          }
+          } */
 
           // setLimit(response.data.records[0]);
           setLimit(prod);

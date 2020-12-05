@@ -27,7 +27,13 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
 
   const IS_CREATING = !value;
 
+  const onFormClosed = () => {
+    setProduct(undefined);
+    handleFormState(false, null);
+  };
+
   const onComplete = (tank_code) => {
+    setProduct(undefined);
     handleFormState(false, null);
     mutate(TANKS.READ);
     if (tank_code) {
@@ -112,7 +118,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
       forceRender
-      onClose={() => handleFormState(false, null)}
+      onClose={() => onFormClosed()}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
       mask={IS_CREATING}
@@ -125,7 +131,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={() => onFormClosed()}
           >
             {t('operations.cancel')}
           </Button>

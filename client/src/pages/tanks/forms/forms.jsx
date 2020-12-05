@@ -17,7 +17,7 @@ import _ from 'lodash';
 import { Gauging, General, Calculation, Levels } from './fields';
 
 import { TANKS, TANK_STATUS } from '../../../api';
-import { VCFManager } from '../../../utils';
+import { VCFManager, getDensityRange } from '../../../utils';
 
 import TankStrapping from '../strapping';
 
@@ -603,7 +603,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     }
   }, [config]);
 
-  const getTankDensHi = (value, config) => {
+  /* const getTankDensHi = (value, config) => {
     let density_hi = 2000;
     if (!value?.tank_base_dens_hi) {
       density_hi = value?.tank_bclass_dens_hi;
@@ -631,12 +631,23 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     return density_lo;
   };
 
-  // const range = handleAPIRange(value?.tank_base_dens_lo, value?.tank_base_dens_hi);
   const densRange = {
     min: getTankDensLo(value, config),
     max: getTankDensHi(value, config),
-  };
+  }; */
+
+  const densRange = getDensityRange({
+    manageFlag: config.manageBaseProductDensityRange,
+    useFlag: config.useBaseProductDensityRange,
+    minDefaultDensity: config.minDensity,
+    maxDefaultDensity: config.maxDensity,
+    minClassDensity: value?.tank_bclass_dens_lo,
+    maxClassDensity: value?.tank_bclass_dens_hi,
+    minBaseDensity: value?.tank_base_dens_lo,
+    maxBaseDensity: value?.tank_base_dens_hi,
+  });
   const range = handleAPIRange(densRange.min, densRange.max);
+  // const range = handleAPIRange(value?.tank_base_dens_lo, value?.tank_base_dens_hi);
 
   return (
     <Drawer
