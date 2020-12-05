@@ -4,7 +4,7 @@ const AntdStyleProvider = createGlobalStyle`
 
 
   .ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-tab-active {
-    color: black;
+    color: white;
    
   }
 
