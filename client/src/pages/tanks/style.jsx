@@ -7,4 +7,10 @@ const TankContainer = styled.div`
   }
 `;
 
-export { TankContainer };
+const TabsColor = styled.div`
+  .ant-tabs-tab-active {
+    color: #0054a4 !important;
+  }
+`;
+
+export { TankContainer, TabsColor };

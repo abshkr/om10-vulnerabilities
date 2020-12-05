@@ -23,6 +23,7 @@ import Table from './table';
 import auth from '../../auth';
 import columns from './columns';
 import transform from './transform';
+import { TabsColor } from './style';
 
 const { TabPane } = Tabs;
 
@@ -141,7 +142,8 @@ const Tanks = () => {
           selected={selected?.tank_code}
           isLoading={isLoading}
         >
-          <Tabs defaultActiveKey="1" type="card">
+          <TabsColor>
+          <Tabs defaultActiveKey="1" type="card" >
             <TabPane key="1" tab={t('tabColumns.overview')} disabled={isLoading}>
               <Overview selected={selected} />
             </TabPane>
@@ -181,6 +183,7 @@ const Tanks = () => {
 
             {/* <TabPane key="8" tab={t('tabColumns.adaptiveFlowControl')} disabled /> */}
           </Tabs>
+          </TabsColor>
         </ListView>
       ) : (
         <Table
