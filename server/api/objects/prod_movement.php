@@ -140,6 +140,7 @@ class ProdMovement extends CommonClass
             SET PMV_OPEN_AMB = :tank_amb_vol,
                 PMV_OPEN_COR = :tank_cor_vol,
                 PMV_TEMPERATURE = :tank_temp,
+                PMV_OBSVD_DENS = :tank_density,
                 PMV_OPEN_TANKLEVEL = :pmv_open_tanklevel
             WHERE PMV_NUMBER = :pmv_number";
         $stmt = oci_parse($this->conn, $query);
@@ -147,6 +148,7 @@ class ProdMovement extends CommonClass
         oci_bind_by_name($stmt, ':tank_amb_vol', $tank_amb_vol);
         oci_bind_by_name($stmt, ':tank_cor_vol', $tank_cor_vol);
         oci_bind_by_name($stmt, ':tank_temp', $tank_temp);
+        oci_bind_by_name($stmt, ':tank_density', $tank_density);
         oci_bind_by_name($stmt, ':pmv_open_tanklevel', $tank_prod_lvl);
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
@@ -619,14 +621,18 @@ class ProdMovement extends CommonClass
         $query = "
             SELECT CLOSEOUT_NR, 
                 DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE, 
-                PMV_CLOSE_COR, 
-                PMV_CLOSE_TEMP CLOSE_TEMP, 
-                PMV_CLOSE_AMB,
-                PMV_CLOSE_DENS CLOSE_DENSITY, 
+                DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) PMV_CLOSE_COR, 
+                DECODE(PMV_STATUS, 3, PMV_CLOSE_TEMP, TANK_DENSITY) CLOSE_TEMP, 
+                DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) PMV_CLOSE_AMB,
+                DECODE(PMV_STATUS, 3, PMV_CLOSE_DENS, TANK_DENSITY) CLOSE_DENSITY, 
                 PMV_DATE2, 
-                PMV_CLOSE_TANKLEVEL TANK_LEVEL,
-                NVL(AVL_SUM, 0) AVL_SUM,
-                NVL(CVL_SUM, 0) CVL_SUM
+                DECODE(PMV_STATUS, 3, PMV_CLOSE_TANKLEVEL, TANK_PROD_LVL) TANK_LEVEL,
+                DECODE(PMV_SRCTYPE, 3, 
+                    PMV_OPEN_AMB - DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) - NVL(LOADED_AVL, 0), 
+                    DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) - PMV_OPEN_AMB + NVL(LOADED_AVL, 0)) AVL_SUM,
+                DECODE(PMV_SRCTYPE, 3, 
+                    PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - NVL(LOADED_CVL, 0), 
+                    DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - PMV_OPEN_COR + NVL(LOADED_CVL, 0)) CVL_SUM
             FROM PRODUCT_MVMNTS, 
             (
                 SELECT CLOSEOUT_NR, PMV_NUMBER FROM CLOSEOUTS, PRODUCT_MVMNTS
@@ -634,8 +640,8 @@ class ProdMovement extends CommonClass
                 AND PMV_DATE2 > PREV_CLOSEOUT_DATE AND PMV_DATE2 < NVL(CLOSEOUT_DATE, SYSDATE)
             ) TMP,
             (
-                SELECT NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_AVL / 1000, TRSB_AVL)), 0) AVL_SUM,
-                    NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_CVL / 1000, TRSB_CVL)), 0) CVL_SUM,
+                SELECT NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_AVL / 1000, TRSB_AVL)), 0) LOADED_AVL,
+                    NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_CVL / 1000, TRSB_CVL)), 0) LOADED_CVL,
                     DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE,
                     PMV_NUMBER
                 FROM TRANBASE, TRANSFERS, TRANSACTIONS, PRODUCT_MVMNTS
@@ -646,7 +652,20 @@ class ProdMovement extends CommonClass
                     AND TRSA_ED_DMY < NVL(PMV_DATE2, SYSDATE)
                     AND TRSB_TK_TANKCODE = DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)
                 GROUP BY PMV_SRCTYPE, PMV_SRCCODE, PMV_DSTCODE, PMV_NUMBER
-            ) LOADED
+            ) LOADED,
+            (
+                SELECT TANK_COR_VOL,
+                    TANK_AMB_VOL,
+                    TANK_DENSITY,
+                    TANK_TEMP,
+                    TANK_PROD_LVL
+                FROM TANKS
+                WHERE TANK_CODE = (
+                        SELECT DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)
+                        FROM PRODUCT_MVMNTS
+                        WHERE PMV_NUMBER = :pmv_number
+                    )
+            ) TANK_INFO
             WHERE PRODUCT_MVMNTS.PMV_NUMBER = :pmv_number
                 AND PRODUCT_MVMNTS.PMV_NUMBER = TMP.PMV_NUMBER(+)
                 AND PRODUCT_MVMNTS.PMV_NUMBER = LOADED.PMV_NUMBER(+)";
