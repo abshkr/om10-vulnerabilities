@@ -50,6 +50,13 @@ define('INVALIDATE_TOKEN_ENABLED', true);
 //If it is false, when token is expired, do not reject 
 define('EXPIRY_TOKEN_ENABLED', false);
 
+//If it is true, then for some read.php, use pagination
+//For pagination, object must implement pagination_count() function inherited from common_class.php
+define('READ_PAGINATION', false);
+
+//One page include 100 records by default
+define('PAGINATION_PAGECOUNT', 100);
+
 define('JASPERREPORT_DIR', 'reports/');
 
 //HST host message folder

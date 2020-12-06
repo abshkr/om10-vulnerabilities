@@ -93,6 +93,39 @@ class OMJournal extends CommonClass
         }
     }
 
+    public function pagination_count()
+    {
+        if (!isset($this->start_date) || !isset($this->end_date)) {
+            //get journal in 30 min
+            $query = "SELECT COUNT(*) CN FROM GUI_SITE_JOURNAL WHERE REGION_CODE = :lang ";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':lang', $this->lang);
+        } else {
+            $query = "SELECT COUNT(*) CN
+            FROM GUI_SITE_JOURNAL
+            WHERE REGION_CODE = :lang
+                AND GEN_DATE >= TO_DATE(:start_date, 'yyyy-mm-dd hh24:mi:ss')
+                AND GEN_DATE <= TO_DATE(:end_date, 'yyyy-mm-dd hh24:mi:ss')";
+            // write_log(json_encode($query), __FILE__, __LINE__);
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':start_date', $this->start_date);
+            oci_bind_by_name($stmt, ':end_date', $this->end_date);
+            oci_bind_by_name($stmt, ':lang', $this->lang);
+            if (isset($this->region_code)) {
+                oci_bind_by_name($stmt, ':region_code', $this->region_code);
+            }
+        }
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            return (int) $row['CN'];
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return 0;
+        }
+    }
+
     // read personnel
     public function read()
     {
@@ -117,8 +150,10 @@ class OMJournal extends CommonClass
             WHERE GEN_DATE >= SYSDATE - 30 / 1440
                 AND REGION_CODE = :lang
             ORDER BY GEN_DATE DESC";
+            $query = $this->pagination_query($query);
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':lang', $this->lang);
+            $this->pagination_binds($stmt);
         } else {
             $query = "
             SELECT TO_CHAR(GEN_DATE, 'YYYY-MM-DD HH24:MI:SSXFF') GEN_DATE,
@@ -135,6 +170,7 @@ class OMJournal extends CommonClass
                 AND GEN_DATE >= TO_DATE(:start_date, 'yyyy-mm-dd hh24:mi:ss')
                 AND GEN_DATE <= TO_DATE(:end_date, 'yyyy-mm-dd hh24:mi:ss')
             ORDER BY GEN_DATE DESC";
+            $query = $this->pagination_query($query);
             // write_log(json_encode($query), __FILE__, __LINE__);
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':start_date', $this->start_date);
@@ -143,6 +179,7 @@ class OMJournal extends CommonClass
             if (isset($this->region_code)) {
                 oci_bind_by_name($stmt, ':region_code', $this->region_code);
             }
+            $this->pagination_binds($stmt);
         }
 
         if (oci_execute($stmt, $this->commit_mode)) {

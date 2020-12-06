@@ -101,7 +101,49 @@ class CommonClass
     //read imp will be called inside read. Make it public because Utilities::update() calls it
     public function read_hook(&$hook_item)
     {
+        
+    }
 
+    //Get count of all records. Use pagination_count because count() is used, it returns a stmt, 
+    //but here it returns a number
+    public function pagination_count()
+    {
+        return null;
+    }
+
+    protected function pagination_query($query)
+    {
+        $paginaged_query = $query;
+        if (READ_PAGINATION) {
+            $paginaged_query = "
+            SELECT * FROM(
+                SELECT RES.*, ROWNUM AS RN
+                FROM (" . $query . ") RES
+                )
+            WHERE RN BETWEEN :start_num AND :end_num
+            ";
+        }
+
+        return $paginaged_query;
+    }
+
+    protected function pagination_binds($stmt)
+    {
+        if (READ_PAGINATION) {
+            if (!isset($this->start_num)) {
+                $this->start_num = 0;
+            }
+
+            if (!isset($this->end_num)) {
+                $this->end_num = $this->start_num + PAGINATION_PAGECOUNT;
+            }
+
+            //Because query "BETWEEN" does not include start but includes end
+            $this->start_num -= 1;
+
+            oci_bind_by_name($stmt, ':start_num', $this->start_num);
+            oci_bind_by_name($stmt, ':end_num', $this->end_num);
+        }
     }
 
     // constructor with $db as database connection

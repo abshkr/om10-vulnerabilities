@@ -282,6 +282,14 @@ class Utilities
         }
 
         $result = array();
+
+        if (READ_PAGINATION) {
+            $result["count"] = $object->pagination_count();
+            // $result["next"] = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . 
+            //     "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+            // $result["previous"] = null;
+        }
+
         $result["records"] = array();
 
         /**
@@ -767,6 +775,7 @@ class Utilities
         echo '}';
         return;
     }
+
 
     //If $itemData is set, it means it is called from updateArray(), so
     //do not echo if it success, just return true or false.

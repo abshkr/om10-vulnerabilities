@@ -856,6 +856,42 @@ class Schedule extends CommonClass
         return $this->create_n_update("MOD");
     }
 
+    public function pagination_count()
+    {
+        $query = "
+            SELECT COUNT(*) CN
+            FROM " . $this->VIEW_NAME . ", SHL_SOURCE_TYPES
+            WHERE SHLS_SRCTYPE = SHL_SOURCE_TYPES.SOURCE_TYPE_ID
+        ";
+        if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1') {
+            $query .= "
+                AND SHLS_CALDATE > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')
+            ";
+        }
+        if (isset($this->end_date) && $this->end_date != -1 && $this->end_date != '-1') {
+            $query .= "
+                AND SHLS_CALDATE < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS')
+            ";
+        };
+        
+        $stmt = oci_parse($this->conn, $query);
+        if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1') {
+            oci_bind_by_name($stmt, ':start_date', $this->start_date);
+        }
+        if (isset($this->end_date) && $this->end_date != -1 && $this->end_date != '-1') {
+            oci_bind_by_name($stmt, ':end_date', $this->end_date);
+        }
+        
+        if (oci_execute($stmt, $this->commit_mode)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            return (int) $row['CN'];
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return 0;
+        }
+    }
+
     public function read()
     {
         $query = "
@@ -897,6 +933,7 @@ class Schedule extends CommonClass
         $query .= "
             ORDER BY SHLS_CALDATE DESC
         ";
+        $query = $this->pagination_query($query);
         $stmt = oci_parse($this->conn, $query);
         if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1') {
             oci_bind_by_name($stmt, ':start_date', $this->start_date);
@@ -904,6 +941,7 @@ class Schedule extends CommonClass
         if (isset($this->end_date) && $this->end_date != -1 && $this->end_date != '-1') {
             oci_bind_by_name($stmt, ':end_date', $this->end_date);
         }
+        $this->pagination_binds($stmt);
 
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
