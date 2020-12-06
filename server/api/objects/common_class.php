@@ -138,9 +138,6 @@ class CommonClass
                 $this->end_num = $this->start_num + PAGINATION_PAGECOUNT;
             }
 
-            //Because query "BETWEEN" does not include start but includes end
-            $this->start_num -= 1;
-
             oci_bind_by_name($stmt, ':start_num', $this->start_num);
             oci_bind_by_name($stmt, ':end_num', $this->end_num);
         }
