@@ -282,22 +282,27 @@ class Utilities
         }
 
         $result = array();
-
         if (READ_PAGINATION) {
             $result["count"] = $object->pagination_count();
             // $result["next"] = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . 
             //     "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-            // $result["previous"] = null;
+            $result["start_num"] = intval($object->start_num);
+            $result["end_num"] = intval($object->end_num);
         }
-
-        $result["records"] = array();
-
+        
+        $temp_array = array();
+        
         /**
          * last parameter method: normally it is read, so the hook name
          * is read_hook; if method is other name, like composition
          * in Tanker, so the hook method is composition_hook
          */
-        $num = self::retrieve($result["records"], $object, $stmt, $method);
+        $num = self::retrieve($temp_array, $object, $stmt, $method);
+        if (READ_PAGINATION) {
+            $result["retrieved"] = $num;
+        }
+
+        $result["records"] = $temp_array;
 
         /**
          * For read_decorate, it can change the result from read(), check
