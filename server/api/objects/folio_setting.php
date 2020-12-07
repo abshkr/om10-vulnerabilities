@@ -18,6 +18,21 @@ class FolioSetting extends CommonClass
         
     );
 
+    public function check_frozen_folios()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM CLOSEOUTS WHERE STATUS = 1
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function read()
     {
         $query = "SELECT * FROM CLOSEOUT_DATE_SETTINGS ORDER BY PARAM_KEY";

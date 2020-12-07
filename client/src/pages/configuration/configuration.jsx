@@ -10,7 +10,7 @@ import _ from 'lodash';
 import Locations from './locations';
 import { useAuth } from '../../hooks';
 import { ConfigurationContainer } from './styles';
-import api, { SITE_CONFIGURATION } from '../../api';
+import api, { SITE_CONFIGURATION, FOLIO_SCHEDULING } from '../../api';
 import { Page } from '../../components';
 import auth from '../../auth';
 import { complexityDesc } from 'utils';
@@ -439,7 +439,24 @@ const Configuration = ({ user, config }) => {
 
   const UPDATING_TERMINALS = tab === '5';
 
-  const onConfigurationEdit = (object, value) => {
+  const countFrozenFolios = async () => {
+    const results = await api.get(FOLIO_SCHEDULING.CHECK_FROZEN_FOLIOS);
+
+    return _.toNumber(results?.data?.records?.[0]?.cnt);
+  };
+
+  const onConfigurationEdit = async (object, value) => {
+    // console.log('............onConfigurationEdit', object, value);
+    if (object.config_key === 'CLOSEOUT_AUTO_CLOSE' && value === 'Y') {
+      const cnt = await countFrozenFolios();
+      if (cnt > 0) {
+        notification.warning({
+          description: t('descriptions.frozenFoliosToAutoClose'),
+        });
+        return;
+      }
+    }
+
     let payload = [...configuration];
 
     object.config_value = value;

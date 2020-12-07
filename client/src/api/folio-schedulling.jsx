@@ -13,3 +13,5 @@ export const UPDATE_SETTINGS = '/api/pages/folio_schedule/update_settings.php';
 export const FREEZE_CLOSEOUT = '/api/pages/folio_schedule/run_closeout.php';
 export const RUN_N_OVERRIDE = '/api/pages/folio_schedule/run_n_override.php';
 export const CLOSE_CLOSEOUT = '/api/pages/folio_schedule/close_closeout.php';
+
+export const CHECK_FROZEN_FOLIOS = '/api/pages/folio_schedule/check_frozen_folios.php';
