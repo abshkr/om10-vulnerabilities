@@ -55,8 +55,8 @@ const Seals = ({ value, sealUpated }) => {
     if (payload?.records?.length === 0) {
       if (val <= 0) {
         notification.error({
-          message: t("messages.validationFailed"),
-          description: t("descriptions.sealNumberRequired"),
+          message: t('messages.validationFailed'),
+          description: t('descriptions.sealNumberRequired'),
         });
         return;
       }
@@ -70,55 +70,57 @@ const Seals = ({ value, sealUpated }) => {
           cancelText: t('operations.no'),
           centered: true,
           onOk: async () => {
-            api.post(LOAD_SCHEDULES.ALLOCATE_ALL, {
-              supplier: value.supplier_code,
-              trip_no: value.shls_trip_no,
-              seal_num: val,
-            })
-            .then(() => {
-              refreshSeals();
-              sealUpated();
-              setModified([]);
-              setSavable(false);
-    
-              notification.success({
-                message: t('messages.updateSuccess'),
-              });
-            })
-            .catch((errors) => {
-              _.forEach(errors.response.data.errors, (error) => {
-                notification.error({
-                  message: error.type,
-                  description: error.message,
+            api
+              .post(LOAD_SCHEDULES.ALLOCATE_ALL, {
+                supplier: value.supplier_code,
+                trip_no: value.shls_trip_no,
+                seal_num: val,
+              })
+              .then(() => {
+                refreshSeals();
+                sealUpated();
+                setModified([]);
+                setSavable(false);
+
+                notification.success({
+                  message: t('messages.updateSuccess'),
+                });
+              })
+              .catch((errors) => {
+                _.forEach(errors.response.data.errors, (error) => {
+                  notification.error({
+                    message: error.type,
+                    description: error.message,
+                  });
                 });
               });
-            });
           },
         });
       } else {
-        api.post(LOAD_SCHEDULES.ALLOCATE_ALL, {
-          supplier: value.supplier_code,
-          trip_no: value.shls_trip_no,
-          seal_num: val,
-        })
-        .then(() => {
-          refreshSeals();
-          sealUpated();
-          setModified([]);
-          setSavable(false);
+        api
+          .post(LOAD_SCHEDULES.ALLOCATE_ALL, {
+            supplier: value.supplier_code,
+            trip_no: value.shls_trip_no,
+            seal_num: val,
+          })
+          .then(() => {
+            refreshSeals();
+            sealUpated();
+            setModified([]);
+            setSavable(false);
 
-          notification.success({
-            message: t('messages.updateSuccess'),
-          });
-        })
-        .catch((errors) => {
-          _.forEach(errors.response.data.errors, (error) => {
-            notification.error({
-              message: error.type,
-              description: error.message,
+            notification.success({
+              message: t('messages.updateSuccess'),
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
-        });
       }
     } else {
       if (modified.length > 0) {
@@ -130,57 +132,59 @@ const Seals = ({ value, sealUpated }) => {
           cancelText: t('operations.no'),
           centered: true,
           onOk: async () => {
-            api.post(LOAD_SCHEDULES.ALLOCATE_ONE, {
-              supplier: value.supplier_code,
-              trip_no: value.shls_trip_no,
-              cmpt_nr: 1,
-            })
-            .then(() => {
-              refreshSeals();
-              refreshNextSeal();
-              sealUpated();
-              setModified([]);
-              setSavable(false);
-    
-              notification.success({
-                message: t('messages.updateSuccess'),
-              });
-            })
-            .catch((errors) => {
-              _.forEach(errors.response.data.errors, (error) => {
-                notification.error({
-                  message: error.type,
-                  description: error.message,
+            api
+              .post(LOAD_SCHEDULES.ALLOCATE_ONE, {
+                supplier: value.supplier_code,
+                trip_no: value.shls_trip_no,
+                cmpt_nr: 1,
+              })
+              .then(() => {
+                refreshSeals();
+                refreshNextSeal();
+                sealUpated();
+                setModified([]);
+                setSavable(false);
+
+                notification.success({
+                  message: t('messages.updateSuccess'),
+                });
+              })
+              .catch((errors) => {
+                _.forEach(errors.response.data.errors, (error) => {
+                  notification.error({
+                    message: error.type,
+                    description: error.message,
+                  });
                 });
               });
-            });
           },
         });
       } else {
-        api.post(LOAD_SCHEDULES.ALLOCATE_ONE, {
-          supplier: value.supplier_code,
-          trip_no: value.shls_trip_no,
-          cmpt_nr: 1,
-        })
-        .then(() => {
-          refreshSeals();
-          refreshNextSeal();
-          sealUpated();
-          setModified([]);
-          setSavable(false);
+        api
+          .post(LOAD_SCHEDULES.ALLOCATE_ONE, {
+            supplier: value.supplier_code,
+            trip_no: value.shls_trip_no,
+            cmpt_nr: 1,
+          })
+          .then(() => {
+            refreshSeals();
+            refreshNextSeal();
+            sealUpated();
+            setModified([]);
+            setSavable(false);
 
-          notification.success({
-            message: t('messages.updateSuccess'),
-          });
-        })
-        .catch((errors) => {
-          _.forEach(errors.response.data.errors, (error) => {
-            notification.error({
-              message: error.type,
-              description: error.message,
+            notification.success({
+              message: t('messages.updateSuccess'),
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
-        });
       }
     }
   };
@@ -195,61 +199,63 @@ const Seals = ({ value, sealUpated }) => {
         cancelText: t('operations.no'),
         centered: true,
         onOk: async () => {
-          api.post(LOAD_SCHEDULES.REALLOCATE, {
-            supplier: value.supplier_code,
-            trip_no: value.shls_trip_no,
-            seal_nr: selected?.seal_nr,
-            cmpt_nr: 1,
-          })
-          .then(() => {
-            refreshSeals();
-            refreshNextSeal();
-            sealUpated();
-            setModified([]);
-            setSavable(false);
-            setSelected(null);
-    
-            notification.success({
-              message: t('messages.updateSuccess'),
-            });
-          })
-          .catch((errors) => {
-            _.forEach(errors.response.data.errors, (error) => {
-              notification.error({
-                message: error.type,
-                description: error.message,
+          api
+            .post(LOAD_SCHEDULES.REALLOCATE, {
+              supplier: value.supplier_code,
+              trip_no: value.shls_trip_no,
+              seal_nr: selected?.seal_nr,
+              cmpt_nr: 1,
+            })
+            .then(() => {
+              refreshSeals();
+              refreshNextSeal();
+              sealUpated();
+              setModified([]);
+              setSavable(false);
+              setSelected(null);
+
+              notification.success({
+                message: t('messages.updateSuccess'),
+              });
+            })
+            .catch((errors) => {
+              _.forEach(errors.response.data.errors, (error) => {
+                notification.error({
+                  message: error.type,
+                  description: error.message,
+                });
               });
             });
-          });
         },
       });
     } else {
-      api.post(LOAD_SCHEDULES.REALLOCATE, {
-        supplier: value.supplier_code,
-        trip_no: value.shls_trip_no,
-        seal_nr: selected?.seal_nr,
-        cmpt_nr: 1,
-      })
-      .then(() => {
-        refreshSeals();
-        refreshNextSeal();
-        sealUpated();
-        setModified([]);
-        setSavable(false);
-        setSelected(null);
+      api
+        .post(LOAD_SCHEDULES.REALLOCATE, {
+          supplier: value.supplier_code,
+          trip_no: value.shls_trip_no,
+          seal_nr: selected?.seal_nr,
+          cmpt_nr: 1,
+        })
+        .then(() => {
+          refreshSeals();
+          refreshNextSeal();
+          sealUpated();
+          setModified([]);
+          setSavable(false);
+          setSelected(null);
 
-        notification.success({
-          message: t('messages.updateSuccess'),
-        });
-      })
-      .catch((errors) => {
-        _.forEach(errors.response.data.errors, (error) => {
-          notification.error({
-            message: error.type,
-            description: error.message,
+          notification.success({
+            message: t('messages.updateSuccess'),
+          });
+        })
+        .catch((errors) => {
+          _.forEach(errors.response.data.errors, (error) => {
+            notification.error({
+              message: error.type,
+              description: error.message,
+            });
           });
         });
-      });
     }
   };
 
@@ -263,57 +269,59 @@ const Seals = ({ value, sealUpated }) => {
         cancelText: t('operations.no'),
         centered: true,
         onOk: async () => {
-          api.post(LOAD_SCHEDULES.DELETE_SEAL, {
-            seal_nr: selected?.seal_nr,
-          })
-          .then(() => {
-            refreshSeals();
-            refreshNextSeal();
-            sealUpated();
-            setModified([]);
-            setSavable(false);
-            setSelected(null);
-    
-            notification.success({
-              message: t('messages.updateSuccess'),
-            });
-          })
-          .catch((errors) => {
-            _.forEach(errors.response.data.errors, (error) => {
-              notification.error({
-                message: error.type,
-                description: error.message,
+          api
+            .post(LOAD_SCHEDULES.DELETE_SEAL, {
+              seal_nr: selected?.seal_nr,
+            })
+            .then(() => {
+              refreshSeals();
+              refreshNextSeal();
+              sealUpated();
+              setModified([]);
+              setSavable(false);
+              setSelected(null);
+
+              notification.success({
+                message: t('messages.updateSuccess'),
+              });
+            })
+            .catch((errors) => {
+              _.forEach(errors.response.data.errors, (error) => {
+                notification.error({
+                  message: error.type,
+                  description: error.message,
+                });
               });
             });
-          });
         },
       });
     } else {
-      api.post(LOAD_SCHEDULES.DELETE_SEAL, {
-        seal_nr: selected?.seal_nr,
-      })
-      .then(() => {
-        refreshSeals();
-        refreshNextSeal();
-        sealUpated();
-        setModified([]);
-        setSavable(false);
-        setSelected(null);
+      api
+        .post(LOAD_SCHEDULES.DELETE_SEAL, {
+          seal_nr: selected?.seal_nr,
+        })
+        .then(() => {
+          refreshSeals();
+          refreshNextSeal();
+          sealUpated();
+          setModified([]);
+          setSavable(false);
+          setSelected(null);
 
-        notification.success({
-          message: t('messages.updateSuccess'),
-        });
-      })
-      .catch((errors) => {
-        _.forEach(errors.response.data.errors, (error) => {
-          notification.error({
-            message: error.type,
-            description: error.message,
+          notification.success({
+            message: t('messages.updateSuccess'),
+          });
+        })
+        .catch((errors) => {
+          _.forEach(errors.response.data.errors, (error) => {
+            notification.error({
+              message: error.type,
+              description: error.message,
+            });
           });
         });
-      });
-    };
-  }
+    }
+  };
 
   const onDellocateAll = () => {
     if (modified.length > 0) {
@@ -326,18 +334,70 @@ const Seals = ({ value, sealUpated }) => {
         centered: true,
         onOk: async () => {
           api
-          .post(LOAD_SCHEDULES.DEALLOCATE, {
-            supplier: value.supplier_code,
-            trip_no: value.shls_trip_no,
+            .post(LOAD_SCHEDULES.DEALLOCATE, {
+              supplier: value.supplier_code,
+              trip_no: value.shls_trip_no,
+            })
+            .then(() => {
+              refreshSeals();
+              refreshNextSeal();
+              sealUpated();
+              setSelected(null);
+              setModified([]);
+              setSavable(false);
+
+              notification.success({
+                message: t('messages.updateSuccess'),
+              });
+            })
+            .catch((errors) => {
+              _.forEach(errors.response.data.errors, (error) => {
+                notification.error({
+                  message: error.type,
+                  description: error.message,
+                });
+              });
+            });
+        },
+      });
+    } else {
+      api
+        .post(LOAD_SCHEDULES.DEALLOCATE, {
+          supplier: value.supplier_code,
+          trip_no: value.shls_trip_no,
+        })
+        .then(() => {
+          refreshSeals();
+          refreshNextSeal();
+          sealUpated();
+          setSelected(null);
+          setModified([]);
+          setSavable(false);
+
+          notification.success({
+            message: t('messages.updateSuccess'),
+          });
+        })
+        .catch((errors) => {
+          _.forEach(errors.response.data.errors, (error) => {
+            notification.error({
+              message: error.type,
+              description: error.message,
+            });
+          });
+        });
+    }
+  };
+
+  const onSave = () => {
+    for (let i = 0; i < modified.length; i++) {
+      if (!!modified[i].seal_prefix) {
+        api
+          .post(LOAD_SCHEDULES.SET_PREFIX, {
+            seal_nr: modified[i].seal_nr,
+            prefix: modified[i].seal_prefix,
           })
           .then(() => {
-            refreshSeals();
-            refreshNextSeal();
-            sealUpated();
-            setSelected(null);
-            setModified([]);
-            setSavable(false);
-
             notification.success({
               message: t('messages.updateSuccess'),
             });
@@ -350,76 +410,26 @@ const Seals = ({ value, sealUpated }) => {
               });
             });
           });
-        },
-      });
-    } else {
-      api
-      .post(LOAD_SCHEDULES.DEALLOCATE, {
-        supplier: value.supplier_code,
-        trip_no: value.shls_trip_no,
-      })
-      .then(() => {
-        refreshSeals();
-        refreshNextSeal();
-        sealUpated();
-        setSelected(null);
-        setModified([]);
-        setSavable(false);
-
-        notification.success({
-          message: t('messages.updateSuccess'),
-        });
-      })
-      .catch((errors) => {
-        _.forEach(errors.response.data.errors, (error) => {
-          notification.error({
-            message: error.type,
-            description: error.message,
-          });
-        });
-      });
-    }
-  };
-
-  const onSave = () => {
-    for (let i = 0; i < modified.length; i ++) {
-      if (!!modified[i].seal_prefix) {
-        api.post(LOAD_SCHEDULES.SET_PREFIX, {
-          seal_nr: modified[i].seal_nr,
-          prefix: modified[i].seal_prefix,
-        })
-        .then(() => {
-          notification.success({
-            message: t('messages.updateSuccess'),
-          });
-        })
-        .catch((errors) => {
-          _.forEach(errors.response.data.errors, (error) => {
-            notification.error({
-              message: error.type,
-              description: error.message,
-            });
-          });
-        });
       }
       if (!!modified[i].seal_suffix) {
-        api.post(LOAD_SCHEDULES.SET_SUFFIX, {
-          seal_nr: modified[i].seal_nr,
-          suffix: modified[i].seal_suffix,
-        })
-        .then(() => {
-          notification.success({
-            message: t('messages.updateSuccess'),
-          });
-        })
-        .catch((errors) => {
-          _.forEach(errors.response.data.errors, (error) => {
-            notification.error({
-              message: error.type,
-              description: error.message,
+        api
+          .post(LOAD_SCHEDULES.SET_SUFFIX, {
+            seal_nr: modified[i].seal_nr,
+            suffix: modified[i].seal_suffix,
+          })
+          .then(() => {
+            notification.success({
+              message: t('messages.updateSuccess'),
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
-        });
       }
     }
 
@@ -431,35 +441,35 @@ const Seals = ({ value, sealUpated }) => {
     setSavable(savable || value.oldValue !== value.value);
     if (value.oldValue !== value.value) {
       const field = value.colDef.field;
-      
+
       const temp = [...modified];
       const find = _.find(temp, (item) => {
         return item.seal_nr === value.data.seal_nr;
       });
 
       if (find) {
-        if (field === "seal_prefix" && find.seal_prefix !== value.value) {
-          find.seal_prefix = value.value; 
-        } else if (field === "seal_suffix" && find.seal_suffix !== value.value) {
-          find.seal_suffix = value.value; 
+        if (field === 'seal_prefix' && find.seal_prefix !== value.value) {
+          find.seal_prefix = value.value;
+        } else if (field === 'seal_suffix' && find.seal_suffix !== value.value) {
+          find.seal_suffix = value.value;
         }
       } else {
-        if (field === "seal_prefix") {
+        if (field === 'seal_prefix') {
           temp.push({
             seal_prefix: value.value,
             seal_nr: value.data.seal_nr,
-          })
-        } else if (field === "seal_suffix") {
+          });
+        } else if (field === 'seal_suffix') {
           temp.push({
             seal_suffix: value.value,
             seal_nr: value.data.seal_nr,
-          })
+          });
         }
       }
-      
+
       setModified(temp);
     }
-  }
+  };
 
   useEffect(() => {
     const payload = nextSeal?.records[0]?.site_next_seal;
@@ -473,9 +483,9 @@ const Seals = ({ value, sealUpated }) => {
     <>
       <Row gutter={[8, 10]}>
         <Col span={12}>
-          <Form.Item label={t('fields.nextSeal')} >
+          <Form.Item label={t('fields.nextSeal')}>
             <Search
-              type="number"
+              // type="number"
               min={next}
               placeholder={next}
               enterButton={t('operations.update')}
@@ -486,10 +496,12 @@ const Seals = ({ value, sealUpated }) => {
         </Col>
 
         <Col span={12}>
-          <Form.Item label={t('fields.numOfSeals')} >
+          <Form.Item label={t('fields.numOfSeals')}>
             <Search
               placeholder={payload?.records?.length}
-              enterButton={payload?.records?.length === 0 ? t('operations.allocation') : t('operations.addOne')}
+              enterButton={
+                payload?.records?.length === 0 ? t('operations.allocation') : t('operations.addOne')
+              }
               disabled={value?.status !== 'A' && value?.status !== 'F'}
               onSearch={(value) => onAllocation(value)}
               readOnly={!payload?.records || payload?.records?.length > 0}
@@ -498,11 +510,11 @@ const Seals = ({ value, sealUpated }) => {
         </Col>
       </Row>
 
-      <div style={{marginBottom: 10}}>
-        <Button 
-          style={{ marginRight: 5 }} 
-          type="primary" 
-          disabled={!selected || (value?.status !== 'A' && value?.status !== 'F')} 
+      <div style={{ marginBottom: 10 }}>
+        <Button
+          style={{ marginRight: 5 }}
+          type="primary"
+          disabled={!selected || (value?.status !== 'A' && value?.status !== 'F')}
           onClick={onReallocateSelected}
         >
           {t('operations.reallocateSelected')}
@@ -511,36 +523,36 @@ const Seals = ({ value, sealUpated }) => {
         <Button
           style={{ marginRight: 5 }}
           type="primary"
-          disabled={!selected || value?.status !== 'A' && value?.status !== 'F'}
+          disabled={!selected || (value?.status !== 'A' && value?.status !== 'F')}
           onClick={onDellocateAllSelected}
         >
           {t('operations.deallocateSelected')}
         </Button>
 
-        <Button 
-          style={{ marginRight: 5 }} 
-          type="primary" 
+        <Button
+          style={{ marginRight: 5 }}
+          type="primary"
           onClick={onDellocateAll}
-          disabled={value?.status !== 'A' && value?.status !== 'F' || payload?.records?.length === 0}
+          disabled={(value?.status !== 'A' && value?.status !== 'F') || payload?.records?.length === 0}
         >
           {t('operations.deallocateAll')}
         </Button>
 
-        <Button 
-          style={{ marginRight: 5 }} 
-          type="primary" 
+        <Button
+          style={{ marginRight: 5 }}
+          type="primary"
           onClick={onSave}
-          disabled={value?.status !== 'A' && value?.status !== 'F' || !savable}
+          disabled={(value?.status !== 'A' && value?.status !== 'F') || !savable}
         >
           {t('operations.save')}
         </Button>
       </div>
 
-      <Form.Item name="seals" noStyle >
+      <Form.Item name="seals" noStyle>
         <DataTable
           data={payload?.records}
           columns={fields}
-          height="50vh" 
+          height="50vh"
           // extra={extra}
           minimal
           handleSelect={(value) => setSelected(value[0])}
