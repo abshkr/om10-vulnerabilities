@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Modal, Badge, Checkbox, notification, Calendar } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-import { mutate } from 'swr';
+import useSWR, { mutate } from 'swr';
 import './calendar.css';
 import moment from 'moment';
 
@@ -13,6 +13,10 @@ import api, { FOLIO_SCHEDULING } from '../../../api';
 import { describeExceptionRule } from '../../../utils';
 
 const FolioCalendar = ({ access, value }) => {
+  const { data: payload } = useSWR(FOLIO_SCHEDULING.SETTINGS);
+
+  const [closeoutTime, setCloseoutTime] = useState(null);
+
   const { t } = useTranslation();
   let curDate = null;
 
@@ -178,7 +182,10 @@ const FolioCalendar = ({ access, value }) => {
   };
 
   const dateCellRender = (v) => {
-    const isPast = v.diff(moment()) < 0;
+    let isPast = v.diff(moment()) < 0;
+    if (v.format("YYYY-MM-DD") === moment().format("YYYY-MM-DD")) {
+      isPast = v.format("HH:mm:ss") > closeoutTime;
+    }
     const checkDateRet = checkDate(v);
     return (
       <div>
@@ -207,6 +214,21 @@ const FolioCalendar = ({ access, value }) => {
   const onSelect = (v) => {
     curDate = v.format('D_M_YYYY');
   };
+
+  useEffect(() => {
+    if (payload) {
+      const records = payload?.records;
+      const nextTime = _.find(records, (record) => {
+        return record.param_key === 'NEXT_REPORT_TIME';
+      })
+      
+      const nextCloseoutTime = moment(
+        nextTime.param_value, 'YYYY-MM-DD HH:mm:ss'
+      );
+
+      setCloseoutTime(nextCloseoutTime.format("HH:mm:ss"))
+    }
+  }, [payload]);
 
   return (
     <Calendar
