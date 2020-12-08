@@ -113,6 +113,13 @@ class ReportProfile extends CommonClass
         return $this->post_update();
     }
 
+    public function pre_update()
+    {
+        if (!isset($this->report_ondemand_title) && isset($this->report_name)) {
+            $this->ondemand_title = $this->report_name;
+        }
+    }
+
     public function post_update()
     {
         $ondemand_flag = 0;
