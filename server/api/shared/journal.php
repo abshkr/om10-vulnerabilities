@@ -1211,8 +1211,8 @@ class Journal
         // write_log(json_decode($set_old), __FILE__, __LINE__);
 
         foreach ($set_new as $key => $value) {
-            write_log(sprintf("%s::%s LOOP. key:%s, value:%s", __CLASS__, __FUNCTION__, $key, $value),
-            __FILE__, __LINE__);
+            // write_log(sprintf("%s::%s LOOP. key:%s, value:%s", __CLASS__, __FUNCTION__, $key, $value),
+            // __FILE__, __LINE__);
             if (array_key_exists($module, $this->fields_excluded) &&
                 in_array(strtoupper($key), $this->fields_excluded[$module])) {
                 continue;
