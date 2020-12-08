@@ -262,19 +262,13 @@ const Settings = ({ value, access }) => {
         return item.param_key === 'NEXT_REPORT_TIME';
       })
     ) {
-      let datePart = _.filter(newSettings, function (item) {
-        return item.param_key === 'NEXT_REPORT_TIME';
-      })[0].substring(0, 11);
       _.filter(newSettings, function (item) {
         return item.param_key === 'NEXT_REPORT_TIME';
-      })[0].param_value = datePart + value.format('HH:mm:00');
+      })[0].param_value = moment().format("YYYY-MM-DD") + value.format('HH:mm:00');
     } else {
-      let datePart = _.filter(payload?.records, function (item) {
-        return item.param_key === 'NEXT_REPORT_TIME';
-      })[0].param_value.substring(0, 11);
       newSettings.push({
         param_key: 'NEXT_REPORT_TIME',
-        param_value: datePart + value.format('HH:mm:00'),
+        param_value: moment().format("YYYY-MM-DD") + value.format('HH:mm:00'),
       });
     }
   };
