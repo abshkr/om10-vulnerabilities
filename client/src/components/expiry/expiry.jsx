@@ -19,20 +19,20 @@ const Expiry = ({ form, value, type }) => {
   const { setFieldsValue } = form;
 
   const handleSave = (row) => {
-    const payload = [...data];
+    const tempData = [...data];
+    
+    const types = [...payload?.records];
+    const index = types.findIndex((item) => row.edt_type_desc === item.edt_type_desc);
+    const targetType = types[index];
 
-    const index = payload.findIndex((item) => row.edt_type_code === item.edt_type_code);
-    const item = payload[index];
-
-    payload.splice(index, 1, {
-      ...item,
-      ...row,
-    });
-
-    setData(payload);
+    const index2 = tempData.findIndex((item) => row.edt_type_code === item.edt_type_code);
+    tempData[index2] = {...row}
+    tempData[index2].edt_type_code = targetType.edt_type_code;
+    
+    setData(tempData);
 
     setFieldsValue({
-      expiry_dates: payload,
+      expiry_dates: tempData,
     });
   };
 
@@ -44,6 +44,7 @@ const Expiry = ({ form, value, type }) => {
     });
 
     const value = values[0];
+    value.ed_status = value.edt_status;
 
     if (value.edt_def_exp_date === '') {
       setData([...data, value]);
