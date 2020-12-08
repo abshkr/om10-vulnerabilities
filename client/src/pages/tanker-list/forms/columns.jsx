@@ -1,14 +1,14 @@
 const columns = t => [
   {
-    title: t('fields.id'),
-    dataIndex: 'eqpt_id',
-    key: 'eqpt_id',
+    title: t('fields.code'),
+    dataIndex: 'tnkr_code',
+    key: 'tnkr_code',
     align: 'center'
   },
   {
-    title: t('fields.code'),
-    dataIndex: 'eqpt_code',
-    key: 'eqpt_code',
+    title: t('fields.name'),
+    dataIndex: 'tnkr_name',
+    key: 'tnkr_name',
     align: 'center'
   }
 ];

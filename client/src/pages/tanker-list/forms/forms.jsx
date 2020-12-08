@@ -54,7 +54,6 @@ const FormModal = ({
   config,
   tankers,
 }) => {
-  console.log(expiryTypes);
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -85,13 +84,16 @@ const FormModal = ({
   const onFinish = async () => {
     const values = await form.validateFields();
     let matches = [];
+    let bulk_edit = [];
+    const setBulk = (bulk) => {
+      bulk_edit = [...bulk];
+    };
 
     let eqpt_selected = true;
     if (!values.tnkr_equips) {
       eqpt_selected = false;
     } else {
       _.forEach(values?.tnkr_equips, (equipment, index) => {
-        console.log(equipment);
         if (!equipment.eqpt_id) {
           eqpt_selected = false;
         }
@@ -124,9 +126,10 @@ const FormModal = ({
       centered: true,
       content:
         matches.length > 0 ? (
-          <CheckList form={form} matches={matches} columns={fields} rowKey="tnkr_code" />
+          <CheckList form={form} matches={matches} columns={fields} rowKey="tnkr_code" setBulk={setBulk} />
         ) : null,
       onOk: async () => {
+        values.bulk_edit = bulk_edit;
         await api
           .post(IS_CREATING ? TANKER_LIST.CREATE : TANKER_LIST.UPDATE, values)
           .then((response) => {

@@ -63,6 +63,10 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
     const values = await form.validateFields();
 
     let matches = [];
+    let bulk_edit = [];
+    const setBulk = (bulk) => {
+      bulk_edit = [...bulk];
+    };
 
     if (!IS_CREATING) {
       matches = _.filter(payload?.records, (object) => {
@@ -87,9 +91,10 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
       centered: true,
       content:
         matches.length > 0 ? (
-          <CheckList form={form} matches={matches} columns={fields} rowKey="eqpt_code" />
+          <CheckList form={form} matches={matches} columns={fields} rowKey="eqpt_code" setBulk={setBulk} />
         ) : null,
       onOk: async () => {
+        values.bulk_edit = bulk_edit;
         await api
           .post(IS_CREATING ? EQUIPMENT_LIST.CREATE : EQUIPMENT_LIST.UPDATE, values)
           .then((response) => {

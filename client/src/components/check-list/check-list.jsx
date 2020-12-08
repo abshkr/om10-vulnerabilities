@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, Form } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-const CheckList = ({ form, matches, rowKey, columns }) => {
+const CheckList = ({ form, matches, rowKey, columns, setBulk }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -12,6 +12,10 @@ const CheckList = ({ form, matches, rowKey, columns }) => {
       setFieldsValue({
         bulk_edit: selectedRows
       });
+      
+      if (setBulk) {
+        setBulk(selectedRows)
+      }
     }
   };
 

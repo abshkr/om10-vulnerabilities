@@ -73,6 +73,10 @@ const FormModal = ({
     const values = await form.validateFields();
 
     let matches = [];
+    let bulk_edit = [];
+    const setBulk = (bulk) => {
+      bulk_edit = [...bulk];
+    };
 
     if (!IS_CREATING) {
       matches = _.filter(payload?.records, (object) => {
@@ -95,9 +99,10 @@ const FormModal = ({
       centered: true,
       content:
         matches.length > 0 ? (
-          <CheckList form={form} matches={matches} columns={fields} rowKey="per_code" />
+          <CheckList form={form} matches={matches} columns={fields} rowKey="per_code" setBulk={setBulk} />
         ) : null,
       onOk: async () => {
+        values.bulk_edit = bulk_edit;
         await api
           .post(IS_CREATING ? PERSONNEL.CREATE : PERSONNEL.UPDATE, values)
           .then((response) => {
