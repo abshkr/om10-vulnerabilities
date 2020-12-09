@@ -62,7 +62,7 @@ class Schedule extends CommonClass
     public function carriers()
     {
         //Because Reactjs can call carriers.php?customer=undefined, so undefined becomes a string
-        if (isset($this->customer) && $this->customer !== "undefined") {
+        if (isset($this->customer) && $this->customer !== "undefined" && $this->customer !== "") {
             $query = "SELECT CARRIER.CMPY_CODE,
                         CARRIER.CMPY_NAME,
                         CARRIER.CMPY_CODE||' - '||CARRIER.CMPY_NAME AS CMPY_DESC,
