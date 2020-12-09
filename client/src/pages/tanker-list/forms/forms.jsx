@@ -9,7 +9,7 @@ import {
   UnlockOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal, Drawer, Row, Col, Divider } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Drawer, Row, Col, Divider, Tag, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 
@@ -58,8 +58,22 @@ const FormModal = ({
   const [form] = Form.useForm();
   const { resetFields } = form;
 
+  const [tagCount, setTagCount] = useState(0);
+  const [loadCount, setLoadCount] = useState(0);
+  const [tripCount, setTripCount] = useState(0);
+
   const { data: payload } = useSWR(TANKER_LIST.READ, { refreshInterval: 0 });
   const [equipment, setEquipment] = useState(undefined);
+
+  const { data: tags } = useSWR(`${TANKER_LIST.CHECK_TANKER_TAGS}?tanker=${value?.tnkr_code}`, {
+    refreshInterval: 0,
+  });
+  const { data: loads } = useSWR(`${TANKER_LIST.CHECK_TANKER_LOADS}?tanker=${value?.tnkr_code}`, {
+    refreshInterval: 0,
+  });
+  const { data: trips } = useSWR(`${TANKER_LIST.CHECK_TANKER_TRIPS}?tanker=${value?.tnkr_code}`, {
+    refreshInterval: 0,
+  });
 
   const fields = columns(t);
   const IS_CREATING = !value;
@@ -220,6 +234,24 @@ const FormModal = ({
     }
   }, [value, visible]);
 
+  useEffect(() => {
+    if (tags) {
+      setTagCount(tags?.records?.[0]?.cnt);
+    }
+  }, [tags]);
+
+  useEffect(() => {
+    if (loads) {
+      setLoadCount(loads?.records?.[0]?.cnt);
+    }
+  }, [loads]);
+
+  useEffect(() => {
+    if (trips) {
+      setTripCount(trips?.records?.[0]?.cnt);
+    }
+  }, [trips]);
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -233,6 +265,26 @@ const FormModal = ({
       visible={visible}
       footer={
         <>
+          {!IS_CREATING && (
+            <div style={{ float: 'left', marginRight: 5 }}>
+              <Tooltip placement="topRight" title={t('descriptions.countTankerTags')}>
+                <Tag color={tagCount > 0 ? 'red' : 'green'}>
+                  {t('fields.countTankerTags') + ': ' + tagCount}
+                </Tag>
+              </Tooltip>
+              <Tooltip placement="topRight" title={t('descriptions.countTankerLoads')}>
+                <Tag color={loadCount > 0 ? 'red' : 'green'}>
+                  {t('fields.countTankerLoads') + ': ' + loadCount}
+                </Tag>
+              </Tooltip>
+              <Tooltip placement="topRight" title={t('descriptions.countTankerTrips')}>
+                <Tag color={tripCount > 0 ? 'red' : 'green'}>
+                  {t('fields.countTankerTrips') + ': ' + tripCount}
+                </Tag>
+              </Tooltip>
+            </div>
+          )}
+
           <Button
             htmlType="button"
             icon={<CloseOutlined />}
@@ -270,7 +322,7 @@ const FormModal = ({
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={!access?.canDelete}
+              disabled={!access?.canDelete || tagCount > 0 || loadCount > 0 || tripCount > 0}
             >
               {t('operations.delete')}
             </Button>

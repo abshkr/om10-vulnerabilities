@@ -242,7 +242,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               disabled={
-                !access?.canUpdate || value?.etyp_count > 0 || value?.eqpt_count > 0 || value?.tnkr_count > 0
+                !access?.canDelete || value?.etyp_count > 0 || value?.eqpt_count > 0 || value?.tnkr_count > 0
               }
               onClick={onDelete}
             >

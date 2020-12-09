@@ -1177,4 +1177,91 @@ class Tanker extends CommonClass
 
         return true;
     }
+
+    /*
+        The child tables and columns which refers to TANKERS
+        ACCESS_KEYS	9	KYA_TANKER
+        LOADS	    1	LOAD_TANKER
+        SCHEDULE	1	SHL_TANKER
+        SCHEDULE	24	SHLS_ORIG_TKR
+        EPC_TRAN	1	EPCT_TANKER
+        OVC	        2	OVC_TANKER
+        RTN_EQP_CPT	2	RTN_TANKER
+        TNKR_EQUIP	1	TC_TANKER
+    */
+
+    // check if the tanker has been used by tags
+    //    ACCESS_KEYS	9	KYA_TANKER
+    public function check_tanker_tags()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM ACCESS_KEYS WHERE KYA_TANKER=:tnkr_code
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tnkr_code', $this->tanker);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    // check if the tanker has been used by loads
+    //    LOADS	    1	LOAD_TANKER
+    public function check_tanker_loads()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM LOADS WHERE LOAD_TANKER=:tnkr_code
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tnkr_code', $this->tanker);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    // check if the tanker has been used by schedules
+    //    SCHEDULE	1	SHL_TANKER
+    //    SCHEDULE	24	SHLS_ORIG_TKR
+    public function check_tanker_trips()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM SCHEDULE WHERE SHL_TANKER=:tnkr_code OR SHLS_ORIG_TKR=:tnkr_code
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tnkr_code', $this->tanker);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    // check if the tanker has been used by any active schedules
+    //    SCHEDULE	1	SHL_TANKER
+    public function check_tanker_active_trips()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT 
+            FROM SCHEDULE 
+            WHERE SHL_TANKER=:tnkr_code AND NVL(STATS, 'F') IN ('A', 'L') AND SHLS_CLASS=0
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tnkr_code', $this->tanker);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
 }

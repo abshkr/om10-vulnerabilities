@@ -12,3 +12,8 @@ export const UNLOCK_ALL = '/api/pages/tanker/unlock_all.php';
 export const CREATE = '/api/pages/tanker/create.php';
 export const UPDATE = '/api/pages/tanker/update.php';
 export const DELETE = '/api/pages/tanker/delete.php';
+
+export const CHECK_TANKER_TAGS = '/api/pages/tanker/check_tanker_tags.php';
+export const CHECK_TANKER_LOADS = '/api/pages/tanker/check_tanker_loads.php';
+export const CHECK_TANKER_TRIPS = '/api/pages/tanker/check_tanker_trips.php';
+export const CHECK_TANKER_ACTIVE_TRIPS = '/api/pages/tanker/check_tanker_active_trips.php';
