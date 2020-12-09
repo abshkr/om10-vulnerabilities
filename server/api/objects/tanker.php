@@ -807,6 +807,18 @@ class Tanker extends CommonClass
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
         
+        $query = "SELECT NVL(CONFIG_VALUE, 2) CONFIG_VALUE FROM SITE_CONFIG WHERE CONFIG_KEY = 'SITE_EXPIRY_DATE_MANAGE_MODE'";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $expiry_mode = $row['CONFIG_VALUE'];    //1: old, 2: new, 3: both
+
         $query = "
             SELECT *
             FROM GUI_TANKERS
@@ -1006,7 +1018,7 @@ class Tanker extends CommonClass
         }
 
         //Update expiry dates
-        if (isset($this->expiry_dates)) {
+        if (isset($this->expiry_dates) && ($expiry_mode == '2' || $expiry_mode == '3')) {
             $expiry_dates = array();
             $expiry_date = new ExpiryDate($this->conn);
             $expiry_date->ed_object_id = $this->tnkr_code;
@@ -1032,33 +1044,56 @@ class Tanker extends CommonClass
                     continue;
                 }
 
-                if (!isset($this->expiry_dates)) {
-                    $expiry_date = new ExpiryDate($this->conn);
-                    $expiry_date->ed_target_code = ExpiryTarget::TANKER;
-                    $expiry_date->ed_object_id = $this->tnkr_code;
-                    $stmt = $expiry_date->read();
-                    $result = array();
-                    Utilities::retrieve($result, $expiry_date, $stmt);
-                    $this->expiry_dates = $result;
-                }
-
-                $expiry_dates = array();
-                $expiry_date->ed_object_id = $a_tanker->tnkr_code;
-                $expiry_date->edt_target_code = ExpiryTarget::TANKER;
-                // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
-                foreach ($this->expiry_dates as $key => $value) {
-                    if (is_array($value)) {
-                        $value = (object)$value;
+                //Legacy expiry or both
+                if ($expiry_mode == '1' || $expiry_mode == '3') {
+                    $query = "UPDATE TANKERS
+                        SET TNKR_LIC_EXP = :tnkr_lic_exp,
+                            TNKR_DGLIC_EXP = :tnkr_dglic_exp,
+                            TNKR_INS_EXP = :tnkr_ins_exp
+                        WHERE TNKR_CODE = :tnkr_code";
+                    $stmt = oci_parse($this->conn, $query);
+                    oci_bind_by_name($stmt, ':tnkr_code', $a_tanker->tnkr_code);
+                    oci_bind_by_name($stmt, ':tnkr_lic_exp', $this->tnkr_lic_exp);
+                    oci_bind_by_name($stmt, ':tnkr_dglic_exp', $this->tnkr_dglic_exp);
+                    oci_bind_by_name($stmt, ':tnkr_ins_exp', $this->tnkr_ins_exp);
+                    if (!oci_execute($stmt, $this->commit_mode)) {
+                        $e = oci_error($stmt);
+                        write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                        oci_rollback($this->conn);
+                        return false;
                     }
-                    $value->edt_object_id = $a_tanker->tnkr_code;
-                    $value->ed_object_id = $a_tanker->tnkr_code;
-                    $expiry_dates[$value->edt_type_code] = $value;
-                }
-                if (!$expiry_date->update($expiry_dates)) {
-                    write_log("Failed to update expiry dates",
-                        __FILE__, __LINE__, LogLevel::ERROR);
-                    oci_rollback($this->conn);
-                    return false;
+                } 
+
+                //New expiry or both
+                if ($expiry_mode == '2' || $expiry_mode == '3') {
+                    if (!isset($this->expiry_dates)) {
+                        $expiry_date = new ExpiryDate($this->conn);
+                        $expiry_date->ed_target_code = ExpiryTarget::TANKER;
+                        $expiry_date->ed_object_id = $this->tnkr_code;
+                        $stmt = $expiry_date->read();
+                        $result = array();
+                        Utilities::retrieve($result, $expiry_date, $stmt);
+                        $this->expiry_dates = $result;
+                    }
+
+                    $expiry_dates = array();
+                    $expiry_date->ed_object_id = $a_tanker->tnkr_code;
+                    $expiry_date->edt_target_code = ExpiryTarget::TANKER;
+                    // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
+                    foreach ($this->expiry_dates as $key => $value) {
+                        if (is_array($value)) {
+                            $value = (object)$value;
+                        }
+                        $value->edt_object_id = $a_tanker->tnkr_code;
+                        $value->ed_object_id = $a_tanker->tnkr_code;
+                        $expiry_dates[$value->edt_type_code] = $value;
+                    }
+                    if (!$expiry_date->update($expiry_dates)) {
+                        write_log("Failed to update expiry dates",
+                            __FILE__, __LINE__, LogLevel::ERROR);
+                        oci_rollback($this->conn);
+                        return false;
+                    }
                 }
             }
         }

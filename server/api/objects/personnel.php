@@ -726,7 +726,17 @@ class Personnel extends CommonClass
 
     public function update()
     {
-        write_log(json_encode($this), __FILE__, __LINE__);
+        $query = "SELECT NVL(CONFIG_VALUE, 2) CONFIG_VALUE FROM SITE_CONFIG WHERE CONFIG_KEY = 'SITE_EXPIRY_DATE_MANAGE_MODE'";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $expiry_mode = $row['CONFIG_VALUE'];    //1: old, 2: new, 3: both
 
         //Old data
         $query = "
@@ -876,7 +886,7 @@ class Personnel extends CommonClass
             }
         }
 
-        if (isset($this->expiry_dates)) {
+        if (isset($this->expiry_dates) && ($expiry_mode == '2' || $expiry_mode == '3')) {
             //Update expiry dates
             $expiry_dates = array();
             $expiry_date = new ExpiryDate($this->conn);
@@ -899,42 +909,65 @@ class Personnel extends CommonClass
         //Bulk etp
         if (isset($this->bulk_edit)) {
             foreach ($this->bulk_edit as $bluk_eqpt) {
-                // write_log(json_encode($value), __FILE__, __LINE__);
+                // write_log(json_encode($bluk_eqpt), __FILE__, __LINE__);
                 if ($bluk_eqpt->per_code === $this->per_code) {
                     continue;
                 }
 
-                if (!isset($this->expiry_dates)) {
-                    $expiry_date = new ExpiryDate($this->conn);
-                    $expiry_date->ed_target_code = ExpiryTarget::PERSONNEL;
-                    $expiry_date->ed_object_id = $this->per_code;
-                    $stmt = $expiry_date->read();
-                    $result = array();
-                    Utilities::retrieve($result, $expiry_date, $stmt);
-                    $this->expiry_dates = $result;
-                }
-
-                $expiry_dates = array();
-                $expiry_date->ed_object_id = $bluk_eqpt->per_code;
-                $expiry_date->edt_target_code = ExpiryTarget::PERSONNEL;
-                // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
-                foreach ($this->expiry_dates as $key => $value) {
-                    if (is_array($value)) {
-                        $value = (object)$value;
+                //Legacy expiry or both
+                if ($expiry_mode == '1' || $expiry_mode == '3') {
+                    $query = "UPDATE PERSONNEL
+                        SET PER_EXP_D1_DMY = :per_exp_d1_dmy,
+                            PER_EXP_D2_DMY = :per_exp_d2_dmy,
+                            PER_EXP_D3_DMY = :per_exp_d3_dmy
+                        WHERE PER_CODE = :per_code";
+                    $stmt = oci_parse($this->conn, $query);
+                    oci_bind_by_name($stmt, ':per_code', $bluk_eqpt->per_code);
+                    oci_bind_by_name($stmt, ':per_exp_d1_dmy', $this->per_exp_d1_dmy);
+                    oci_bind_by_name($stmt, ':per_exp_d2_dmy', $this->per_exp_d2_dmy);
+                    oci_bind_by_name($stmt, ':per_exp_d3_dmy', $this->per_exp_d3_dmy);
+                    if (!oci_execute($stmt, $this->commit_mode)) {
+                        $e = oci_error($stmt);
+                        write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                        oci_rollback($this->conn);
+                        return false;
                     }
-                    
-                    $value->edt_object_id = $bluk_eqpt->per_code;
-                    $value->ed_object_id = $bluk_eqpt->per_code;
+                } 
+
+                //New expiry or both
+                if ($expiry_mode == '2' || $expiry_mode == '3') {
+                    if (!isset($this->expiry_dates)) {
+                        $expiry_date = new ExpiryDate($this->conn);
+                        $expiry_date->ed_target_code = ExpiryTarget::PERSONNEL;
+                        $expiry_date->ed_object_id = $this->per_code;
+                        $stmt = $expiry_date->read();
+                        $result = array();
+                        Utilities::retrieve($result, $expiry_date, $stmt);
+                        $this->expiry_dates = $result;
+                    }
+    
+                    $expiry_dates = array();
                     $expiry_date->ed_object_id = $bluk_eqpt->per_code;
-                    $expiry_dates[$value->edt_type_code] = $value;
-                }
-                // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
-                if (!$expiry_date->update($expiry_dates)) {
-                    write_log("Failed to update expiry dates",
-                        __FILE__, __LINE__, LogLevel::ERROR);
-                    oci_rollback($this->conn);
-                    return false;
-                }
+                    $expiry_date->edt_target_code = ExpiryTarget::PERSONNEL;
+                    // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
+                    foreach ($this->expiry_dates as $key => $value) {
+                        if (is_array($value)) {
+                            $value = (object)$value;
+                        }
+                        
+                        $value->edt_object_id = $bluk_eqpt->per_code;
+                        $value->ed_object_id = $bluk_eqpt->per_code;
+                        $expiry_date->ed_object_id = $bluk_eqpt->per_code;
+                        $expiry_dates[$value->edt_type_code] = $value;
+                    }
+                    // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
+                    if (!$expiry_date->update($expiry_dates)) {
+                        write_log("Failed to update expiry dates",
+                            __FILE__, __LINE__, LogLevel::ERROR);
+                        oci_rollback($this->conn);
+                        return false;
+                    }
+                } 
             }
         }
 

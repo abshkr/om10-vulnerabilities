@@ -530,6 +530,18 @@ class Equipment extends CommonClass
 
     public function update()
     {
+        $query = "SELECT NVL(CONFIG_VALUE, 2) CONFIG_VALUE FROM SITE_CONFIG WHERE CONFIG_KEY = 'SITE_EXPIRY_DATE_MANAGE_MODE'";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $expiry_mode = $row['CONFIG_VALUE'];    //1: old, 2: new, 3: both
+
         $query = "
             SELECT *
             FROM TRANSP_EQUIP
@@ -608,7 +620,7 @@ class Equipment extends CommonClass
         }
 
         //Update expiry dates
-        if (isset($this->expiry_dates)) {
+        if (isset($this->expiry_dates) && ($expiry_mode == '2' || $expiry_mode == '3')) {
             $expiry_dates = array();
             $expiry_date = new ExpiryDate($this->conn);
             $expiry_date->ed_object_id = $this->eqpt_id;
@@ -642,37 +654,60 @@ class Equipment extends CommonClass
                     continue;
                 }
 
-                if (!isset($this->expiry_dates)) {
-                    $expiry_date = new ExpiryDate($this->conn);
-                    $expiry_date->ed_target_code = ExpiryTarget::TRANSP_EQUIP;
-                    $expiry_date->ed_object_id = $this->eqpt_id;
-                    $stmt = $expiry_date->read();
-                    $result = array();
-                    Utilities::retrieve($result, $expiry_date, $stmt);
-                    $this->expiry_dates = $result;
-                }
-
-                $expiry_dates = array();
-                $expiry_date->ed_object_id = $bluk_eqpt->eqpt_id;
-                $expiry_date->edt_target_code = ExpiryTarget::TRANSP_EQUIP;
-                // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
-                foreach ($this->expiry_dates as $key => $value) {
-                    if (is_array($value)) {
-                        $value = (object)$value;
+                //Legacy expiry or both
+                if ($expiry_mode == '1' || $expiry_mode == '3') {
+                    $query = "UPDATE TRANSP_EQUIP
+                        SET EQPT_EXP_D1_DMY = :eqpt_exp_d1_dmy,
+                            EQPT_EXP_D2_DMY = :eqpt_exp_d2_dmy,
+                            EQPT_EXP_D3_DMY = :eqpt_exp_d3_dmy
+                            WHERE EQPT_ID = :eqpt_id";
+                    $stmt = oci_parse($this->conn, $query);
+                    oci_bind_by_name($stmt, ':eqpt_id', $bluk_eqpt->eqpt_id);
+                    oci_bind_by_name($stmt, ':eqpt_exp_d1_dmy', $this->eqpt_exp_d1_dmy);
+                    oci_bind_by_name($stmt, ':eqpt_exp_d2_dmy', $this->eqpt_exp_d2_dmy);
+                    oci_bind_by_name($stmt, ':eqpt_exp_d3_dmy', $this->eqpt_exp_d3_dmy);
+                    if (!oci_execute($stmt, $this->commit_mode)) {
+                        $e = oci_error($stmt);
+                        write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                        oci_rollback($this->conn);
+                        return false;
                     }
-                    
-                    $value->edt_object_id = $bluk_eqpt->eqpt_id;
-                    $value->ed_object_id = $bluk_eqpt->eqpt_id;
+                } 
+
+                //New expiry or both
+                if ($expiry_mode == '2' || $expiry_mode == '3') {
+                    if (!isset($this->expiry_dates)) {
+                        $expiry_date = new ExpiryDate($this->conn);
+                        $expiry_date->ed_target_code = ExpiryTarget::TRANSP_EQUIP;
+                        $expiry_date->ed_object_id = $this->eqpt_id;
+                        $stmt = $expiry_date->read();
+                        $result = array();
+                        Utilities::retrieve($result, $expiry_date, $stmt);
+                        $this->expiry_dates = $result;
+                    }
+
+                    $expiry_dates = array();
                     $expiry_date->ed_object_id = $bluk_eqpt->eqpt_id;
-                    $expiry_dates[$value->edt_type_code] = $value;
-                }
-                // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
-                if (!$expiry_date->update($expiry_dates)) {
-                    write_log("Failed to update expiry dates",
-                        __FILE__, __LINE__, LogLevel::ERROR);
-                    oci_rollback($this->conn);
-                    return false;
-                }
+                    $expiry_date->edt_target_code = ExpiryTarget::TRANSP_EQUIP;
+                    // write_log(json_encode($this->expiry_dates), __FILE__, __LINE__);
+                    foreach ($this->expiry_dates as $key => $value) {
+                        if (is_array($value)) {
+                            $value = (object)$value;
+                        }
+                        
+                        $value->edt_object_id = $bluk_eqpt->eqpt_id;
+                        $value->ed_object_id = $bluk_eqpt->eqpt_id;
+                        $expiry_date->ed_object_id = $bluk_eqpt->eqpt_id;
+                        $expiry_dates[$value->edt_type_code] = $value;
+                    }
+                    // write_log(json_encode($expiry_dates), __FILE__, __LINE__);
+                    if (!$expiry_date->update($expiry_dates)) {
+                        write_log("Failed to update expiry dates",
+                            __FILE__, __LINE__, LogLevel::ERROR);
+                        oci_rollback($this->conn);
+                        return false;
+                    }
+                }    
             }
         }
 
