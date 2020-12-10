@@ -15,12 +15,7 @@ const Events = () => {
   const { data } = useSWR(AUTH.SESSION, { refreshInterval: 1000 });
 
   const [alarms, setAlarms] = useState([]);
-  const [events, setEvents] = useState([
-    {
-      gen_date: new Date().toDateString(),
-      message: Math.random(0, 1000),
-    },
-  ]);
+  const [events, setEvents] = useState([]);
   const [muted, setMuted] = useState(false);
 
   const [visible, setVisible] = useState(false);
