@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, List, Dropdown, Button, Badge } from 'antd';
 
-import { BellOutlined, CloseOutlined } from '@ant-design/icons';
+import { BellOutlined, CloseOutlined, StopOutlined } from '@ant-design/icons';
 
 import useSWR from 'swr';
 import { useAudio } from 'hooks';
@@ -14,19 +14,17 @@ const Events = () => {
 
   const { data } = useSWR(AUTH.SESSION, { refreshInterval: 1000 });
 
-  const [events, setEvents] = useState([]);
+  const [alarms, setAlarms] = useState([]);
+  const [events, setEvents] = useState([
+    {
+      gen_date: new Date().toDateString(),
+      message: Math.random(0, 1000),
+    },
+  ]);
+  const [muted, setMuted] = useState(false);
+
   const [visible, setVisible] = useState(false);
   const [seen, setSeen] = useState([]);
-
-  const onVisibleChange = (value) => {
-    // stop playing the noise if the sound is playing and the menu is opened.
-
-    if (playing) {
-      toggle();
-    }
-
-    setVisible(value);
-  };
 
   const onRemove = (message) => {
     let payload = [...seen, message];
@@ -35,25 +33,47 @@ const Events = () => {
   };
 
   useEffect(() => {
-    const payload = data?.records?.alarms || [];
+    const payload = alarms || [];
 
     const filtered = _.filter(payload, (object) => {
       return !seen.includes(object.message);
     });
 
-    setEvents(filtered.slice(0, 4));
-  }, [data, seen]);
+    setEvents(filtered);
+  }, [alarms, seen]);
+
+  useEffect(() => {
+    const set = data?.records?.alarms || [];
+
+    const payload = [...events, ...set];
+
+    setAlarms(payload);
+  }, [data]);
 
   useEffect(() => {
     // play if there are events and the sound is not playing
 
-    if (events.length > 0 && !playing && !visible) {
+    if (events.length > 0 && !playing && !muted) {
       toggle();
     }
-  }, [events, playing, visible]);
+
+    if (playing && muted) {
+      toggle();
+    }
+
+    if (events.length < 1 && playing && !muted) {
+      toggle();
+    }
+  }, [events, playing, muted]);
 
   const menu = (
     <Menu style={{ display: events.length === 0 && 'none' }}>
+      <div style={{ paddingLeft: 5, paddingRight: 5 }}>
+        <Button type="primary" block onClick={() => setMuted(!muted)}>
+          {muted ? 'Unmute' : 'Mute'}
+        </Button>
+      </div>
+
       <List
         style={{ minWidth: 300 }}
         itemLayout="horizontal"
@@ -82,13 +102,16 @@ const Events = () => {
     <Dropdown
       visible={visible}
       overlay={menu}
-      onVisibleChange={onVisibleChange}
+      onVisibleChange={setVisible}
       trigger={['click']}
       disabled={events.length === 0}
     >
       <Button type="primary" size="large" shape="circle" style={{ marginRight: 7 }}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <Badge count={events?.length} offset={[10, -5]}>
+            <StopOutlined
+              style={{ transform: 'scale(1s)', position: 'absolute', display: muted ? '' : 'none' }}
+            />
             <BellOutlined style={{ transform: 'scale(1.5)' }} />
           </Badge>
         </div>
