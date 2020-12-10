@@ -4,6 +4,6 @@ include_once '../../shared/header.php';
 
 // include database and object files
 include_once '../../config/database.php';
-include_once '../../objects/folio.php';
+include_once '../../objects/folio_setting.php';
 
-Utilities::read('Folio', "manual_close", $filter = true);
+Utilities::exec('FolioSetting', $method = 'close_closeout', $filter = true);

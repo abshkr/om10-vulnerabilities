@@ -2,8 +2,8 @@ import React, { useCallback, useState, useEffect } from 'react';
 
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
-import { notification, Button } from 'antd';
-import { SafetyCertificateOutlined, ReconciliationOutlined, SyncOutlined } from '@ant-design/icons';
+import { notification, Button, Modal } from 'antd';
+import { SafetyCertificateOutlined, ReconciliationOutlined, SyncOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 
 import Forms from './forms';
@@ -67,25 +67,35 @@ const FolioSummary = () => {
     }
   };
 
-  const closeFolio = useCallback(() => {
-    api
-      .post(FOLIO_SUMMARY.MANUAL_CLOSE)
-      .then((response) => {
-        notification.success({
-          message: t('messages.submitSuccess'),
-          description: t('descriptions.closeFolioTriggered'),
-        });
-      })
-
-      .catch((errors) => {
-        _.forEach(errors.response.data.errors, (error) => {
-          notification.error({
-            message: error.type,
-            description: error.message,
+  const closeFolio = async () => {
+    Modal.confirm({
+      title: t('prompts.closeCloseout'),
+      okText: t('operations.yes'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await api
+        .post(FOLIO_SUMMARY.MANUAL_CLOSE)
+        .then((response) => {
+          notification.success({
+            message: t('messages.submitSuccess'),
+            description: t('descriptions.closeFolioTriggered'),
+          });
+        })
+  
+        .catch((errors) => {
+          _.forEach(errors.response.data.errors, (error) => {
+            notification.error({
+              message: error.type,
+              description: error.message,
+            });
           });
         });
-      });
-  }, [t]);
+      }
+    });
+  };
 
   const modifiers = (
     <>
