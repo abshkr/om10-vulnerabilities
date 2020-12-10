@@ -12,7 +12,7 @@ import { AUTH, COMMON } from '../../api';
 const Events = () => {
   const [playing, toggle] = useAudio(COMMON.WARNING_SOUND);
 
-  const { data } = useSWR(AUTH.SESSION);
+  const { data } = useSWR(AUTH.SESSION, { refreshInterval: 1000 });
 
   const [events, setEvents] = useState([]);
   const [visible, setVisible] = useState(false);
