@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 const useAudio = (url) => {
   const [audio] = useState(new Audio(url));
   const [playing, setPlaying] = useState(false);
-  const [muted, setMuted] = useState(false);
+  const [muted, setMuted] = useState(true);
 
   const toggle = () => {
     setPlaying(!playing);
