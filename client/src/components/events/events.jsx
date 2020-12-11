@@ -60,6 +60,12 @@ const Events = () => {
     setAlarms(payload);
   }, [data]);
 
+  useEffect(() => {
+    if (events.length === 0 && playing) {
+      toggle();
+    }
+  }, [events, playing]);
+
   const menu = (
     <Menu style={{ minWidth: 500 }}>
       <div style={{ paddingLeft: 5, paddingRight: 5, display: 'flex' }}>
