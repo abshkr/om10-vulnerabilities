@@ -16,10 +16,18 @@ const Events = () => {
 
   const [alarms, setAlarms] = useState([]);
   const [events, setEvents] = useState([]);
-  const [muted, setMuted] = useState(false);
+  const [muted, setMuted] = useState(true);
 
   const [visible, setVisible] = useState(false);
   const [seen, setSeen] = useState([]);
+
+  const onClearAll = () => {
+    const unique = [...new Set(events.map((item) => item.message))];
+
+    const payload = [...seen, ...unique];
+
+    setSeen(payload);
+  };
 
   const onRemove = (message) => {
     let payload = [...seen, message];
@@ -63,19 +71,24 @@ const Events = () => {
 
   const menu = (
     <Menu style={{ display: events.length === 0 && 'none' }}>
-      <div style={{ paddingLeft: 5, paddingRight: 5 }}>
-        <Button type="primary" block onClick={() => setMuted(!muted)}>
+      <div style={{ paddingLeft: 5, paddingRight: 5, display: 'flex' }}>
+        <Button type="primary" block onClick={() => setMuted(!muted)} style={{ marginRight: 2.5 }}>
           {muted ? 'Unmute' : 'Mute'}
+        </Button>
+
+        <Button type="danger" block onClick={() => onClearAll()} style={{ marginLeft: 2.5 }}>
+          Clear All
         </Button>
       </div>
 
       <List
-        style={{ minWidth: 300 }}
+        style={{ width: '100%' }}
         itemLayout="horizontal"
         dataSource={events}
         size="small"
         renderItem={(item) => (
           <List.Item
+            style={{ minWidth: 500 }}
             actions={[
               <Button
                 type="danger"
