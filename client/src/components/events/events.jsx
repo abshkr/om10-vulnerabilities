@@ -64,7 +64,7 @@ const Events = () => {
     if (events.length === 0 && playing) {
       toggle();
     }
-  }, [events, playing]);
+  }, [events]);
 
   const menu = (
     <Menu style={{ minWidth: 500 }}>
