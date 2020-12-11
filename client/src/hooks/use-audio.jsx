@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 const useAudio = (url) => {
   const [audio] = useState(new Audio(url));
   const [playing, setPlaying] = useState(false);
+  const [muted, setMuted] = useState(false);
 
   const toggle = () => {
     setPlaying(!playing);
@@ -20,6 +21,10 @@ const useAudio = (url) => {
   }, [playing]);
 
   useEffect(() => {
+    audio.volume = muted ? 0 : 1;
+  }, [muted]);
+
+  useEffect(() => {
     audio.addEventListener('ended', () => setPlaying(false));
 
     return () => {
@@ -27,7 +32,7 @@ const useAudio = (url) => {
     };
   }, []);
 
-  return [playing, toggle];
+  return [playing, toggle, muted, setMuted];
 };
 
 export default useAudio;
