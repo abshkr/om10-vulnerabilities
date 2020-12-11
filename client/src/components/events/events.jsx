@@ -4,7 +4,7 @@ import { Menu, List, Dropdown, Button, Badge } from 'antd';
 import { BellOutlined, CloseOutlined, StopOutlined } from '@ant-design/icons';
 
 import useSWR from 'swr';
-import { useAudio } from 'hooks';
+import { useAudio, usePrevious } from 'hooks';
 import _ from 'lodash';
 
 import { AUTH, COMMON } from '../../api';
@@ -16,10 +16,13 @@ const Events = () => {
 
   const [alarms, setAlarms] = useState([]);
   const [events, setEvents] = useState([]);
-  const [muted, setMuted] = useState(true);
+
+  const [muted, setMuted] = useState(false);
 
   const [visible, setVisible] = useState(false);
   const [seen, setSeen] = useState([]);
+
+  const prevEvents = usePrevious(events);
 
   const onClearAll = () => {
     const unique = [...new Set(events.map((item) => item.message))];
@@ -54,20 +57,18 @@ const Events = () => {
   }, [data]);
 
   useEffect(() => {
-    // play if there are events and the sound is not playing
+    if (events.length > 0 && events.length !== prevEvents?.length && !playing && !muted) {
+      toggle();
+    }
 
-    if (events.length > 0 && !playing && !muted) {
+    if (events.length === 0 && playing && !muted) {
       toggle();
     }
 
     if (playing && muted) {
       toggle();
     }
-
-    if (events.length < 1 && playing && !muted) {
-      toggle();
-    }
-  }, [events, playing, muted]);
+  }, [events, prevEvents, playing, muted]);
 
   const menu = (
     <Menu style={{ display: events.length === 0 && 'none' }}>
