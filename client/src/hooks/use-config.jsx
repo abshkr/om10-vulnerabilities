@@ -96,6 +96,7 @@ const useConfig = () => {
     maxLengthCmpyCode: 16,
     maxLengthCustAcct: 40,
     siteUseSG: false,
+    siteUseSpecIns: false,
     load_tolerance_type: 'PERCENT',
     siteTransferTankSource: 'FROM',
   });
@@ -252,6 +253,7 @@ const useConfig = () => {
         maxLengthCmpyCode: _.min([_.toNumber(configurationObject?.SITE_MAXLEN_CMPYCODE) || 16, 16]),
         maxLengthCustAcct: _.min([_.toNumber(configurationObject?.SITE_MAXLEN_CUSTACCT) || 40, 40]),
         siteUseSG: configurationObject?.SITE_USE_SG,
+        siteUseSpecIns: configurationObject?.SITE_USE_SHLS_SPEC_INS,
         load_tolerance_type: configurationObject?.LOAD_TOLERANCE_TYPE,
         siteTransferTankSource: configurationObject?.SITE_TRANSFER_TANK_SOURCE || 'FROM',
       });
