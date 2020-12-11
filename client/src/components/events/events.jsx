@@ -12,7 +12,7 @@ import { AUTH, COMMON } from '../../api';
 const Events = () => {
   const [playing, toggle, muted, setMuted] = useAudio(COMMON.WARNING_SOUND);
 
-  const { data } = useSWR(AUTH.SESSION, { refreshInterval: 0 });
+  const { data } = useSWR(AUTH.SESSION, { refreshInterval: 1000 });
 
   const [alarms, setAlarms] = useState([]);
   const [events, setEvents] = useState([]);
@@ -58,7 +58,7 @@ const Events = () => {
     const payload = [...events, ...set];
 
     setAlarms(payload);
-  }, [data, playing]);
+  }, [data]);
 
   const menu = (
     <Menu style={{ minWidth: 500 }}>
