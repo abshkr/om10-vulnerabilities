@@ -46,6 +46,7 @@ import {
   SoldTo,
   ShipTo,
   LoadSecurityInformation,
+  SpecialInstructions,
   Terminal,
 } from './fields';
 
@@ -79,6 +80,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
     manageViewDeliveryDetails,
     site_customer_product,
     site_customer_carrier,
+    siteUseSpecIns,
   } = config;
 
   const { t } = useTranslation();
@@ -264,6 +266,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
     if (record.unload) {
       record.shls_ld_type = '6';
     }
+
+    /* if (!siteUseSpecIns) {
+      record.shls_spec_ins = value?.shls_spec_ins;
+    } */
 
     const values = {
       ...record,
@@ -899,8 +905,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               </Col>
             </Row>
 
-            <Row gutter={[2, 2]}>
-              <Col span={24}>
+            <Row gutter={[8, 2]}>
+              {siteUseSpecIns && (
+                <Col span={12}>
+                  <SpecialInstructions form={form} value={value} />
+                </Col>
+              )}
+              <Col span={siteUseSpecIns ? 12 : 24}>
                 <LoadSecurityInformation form={form} value={value} />
               </Col>
             </Row>

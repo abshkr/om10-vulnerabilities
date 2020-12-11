@@ -397,6 +397,7 @@ class Schedule extends CommonClass
     //sess_id=hvufDCYgiNhz&tankTerm=CNS&supp=7640102&tripNo=900097&op=19&cmd=DEL&callerTyp=flex
     public function delete()
     {
+        // Note: The CGI will take care of special instructions in SPECVARS when deleting a schedule
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
@@ -823,6 +824,7 @@ class Schedule extends CommonClass
             return false;
         }
 
+        $this->insert_special_instructions();
         $this->set_cust();
         return $this->setSHLS_SRCTYPE();
     }
@@ -853,7 +855,73 @@ class Schedule extends CommonClass
 
     public function update()
     {
+        if (isset($this->shls_spec_ins)) {
+            $this->delete_special_instructions();
+            $this->insert_special_instructions();
+        }
         return $this->create_n_update("MOD");
+    }
+
+    protected function insert_special_instructions()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        // if (isset($this->shls_spec_ins)) {
+            $items = explode("\n", $this->shls_spec_ins);  
+            $lineno = 1;
+            foreach ($items as $value) {
+                // write_log(json_encode($value), __FILE__, __LINE__);
+                $query = "
+                    INSERT INTO SPECVARS (
+                        SCHVSPID_SHLSTRIP, 
+                        SCHVSPID_SHLSSUPP, 
+                        SCHV_TEXT, 
+                        SCHV_VAR_ID
+                    ) VALUES (
+                        :trip, 
+                        :supp, 
+                        :special_ins, 
+                        :var_id
+                    )
+                ";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+                oci_bind_by_name($stmt, ':supp', $this->supplier_code);
+                oci_bind_by_name($stmt, ':special_ins', $value);
+                oci_bind_by_name($stmt, ':var_id', $lineno);
+
+                if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    throw new DatabaseException($e['message']);
+                    return false;
+                }
+
+                $lineno += 1;
+            }
+        // }
+
+        return true;
+    }
+
+    protected function delete_special_instructions()
+    {
+        $query = "
+            DELETE FROM SPECVARS 
+            WHERE SCHVSPID_SHLSTRIP = :trip AND SCHVSPID_SHLSSUPP= :supp
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+        oci_bind_by_name($stmt, ':supp', $this->supplier_code);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            throw new DatabaseException($e['message']);;
+            return false;
+        }
+
+        return true;
     }
 
     public function pagination_count()

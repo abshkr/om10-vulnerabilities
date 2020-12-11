@@ -11,7 +11,7 @@ const SpecialInstructions = ({ form, value }) => {
   const validate = (rule, input) => {
     if (rule.required) {
       if (input === '' || !input) {
-        return Promise.reject(`${t('validate.set')} ─ ${t('fields.SpecialInstructions')}`);
+        return Promise.reject(`${t('validate.set')} ─ ${t('fields.specialInstructions')}`);
       }
     }
 
@@ -35,7 +35,7 @@ const SpecialInstructions = ({ form, value }) => {
     <>
       <Form.Item
         name="shls_spec_ins"
-        label={t('fields.SpecialInstructions')}
+        label={t('fields.specialInstructions')}
         rules={[{ required: false, validator: validate }]}
       >
         <Input.TextArea />
