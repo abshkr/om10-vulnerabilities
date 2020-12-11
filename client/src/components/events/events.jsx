@@ -15,7 +15,22 @@ const Events = () => {
   const { data } = useSWR(AUTH.SESSION, { refreshInterval: 1000 });
 
   const [alarms, setAlarms] = useState([]);
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState([
+    {
+      gen_date: Math.random(0, 5),
+      message: 'hi',
+    },
+
+    {
+      gen_date: Math.random(0, 5),
+      message: 'hi',
+    },
+
+    {
+      gen_date: Math.random(0, 5),
+      message: 'hi',
+    },
+  ]);
 
   const [muted, setMuted] = useState(false);
 
@@ -25,7 +40,7 @@ const Events = () => {
   const prevEvents = usePrevious(events);
 
   const onClearAll = () => {
-    const unique = [...new Set(events.map((item) => item.message))];
+    const unique = [...new Set(events.map((item) => `${item?.gen_date}-${item?.message}`))];
 
     const payload = [...seen, ...unique];
 
@@ -42,7 +57,7 @@ const Events = () => {
     const payload = alarms || [];
 
     const filtered = _.filter(payload, (object) => {
-      return !seen.includes(object.message);
+      return !seen.includes(`${object?.gen_date}-${object?.message}`);
     });
 
     setEvents(filtered);
@@ -95,7 +110,7 @@ const Events = () => {
                 type="danger"
                 size="small"
                 icon={<CloseOutlined />}
-                onClick={() => onRemove(item.message)}
+                onClick={() => onRemove(`${item?.gen_date}-${item?.message}`)}
                 shape="circle"
               ></Button>,
             ]}
