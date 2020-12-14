@@ -14,7 +14,7 @@ class PersonnelOnsite extends CommonClass
         $query = "
             SELECT PER_CODE, PER_NAME ,CMPY_NAME, AREA_K, AREA_NAME, PERL_ENTER_TIME, PERL_PSN
             FROM GUI_PERSONNEL, AREA_RC
-            WHERE PER_CODE = PERL_PSN AND PERL_ARA <> 9999 AND PERL_ARA = AREA_K
+            WHERE PER_CODE = PERL_PSN AND PERL_ARA = AREA_K
             ORDER BY PERL_ARA";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
