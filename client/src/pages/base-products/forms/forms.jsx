@@ -8,7 +8,7 @@ import {
   CloseOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, message, Drawer, Divider } from 'antd';
+import { Form, Button, Tabs, Modal, notification, message, Drawer, Divider, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 
@@ -24,6 +24,8 @@ import {
   RefSpecTemp,
   CorrectionMethod,
   HotTempFlag,
+  AdaptiveFlowControlFlag,
+  AdaptiveFlowControlPriority,
 } from './fields';
 
 import api, { BASE_PRODUCTS } from '../../../api';
@@ -31,7 +33,7 @@ import api, { BASE_PRODUCTS } from '../../../api';
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, config, setFilterValue }) => {
-  const { manageHotProduct, manageBaseProductDensityRange } = config;
+  const { manageHotProduct, manageBaseProductDensityRange, siteUseAFC } = config;
   const [classification, setClassification] = useState(undefined);
 
   const { t } = useTranslation();
@@ -202,8 +204,27 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
 
             <Divider />
             {manageHotProduct && <HotTempFlag form={form} value={value} />}
-            <RefSpecTemp form={form} value={value} />
-            <CorrectionMethod form={form} value={value} />
+            <Row gutter={[12, 12]}>
+              <Col span={12}>
+                <RefSpecTemp form={form} value={value} />
+              </Col>
+              <Col span={12}>
+                <CorrectionMethod form={form} value={value} />
+              </Col>
+            </Row>
+            {siteUseAFC && (
+              <>
+                <Divider />
+                <Row gutter={[12, 12]}>
+                  <Col span={12}>
+                    <AdaptiveFlowControlFlag form={form} value={value} />
+                  </Col>
+                  <Col span={12}>
+                    <AdaptiveFlowControlPriority form={form} value={value} />
+                  </Col>
+                </Row>
+              </>
+            )}
           </TabPane>
         </Tabs>
       </Form>
