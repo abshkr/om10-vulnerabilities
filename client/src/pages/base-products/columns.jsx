@@ -174,6 +174,27 @@ const columns = (t, config) => [
     width: 160,
     suppressSizeToFit: true,
   },
+  {
+    headerName: t('fields.adaptiveFlowControl'),
+    field: 'afc_enabled',
+    sortable: true,
+    filter: 'BooleanFilter',
+    resizable: true,
+    cellRenderer: 'BooleanRenderer',
+    hide: !config.siteUseAFC,
+    width: 200,
+    suppressSizeToFit: true,
+  },
+  {
+    headerName: t('fields.adaptiveArmPriority'),
+    field: 'afc_priority',
+    sortable: true,
+    filter: 'MultiFilter',
+    resizable: true,
+    hide: !config.siteUseAFC,
+    width: 200,
+    suppressSizeToFit: true,
+  },
 ];
 
 export default columns;
