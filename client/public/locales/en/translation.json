@@ -271,6 +271,7 @@
     "activeTanker": "Active Tanker",
     "actualFlowRate": "Actual Flowrate",
     "adaptiveArmPriority": "Adaptive Arm Priority",
+    "adaptiveFlowControl": "Adaptive Flow Control",
     "additionalHostData": "Additional Host Data",
     "additionalHostDataType": "Additional Host Data Type",
     "additionalTxt": "Additional Text",

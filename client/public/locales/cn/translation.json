@@ -271,6 +271,7 @@
     "activeTanker": "活跃油槽车",
     "actualFlowRate": "实际流量",
     "adaptiveArmPriority": "适应性鹤管优先级",
+    "adaptiveFlowControl": "适应性油品流动控制",
     "additionalHostData": "自定义配送订单编号",
     "additionalHostDataType": "自定义配送订单编号类型",
     "additionalTxt": "附注",
