@@ -39,12 +39,13 @@ const AdhocKeyForm = ({ assignAdhocKey, options, modal }) => {
             placeholder={null}
             filterOption={(value, option) =>
               option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0 ||
-              value.toLowerCase().indexOf(option.props.children.toLowerCase()) >= 0
+              value.toLowerCase().indexOf(option.props.children.toLowerCase()) >= 0 ||
+              value.toLowerCase().indexOf(option.props.children.toLowerCase().split(' - ')?.[1]) >= 0
             }
           >
             {options.map((item, index) => (
               <Select.Option key={index} value={item.kya_txt}>
-                {item.kya_txt}
+                {item.kya_key_no + ' - ' + item.kya_txt}
               </Select.Option>
             ))}
           </Select>
