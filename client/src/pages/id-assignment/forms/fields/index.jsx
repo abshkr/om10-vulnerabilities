@@ -6,6 +6,7 @@ import PhysicalTagText from './physical-tag-text';
 import TimeCode from './time-code';
 import Flags from './flags';
 import Pin from './pin';
+import PinDate from './pin-date';
 import Employer from './employer';
 import Role from './role';
 import Personnel from './personnel';
@@ -25,6 +26,7 @@ export {
   TimeCode,
   Flags,
   Pin,
+  PinDate,
   Employer,
   Role,
   Personnel,
@@ -33,5 +35,5 @@ export {
   Carrier,
   Tanker,
   EquipmentCarrier,
-  TransportEquipment
+  TransportEquipment,
 };

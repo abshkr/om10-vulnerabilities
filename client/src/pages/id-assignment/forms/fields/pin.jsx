@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, InputNumber } from 'antd';
+import { Form, Input } from 'antd';
 
 const Pin = ({ form, value }) => {
   const { t } = useTranslation();
@@ -10,14 +10,14 @@ const Pin = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        kya_pin: value.kya_pin
+        kya_pin: value.kya_pin,
       });
     }
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item name="kya_pin" label={t('fields.pin')}>
-      <InputNumber min={0} max={4} style={{ width: '100%' }} disabled={!!value} />
+      <Input type="password" style={{ width: '100%' }} disabled={true} />
     </Form.Item>
   );
 };

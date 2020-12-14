@@ -1234,6 +1234,7 @@
     "physicalTagText": "Physical Tag Text",
     "physicalType": "Physical Type",
     "pin": "PIN",
+    "pinDate": "PIN Changed",
     "pinPassword": "PIN/Password",
     "placardNotation1": "Placard Notation1",
     "placardNotation2": "Placard Notation2",

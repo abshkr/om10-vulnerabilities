@@ -19,6 +19,8 @@ import {
   PhysicalTagText,
   TimeCode,
   Flags,
+  Pin,
+  PinDate,
   Employer,
   Role,
   Personnel,
@@ -317,11 +319,17 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
                 <PhysicalTagText form={form} value={value} physType={physType} />
               </Col>
             </Row>
-            <Row gutter={[40, 3]}>
-              <Col span={12}>
+            <Row gutter={[8, 3]}>
+              <Col span={5}>
                 <TimeCode form={form} value={value} />
               </Col>
-              <Col span={12}>
+              <Col span={5}>
+                <Pin form={form} value={value} />
+              </Col>
+              <Col span={6}>
+                <PinDate form={form} value={value} />
+              </Col>
+              <Col span={8}>
                 <Flags form={form} value={value} />
               </Col>
             </Row>
