@@ -13,6 +13,7 @@ import {
   UnlockOutlined,
   QuestionCircleOutlined,
   SafetyCertificateOutlined,
+  LogoutOutlined,
 } from '@ant-design/icons';
 
 import {
@@ -35,6 +36,7 @@ import { CheckList, PasswordReset, Expiry } from '../../../components';
 import api, { PERSONNEL } from '../../../api';
 import columns from './columns';
 import { SETTINGS } from '../../../constants';
+import ChangeArea from './change-area';
 
 const TabPane = Tabs.TabPane;
 
@@ -49,6 +51,7 @@ const FormModal = ({
   config,
 }) => {
   const [passwordResetVisible, setPasswordResetVisible] = useState(false);
+  const [areaVisible, setAreaVisible] = useState(false);
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -278,6 +281,18 @@ const FormModal = ({
             </Button>
           )}
 
+          {!IS_CREATING && (
+            <Button
+              type="primary"
+              icon={<LogoutOutlined />}
+              style={{ float: 'left', marginLeft: 5 }}
+              onClick={() => setAreaVisible(true)}
+              disabled={!access?.canUpdate}
+            >
+              {t('operations.changeArea')}
+            </Button>
+          )}
+
           {passwordResetVisible && (
             <Drawer
               title={t('tabColumns.resetPassword')}
@@ -290,6 +305,19 @@ const FormModal = ({
               <Form layout="vertical">
                 <PasswordReset value={value} setHide={() => setPasswordResetVisible(false)}/>
               </Form>
+            </Drawer>
+          )}
+
+          {areaVisible && (
+            <Drawer
+              title={t('tabColumns.changeArea')}
+              placement="right"
+              bodyStyle={{ paddingTop: 25 }}
+              onClose={() => setAreaVisible(false)}
+              visible={areaVisible}
+              width="36vw"
+            >
+              <ChangeArea value={value} setHide={() => setAreaVisible(false)}/>
             </Drawer>
           )}
         </>

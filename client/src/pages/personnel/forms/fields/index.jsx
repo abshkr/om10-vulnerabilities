@@ -11,5 +11,6 @@ import Comment from './comment';
 import Lock from './lock';
 import SLP from './slp';
 import LegacyExpires from './legacy-expires';
+import Area from './area';
 
-export { Employer, Code, Name, Department, Email, Role, TimeCode, DriverLicence, Status, Comment, Lock, SLP, LegacyExpires };
+export { Employer, Code, Name, Department, Email, Role, TimeCode, DriverLicence, Status, Comment, Lock, SLP, LegacyExpires, Area };
