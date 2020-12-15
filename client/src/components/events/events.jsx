@@ -8,11 +8,13 @@ import { useAudio } from 'hooks';
 import _ from 'lodash';
 
 import { AUTH, COMMON } from '../../api';
+import { useConfig } from 'hooks';
 
 const Events = () => {
   const [playing, toggle, muted, setMuted] = useAudio(COMMON.WARNING_SOUND);
-
-  const { data } = useSWR(AUTH.SESSION, { refreshInterval: 1000 });
+  const { refreshAlarm } = useConfig();
+  
+  const { data } = useSWR(AUTH.SESSION, { refreshInterval: refreshAlarm });
 
   const [alarms, setAlarms] = useState([]);
   const [events, setEvents] = useState([]);
