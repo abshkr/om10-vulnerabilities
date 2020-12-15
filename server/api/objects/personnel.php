@@ -272,6 +272,9 @@ class Personnel extends CommonClass
             return false;
         }
 
+        if (!isset($this->perl_ara)) {
+            $this->perl_ara = 9999;     //By default, use OFF_SITE
+        }
         $query = "INSERT INTO PERS_IN_AREA
                 (PERL_PSN,
                 PERL_ARA)
