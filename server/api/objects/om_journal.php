@@ -137,7 +137,7 @@ class OMJournal extends CommonClass
         if (!isset($this->start_date) || !isset($this->end_date)) {
             //get journal in 30 min
             $query = "
-            SELECT TO_CHAR(GEN_DATE, 'YYYY-MM-DD HH24:MI:SSXFF') GEN_DATE,
+            SELECT GEN_DATE,
                 REGION_CODE,
                 PRINT_DATE,
                 COMPANY_CODE,
@@ -156,7 +156,7 @@ class OMJournal extends CommonClass
             $this->pagination_binds($stmt);
         } else {
             $query = "
-            SELECT TO_CHAR(GEN_DATE, 'YYYY-MM-DD HH24:MI:SSXFF') GEN_DATE,
+            SELECT GEN_DATE,
                 REGION_CODE,
                 PRINT_DATE,
                 COMPANY_CODE,
