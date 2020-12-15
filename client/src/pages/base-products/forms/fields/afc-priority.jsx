@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Form, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-const AdaptiveFlowControlPriority = ({ form, value }) => {
+const AdaptiveFlowControlPriority = ({ form, value, flag }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -19,8 +19,10 @@ const AdaptiveFlowControlPriority = ({ form, value }) => {
   ];
 
   const validate = (rule, input) => {
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.adaptiveArmPriority')}`);
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.select')} ─ ${t('fields.adaptiveArmPriority')}`);
+      }
     }
 
     return Promise.resolve();
@@ -28,7 +30,7 @@ const AdaptiveFlowControlPriority = ({ form, value }) => {
 
   useEffect(() => {
     setFieldsValue({
-      afc_priority: value ? value.afc_priority : 'LILO',
+      afc_priority: value ? value.afc_priority : '',
     });
   }, [value, setFieldsValue]);
 
@@ -36,11 +38,12 @@ const AdaptiveFlowControlPriority = ({ form, value }) => {
     <Form.Item
       name="afc_priority"
       label={t('fields.adaptiveArmPriority')}
-      rules={[{ required: true, validator: validate }]}
+      rules={[{ required: flag, validator: validate }]}
     >
       <Select
         dropdownMatchSelectWidth={false}
         showSearch
+        allowClear
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectRefTempSpec') : null}
         filterOption={(input, option) =>

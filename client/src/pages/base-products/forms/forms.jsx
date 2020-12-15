@@ -35,6 +35,7 @@ const TabPane = Tabs.TabPane;
 const FormModal = ({ value, visible, handleFormState, access, config, setFilterValue }) => {
   const { manageHotProduct, manageBaseProductDensityRange, siteUseAFC } = config;
   const [classification, setClassification] = useState(undefined);
+  const [afcEnabled, setAfcEnabled] = useState(value?.afc_enabled);
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -65,6 +66,10 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
   const onFinish = async () => {
     try {
       const values = await form.validateFields();
+
+      if (values?.afc_priority === undefined) {
+        values.afc_priority = '';
+      }
 
       Modal.confirm({
         title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
@@ -217,10 +222,10 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
                 <Divider />
                 <Row gutter={[12, 12]}>
                   <Col span={12}>
-                    <AdaptiveFlowControlFlag form={form} value={value} />
+                    <AdaptiveFlowControlFlag form={form} value={value} onChange={setAfcEnabled} />
                   </Col>
                   <Col span={12}>
-                    <AdaptiveFlowControlPriority form={form} value={value} />
+                    <AdaptiveFlowControlPriority form={form} value={value} flag={afcEnabled} />
                   </Col>
                 </Row>
               </>

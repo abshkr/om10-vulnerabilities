@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Form, Checkbox } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-const AdaptiveFlowControlFlag = ({ form, value }) => {
+const AdaptiveFlowControlFlag = ({ form, value, onChange }) => {
   const { t } = useTranslation();
   const { setFieldsValue } = form;
   const [flag, setFlag] = useState(value?.afc_enabled);
@@ -12,6 +12,7 @@ const AdaptiveFlowControlFlag = ({ form, value }) => {
     setFieldsValue({
       afc_enabled: v.target.checked,
     });
+    onChange(v.target.checked);
   };
 
   useEffect(() => {
@@ -20,6 +21,9 @@ const AdaptiveFlowControlFlag = ({ form, value }) => {
         afc_enabled: value.afc_enabled,
       });
       setFlag(value.afc_enabled);
+      onChange(value.afc_enabled);
+    } else {
+      onChange(value?.afc_enabled);
     }
   }, [value, setFieldsValue, setFlag]);
 
