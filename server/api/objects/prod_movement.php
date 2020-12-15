@@ -82,7 +82,8 @@ class ProdMovement extends CommonClass
 
         $serv = new SiteService($this->conn);
         $site_code = $serv->site_code();
-        $query_string = "pmvDepot=" . $site_code . "&h_PMV_NUMBER=" . $this->pmv_number .
+        $query_string = "pmvDepot=" . rawurlencode(strip_tags($site_code)) . 
+            "&h_PMV_NUMBER=" . rawurlencode(strip_tags($this->pmv_number)) .
             "&op=206";
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/stck_mgmt/prod_movement.cgi", $query_string);
@@ -170,7 +171,8 @@ class ProdMovement extends CommonClass
 
         $serv = new SiteService($this->conn);
         $site_code = $serv->site_code();
-        $query_string = "pmvDepot=" . $site_code . "&h_PMV_NUMBER=" . $this->pmv_number .
+        $query_string = "pmvDepot=" . rawurlencode(strip_tags($site_code)) . 
+            "&h_PMV_NUMBER=" . rawurlencode(strip_tags($this->pmv_number)) .
             "&op=207";
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/stck_mgmt/prod_movement.cgi", $query_string);
@@ -195,8 +197,8 @@ class ProdMovement extends CommonClass
         $serv = new SiteService($this->conn);
         $site_code = $serv->site_code();
         $query_string = "pmvDepot=" . $site_code . 
-            "&h_PMV_NUMBER=" . $this->pmv_number . 
-            "&h_PMV_BATCHCODE=" . $this->pmv_batchcode . 
+            "&h_PMV_NUMBER=" . rawurlencode(strip_tags($this->pmv_number)) . 
+            "&h_PMV_BATCHCODE=" . rawurlencode(strip_tags($this->pmv_batchcode)) . 
             "&h_PMV_STATUS=0&pg=1&preqstr=&op=203";
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/stck_mgmt/prod_movement.cgi", $query_string);
@@ -257,18 +259,18 @@ class ProdMovement extends CommonClass
         $serv = new SiteService($this->conn);
         $site_code = $serv->site_code();
         $query_string = "preqstr=&newProductMovementNr=" . $this->pmv_number . "&pmvDepot=" . $site_code . 
-            "&addedType=" . $this->pmv_status . 
-            "&base=" . $this->pmv_prdctlnk . 
-            "&h_PMV_BATCHCODE=" . $this->pmv_batchcode . 
-            "&src=" . $this->pmv_srctype . 
-            "&h_PMV_SRCCODE=" . $this->pmv_srccode . 
-            "&dst=" . $this->pmv_dsttype . 
-            "&h_PMV_DSTCODE=" . $this->pmv_dstcode . 
-            "&h_PMV_TRANS_TYPE=" . $this->pmv_trans_type . 
-            "&h_PMV_INTENDED_QTY=" . $this->pmv_intended_qty . 
+            "&addedType=" . rawurlencode(strip_tags($this->pmv_status)) . 
+            "&base=" . rawurlencode(strip_tags($this->pmv_prdctlnk)) . 
+            "&h_PMV_BATCHCODE=" . rawurlencode(strip_tags($this->pmv_batchcode)) . 
+            "&src=" . rawurlencode(strip_tags($this->pmv_srctype)) . 
+            "&h_PMV_SRCCODE=" . rawurlencode(strip_tags($this->pmv_srccode)) . 
+            "&dst=" . rawurlencode(strip_tags($this->pmv_dsttype)) . 
+            "&h_PMV_DSTCODE=" . rawurlencode(strip_tags($this->pmv_dstcode)) . 
+            "&h_PMV_TRANS_TYPE=" . rawurlencode(strip_tags($this->pmv_trans_type)) . 
+            "&h_PMV_INTENDED_QTY=" . rawurlencode(strip_tags($this->pmv_intended_qty)) . 
             "&QuantityScale=1" . 
-            "&h_PMV_OPENING_QTY=" . $this->pmv_opening_qty . 
-            "&h_PMV_OBSVD_DENS=" . $this->pmv_obsvd_dens . 
+            "&h_PMV_OPENING_QTY=" . rawurlencode(strip_tags($this->pmv_opening_qty)) . 
+            "&h_PMV_OBSVD_DENS=" . rawurlencode(strip_tags($this->pmv_obsvd_dens)) . 
             "&op=202";
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/stck_mgmt/prod_movement.cgi", $query_string);
@@ -294,8 +296,8 @@ class ProdMovement extends CommonClass
     {
         $serv = new SiteService($this->conn);
         $site_code = $serv->site_code();
-        $query_string = "pmvDepot=" . $site_code . 
-            "&h_PMV_NUMBER=" . $this->pmv_number . "&op=208";
+        $query_string = "pmvDepot=" . rawurlencode(strip_tags($site_code)) . 
+            "&h_PMV_NUMBER=" . rawurlencode(strip_tags($this->pmv_number)) . "&op=208";
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/stck_mgmt/prod_movement.cgi", $query_string);
         $op_pos = strpos($res, "op=");
@@ -373,8 +375,8 @@ class ProdMovement extends CommonClass
         $serv = new SiteService($this->conn);
         $site_code = $serv->site_code();
         $query_string = "pmvDepot=" . $site_code . 
-            "&h_PMV_NUMBER=" . $this->pmv_number . 
-            "&h_PMV_BATCHCODE=" . $this->pmv_batchcode . 
+            "&h_PMV_NUMBER=" . rawurlencode(strip_tags($this->pmv_number)) . 
+            "&h_PMV_BATCHCODE=" . rawurlencode(strip_tags($this->pmv_batchcode)) . 
             "&h_PMV_STATUS=3&pg=1&preqstr=&op=9";
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/stck_mgmt/prod_movement.cgi", $query_string);
