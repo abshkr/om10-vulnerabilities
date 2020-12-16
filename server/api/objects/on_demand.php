@@ -98,6 +98,14 @@ class OndemandReport extends CommonClass
                 $this->company = "";
             }
         }
+
+        if (!isset($this->carrier)) {
+            $this->carrier = "";
+        }
+
+        if (!isset($this->customer)) {
+            $this->customer = "";
+        }
         
         $query_string = "output=" . $this->output . 
             "&company=" . rawurlencode(strip_tags($this->company)) .
