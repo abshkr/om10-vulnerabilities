@@ -407,6 +407,7 @@
     "canBePrinted": "报表可打印?",
     "capacity": "容量",
     "carrier": "承运商",
+    "carrierName": "承运商名称",
     "carrierCode": "承运商代码",
     "category": "类别",
     "certificOfAnalysis": "分析证书",
