@@ -4279,7 +4279,6 @@
       "TANK_MONTHLY_TOL_PERCENT": "Tank Monthly Tol Percent",
       "TANK_MONTHLY_TOL_VOL": "Tank Monthly Tol Vol",
       "TANK_15_DENSITY": "Tank 15 Density",
-      "TANK_SG": "Tank SG",
       "TANK_ATG_STATUS": "ATG Status",
       "TANK_ATG_MANCHG": "ATG Manual Updated",
       "TANK_SULPHUR": "Sulphur(wt%)",
@@ -4290,7 +4289,17 @@
       "TANK_L_LEVEL": "L Level",
       "TANK_LL_LEVEL": "LL Level",
       "TANK_UH_LEVEL": "User H Level",
-      "TANK_UL_LEVEL": "User L Level"
+      "TANK_UL_LEVEL": "User L Level",
+      "TANK_EXC_PDS": "Exclude from PDS",
+      "TANK_EXC_PID": "Exclude from PID",
+      "TANK_EXC_SPMV": "Exclude from Special Movement Gain/Loss",
+      "TANK_EXC_STCKRPT": "Exclude from Stock Reports",
+      "TANK_VISCOSITY": "Tank Viscosity",
+      "TANK_BATCH_NO": "Tank Batch No.",
+      "TANK_MAX_LEVEL": "Tank Max. Level",
+      "TANK_MAX_CAPACITY": "Tank Max. Capacity",
+      "TANK_AMB_CLOSE": "Tank Ambient Closeout",
+      "TANK_SG": "Tank Specific Gravity"
     },
     "TANKSWITCH": {
       "TSW_ENABLED": "Tsw Enabled",
@@ -9122,7 +9131,6 @@
       "TANK_MONTHLY_TOL_PERCENT": "月可变范围(%)",
       "TANK_MONTHLY_TOL_VOL": "月可变范围(容积)",
       "TANK_15_DENSITY": "标准密度",
-      "TANK_SG": "特殊重力系数",
       "TANK_ATG_STATUS": "ATG状态",
       "TANK_ATG_MANCHG": "ATG手工修改时间",
       "TANK_SULPHUR": "含硫率(重量%)",
@@ -9133,7 +9141,17 @@
       "TANK_L_LEVEL": "低报警点液位",
       "TANK_LL_LEVEL": "低低报警点液位",
       "TANK_UH_LEVEL": "用户高报警点液位",
-      "TANK_UL_LEVEL": "用户低报警点液位"
+      "TANK_UL_LEVEL": "用户低报警点液位",
+      "TANK_EXC_PDS": "从PDS中排除",
+      "TANK_EXC_PID": "从PID中排除",
+      "TANK_EXC_SPMV": "从特殊货单损益中排除",
+      "TANK_EXC_STCKRPT": "从库存报表中排除",
+      "TANK_VISCOSITY": "油罐粘度",
+      "TANK_BATCH_NO": "油罐批处理号",
+      "TANK_MAX_LEVEL": "油罐最高液位",
+      "TANK_MAX_CAPACITY": "油罐最大容量",
+      "TANK_AMB_CLOSE": "油罐盘点视量",
+      "TANK_SG": "油罐比重"
     },
     "TANKSWITCH": {
       "TSW_ENABLED": "油罐切换启用标记",

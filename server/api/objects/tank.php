@@ -290,18 +290,18 @@ class Tank extends CommonClass
 
     protected function journal_children_change($journal, $old, $new)
     {
-        $module = "tank max flow";
+        $module = $this->TABLE_NAME;
         foreach ($old as $tank_level => $max_flow_item) {
             if (isset($new[$tank_level]) && $max_flow_item['flow_rate'] != $new[$tank_level]['flow_rate']) {
-                $record = sprintf("tank code:%s, tank_level:%s", $this->tank_code, $tank_level);
+                $record = sprintf("tank_code:%s, tank_level:%s", $this->tank_code, $tank_level);
                 $journal->valueChange($module, $record, "flow rate", $max_flow_item['flow_rate'], $new[$tank_level]['flow_rate']);
             }
 
             if (!isset($new[$tank_level])) {
                 $jnl_data[0] = Utilities::getCurrPsn();
                 $jnl_data[1] = $module;
-                $jnl_data[2] = sprintf("tank code:%s, level:%s", $this->tank_code, $tank_level);
-                $jnl_data[3] = sprintf("flow rate:%s", $max_flow_item['flow_rate']);
+                $jnl_data[2] = sprintf("tank_code:%s, tank_level:%s", $this->tank_code, $tank_level);
+                $jnl_data[3] = sprintf("flow_rate:%s", $max_flow_item['flow_rate']);
 
                 if (!$journal->jnlLogEvent(
                     Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
@@ -319,8 +319,8 @@ class Tank extends CommonClass
             if (!isset($old[$tank_level])) {
                 $jnl_data[0] = Utilities::getCurrPsn();
                 $jnl_data[1] = $module;
-                $jnl_data[2] = sprintf("tank code:%s, level:%s", $this->tank_code, $tank_level);
-                $jnl_data[3] = sprintf("flow rate:%s", $max_flow_item['flow_rate']);
+                $jnl_data[2] = sprintf("tank_code:%s, tank_level:%s", $this->tank_code, $tank_level);
+                $jnl_data[3] = sprintf("flow_rate:%s", $max_flow_item['flow_rate']);
 
                 if (!$journal->jnlLogEvent(
                     Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
@@ -588,10 +588,10 @@ class Tank extends CommonClass
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
         $jnl_data[0] = $curr_psn;
-        $jnl_data[1] = "Tank";
+        $jnl_data[1] = $this->TABLE_NAME;
         $jnl_data[2] = $this->tank_code;
         $jnl_data[3] = sprintf(
-            "name:%s, base product:%s", $this->tank_name, $this->tank_base);
+            "tank_name:%s, tank_base:%s", $this->tank_name, $this->tank_base);
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
@@ -607,6 +607,18 @@ class Tank extends CommonClass
 
     public function delete()
     {
+        // need delete the child records in TANK_MAX_FLOW first
+        $query = "DELETE FROM TANK_MAX_FLOW WHERE TANK_CODE = :tank_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+
+            throw new DatabaseException($e['message']);
+        }
+
         $query = "
             DELETE TGRLINK
             WHERE TGR_TKLK_TANKCODE = :tank_code";
@@ -646,7 +658,7 @@ class Tank extends CommonClass
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
         $jnl_data[0] = $curr_psn;
-        $jnl_data[1] = "Tank";
+        $jnl_data[1] = $this->TABLE_NAME;
         $jnl_data[2] = $this->tank_code;
         $jnl_data[3] = "";
 

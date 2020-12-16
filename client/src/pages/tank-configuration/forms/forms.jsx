@@ -16,6 +16,8 @@ import _ from 'lodash';
 import { Name, Code, Terminal, Product, Density, Flags, DailyVariance, MontlhyVariance } from './fields';
 import api, { TANKS } from '../../../api';
 
+import TankAdaptiveFlowControl from '../../tanks/afc';
+
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, config, setFilterValue }) => {
@@ -23,16 +25,19 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
   const [form] = Form.useForm();
   const { resetFields } = form;
 
+  const [tab, setTab] = useState('1');
   const [product, setProduct] = useState(undefined);
 
   const IS_CREATING = !value;
 
   const onFormClosed = () => {
+    setTab('1');
     setProduct(undefined);
     handleFormState(false, null);
   };
 
   const onComplete = (tank_code) => {
+    setTab('1');
     setProduct(undefined);
     handleFormState(false, null);
     mutate(TANKS.READ);
@@ -142,7 +147,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             htmlType="submit"
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
+            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate || tab !== '1'}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -162,7 +167,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       }
     >
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
-        <Tabs defaultActiveKey="1" animated={false}>
+        <Tabs defaultActiveKey="1" animated={false} onChange={setTab}>
           <TabPane tab={t('tabColumns.general')} forceRender={true} key="1">
             <Terminal form={form} value={value} />
             <Code form={form} value={value} config={config} />
@@ -175,6 +180,18 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             <Divider>{t('divider.flags')}</Divider>
             <Flags form={form} value={value} />
           </TabPane>
+
+          {config.siteUseAFC && !IS_CREATING && (
+            <TabPane key="2" tab={t('tabColumns.adaptiveFlowControl')}>
+              <TankAdaptiveFlowControl
+                terminal={value?.tank_terminal}
+                code={value?.tank_code}
+                tanks={[value]}
+                access={access}
+                value={value}
+              />
+            </TabPane>
+          )}
         </Tabs>
       </Form>
     </Drawer>
