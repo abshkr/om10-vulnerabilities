@@ -31,27 +31,27 @@ export default class FlowRateRenderer extends Component {
     const valid = value?.length > 0;
 
     return (
-      <Popover
-        placement="topRight"
-        title=""
-        content={
-          <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }}>
-            {value.map((item) => (
-              <Descriptions.Item label={String(item.tank_level) + ' mm'} span={24}>
-                {String(item.flow_rate) + ' LPM'}
-              </Descriptions.Item>
-            ))}
-          </Descriptions>
-        }
-      >
-        <div className="cell-icon">
-          {valid ? (
+      <div className="cell-icon">
+        {valid ? (
+          <Popover
+            placement="topRight"
+            title=""
+            content={
+              <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }}>
+                {value.map((item) => (
+                  <Descriptions.Item label={String(item.tank_level) + ' mm'} span={24}>
+                    {String(item.flow_rate) + ' LPM'}
+                  </Descriptions.Item>
+                ))}
+              </Descriptions>
+            }
+          >
             <CheckCircleOutlined style={{ fontSize: 16, color: '#52c41a' }} />
-          ) : (
-            <CloseCircleOutlined style={{ fontSize: 18, color: '#ec6e68' }} />
-          )}
-        </div>
-      </Popover>
+          </Popover>
+        ) : (
+          <CloseCircleOutlined style={{ fontSize: 18, color: '#ec6e68' }} />
+        )}
+      </div>
     );
   }
 }
