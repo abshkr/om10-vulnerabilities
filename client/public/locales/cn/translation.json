@@ -1537,6 +1537,7 @@
     "tankGroupMemebers": "油罐组成员列表",
     "tankId": "油罐ID",
     "tankLevel": "油罐液位",
+    "tankMaxFlowRate": "油罐最大流量",
     "tankMaxLevel": "油罐最大液位",
     "tankName": "油罐名称",
     "tankStatusId": "油罐状态编号",

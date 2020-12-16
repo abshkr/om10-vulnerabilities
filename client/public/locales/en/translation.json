@@ -1537,6 +1537,7 @@
     "tankGroupMemebers": "Tank Group Members",
     "tankId": "Tank ID",
     "tankLevel": "Tank Level",
+    "tankMaxFlowRate": "Max Flow Rates",
     "tankMaxLevel": "Tank Max Level",
     "tankName": "Tank Name",
     "tankStatusId": "Tank Status Id",

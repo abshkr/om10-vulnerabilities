@@ -27,11 +27,19 @@ import {
   DensityRenderer,
   ExpiryDateRenderer,
   DraggableRenderer,
+  FlowRateRenderer,
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
 
-import { NumericEditor, SelectEditor, BooleanEditor, ListEditor, PowerListEditor, InputPopupEditor } from './editors';
+import {
+  NumericEditor,
+  SelectEditor,
+  BooleanEditor,
+  ListEditor,
+  PowerListEditor,
+  InputPopupEditor,
+} from './editors';
 import { LoadingStatus } from './status';
 import { Search } from '..';
 
@@ -60,6 +68,7 @@ const defaultComponents = {
   TemperatureRenderer,
   DensityRenderer,
   ExpiryDateRenderer,
+  FlowRateRenderer,
   ATGRenderer,
   TagRenderer,
   NullRenderer,

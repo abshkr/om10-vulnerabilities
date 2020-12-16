@@ -25,9 +25,9 @@ const TankConfiguration = () => {
   const access = useAuth('M_TANKCONFIGURATION');
 
   const { data: payload, isValidating, revalidate } = useSWR(TANKS.READ);
-  const { data: configuration } = useSWR(COMMON.CONFIG);
+  // const { data: configuration } = useSWR(COMMON.CONFIG);
 
-  const fields = columns(configuration, t);
+  const fields = columns(config, t);
   const data = generator(payload?.records);
 
   const handleFormState = (visibility, value) => {
@@ -69,7 +69,7 @@ const TankConfiguration = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         filterValue={filterValue}
       />
-      <Forms 
+      <Forms
         value={selected}
         visible={visible}
         handleFormState={handleFormState}

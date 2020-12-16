@@ -19,6 +19,7 @@ import TemperatureRenderer from './temperature';
 import DensityRenderer from './density';
 import ExpiryDateRenderer from './expiry-date-renderer';
 import DraggableRenderer from './draggable';
+import FlowRateRenderer from './flow-rate';
 
 export {
   BooleanRenderer,
@@ -42,4 +43,5 @@ export {
   DensityRenderer,
   ExpiryDateRenderer,
   DraggableRenderer,
+  FlowRateRenderer,
 };
