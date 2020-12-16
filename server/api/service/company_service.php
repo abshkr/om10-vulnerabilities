@@ -254,6 +254,29 @@ class CompanyService
         }
     }
 
+    public function customers($plus_any = false)
+    {
+        $query = "";
+        if ($plus_any) {
+            $query .= " SELECT 'ANY' CMPY_CODE, 'ALL' CMPY_NAME, 'ANY - ALL' CMPY_DESC FROM DUAL UNION ";
+        }
+        $query .= "
+            SELECT CMPY_CODE, CMPY_NAME,
+                CMPY_CODE||' - '||CMPY_NAME AS CMPY_DESC
+            FROM GUI_COMPANYS
+            WHERE BITAND(CMPY_TYPE, POWER(2, 3)) != 0
+            ORDER BY CMPY_NAME ASC";
+        // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function drawers($plus_any = false)
     {
         $query = "";

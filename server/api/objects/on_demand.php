@@ -5,6 +5,7 @@ include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../config/setups.php';
 include_once __DIR__ . '/../shared/utilities.php';
 include_once __DIR__ . '/../service/closeout_service.php';
+include_once __DIR__ . '/../service/company_service.php';
 include_once 'common_class.php';
 
 class OndemandReport extends CommonClass
@@ -51,7 +52,7 @@ class OndemandReport extends CommonClass
                     if (oci_execute($stmt, $this->commit_mode)) {
                         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
                         $this->curr_cmpy = $row['PER_CMPY'];
-                        $this->is_manager = $row['IS_MANAGER'];
+                        $this->is_manager = ($row['IS_MANAGER'] === 'Y');
 
                         write_log("curr_cmpy:" . $this->curr_cmpy .
                             ", is_manager:" . $this->is_manager,
@@ -98,8 +99,11 @@ class OndemandReport extends CommonClass
             }
         }
         
-        $query_string = "output=" . $this->output . "&company=" . $this->company .
-            "&report=" . $this->report;
+        $query_string = "output=" . $this->output . 
+            "&company=" . rawurlencode(strip_tags($this->company)) .
+            "&customer=" . rawurlencode(strip_tags($this->customer)) .
+            "&carrier=" . rawurlencode(strip_tags($this->carrier)) .
+            "&report=" . rawurlencode(strip_tags($this->report));
         if (isset($this->start_date)) {
             $query_string = $query_string . "&startdate=" . rawurlencode(strip_tags($this->start_date));
         }
@@ -163,7 +167,6 @@ class OndemandReport extends CommonClass
                     COMPANYS
                 WHERE COMPANYS.CMPY_CODE = :curr_cmpy
                 ORDER BY CMPY_CODE";
-
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':curr_cmpy', $this->curr_cmpy);
         }
@@ -180,12 +183,12 @@ class OndemandReport extends CommonClass
     {
         $query = "
             SELECT CMPY_CODE,
-                CMPY_NAME
+                CMPY_NAME,
+                CMPY_CODE||' - '||CMPY_NAME AS CMPY_DESC
             FROM
                 COMPANYS
             WHERE BITAND(CMPY_TYPE, POWER(2, 4)) <> 0
             ORDER BY CMPY_CODE";
-
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
@@ -197,56 +200,49 @@ class OndemandReport extends CommonClass
     // get all carriers
     public function carriers()
     {
-        write_log(__METHOD__ . " START. is_manager:" . $this->is_manager, __FILE__, __LINE__);
+        $serv = new CompanyService($this->conn);
+        return $serv->carriers($plus_any = true);
 
-        if ($this->is_manager) {
-            $query = "
-                SELECT CMPY_CODE,
-                    CMPY_NAME
-                FROM
-                    COMPANYS
-                WHERE BITAND(CMPY_TYPE, POWER(2, 2)) <> 0
-                ORDER BY CMPY_CODE";
+        // write_log(__METHOD__ . " START. is_manager:" . $this->is_manager, __FILE__, __LINE__);
 
-            $stmt = oci_parse($this->conn, $query);
-        } else {
-            // CHILD_CMPY_ROLE == 2 means carrier
-            $query = "
-                SELECT CMPY_CODE,
-                    CMPY_NAME
-                FROM COMPANY_RELATION, COMPANYS
-                WHERE PARENT_CMPY_CODE = :curr_cmpy
-                    AND CHILD_CMPY_ROLE = 2
-                    AND CHILD_CMPY_CODE = COMPANYS.CMPY_CODE
-            ";
-            $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':curr_cmpy', $this->curr_cmpy);
-        }
+        // $query = " SELECT 'ANY' CMPY_CODE, 'ALL' CMPY_NAME, 'ANY - ALL' CMPY_DESC FROM DUAL UNION ";
+        // if ($this->is_manager) {
+        //     $query .= "
+        //         SELECT CMPY_CODE,
+        //             CMPY_NAME,
+        //             CMPY_CODE||' - '||CMPY_NAME AS CMPY_DESC
+        //         FROM
+        //             COMPANYS
+        //         WHERE BITAND(CMPY_TYPE, POWER(2, 2)) <> 0
+        //         ORDER BY CMPY_NAME DESC";
+        //     $stmt = oci_parse($this->conn, $query);
+        // } else {
+        //     // CHILD_CMPY_ROLE == 2 means carrier
+        //     $query .= "
+        //         SELECT CMPY_CODE,
+        //             CMPY_NAME,
+        //             CMPY_CODE||' - '||CMPY_NAME AS CMPY_DESC
+        //         FROM COMPANY_RELATION, COMPANYS
+        //         WHERE PARENT_CMPY_CODE = :curr_cmpy
+        //             AND CHILD_CMPY_ROLE = 2
+        //             AND CHILD_CMPY_CODE = COMPANYS.CMPY_CODE
+        //             ORDER BY CMPY_NAME DESC";
+        //     $stmt = oci_parse($this->conn, $query);
+        //     oci_bind_by_name($stmt, ':curr_cmpy', $this->curr_cmpy);
+        // }
 
-        if (oci_execute($stmt, $this->commit_mode)) {
-            return $stmt;
-        } else {
-            return null;
-        }
+        // if (oci_execute($stmt, $this->commit_mode)) {
+        //     return $stmt;
+        // } else {
+        //     return null;
+        // }
     }
 
     // get all customers
     public function customers()
     {
-        $query = "
-            SELECT CMPY_CODE,
-                CMPY_NAME
-            FROM
-                COMPANYS
-            WHERE BITAND(CMPY_TYPE, POWER(2, 3)) <> 0
-            ORDER BY CMPY_CODE";
-
-        $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt, $this->commit_mode)) {
-            return $stmt;
-        } else {
-            return null;
-        }
+        $serv = new CompanyService($this->conn);
+        return $serv->customers($plus_any = true);
     }
 
     // get all reports of supplier
@@ -273,19 +269,31 @@ class OndemandReport extends CommonClass
     }
 
     // get all parameters of report
-    public function parameters()
+    public function filters()
     {
-        $query = "
-            SELECT DECODE(ARGUMENT_NAME,
-                'CMPY_CODE', 'SUPP_CODE',
-                'SUPPLIER_CODE', 'SUPP_CODE',
-                ARGUMENT_NAME) ARGUMENT_NAME
-            FROM REPORT_FILTER
-            WHERE JASPER_FILE = :jasper_file
-            ORDER BY ARGUMENT_SEQ";
-
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':jasper_file', $this->jasper_file);
+        if (isset($this->jasper_file)) {
+            $query = "SELECT DECODE(ARGUMENT_NAME,
+                            'CMPY_CODE', 'SUPP_CODE',
+                            'SUPPLIER_CODE', 'SUPP_CODE',
+                            ARGUMENT_NAME) ARGUMENT_NAME
+                    FROM REPORT_FILTER
+                    WHERE JASPER_FILE = :jasper_file
+                    ORDER BY ARGUMENT_SEQ";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':jasper_file', $this->jasper_file);
+        } else {
+            $query = "SELECT DECODE(ARGUMENT_NAME,
+                            'CMPY_CODE', 'SUPP_CODE',
+                            'SUPPLIER_CODE', 'SUPP_CODE',
+                            ARGUMENT_NAME) ARGUMENT_NAME
+                    FROM REPORT_FILTER, REPORT_FILES
+                    WHERE REPORT_FILTER.JASPER_FILE = REPORT_FILES.JASPER_FILE
+                        AND REPORT_FILES.RPT_FILE = :rpt_file
+                    ORDER BY ARGUMENT_SEQ";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':rpt_file', $this->rpt_file);
+        }
+        
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {

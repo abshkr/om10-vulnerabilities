@@ -2,17 +2,18 @@ import React, { useState, useEffect } from 'react';
 
 import useSWR from 'swr';
 import { ReloadOutlined } from '@ant-design/icons';
-import { Button, Select, Radio, Form, InputNumber, notification } from 'antd';
+import { Button, Select, Radio, Form, InputNumber, notification, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import _ from 'lodash';
 
 import { useAuth } from '../../hooks';
 import { Page, DataTable, Calendar } from '../../components';
-import api, { ON_DEMAND_REPORTS } from '../../api';
+import api, { ON_DEMAND_REPORTS } from 'api';
 import { SETTINGS } from '../../constants';
 import columns from './columns';
 import auth from '../../auth';
+import { Carrier, Customer } from './fields';
 
 const OnDemandReports = () => {
   const { t } = useTranslation();
@@ -24,6 +25,8 @@ const OnDemandReports = () => {
   const [supplier, setSupplier] = useState(null);
   const [reports, setReports] = useState(null);
   const [usefolioRange, setUseFolio] = useState(false);
+  const [carrierFilter, setCarrierFilter] = useState(false);
+  const [customerFilter, setCustomerFilter] = useState(false);
   const [closeouts, setCloseouts] = useState([]);
   const [fromDatePicker, setFromDatePicker] = useState(true);
 
@@ -68,6 +71,29 @@ const OnDemandReports = () => {
     });
 
     setUseFolio(find?.folio_number_parameters);
+    setCustomerFilter(false);
+    setCarrierFilter(false);
+
+    api
+      .get(ON_DEMAND_REPORTS.FILTERS, {
+        params: {
+          rpt_file: value,
+        },
+      })
+      .then((res) => {
+        const filters = res.data.records;
+
+        //If there are CARRIER_CODE or CUST_CODE in filter. Skip first 2 filters
+        for (let i = 2; i < filters.length; i ++) {
+          if (filters[i] === "CUST_CODE" || filters[i] === "CUSTOMER_CODE") {
+            setCustomerFilter(true);
+          }
+
+          if (filters[i] === "CARR_CODE" || filters[i] === "CARRIER_CODE") {
+            setCarrierFilter(true);
+          }
+        }
+      });
   };
 
   const onFinish = (values) => {
@@ -77,12 +103,16 @@ const OnDemandReports = () => {
         ...values,
         start_date: values.close_out_from,
         end_date: values.close_out_to,
+        carrier: values?.carrier === 'ANY' ? null : values?.carrier,
+        customer: values?.customer === 'ANY' ? null : values?.customer,
       };
     } else {
       payload = {
         ...values,
         start_date: start,
         end_date: end,
+        carrier: values?.carrier === 'ANY' ? null : values?.carrier,
+        customer: values?.customer === 'ANY' ? null : values?.customer,
       };
     }
 
@@ -208,6 +238,22 @@ const OnDemandReports = () => {
             ))}
           </Select>
         </Form.Item>
+
+        {(carrierFilter || customerFilter) &&
+          <Row gutter={[8, 8]}>
+            {carrierFilter &&
+              <Col span={12}>
+                <Carrier form={form} />
+              </Col>
+            }
+
+            {customerFilter &&
+              <Col span={12}>
+                <Customer form={form} />
+              </Col>
+            }
+          </Row>
+        }
 
         <Form.Item
           name="dateRange"

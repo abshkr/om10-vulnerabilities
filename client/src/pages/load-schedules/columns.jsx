@@ -69,7 +69,7 @@ const columns = (IS_NOMINATION, t) => [
     hide: IS_NOMINATION,
   },
   {
-    headerName: t('fields.carrier'),
+    headerName: t('fields.carrierName'),
     field: 'carrier',
     filter: 'MultiFilter',
     sortable: true,

@@ -16,7 +16,7 @@ const columns = (t) => [
     width: 130,
   },
   {
-    headerName: t('fields.carrier'),
+    headerName: t('fields.carrierName'),
     field: 'cmpy_name',
     filter: 'FuzzyFilter',
     sortable: true,
