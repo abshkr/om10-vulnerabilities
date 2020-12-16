@@ -53,7 +53,7 @@ const ChangeArea = ({ value, setHide }) => {
 
       <Area form={form} value={value} onAreaChange={setArea} />
 
-      <div style={{ marginTop: 30, display: 'flex', justifyContent: 'end' }}>
+      <div style={{ marginTop: 30, display: 'flex', justifyContent: 'flex-end' }}>
         <Button icon={<SaveOutlined />} type="primary" style={{ marginRight: 5 }} onClick={handleSubmit}>
           {t('operations.save')}
         </Button>
