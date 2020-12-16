@@ -612,7 +612,9 @@
       "BASE_LIMIT_PRESET_HT": "Base Limit Preset Ht",
       "BASE_DENS_LO": "Base Dens Lo",
       "BASE_DENS_HI": "Base Dens Hi",
-      "BASE_COLOR": "Base Color"
+      "BASE_COLOR": "Base Color",
+      "AFC_ENABLED": "AFC Enabled",
+      "AFC_PRIORITY": "AFC Arm Priority"
     },
     "BASE_PROD_OWNSHIP": {
       "OWNSHIP_NO": "Ownship No",
@@ -4313,6 +4315,12 @@
       "TKHLNK_TANKCODE": "Tkhlnk Tankcode",
       "TKHLNK_TANKDEPO": "Tkhlnk Tankdepo"
     },
+    "TANK_MAX_FLOW": {
+      "ID": "ID",
+      "TANK_CODE": "Tank Code",
+      "TANK_LEVEL": "Tank Level",
+      "FLOW_RATE": "Flow Rate"
+    },
     "TEMPERATURE_DENSITY": {
       "TD_INDEX": "Td Index",
       "TD_TEMPERATURE": "Td Temperature",
@@ -5447,7 +5455,9 @@
       "BASE_LIMIT_PRESET_HT": "高温油品装车重量预检",
       "BASE_DENS_LO": "基础油品密度下限",
       "BASE_DENS_HI": "基础油品密度上限",
-      "BASE_COLOR": "基础油品颜色"
+      "BASE_COLOR": "基础油品颜色",
+      "AFC_ENABLED": "适应性油品流动控制",
+      "AFC_PRIORITY": "适应性鹤管优先级"
     },
     "BASE_PROD_OWNSHIP": {
       "OWNSHIP_NO": "所有权编号",
@@ -9147,6 +9157,12 @@
       "TKH_GAUGE_DELTA": "Tkh Gauge Delta",
       "TKHLNK_TANKCODE": "Tkhlnk Tankcode",
       "TKHLNK_TANKDEPO": "Tkhlnk Tankdepo"
+    },
+    "TANK_MAX_FLOW": {
+      "ID": "ID",
+      "TANK_CODE": "油罐代码",
+      "TANK_LEVEL": "油罐液位",
+      "FLOW_RATE": "油罐流量"
     },
     "TEMPERATURE_DENSITY": {
       "TD_INDEX": "Td Index",

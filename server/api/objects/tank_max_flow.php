@@ -120,8 +120,8 @@ class TankMaxFlow extends CommonClass
 
         $journal = new Journal($this->conn, false);
         $jnl_data[0] = Utilities::getCurrPsn();
-        $jnl_data[1] = "tank max flow";
-        $jnl_data[2] = sprintf("id:%d, tank:%s, level:%d", $this->id, $this->tank_code, $this->tank_level);
+        $jnl_data[1] = $this->TABLE_NAME;
+        $jnl_data[2] = sprintf("id:%d, tank_code:%s, tank_level:%d", $this->id, $this->tank_code, $this->tank_level);
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_ADD, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
@@ -151,9 +151,9 @@ class TankMaxFlow extends CommonClass
 
         $journal = new Journal($this->conn, $autocommit = false);
         $jnl_data[0] = Utilities::getCurrPsn();
-        $jnl_data[1] = "tank max flow";
-        // $jnl_data[2] = sprintf("id:%d, tank:%s, level:%d", $this->id, $this->tank_code, $this->tank_level);
-        $jnl_data[2] = $this->id;
+        $jnl_data[1] = $this->TABLE_NAME;
+        $jnl_data[2] = sprintf("id:%d, tank_code:%s, tank_level:%d", $this->id, $this->tank_code, $this->tank_level);
+        // $jnl_data[2] = $this->id;
 
         if (!$journal->jnlLogEvent(
             Lookup::RECORD_DELETE, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
@@ -203,7 +203,7 @@ class TankMaxFlow extends CommonClass
 
         $journal = new Journal($this->conn, $autocommit = false);
         $jnl_data[0] = Utilities::getCurrPsn();
-        $jnl_data[1] = "tank max flow";
+        $jnl_data[1] = $this->TABLE_NAME;
         $jnl_data[2] = $this->id;
 
         if (!$journal->jnlLogEvent(
@@ -214,8 +214,9 @@ class TankMaxFlow extends CommonClass
             return false;
         }
 
-        $module = "Tank Max Flow";
-        $record = sprintf("id:%d", $this->id);
+        $module = $this->TABLE_NAME;
+        // $record = sprintf("id:%d", $this->id);
+        $record = sprintf("id:%d, tank_code:%s, tank_level:%d", $this->id, $this->tank_code, $this->tank_level);
         foreach ($this as $key => $value) {
             if (isset($row[strtoupper($key)]) && $value != $row[strtoupper($key)] &&
                 !$journal->valueChange(
