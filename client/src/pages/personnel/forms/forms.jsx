@@ -13,7 +13,7 @@ import {
   UnlockOutlined,
   QuestionCircleOutlined,
   SafetyCertificateOutlined,
-  LogoutOutlined,
+  CompassOutlined,
 } from '@ant-design/icons';
 
 import {
@@ -284,7 +284,7 @@ const FormModal = ({
           {!IS_CREATING && (
             <Button
               type="primary"
-              icon={<LogoutOutlined />}
+              icon={<CompassOutlined />}
               style={{ float: 'left', marginLeft: 5 }}
               onClick={() => setAreaVisible(true)}
               disabled={!access?.canUpdate}

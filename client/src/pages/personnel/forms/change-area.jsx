@@ -43,8 +43,12 @@ const ChangeArea = ({ value, setHide }) => {
 
   return (
     <Form layout="vertical" form={form}>
-      <Form.Item label={t('fields.user')}>
+      <Form.Item label={t('fields.userCode')}>
         <Input value={value?.per_code} disabled />
+      </Form.Item>
+
+      <Form.Item label={t('fields.userName')}>
+        <Input value={value?.per_name} disabled />
       </Form.Item>
 
       <Area form={form} value={value} onAreaChange={setArea} />

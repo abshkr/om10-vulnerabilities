@@ -40,7 +40,7 @@ const Area = ({ form, value, onAreaChange }) => {
       >
         {options?.records.map((item, index) => (
           <Select.Option key={index} value={item.area_k}>
-            {item.area_name}
+            {item.area_desc}
           </Select.Option>
         ))}
       </Select>
