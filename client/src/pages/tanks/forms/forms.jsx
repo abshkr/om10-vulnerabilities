@@ -20,6 +20,7 @@ import { TANKS, TANK_STATUS } from '../../../api';
 import { VCFManager, getDensityRange } from '../../../utils';
 
 import TankStrapping from '../strapping';
+import TankAdaptiveFlowControl from '../afc';
 
 const TabPane = Tabs.TabPane;
 
@@ -677,7 +678,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             htmlType="submit"
             style={{ float: 'right', marginRight: 5 }}
             onClick={onFinish}
-            disabled={(IS_CREATING ? !access?.canCreate : !access?.canUpdate) || tab === '5'}
+            disabled={(IS_CREATING ? !access?.canCreate : !access?.canUpdate) || tab === '5' || tab === '6'}
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -763,6 +764,18 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
                 code={value?.tank_code}
                 tanks={tanks}
                 access={access}
+              />
+            </TabPane>
+          )}
+
+          {config.siteUseAFC && (
+            <TabPane key="6" tab={t('tabColumns.adaptiveFlowControl')}>
+              <TankAdaptiveFlowControl
+                terminal={value?.tank_terminal}
+                code={value?.tank_code}
+                tanks={tanks}
+                access={access}
+                value={value}
               />
             </TabPane>
           )}

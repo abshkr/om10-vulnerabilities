@@ -14,6 +14,7 @@ import { Page, Download, ListView } from '../../components';
 import ConnectedArms from './connected-arms';
 import Calculations from './calculations';
 import TankStrapping from './strapping';
+import TankAdaptiveFlowControl from './afc';
 import Overview from './overview';
 import Gauging from './gauging';
 import Details from './details';
@@ -175,6 +176,18 @@ const Tanks = () => {
                   code={selected?.tank_code}
                   tanks={read?.records}
                   access={access}
+                />
+              </TabPane>
+            )}
+
+            {config.siteUseAFC && (
+              <TabPane key="8" tab={t('tabColumns.adaptiveFlowControl')}>
+                <TankAdaptiveFlowControl
+                  terminal={selected?.tank_terminal}
+                  code={selected?.tank_code}
+                  tanks={read?.records}
+                  access={access}
+                  value={selected}
                 />
               </TabPane>
             )}

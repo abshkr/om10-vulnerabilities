@@ -35,6 +35,50 @@ class TankMaxFlow extends CommonClass
         }
     }
 
+    public function read_details()
+    {
+        $query = "
+            SELECT 
+                tmf.ID AS ID,
+                tmf.TANK_CODE AS TANK_CODE,
+                tmf.TANK_LEVEL AS TANK_LEVEL,
+                tmf.FLOW_RATE AS TANK_FLOWRATE,
+                gt.TANK_NAME AS TANK_NAME,
+                gt.TANK_TERMINAL AS TANK_SITECODE,
+                gt.TANK_SITENAME AS TANK_SITENAME,
+                gt.TANK_BASE AS TANK_BASECODE,
+                gt.TANK_BASE_NAME AS TANK_BASENAME,
+                gt.TANK_BASE_CLASS AS TANK_BASECLASS,
+                gt.TANK_BCLASS_NAME AS TANK_BSCLSNAME,
+                gt.TANK_PROD_LVL AS TANK_PRODLEVEL,
+                bp.AFC_ENABLED AS TANK_AFC_ENABLED,
+                bp.AFC_PRIORITY AS TANK_AFC_PRIORITY
+            FROM 
+                TANK_MAX_FLOW   tmf, 
+                GUI_TANKS       gt, 
+                BASE_PRODS      bp
+            WHERE
+                tmf.TANK_CODE = gt.TANK_CODE
+                AND gt.TANK_BASE = bp.BASE_CODE
+        ";
+        if (isset($this->tank_code)) {
+            $query .= "AND tmf.TANK_CODE = :tank_code ";
+        }
+        $query .= "ORDER BY tmf.TANK_CODE, tmf.TANK_LEVEL";
+
+        $stmt = oci_parse($this->conn, $query);
+        if (isset($this->tank_code)) {
+            oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+        }
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function create()
     {
         $this->id = 0;

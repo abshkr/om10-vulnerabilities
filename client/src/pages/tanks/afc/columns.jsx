@@ -1,0 +1,80 @@
+const columns = (t) => [
+  {
+    headerName: t('fields.id'),
+    field: 'id',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
+    width: 80,
+    hide: true,
+  },
+  {
+    headerName: `${t('fields.tankLevel')} (${t('units.mm')})`,
+    field: 'tank_level',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
+    width: 160,
+  },
+  {
+    headerName: `${t('fields.flowRate')} (${t('units.lpm')})`,
+    field: 'tank_flowrate',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
+  },
+
+  {
+    headerName: `${t('fields.currentTankLevel')} (${t('units.mm')})`,
+    field: 'tank_prodlevel',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
+    width: 160,
+    hide: true,
+  },
+  {
+    headerName: `${t('fields.currentFlowRate')} (${t('units.lpm')})`,
+    field: 'tank_currflowrate',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
+    hide: true,
+  },
+  {
+    headerName: t('fields.baseProductCode'),
+    field: 'tank_basecode',
+    sortable: true,
+    resizable: true,
+    filter: 'MultiFilter',
+    hide: true,
+  },
+
+  {
+    headerName: t('fields.baseProductName'),
+    field: 'tank_basename',
+    sortable: true,
+    resizable: true,
+    filter: 'MultiFilter',
+    hide: true,
+  },
+  {
+    headerName: t('fields.adaptiveArmPriority'),
+    field: 'tank_afc_priority',
+    sortable: true,
+    resizable: true,
+    filter: 'MultiFilter',
+    hide: true,
+  },
+  {
+    headerName: t('fields.adaptiveFlowControl'),
+    field: 'tank_afc_enabled',
+    sortable: true,
+    resizable: true,
+    filter: 'BooleanFilter',
+    cellRenderer: 'BooleanRenderer',
+    hide: true,
+  },
+];
+
+export default columns;
