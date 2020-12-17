@@ -25,6 +25,7 @@ import {
   Radio,
   Checkbox,
   InputNumber,
+  Tooltip,
 } from 'antd';
 
 import { useTranslation } from 'react-i18next';
@@ -52,7 +53,7 @@ import {
 
 import { SelectInput, PartnershipManager } from '../../../components';
 import { SETTINGS } from '../../../constants';
-import { LOAD_SCHEDULES, SITE_CONFIGURATION } from '../../../api';
+import { LOAD_SCHEDULES, SITE_CONFIGURATION, TANKER_LIST } from '../../../api';
 
 import { useConfig } from '../../../hooks';
 
@@ -105,6 +106,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const [shipTo, setShipTo] = useState(value?.shls_ship_to_num);
   const [soldTo, setSoldTo] = useState(value?.shls_sold_to_num);
   const [expHour, setExpHour] = useState(undefined); // SITE.SITE_SHLS_EXP_H
+  const [activeTrips, setActiveTrips] = useState(0);
 
   /*
     1	F	NEW SCHEDULE
@@ -149,6 +151,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const CAN_ADD_HOST_DATA = value?.shls_ld_type === '2' && manageAdditionalHostData;
 
   const { data: siteData } = useSWR(SITE_CONFIGURATION.GET_SITE);
+
+  const { data: trips } = useSWR(`${TANKER_LIST.CHECK_TANKER_ACTIVE_TRIPS}?tanker=${value?.tnkr_code}`, {
+    refreshInterval: 0,
+  });
 
   const { resetFields, setFieldsValue } = form;
 
@@ -600,6 +606,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
     }
   }, [resetFields, setFieldsValue, visible, value, expHour]);
 
+  useEffect(() => {
+    if (trips) {
+      setActiveTrips(trips?.records?.[0]?.cnt);
+    }
+  }, [trips]);
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -825,7 +837,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               </Col>
 
               <Col span={12}>
-                <Tanker form={form} value={value} carrier={carrier} onChange={setTanker} />
+                <Tanker
+                  form={form}
+                  value={value}
+                  carrier={carrier}
+                  onChange={setTanker}
+                  activeTrips={activeTrips}
+                />
               </Col>
             </Row>
 
@@ -1004,9 +1022,21 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
           </TabPane>
 
           <TabPane
-            tab={t('tabColumns.createTripTransactions')}
+            tab={
+              activeTrips > 0 ? (
+                <Tooltip placement="topRight" title={t('descriptions.countTankerActiveTrips')}>
+                  {t('tabColumns.createTripTransactions')}
+                </Tooltip>
+              ) : (
+                t('tabColumns.createTripTransactions')
+              )
+            }
             disabled={
-              IS_CREATING || !CAN_MAKE_TRANSACTIONS || !access.canCreate || value.shls_ld_type === '6'
+              IS_CREATING ||
+              !CAN_MAKE_TRANSACTIONS ||
+              !access.canCreate ||
+              value.shls_ld_type === '6' ||
+              activeTrips > 0
             }
             key="8"
           >

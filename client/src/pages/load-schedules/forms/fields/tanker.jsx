@@ -2,14 +2,14 @@ import React, { useEffect } from 'react';
 
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
-import { Form, Select, Button, Row, Col, notification } from 'antd';
+import { Form, Select, Button, Row, Col, notification, Tag } from 'antd';
 import { SecurityScanOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 
 import { AdhocKey } from '../../../../components';
 import api, { LOAD_SCHEDULES, ID_ASSIGNMENT } from '../../../../api';
 
-const Tanker = ({ form, value, carrier, onChange }) => {
+const Tanker = ({ form, value, carrier, onChange, activeTrips }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue, getFieldValue } = form;
@@ -84,7 +84,17 @@ const Tanker = ({ form, value, carrier, onChange }) => {
       <Col span={!value ? 24 : 19}>
         <Form.Item
           name="tnkr_code"
-          label={t('fields.tanker')}
+          label={
+            activeTrips > 0 && value ? (
+              <>
+                {t('fields.tanker')} &nbsp;&nbsp;&nbsp;
+                <Tag color={'red'}>{t('fields.countTankerActiveTrips') + ': ' + activeTrips}</Tag>
+              </>
+            ) : (
+              t('fields.tanker')
+            )
+          }
+          // extra={activeTrips>0 && value ? '['+t('fields.countTankerActiveTrips')+': '+activeTrips+']' : ''}
           rules={[{ required: true, validator: validate }]}
         >
           <Select
