@@ -8,6 +8,21 @@ const LoadSecurityInformation = ({ form, value }) => {
 
   const { setFieldsValue } = form;
 
+  const validate = (rule, input) => {
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.set')} ─ ${t('fields.loadSecurityInformation')}`);
+      }
+    }
+
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 120) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 120 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    return Promise.resolve();
+  };
+
   useEffect(() => {
     if (value) {
       setFieldsValue({
@@ -18,8 +33,12 @@ const LoadSecurityInformation = ({ form, value }) => {
 
   return (
     <>
-      <Form.Item name="shls_load_security_info" label={t('fields.loadSecurityInformation')}>
-        <Input.TextArea disabled />
+      <Form.Item
+        name="shls_load_security_info"
+        label={t('fields.loadSecurityInformation')}
+        rules={[{ required: false, validator: validate }]}
+      >
+        <Input.TextArea />
       </Form.Item>
     </>
   );

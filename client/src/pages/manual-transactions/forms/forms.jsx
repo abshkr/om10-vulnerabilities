@@ -184,6 +184,7 @@ const Forms = ({
       carrier: value?.carrier,
       driver: !value?.driver ? drivers?.records?.[0]?.per_code : value?.driver,
       seal_range: sealResults?.records?.[0]?.shls_seal_no,
+      load_security: briefsResults?.records?.[0]?.shls_load_security_info,
     });
   };
 
@@ -467,6 +468,9 @@ const Forms = ({
           ? drivers?.records?.[0]?.per_code
           : value?.driver,
         seal_range: params?.seal_range ? params?.seal_range : sealResults?.records?.[0]?.shls_seal_no,
+        load_security: params?.load_security
+          ? params?.load_security
+          : briefsResults?.records?.[0]?.shls_load_security_info,
       });
     }
 
@@ -853,15 +857,17 @@ const Forms = ({
           </Form.Item>
         </Col>
 
-        <Col span={16}>
-          <Form.Item
-            name="load_security"
-            label={t('fields.loadSecurityInformation')}
-            rules={[{ required: false }]}
-          >
-            <Input />
-          </Form.Item>
-        </Col>
+        {config.showLSI && (
+          <Col span={16}>
+            <Form.Item
+              name="load_security"
+              label={t('fields.loadSecurityInformation')}
+              rules={[{ required: false }]}
+            >
+              <Input maxLength={120} />
+            </Form.Item>
+          </Col>
+        )}
       </Row>
 
       <Divider style={{ margin: '2px 0' }} />

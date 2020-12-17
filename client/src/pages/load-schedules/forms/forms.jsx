@@ -81,6 +81,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
     site_customer_product,
     site_customer_carrier,
     siteUseSpecIns,
+    showLSI,
   } = config;
 
   const { t } = useTranslation();
@@ -907,13 +908,15 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
             <Row gutter={[8, 2]}>
               {siteUseSpecIns && (
-                <Col span={12}>
+                <Col span={showLSI ? 12 : 24}>
                   <SpecialInstructions form={form} value={value} />
                 </Col>
               )}
-              <Col span={siteUseSpecIns ? 12 : 24}>
-                <LoadSecurityInformation form={form} value={value} />
-              </Col>
+              {showLSI && (
+                <Col span={siteUseSpecIns ? 12 : 24}>
+                  <LoadSecurityInformation form={form} value={value} />
+                </Col>
+              )}
             </Row>
 
             {mode === '2' && !READ_ONLY && (

@@ -553,6 +553,30 @@ class Schedule extends CommonClass
         return;
     }
 
+    private function update_load_security_info() 
+    {
+        if (!isset($this->shls_load_security_info)) {
+            return;
+        }
+
+        $query = "
+            UPDATE SCHEDULE 
+            SET SHLS_LOAD_SECURITY_INFO = :lsi 
+            WHERE SHLS_TRIP_NO = :trip and SHLS_SUPP = :supplier";
+        $stmt = oci_parse($this->conn, $query);
+        // oci_bind_by_name($stmt, ':default', $default);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier_code);
+        oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+        oci_bind_by_name($stmt, ':lsi', $this->shls_load_security_info);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            throw new DatabaseException($e['message']);;
+        }
+
+        return;
+    }
+
     private function clean_up_zero_products()
     {
         $query = "DELETE FROM SPECPROD
@@ -794,6 +818,7 @@ class Schedule extends CommonClass
         $this->clean_up_zero_products();
         $this->update_host_data();
         $this->update_sold_to_ship_to();
+        $this->update_load_security_info();
 
         return true;
     }

@@ -1600,6 +1600,7 @@ class ManualTrans extends CommonClass
                 ) as SCHD_TYPE,
                 SHLSLOAD_LOAD_ID  as SCHD_LOAD_ID,
                 STATUS  as SCHD_STATUS,
+                SHLS_LOAD_SECURITY_INFO,
                 CARRIER_CODE  as SCHD_CARRIER,
                 TNKR_CODE  as SCHD_TANKER
             FROM GUI_SCHEDULES 
