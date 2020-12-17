@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
-import { Form, Select, Input, Button, Row, Col, DatePicker, Divider } from 'antd';
+import { Form, Select, Input, Button, Row, Col, DatePicker, Divider, Tag, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 import moment from 'moment';
 import { useState } from 'react';
 
-import api, { MANUAL_TRANSACTIONS } from '../../../api';
+import api, { MANUAL_TRANSACTIONS, TANKER_LIST } from '../../../api';
 import { getDateTimeFormat, validateField } from '../../../utils';
 import TripSealManager from './trip-seals';
 import OrderSealManager from './order-seals';
@@ -59,6 +59,7 @@ const Forms = ({
   const [tankersLoading, setTankersLoading] = useState(false);
   const [selectedDriver, setSelectedDriver] = useState(null);
   const [activeFlag, setActiveFlag] = useState(false);
+  const [activeTripCount, setActiveTripCount] = useState(0);
 
   /* const { data: suppliers, isValidating: suppliersLoading } = useSWR(
     // sourceType === 'SCHEDULE' ? MANUAL_TRANSACTIONS.SCHEDULE_SUPPLIERS : MANUAL_TRANSACTIONS.ORDER_SUPPLIERS
@@ -68,6 +69,7 @@ const Forms = ({
   ); */
   const { data: drivers, isValidating: driversLoading } = useSWR(MANUAL_TRANSACTIONS.DRIVERS);
   const { data: carriers, isValidating: carriersLoading } = useSWR(MANUAL_TRANSACTIONS.CARRIERS);
+  const { data: activeTrips } = useSWR(`${TANKER_LIST.CHECK_TANKER_ACTIVE_TRIPS}?tanker=${selectedTanker}`);
 
   const getSuppliersByType = async (type) => {
     let url = null;
@@ -603,6 +605,12 @@ const Forms = ({
     });
   }, [setFieldsValue]);
 
+  useEffect(() => {
+    if (activeTrips) {
+      setActiveTripCount(activeTrips?.records?.[0]?.cnt);
+    }
+  }, [activeTrips]);
+
   const format = getDateTimeFormat();
 
   return (
@@ -684,7 +692,22 @@ const Forms = ({
         </Col>
 
         <Col span={8}>
-          <Form.Item name="tanker" label={t('fields.mtDataTanker')} rules={[{ required: true }]}>
+          <Form.Item
+            name="tanker"
+            label={
+              activeTripCount > 0 ? (
+                <>
+                  {t('fields.mtDataTanker')} &nbsp;&nbsp;&nbsp;
+                  <Tooltip placement="topRight" title={t('descriptions.countTankerActiveTrips')}>
+                    <Tag color={'red'}>{t('fields.countTankerActiveTrips') + ': ' + activeTripCount}</Tag>
+                  </Tooltip>
+                </>
+              ) : (
+                t('fields.mtDataTanker')
+              )
+            }
+            rules={[{ required: true }]}
+          >
             <Select
               dropdownMatchSelectWidth={false}
               allowClear
