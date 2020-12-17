@@ -101,6 +101,7 @@ const useConfig = () => {
     load_tolerance_type: 'PERCENT',
     siteTransferTankSource: 'FROM',
     refreshAlarm: 10000,
+    refreshProductMovement: 10000,
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -260,6 +261,7 @@ const useConfig = () => {
         load_tolerance_type: configurationObject?.LOAD_TOLERANCE_TYPE,
         siteTransferTankSource: configurationObject?.SITE_TRANSFER_TANK_SOURCE || 'FROM',
         refreshAlarm: configurationObject?.SITE_REFRESH_ALARM_INTERVAL ? (configurationObject?.SITE_REFRESH_ALARM_INTERVAL) * 1000 : 10000,
+        refreshProductMovement: configurationObject?.SITE_REFRESH_PRODMV_INTERVAL ? (configurationObject?.SITE_REFRESH_PRODMV_INTERVAL) * 1000 : 10000,
       });
     }
     // eslint-disable-next-line

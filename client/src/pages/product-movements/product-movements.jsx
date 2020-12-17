@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
@@ -9,7 +9,8 @@ import { PRODUCT_MOVEMENTS } from '../../api';
 import generator from './generator';
 import columns from './columns';
 import auth from '../../auth';
-import { useAuth } from '../../hooks';
+import { useAuth, useConfig} from 'hooks';
+import _ from 'lodash';
 
 import Forms from './forms';
 
@@ -18,7 +19,8 @@ const ProductMovements = () => {
 
   const access = useAuth('M_PRODUCTMOVEMENT');
 
-  const { data: payload, isValidating, revalidate } = useSWR(PRODUCT_MOVEMENTS.READ);
+  const { refreshProductMovement } = useConfig();
+  const { data: payload, isValidating, revalidate } = useSWR(PRODUCT_MOVEMENTS.READ, { refreshInterval: refreshProductMovement });
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -26,11 +28,21 @@ const ProductMovements = () => {
 
   const fields = columns(t);
   const data = generator(payload?.records);
-
+  
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
     setSelected(value);
   };
+
+  useEffect(() => {
+    if (selected) {
+      const result = _.find(data, (item) =>{
+        return item.pmv_number === selected.pmv_number;
+      });
+  
+      setSelected(result);
+    }
+  }, [payload]);
 
   const modifiers = (
     <>
