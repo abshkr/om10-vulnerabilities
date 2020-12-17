@@ -45,6 +45,10 @@ const validateRegexp = (code) => {
       pattern = REGEX.ALPHANUMERIC_MULTILINGUAL;
       message = 'regexpTextAlphaNumericMultilingual';
       break;
+    case 'ALPHANUMERIC_HOSTCOMM':
+      pattern = REGEX.ALPHANUMERIC_HOSTCOMM;
+      message = 'regexpTextAlphaNumericHostcomm';
+      break;
     case 'BAYCODE':
       pattern = REGEX.BAYCODE;
       message = 'regexpTextBaycode';

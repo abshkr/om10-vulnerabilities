@@ -6,7 +6,7 @@ import moment from 'moment';
 import { useState } from 'react';
 
 import api, { MANUAL_TRANSACTIONS } from '../../../api';
-import { getDateTimeFormat } from '../../../utils';
+import { getDateTimeFormat, validateField } from '../../../utils';
 import TripSealManager from './trip-seals';
 import OrderSealManager from './order-seals';
 import { SETTINGS } from '../../../constants';
@@ -859,12 +859,32 @@ const Forms = ({
 
         {config.showLSI && (
           <Col span={16}>
-            <Form.Item
+            {/* <Form.Item
               name="load_security"
               label={t('fields.loadSecurityInformation')}
               rules={[{ required: false }]}
             >
               <Input maxLength={120} />
+            </Form.Item> */}
+            <Form.Item
+              name="load_security"
+              label={t('fields.loadSecurityInformation')}
+              rules={[
+                {
+                  required: false,
+                  title: t('fields.loadSecurityInformation'),
+                  dataType: 'STRING',
+                  maxLength: 120,
+                  precision: null,
+                  min: null,
+                  max: null,
+                  prompts: t,
+                  regexp: 'ALPHANUMERIC_HOSTCOMM',
+                  validator: validateField,
+                },
+              ]}
+            >
+              <Input />
             </Form.Item>
           </Col>
         )}
