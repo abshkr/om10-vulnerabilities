@@ -85,7 +85,7 @@ const Tanker = ({ form, value, carrier, onChange, activeTrips }) => {
         <Form.Item
           name="tnkr_code"
           label={
-            activeTrips > 0 && value ? (
+            activeTrips > 0 ? (
               <>
                 {t('fields.tanker')} &nbsp;&nbsp;&nbsp;
                 <Tag color={'red'}>{t('fields.countTankerActiveTrips') + ': ' + activeTrips}</Tag>

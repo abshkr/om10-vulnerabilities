@@ -152,7 +152,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
   const { data: siteData } = useSWR(SITE_CONFIGURATION.GET_SITE);
 
-  const { data: trips } = useSWR(`${TANKER_LIST.CHECK_TANKER_ACTIVE_TRIPS}?tanker=${value?.tnkr_code}`, {
+  const { data: trips } = useSWR(`${TANKER_LIST.CHECK_TANKER_ACTIVE_TRIPS}?tanker=${tanker}`, {
     refreshInterval: 0,
   });
 
@@ -1023,7 +1023,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
           <TabPane
             tab={
-              activeTrips > 0 ? (
+              !IS_CREATING && activeTrips > 0 ? (
                 <Tooltip placement="topRight" title={t('descriptions.countTankerActiveTrips')}>
                   {t('tabColumns.createTripTransactions')}
                 </Tooltip>
