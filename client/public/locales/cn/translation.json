@@ -2394,6 +2394,7 @@
     "regexpTextAlphaNumericSpecial": "允许输入字符：A-Z,a-z,0-9, _-/\\'&[]<>(){},.",
     "regexpTextAlphaNumericSpecialNoSingleQuote": "允许输入字符：A-Z,a-z,0-9, _-/\\&[]<>(){},.",
     "regexpTextAlphaNumericMultilingual": "必填字段，允许输入任何字符",
+    "regexpTextAlphaNumericHostcomm": "不允许输入字符：>`'&<",
     "regexpTextBaycode": "发油台代码格式：BAY XXX",
     "regexpTextCurrency": "必须是货币格式(0.00)",
     "regexpTextDocument": "必填字段，允许输入任何字符",

@@ -3,6 +3,8 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
 
+import { REGEX } from '../../../../constants';
+
 const LoadSecurityInformation = ({ form, value }) => {
   const { t } = useTranslation();
 
@@ -13,6 +15,13 @@ const LoadSecurityInformation = ({ form, value }) => {
       if (input === '' || !input) {
         return Promise.reject(`${t('validate.set')} ─ ${t('fields.loadSecurityInformation')}`);
       }
+    }
+
+    const regex = new RegExp(REGEX.ALPHANUMERIC_HOSTCOMM);
+    const validated = regex.exec(input);
+    if (!validated) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextAlphaNumericHostcomm')}`);
+      // return Promise.reject(`${t('validate.invalidInput')}: \>\`\'\&\<`);
     }
 
     const len = new TextEncoder().encode(input).length;

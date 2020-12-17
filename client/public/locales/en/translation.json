@@ -2394,6 +2394,7 @@
     "regexpTextAlphaNumericSpecial": "Expecting A-Z,a-z,0-9, _-/\\'&[]<>(){},.",
     "regexpTextAlphaNumericSpecialNoSingleQuote": "Expecting A-Z,a-z,0-9, _-/\\&[]<>(){},.",
     "regexpTextAlphaNumericMultilingual": "Expecting Multilingual Text",
+    "regexpTextAlphaNumericHostcomm": "Not allowed to use >`'&<",
     "regexpTextBaycode": "Baycode is BAY XXX",
     "regexpTextCurrency": "Currency value expected(0.00)",
     "regexpTextDocument": "A manditory field allows any characters",
