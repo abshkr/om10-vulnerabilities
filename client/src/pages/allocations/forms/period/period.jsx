@@ -146,7 +146,7 @@ const PeriodForm = ({ value, units, parent, revalidate, data }) => {
             <InputNumber min={0} style={{ width: '100%' }} />
           </Form.Item>
 
-          <Form.Item name="aiprd_qtylimit" label={t('fields.allocatedQuantity')}>
+          <Form.Item name="aiprd_qtylimit" label={t('fields.quantityAllocated')}>
             <InputNumber min={0} style={{ width: '100%' }} />
           </Form.Item>
 
