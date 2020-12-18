@@ -123,15 +123,17 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             {t('operations.cancel')}
           </Button>
 
-          <Button
-            type="primary"
-            icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
-            onClick={onFinish}
-            style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
-          >
-            {IS_CREATING ? t('operations.create') : t('operations.update')}
-          </Button>
+          {IS_CREATING && (
+            <Button
+              type="primary"
+              icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
+              onClick={onFinish}
+              style={{ float: 'right', marginRight: 5 }}
+              disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
+            >
+              {IS_CREATING ? t('operations.create') : t('operations.update')}
+            </Button>
+          )}
 
           {!IS_CREATING && (
             <Tooltip

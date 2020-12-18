@@ -322,6 +322,11 @@ const paths = [
   },
 
   {
+    path: ROUTES.FAST_TRACK,
+    component: lazy(() => import('../pages/fast-track')),
+  },
+
+  {
     path: ROUTES.TANK_VIEW,
     component: lazy(() => import('../pages/tank-view')),
   },
