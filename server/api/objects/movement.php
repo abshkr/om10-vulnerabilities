@@ -1296,6 +1296,144 @@ class Movement extends CommonClass
         return $serv->products();
     }
 
+    protected function adjust_nom_status()
+    {
+        // get the status of nomination items
+        $query = "SELECT MVITM_LINE_ID, MVITM_STATUS FROM MOVEMENT_ITEMS
+            WHERE MVITM_MOVE_ID = :mv_id
+            ORDER BY MVITM_LINE_ID";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':mv_id', $this->mv_id);
+        
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        $tank_max_flows = array();
+        while ($flow_row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            $tank_max_flows[$flow_row['MVITM_LINE_ID']] = (int)$flow_row['MVITM_STATUS'];
+        }
+
+        /*
+            The list of nomination status:  
+            0	NEW
+            1	PARTIALLY SCHEDULED
+            2	FULLY SCHEDULED
+            3	FULLY MOVED
+            4	OUTSTANDING
+            5	FULLY DELIVERED
+            6	EXPIRED
+            7	PARTIALLY MOVED
+            8	PARTIALLY DELIVERED
+        */
+        $max_nom_status = 0;
+        $min_nom_status = 8;
+        $status_counts = array();
+        for ($i=0; $i<=8; $i++) {
+            $status_counts[$i] = 0;
+        }
+        // get the maximum, minimum, and counts of item status
+        foreach ($tank_max_flows as $key => $value) {
+            if ($max_nom_status < $value) {
+                $max_nom_status = $value;
+            }
+            if ($min_nom_status > $value) {
+                $min_nom_status = $value;
+            }
+            if ($value >= 0 && $value <= 8) {
+                $status_counts[$value] += 1;
+                // write_log(sprintf("%s::%s() value:%d, count:%d", __CLASS__, __FUNCTION__, $value, $status_counts[$value]),
+                //     __FILE__, __LINE__);
+            }
+        }
+        // write_log(sprintf("%s::%s() max:%d, min:%d", __CLASS__, __FUNCTION__, $max_nom_status, $min_nom_status),
+        //     __FILE__, __LINE__);
+
+        $nom_status = 4;
+        if ($max_nom_status == $min_nom_status) {
+            $nom_status = $max_nom_status;
+        } else {
+            if ($max_nom_status == 1) { // PARTIALLY SCHEDULED
+                // the status could be 0, 1
+                $nom_status = 1; //PARTIALLY SCHEDULED
+            }
+            if ($max_nom_status == 2) { // FULLY SCHEDULED
+                // the status could be 0, 1, 2
+                $nom_status = 1; //PARTIALLY SCHEDULED
+            }
+            if ($max_nom_status == 3) { // FULLY MOVED
+                // the status could be 0, 1, 2, 3
+                $nom_status = 7; // PARTIALLY MOVED
+            }
+            if ($max_nom_status == 4) { // OUTSTANDING
+                // the status could be 0, 1, 2, 3, 4
+                if ($status_counts[3] > 0) {
+                    $nom_status = 7; // PARTIALLY MOVED
+                } else {
+                    if ($status_counts[2] > 0 || $status_counts[1] > 0) {
+                        $nom_status = 1; //PARTIALLY SCHEDULED
+                    } else {
+                        $nom_status = 0; //NEW
+                    }
+                }
+            }
+            if ($max_nom_status == 5) { // FULLY DELIVERED
+                // the status could be 0, 1, 2, 3, 4, 5
+                $nom_status = 7; // PARTIALLY MOVED
+            }
+            if ($max_nom_status == 6) { // EXPIRED
+                // the status could be 0, 1, 2, 3, 4, 5, 6
+                if ($status_counts[3] > 0 || $status_counts[5] > 0) {
+                    $nom_status = 7; // PARTIALLY MOVED
+                } else {
+                    if ($status_counts[2] > 0 || $status_counts[1] > 0) {
+                        $nom_status = 1; //PARTIALLY SCHEDULED
+                    } else {
+                        $nom_status = 0; //NEW
+                    }
+                }
+            }
+            if ($max_nom_status == 7) { // PARTIALLY MOVED
+                // the status could be 0, 1, 2, 3, 4, 5, 6, 7
+                $nom_status = 7; // PARTIALLY MOVED
+            }
+            if ($max_nom_status == 8) { // PARTIALLY DELIVERED
+                // the status could be 0, 1, 2, 3, 4, 5, 6, 7, 8
+                if ($status_counts[5] > 0 && 
+                  $status_counts[0] == 0 && 
+                  $status_counts[1] == 0 && 
+                  $status_counts[2] == 0 && 
+                  $status_counts[3] == 0 && 
+                  $status_counts[4] == 0 && 
+                  $status_counts[6] == 0 && 
+                  $status_counts[7] == 0
+                ) {
+                    $nom_status = 8; // PARTIALLY DELIVERED
+                } else {
+                    $nom_status = 7; // PARTIALLY MOVED
+                }
+            }
+        }
+
+        $query = "
+            UPDATE MOVEMENTS
+            SET MV_STATUS = :stat
+            WHERE MV_KEY = :mv_key
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':mv_key', $this->mv_key);
+        oci_bind_by_name($stmt, ':stat', $nom_status);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        return $nom_status;
+    }
+
     public function pre_create()
     {
         $query = "SELECT NVL(MAX(MV_ID), 0) + 1 NEXT_ID FROM MOVEMENTS";
@@ -1887,6 +2025,9 @@ class Movement extends CommonClass
                 return false;
             }
         }
+
+        // adjust the new status of nomination
+        $this->adjust_nom_status();
 
         return true;
     }
