@@ -2264,7 +2264,7 @@ class Movement extends CommonClass
         $query = "
             SELECT * FROM GUI_TRANSACTION_DETAILS 
             WHERE TRSFTRID_TRSA_ID = :trsa_id
-            ORDER BY TRSFTRID_TRSA_ID
+            ORDER BY TRSFTRID_TRSA_ID, TRSF_ID
         ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':trsa_id', $hook_item['trsa_id']);
