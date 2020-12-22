@@ -96,6 +96,7 @@ const ConfigProvider = ({ children }) => {
     siteUseSG: false,
     siteUseAFC: false,
     siteUseSpecIns: false,
+    siteUseSafefillOnly: false,
     load_tolerance_type: 'PERCENT',
     siteTransferTankSource: 'FROM',
   });
@@ -257,6 +258,7 @@ const ConfigProvider = ({ children }) => {
         siteUseSG: configurationObject?.SITE_USE_SG,
         siteUseAFC: configurationObject?.SITE_USE_ADAPTIVE_FLOW_CONTROL,
         siteUseSpecIns: configurationObject?.SITE_USE_SHLS_SPEC_INS,
+        siteUseSafefillOnly: configurationObject?.SITE_USE_SAFEFILL_ONLY,
         load_tolerance_type: configurationObject?.LOAD_TOLERANCE_TYPE,
         siteTransferTankSource: configurationObject?.SITE_TRANSFER_TANK_SOURCE || 'FROM',
         revalidate: () => onRevalidate(),

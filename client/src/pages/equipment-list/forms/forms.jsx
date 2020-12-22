@@ -29,14 +29,23 @@ import {
   PullingLimit,
   Comments,
   Locks,
-  LegacyExpires
+  LegacyExpires,
 } from './fields';
 import { Expiry, CheckList, Equipment } from '../../../components';
 import columns from './columns';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, setFilterValue, expiryDateMode, expiryTypes }) => {
+const FormModal = ({
+  value,
+  visible,
+  handleFormState,
+  access,
+  setFilterValue,
+  expiryDateMode,
+  expiryTypes,
+  config,
+}) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -204,11 +213,9 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
       footer={
         <>
           {!IS_CREATING && (
-            <div
-              style={{ float: 'left', marginRight: 5 }}
-            >
-              <Tooltip placement="topRight" title={t("descriptions.countEqptTanker")} >
-                <Tag color={value?.tnkr_count>0 ? 'red' : 'green'}>
+            <div style={{ float: 'left', marginRight: 5 }}>
+              <Tooltip placement="topRight" title={t('descriptions.countEqptTanker')}>
+                <Tag color={value?.tnkr_count > 0 ? 'red' : 'green'}>
                   {t('fields.countEqptTanker') + ': ' + value?.tnkr_count}
                 </Tag>
               </Tooltip>
@@ -252,7 +259,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={!access?.canDelete || value?.tnkr_count>0}
+              disabled={!access?.canDelete || value?.tnkr_count > 0}
             >
               {t('operations.delete')}
             </Button>
@@ -300,7 +307,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
                 <Comments form={form} value={value} />
               </Col>
             </Row>
-            
+
             <Divider>{t('tabColumns.equipmentAndSafefill')}</Divider>
 
             <Equipment image={image} showName={value?.eqpt_etp_title} />
@@ -313,16 +320,22 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, ex
                 <EquipmentType form={form} value={value} onChange={setEquipment} />
               </Col>
             </Row>
-            
-            <Compartments form={form} value={value} equipment={equipment} onChange={setImage} />
+
+            <Compartments
+              form={form}
+              value={value}
+              equipment={equipment}
+              onChange={setImage}
+              config={config}
+            />
 
             <Divider>{t('tabColumns.expiryDates')}</Divider>
 
-            {expiryDateMode === '1' ?
+            {expiryDateMode === '1' ? (
               <LegacyExpires form={form} value={value} expiryTypes={expiryTypes}></LegacyExpires>
-              :
+            ) : (
               <Expiry form={form} value={value} type={EQUIPMENT_LIST.EXPIRY} />
-            }
+            )}
           </TabPane>
         </Tabs>
       </Form>

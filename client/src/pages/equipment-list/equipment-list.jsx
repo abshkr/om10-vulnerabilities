@@ -14,8 +14,9 @@ import { useAuth, useConfig } from 'hooks';
 import Forms from './forms';
 
 const EquipmentList = () => {
+  const config = useConfig();
   const { expiryDateMode } = useConfig();
-  
+
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -45,11 +46,7 @@ const EquipmentList = () => {
 
   const modifiers = (
     <>
-      <Button
-        icon={<SyncOutlined />}
-        onClick={() => revalidate()}
-        loading={isValidating}
-      >
+      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
@@ -86,6 +83,7 @@ const EquipmentList = () => {
           setFilterValue={setFilterValue}
           expiryDateMode={expiryDateMode}
           expiryTypes={expiryTypes?.records}
+          config={config}
         />
       )}
     </Page>

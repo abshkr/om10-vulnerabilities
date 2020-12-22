@@ -1,4 +1,4 @@
-const columns = (t) => [
+const columns = (t, config) => [
   {
     title: t('fields.compartment'),
     dataIndex: 'cmpt_no',
@@ -27,7 +27,7 @@ const columns = (t) => [
     dataIndex: 'sfl',
     key: 'sfl',
     align: 'center',
-    editable: true,
+    editable: !config?.siteUseSafefillOnly,
     cellClass: 'editable-ag-grid-cell',
     width: 120,
   },

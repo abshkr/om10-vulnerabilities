@@ -98,6 +98,7 @@ const useConfig = () => {
     siteUseSG: false,
     siteUseAFC: false,
     siteUseSpecIns: false,
+    siteUseSafefillOnly: false,
     load_tolerance_type: 'PERCENT',
     siteTransferTankSource: 'FROM',
     refreshAlarm: 10000,
@@ -258,10 +259,15 @@ const useConfig = () => {
         siteUseSG: configurationObject?.SITE_USE_SG,
         siteUseAFC: configurationObject?.SITE_USE_ADAPTIVE_FLOW_CONTROL,
         siteUseSpecIns: configurationObject?.SITE_USE_SHLS_SPEC_INS,
+        siteUseSafefillOnly: configurationObject?.SITE_USE_SAFEFILL_ONLY,
         load_tolerance_type: configurationObject?.LOAD_TOLERANCE_TYPE,
         siteTransferTankSource: configurationObject?.SITE_TRANSFER_TANK_SOURCE || 'FROM',
-        refreshAlarm: configurationObject?.SITE_REFRESH_ALARM_INTERVAL ? (configurationObject?.SITE_REFRESH_ALARM_INTERVAL) * 1000 : 10000,
-        refreshProductMovement: configurationObject?.SITE_REFRESH_PRODMV_INTERVAL ? (configurationObject?.SITE_REFRESH_PRODMV_INTERVAL) * 1000 : 10000,
+        refreshAlarm: configurationObject?.SITE_REFRESH_ALARM_INTERVAL
+          ? configurationObject?.SITE_REFRESH_ALARM_INTERVAL * 1000
+          : 10000,
+        refreshProductMovement: configurationObject?.SITE_REFRESH_PRODMV_INTERVAL
+          ? configurationObject?.SITE_REFRESH_PRODMV_INTERVAL * 1000
+          : 10000,
       });
     }
     // eslint-disable-next-line

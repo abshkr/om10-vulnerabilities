@@ -10,7 +10,7 @@ import columns from './columns';
 import Cell from './cell';
 import Row from './row';
 
-const Compartments = ({ form, value, equipment, onChange }) => {
+const Compartments = ({ form, value, equipment, onChange, config }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
@@ -78,7 +78,7 @@ const Compartments = ({ form, value, equipment, onChange }) => {
     const options = _.filter(payload?.records, predicate) || [];
 
     setOptions(options);
-    setSelected(value? value.eqpt_id : options[0]?.eqpt_id);
+    setSelected(value ? value.eqpt_id : options[0]?.eqpt_id);
   }, [value, payload, equipment]);
 
   useEffect(() => {
@@ -105,7 +105,7 @@ const Compartments = ({ form, value, equipment, onChange }) => {
     }
   }, [value, equipment, fetchByEquipment, fetchByCompartment]);
 
-  const fields = columns(t).map((col) => {
+  const fields = columns(t, config).map((col) => {
     if (!col.editable) {
       return col;
     }
@@ -119,6 +119,7 @@ const Compartments = ({ form, value, equipment, onChange }) => {
         dataIndex: col.dataIndex,
         title: col.title,
         handleSave: save,
+        config: config,
       }),
     };
   });

@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { FormWrapper } from './style';
 import Context from './context';
 
-const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, ...restProps }) => {
+const Cell = ({ config, title, editable, children, dataIndex, record, handleSave, data, ...restProps }) => {
   const { t } = useTranslation();
   const form = useContext(Context);
   const inputRef = useRef();
@@ -21,6 +21,7 @@ const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, 
 
   const save = async (e) => {
     let values = await form.validateFields();
+    console.log('...............save', dataIndex, values);
 
     if (values?.safefill === undefined) {
       values.safefill = record?.safefill;
@@ -30,7 +31,12 @@ const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, 
       values.sfl = record?.sfl;
     }
 
-    if (values?.safefill) {
+    if (config?.siteUseSafefillOnly) {
+      values.sfl = values?.safefill;
+      record.sfl = values?.safefill;
+    }
+
+    if (dataIndex === 'safefill' && values?.safefill) {
       if (!record?.sfl || _.toNumber(values?.safefill) <= record?.sfl) {
         onEdit();
 
@@ -45,7 +51,7 @@ const Cell = ({ title, editable, children, dataIndex, record, handleSave, data, 
         // message.error('Safefill Cannot be higher than capacity');
         message.error(t('validate.cmptSafefillHigh'));
       }
-    } else if (values?.sfl) {
+    } else if (dataIndex === 'sfl' && values?.sfl) {
       if (!record?.safefill || _.toNumber(values?.sfl) >= record?.safefill) {
         onEdit();
 
