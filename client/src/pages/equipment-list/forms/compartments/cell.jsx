@@ -21,7 +21,6 @@ const Cell = ({ config, title, editable, children, dataIndex, record, handleSave
 
   const save = async (e) => {
     let values = await form.validateFields();
-    console.log('...............save', dataIndex, values);
 
     if (values?.safefill === undefined) {
       values.safefill = record?.safefill;
