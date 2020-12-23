@@ -97,6 +97,8 @@ const ConfigProvider = ({ children }) => {
     siteUseAFC: false,
     siteUseSpecIns: false,
     siteUseSafefillOnly: false,
+    siteUseAxleWeightLimit: false,
+    siteAxleWeightLimitType: false,
     load_tolerance_type: 'PERCENT',
     siteTransferTankSource: 'FROM',
   });
@@ -259,6 +261,8 @@ const ConfigProvider = ({ children }) => {
         siteUseAFC: configurationObject?.SITE_USE_ADAPTIVE_FLOW_CONTROL,
         siteUseSpecIns: configurationObject?.SITE_USE_SHLS_SPEC_INS,
         siteUseSafefillOnly: configurationObject?.SITE_USE_SAFEFILL_ONLY,
+        siteUseAxleWeightLimit: configurationObject?.SITE_USE_AXLE_WEIGHT_LIMIT,
+        siteAxleWeightLimitType: configurationObject?.AXLE_WEIGHT_LIMIT_TYPE,
         load_tolerance_type: configurationObject?.LOAD_TOLERANCE_TYPE,
         siteTransferTankSource: configurationObject?.SITE_TRANSFER_TANK_SOURCE || 'FROM',
         revalidate: () => onRevalidate(),

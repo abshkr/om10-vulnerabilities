@@ -63,6 +63,7 @@ import * as DRAWER_PRODUCTS from './drawer-products';
 import * as DELIVERY_DETAILS from './delivery-details';
 import * as NOMINATION_TRANSACTIONS from './nomination-transactions';
 import * as LOAD_BAYS from './load-bays';
+import * as AXLE_WEIGHTS from './axle-weights';
 
 export {
   AUTH,
@@ -128,6 +129,7 @@ export {
   DELIVERY_DETAILS,
   NOMINATION_TRANSACTIONS,
   LOAD_BAYS,
+  AXLE_WEIGHTS,
 };
 
 export default api;
