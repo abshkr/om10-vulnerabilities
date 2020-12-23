@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
 
+import AxleWeightLimit from './axle-weight-limit';
 import Locations from './locations';
 import { useAuth } from '../../hooks';
 import { ConfigurationContainer } from './styles';
@@ -430,14 +431,18 @@ const Configuration = ({ user, config }) => {
   const [features, setFeatures] = useState([]);
   const [tab, setTab] = useState('1');
 
-  const [visible, setVisible] = useState(false);
-  const [selected, setSelected] = useState(null);
+  const [visibleTerminal, setVisibleTerminal] = useState(false);
+  const [selectedTerminal, setSelectedTerminal] = useState(null);
+  const [visibleAxle, setVisibleAxle] = useState(false);
+  const [selectedAxle, setSelectedAxle] = useState(null);
 
   const { t } = useTranslation();
 
   const UPDATING_FEATURES = tab === '7';
 
   const UPDATING_TERMINALS = tab === '5';
+
+  const UPDATING_AXLES = tab === '9';
 
   const countFrozenFolios = async () => {
     const results = await api.get(FOLIO_SCHEDULING.CHECK_FROZEN_FOLIOS);
@@ -561,14 +566,19 @@ const Configuration = ({ user, config }) => {
     });
   };
 
-  const handleFormState = (visibility, value) => {
-    setVisible(visibility);
-    setSelected(value);
+  const handleTerminalFormState = (visibility, value) => {
+    setVisibleTerminal(visibility);
+    setSelectedTerminal(value);
+  };
+
+  const handleAxleFormState = (visibility, value) => {
+    setVisibleAxle(visibility);
+    setSelectedAxle(value);
   };
 
   const modifiers = (
     <>
-      {!UPDATING_TERMINALS && (
+      {!UPDATING_TERMINALS && !UPDATING_AXLES && (
         <Button icon={<EditOutlined />} type="primary" onClick={onUpdate} disabled={!access?.canUpdate}>
           {t('operations.update')}
         </Button>
@@ -599,10 +609,22 @@ const Configuration = ({ user, config }) => {
       {UPDATING_TERMINALS && (
         <Button
           icon={<PlusOutlined />}
-          onClick={onFeatureDeselectAll}
+          // onClick={onFeatureDeselectAll}
           type="primary"
           disabled={!access?.canUpdate}
-          onClick={() => handleFormState(true, null)}
+          onClick={() => handleTerminalFormState(true, null)}
+        >
+          {t('operations.create')}
+        </Button>
+      )}
+
+      {UPDATING_AXLES && (
+        <Button
+          icon={<PlusOutlined />}
+          // onClick={onFeatureDeselectAll}
+          type="primary"
+          disabled={!access?.canUpdate}
+          onClick={() => handleAxleFormState(true, null)}
         >
           {t('operations.create')}
         </Button>
@@ -648,9 +670,9 @@ const Configuration = ({ user, config }) => {
 
           <TabPane tab={t('tabColumns.terminalLocations')} key="5">
             <Locations
-              handleFormState={handleFormState}
-              visible={visible}
-              selected={selected}
+              handleFormState={handleTerminalFormState}
+              visible={visibleTerminal}
+              selected={selectedTerminal}
               access={access}
             />
           </TabPane>
@@ -678,6 +700,17 @@ const Configuration = ({ user, config }) => {
                 data={_.filter(configuration, ['config_required_by_gui', 'H'])}
                 onChange={onConfigurationEdit}
                 t={t}
+              />
+            </TabPane>
+          )}
+
+          {config?.siteUseAxleWeightLimit && (
+            <TabPane tab={t('tabColumns.axleWeightLimit')} key="9">
+              <AxleWeightLimit
+                handleFormState={handleAxleFormState}
+                visible={visibleAxle}
+                selected={selectedAxle}
+                access={access}
               />
             </TabPane>
           )}

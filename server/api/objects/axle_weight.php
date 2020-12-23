@@ -10,15 +10,15 @@ class AxleWeight extends CommonClass
     protected $TABLE_NAME = 'AXLE_WEIGHT_LIMIT_LOOKUP';
     protected $VIEW_NAME = 'AXLE_WEIGHT_LIMIT_LOOKUP_VW';
     public $NUMBER_FIELDS = array(
-        "AXLE_LIMIT_TYPE_ID",
-        "AXLE_GROUP_ID",
-        "WEIGHT_LIMIT",
+        /* // "AXLE_LIMIT_TYPE_ID",
+        // "AXLE_GROUP_ID",
+        "AXLE_WEIGHT_LIMIT", */
     );
 
     protected $table_view_map = array(
         "LIMIT_TYPE_ID" => "AXLE_LIMIT_TYPE_ID",
         "AXLE_GROUP" => "AXLE_GROUP_ID",
-        "WEIGHT_LIMIT" => "WEIGHT_LIMIT",
+        "WEIGHT_LIMIT" => "AXLE_WEIGHT_LIMIT",
     );
 
     //All the fields that should be treated as BOOLEAN in JSON
@@ -130,10 +130,10 @@ class AxleWeight extends CommonClass
             SELECT 
                 AXLE_LIMIT_TYPE_ID,
                 AXLE_LIMIT_TYPE_CODE,
-                AXLE_LIMIT_TYPE,
+                AXLE_LIMIT_TYPE_NAME,
                 AXLE_GROUP_ID,
-                AXLE_GROUP,
-                WEIGHT_LIMIT
+                AXLE_GROUP_NAME,
+                AXLE_WEIGHT_LIMIT
             FROM 
                 AXLE_WEIGHT_LIMIT_LOOKUP_VW
             WHERE 
