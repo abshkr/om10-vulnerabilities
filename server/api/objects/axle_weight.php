@@ -8,10 +8,14 @@ include_once 'common_class.php';
 class AxleWeight extends CommonClass
 {
     protected $TABLE_NAME = 'AXLE_WEIGHT_LIMIT_LOOKUP';
-    protected $VIEW_NAME = 'AXLE_WEIGHT_LIMIT_LOOKUP_VW';
+    // protected $VIEW_NAME = 'AXLE_WEIGHT_LIMIT_LOOKUP_VW';
+    protected $primary_keys = array("limit_type_id", "axle_group");
+    protected $view_keys = array("axle_limit_type_id", "axle_group_id");
+
+
     public $NUMBER_FIELDS = array(
-        /* // "AXLE_LIMIT_TYPE_ID",
-        // "AXLE_GROUP_ID",
+        /* "AXLE_LIMIT_TYPE_ID",
+        "AXLE_GROUP_ID",
         "AXLE_WEIGHT_LIMIT", */
     );
 

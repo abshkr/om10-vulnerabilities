@@ -558,6 +558,11 @@
       "AWA_TAG": "Awa Tag",
       "AWA_TAG_PRESENT": "Awa Tag Present"
     },
+    "AXLE_WEIGHT_LIMIT_LOOKUP": {
+      "LIMIT_TYPE_ID": "Axle Weight Limit Type",
+      "AXLE_GROUP": "Axle Group",
+      "WEIGHT_LIMIT": "Weight Limit"
+    },
     "BAD_BA": {
       "BA_CODE_LNK": "Ba Code Lnk",
       "BAD_LNK": "Bad Lnk",
@@ -5409,6 +5414,11 @@
       "AWA_LOOPKEY": "Awa Loopkey",
       "AWA_TAG": "Awa Tag",
       "AWA_TAG_PRESENT": "Awa Tag Present"
+    },
+    "AXLE_WEIGHT_LIMIT_LOOKUP": {
+      "LIMIT_TYPE_ID": "车轴承重上限类型",
+      "AXLE_GROUP": "车轴组合",
+      "WEIGHT_LIMIT": "车轴承重上限"
     },
     "BAD_BA": {
       "BA_CODE_LNK": "发油台代码",
