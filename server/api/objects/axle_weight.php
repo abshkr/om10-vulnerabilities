@@ -50,6 +50,52 @@ class AxleWeight extends CommonClass
         }
     }
     
+    public function avail_axle_weight_limit_types()
+    {
+        $query = "
+            SELECT 
+                AWLV.AXLE_LIMIT_TYPE_ID, 
+                AWLV.AXLE_LIMIT_TYPE_CODE, 
+                AWLV.AXLE_LIMIT_TYPE_NAME,
+                AWLL.COUNT_AXLE_GROUPS
+            FROM 
+                AXLE_WEIGHT_LIMIT_VW AWLV
+                , (
+                    SELECT 
+                        LIMIT_TYPE_ID, 
+                        COUNT(AXLE_GROUP) AS COUNT_AXLE_GROUPS
+                    FROM AXLE_WEIGHT_LIMIT_LOOKUP
+                    GROUP BY LIMIT_TYPE_ID
+                ) AWLL
+            WHERE AWLV.AXLE_LIMIT_TYPE_ID = AWLL.LIMIT_TYPE_ID(+)
+            ORDER BY AXLE_LIMIT_TYPE_ID
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+    
+    public function count_axle_weight_limit_types()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT 
+            FROM AXLE_WEIGHT_LIMIT_VW 
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+    
     public function axle_groups()
     {
         $query = "
@@ -59,6 +105,52 @@ class AxleWeight extends CommonClass
                 AXLE_GROUP_NAME
             FROM AXLE_GROUP_VW 
             ORDER BY AXLE_GROUP_ID
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+    
+    public function avail_axle_groups()
+    {
+        $query = "
+            SELECT 
+                AGV.AXLE_GROUP_ID, 
+                AGV.AXLE_GROUP_CODE, 
+                AGV.AXLE_GROUP_NAME,
+                AWLL.COUNT_LIMIT_TYPES
+            FROM 
+                AXLE_GROUP_VW  AGV
+                , (
+                    SELECT 
+                        AXLE_GROUP, 
+                        COUNT(LIMIT_TYPE_ID) AS COUNT_LIMIT_TYPES
+                    FROM AXLE_WEIGHT_LIMIT_LOOKUP
+                    GROUP BY AXLE_GROUP
+                ) AWLL
+            WHERE AGV.AXLE_GROUP_ID = AWLL.AXLE_GROUP(+)
+            ORDER BY AGV.AXLE_GROUP_ID
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+    
+    public function count_axle_groups()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT 
+            FROM AXLE_GROUP_VW 
         ";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {

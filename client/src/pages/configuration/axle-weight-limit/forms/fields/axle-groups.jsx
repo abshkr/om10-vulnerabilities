@@ -6,10 +6,11 @@ import { Form, Select } from 'antd';
 
 import { AXLE_WEIGHTS } from 'api';
 
-const AxleGroups = ({ form, value }) => {
+const AxleGroups = ({ form, value, counts }) => {
   const { t } = useTranslation();
 
-  const { data: options, isValidating } = useSWR(AXLE_WEIGHTS.AXLE_GROUPS);
+  // const { data: options, isValidating } = useSWR(AXLE_WEIGHTS.AXLE_GROUPS);
+  const { data: options, isValidating } = useSWR(AXLE_WEIGHTS.AVAIL_AXLE_GROUPS);
 
   const { setFieldsValue } = form;
 
@@ -49,7 +50,7 @@ const AxleGroups = ({ form, value }) => {
         }
       >
         {options?.records.map((item, index) => (
-          <Select.Option key={index} value={item.axle_group_id}>
+          <Select.Option key={index} value={item.axle_group_id} disabled={item.count_limit_types >= counts}>
             {item.axle_group_name}
           </Select.Option>
         ))}

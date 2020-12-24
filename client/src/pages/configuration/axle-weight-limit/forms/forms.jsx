@@ -9,7 +9,7 @@ import {
 } from '@ant-design/icons';
 import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { mutate } from 'swr';
+import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
 
 import api, { AXLE_WEIGHTS } from 'api';
@@ -24,7 +24,11 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   const IS_CREATING = !value;
 
-  const [company, setCompany] = useState(undefined);
+  const [countLimitTypes, setCountLimitTypes] = useState(4);
+  const [countAxleGroups, setCountAxleGroups] = useState(6);
+
+  const { data: payloadLimitTypes } = useSWR(AXLE_WEIGHTS.COUNT_LIMIT_TYPES);
+  const { data: payloadAxleGroups } = useSWR(AXLE_WEIGHTS.COUNT_AXLE_GROUPS);
 
   const { resetFields } = form;
 
@@ -103,6 +107,18 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     }
   }, [resetFields, value, visible]);
 
+  useEffect(() => {
+    if (payloadLimitTypes) {
+      setCountLimitTypes(payloadLimitTypes?.records?.[0]?.cnt);
+    }
+  }, [payloadLimitTypes]);
+
+  useEffect(() => {
+    if (payloadAxleGroups) {
+      setCountAxleGroups(payloadAxleGroups?.records?.[0]?.cnt);
+    }
+  }, [payloadAxleGroups]);
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -152,8 +168,8 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       <Form layout="vertical" form={form} scrollToFirstError>
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-            <AxleLimitTypes form={form} value={value} />
-            <AxleGroups form={form} value={value} />
+            <AxleLimitTypes form={form} value={value} counts={countAxleGroups} />
+            <AxleGroups form={form} value={value} counts={countLimitTypes} />
             <WeightLimit form={form} value={value} />
           </TabPane>
         </Tabs>

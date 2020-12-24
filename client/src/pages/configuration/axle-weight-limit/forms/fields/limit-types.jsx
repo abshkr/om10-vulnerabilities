@@ -6,10 +6,11 @@ import { Form, Select } from 'antd';
 
 import { AXLE_WEIGHTS } from 'api';
 
-const AxleLimitTypes = ({ form, value }) => {
+const AxleLimitTypes = ({ form, value, counts }) => {
   const { t } = useTranslation();
 
-  const { data: options, isValidating } = useSWR(AXLE_WEIGHTS.LIMIT_TYPES);
+  // const { data: options, isValidating } = useSWR(AXLE_WEIGHTS.LIMIT_TYPES);
+  const { data: options, isValidating } = useSWR(AXLE_WEIGHTS.AVAIL_LIMIT_TYPES);
 
   const { setFieldsValue } = form;
 
@@ -49,7 +50,11 @@ const AxleLimitTypes = ({ form, value }) => {
         }
       >
         {options?.records.map((item, index) => (
-          <Select.Option key={index} value={item.axle_limit_type_id}>
+          <Select.Option
+            key={index}
+            value={item.axle_limit_type_id}
+            disabled={item.count_axle_groups >= counts}
+          >
             {item.axle_limit_type_name}
           </Select.Option>
         ))}
