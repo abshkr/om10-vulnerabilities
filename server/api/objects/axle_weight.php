@@ -14,9 +14,9 @@ class AxleWeight extends CommonClass
 
 
     public $NUMBER_FIELDS = array(
-        /* "AXLE_LIMIT_TYPE_ID",
+        "AXLE_LIMIT_TYPE_ID",
         "AXLE_GROUP_ID",
-        "AXLE_WEIGHT_LIMIT", */
+        "AXLE_WEIGHT_LIMIT",
     );
 
     protected $table_view_map = array(
