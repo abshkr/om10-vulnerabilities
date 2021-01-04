@@ -349,6 +349,8 @@
     "axleLimitTypeCode": "Axle Limit Type Code",
     "axleLimitTypeId": "Axle Limit Type Id",
     "axleWeightLimit": "Weight Limit",
+    "axleFrontWeightLimit": "Front Weight Limit",
+    "axleRearWeightLimit": "Rear Weight Limit",
     "backColor": "Back Colour",
     "baseClass": "Base Class",
     "baseClassMaxDensity": "Base Class Max Density",

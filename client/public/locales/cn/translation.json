@@ -349,6 +349,8 @@
     "axleLimitTypeCode": "车轴承重上限类型代码",
     "axleLimitTypeId": "车轴承重上限类型ID",
     "axleWeightLimit": "车轴承重上限",
+    "axleFrontWeightLimit": "车轴前端承重上限",
+    "axleRearWeightLimit": "车轴后端承重上限",
     "backColor": "背景颜色",
     "baseClass": "基础油品类别",
     "baseClassMaxDensity": "基础油品类别密度上限",
