@@ -245,4 +245,33 @@ class AxleWeight extends CommonClass
             return null;
         }
     }
+
+    public function read_by_type()
+    {
+        $query = "
+            SELECT 
+                AXLE_LIMIT_TYPE_ID,
+                AXLE_LIMIT_TYPE_CODE,
+                AXLE_LIMIT_TYPE_NAME,
+                AXLE_GROUP_ID,
+                AXLE_GROUP_NAME,
+                AXLE_WEIGHT_LIMIT, 
+                LPAD(AXLE_WEIGHT_LIMIT, 6, ' ')||' ['||AXLE_GROUP_NAME||']'  AS AXLE_GROUP_DESC
+            FROM 
+                AXLE_WEIGHT_LIMIT_LOOKUP_VW
+            WHERE 
+                AXLE_LIMIT_TYPE_CODE = NVL((
+                        SELECT CONFIG_VALUE FROM SITE_CONFIG WHERE CONFIG_KEY='AXLE_WEIGHT_LIMIT_TYPE'
+                    ), 'GML')                    
+            ORDER BY AXLE_LIMIT_TYPE_ID, AXLE_GROUP_ID
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
 }

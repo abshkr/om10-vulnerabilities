@@ -1,4 +1,5 @@
 export const READ = '/api/pages/axle_weight/read.php';
+export const CURR_AXLE_WEIGHT_LIMIT = '/api/pages/axle_weight/read_by_type.php';
 export const CHECK_AXLE_WEIGHT_LIMIT = '/api/pages/axle_weight/check_axle_weight_limit.php';
 export const GET_LIMIT_TYPE_BY_GROUP = '/api/pages/axle_weight/get_limit_type_by_group.php';
 export const GET_GROUP_BY_LIMIT_TYPE = '/api/pages/axle_weight/get_group_by_limit_type.php';

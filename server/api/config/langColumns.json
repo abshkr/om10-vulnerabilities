@@ -1608,7 +1608,9 @@
       "ETYP_IS_DRUMFILL": "Etyp Is Drumfill",
       "ETYP_MAX_GROSS": "Etyp Max Gross",
       "ETYP_ISRIGID": "Etyp Isrigid",
-      "ETYP_CATEGORY": "Etyp Category"
+      "ETYP_CATEGORY": "Etyp Category",
+      "FRONT_WEIGH_LIMIT": "Front Axle Weight Limit",
+      "REAR_WEIGH_LIMIT": "Rear Axle Weight Limit"
     },
     "ERP_TYPE": {
       "ERP_TYPE_NO": "Erp Type No",
@@ -6465,7 +6467,9 @@
       "ETYP_IS_DRUMFILL": "油桶",
       "ETYP_MAX_GROSS": "最大净重",
       "ETYP_ISRIGID": "一体车类型",
-      "ETYP_CATEGORY": "运输设备类型"
+      "ETYP_CATEGORY": "运输设备类型",
+      "FRONT_WEIGH_LIMIT": "前端车轴承重上限",
+      "REAR_WEIGH_LIMIT": "后端车轴承重上限"
     },
     "ERP_TYPE": {
       "ERP_TYPE_NO": "ERP类型编号",

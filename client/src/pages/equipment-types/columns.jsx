@@ -1,4 +1,4 @@
-const columns = (t) => [
+const columns = (t, config) => [
   {
     headerName: t('fields.id'),
     field: 'etyp_id',
@@ -53,6 +53,47 @@ const columns = (t) => [
     width: 100,
     suppressSizeToFit: true,
   },
+  {
+    headerName: t('fields.axleFrontWeightLimit') + ' (' + t('units.kg') + ')',
+    field: 'front_weigh_limit',
+    filterable: true,
+    sortable: true,
+    resizable: true,
+    width: 140,
+    suppressSizeToFit: true,
+    hide: true,
+  },
+  {
+    headerName: t('fields.axleRearWeightLimit') + ' (' + t('units.kg') + ')',
+    field: 'rear_weigh_limit',
+    filterable: true,
+    sortable: true,
+    resizable: true,
+    width: 140,
+    suppressSizeToFit: true,
+    hide: true,
+  },
+  {
+    headerName: t('fields.axleFrontWeightLimit') + ' (' + t('units.kg') + ')',
+    field: 'etyp_front_axle',
+    filterable: true,
+    sortable: true,
+    resizable: true,
+    width: 180,
+    suppressSizeToFit: true,
+    hide: !config?.siteUseAxleWeightLimit,
+  },
+  {
+    headerName: t('fields.axleRearWeightLimit') + ' (' + t('units.kg') + ')',
+    field: 'etyp_rear_axle',
+    filterable: true,
+    sortable: true,
+    resizable: true,
+    width: 180,
+    suppressSizeToFit: true,
+    hide: !config?.siteUseAxleWeightLimit,
+  },
+
   {
     headerName: t('fields.countEtypEquipment'),
     field: 'eqpt_count',

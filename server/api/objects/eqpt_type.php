@@ -24,7 +24,9 @@ class EquipmentType extends CommonClass
         "SAFEFILL",
         "SFL",
         "CMPT_NO",
-        "ETYP_ID"
+        "ETYP_ID",
+        "FRONT_WEIGH_LIMIT",
+        "REAR_WEIGH_LIMIT"
     );
 
     public function equipmentCount($eqpt_etp)
@@ -328,6 +330,10 @@ class EquipmentType extends CommonClass
                     )) IMAGE,
                 NVL(EQUIP_CMPTS.CMPTS, EQUIP_TYPES_VW.ETYP_N_ITEMS) CMPTS,
                 EQUIP_TYPES_VW.CMPTNU,
+                EQUIP_TYPE_AXLES_VW.FRONT_WEIGH_LIMIT,
+                EQUIP_TYPE_AXLES_VW.REAR_WEIGH_LIMIT,
+                EQUIP_TYPE_AXLES_VW.FRONT_AXLE_GROUP_DESC   AS ETYP_FRONT_AXLE,
+                EQUIP_TYPE_AXLES_VW.REAR_AXLE_GROUP_DESC    AS ETYP_REAR_AXLE,
                 NVL(ETYP_COUNTS.ETYP_COUNT, 0)  ETYP_COUNT,
                 NVL(EQPT_COUNTS.EQPT_COUNT, 0)  EQPT_COUNT,
                 NVL(TNKR_COUNTS.TNKR_COUNT, 0)  TNKR_COUNT
@@ -366,6 +372,7 @@ class EquipmentType extends CommonClass
                     )
                     GROUP BY ETYP_ID_RT
                 ) EQUIP_CMPTS,
+                EQUIP_TYPE_AXLES_VW,
                 (
                     SELECT EQC_SUB_ITEM, COUNT(*) ETYP_COUNT
                     FROM EQP_CONNECT
@@ -387,6 +394,7 @@ class EquipmentType extends CommonClass
                 AND EQUIP_TYPES_VW.ETYP_ID = ETYP_COUNTS.EQC_SUB_ITEM(+)
                 AND EQUIP_TYPES_VW.ETYP_ID = EQPT_COUNTS.EQPT_ETP(+)
                 AND EQUIP_TYPES_VW.ETYP_ID = TNKR_COUNTS.TNKR_ETP(+)
+                AND EQUIP_TYPES_VW.ETYP_ID = EQUIP_TYPE_AXLES_VW.ETYP_ID(+)
                 AND ETYP_TITLE like :etyp_title";
 
         if (isset($this->cmptnu)) {
@@ -473,7 +481,34 @@ class EquipmentType extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             // $error = new EchoSchema(500, response("__INTERNAL_ERROR__", "Internal Error: " . $e['message']));
             // echo json_encode($error, JSON_PRETTY_PRINT);
-            false;
+            return false;
+        };
+
+        return true;
+    }
+
+    protected function update_axle_weights()
+    {
+        $query = "
+            UPDATE EQUIP_TYPES 
+            SET FRONT_WEIGH_LIMIT = :front_weight, REAR_WEIGH_LIMIT = :rear_weight 
+            WHERE ETYP_ID = :etyp_id
+        ";
+        write_log(
+            sprintf("%s::%s EQUIP_TYPES. key:%s, value:%s|%s", __CLASS__, __FUNCTION__, 
+                $this->etyp_id, $this->front_weigh_limit, $this->rear_weigh_limit),
+            __FILE__, __LINE__
+        );
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':front_weight', $this->front_weigh_limit);
+        oci_bind_by_name($stmt, ':rear_weight', $this->rear_weigh_limit);
+        oci_bind_by_name($stmt, ':etyp_id', $this->etyp_id);
+        if (!oci_execute($stmt)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            // $error = new EchoSchema(500, response("__INTERNAL_ERROR__", "Internal Error: " . $e['message']));
+            // echo json_encode($error, JSON_PRETTY_PRINT);
+            return false;
         };
 
         return true;
@@ -567,6 +602,9 @@ class EquipmentType extends CommonClass
         if (preg_match("/(var eqpCd=)(\d+)(;)/", $first_res, $out)) {
             $this->etyp_id = $out[2];
             $this->update_title();
+            if ($is_combo === 0) {
+                $this->update_axle_weights();
+            }
         }
 
         return true;

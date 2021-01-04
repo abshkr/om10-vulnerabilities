@@ -8,12 +8,15 @@ import { SyncOutlined, PlusOutlined, ExclamationCircleOutlined } from '@ant-desi
 import { Page, DataTable, Download } from '../../components';
 import { EQUIPMENT_TYPES } from '../../api';
 import { useAuth } from '../../hooks';
+import { useConfig } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 
 import Forms from './forms';
 
 const EquipmentTypes = () => {
+  const config = useConfig();
+
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [isCombination, setCombination] = useState(false);
@@ -53,7 +56,7 @@ const EquipmentTypes = () => {
     }
   };
 
-  const fields = columns(t);
+  const fields = columns(t, config);
 
   const data = payload?.records;
   const isLoading = isValidating || !data;
@@ -101,6 +104,7 @@ const EquipmentTypes = () => {
           access={access}
           isCombination={isCombination}
           setFilterValue={setFilterValue}
+          config={config}
         />
       )}
     </Page>
