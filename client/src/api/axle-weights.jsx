@@ -13,3 +13,6 @@ export const COUNT_AXLE_GROUPS = '/api/pages/axle_weight/count_axle_groups.php';
 export const CREATE = '/api/pages/axle_weight/create.php';
 export const UPDATE = '/api/pages/axle_weight/update.php';
 export const DELETE = '/api/pages/axle_weight/delete.php';
+
+export const GET_SITE_AXLE_LIMIT_TYPE = '/api/pages/axle_weight/get_site_axle_limit_type.php';
+export const SET_SITE_AXLE_LIMIT_TYPE = '/api/pages/site_config/update.php';

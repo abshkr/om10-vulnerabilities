@@ -448,6 +448,12 @@ class Journal
             "HOST_MESSAGING_IN_SUBMIT_ON" => "提交接收信息",
             "HOST_MESSAGING_OUT_EDIT_ON" => "编辑发送信息",
             "HOST_MESSAGING_OUT_SUBMIT_ON" => "提交发送信息",
+            "SITE_USE_SG" => "启用油罐比重字段",
+            "SITE_USE_ADAPTIVE_FLOW_CONTROL" => "启用适应性油品流动控制",
+            "SITE_USE_SHLS_SPEC_INS" => "启用提单特殊指令字段",
+            "SITE_USE_SAFEFILL_ONLY" => "只用油仓安全容量",
+            "SITE_USE_AXLE_WEIGHT_LIMIT" => "启用车轴承重上限检查",
+            "AXLE_WEIGHT_LIMIT_TYPE" => "油库车轴承重上限类型",
         ),
         "ENG" => array(
             "AIR_BUOYANCY_FACTOR" => "Air Buoyancy",
@@ -575,6 +581,12 @@ class Journal
             "ld_qty_chk" => "",
             "ld_qty_err" => "",
             "one_trip" => "to set if one tanker allow multiple trips or not",
+            "SITE_USE_SG" => "Enable tank specific gravity field",
+            "SITE_USE_ADAPTIVE_FLOW_CONTROL" => "Enable Adaptive Flow Control",
+            "SITE_USE_SHLS_SPEC_INS" => "Use special instruction in load schedules",
+            "SITE_USE_SAFEFILL_ONLY" => "Use the safefill only",
+            "SITE_USE_AXLE_WEIGHT_LIMIT" => "Enable the axle weight limit check",
+            "AXLE_WEIGHT_LIMIT_TYPE" => "Site Axle Weight Limit Type",
         )
     );
 

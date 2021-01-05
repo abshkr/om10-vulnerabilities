@@ -1,30 +1,67 @@
 import React, { useEffect, useState } from 'react';
-
-import useSWR from 'swr';
+import { QuestionCircleOutlined } from '@ant-design/icons';
+import useSWR, { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
-import { Tooltip, Select } from 'antd';
+import { Tooltip, Select, Modal, notification } from 'antd';
 
-import { AXLE_WEIGHTS } from 'api';
+import api, { AXLE_WEIGHTS } from 'api';
 
 const SiteAxleLimitTypes = () => {
   const [limit, setLimit] = useState('GML');
-
+  const configKey = 'AXLE_WEIGHT_LIMIT_TYPE';
   const { t } = useTranslation();
 
-  // const { data: options, isValidating } = useSWR(AXLE_WEIGHTS.LIMIT_TYPES);
   const { data: options, isValidating } = useSWR(AXLE_WEIGHTS.AVAIL_LIMIT_TYPES);
+  const { data: siteConfig } = useSWR(`${AXLE_WEIGHTS.GET_SITE_AXLE_LIMIT_TYPE}?config_key=${configKey}`);
 
-  const onChange = (value) => {
-    setLimit(value);
+  const onUpdate = (value) => {
+    const values = [
+      {
+        config_key: 'AXLE_WEIGHT_LIMIT_TYPE',
+        config_value: value,
+      },
+    ];
+
+    Modal.confirm({
+      title: t('prompts.update'),
+      okText: t('operations.update'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await api
+          .post(AXLE_WEIGHTS.SET_SITE_AXLE_LIMIT_TYPE, values)
+          .then((response) => {
+            Modal.destroyAll();
+            setLimit(value);
+
+            // mutate(`${AXLE_WEIGHTS.GET_SITE_AXLE_LIMIT_TYPE}?config_key=${configKey}`);
+
+            notification.success({
+              message: t('messages.updateSuccess'),
+            });
+          })
+
+          .catch((error) => {
+            notification.error({
+              message: error.message,
+              description: t('descriptions.updateFailed'),
+            });
+          });
+      },
+    });
   };
 
-  /* useEffect(() => {
-    if (value) {
-      setFieldsValue({
-        axle_limit_type_id: value.axle_limit_type_id,
-      });
+  const onChange = (value) => {
+    onUpdate(value);
+  };
+
+  useEffect(() => {
+    if (siteConfig) {
+      setLimit(siteConfig?.records?.[0]?.config_value);
     }
-  }, [value, setFieldsValue]); */
+  }, [siteConfig]);
 
   return (
     <Tooltip placement="topRight" title={t('descriptions.siteAxleLimitType')}>
