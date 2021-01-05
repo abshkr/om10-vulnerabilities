@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 
 import Forms from './forms';
+import { SiteAxleLimitTypes } from './forms/fields';
 import { DataTable } from 'components';
 import columns from './columns';
 import { AXLE_WEIGHTS } from 'api';
@@ -27,6 +28,7 @@ const AxleWeightLimit = ({ handleFormState, visible, selected, access }) => {
         selectionMode="single"
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
+        extra={<SiteAxleLimitTypes />}
       />
 
       <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />

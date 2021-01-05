@@ -192,6 +192,7 @@
     "seqDateRange": "结束日期时间不应该早于开始日期时间",
     "setFromCalendar": "由盘点日历设置",
     "shouldBe": "应该是",
+    "siteAxleLimitType": "请注意：改变此下拉框选项将会立即重新设定油库的车轴承重上限类型",
     "startFailed": "进程开始失败",
     "startSuccess": "您已成功开始了进程",
     "submitFailed": "提交失败",

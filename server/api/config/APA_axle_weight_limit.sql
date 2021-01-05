@@ -11,6 +11,8 @@ create table AXLE_WEIGHT_LIMIT_LOOKUP
     CONSTRAINT PK_AWL_LOOKUP
     PRIMARY KEY(LIMIT_TYPE_ID, AXLE_GROUP)
 );
+alter table AXLE_WEIGHT_LIMIT_LOOKUP modify LIMIT_TYPE_ID NUMBER(9);
+alter table AXLE_WEIGHT_LIMIT_LOOKUP modify AXLE_GROUP NUMBER(9);
 
 -- Lookup data
 insert into AXLE_WEIGHT_LIMIT_LOOKUP (LIMIT_TYPE_ID, AXLE_GROUP, WEIGHT_LIMIT) values(1, 0, 0);
@@ -54,18 +56,18 @@ insert into ENUMITEM (ENUMTYPENAME, ENUM_NO, ENUM_TMM, ENUM_CODE) values('AXLE_G
 delete from MSG_LOOKUP where MSG_ID in(3221,3222,3223,3224,3225,3226,3227,3228,3229,3230);
 
 -- Message lookup for AXLE_WEIGHT_LIMIT
-insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3221, 'CHN', 'NA');
-insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3221, 'ENG', 'NA');
-insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3222, 'CHN', 'GML');
-insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3222, 'ENG', 'GML');
-insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3223, 'CHN', 'HML');
-insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3223, 'ENG', 'HML');
-insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3224, 'CHN', 'XTRA');
-insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3224, 'ENG', 'XTRA');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3221, 'CHN', 'N/A');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3221, 'ENG', 'N/A');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3222, 'CHN', 'GML: 常规重量限制');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3222, 'ENG', 'GML: General Mass Limits');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3223, 'CHN', 'HML: 高段重量限制');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3223, 'ENG', 'HML: Higher Mass Limits');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3224, 'CHN', 'XTRA: 特别重量限制');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3224, 'ENG', 'XTRA: Extra Mass Limits');
 
 -- Message lookup for AXLE_GROUP
-insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3225, 'CHN', 'NA');
-insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3225, 'ENG', 'NA');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3225, 'CHN', 'N/A');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3225, 'ENG', 'N/A');
 insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3226, 'CHN', '单车轴');
 insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3226, 'ENG', 'Single Axle');
 insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3227, 'CHN', '单转向轴');

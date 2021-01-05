@@ -192,6 +192,7 @@
     "seqDateRange": "The End Date Time should not be earlier than Start Date Time",
     "setFromCalendar": "Set From Calendar",
     "shouldBe": "Should be ",
+    "siteAxleLimitType": "Please note: the selection of dropdown list will change the axle limit type on site instantly",
     "startFailed": "Failed to start the process",
     "startSuccess": "You have started the record",
     "submitFailed": "Failed to submit",
