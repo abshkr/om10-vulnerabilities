@@ -24,26 +24,30 @@ const RearAxleGroups = ({ form, value, etype }) => {
     return Promise.resolve();
   };
 
-  useEffect(() => {
-    if (limits) {
-      if (!value || !value?.rear_weigh_limit) {
-        const id = !limits?.records?.[0]?.rear_weigh_limit
-          ? null
-          : Number(limits?.records?.[0]?.rear_weigh_limit);
-        setFieldsValue({
-          rear_weigh_limit: id,
-        });
-      }
-    }
-  }, [limits, value, setFieldsValue]);
+  const setDefaultLimit = (limit) => {
+    const value = !limit ? limit : Number(limit);
+    setFieldsValue({
+      rear_weigh_limit: value,
+    });
+  };
 
   useEffect(() => {
     if (value) {
-      setFieldsValue({
-        rear_weigh_limit: value.rear_weigh_limit,
-      });
+      if (!value?.rear_weigh_limit) {
+        if (limits) {
+          setDefaultLimit(limits?.records?.[0]?.rear_weigh_limit);
+        }
+      } else {
+        setFieldsValue({
+          rear_weigh_limit: value.rear_weigh_limit,
+        });
+      }
+    } else {
+      if (limits) {
+        setDefaultLimit(limits?.records?.[0]?.rear_weigh_limit);
+      }
     }
-  }, [value, setFieldsValue]);
+  }, [value, limits, setFieldsValue]);
 
   return (
     <Form.Item

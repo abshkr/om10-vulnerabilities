@@ -24,26 +24,30 @@ const FrontAxleGroups = ({ form, value, etype }) => {
     return Promise.resolve();
   };
 
-  useEffect(() => {
-    if (limits) {
-      if (!value || !value?.front_weigh_limit) {
-        const id = !limits?.records?.[0]?.front_weigh_limit
-          ? null
-          : Number(limits?.records?.[0]?.front_weigh_limit);
-        setFieldsValue({
-          front_weigh_limit: id,
-        });
-      }
-    }
-  }, [limits, value, setFieldsValue]);
+  const setDefaultLimit = (limit) => {
+    const value = !limit ? limit : Number(limit);
+    setFieldsValue({
+      front_weigh_limit: value,
+    });
+  };
 
   useEffect(() => {
     if (value) {
-      setFieldsValue({
-        front_weigh_limit: value.front_weigh_limit,
-      });
+      if (!value?.front_weigh_limit) {
+        if (limits) {
+          setDefaultLimit(limits?.records?.[0]?.front_weigh_limit);
+        }
+      } else {
+        setFieldsValue({
+          front_weigh_limit: value.front_weigh_limit,
+        });
+      }
+    } else {
+      if (limits) {
+        setDefaultLimit(limits?.records?.[0]?.front_weigh_limit);
+      }
     }
-  }, [value, setFieldsValue]);
+  }, [value, limits, setFieldsValue]);
 
   return (
     <Form.Item
