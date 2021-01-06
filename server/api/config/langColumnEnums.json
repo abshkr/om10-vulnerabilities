@@ -3812,6 +3812,7 @@
     "ADJ_CMPT": "NA",
     "ADJ_AMNT": "NA",
     "ADJ_CAPACITY": "NA",
+    "ADJ_SAFEFILL": "NA",
     "ADJ_CMPT_LOCK": "NA"
   },
   "SITE": {

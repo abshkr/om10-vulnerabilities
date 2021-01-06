@@ -552,18 +552,21 @@ class Equipment extends CommonClass
             }
 
             $journal = new Journal($this->conn, false);
-            $module = "Equipment";
-            $record = sprintf("equipment id:%s, cmpt num:%d", $this->eqpt_id, $i);
+            // $module = "Equipment";
+            // $record = sprintf("equipment id:%s, cmpt num:%d", $this->eqpt_id, $i);
+            $module = "SFILL_ADJUST";
+            $record = sprintf("adj_eqp:%s, adj_cmpt:%d", $this->eqpt_id, $i);
+      
             if ($old_limit != (int) $this->compartments[$i - 1]->safefill &&
                 !$journal->valueChange(
-                    $module, $record, "scheduled limit",
+                    $module, $record, "ADJ_SAFEFILL",
                     $old_limit, $this->compartments[$i - 1]->safefill)) {
                 oci_rollback($this->conn);
                 return false;
             }
             if ($adj_capacity != $old_capacity &&
                 !$journal->valueChange(
-                    $module, $record, "sfl",
+                    $module, $record, "ADJ_CAPACITY",
                     $old_capacity, $adj_capacity)) {
                 oci_rollback($this->conn);
                 return false;
@@ -573,7 +576,7 @@ class Equipment extends CommonClass
 
             if ($adj_cmpt_lock != $old_lock &&
                 !$journal->valueChange(
-                    $module, $record, "lock",
+                    $module, $record, "ADJ_CMPT_LOCK",
                     $old_lock, $adj_cmpt_lock)) {
                 oci_rollback($this->conn);
                 return false;
@@ -604,7 +607,7 @@ class Equipment extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
         if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            $row0 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         } else {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -771,7 +774,7 @@ class Equipment extends CommonClass
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
         $jnl_data[0] = $curr_psn;
-        $jnl_data[1] = "Equpment";
+        $jnl_data[1] = $this->TABLE_NAME;
         $jnl_data[2] = $this->eqpt_code;
 
         if (!$journal->jnlLogEvent(
@@ -797,9 +800,9 @@ class Equipment extends CommonClass
         }
 
         // write_log(json_encode($row2), __FILE__, __LINE__);
-        $module = "TRANSP_EQUIP";
-        $record = sprintf("equipment code:%s", $this->eqpt_code);
-        if (!$journal->updateChanges($row, $row2, $module, $record)) {
+        $module = $this->TABLE_NAME;
+        $record = sprintf("eqpt_code:%s", $this->eqpt_code);
+        if (!$journal->updateChanges($row0, $row2, $module, $record)) {
             oci_rollback($this->conn);
             return false;
         }
@@ -915,7 +918,7 @@ class Equipment extends CommonClass
             oci_rollback($this->conn);
             return false;
         }
-        
+
         $this->update_axle_weights();
 
         if (isset($this->expiry_dates)) {
@@ -939,10 +942,11 @@ class Equipment extends CommonClass
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
         $jnl_data[0] = $curr_psn;
-        $jnl_data[1] = "Equipment";
+        $jnl_data[1] = $this->TABLE_NAME;
         $jnl_data[2] = $this->eqpt_id;
+        //    "code:%s, type:%s, owner:%s, empty weight:%d, lock status:%s, must_tare_in status:%s",
         $jnl_data[3] = sprintf(
-            "code:%s, type:%s, owner:%s, empty weight:%d, lock status:%s, must_tare_in status:%s",
+            "eqpt_code:%s, eqpt_etp:%s, eqpt_owner:%s, eqpt_empty_kg:%d, eqpt_lock:%s, eqp_must_tare_in:%s",
             $this->eqpt_code, $this->eqpt_etp, $this->eqpt_owner, $this->eqpt_empty_kg,
             $this->eqpt_lock, $this->eqp_must_tare_in);
 
@@ -1074,9 +1078,9 @@ class Equipment extends CommonClass
         $journal = new Journal($this->conn, false);
         $curr_psn = Utilities::getCurrPsn();
         $jnl_data[0] = $curr_psn;
-        $jnl_data[1] = "Equpment";
+        $jnl_data[1] = $this->TABLE_NAME;
         $jnl_data[2] = $this->eqpt_id;
-        $jnl_data[3] = sprintf("code:%s, type:%s, owner:%s",
+        $jnl_data[3] = sprintf("eqpt_code:%s, eqpt_etp:%s, eqpt_owner:%s",
             $this->eqpt_code, $this->eqpt_etp, $this->eqpt_owner);
 
         if (!$journal->jnlLogEvent(

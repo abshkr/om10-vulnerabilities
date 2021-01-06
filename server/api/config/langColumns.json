@@ -3785,11 +3785,12 @@
       "SEAL_SUFFIX": "Seal Suffix"
     },
     "SFILL_ADJUST": {
-      "ADJ_EQP": "Adj Eqp",
-      "ADJ_CMPT": "Adj Cmpt",
-      "ADJ_AMNT": "Adj Amnt",
-      "ADJ_CAPACITY": "Adj Capacity",
-      "ADJ_CMPT_LOCK": "Adj Cmpt Lock"
+      "ADJ_EQP": "Eqpt ID",
+      "ADJ_CMPT": "Cmpt No",
+      "ADJ_AMNT": "Adjust Amount",
+      "ADJ_CAPACITY": "Eqpt Capacity",
+      "ADJ_SAFEFILL": "Eqpt Safefill",
+      "ADJ_CMPT_LOCK": "Cmpt Lock"
     },
     "SITE": {
       "SITE_CODE": "Site Code",
@@ -8650,6 +8651,7 @@
       "ADJ_CMPT": "运输设备油仓",
       "ADJ_AMNT": "调整量",
       "ADJ_CAPACITY": "最大容量",
+      "ADJ_SAFEFILL": "安全容量",
       "ADJ_CMPT_LOCK": "油仓锁定标记"
     },
     "SITE": {
