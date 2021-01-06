@@ -24,6 +24,8 @@ class Equipment extends CommonClass
         "SAFEFILL",
         "EQPT_EMPTY_KG",
         "EQPT_MAX_GROSS",
+        "FRONT_WEIGH_LIMIT",
+        "REAR_WEIGH_LIMIT",
     );
 
     protected $check_mandatory = false;
@@ -242,6 +244,10 @@ class Equipment extends CommonClass
                 RN,
                 EQPT_LAST_MODIFIED,
                 EQPT_LAST_USED,
+                FRONT_WEIGH_LIMIT,
+                REAR_WEIGH_LIMIT,
+                ETYP_FRONT_AXLE,
+                ETYP_REAR_AXLE,
                 TNKR_COUNT
             FROM
             (
@@ -250,15 +256,22 @@ class Equipment extends CommonClass
                 (
                     SELECT 
                         GUI_EQUIPMENT_LIST.*,
+                        EQPT_AXLES_VW.FRONT_WEIGH_LIMIT,
+                        EQPT_AXLES_VW.REAR_WEIGH_LIMIT,
+                        EQPT_AXLES_VW.FRONT_AXLE_GROUP_DESC   AS ETYP_FRONT_AXLE,
+                        EQPT_AXLES_VW.REAR_AXLE_GROUP_DESC    AS ETYP_REAR_AXLE,
                         NVL(TNKR_COUNTS.TNKR_COUNT, 0)  TNKR_COUNT
                     FROM 
                         GUI_EQUIPMENT_LIST,
+                        EQPT_AXLES_VW,
                         (
                             SELECT TC_EQPT, COUNT(*) TNKR_COUNT
                             FROM TNKR_EQUIP
                             GROUP BY TC_EQPT
                         ) TNKR_COUNTS
-                    WHERE GUI_EQUIPMENT_LIST.EQPT_ID = TNKR_COUNTS.TC_EQPT(+)
+                    WHERE 
+                        EQPT_AXLES_VW.EQPT_ID = GUI_EQUIPMENT_LIST.EQPT_ID
+                        AND GUI_EQUIPMENT_LIST.EQPT_ID = TNKR_COUNTS.TC_EQPT(+)
                     ORDER BY GUI_EQUIPMENT_LIST.EQPT_ID
                 ) RES
             )
@@ -417,6 +430,48 @@ class Equipment extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    protected function update_axle_weights()
+    {
+        $query = "
+            SELECT NVL(CONFIG_VALUE, 'N') CONFIG_VALUE 
+            FROM SITE_CONFIG WHERE CONFIG_KEY = 'SITE_USE_AXLE_WEIGHT_LIMIT'
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        } 
+        $row = oci_fetch_array($stmt, OCI_NO_AUTO_COMMIT);
+        if ($row['CONFIG_VALUE'] !== 'Y') {
+            return false;
+        }
+
+        $query = "
+            UPDATE TRANSP_EQUIP 
+            SET FRONT_WEIGH_LIMIT = :front_weight, REAR_WEIGH_LIMIT = :rear_weight 
+            WHERE EQPT_ID = :eqpt_id
+        ";
+        write_log(
+            sprintf("%s::%s TRANSP_EQUIP. key:%s, value:%s|%s", __CLASS__, __FUNCTION__, 
+                $this->eqpt_id, $this->front_weigh_limit, $this->rear_weigh_limit),
+            __FILE__, __LINE__
+        );
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':front_weight', $this->front_weigh_limit);
+        oci_bind_by_name($stmt, ':rear_weight', $this->rear_weigh_limit);
+        oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
+        if (!oci_execute($stmt)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            // $error = new EchoSchema(500, response("__INTERNAL_ERROR__", "Internal Error: " . $e['message']));
+            // echo json_encode($error, JSON_PRETTY_PRINT);
+            return false;
+        };
+
+        return true;
     }
 
     //This function does not auto-commit
@@ -585,6 +640,8 @@ class Equipment extends CommonClass
             throw new DatabaseException($e['message']);
             return false;
         }
+
+        $this->update_axle_weights();
 
         $query = "
             SELECT NVL(MAX(CONFIG_VALUE), '2') CONFIG_VALUE 
@@ -858,6 +915,8 @@ class Equipment extends CommonClass
             oci_rollback($this->conn);
             return false;
         }
+        
+        $this->update_axle_weights();
 
         if (isset($this->expiry_dates)) {
             $expiry_dates = array();

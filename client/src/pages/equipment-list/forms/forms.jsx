@@ -30,6 +30,10 @@ import {
   Comments,
   Locks,
   LegacyExpires,
+  FrontWeightLimit,
+  RearWeightLimit,
+  FrontAxleGroups,
+  RearAxleGroups,
 } from './fields';
 import { Expiry, CheckList, Equipment } from '../../../components';
 import columns from './columns';
@@ -307,6 +311,19 @@ const FormModal = ({
                 <Comments form={form} value={value} />
               </Col>
             </Row>
+
+            {config?.siteUseAxleWeightLimit && (
+              <Row gutter={[12, 12]}>
+                <Col span={12}>
+                  {/* <FrontWeightLimit form={form} value={value} /> */}
+                  <FrontAxleGroups form={form} value={value} etype={equipment} />
+                </Col>
+                <Col span={12}>
+                  {/* <RearWeightLimit form={form} value={value} /> */}
+                  <RearAxleGroups form={form} value={value} etype={equipment} />
+                </Col>
+              </Row>
+            )}
 
             <Divider>{t('tabColumns.equipmentAndSafefill')}</Divider>
 

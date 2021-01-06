@@ -4657,7 +4657,9 @@
       "EQPT_MAX_GROSS": "Eqpt Max Gross",
       "EQPT_AREA": "Eqpt Area",
       "EQPT_LOAD_TYPE": "Eqpt Load Type",
-      "EQPT_COMMENTS": "Eqpt Comments"
+      "EQPT_COMMENTS": "Eqpt Comments",
+      "FRONT_WEIGH_LIMIT": "Front Axle Weight Limit",
+      "REAR_WEIGH_LIMIT": "Rear Axle Weight Limit"
     },
     "TRFORDERS": {
       "TRFSPLIT_UNIT": "Trfsplit Unit",
@@ -9516,7 +9518,9 @@
       "EQPT_MAX_GROSS": "车头承重",
       "EQPT_AREA": "区域",
       "EQPT_LOAD_TYPE": "装载方式",
-      "EQPT_COMMENTS": "备注"
+      "EQPT_COMMENTS": "备注",
+      "FRONT_WEIGH_LIMIT": "前端车轴承重上限",
+      "REAR_WEIGH_LIMIT": "后端车轴承重上限"
     },
     "TRFORDERS": {
       "TRFSPLIT_UNIT": "交易订单计量单位",

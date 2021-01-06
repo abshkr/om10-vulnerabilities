@@ -15,7 +15,7 @@ import Forms from './forms';
 
 const EquipmentList = () => {
   const config = useConfig();
-  const { expiryDateMode } = useConfig();
+  const { expiryDateMode, siteUseAxleWeightLimit } = useConfig();
 
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
@@ -26,7 +26,9 @@ const EquipmentList = () => {
   const { data: payload, isValidating, revalidate } = useSWR(EQUIPMENT_LIST.READ);
   const { data: expiryTypes } = useSWR(EQUIPMENT_LIST.EXPIRY);
 
-  const [fields, setFields] = useState(columns(expiryTypes?.records, t, expiryDateMode));
+  const [fields, setFields] = useState(
+    columns(expiryTypes?.records, t, expiryDateMode, siteUseAxleWeightLimit)
+  );
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -40,9 +42,9 @@ const EquipmentList = () => {
 
   useEffect(() => {
     if (expiryTypes) {
-      setFields(columns(expiryTypes?.records, t, expiryDateMode));
+      setFields(columns(expiryTypes?.records, t, expiryDateMode, siteUseAxleWeightLimit));
     }
-  }, [expiryTypes, t, expiryDateMode]);
+  }, [expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit]);
 
   const modifiers = (
     <>

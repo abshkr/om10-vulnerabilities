@@ -274,4 +274,22 @@ class AxleWeight extends CommonClass
             return null;
         }
     }
+
+    public function get_etyp_axle_weights()
+    {
+        $query = "
+            SELECT FRONT_WEIGH_LIMIT, REAR_WEIGH_LIMIT
+            FROM EQUIP_TYPES
+            WHERE ETYP_ID = :etyp_id
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':etyp_id', $this->etyp_id);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
 }

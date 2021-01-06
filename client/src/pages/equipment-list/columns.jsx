@@ -1,4 +1,4 @@
-const columns = (expiryTypes, t, expiryDateMode) => {
+const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit) => {
   const expiryColumns = [];
 
   if (!!expiryColumns) {
@@ -139,6 +139,48 @@ const columns = (expiryTypes, t, expiryDateMode) => {
       suppressSizeToFit: true,
       width: 160,
     },
+
+    {
+      headerName: t('fields.axleFrontWeightLimit') + ' (' + t('units.kg') + ')',
+      field: 'front_weigh_limit',
+      filterable: true,
+      sortable: true,
+      resizable: true,
+      width: 140,
+      suppressSizeToFit: true,
+      hide: true,
+    },
+    {
+      headerName: t('fields.axleRearWeightLimit') + ' (' + t('units.kg') + ')',
+      field: 'rear_weigh_limit',
+      filterable: true,
+      sortable: true,
+      resizable: true,
+      width: 140,
+      suppressSizeToFit: true,
+      hide: true,
+    },
+    {
+      headerName: t('fields.axleFrontWeightLimit') + ' (' + t('units.kg') + ')',
+      field: 'etyp_front_axle',
+      filterable: true,
+      sortable: true,
+      resizable: true,
+      width: 180,
+      suppressSizeToFit: true,
+      hide: !siteUseAxleWeightLimit,
+    },
+    {
+      headerName: t('fields.axleRearWeightLimit') + ' (' + t('units.kg') + ')',
+      field: 'etyp_rear_axle',
+      filterable: true,
+      sortable: true,
+      resizable: true,
+      width: 180,
+      suppressSizeToFit: true,
+      hide: !siteUseAxleWeightLimit,
+    },
+
     {
       headerName: t('fields.countEqptTanker'),
       field: 'tnkr_count',

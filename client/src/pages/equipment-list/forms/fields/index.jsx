@@ -11,4 +11,26 @@ import Locks from './locks';
 import Comments from './comments';
 import LegacyExpires from './legacy-expires';
 
-export { Owner, Code, Title, Id, EquipmentType, Area, LoadType, PullingLimit, EmptyWeight, Locks, Comments, LegacyExpires };
+import FrontWeightLimit from './front-weight-limit';
+import RearWeightLimit from './rear-weight-limit';
+import FrontAxleGroups from './front-axle-groups';
+import RearAxleGroups from './rear-axle-groups';
+
+export {
+  Owner,
+  Code,
+  Title,
+  Id,
+  EquipmentType,
+  Area,
+  LoadType,
+  PullingLimit,
+  EmptyWeight,
+  Locks,
+  Comments,
+  LegacyExpires,
+  FrontWeightLimit,
+  RearWeightLimit,
+  FrontAxleGroups,
+  RearAxleGroups,
+};
