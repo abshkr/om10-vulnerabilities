@@ -692,7 +692,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               onClick={onPrint}
               style={{ marginRight: 5 }}
               // disabled={!access?.canUpdate}
-              disabled={!CAN_VIEW_REPORTS}
+              disabled={!CAN_VIEW_REPORTS && !(tab === '2' && access?.canUpdate)}
             >
               {t('operations.print')}
             </Button>
@@ -705,7 +705,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               onClick={onExport}
               style={{ marginRight: 5 }}
               // disabled={!access?.canUpdate}
-              disabled={!CAN_VIEW_REPORTS}
+              disabled={!CAN_VIEW_REPORTS && !(tab === '2' && access?.canUpdate)}
             >
               {t('operations.exportPDF')}
             </Button>
