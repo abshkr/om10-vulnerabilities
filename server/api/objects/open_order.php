@@ -711,6 +711,9 @@ class OpenOrder extends CommonClass
             }
         }
 
+        // status is adjusted on order products
+        $this->adjust_order_status($this->order_sys_no);
+
         // update order instructions
         // delete it first
         $query = "
@@ -1230,4 +1233,388 @@ class OpenOrder extends CommonClass
             return null;
         }
     }
+
+    
+    // The following functions are designed to manage the order status
+    
+    protected function applies_for_today($ch_key, $ch_code, $ch_cmpy, $ch_num)
+    {
+        $applies = 0;
+        $query = "
+            SELECT (
+                CASE WHEN (OPRD_CH_ST_DAY <= SYSDATE AND OPRD_CH_ED_DAY >= SYSDATE) 
+                THEN 1 ELSE 0 END
+            ) as APPLIES
+            FROM OPROD_CHILD
+            WHERE OPB_DAD_OPRODKEY = :ch_key
+            AND OPB_DAD_OSPROD_PRODCODE = :ch_code
+            AND OPB_DAD_OSPROD_PRODCMPY = :ch_cmpy
+            AND OPRD_CH_NO = :ch_num
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':ch_key', $ch_key);
+        oci_bind_by_name($stmt, ':ch_code', $ch_code);
+        oci_bind_by_name($stmt, ':ch_cmpy', $ch_cmpy);
+        oci_bind_by_name($stmt, ':ch_num', $ch_num);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        } else {
+            $row = oci_fetch_array($stmt, OCI_NO_AUTO_COMMIT);
+            $applies = (int)$row['APPLIES'];
+        }
+        
+        return $applies;
+    }
+    
+    protected function count_order_period($ch_key, $ch_code, $ch_cmpy)
+    {
+        $nrecs = 0;
+        $query = "
+            SELECT COUNT(*) as NRECS 
+            FROM OPROD_CHILD
+            WHERE OPB_DAD_OPRODKEY = :ch_key
+            AND OPB_DAD_OSPROD_PRODCODE = :ch_code
+            AND OPB_DAD_OSPROD_PRODCMPY = :ch_cmpy
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':ch_key', $ch_key);
+        oci_bind_by_name($stmt, ':ch_code', $ch_code);
+        oci_bind_by_name($stmt, ':ch_cmpy', $ch_cmpy);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        } else {
+            $row = oci_fetch_array($stmt, OCI_NO_AUTO_COMMIT);
+            $nrecs = (int)$row['NRECS'];
+        }
+        
+        return $nrecs;
+    }
+    
+    protected function get_curr_period_brief($ch_key, $ch_code, $ch_cmpy)
+    {
+        $recs = array(
+            "OPROD_CH_NO" => 0,
+            "ORDER_PROD_QTY" => 0,
+        );
+        $query = "
+            SELECT OPROD_CH_NO, ORDER_PROD_QTY 
+            FROM OPRODMTD 
+            WHERE ORDER_PROD_KEY = :ch_key and OSPROD_PRODCODE = :ch_code and OSPROD_PRODCMPY = :ch_cmpy
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':ch_key', $ch_key);
+        oci_bind_by_name($stmt, ':ch_code', $ch_code);
+        oci_bind_by_name($stmt, ':ch_cmpy', $ch_cmpy);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        } else {
+            $row = oci_fetch_array($stmt, OCI_NO_AUTO_COMMIT);
+            $recs = $row;
+        }
+        
+        return $recs;
+    }
+
+    protected function update_order_product($ch_key, $ch_code, $ch_cmpy, $oprd_ch_unit, $oprd_ch_no, $oprd_ch_qty, $oprd_ch_used, $price_type, $oprd_ch_price)
+    {
+        $query = "
+            update OPRODMTD set 
+                ORDER_PROD_UNIT = :oprd_ch_unit, 
+                OPROD_CH_NO = :oprd_ch_no, 
+                ORDER_PROD_QTY = :oprd_ch_qty,
+                OPROD_LOADED = :oprd_ch_used, 
+                OPROD_DELIVERED = 0.0, 
+                OPROD_SCHEDULED = :oprd_ch_used, 
+                PROD_PRICE_TYPE = :price_type, 
+                OPROD_PRICE = :oprd_ch_price
+            where ORDER_PROD_KEY = :ch_key and OSPROD_PRODCODE = :ch_code and OSPROD_PRODCMPY = :ch_cmpy
+        ";
+        write_log(
+            sprintf("%s::%s Update OPRODMTD for child found. key:%d, product:%s|%s", __CLASS__, __FUNCTION__, 
+                $ch_key, $ch_code, $ch_cmpy),
+            __FILE__, __LINE__
+        );
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':oprd_ch_unit', $oprd_ch_unit);
+        oci_bind_by_name($stmt, ':oprd_ch_no', $oprd_ch_no);
+        oci_bind_by_name($stmt, ':oprd_ch_qty', $oprd_ch_qty);
+        oci_bind_by_name($stmt, ':oprd_ch_used', $oprd_ch_used);
+        oci_bind_by_name($stmt, ':price_type', $price_type);
+        oci_bind_by_name($stmt, ':oprd_ch_price', $oprd_ch_price);
+        oci_bind_by_name($stmt, ':ch_key', $ch_key);
+        oci_bind_by_name($stmt, ':ch_code', $ch_code);
+        oci_bind_by_name($stmt, ':ch_cmpy', $ch_cmpy);
+        if (!oci_execute($stmt)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return FALSE;
+        };
+
+        return TRUE;
+    }
+
+    protected function clear_order_product($ch_key, $ch_code, $ch_cmpy, $mode)
+    {
+        if ($mode === 1) {
+            $query = "
+                update OPRODMTD 
+                set OPROD_CH_NO = 0
+                where ORDER_PROD_KEY = :ch_key and OSPROD_PRODCODE = :ch_code and OSPROD_PRODCMPY = :ch_cmpy
+            ";
+        } else {
+            $query = "
+                update OPRODMTD 
+                set OPROD_CH_NO = 0, ORDER_PROD_QTY = 0.0, OPROD_LOADED = 0.0, OPROD_DELIVERED = 0.0, OPROD_SCHEDULED = 0.0
+                where ORDER_PROD_KEY = :ch_key and OSPROD_PRODCODE = :ch_code and OSPROD_PRODCMPY = :ch_cmpy
+            ";
+        }
+        write_log(
+            sprintf("%s::%s Reset OPRODMTD for no child. key:%d, product:%s|%s", __CLASS__, __FUNCTION__, 
+                $ch_key, $ch_code, $ch_cmpy),
+            __FILE__, __LINE__
+        );
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':ch_key', $ch_key);
+        oci_bind_by_name($stmt, ':ch_code', $ch_code);
+        oci_bind_by_name($stmt, ':ch_cmpy', $ch_cmpy);
+        if (!oci_execute($stmt)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return FALSE;
+        };
+
+        return TRUE;
+    }
+    
+    protected function check_order_period_dates($ch_key, $ch_code, $ch_cmpy)
+    {
+        if( $ch_key == 0 || $ch_code == "" || $ch_cmpy == "") {
+            /* This product does not exist in "OPRODMTD" for this order */
+            return;
+        }
+
+        /* Are there any period children for this product? */
+        $nrecs = $this->count_order_period($ch_key, $ch_code, $ch_cmpy);
+        if ( $nrecs > 0 ) {	/* found children in OPROD_CHILD*/
+            /* get the current child num and qty from this product */
+            $curr_period = $this->get_curr_period_brief($ch_key, $ch_code, $ch_cmpy);
+            $child_item_no = $curr_period['OPROD_CH_NO'];
+            $order_prod_qty = $curr_period['ORDER_PROD_QTY'];
+            /* check whether the child dates are effective: start<=today<=end */
+            $in_range = $this->applies_for_today($ch_key, $ch_code, $ch_cmpy, $child_item_no);
+            if ( $in_range === 1 ) {
+                return; /* already pointing to right dates */
+            }
+
+            /* either child_item_no=0 or start>today || end<today */
+            $applies = FALSE;
+            $query = "
+                SELECT OPRD_CH_UNIT, OPRD_CH_NO, OPRD_CH_QTY, OPRD_CH_USED, OPRD_CH_FIXEDPRI, OPRD_CH_PRICE 
+                FROM OPROD_CHILD
+                WHERE OPB_DAD_OPRODKEY = :ch_key
+                AND OPB_DAD_OSPROD_PRODCODE = :ch_code
+                AND OPB_DAD_OSPROD_PRODCMPY = :ch_cmpy
+            ";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':ch_key', $ch_key);
+            oci_bind_by_name($stmt, ':ch_code', $ch_code);
+            oci_bind_by_name($stmt, ':ch_cmpy', $ch_cmpy);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return;
+            }
+
+            $rows = array();
+            while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+                $rows[] = $row;
+                $oprd_ch_unit = $row['OPRD_CH_UNIT'];
+                $oprd_ch_no = $row['OPRD_CH_NO'];
+                $oprd_ch_qty = $row['OPRD_CH_QTY'];
+                $oprd_ch_used = $row['OPRD_CH_USED'];
+                $oprd_ch_fixedpri = $row['OPRD_CH_FIXEDPRI'];
+                $oprd_ch_price = $row['OPRD_CH_PRICE'];
+                /* check whether the child dates are effective in current child: start<=today<=end */
+                $child_in_range = $this->applies_for_today($ch_key, $ch_code, $ch_cmpy, $oprd_ch_no);
+
+                if ( $child_in_range === 1 ) { /* this child points to right dates */
+                    /* modify the child no and relevant data in parent product */
+                    if( $oprd_ch_fixedpri == 'Y' ) {
+                        $price_type = 2; // 2: (int)CPT_CONTRACT
+                    } else if ( $oprd_ch_fixedpri == 'N' ) {
+                        $price_type = 0; // 0: (int)CPT_LOAD
+                    } else {
+                        $price_type = (int)$oprd_ch_fixedpri;
+                    }
+                    $applies = TRUE;
+                    $this->update_order_product($ch_key, $ch_code, $ch_cmpy, 
+                        $oprd_ch_unit, $oprd_ch_no, $oprd_ch_qty, $oprd_ch_used, $price_type, $oprd_ch_price);
+                    break;
+                }
+            }
+            
+            if ( !$applies ) {	/* no child applies today */
+                if ( $order_prod_qty > 0.0 ) {
+                    $this->clear_order_product($ch_key, $ch_code, $ch_cmpy, 5);
+                }
+            }
+        } else {	/* No children */
+            $this->clear_order_product($ch_key, $ch_code, $ch_cmpy, 1);
+        }
+
+    }
+
+    protected function order_is_expired($order_no)
+    {
+        $expired = 0;
+        $query = "
+            SELECT (CASE WHEN (ORDER_EXP_DATE > SYSDATE) THEN 0 ELSE 1 END) as EXPIRED
+            FROM CUST_ORDER
+            WHERE ORDER_NO = :order_no
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':order_no', $order_no);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        } else {
+            $row = oci_fetch_array($stmt, OCI_NO_AUTO_COMMIT);
+            $expired = (int)$row['EXPIRED'];
+        }
+        
+        return $expired;
+    }
+
+    protected function update_order_status($order_no, $order_status)
+    {
+        $query = "
+            update CUST_ORDER 
+            set ORDER_STAT = :rstat
+            where ORDER_NO = :order_no
+        ";
+        write_log(
+            sprintf("%s::%s Update order status. key:%d, status:%d", __CLASS__, __FUNCTION__, 
+                $order_no, $order_status),
+            __FILE__, __LINE__
+        );
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':rstat', $order_status);
+        oci_bind_by_name($stmt, ':order_no', $order_no);
+        if (!oci_execute($stmt)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return FALSE;
+        };
+
+        // TODO Journal and Hostcomm????
+
+        return TRUE;
+    }
+
+  /*
+    6 - ORD_EXPIRED: order expired
+    0 - ORD_NEW: new order
+    5 - ORD_COMPLETED: fully delivered  !!!
+    8 - ORD_PARTIALLY_COMPLETED: fully loaded but partially delivered !!!
+    3 - ORD_DELIVERY: fully loaded but not delivered yet  !!!
+    1 - ORD_FILLING: partially scheduled
+    7 - ORD_PARTIALLY_DELIVERY: partially loaded but not all loaded
+    2 - ORD_SCHEDULED: fully scheduled  ??
+    4 - ORD_OUTSTANDING : other status
+  */
+    protected function adjust_order_status($order_no)
+    {
+        $ORD_EXPIRED                = 6;
+        $ORD_NEW                    = 0;
+        $ORD_COMPLETED              = 5;
+        $ORD_PARTIALLY_COMPLETED    = 8;
+        $ORD_DELIVERY               = 3;
+        $ORD_FILLING                = 1;
+        $ORD_PARTIALLY_DELIVERY     = 7;
+        $ORD_SCHEDULED              = 2;
+        $ORD_OUTSTANDING            = 4;
+    
+        $status = $ORD_NEW;
+        
+        if ($this->order_is_expired($order_no) === 1) {
+            $status = $ORD_EXPIRED;
+        } else {
+            $ordered = 0.0;
+            $scheduled = 0.0;
+            $loaded = 0.0;
+            $delivered = 0.0;
+
+            $query = "
+                select OSPROD_PRODCODE, OSPROD_PRODCMPY, ORDER_PROD_QTY, 
+                    OPROD_SCHEDULED, OPROD_LOADED, OPROD_DELIVERED, OPRD_PACK_SIZE
+                from OPRODMTD 
+                where ORDER_PROD_KEY = :order_no
+            ";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':order_no', $order_no);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return FALSE;
+            }
+
+            $rows = array();
+            while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+                $rows[] = $row;
+                $osprod_prodcode = $row['OSPROD_PRODCODE'];
+                $osprod_prodcmpy = $row['OSPROD_PRODCMPY'];
+                $order_prod_qty = $row['ORDER_PROD_QTY'];
+                $oprod_scheduled = $row['OPROD_SCHEDULED'];
+                $oprod_loaded = $row['OPROD_LOADED'];
+                $oprod_delivered = $row['OPROD_DELIVERED'];
+                $oprd_pack_size = $row['OPRD_PACK_SIZE'];
+
+                /* Check the order product children; (complicated logic here) */
+                $this->check_order_period_dates($order_no, $osprod_prodcode, $osprod_prodcmpy);
+
+                $ordered   += $order_prod_qty * $oprd_pack_size;
+                $scheduled += $oprod_scheduled;
+                $loaded    += $oprod_loaded;
+                $delivered += $oprod_delivered;
+            }
+            if ( ( $scheduled + $loaded + $delivered ) <= 0.01 ) {
+                $status = $ORD_NEW;   
+            } else if ( $delivered >= ( $ordered - 0.01 ) ) /* fully delivered */ {
+                $status = $ORD_COMPLETED;   
+            } else if ( $loaded >= ( $ordered - 0.01 ) ) /* fully loaded */ {
+                if ( ( $delivered > 0.01 ) && /* partially delivered */
+                ( $delivered < ( $ordered - 0.01 ) ) ) {
+                    $status = $ORD_PARTIALLY_COMPLETED;     
+                } else {
+                    $status = $ORD_DELIVERY;     
+                }
+            } else if ( ( $ordered > $scheduled ) /* partially scheduled */
+                && ( $ordered > $loaded )
+                && ( $ordered > $delivered ) ) { 
+                $status = $ORD_FILLING;   
+            } else if ( ( $loaded > 0.01 ) && /* partially loaded */
+                (  $ordered > ( $loaded - 0.01 ) ) ) /* not all loaded */ { 
+                $status = $ORD_PARTIALLY_DELIVERY;   
+            } else if ( $scheduled >= ( $ordered - 0.01 ) ) /* fully scheduled */ { 
+                $status = $ORD_SCHEDULED;   
+            } else {     
+                $status = $ORD_OUTSTANDING;   
+            }
+        }
+
+        $this->update_order_status($order_no, $status);
+
+        return TRUE;
+    }
+
+    protected function post_update()
+    {
+        // Note: post_update() will be called after CUST_ORDER updated but before OPRODMTD updated, 
+        // so the function adjust_order_status will not get the correct product data
+        // return $this->adjust_order_status($this->order_sys_no);
+    }
+
 }
