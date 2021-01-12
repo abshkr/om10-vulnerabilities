@@ -44,6 +44,7 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
   const disabled = selected?.length === 0 || !selected;
   //const canModifyFurther = selected[0]?.mvitm_status_name === 'NEW' || disabled;
   const canModifyFurther = selected?.[0]?.mvitm_status === 0 || disabled;
+  const removeItemDisabled = disabled || selected?.[0]?.mvitm_status !== 0;
   const fields = useColumns(value, selected);
 
   const handleButtonState = (state) => {
@@ -206,33 +207,38 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
     */
     let itemChanged = false;
     if (
-      oldItem?.mvitm_type          !== currItem?.mvitm_type          ||
-      oldItem?.mvitm_item_key      !== currItem?.mvitm_item_key      ||
-      _.toNumber(oldItem?.mvitm_prod_qty)      !== _.toNumber(currItem?.mvitm_prod_qty)      ||
-      oldItem?.mvitm_prod_unit     !== currItem?.mvitm_prod_unit     ||
-      oldItem?.mvitm_plant_from    !== currItem?.mvitm_plant_from    ||
+      oldItem?.mvitm_type !== currItem?.mvitm_type ||
+      oldItem?.mvitm_item_key !== currItem?.mvitm_item_key ||
+      _.toNumber(oldItem?.mvitm_prod_qty) !== _.toNumber(currItem?.mvitm_prod_qty) ||
+      oldItem?.mvitm_prod_unit !== currItem?.mvitm_prod_unit ||
+      oldItem?.mvitm_plant_from !== currItem?.mvitm_plant_from ||
       oldItem?.mvitm_prodcmpy_from !== currItem?.mvitm_prodcmpy_from ||
       oldItem?.mvitm_prodcode_from !== currItem?.mvitm_prodcode_from ||
       oldItem?.mvitm_prodname_from !== currItem?.mvitm_prodname_from ||
-      oldItem?.mvitm_tank_from     !== currItem?.mvitm_tank_from     ||
-      oldItem?.mvitm_plant_to      !== currItem?.mvitm_plant_to      ||
-      oldItem?.mvitm_prodcmpy_to   !== currItem?.mvitm_prodcmpy_to   ||
-      oldItem?.mvitm_prodcode_to   !== currItem?.mvitm_prodcode_to   ||
-      oldItem?.mvitm_prodname_to   !== currItem?.mvitm_prodname_to   ||
-      oldItem?.mvitm_tank_to       !== currItem?.mvitm_tank_to       ||
-      oldItem?.mvitm_comments      !== currItem?.mvitm_comments      
+      oldItem?.mvitm_tank_from !== currItem?.mvitm_tank_from ||
+      oldItem?.mvitm_plant_to !== currItem?.mvitm_plant_to ||
+      oldItem?.mvitm_prodcmpy_to !== currItem?.mvitm_prodcmpy_to ||
+      oldItem?.mvitm_prodcode_to !== currItem?.mvitm_prodcode_to ||
+      oldItem?.mvitm_prodname_to !== currItem?.mvitm_prodname_to ||
+      oldItem?.mvitm_tank_to !== currItem?.mvitm_tank_to ||
+      oldItem?.mvitm_comments !== currItem?.mvitm_comments
     ) {
       itemChanged = true;
     }
 
     if (itemChanged) {
       notification.warning({
-        message: t('messages.nominationItemChanged') + ' [' + t('fields.line') + ': ' + currItem?.mvitm_item_id + ']',
+        message:
+          t('messages.nominationItemChanged') +
+          ' [' +
+          t('fields.line') +
+          ': ' +
+          currItem?.mvitm_item_id +
+          ']',
         description: t('descriptions.nominationItemChanged'),
       });
       return;
     }
-
 
     currItem.mvitm_carrier = value?.mv_carrier;
     currItem.mvitm_tanker = value?.mv_vehicle;
@@ -274,7 +280,7 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
     const length = getNextLineNo();
 
     // get status name
-    const status = _.find(nomItemStatus?.records, (o)=>(String(o.movstatus_type_id)==='0'));
+    const status = _.find(nomItemStatus?.records, (o) => String(o.movstatus_type_id) === '0');
     // console.log('............handleItemAdd', nomItemStatus, status);
 
     const line = {
@@ -435,7 +441,7 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
             setSelected([]);
             const buttonStates = handleButtonState(-1);
             setButtonState(buttonStates);
-      
+
             notification.success({
               message: t('messages.updateSuccess'),
               description: `${t('messages.updateSuccess')}`,
@@ -501,7 +507,7 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
       <Button
         type="danger"
         icon={<MinusOutlined />}
-        disabled={disabled}
+        disabled={removeItemDisabled}
         onClick={handleItemRemove}
         style={{ marginBottom: 10 }}
       >
@@ -587,8 +593,8 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
           visible={scheduleVisible}
           width="100vw"
         >
-          <Schedules 
-            selected={!selected?.[0]?.mvitm_key ? {mvitm_key: value?.mv_key} : selected?.[0]} 
+          <Schedules
+            selected={!selected?.[0]?.mvitm_key ? { mvitm_key: value?.mv_key } : selected?.[0]}
             cbFunction={cbFunction}
             closeForm={setScheduleVisible}
           />
