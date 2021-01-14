@@ -114,30 +114,33 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
     const rowNode = tableAPI.getRowNode(index);
     const data = rowNode.data;
 
-    // console.log('.......onDragFinished', index, value, data);
+    const productCode = value?.prod_code || '';
+    const productName = value?.prod_name || '';
 
-    rowNode.setDataValue('prod_code', value?.prod_code);
+    const quantityScheduled = !value?.prod_code
+      ? value?.qty_scheduled
+      : value.qty_scheduled > 0
+      ? value?.qty_scheduled
+      : parseInt(data.safefill);
 
-    rowNode.setDataValue('prod_name', value?.prod_name);
-
-    if (!value?.prod_code) {
-      rowNode.setDataValue('qty_scheduled', value?.qty_scheduled);
-    } else {
-      rowNode.setDataValue(
-        'qty_scheduled',
-        value?.qty_scheduled > 0 ? value?.qty_scheduled : parseInt(data.safefill)
-      );
-    }
-
-    tableAPI.forEachNodeAfterFilterAndSort((rowNode, index) => {
-      payload.push(rowNode.data);
+    tableAPI.forEachNodeAfterFilterAndSort((rowNode, tableIndex) => {
+      if (tableIndex === index) {
+        payload.push({
+          ...rowNode.data,
+          prod_code: productCode,
+          prod_name: productName,
+          qty_scheduled: quantityScheduled,
+        });
+      } else {
+        payload.push(rowNode.data);
+      }
     });
+
+    tableAPI.updateRowData({ update: payload });
 
     form.setFieldsValue({
       compartments: payload,
     });
-
-    // console.log(payload);
 
     setCompartments(payload);
   };
@@ -167,73 +170,24 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
 
   return (
     <Form.Item name="compartments">
-      <DataTable
-        data={compartments}
-        columns={fields}
-        parentHeight="320px"
-        components={components}
-        minimal
-        apiContext={setTableAPI}
-        rowEditingStopped={rowEditingStopped}
-      />
+      <Row gutter={[8, 8]}>
+        <Col flex={1}>
+          <DataTable data={products} columns={productFields} parentHeight="320px" minimal />
+        </Col>
+        <Col flex={4}>
+          <DataTable
+            data={compartments}
+            columns={fields}
+            parentHeight="320px"
+            components={components}
+            minimal
+            apiContext={setTableAPI}
+            rowEditingStopped={rowEditingStopped}
+          />
+        </Col>
+      </Row>
     </Form.Item>
   );
 };
 
 export default Compartments;
-
-{
-  /* <Row gutter={[8, 8]}>
-<Col flex={1}>
-  <DataTable data={products} columns={productFields} parentHeight="320px" minimal />
-</Col>
-<Col flex={4}>
-  <DataTable
-    data={compartments}
-    columns={fields}
-    parentHeight="320px"
-    components={components}
-    minimal
-    apiContext={setTableAPI}
-    rowEditingStopped={rowEditingStopped}
-  />
-</Col>
-</Row> */
-}
-
-// const onDragFinished = (index, value) => {
-//   const payload = [];
-
-//   const rowNode = tableAPI.getRowNode(index);
-//   const data = rowNode.data;
-
-//   const productCode = value?.prod_code || '';
-//   const productName = value?.prod_name || '';
-
-//   const quantityScheduled = !value?.prod_code
-//     ? value?.qty_scheduled
-//     : value.qty_scheduled > 0
-//     ? value?.qty_scheduled
-//     : parseInt(data.safefill);
-
-//   tableAPI.forEachNodeAfterFilterAndSort((rowNode, tableIndex) => {
-//     if (tableIndex === index) {
-//       payload.push({
-//         ...rowNode.data,
-//         prod_code: productCode,
-//         prod_name: productName,
-//         qty_scheduled: quantityScheduled,
-//       });
-//     } else {
-//       payload.push(rowNode.data);
-//     }
-//   });
-
-//   tableAPI.updateRowData({ update: payload });
-
-//   form.setFieldsValue({
-//     compartments: payload,
-//   });
-
-//   setCompartments(payload);
-// };
