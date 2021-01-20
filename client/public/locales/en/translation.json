@@ -225,7 +225,8 @@
     "validationFailed": "Make sure all the fields meet the requirements",
     "valueTooHigh": "Value too high",
     "valueTooLow": "Value too low",
-    "zeroCompartmentCount": "The compartment count cannot be zero"
+    "zeroCompartmentCount": "The compartment count cannot be zero",
+	"periodOverlap": "Allcation period dates overlap with existing period"
   },
   "divider": {
     "baseProducts": "Base Products",

@@ -225,7 +225,8 @@
     "validationFailed": "请确认所有的字段数据都符合要求",
     "valueTooHigh": "数值太高",
     "valueTooLow": "数值太低",
-    "zeroCompartmentCount": "油仓数目不能为零"
+    "zeroCompartmentCount": "油仓数目不能为零",
+	"periodOverlap": "周期时间与已有周期重叠"
   },
   "divider": {
     "baseProducts": "基础油品",
