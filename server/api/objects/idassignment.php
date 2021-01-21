@@ -770,7 +770,7 @@ class IDAssignment extends CommonClass
             return false;
         }
 
-        $this->key_history("ADD");
+        $this->key_history("ADDED");
 
         $journal = new Journal($this->conn, false);
         $jnl_data[0] = $curr_psn;
