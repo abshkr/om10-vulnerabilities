@@ -37,7 +37,7 @@ import api, { ALLOCATIONS } from '../../../../api';
 
 const { TabPane } = Tabs;
 
-const PeriodForm = ({ value, units, parent, revalidate, data }) => {
+const PeriodForm = ({ value, units, parent, revalidate, data, onChange }) => {
   const { t } = useTranslation();
 
   const [form] = Form.useForm();
@@ -69,6 +69,9 @@ const PeriodForm = ({ value, units, parent, revalidate, data }) => {
       return;
     }
 
+    const coversToday = moment().format(SETTINGS.DATE_TIME_FORMAT) > tmp_start && 
+      moment().format(SETTINGS.DATE_TIME_FORMAT) < tmp_end
+
     const record = {
       aiprd_type: parent?.aitem_type,
       aiprd_cmpycode: parent?.aitem_cmpycode,
@@ -93,6 +96,9 @@ const PeriodForm = ({ value, units, parent, revalidate, data }) => {
             Modal.destroyAll();
 
             revalidate();
+            if (coversToday) {
+              onChange();
+            }
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
               description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
@@ -235,7 +241,7 @@ const PeriodForm = ({ value, units, parent, revalidate, data }) => {
   );
 };
 
-const Period = ({ selected, setVisibility, visible }) => {
+const Period = ({ selected, setVisibility, visible, onChange }) => {
   const [form] = Form.useForm();
 
   const SHOULD_FETCH = !!selected;
@@ -260,6 +266,7 @@ const Period = ({ selected, setVisibility, visible }) => {
           parent={selected}
           revalidate={revalidate}
           data={data}
+          onChange={onChange}
         />
       ),
       id: value?.aitem_prodcode,
@@ -286,6 +293,15 @@ const Period = ({ selected, setVisibility, visible }) => {
       visible={visible}
       footer={
         <>
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => setVisibility(false)}
+          >
+            {t('operations.cancel')}
+          </Button>
+          
           <Button
             type="primary"
             icon={<PlusOutlined />}
