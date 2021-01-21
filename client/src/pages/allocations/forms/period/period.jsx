@@ -47,6 +47,27 @@ const PeriodForm = ({ value, units, parent, revalidate, data }) => {
   const IS_CREATING = !value;
 
   const onFinish = (values) => {
+    const tmp_start = values.aiprd_daystart?.format(SETTINGS.DATE_TIME_FORMAT);
+    const tmp_end = values.aiprd_dayend?.format(SETTINGS.DATE_TIME_FORMAT);
+    if (tmp_start >= tmp_end) {
+      notification.error({
+        key: 'date-range-warning',
+        message: t('messages.seqDateRange'),
+        description: `${t('descriptions.seqDateRange')}`,
+      });
+      return;
+    }
+    if (_.find(data?.records, item => {
+      return tmp_start < item.aiprd_dayend && tmp_end > item.aiprd_daystart ||
+        tmp_end > item.aiprd_daystart && tmp_start < item.aiprd_dayend;
+    })) {
+      notification.error({
+        message: t('messages.validationFailed'),
+        description: t('descriptions.periodOverlap'),
+      });
+      return;
+    }
+
     const record = {
       aiprd_type: parent?.aitem_type,
       aiprd_cmpycode: parent?.aitem_cmpycode,
@@ -217,7 +238,7 @@ const Period = ({ selected, setVisibility, visible }) => {
   const [form] = Form.useForm();
 
   const SHOULD_FETCH = !!selected;
-
+  
   const { data, isValidating, revalidate } = useSWR(
     SHOULD_FETCH
       ? `${ALLOCATIONS.PERIOD_READ}?aiprd_type=${selected?.aitem_type}&aiprd_cmpycode=${selected?.aitem_cmpycode}&aiprd_prodcode=${selected?.aitem_prodcode}&aiprd_suppcode=${selected?.aitem_suppcode}`
