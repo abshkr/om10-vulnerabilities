@@ -161,8 +161,20 @@ class Utilities
                 $url .= "sess_id=" . $_SESSION["SESSION"];
             }
         }
-        //echo file_get_contents($url);
-        return file_get_contents($url);
+        
+        if (strpos(URL_PROTOCOL, "https") !== false) {
+            $arrContextOptions = array(
+                "ssl"=>array(
+                    "verify_peer"=>false,
+                    "verify_peer_name"=>false,
+                ),
+            );  
+            
+            return file_get_contents($url, false, stream_context_create($arrContextOptions));
+            
+        } else {
+            return file_get_contents($url);
+        }
     }
 
     public static function http_cgi_invoke($cgi, $query_string = null)
@@ -198,7 +210,21 @@ class Utilities
         write_log(sprintf("%s::%s(), url:%s", __CLASS__, __FUNCTION__, $url),
             __FILE__, __LINE__);
 
-        $result = @file_get_contents($url);
+        $result = null;
+        if (strpos(URL_PROTOCOL, "https") !== false) {
+            $arrContextOptions = array(
+                "ssl"=>array(
+                    "verify_peer"=>false,
+                    "verify_peer_name"=>false,
+                ),
+            );  
+            
+            $result = @file_get_contents($url, false, stream_context_create($arrContextOptions));
+            
+        } else {
+            $result = @file_get_contents($url);
+        }
+        
         if ($result === false) {
             // write_log(json_encode(()), __FILE__, __LINE__);
             $e = error_get_last();
