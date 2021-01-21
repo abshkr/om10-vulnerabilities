@@ -25,8 +25,6 @@ class EquipmentType extends CommonClass
         "SFL",
         "CMPT_NO",
         "ETYP_ID",
-        "FRONT_WEIGH_LIMIT",
-        "REAR_WEIGH_LIMIT"
     );
 
     public function equipmentCount($eqpt_etp)
@@ -330,10 +328,6 @@ class EquipmentType extends CommonClass
                     )) IMAGE,
                 NVL(EQUIP_CMPTS.CMPTS, EQUIP_TYPES_VW.ETYP_N_ITEMS) CMPTS,
                 EQUIP_TYPES_VW.CMPTNU,
-                EQUIP_TYPE_AXLES_VW.FRONT_WEIGH_LIMIT,
-                EQUIP_TYPE_AXLES_VW.REAR_WEIGH_LIMIT,
-                EQUIP_TYPE_AXLES_VW.FRONT_AXLE_GROUP_DESC   AS ETYP_FRONT_AXLE,
-                EQUIP_TYPE_AXLES_VW.REAR_AXLE_GROUP_DESC    AS ETYP_REAR_AXLE,
                 NVL(ETYP_COUNTS.ETYP_COUNT, 0)  ETYP_COUNT,
                 NVL(EQPT_COUNTS.EQPT_COUNT, 0)  EQPT_COUNT,
                 NVL(TNKR_COUNTS.TNKR_COUNT, 0)  TNKR_COUNT
@@ -372,7 +366,6 @@ class EquipmentType extends CommonClass
                     )
                     GROUP BY ETYP_ID_RT
                 ) EQUIP_CMPTS,
-                EQUIP_TYPE_AXLES_VW,
                 (
                     SELECT EQC_SUB_ITEM, COUNT(*) ETYP_COUNT
                     FROM EQP_CONNECT
@@ -394,7 +387,6 @@ class EquipmentType extends CommonClass
                 AND EQUIP_TYPES_VW.ETYP_ID = ETYP_COUNTS.EQC_SUB_ITEM(+)
                 AND EQUIP_TYPES_VW.ETYP_ID = EQPT_COUNTS.EQPT_ETP(+)
                 AND EQUIP_TYPES_VW.ETYP_ID = TNKR_COUNTS.TNKR_ETP(+)
-                AND EQUIP_TYPES_VW.ETYP_ID = EQUIP_TYPE_AXLES_VW.ETYP_ID(+)
                 AND ETYP_TITLE like :etyp_title";
 
         if (isset($this->cmptnu)) {
@@ -487,7 +479,8 @@ class EquipmentType extends CommonClass
         return true;
     }
 
-    protected function update_axle_weights()
+    // not used
+    /* protected function update_axle_weights()
     {
         $query = "
             UPDATE EQUIP_TYPES 
@@ -509,10 +502,10 @@ class EquipmentType extends CommonClass
             // $error = new EchoSchema(500, response("__INTERNAL_ERROR__", "Internal Error: " . $e['message']));
             // echo json_encode($error, JSON_PRETTY_PRINT);
             return false;
-        };
+        }; 
 
         return true;
-    }
+    }*/
 
     //sess_id=LWWRTniwSbdD&canBreak=0&eqpNm=CW&sched=n&op=17&rigid=n&etyp_category=P&callerTyp=flex
     public function create()
@@ -602,9 +595,9 @@ class EquipmentType extends CommonClass
         if (preg_match("/(var eqpCd=)(\d+)(;)/", $first_res, $out)) {
             $this->etyp_id = $out[2];
             $this->update_title();
-            if ($is_combo === 0) {
-                $this->update_axle_weights();
-            }
+            // if ($is_combo === 0) {
+            //     $this->update_axle_weights();
+            // }
         }
 
         return true;

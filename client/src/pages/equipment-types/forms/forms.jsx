@@ -18,10 +18,10 @@ import {
   NonCombination,
   Compartments,
   Combination,
-  FrontWeightLimit,
-  RearWeightLimit,
-  FrontAxleGroups,
-  RearAxleGroups,
+  // FrontWeightLimit,
+  // RearWeightLimit,
+  // FrontAxleGroups,
+  // RearAxleGroups,
 } from './fields';
 
 const TabPane = Tabs.TabPane;
@@ -90,13 +90,11 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
         etyp_category: record.etyp_category?.toUpperCase(),
         etyp_isrigid:
           record.etyp_category?.toUpperCase() === 'R' || record.etyp_category?.toUpperCase() === 'S',
-        // front_weigh_limit: record.front_weigh_limit,
-        // rear_weigh_limit: record.rear_weigh_limit,
       };
-      if (config?.siteUseAxleWeightLimit) {
-        values.front_weigh_limit = record.front_weigh_limit;
-        values.rear_weigh_limit = record.rear_weigh_limit;
-      }
+      // if (config?.siteUseAxleWeightLimit) {
+      //   values.front_weigh_limit = record.front_weigh_limit;
+      //   values.rear_weigh_limit = record.rear_weigh_limit;
+      // }
     }
 
     if (IS_COMBINATION && !IS_CREATING) {
@@ -112,14 +110,12 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
         etyp_isrigid:
           record.etyp_category?.toUpperCase() === 'R' || record.etyp_category?.toUpperCase() === 'S',
         etyp_schedul: compartments.length > 0,
-        // front_weigh_limit: record.front_weigh_limit,
-        // rear_weigh_limit: record.rear_weigh_limit,
         compartments,
       };
-      if (config?.siteUseAxleWeightLimit) {
-        values.front_weigh_limit = record.front_weigh_limit;
-        values.rear_weigh_limit = record.rear_weigh_limit;
-      }
+      // if (config?.siteUseAxleWeightLimit) {
+      //   values.front_weigh_limit = record.front_weigh_limit;
+      //   values.rear_weigh_limit = record.rear_weigh_limit;
+      // }
     }
 
     if (IS_CREATING && IS_COMBINATION) {
@@ -283,18 +279,16 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
           <TabPane tab={t('tabColumns.general')} key="1">
             <Code form={form} value={value} />
 
-            {!IS_COMBINATION && config?.siteUseAxleWeightLimit && (
+            {/*!IS_COMBINATION && config?.siteUseAxleWeightLimit && (
               <Row gutter={[12, 12]}>
                 <Col span={12}>
-                  {/* <FrontWeightLimit form={form} value={value} /> */}
                   <FrontAxleGroups form={form} value={value} />
                 </Col>
                 <Col span={12}>
-                  {/* <RearWeightLimit form={form} value={value} /> */}
                   <RearAxleGroups form={form} value={value} />
                 </Col>
               </Row>
-            )}
+            )*/}
 
             {IS_CREATING && IS_COMBINATION && <Combination form={form} value={value} />}
 
