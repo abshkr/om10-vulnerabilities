@@ -328,6 +328,61 @@ class Utilities
     /**
      * Identical to read(), the difference is it does not continue after calling $object->$method()
      */
+    public static function exec2($class, $method = 'read', $filter = true)
+    {
+        write_log(sprintf("%s::%s() START, class:%s, method:%s",
+            __CLASS__, __FUNCTION__, $class, $method),
+            __FILE__, __LINE__);
+
+        $database = new Database();
+        $db = null;
+
+        // initialize object
+        try {
+            $db = $database->getConnection2($class, $method);
+        } catch (UnauthException $e) {
+            $error = new EchoSchema(401, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $access_check = new AccessCheck($db);
+        if (!$access_check->check($class, $method, self::getCurrPsn())) {
+            $error = new EchoSchema(400, response("__INVALID_PRIV__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $object = new $class($db);
+
+        if ($filter) {
+            //Prior to PHP 5.6, a stream opened with php://input could only be read once
+            $data = json_decode(file_get_contents("php://input"));
+            // write_log(json_encode($data), __FILE__, __LINE__);
+            if ($data) {
+                foreach ($data as $key => $value) {
+                    $object->$key = $value;
+                }
+            } else {
+                // write_log(json_encode($_GET), __FILE__, __LINE__);
+                foreach ($_GET as $key => $value) {
+                    $object->$key = $value;
+                }
+            }
+        }
+
+        self::sanitize($object);
+
+        if (method_exists($object, "common_prep")) {
+            $object->common_prep();
+        }
+        
+        return $object->$method();
+    }
+
+    /**
+     * Identical to read(), the difference is it does not continue after calling $object->$method()
+     */
     public static function exec($class, $method = 'read', $filter = true, $params = null)
     {
         write_log(sprintf("%s::%s() START, class:%s, method:%s",
