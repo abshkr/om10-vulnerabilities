@@ -45,12 +45,12 @@ const columns = (
     width: 300,
     suppressSizeToFit: true,
     editable: true,
-    cellClass: 'editable-ag-grid-cell',
-    cellEditor: 'ProductEditor',
+    cellRenderer: 'DraggableRenderer',
 
-    cellEditorParams: {
-      values: products,
-      form: form,
+    cellRendererParams: {
+      onDragFinished,
+      compartments,
+      t,
     },
   },
 
