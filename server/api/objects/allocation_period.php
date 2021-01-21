@@ -51,6 +51,4 @@ class AllocationPeriod extends CommonClass
             return null;
         }
     }
-
-    
 }
