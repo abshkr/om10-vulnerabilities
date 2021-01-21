@@ -299,7 +299,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal 
           </TabPane>
         </Tabs>
       </Form>
-      <Period visible={showPeriod && CAN_ALLOCATE_PERIOD} setVisibility={setShowPeriod} selected={selected} />
+      <Period 
+        visible={showPeriod && CAN_ALLOCATE_PERIOD} 
+        setVisibility={setShowPeriod} 
+        selected={selected} 
+        onChange={getAllocations} //Because period update may change allocation quantity
+      />
     </Drawer>
   );
 };
