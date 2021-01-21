@@ -58,8 +58,9 @@ const PeriodForm = ({ value, units, parent, revalidate, data }) => {
       return;
     }
     if (_.find(data?.records, item => {
-      return tmp_start < item.aiprd_dayend && tmp_end > item.aiprd_daystart ||
-        tmp_end > item.aiprd_daystart && tmp_start < item.aiprd_dayend;
+      return item.aiprd_index != values.aiprd_index && 
+        (tmp_start < item.aiprd_dayend && tmp_end > item.aiprd_daystart ||
+        tmp_end > item.aiprd_daystart && tmp_start < item.aiprd_dayend);
     })) {
       notification.error({
         message: t('messages.validationFailed'),
