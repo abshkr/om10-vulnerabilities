@@ -356,7 +356,7 @@
     "axleUserWeightLimit": "用户车轴承重上限",
     "axleWeightLimit": "车轴承重上限",
     "axleWeightLimits": "车轴承重上限",
-    "axleWeightLimitNote": "* 与标准值的差值",
+    "axleWeightLimitNote": "与标准值的差值",
     "axleFrontWeightLimit": "车轴前端承重上限",
     "axleRearWeightLimit": "车轴后端承重上限",
     "backColor": "背景颜色",
