@@ -226,7 +226,7 @@
     "valueTooHigh": "数值太高",
     "valueTooLow": "数值太低",
     "zeroCompartmentCount": "油仓数目不能为零",
-	"periodOverlap": "周期时间与已有周期重叠"
+    "periodOverlap": "周期时间与已有周期重叠"
   },
   "divider": {
     "baseProducts": "基础油品",
@@ -345,12 +345,16 @@
     "auxilary": "电子地址",
     "availableTanks": "尚未分组的油罐",
     "averageQuantityLoad": "单次发油平均油量",
+    "axleDetails": "车轴详情",
     "axleGroup": "车轴组合",
+    "axleGroups": "车轴组合系列",
+    "axleGroupNumber": "车轴组合数量",
     "axleGroupId": "车轴组合ID",
     "axleLimitType": "车轴承重上限类型",
     "axleLimitTypeCode": "车轴承重上限类型代码",
     "axleLimitTypeId": "车轴承重上限类型ID",
     "axleWeightLimit": "车轴承重上限",
+    "axleWeightLimits": "车轴承重上限",
     "axleFrontWeightLimit": "车轴前端承重上限",
     "axleRearWeightLimit": "车轴后端承重上限",
     "backColor": "背景颜色",
