@@ -13,17 +13,18 @@ const EndFolio = ({ form, value }) => {
 
   useEffect(() => {
     if (payload && payload.records.length > 0) {
-      console.log(payload.records)
       setFieldsValue({
         closeout_nr: payload.records[0].closeout_nr,
         pmv_date2: payload.records[0].pmv_date2,
         tank_level: payload.records[0].tank_level,
         pmv_close_amb: payload.records[0].pmv_close_amb,
         pmv_close_cor: payload.records[0].pmv_close_cor,
+        pmv_close_kg: payload.records[0].pmv_close_kg,
         close_temp: payload.records[0].close_temp,
         close_density: payload.records[0].close_density,
         avl_sum: payload.records[0].avl_sum,
         cvl_sum: payload.records[0].cvl_sum,
+        kg_sum: payload.records[0].kg_sum,
       });
     }
   }, [payload]);
@@ -76,6 +77,14 @@ const EndFolio = ({ form, value }) => {
         </Col>
         <Col span={6}>
           <Form.Item
+            name="pmv_close_kg"
+            label={t('fields.endKG')}
+          >
+            <Input disabled={!!value} />
+          </Form.Item>
+        </Col>
+        <Col span={6}>
+          <Form.Item
             name="close_temp"
             label={t('fields.endTemp')}
           >
@@ -90,6 +99,9 @@ const EndFolio = ({ form, value }) => {
             <Input disabled={!!value} />
           </Form.Item>
         </Col>
+      </Row>
+
+      <Row gutter={[8, 8]}>
         <Col span={6}>
           <Form.Item
             name="avl_sum"
@@ -98,13 +110,18 @@ const EndFolio = ({ form, value }) => {
             <Input disabled={!!value} />
           </Form.Item>
         </Col>
-      </Row>
-
-      <Row gutter={[8, 8]}>
         <Col span={6}>
           <Form.Item
             name="cvl_sum"
             label={t('fields.finalStd')}
+          >
+            <Input disabled={!!value} />
+          </Form.Item>
+        </Col>
+        <Col span={6}>
+          <Form.Item
+            name="kg_sum"
+            label={t('fields.finalKG')}
           >
             <Input disabled={!!value} />
           </Form.Item>

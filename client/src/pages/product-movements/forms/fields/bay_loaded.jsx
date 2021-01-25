@@ -13,17 +13,17 @@ const BayLoaded = ({ form, value }) => {
 
   useEffect(() => {
     if (payload && payload.records.length > 0) {
-      console.log(payload.records)
       setFieldsValue({
-        bay_avl_sum: payload.records[0].avl_sum,
-        bay_cvl_sum: payload.records[0].cvl_sum,
+        bay_avl_sum: payload.records[0].bay_avl_sum,
+        bay_cvl_sum: payload.records[0].bay_cvl_sum,
+        bay_kg_sum: payload.records[0].bay_kg_sum,
       });
     }
   }, [payload]);
 
   return (
     <>
-      <Col span={8}>
+      <Col span={6}>
           <Form.Item
             name="bay_avl_sum"
             label={t('fields.bayAmb')}
@@ -31,10 +31,18 @@ const BayLoaded = ({ form, value }) => {
             <Input disabled={!!value} />
           </Form.Item>
         </Col>
-        <Col span={8}>
+        <Col span={6}>
           <Form.Item
             name="bay_cvl_sum"
             label={t('fields.bayStd')}
+          >
+            <Input disabled={!!value} />
+          </Form.Item>
+        </Col>
+        <Col span={6}>
+          <Form.Item
+            name="bay_kg_sum"
+            label={t('fields.bayKG')}
           >
             <Input disabled={!!value} />
           </Form.Item>

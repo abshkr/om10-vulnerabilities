@@ -3,12 +3,13 @@ import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
 import useSWR from 'swr';
+import moment from 'moment';
 
-import { Page, DataTable, Download } from '../../components';
+import { Page, DataTable, Download, DateTimeRangePicker } from '../../components';
 import { PRODUCT_MOVEMENTS } from '../../api';
-import generator from './generator';
 import columns from './columns';
 import auth from '../../auth';
+import { SETTINGS } from '../../constants';
 import { useAuth, useConfig} from 'hooks';
 import _ from 'lodash';
 
@@ -19,15 +20,27 @@ const ProductMovements = () => {
 
   const access = useAuth('M_PRODUCTMOVEMENT');
 
-  const { refreshProductMovement } = useConfig();
-  const { data: payload, isValidating, revalidate } = useSWR(PRODUCT_MOVEMENTS.READ, { refreshInterval: refreshProductMovement });
+  const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+  const [end, setEnd] = useState(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+
+  const { refreshProductMovement, scheduleDateRange } = useConfig();
+  const { 
+    data: payload, 
+    isValidating, 
+    revalidate } = 
+  useSWR(`${PRODUCT_MOVEMENTS.READ}?start_date=${start}&end_date=${end}`, { refreshInterval: refreshProductMovement });
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [filterValue, setFilterValue] = useState('');
 
+  const setRange = (start, end) => {
+    setStart(start);
+    setEnd(end);
+  };
+
   const fields = columns(t);
-  const data = generator(payload?.records);
+  const data = (payload?.records);
   
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -46,6 +59,17 @@ const ProductMovements = () => {
 
   const modifiers = (
     <>
+      <DateTimeRangePicker
+        handleChange={setRange}
+        rangeSetting={scheduleDateRange}
+        // refreshed={refreshed}
+        // setRefreshed={setRefreshed}
+        disabled={false}
+        enableClear={true}
+        max={720}
+        // localBased={true}
+      />
+
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
@@ -85,6 +109,7 @@ const ProductMovements = () => {
         handleFormState={handleFormState} 
         access={access} 
         setFilterValue={setFilterValue}
+        refresh={revalidate}
       />
     </Page>
   );

@@ -20,6 +20,7 @@ class ProdMovement extends CommonClass
         "PMV_OPEN_AMB",
         "OPEN_TEMP",
         "PMV_OPEN_COR",
+        "PMV_OPEN_KG",
         "OPEN_DENSITY",
         "CLOSE_STD_TOT",
         "CLOSE_TEMP", 
@@ -28,6 +29,10 @@ class ProdMovement extends CommonClass
         "TANK_LEVEL",
         "AVL_SUM",
         "CVL_SUM",
+        "KG_SUM",
+        "BAY_AVL_SUM",
+        "BAY_CVL_SUM",
+        "PERCENTAGE", 
     );
 
     /*
@@ -115,6 +120,7 @@ class ProdMovement extends CommonClass
         $query = "
             SELECT TANK_COR_VOL,
                 TANK_AMB_VOL,
+                TANK_LIQUID_KG,
                 TANK_DENSITY,
                 TANK_TEMP,
                 TANK_PROD_LVL
@@ -133,13 +139,15 @@ class ProdMovement extends CommonClass
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         $tank_cor_vol = $row["TANK_COR_VOL"];
         $tank_amb_vol = $row["TANK_AMB_VOL"];
+        $tank_liquid_kg = $row["TANK_LIQUID_KG"];
         $tank_density = $row["TANK_DENSITY"];
         $tank_temp = $row["TANK_TEMP"];
         $tank_prod_lvl = $row["TANK_PROD_LVL"];
-
+        
         $query = "UPDATE PRODUCT_MVMNTS
             SET PMV_OPEN_AMB = :tank_amb_vol,
                 PMV_OPEN_COR = :tank_cor_vol,
+                PMV_OPEN_KG = :tank_liquid_kg,
                 PMV_TEMPERATURE = :tank_temp,
                 PMV_OBSVD_DENS = :tank_density,
                 PMV_OPEN_TANKLEVEL = :pmv_open_tanklevel
@@ -148,6 +156,7 @@ class ProdMovement extends CommonClass
         oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
         oci_bind_by_name($stmt, ':tank_amb_vol', $tank_amb_vol);
         oci_bind_by_name($stmt, ':tank_cor_vol', $tank_cor_vol);
+        oci_bind_by_name($stmt, ':tank_liquid_kg', $tank_liquid_kg);
         oci_bind_by_name($stmt, ':tank_temp', $tank_temp);
         oci_bind_by_name($stmt, ':tank_density', $tank_density);
         oci_bind_by_name($stmt, ':pmv_open_tanklevel', $tank_prod_lvl);
@@ -320,6 +329,7 @@ class ProdMovement extends CommonClass
         $query = "
             SELECT TANK_COR_VOL,
                 TANK_AMB_VOL,
+                TANK_LIQUID_KG,
                 TANK_DENSITY,
                 TANK_TEMP,
                 TANK_PROD_LVL
@@ -338,6 +348,7 @@ class ProdMovement extends CommonClass
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         $tank_cor_vol = $row["TANK_COR_VOL"];
         $tank_amb_vol = $row["TANK_AMB_VOL"];
+        $tank_liquid_kg = $row["TANK_LIQUID_KG"];
         $tank_density = $row["TANK_DENSITY"];
         $tank_temp = $row["TANK_TEMP"];
         $tank_prod_lvl = $row["TANK_PROD_LVL"];
@@ -345,6 +356,7 @@ class ProdMovement extends CommonClass
         $query = "UPDATE PRODUCT_MVMNTS
             SET PMV_CLOSE_AMB = :tank_amb_vol,
                 PMV_CLOSE_COR = :tank_cor_vol,
+                PMV_CLOSE_KG = :TANK_LIQUID_KG,
                 PMV_CLOSE_TANKLEVEL = :pmv_open_tanklevel,
                 PMV_CLOSE_TEMP = :tank_temp,
                 PMV_CLOSE_DENS = :tank_dens
@@ -353,6 +365,7 @@ class ProdMovement extends CommonClass
         oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
         oci_bind_by_name($stmt, ':tank_amb_vol', $tank_amb_vol);
         oci_bind_by_name($stmt, ':tank_cor_vol', $tank_cor_vol);
+        oci_bind_by_name($stmt, ':tank_liquid_kg', $tank_liquid_kg);
         oci_bind_by_name($stmt, ':pmv_open_tanklevel', $tank_prod_lvl);
         oci_bind_by_name($stmt, ':tank_temp', $tank_temp);
         oci_bind_by_name($stmt, ':tank_dens', $tank_density);
@@ -360,7 +373,8 @@ class ProdMovement extends CommonClass
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
-        
+
+        oci_commit($this->conn);
         $error = new EchoSchema(200, response("__PRODUCTMOVEMENT_COMPLETED__"));
         echo json_encode($error, JSON_PRETTY_PRINT);
 
@@ -523,7 +537,7 @@ class ProdMovement extends CommonClass
                 PMV_INTENDED_QTY,
                 PMV_OPENING_QTY,
                 PMV_MOVED_QTY,
-                DECODE(PMV_INTENDED_QTY, 0, 0, PMV_MOVED_QTY / PMV_INTENDED_QTY) PERCENT,
+                DECODE(PMV_INTENDED_QTY, 0, 0, PMV_MOVED_QTY / PMV_INTENDED_QTY) * 100 PERCENTAGE,
                 PMV_EXPCTD_DENS,
                 PMV_OBSVD_DENS,
                 PMV.PMV_DST_TERMINAL,
@@ -541,16 +555,86 @@ class ProdMovement extends CommonClass
                 AND PMV_SRCTYPE = PMV_TYP1.PMV_ID
                 AND PMV_DSTTYPE = PMV_TYP2.PMV_ID
                 AND PMV_UNIT = UNIT_ID(+)
-                AND PMV_TRANS_TYPE = PMV_TRANSFER_CLASS_TYP.PMV_TRANSFER_CLASS_ID
-            ORDER BY NVL(PMV.PMV_DATE2, SYSDATE) DESC, PMV.PMV_STATUS DESC";
+                AND PMV_TRANS_TYPE = PMV_TRANSFER_CLASS_TYP.PMV_TRANSFER_CLASS_ID ";
+        if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1') {
+            $query .= "
+                AND PMV_DATE1 > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')
+            ";
+        }
+        if (isset($this->end_date) && $this->end_date != -1 && $this->end_date != '-1') {
+            $query .= "
+                AND PMV_DATE1 < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS')
+            ";
+        }
+
+        $query .= "ORDER BY NVL(PMV.PMV_DATE2, SYSDATE) DESC, PMV.PMV_STATUS DESC";
 
         $stmt = oci_parse($this->conn, $query);
+        if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1') {
+            oci_bind_by_name($stmt, ':start_date', $this->start_date);
+        }
+        if (isset($this->end_date) && $this->end_date != -1 && $this->end_date != '-1') {
+            oci_bind_by_name($stmt, ':end_date', $this->end_date);
+        }
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
+        }
+    }
+
+    public function read_decorate(&$result_array)
+    {
+        foreach ($result_array as $i => $pmv) {
+            $result_array[$i]['bay_avl_sum'] = 0;
+            $result_array[$i]['bay_cvl_sum'] = 0;
+            
+            $query = "
+                SELECT PMV_TANK.TANK_CODE, 
+                    PMV_UNIT,
+                    NVL(AVL_SUM, 0) BAY_AVL_SUM, 
+                    NVL(CVL_SUM, 0) BAY_CVL_SUM,
+                    NVL(KG_SUM, 0) BAY_KG_SUM
+                FROM
+                (
+                    SELECT DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE, PMV_UNIT 
+                    FROM PRODUCT_MVMNTS WHERE PMV_NUMBER = :pmv_number
+                ) PMV_TANK,
+                (
+                    SELECT NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_AVL / 1000, TRSB_AVL)), 0) AVL_SUM,
+                        NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_CVL / 1000, TRSB_CVL)), 0) CVL_SUM,
+                        NVL(SUM(TRSB_KG), 0) KG_SUM,
+                        DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE
+                    FROM TRANBASE, TRANSFERS, TRANSACTIONS, PRODUCT_MVMNTS
+                    WHERE TRSB_ID_TRSF_ID = TRSF_ID AND TRSB_ID_TRSF_TRM = TRSF_TERMINAL
+                        AND TRSFTRID_TRSA_ID = TRSA_ID AND TRSFTRID_TRSA_TRM = TRSA_TERMINAL
+                        AND PMV_NUMBER = :pmv_number
+                        AND TRSA_ED_DMY > NVL(PMV_DATE1, SYSDATE)
+                        AND TRSA_ED_DMY < NVL(PMV_DATE2, SYSDATE)
+                        AND TRSB_TK_TANKCODE = DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)
+                    GROUP BY PMV_SRCTYPE, PMV_SRCCODE, PMV_DSTCODE
+                ) LOAD_INFO
+                WHERE PMV_TANK.TANK_CODE = LOAD_INFO.TANK_CODE (+)";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':pmv_number', $pmv['pmv_number']);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                return;
+            } 
+            
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            if ($row) {
+                if ($row['PMV_UNIT'] == 17 /* KG */) {
+                    $loaded = floatval($row['CVL_SUM']);
+                } else {
+                    $loaded = floatval($row['KG_SUM']);
+                }
+                $result_array[$i]['bay_avl_sum'] = floatval($row['BAY_AVL_SUM']);
+                $result_array[$i]['bay_cvl_sum'] = floatval($row['BAY_CVL_SUM']);
+                $result_array[$i]['percentage'] = 
+                    (intval($result_array[$i]['pmv_moved_qty']) + $loaded) * 100 / floatval($result_array[$i]['pmv_intended_qty']);
+            }
         }
     }
 
@@ -562,6 +646,7 @@ class ProdMovement extends CommonClass
                 PMV_OPEN_COR, 
                 PMV_TEMPERATURE OPEN_TEMP, 
                 PMV_OPEN_AMB,
+                PMV_OPEN_KG,
                 PMV_OBSVD_DENS OPEN_DENSITY, 
                 PMV_DATE1, 
                 PMV_OPEN_TANKLEVEL TANK_LEVEL
@@ -588,7 +673,10 @@ class ProdMovement extends CommonClass
         }
 
         $query = "
-            SELECT PMV_TANK.TANK_CODE, NVL(AVL_SUM, 0) AVL_SUM, NVL(CVL_SUM, 0) CVL_SUM
+            SELECT PMV_TANK.TANK_CODE, 
+                NVL(AVL_SUM, 0) BAY_AVL_SUM, 
+                NVL(CVL_SUM, 0) BAY_CVL_SUM,
+                NVL(KG_SUM, 0) BAY_KG_SUM
             FROM
             (
                 SELECT DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE FROM PRODUCT_MVMNTS WHERE PMV_NUMBER = :pmv_number
@@ -596,6 +684,7 @@ class ProdMovement extends CommonClass
             (
                 SELECT NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_AVL / 1000, TRSB_AVL)), 0) AVL_SUM,
                     NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_CVL / 1000, TRSB_CVL)), 0) CVL_SUM,
+                    NVL(SUM(TRSB_KG), 0) KG_SUM,
                     DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE
                 FROM TRANBASE, TRANSFERS, TRANSACTIONS, PRODUCT_MVMNTS
                 WHERE TRSB_ID_TRSF_ID = TRSF_ID AND TRSB_ID_TRSF_TRM = TRSF_TERMINAL
@@ -626,6 +715,7 @@ class ProdMovement extends CommonClass
                 DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) PMV_CLOSE_COR, 
                 DECODE(PMV_STATUS, 3, PMV_CLOSE_TEMP, TANK_TEMP) CLOSE_TEMP, 
                 DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) PMV_CLOSE_AMB,
+                DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) PMV_CLOSE_KG,
                 DECODE(PMV_STATUS, 3, PMV_CLOSE_DENS, TANK_DENSITY) CLOSE_DENSITY, 
                 PMV_DATE2, 
                 DECODE(PMV_STATUS, 3, PMV_CLOSE_TANKLEVEL, TANK_PROD_LVL) TANK_LEVEL,
@@ -634,7 +724,10 @@ class ProdMovement extends CommonClass
                     DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) - PMV_OPEN_AMB + NVL(LOADED_AVL, 0)) AVL_SUM,
                 DECODE(PMV_SRCTYPE, 3, 
                     PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - NVL(LOADED_CVL, 0), 
-                    DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - PMV_OPEN_COR + NVL(LOADED_CVL, 0)) CVL_SUM
+                    DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - PMV_OPEN_COR + NVL(LOADED_CVL, 0)) CVL_SUM,
+                DECODE(PMV_SRCTYPE, 3, 
+                    PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) - NVL(LOADED_KG, 0), 
+                    DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) - PMV_OPEN_KG + NVL(LOADED_KG, 0)) KG_SUM
             FROM PRODUCT_MVMNTS, 
             (
                 SELECT CLOSEOUT_NR, PMV_NUMBER FROM CLOSEOUTS, PRODUCT_MVMNTS
@@ -644,6 +737,7 @@ class ProdMovement extends CommonClass
             (
                 SELECT NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_AVL / 1000, TRSB_AVL)), 0) LOADED_AVL,
                     NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_CVL / 1000, TRSB_CVL)), 0) LOADED_CVL,
+                    NVL(SUM(TRSB_KG), 0) LOADED_KG,
                     DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE,
                     PMV_NUMBER
                 FROM TRANBASE, TRANSFERS, TRANSACTIONS, PRODUCT_MVMNTS
@@ -658,6 +752,7 @@ class ProdMovement extends CommonClass
             (
                 SELECT TANK_COR_VOL,
                     TANK_AMB_VOL,
+                    TANK_LIQUID_KG,
                     TANK_DENSITY,
                     TANK_TEMP,
                     TANK_PROD_LVL
