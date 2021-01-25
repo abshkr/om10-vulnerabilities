@@ -91,7 +91,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const [tab, setTab] = useState('0');
   const [drawerWidth, setDrawerWidth] = useState('75vw');
 
-  const [mode, setMode] = useState('3');
+  const [mode, setMode] = useState('2');
   const [unload, setUnload] = useState(false);
   const [supplier, setSupplier] = useState(undefined);
   const [drawer, setDrawer] = useState(undefined);
