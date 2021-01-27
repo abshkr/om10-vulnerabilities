@@ -241,8 +241,8 @@ const columns = (
     editable: true,
     cellClass: 'editable-ag-grid-cell',
     cellEditorParams: {
-      min: -18,
-      max: 150,
+      min: -50,
+      max: 500,
       txt: t,
       form,
     },

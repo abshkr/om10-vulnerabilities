@@ -13,7 +13,7 @@ const Calculation = ({ form, value, range, envrionment }) => {
 
   const [tempBounds, setTempBounds] = useState({
     min: value.tank_bclass_temp_lo || -50,
-    max: value.tank_bclass_temp_hi || 150,
+    max: value.tank_bclass_temp_hi || 500,
     type: 'ºC',
   });
 
@@ -37,7 +37,7 @@ const Calculation = ({ form, value, range, envrionment }) => {
     if (selected !== 'degC') {
       setTempBounds({
         min: VCFManager.temperatureC2F(value.tank_bclass_temp_lo || -50),
-        max: VCFManager.temperatureC2F(value.tank_bclass_temp_hi || 150),
+        max: VCFManager.temperatureC2F(value.tank_bclass_temp_hi || 500),
         type: 'ºF',
       });
       setFieldsValue({
@@ -46,7 +46,7 @@ const Calculation = ({ form, value, range, envrionment }) => {
     } else {
       setTempBounds({
         min: value.tank_bclass_temp_lo || -50,
-        max: value.tank_bclass_temp_hi || 150,
+        max: value.tank_bclass_temp_hi || 500,
         type: 'ºC',
       });
 
@@ -58,9 +58,9 @@ const Calculation = ({ form, value, range, envrionment }) => {
 
   const temperaturePostfix = (
     <Form.Item name="tank_temp_unit" noStyle>
-      <Select 
+      <Select
         dropdownMatchSelectWidth={false}
-        defaultValue={envrionment?.SITE_TEMPERATURE_UNIT || 'degC'} 
+        defaultValue={envrionment?.SITE_TEMPERATURE_UNIT || 'degC'}
         onChange={handleTemperature}
       >
         <Option value="degC">Celcius</Option>
