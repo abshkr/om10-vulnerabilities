@@ -587,36 +587,81 @@ class ProdMovement extends CommonClass
 
     public function read_decorate(&$result_array)
     {
+        /**
+         * If SITE_PRODUCT_MVMNTS_LITER == AMB, use 
+         * DECODE(PMV_SRCTYPE, 3, 
+         *      PMV_OPEN_AMB - DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) - NVL(LOADED_AVL, 0), 
+         *      DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) - PMV_OPEN_AMB + NVL(LOADED_AVL, 0))
+         * as product movement quantity. 
+         * This is a Green Energy request. Normally, use PMV_MOVED_QTY, but for UK, there might be loadings
+         * during a product movement duration. On the other hand, PMV_MOVED_QTY is done inside tpmman, it is
+         * using STD (
+         * Pmv_update_tank_pmvs {
+         *      ...
+         *      Pmv_qty_set_double( pmv_num, diff_in_units, diff_stdltr, COR_LITRE);
+         *      ...
+         * }
+         * But Green Enery wants AMB, so use a SITE_CONFIG SITE_PRODUCT_MVMNTS_LITER.
+         */
+        $movement_liter_unit = 'STD';
+        $query = "SELECT CONFIG_VALUE FROM SITE_CONFIG WHERE CONFIG_KEY = 'SITE_PRODUCT_MVMNTS_LITER'";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        if ($row && $row["CONFIG_VALUE"] === 'AMB') {
+            $movement_liter_unit = 'AMB';
+        }
+
         foreach ($result_array as $i => $pmv) {
             $result_array[$i]['bay_avl_sum'] = 0;
             $result_array[$i]['bay_cvl_sum'] = 0;
             
             $query = "
-                SELECT PMV_TANK.TANK_CODE, 
-                    PMV_UNIT,
-                    NVL(AVL_SUM, 0) BAY_AVL_SUM, 
-                    NVL(CVL_SUM, 0) BAY_CVL_SUM,
-                    NVL(KG_SUM, 0) BAY_KG_SUM
-                FROM
-                (
-                    SELECT DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE, PMV_UNIT 
-                    FROM PRODUCT_MVMNTS WHERE PMV_NUMBER = :pmv_number
-                ) PMV_TANK,
-                (
-                    SELECT NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_AVL / 1000, TRSB_AVL)), 0) AVL_SUM,
-                        NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_CVL / 1000, TRSB_CVL)), 0) CVL_SUM,
-                        NVL(SUM(TRSB_KG), 0) KG_SUM,
-                        DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE
-                    FROM TRANBASE, TRANSFERS, TRANSACTIONS, PRODUCT_MVMNTS
-                    WHERE TRSB_ID_TRSF_ID = TRSF_ID AND TRSB_ID_TRSF_TRM = TRSF_TERMINAL
-                        AND TRSFTRID_TRSA_ID = TRSA_ID AND TRSFTRID_TRSA_TRM = TRSA_TERMINAL
-                        AND PMV_NUMBER = :pmv_number
-                        AND TRSA_ED_DMY > NVL(PMV_DATE1, SYSDATE)
-                        AND TRSA_ED_DMY < NVL(PMV_DATE2, SYSDATE)
-                        AND TRSB_TK_TANKCODE = DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)
-                    GROUP BY PMV_SRCTYPE, PMV_SRCCODE, PMV_DSTCODE
-                ) LOAD_INFO
-                WHERE PMV_TANK.TANK_CODE = LOAD_INFO.TANK_CODE (+)";
+            SELECT PMV_UNIT, 
+                DECODE(PMV_SRCTYPE, 3, 
+                    PMV_OPEN_AMB - DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) + NVL(LOADED_AVL, 0), 
+                    DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) - PMV_OPEN_AMB + NVL(LOADED_AVL, 0)) AVL_SUM,
+                DECODE(PMV_SRCTYPE, 3, 
+                    PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) + NVL(LOADED_CVL, 0), 
+                    DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - PMV_OPEN_COR + NVL(LOADED_CVL, 0)) CVL_SUM,
+                DECODE(PMV_SRCTYPE, 3, 
+                    PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) + NVL(LOADED_KG, 0), 
+                    DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) - PMV_OPEN_KG + NVL(LOADED_KG, 0)) KG_SUM
+            FROM PRODUCT_MVMNTS, 
+            (
+                SELECT NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_AVL / 1000, TRSB_AVL)), 0) LOADED_AVL,
+                    NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_CVL / 1000, TRSB_CVL)), 0) LOADED_CVL,
+                    NVL(SUM(TRSB_KG), 0) LOADED_KG,
+                    DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE,
+                    PMV_NUMBER
+                FROM TRANBASE, TRANSFERS, TRANSACTIONS, PRODUCT_MVMNTS
+                WHERE TRSB_ID_TRSF_ID = TRSF_ID AND TRSB_ID_TRSF_TRM = TRSF_TERMINAL
+                    AND TRSFTRID_TRSA_ID = TRSA_ID AND TRSFTRID_TRSA_TRM = TRSA_TERMINAL
+                    AND PMV_NUMBER = :pmv_number
+                    AND TRSA_ED_DMY > NVL(PMV_DATE1, SYSDATE)
+                    AND TRSA_ED_DMY < NVL(PMV_DATE2, SYSDATE)
+                    AND TRSB_TK_TANKCODE = DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)
+                GROUP BY PMV_SRCTYPE, PMV_SRCCODE, PMV_DSTCODE, PMV_NUMBER
+            ) LOADED,
+            (
+                SELECT TANK_COR_VOL,
+                    TANK_AMB_VOL,
+                    TANK_LIQUID_KG,
+                    TANK_DENSITY,
+                    TANK_TEMP,
+                    TANK_PROD_LVL
+                FROM TANKS
+                WHERE TANK_CODE = (
+                        SELECT DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)
+                        FROM PRODUCT_MVMNTS
+                        WHERE PMV_NUMBER = :pmv_number
+                    )
+            ) TANK_INFO
+            WHERE PRODUCT_MVMNTS.PMV_NUMBER = :pmv_number
+                AND PRODUCT_MVMNTS.PMV_NUMBER = LOADED.PMV_NUMBER(+)";
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':pmv_number', $pmv['pmv_number']);
             if (!oci_execute($stmt, $this->commit_mode)) {
@@ -626,14 +671,17 @@ class ProdMovement extends CommonClass
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             if ($row) {
                 if ($row['PMV_UNIT'] == 17 /* KG */) {
-                    $loaded = floatval($row['CVL_SUM']);
+                    $produce_moved = floatval($row['KG_SUM']);
+                } else if ($movement_liter_unit === 'AMB') {
+                    $produce_moved = floatval($row['AVL_SUM']);
                 } else {
-                    $loaded = floatval($row['KG_SUM']);
+                    $produce_moved = floatval($row['CVL_SUM']);
                 }
-                $result_array[$i]['bay_avl_sum'] = floatval($row['BAY_AVL_SUM']);
-                $result_array[$i]['bay_cvl_sum'] = floatval($row['BAY_CVL_SUM']);
+
+                // $result_array[$i]['bay_avl_sum'] = floatval($row['BAY_AVL_SUM']);
+                // $result_array[$i]['bay_cvl_sum'] = floatval($row['BAY_CVL_SUM']);
                 $result_array[$i]['percentage'] = 
-                    (intval($result_array[$i]['pmv_moved_qty']) + $loaded) * 100 / floatval($result_array[$i]['pmv_intended_qty']);
+                    ($produce_moved) * 100 / floatval($result_array[$i]['pmv_intended_qty']);
             }
         }
     }
@@ -720,13 +768,13 @@ class ProdMovement extends CommonClass
                 PMV_DATE2, 
                 DECODE(PMV_STATUS, 3, PMV_CLOSE_TANKLEVEL, TANK_PROD_LVL) TANK_LEVEL,
                 DECODE(PMV_SRCTYPE, 3, 
-                    PMV_OPEN_AMB - DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) - NVL(LOADED_AVL, 0), 
+                    PMV_OPEN_AMB - DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) + NVL(LOADED_AVL, 0), 
                     DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) - PMV_OPEN_AMB + NVL(LOADED_AVL, 0)) AVL_SUM,
                 DECODE(PMV_SRCTYPE, 3, 
-                    PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - NVL(LOADED_CVL, 0), 
+                    PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) + NVL(LOADED_CVL, 0), 
                     DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - PMV_OPEN_COR + NVL(LOADED_CVL, 0)) CVL_SUM,
                 DECODE(PMV_SRCTYPE, 3, 
-                    PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) - NVL(LOADED_KG, 0), 
+                    PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) + NVL(LOADED_KG, 0), 
                     DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) - PMV_OPEN_KG + NVL(LOADED_KG, 0)) KG_SUM
             FROM PRODUCT_MVMNTS, 
             (
