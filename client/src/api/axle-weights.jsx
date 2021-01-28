@@ -17,3 +17,4 @@ export const DELETE = '/api/pages/axle_weight/delete.php';
 export const GET_SITE_AXLE_LIMIT_TYPE = '/api/pages/axle_weight/get_site_axle_limit_type.php';
 export const SET_SITE_AXLE_LIMIT_TYPE = '/api/pages/site_config/update.php';
 export const GET_ETYP_AXLE_WEIGHTS = '/api/pages/axle_weight/get_etyp_axle_weights.php';
+export const GET_EQPT_AXLE_WEIGHTS = '/api/pages/axle_weight/get_eqpt_axle_weights.php';

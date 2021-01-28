@@ -16,6 +16,7 @@ import _ from 'lodash';
 
 import api, { EQUIPMENT_LIST } from '../../../api';
 import Compartments from './compartments';
+import Axles from './axles';
 import { SETTINGS } from '../../../constants';
 
 import {
@@ -30,10 +31,12 @@ import {
   Comments,
   Locks,
   LegacyExpires,
-  FrontWeightLimit,
-  RearWeightLimit,
-  FrontAxleGroups,
-  RearAxleGroups,
+  AxleGroupNumber,
+  AxleLimitTypes,
+  // FrontWeightLimit,
+  // RearWeightLimit,
+  // FrontAxleGroups,
+  // RearAxleGroups,
 } from './fields';
 import { Expiry, CheckList, Equipment } from '../../../components';
 import columns from './columns';
@@ -57,6 +60,8 @@ const FormModal = ({
   const { data: payload } = useSWR(EQUIPMENT_LIST.READ);
   const [equipment, setEquipment] = useState(undefined);
   const [image, setImage] = useState(null);
+  const [massLimitType, setMassLimitType] = useState(1);
+  const [axleGroupNumber, setAxleGroupNumber] = useState(0);
 
   const fields = columns(t);
   const IS_CREATING = !value;
@@ -74,6 +79,8 @@ const FormModal = ({
 
   const onFinish = async () => {
     const values = await form.validateFields();
+
+    console.log('............', form.getFieldValue('axles'));
 
     let matches = [];
     let bulk_edit = [];
@@ -312,18 +319,16 @@ const FormModal = ({
               </Col>
             </Row>
 
-            {config?.siteUseAxleWeightLimit && (
+            {/* config?.siteUseAxleWeightLimit && (
               <Row gutter={[12, 12]}>
                 <Col span={12}>
-                  {/* <FrontWeightLimit form={form} value={value} /> */}
                   <FrontAxleGroups form={form} value={value} etype={equipment} />
                 </Col>
                 <Col span={12}>
-                  {/* <RearWeightLimit form={form} value={value} /> */}
                   <RearAxleGroups form={form} value={value} etype={equipment} />
                 </Col>
               </Row>
-            )}
+            ) */}
 
             <Divider>{t('tabColumns.equipmentAndSafefill')}</Divider>
 
@@ -352,6 +357,34 @@ const FormModal = ({
               <LegacyExpires form={form} value={value} expiryTypes={expiryTypes}></LegacyExpires>
             ) : (
               <Expiry form={form} value={value} type={EQUIPMENT_LIST.EXPIRY} />
+            )}
+
+            {config?.siteUseAxleWeightLimit && <Divider>{t('tabColumns.axleWeightLimit')}</Divider>}
+
+            {config?.siteUseAxleWeightLimit && (
+              <Row gutter={[8, 2]}>
+                <Col span={6}>
+                  <Row gutter={[8, 2]}>
+                    <Col span={24}>
+                      <AxleGroupNumber form={form} value={value} onChange={setAxleGroupNumber} />
+                    </Col>
+                  </Row>
+                  <Row gutter={[8, 2]}>
+                    <Col span={24}>
+                      <AxleLimitTypes form={form} value={value} config={config} onChange={setMassLimitType} />
+                    </Col>
+                  </Row>
+                </Col>
+                <Col span={18}>
+                  <Axles
+                    form={form}
+                    value={value}
+                    equipment={!value ? -1 : value?.eqpt_id}
+                    type={massLimitType}
+                    count={axleGroupNumber}
+                  />
+                </Col>
+              </Row>
             )}
           </TabPane>
         </Tabs>

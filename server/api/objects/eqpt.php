@@ -24,8 +24,8 @@ class Equipment extends CommonClass
         "SAFEFILL",
         "EQPT_EMPTY_KG",
         "EQPT_MAX_GROSS",
-        "FRONT_WEIGH_LIMIT",
-        "REAR_WEIGH_LIMIT",
+        "EQPT_AXLE_GROUP_COUNT",
+        "EQPT_AXLE_LIMIT_TYPE",
     );
 
     protected $check_mandatory = false;
@@ -244,10 +244,12 @@ class Equipment extends CommonClass
                 RN,
                 EQPT_LAST_MODIFIED,
                 EQPT_LAST_USED,
-                FRONT_WEIGH_LIMIT,
-                REAR_WEIGH_LIMIT,
-                ETYP_FRONT_AXLE,
-                ETYP_REAR_AXLE,
+                EQPT_AXLE_GROUP_COUNT,
+                EQPT_AXLE_LIMIT_TYPE,
+                EQPT_AXLE_DETAILS,
+                EQPT_AXLE_GROUPS,
+                EQPT_AXLE_WEIGHTS,
+                EQPT_AXLE_BRIEFS,
                 TNKR_COUNT
             FROM
             (
@@ -256,21 +258,40 @@ class Equipment extends CommonClass
                 (
                     SELECT 
                         GUI_EQUIPMENT_LIST.*,
-                        EQPT_AXLES_VW.FRONT_WEIGH_LIMIT,
-                        EQPT_AXLES_VW.REAR_WEIGH_LIMIT,
-                        EQPT_AXLES_VW.FRONT_AXLE_GROUP_DESC   AS ETYP_FRONT_AXLE,
-                        EQPT_AXLES_VW.REAR_AXLE_GROUP_DESC    AS ETYP_REAR_AXLE,
+                        EQPT_AXLES_LIST.EQPT_AXLE_GROUP_COUNT,
+                        EQPT_AXLES_LIST.EQPT_AXLE_LIMIT_TYPE,
+                        EQPT_AXLES_LIST.EQPT_AXLE_DETAILS,
+                        EQPT_AXLES_LIST.EQPT_AXLE_GROUPS,
+                        EQPT_AXLES_LIST.EQPT_AXLE_WEIGHTS,
+                        EQPT_AXLES_LIST.EQPT_AXLE_BRIEFS,
                         NVL(TNKR_COUNTS.TNKR_COUNT, 0)  TNKR_COUNT
                     FROM 
                         GUI_EQUIPMENT_LIST,
-                        EQPT_AXLES_VW,
+                        (
+                            SELECT 
+                                EQPT_ID
+                                , COUNT(AXLE_ID)  AS EQPT_AXLE_GROUP_COUNT
+                                , MIN(LIMIT_TYPE_ID)  AS EQPT_AXLE_LIMIT_TYPE
+                                , LISTAGG(AXLE_ID||':'||LIMIT_TYPE_ID||':'||AXLE_GROUP||':'||USER_WEIGHT_LIMIT||':'||AXLE_WEIGHT_LIMIT, ',') 
+                                WITHIN GROUP (ORDER BY AXLE_ID) AS EQPT_AXLE_DETAILS
+                                , LISTAGG(AXLE_GROUP_NAME, ', ') 
+                                WITHIN GROUP (ORDER BY AXLE_ID) AS EQPT_AXLE_GROUPS
+                                , LISTAGG(USER_WEIGHT_LIMIT, ', ') 
+                                WITHIN GROUP (ORDER BY AXLE_ID) AS EQPT_AXLE_WEIGHTS
+                                , LISTAGG(USER_WEIGHT_LIMIT||'['||AXLE_GROUP_NAME||']', ', ') 
+                                WITHIN GROUP (ORDER BY AXLE_ID) AS EQPT_AXLE_BRIEFS
+                            FROM
+                                EQPT_AXLES_VW
+                            GROUP BY
+                                EQPT_ID
+                        ) EQPT_AXLES_LIST,
                         (
                             SELECT TC_EQPT, COUNT(*) TNKR_COUNT
                             FROM TNKR_EQUIP
                             GROUP BY TC_EQPT
                         ) TNKR_COUNTS
                     WHERE 
-                        EQPT_AXLES_VW.EQPT_ID = GUI_EQUIPMENT_LIST.EQPT_ID
+                        GUI_EQUIPMENT_LIST.EQPT_ID = EQPT_AXLES_LIST.EQPT_ID(+)
                         AND GUI_EQUIPMENT_LIST.EQPT_ID = TNKR_COUNTS.TC_EQPT(+)
                     ORDER BY GUI_EQUIPMENT_LIST.EQPT_ID
                 ) RES
@@ -434,6 +455,7 @@ class Equipment extends CommonClass
 
     protected function update_axle_weights()
     {
+        // check if the flag is turned on
         $query = "
             SELECT NVL(CONFIG_VALUE, 'N') CONFIG_VALUE 
             FROM SITE_CONFIG WHERE CONFIG_KEY = 'SITE_USE_AXLE_WEIGHT_LIMIT'
@@ -449,7 +471,55 @@ class Equipment extends CommonClass
             return false;
         }
 
+        // delete the axles first
         $query = "
+            DELETE FROM EQUIP_AXLES
+            WHERE EQPT_ID = :eqpt_id";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            throw new DatabaseException($e['message']);
+            return false;
+        }
+
+        // re-insert the axles if there are records
+        if (isset($this->axles)) {
+            foreach ($this->axles as $item) {
+                $query = "
+                    INSERT INTO EQUIP_AXLES (
+                        EQPT_ID,
+                        AXLE_ID,
+                        LIMIT_TYPE_ID,
+                        AXLE_GROUP,
+                        USER_WEIGHT_LIMIT
+                    ) VALUES (
+                        :eqpt_id,
+                        :axle_id,
+                        :limit_type_id,
+                        :axle_group,
+                        :user_weight_limit
+                    )
+                ";
+                $stmt = oci_parse($this->conn, $query);
+                // for a new equipment, the $item->eqpt_id would be 0, so we need use $this->eqpt_id
+                oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
+                oci_bind_by_name($stmt, ':axle_id', $item->axle_id);
+                oci_bind_by_name($stmt, ':limit_type_id', $item->limit_type_id);
+                oci_bind_by_name($stmt, ':axle_group', $item->axle_group);
+                oci_bind_by_name($stmt, ':user_weight_limit', $item->user_weight_limit);
+
+                if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    throw new DatabaseException($e['message']);
+                    return false;
+                }
+            }
+        }
+
+        /* $query = "
             UPDATE TRANSP_EQUIP 
             SET FRONT_WEIGH_LIMIT = :front_weight, REAR_WEIGH_LIMIT = :rear_weight 
             WHERE EQPT_ID = :eqpt_id
@@ -469,7 +539,7 @@ class Equipment extends CommonClass
             // $error = new EchoSchema(500, response("__INTERNAL_ERROR__", "Internal Error: " . $e['message']));
             // echo json_encode($error, JSON_PRETTY_PRINT);
             return false;
-        };
+        }; */
 
         return true;
     }
@@ -644,7 +714,12 @@ class Equipment extends CommonClass
             return false;
         }
 
-        $this->update_axle_weights();
+        if (!$this->update_axle_weights()) {
+            write_log("Failed to update equipment axles",
+                __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
 
         $query = "
             SELECT NVL(MAX(CONFIG_VALUE), '2') CONFIG_VALUE 
@@ -919,7 +994,12 @@ class Equipment extends CommonClass
             return false;
         }
 
-        $this->update_axle_weights();
+        if (!$this->update_axle_weights()) {
+            write_log("Failed to update equipment axles",
+                __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
 
         if (isset($this->expiry_dates)) {
             $expiry_dates = array();
@@ -1032,6 +1112,19 @@ class Equipment extends CommonClass
         } else {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
+        // need to delete the axles children
+        $query = "
+            DELETE FROM EQUIP_AXLES
+            WHERE EQPT_ID = :eqpt_id";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            throw new DatabaseException($e['message']);
+            return false;
         }
 
         $query = "

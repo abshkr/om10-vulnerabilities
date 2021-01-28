@@ -20,6 +20,7 @@ import DensityRenderer from './density';
 import ExpiryDateRenderer from './expiry-date-renderer';
 import DraggableRenderer from './draggable';
 import FlowRateRenderer from './flow-rate';
+import OffsetAlarmRenderer from './offset-alarm';
 
 export {
   BooleanRenderer,
@@ -44,4 +45,5 @@ export {
   ExpiryDateRenderer,
   DraggableRenderer,
   FlowRateRenderer,
+  OffsetAlarmRenderer,
 };

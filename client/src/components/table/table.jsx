@@ -28,6 +28,7 @@ import {
   ExpiryDateRenderer,
   DraggableRenderer,
   FlowRateRenderer,
+  OffsetAlarmRenderer,
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -69,6 +70,7 @@ const defaultComponents = {
   DensityRenderer,
   ExpiryDateRenderer,
   FlowRateRenderer,
+  OffsetAlarmRenderer,
   ATGRenderer,
   TagRenderer,
   NullRenderer,

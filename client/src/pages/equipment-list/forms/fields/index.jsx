@@ -11,6 +11,9 @@ import Locks from './locks';
 import Comments from './comments';
 import LegacyExpires from './legacy-expires';
 
+import AxleGroupNumber from './axle-group-number';
+import AxleLimitTypes from './axle-limit-types';
+
 import FrontWeightLimit from './front-weight-limit';
 import RearWeightLimit from './rear-weight-limit';
 import FrontAxleGroups from './front-axle-groups';
@@ -29,6 +32,8 @@ export {
   Locks,
   Comments,
   LegacyExpires,
+  AxleGroupNumber,
+  AxleLimitTypes,
   FrontWeightLimit,
   RearWeightLimit,
   FrontAxleGroups,
