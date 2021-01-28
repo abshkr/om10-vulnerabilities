@@ -468,7 +468,8 @@ class Equipment extends CommonClass
         } 
         $row = oci_fetch_array($stmt, OCI_NO_AUTO_COMMIT);
         if ($row['CONFIG_VALUE'] !== 'Y') {
-            return false;
+            // need return true here, do not need operate on axles but still allow other actions.
+            return true;
         }
 
         // delete the axles first
