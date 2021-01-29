@@ -333,4 +333,38 @@ class AxleWeight extends CommonClass
             return null;
         }
     }
+
+    public function get_tnkr_axle_weights()
+    {
+        $query = "
+            SELECT 
+                TA.TNKR_CODE
+                , TA.TNKR_AXLE_ID
+                , TA.EQPT_SEQ
+                , TA.EQPT_ID
+                , TE.EQPT_CODE || '[' || NVL(TE.EQPT_TITLE, TE.EQPT_CODE) || ']'   AS EQPT_NAME
+                , TA.EQPT_AXLE_ID
+                , TA.LIMIT_TYPE_ID
+                , TA.AXLE_GROUP
+                , TA.USER_WEIGHT_LIMIT
+                , TA.LIMIT_TYPE_CODE
+                , TA.LIMIT_TYPE_NAME
+                , TA.AXLE_GROUP_NAME
+                , TA.AXLE_WEIGHT_LIMIT            
+            FROM 
+                TNKR_AXLES_VW TA, 
+                TRANSP_EQUIP TE
+            WHERE TA.TNKR_CODE = :tnkr_code AND TA.EQPT_ID=TE.EQPT_ID
+            ORDER BY TA.TNKR_AXLE_ID
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
 }

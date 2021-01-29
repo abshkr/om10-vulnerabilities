@@ -105,9 +105,37 @@ class Tanker extends CommonClass
                 SELECT RES.*, ROWNUM RN
                 FROM
                 (
-                    SELECT GUI_TANKERS.*
-                    FROM GUI_TANKERS
-                    ORDER BY TNKR_CODE
+                    SELECT 
+                        GUI_TANKERS.*,
+                        TNKR_AXLES_LIST.TNKR_AXLE_GROUP_COUNT,
+                        TNKR_AXLES_LIST.TNKR_AXLE_LIMIT_TYPE,
+                        TNKR_AXLES_LIST.TNKR_AXLE_DETAILS,
+                        TNKR_AXLES_LIST.TNKR_AXLE_GROUPS,
+                        TNKR_AXLES_LIST.TNKR_AXLE_WEIGHTS,
+                        TNKR_AXLES_LIST.TNKR_AXLE_BRIEFS
+                    FROM 
+                        GUI_TANKERS
+                        , (
+                            SELECT 
+                                TNKR_CODE
+                                , COUNT(TNKR_AXLE_ID)  AS TNKR_AXLE_GROUP_COUNT
+                                , MIN(LIMIT_TYPE_ID)  AS TNKR_AXLE_LIMIT_TYPE
+                                , LISTAGG(TNKR_AXLE_ID||':'||LIMIT_TYPE_ID||':'||AXLE_GROUP||':'||USER_WEIGHT_LIMIT||':'||AXLE_WEIGHT_LIMIT, ',') 
+                                WITHIN GROUP (ORDER BY TNKR_AXLE_ID) AS TNKR_AXLE_DETAILS
+                                , LISTAGG(AXLE_GROUP_NAME, ', ') 
+                                WITHIN GROUP (ORDER BY TNKR_AXLE_ID) AS TNKR_AXLE_GROUPS
+                                , LISTAGG(USER_WEIGHT_LIMIT, ', ') 
+                                WITHIN GROUP (ORDER BY TNKR_AXLE_ID) AS TNKR_AXLE_WEIGHTS
+                                , LISTAGG(USER_WEIGHT_LIMIT||'['||AXLE_GROUP_NAME||']', ', ') 
+                                WITHIN GROUP (ORDER BY TNKR_AXLE_ID) AS TNKR_AXLE_BRIEFS
+                            FROM
+                                TNKR_AXLES_VW
+                            GROUP BY
+                                TNKR_CODE
+                        ) TNKR_AXLES_LIST
+                    WHERE 
+                        GUI_TANKERS.TNKR_CODE = TNKR_AXLES_LIST.TNKR_CODE(+)
+                    ORDER BY GUI_TANKERS.TNKR_CODE
                 ) RES
             )
             WHERE RN >= :start_num

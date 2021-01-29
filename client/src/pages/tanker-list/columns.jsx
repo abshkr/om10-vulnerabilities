@@ -1,4 +1,4 @@
-const columns = (expiryTypes, t, expiryDateMode) => {
+const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit) => {
   const expiryColumns = [];
 
   if (expiryDateMode === '1') {
@@ -168,6 +168,26 @@ const columns = (expiryTypes, t, expiryDateMode) => {
       cellRenderer: 'DateRenderer',
       suppressSizeToFit: true,
       width: 160,
+    },
+    {
+      headerName: t('fields.axleGroups'),
+      field: 'tnkr_axle_groups',
+      filterable: true,
+      sortable: true,
+      resizable: true,
+      width: 240,
+      suppressSizeToFit: true,
+      hide: !siteUseAxleWeightLimit,
+    },
+    {
+      headerName: t('fields.axleWeightLimits') + ' (' + t('units.kg') + ')',
+      field: 'tnkr_axle_weights',
+      filterable: true,
+      sortable: true,
+      resizable: true,
+      width: 240,
+      suppressSizeToFit: true,
+      hide: !siteUseAxleWeightLimit,
     },
   ];
 };

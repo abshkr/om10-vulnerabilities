@@ -37,6 +37,7 @@ import {
 } from './fields';
 import api, { TANKER_LIST } from '../../../api';
 import Compartments from './compartments';
+import Axles from './axles';
 import { Expiry, CheckList } from '../../../components';
 import columns from './columns';
 import { SETTINGS } from '../../../constants';
@@ -403,6 +404,16 @@ const FormModal = ({
               <LegacyExpires form={form} value={value} expiryTypes={expiryTypes?.records}></LegacyExpires>
             ) : (
               <Expiry form={form} value={value} type={TANKER_LIST.EXPIRY} />
+            )}
+
+            {config?.siteUseAxleWeightLimit && value && <Divider>{t('tabColumns.axleWeightLimit')}</Divider>}
+
+            {config?.siteUseAxleWeightLimit && value && (
+              <Row gutter={[8, 2]}>
+                <Col span={24}>
+                  <Axles form={form} value={value} />
+                </Col>
+              </Row>
             )}
           </TabPane>
         </Tabs>
