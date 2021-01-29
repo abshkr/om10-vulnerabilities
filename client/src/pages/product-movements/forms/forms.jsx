@@ -102,10 +102,10 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
           .then((response) => {
             handleFormState(false, null);
             refresh();
-            if (value.pmv_batchcode) {
-              setFilterValue('' + value.pmv_batchcode);
+            if (values?.pmv_batchcode) {
+              setFilterValue('' + values.pmv_batchcode);
             }
-
+            
             notification.success({
               message: t('messages.createSuccess'),
               description: t('descriptions.createSuccess'),
