@@ -28,10 +28,15 @@ class AllocationPeriod extends CommonClass
         "AIPRD_QTYLIMIT",
     );
 
+    public $BOOLEAN_FIELDS = array(
+        "ACTIVE" => "Y",
+    );
+
     public function read()
     {
         $query = "
-            SELECT *
+            SELECT GUI_ALLOCATION_PERIODS.*,
+                (CASE WHEN AIPRD_DAYSTART < SYSDATE  AND AIPRD_DAYEND > SYSDATE THEN 'Y' ELSE 'N' END) ACTIVE
             FROM " . $this->VIEW_NAME . "
             WHERE AIPRD_TYPE = :aiprd_type
                 AND AIPRD_CMPYCODE = :aiprd_cmpycode
