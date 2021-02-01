@@ -226,7 +226,7 @@
     "valueTooHigh": "Value too high",
     "valueTooLow": "Value too low",
     "zeroCompartmentCount": "The compartment count cannot be zero",
-    "periodOverlap": "Allcation period dates overlap with existing period"
+    "periodOverlap": "Allocation period dates overlap with existing period"
   },
   "divider": {
     "baseProducts": "Base Products",
@@ -1673,6 +1673,7 @@
     "startLevel": "Start Level (mm)",
     "startAmb": "Start Amb (ltr)",
     "startStd": "Start Std (ltr)",
+    "startKg": "Start KG",
     "startTemp": "Start Temperature",
     "startDens": "Start Density",
     "endMovement": "End Movement",
@@ -1680,12 +1681,15 @@
     "endLevel": "End Level (mm)",
     "endAmb": "End Amb (ltr)",
     "endStd": "End Std (ltr)",
+    "endKG": "End KG",
     "endTemp": "End Temperature",
     "endDens": "End Density",
     "bayAmb": "Bay AMB",
     "bayStd": "Bay STD",
+    "bayKG": "Bay KG",
     "finalAmb": "Final AMB",
-    "finalStd": "Final STD"
+    "finalStd": "Final STD",
+	"finalKG": "Final KG"
   },
   "generic": {
     "about": "About (EULA)",

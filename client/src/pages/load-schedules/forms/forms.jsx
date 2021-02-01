@@ -91,7 +91,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const [tab, setTab] = useState('0');
   const [drawerWidth, setDrawerWidth] = useState('75vw');
 
-  const [mode, setMode] = useState('3');
+  const [mode, setMode] = useState('2');
   const [unload, setUnload] = useState(false);
   const [supplier, setSupplier] = useState(undefined);
   const [drawer, setDrawer] = useState(undefined);
@@ -745,7 +745,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
         </>
       }
     >
-      <Form layout="vertical" form={form} scrollToFirstError initialValues={{ shls_ld_type: '3' }}>
+      <Form layout="vertical" form={form} scrollToFirstError initialValues={{ shls_ld_type: '2' }}>
         <Tabs defaultActiveKey="1" activeKey={tab} onChange={onTabChange} animated={false}>
           <TabPane tab={t('tabColumns.general')} key="0">
             <Form.Item name="supermode" noStyle />

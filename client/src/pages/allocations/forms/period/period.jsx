@@ -351,7 +351,7 @@ const Period = ({ selected, setVisibility, visible, onChange }) => {
                     ]}
                   >
                     <List.Item.Meta
-                      avatar={<Avatar>{item.aiprd_index}</Avatar>}
+                      avatar={<Avatar style={{backgroundColor: item.active?'red':null}}>{item.aiprd_index}</Avatar>}
                       // eslint-disable-next-line
                       title={
                         <a>

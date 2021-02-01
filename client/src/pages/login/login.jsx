@@ -75,7 +75,8 @@ const Login = ({ handleLogin, auth }) => {
           refresh_token: false,
         })
         .then(() => {
-          const token = sessionStorage.getItem('token');
+          const token = sessionStorage.getItem('token_as_new');
+          sessionStorage.setItem('token', token);
           dispatch({ type: AUTHORIZED, payload: token});
           history.push(ROUTES.HOME);
           
@@ -254,7 +255,7 @@ const Login = ({ handleLogin, auth }) => {
             },
           });
         } else if (response.data.user_status_flag === '0') {
-          sessionStorage.setItem('token', response.data.token);
+          sessionStorage.setItem('token_as_new', response.data.token);
           changePwd(values.language, response.data.userid, values.password, dispatch);
         } else if (response.data.twofa_result === 'AUTH 2FA') {
           sessionStorage.setItem('token_as_fa', response.data.token);
