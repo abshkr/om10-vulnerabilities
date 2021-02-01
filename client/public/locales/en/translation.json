@@ -359,6 +359,11 @@
     "axleWeightLimitNote": "Altered from Standard",
     "axleFrontWeightLimit": "Front Mass Limit",
     "axleRearWeightLimit": "Rear Mass Limit",
+    "axleWeighInOut": "Axle Weigh IN & Weigh OUT",
+    "axleWeighInMass": "Weigh IN",
+    "axleWeighOutMass": "Weigh OUT",
+    "axleWeighInTime": "Weigh IN Time",
+    "axleWeighOutTime": "Weigh OUT Time",
     "backColor": "Back Colour",
     "baseClass": "Base Class",
     "baseClassMaxDensity": "Base Class Max Density",
@@ -1116,6 +1121,7 @@
     "none": "None",
     "numOfCopies": "No. of Copies",
     "numOfSeals": "No. of Seals",
+    "number": "Number",
     "numberOfDrawerProducts": "Number Of Drawer Products",
     "numberOfTanks": "Number of Tanks",
     "numberOfUnloads": "Number of (Un)Loads",
@@ -1689,7 +1695,7 @@
     "bayKG": "Bay KG",
     "finalAmb": "Final AMB",
     "finalStd": "Final STD",
-	"finalKG": "Final KG"
+    "finalKG": "Final KG"
   },
   "generic": {
     "about": "About (EULA)",

@@ -359,6 +359,11 @@
     "axleWeightLimitNote": "与标准值的差值",
     "axleFrontWeightLimit": "车轴前端承重上限",
     "axleRearWeightLimit": "车轴后端承重上限",
+    "axleWeighInOut": "进库与出库车轴承重称量",
+    "axleWeighInMass": "进库称重",
+    "axleWeighOutMass": "出库称重",
+    "axleWeighInTime": "进库称重时间",
+    "axleWeighOutTime": "出库称重时间",
     "backColor": "背景颜色",
     "baseClass": "基础油品类别",
     "baseClassMaxDensity": "基础油品类别密度上限",
@@ -1116,6 +1121,7 @@
     "none": "不允许",
     "numOfCopies": "拷贝份数",
     "numOfSeals": "允许封签数",
+    "number": "编号",
     "numberOfDrawerProducts": "所属调配油品数量",
     "numberOfTanks": "所属油罐数量",
     "numberOfUnloads": "发油/卸油总批数",
@@ -1687,7 +1693,7 @@
     "bayStd": "油台标量",
     "finalAmb": "最终视量",
     "finalStd": "最终视量",
-	"finalKG": "最终质量(公斤)"
+    "finalKG": "最终质量(公斤)"
   },
   "generic": {
     "about": "关于(EULA)",

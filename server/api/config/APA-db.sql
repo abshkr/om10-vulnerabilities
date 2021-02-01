@@ -309,6 +309,7 @@ FROM
             , TA.TNKR_AXLE_ID
             , TA.EQPT_SEQ
             , TA.EQPT_ID
+            , TE.EQPT_CODE
             , TE.EQPT_CODE || '[' || NVL(TE.EQPT_TITLE, TE.EQPT_CODE) || ']'   AS EQPT_NAME
             , TA.EQPT_AXLE_ID
             , TA.LIMIT_TYPE_ID
