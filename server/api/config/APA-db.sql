@@ -3,7 +3,7 @@ insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIR
 insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIRED_BY_GUI) values ('AXLE_WEIGHT_LIMIT_TYPE', 'GML', 'GML | HML | XTRA | NA', NULL );
 
 drop table SPECAXLES;
-drop table EQUIP_AXLES;
+-- drop table EQUIP_AXLES;
 drop table AXLE_WEIGHT_LIMIT_LOOKUP;
 
 -- Weight limit lookup
@@ -37,8 +37,11 @@ create table SPECAXLES
 (
     TRIP_NO            NUMBER(9) NOT NULL,
     SUPP               VARCHAR2(16) NOT NULL,
-    AXLE_ID            NUMBER(4) NOT NULL,
-    AXLE_WEIGHT        NUMBER(9),
+    AXLE_ID            NUMBER(9) NOT NULL,
+    AXLE_WEIGH_IN      NUMBER(9),
+    AXLE_WEIGH_OUT     NUMBER(9),
+    TIME_WEIGH_IN      DATE,
+    TIME_WEIGH_OUT     DATE,
     CONSTRAINT PK_SPECAXLES
     PRIMARY KEY(TRIP_NO, SUPP, AXLE_ID),
     CONSTRAINT FK_SPECAXLES
@@ -282,4 +285,48 @@ WHERE
     AND TE.TC_EQPT = TA.EQPT_ID
 ORDER BY TK.TNKR_CODE, TE.TC_SEQNO, TA.AXLE_ID
 ) TAV
+/
+
+CREATE OR REPLACE VIEW TRIP_AXLES_VW
+AS
+SELECT
+    SD.SHLS_TRIP_NO             AS TRIP_NO,
+    SD.SHLS_SUPP                AS SUPP_CODE,
+    CP.CMPY_NAME                AS SUPP_NAME,
+    SA.AXLE_ID,
+    SA.AXLE_WEIGH_IN,
+    SA.AXLE_WEIGH_OUT,
+    SA.TIME_WEIGH_IN,
+    SA.TIME_WEIGH_OUT,
+    AX.*
+FROM
+    SCHEDULE        SD,
+    SPECAXLES       SA,
+    COMPANYS        CP,
+    (
+        SELECT 
+            TA.TNKR_CODE
+            , TA.TNKR_AXLE_ID
+            , TA.EQPT_SEQ
+            , TA.EQPT_ID
+            , TE.EQPT_CODE || '[' || NVL(TE.EQPT_TITLE, TE.EQPT_CODE) || ']'   AS EQPT_NAME
+            , TA.EQPT_AXLE_ID
+            , TA.LIMIT_TYPE_ID
+            , TA.AXLE_GROUP
+            , TA.USER_WEIGHT_LIMIT
+            , TA.LIMIT_TYPE_CODE
+            , TA.LIMIT_TYPE_NAME
+            , TA.AXLE_GROUP_NAME
+            , TA.AXLE_WEIGHT_LIMIT            
+        FROM 
+            TNKR_AXLES_VW TA, 
+            TRANSP_EQUIP TE
+        WHERE TA.EQPT_ID = TE.EQPT_ID
+    ) AX
+WHERE
+    SD.SHL_TANKER = AX.TNKR_CODE
+    AND SD.SHLS_SUPP = CP.CMPY_CODE
+    AND SD.SHLS_TRIP_NO = SA.TRIP_NO(+)
+    AND SD.SHLS_SUPP = SA.SUPP(+)
+    AND AX.TNKR_AXLE_ID = SA.AXLE_ID(+)
 /
