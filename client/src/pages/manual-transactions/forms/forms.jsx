@@ -641,28 +641,6 @@ const Forms = ({
             disabled={sourceType === 'SCHEDULE' && (loadType === 'BY_COMPARTMENT' || activeFlag === true)}
             config={config}
           />
-          {/* <Form.Item name="carrier" label={t('fields.mtDataCarrier')} rules={[{ required: true }]}>
-            <Select
-              dropdownMatchSelectWidth={false}
-              allowClear
-              showSearch
-              // disabled={sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT'}
-              disabled={sourceType === 'SCHEDULE' && (loadType === 'BY_COMPARTMENT' || activeFlag === true)}
-              loading={carriersLoading}
-              onChange={handleCarrierSelect}
-              optionFilterProp="children"
-              placeholder={t('placeholder.selectCarrier')}
-              filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              {carriers?.records?.map((item, index) => (
-                <Select.Option key={index} value={item.cmpy_code}>
-                  {item.cmpy_code + ' - ' + item.cmpy_name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item> */}
         </Col>
 
         <Col span={8}>
