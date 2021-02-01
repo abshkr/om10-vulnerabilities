@@ -34,13 +34,14 @@ import {
   Locks,
   SLP,
   LegacyExpires,
+  Number,
 } from './fields';
 import api, { TANKER_LIST } from '../../../api';
 import Compartments from './compartments';
-import Axles from './axles';
 import { Expiry, CheckList } from '../../../components';
 import columns from './columns';
 import { SETTINGS } from '../../../constants';
+import { useConfig } from 'hooks';
 
 const TabPane = Tabs.TabPane;
 
@@ -56,12 +57,14 @@ const FormModal = ({
   tankers,
 }) => {
   const { t } = useTranslation();
+  const { carrcode_tankernum_tag } = useConfig();
   const [form] = Form.useForm();
   const { resetFields } = form;
 
   const [tagCount, setTagCount] = useState(0);
   const [loadCount, setLoadCount] = useState(0);
   const [tripCount, setTripCount] = useState(0);
+  const [carrier, setCarrier] = useState(null);
 
   const { data: payload } = useSWR(TANKER_LIST.READ, { refreshInterval: 0 });
   const [equipment, setEquipment] = useState(undefined);
@@ -347,21 +350,39 @@ const FormModal = ({
                 <Owner form={form} value={value} />
               </Col>
               <Col span={8}>
-                <Carrier form={form} value={value} />
+                <Carrier form={form} value={value} setCarrier={setCarrier} />
               </Col>
             </Row>
 
-            <Row gutter={[8, 2]}>
-              <Col span={8}>
-                <Code form={form} value={value} tankers={tankers} config={config} />
-              </Col>
-              <Col span={8}>
-                <Name form={form} value={value} />
-              </Col>
-              <Col span={8}>
-                <TotalTrips form={form} value={value} />
-              </Col>
-            </Row>
+            {
+              carrcode_tankernum_tag ?
+              <Row gutter={[8, 2]}>
+                <Col span={6}>
+                  <Code form={form} value={value} tankers={tankers} config={config} />
+                </Col>
+                <Col span={6}>
+                  <Number form={form} value={value} carrier={carrier} tankers={tankers} />
+                </Col>
+                <Col span={6}>
+                  <Name form={form} value={value} />
+                </Col>
+                <Col span={6}>
+                  <TotalTrips form={form} value={value} />
+                </Col>
+              </Row>
+              :
+              <Row gutter={[8, 2]}>
+                <Col span={8}>
+                  <Code form={form} value={value} tankers={tankers} config={config} />
+                </Col>
+                <Col span={8}>
+                  <Name form={form} value={value} />
+                </Col>
+                <Col span={8}>
+                  <TotalTrips form={form} value={value} />
+                </Col>
+              </Row>
+            }
 
             <Row gutter={[8, 2]}>
               <Col span={8}>
@@ -404,16 +425,6 @@ const FormModal = ({
               <LegacyExpires form={form} value={value} expiryTypes={expiryTypes?.records}></LegacyExpires>
             ) : (
               <Expiry form={form} value={value} type={TANKER_LIST.EXPIRY} />
-            )}
-
-            {config?.siteUseAxleWeightLimit && value && <Divider>{t('tabColumns.axleWeightLimit')}</Divider>}
-
-            {config?.siteUseAxleWeightLimit && value && (
-              <Row gutter={[8, 2]}>
-                <Col span={24}>
-                  <Axles form={form} value={value} />
-                </Col>
-              </Row>
             )}
           </TabPane>
         </Tabs>

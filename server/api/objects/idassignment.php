@@ -209,7 +209,8 @@ class IDAssignment extends CommonClass
                 TNKR_CARRIER_NAME,
                 TNKR_OWNER,
                 TNKR_OWNER_NAME,
-                DECODE(TNKR_NAME, NULL, TNKR_CODE, TNKR_CODE||'['||TNKR_NAME||']') AS TNKR_DESC
+                DECODE(TNKR_NAME, NULL, TNKR_CODE, TNKR_CODE||'['||TNKR_NAME||']') AS TNKR_DESC,
+                TNKR_NUMBER
             FROM GUI_TANKERS
             WHERE TNKR_OWNER LIKE :tnkr_owner
             ORDER BY TNKR_CODE ASC";

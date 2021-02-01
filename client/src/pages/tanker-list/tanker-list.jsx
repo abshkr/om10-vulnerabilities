@@ -28,7 +28,7 @@ const TankerList = () => {
   const { data: expiryTypes } = useSWR(TANKER_LIST.EXPIRY);
 
   const [fields, setFields] = useState(
-    columns(expiryTypes?.records, t, expiryDateMode, siteUseAxleWeightLimit)
+    columns(expiryTypes?.records, t, expiryDateMode, siteUseAxleWeightLimit, config?.carrcode_tankernum_tag)
   );
 
   const data = payload?.records;
@@ -40,7 +40,7 @@ const TankerList = () => {
 
   useEffect(() => {
     if (expiryTypes) {
-      setFields(columns(expiryTypes?.records, t, expiryDateMode, siteUseAxleWeightLimit));
+      setFields(columns(expiryTypes?.records, t, expiryDateMode, siteUseAxleWeightLimit, config?.carrcode_tankernum_tag));
     }
   }, [expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit]);
 

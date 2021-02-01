@@ -106,6 +106,7 @@ const useConfig = () => {
     siteTransferTankSource: 'FROM',
     refreshAlarm: 10000,
     refreshProductMovement: 10000,
+    carrcode_tankernum_tag: false,
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -274,6 +275,7 @@ const useConfig = () => {
         refreshProductMovement: configurationObject?.SITE_REFRESH_PRODMV_INTERVAL
           ? configurationObject?.SITE_REFRESH_PRODMV_INTERVAL * 1000
           : 10000,
+        carrcode_tankernum_tag: configurationObject?.SITE_CARRCODE_TANKERNUM_TAG,
       });
     }
     // eslint-disable-next-line

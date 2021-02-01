@@ -891,7 +891,8 @@ class Tanker extends CommonClass
                 TNKR_PIN = :tnkr_pin,
                 TNKR_ARCHIVE = :tnkr_archive,
                 REMARKS = :remarks,
-                TNKR_LAST_MODIFIED = SYSDATE
+                TNKR_LAST_MODIFIED = SYSDATE,
+                TNKR_NUMBER = :tnkr_number
             WHERE TNKR_CODE = :tnkr_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
@@ -908,12 +909,69 @@ class Tanker extends CommonClass
         oci_bind_by_name($stmt, ':tnkr_pin', $this->tnkr_pin);
         oci_bind_by_name($stmt, ':tnkr_archive', $this->tnkr_archive);
         oci_bind_by_name($stmt, ':remarks', $this->remarks);
+        oci_bind_by_name($stmt, ':tnkr_number', $this->tnkr_number);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
+        }
+
+        //Update idassignment tag if in SITE_CARRCODE_TANKERNUM_TAG mode
+        $query = "SELECT NVL(MAX(CONFIG_VALUE), 'N') CONFIG_VALUE FROM SITE_CONFIG WHERE CONFIG_KEY = 'SITE_CARRCODE_TANKERNUM_TAG'";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        } else {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            if ($row['CONFIG_VALUE'] == 'Y' && $this->tnkr_number != $old_row['TNKR_NUMBER']) {
+                $tag_txt = $this->tnkr_carrier . $this->tnkr_number;
+                write_log(sprintf("Update id assignment tag that tanker is %s. new tag:%s", $this->tnkr_code, $tag_txt), 
+                    __FILE__, __LINE__, LogLevel::INFO);
+
+                $affected = 0;
+                $query = "SELECT COUNT(*) CN FROM ACCESS_KEYS WHERE KYA_TANKER = :tnkr_code";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+                if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                } else {
+                    $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+                    $affected = (int) $row['CN'];
+                    write_log(sprintf("ID assignment recors to be updated:%d", $affected), __FILE__, __LINE__);
+                }
+
+                $query = "
+                    UPDATE ACCESS_KEYS SET KYA_TXT = :tag_txt WHERE KYA_TANKER = :tnkr_code";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':tag_txt', $tag_txt);
+                oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+                if (!oci_execute($stmt, $this->commit_mode)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    throw new DatabaseException($e['message']);
+                    return false;
+                }
+
+                if ($affected > 0) {
+                    write_log("Update SITE_KYA_UPDATE in SITE table", __FILE__, __LINE__, LogLevel::INFO);
+                    $query = "
+                        UPDATE SITE
+                        SET KYA_CHANGE_DMY = SYSDATE, SITE_KYA_UPDATE = SITE_KYA_UPDATE + 1";
+                    $stmt = oci_parse($this->conn, $query);
+                    if (!oci_execute($stmt, $this->commit_mode)) {
+                        $e = oci_error($stmt);
+                        write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                        oci_rollback($this->conn);
+                        throw new DatabaseException($e['message']);
+                        return false;
+                    }
+                }
+            }
         }
 
         $query = "

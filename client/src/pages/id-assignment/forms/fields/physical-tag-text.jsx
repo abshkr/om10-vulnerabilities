@@ -10,7 +10,7 @@ import { IButton } from '../../../../components';
 
 import { ID_ASSIGNMENT } from '../../../../api';
 
-const PhysicalTagText = ({ form, value, physType }) => {
+const PhysicalTagText = ({ form, value, physType, autoTag, disabled }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -58,7 +58,13 @@ const PhysicalTagText = ({ form, value, physType }) => {
         kya_txt: value.kya_txt
       });
     }
-  }, [value, setFieldsValue]);
+
+    if (autoTag) {
+      setFieldsValue({
+        kya_txt: autoTag
+      });
+    }
+  }, [value, setFieldsValue, autoTag]);
 
   return (
     <Form.Item
@@ -70,10 +76,10 @@ const PhysicalTagText = ({ form, value, physType }) => {
     >
       <Input
         style={{ width: '100%' }}
-        disabled={isValidating}
+        disabled={isValidating || disabled}
         addonAfter={
           physType === '7' && (
-            <Button icon={<SecurityScanOutlined />} onClick={() => handleTagLookUp()}>
+            <Button disabled={disabled} icon={<SecurityScanOutlined />} onClick={() => handleTagLookUp()}>
               {t('operations.tagLookUp')}
             </Button>
           )

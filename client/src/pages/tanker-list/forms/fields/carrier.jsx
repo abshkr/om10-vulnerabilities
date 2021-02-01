@@ -4,7 +4,7 @@ import useSWR from 'swr';
 import { Form, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-const Carrier = ({ form, value }) => {
+const Carrier = ({ form, value, setCarrier }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -37,6 +37,7 @@ const Carrier = ({ form, value }) => {
         dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
+        onChange={setCarrier}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectCarrier') : null}
         filterOption={(input, option) =>
