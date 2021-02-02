@@ -100,4 +100,27 @@ class AllocationPeriod extends CommonClass
 
         return true;
     }
+
+    protected function post_delete()
+    {
+        $query = "UPDATE ALLOCS
+        SET ALLOC_PER_CHILD = NULL
+        WHERE ALL_PROD_PRODCODE = :aiprd_prodcode
+            AND ALL_PROD_PRODCMPY = :aiprd_suppcode
+            AND ALL_ATKY_AT_TYPE = :aiprd_type 
+            AND ALL_ATKY_AT_CMPY = :aiprd_cmpycode
+            AND ALLOC_PER_CHILD = :aiprd_index";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':aiprd_type', $this->aiprd_type);
+        oci_bind_by_name($stmt, ':aiprd_cmpycode', $this->aiprd_cmpycode);
+        oci_bind_by_name($stmt, ':aiprd_prodcode', $this->aiprd_prodcode);
+        oci_bind_by_name($stmt, ':aiprd_suppcode', $this->aiprd_suppcode);
+        oci_bind_by_name($stmt, ':aiprd_index', $this->aiprd_index);
+        
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+    }
 }
