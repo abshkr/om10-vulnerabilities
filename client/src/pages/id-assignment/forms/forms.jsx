@@ -330,7 +330,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
                   value={value} 
                   physType={physType} 
                   autoTag={autoTag} 
-                  disabled={carrcode_tankernum_tag} 
+                  disabled={carrcode_tankernum_tag && type == '4' /* 4 means TANKER */ } 
                 />
               </Col>
             </Row>
