@@ -2263,6 +2263,7 @@
     "allocations": "Allocations",
     "areaAccess": "Area Access",
     "assignments": "Assignments",
+    "axleWeighInOut": "Axle Weigh IN & Weigh OUT",
     "axleWeightLimit": "Axle Weight Limit",
     "baseProductDetails": "Base Product Details",
     "bol": "BOL",
@@ -2395,6 +2396,8 @@
     "volume": "Volume"
   },
   "validate": {
+    "axleWeighInLaterThanWeighOutTime": "The Weigh IN Time should be earlier than Weigh OUT Time",
+    "axleWeighOutEarlierThanWeighInTime": "The Weigh OUT Time should be later than Weigh IN Time",
     "cmptCapacityLow": "Compartment capacity should not be lower than safefill",
     "cmptSafefillHigh": "Compartment safefill should not be higher than capacity",
     "dataOutRange": " out of range",
