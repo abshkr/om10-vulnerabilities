@@ -98,6 +98,7 @@ const ConfigProvider = ({ children }) => {
     siteUseSpecIns: false,
     siteUseSafefillOnly: false,
     siteAllowDragDrop: false,
+    siteCloseoutAutoClose: false,
     load_tolerance_type: 'PERCENT',
     siteTransferTankSource: 'FROM',
   });
@@ -261,6 +262,7 @@ const ConfigProvider = ({ children }) => {
         siteUseSpecIns: configurationObject?.SITE_USE_SHLS_SPEC_INS,
         siteUseSafefillOnly: configurationObject?.SITE_USE_SAFEFILL_ONLY,
         siteAllowDragDrop: configurationObject?.SITE_USE_DRAG_DROP || false,
+        siteCloseoutAutoClose: configurationObject?.CLOSEOUT_AUTO_CLOSE || false,
         load_tolerance_type: configurationObject?.LOAD_TOLERANCE_TYPE,
         siteTransferTankSource: configurationObject?.SITE_TRANSFER_TANK_SOURCE || 'FROM',
         revalidate: () => onRevalidate(),

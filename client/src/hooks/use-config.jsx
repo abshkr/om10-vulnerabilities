@@ -100,6 +100,7 @@ const useConfig = () => {
     siteUseSpecIns: false,
     siteUseSafefillOnly: false,
     siteAllowDragDrop: false,
+    siteCloseoutAutoClose: false,
     load_tolerance_type: 'PERCENT',
     siteTransferTankSource: 'FROM',
     refreshAlarm: 10000,
@@ -262,6 +263,7 @@ const useConfig = () => {
         siteUseSpecIns: configurationObject?.SITE_USE_SHLS_SPEC_INS,
         siteUseSafefillOnly: configurationObject?.SITE_USE_SAFEFILL_ONLY,
         siteAllowDragDrop: configurationObject?.SITE_USE_DRAG_DROP || false,
+        siteCloseoutAutoClose: configurationObject?.CLOSEOUT_AUTO_CLOSE || false,
         load_tolerance_type: configurationObject?.LOAD_TOLERANCE_TYPE,
         siteTransferTankSource: configurationObject?.SITE_TRANSFER_TANK_SOURCE || 'FROM',
         refreshAlarm: configurationObject?.SITE_REFRESH_ALARM_INTERVAL
