@@ -2261,6 +2261,7 @@
     "allocations": "油品配额管理",
     "areaAccess": "区域权限",
     "assignments": "密钥管理",
+    "axleWeighInOut": "进库与出库车轴承重称量",
     "axleWeightLimit": "车轴承重上限",
     "baseProductDetails": "基础油品转移明细",
     "bol": "发油账单",
@@ -2393,6 +2394,8 @@
     "volume": "容积"
   },
   "validate": {
+    "axleWeighInLaterThanWeighOutTime": "进库称重时间应该早于出库称重时间",
+    "axleWeighOutEarlierThanWeighInTime": "出库称重时间应该晚于进库称重时间",
     "cmptCapacityLow": "油仓最大许可容量不应该低于其安全容量",
     "cmptSafefillHigh": "油仓安全容量不应该高于其最大许可容量",
     "dataOutRange": "超出范围",
