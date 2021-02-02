@@ -174,11 +174,11 @@ const PeriodForm = ({ value, units, parent, revalidate, data, onChange }) => {
             <InputNumber min={0} style={{ width: '100%' }} />
           </Form.Item>
 
-          <Form.Item name="aiprd_qtylimit" label={t('fields.quantityAllocated')}>
+          <Form.Item name="aiprd_qtylimit" label={t('fields.quantityAllocated')} rules={[{ required: true }]}>
             <InputNumber min={0} style={{ width: '100%' }} />
           </Form.Item>
 
-          <Form.Item name="aiprd_produnit" label={t('fields.unit')}>
+          <Form.Item name="aiprd_produnit" label={t('fields.unit')} rules={[{ required: true }]}>
             <Select
               dropdownMatchSelectWidth={false}
               loading={!units}
@@ -197,11 +197,11 @@ const PeriodForm = ({ value, units, parent, revalidate, data, onChange }) => {
             </Select>
           </Form.Item>
 
-          <Form.Item name="aiprd_daystart" label={t('fields.startDate')}>
+          <Form.Item name="aiprd_daystart" label={t('fields.startDate')} rules={[{ required: true }]}>
             <DatePicker format={FORMAT} style={{ width: '100%' }} />
           </Form.Item>
 
-          <Form.Item name="aiprd_dayend" label={t('fields.endDate')}>
+          <Form.Item name="aiprd_dayend" label={t('fields.endDate')} rules={[{ required: true }]}>
             <DatePicker format={FORMAT} style={{ width: '100%' }} />
           </Form.Item>
         </TabPane>
