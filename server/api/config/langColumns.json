@@ -1599,6 +1599,13 @@
       "LD_TYPE_CODE": "Ld Type Code",
       "LD_TYPE_TEXT": "Ld Type Text"
     },
+    "EQUIP_AXLES": {
+      "EQPT_ID": "Eqpt ID",
+      "AXLE_ID": "Axle No.",
+      "LIMIT_TYPE_ID": "Type of Mass Limit",
+      "AXLE_GROUP": "Axle Group",
+      "USER_WEIGHT_LIMIT": "Mass Limit"
+    },
     "EQUIP_TYPES": {
       "ETYP_ID": "Etyp Id",
       "ETYP_CLASS": "Etyp Class",
@@ -4042,6 +4049,15 @@
       "JNL_CAT": "Jnl Cat",
       "SOURCE": "Source"
     },
+    "SPECAXLES": {
+      "TRIP_NO": "Trip No.",
+      "SUPP": "Supplier",
+      "AXLE_ID": "Axle No",
+      "AXLE_WEIGH_IN": "Weigh IN Mass",
+      "AXLE_WEIGH_OUT": "Weigh Out Mass",
+      "TIME_WEIGH_IN": "Weigh IN Time",
+      "TIME_WEIGH_OUT": "Weigh Out Time"
+    },
     "SPECDETS": {
       "SCHD_PMV_NUM": "Schd Pmv Num",
       "SCHDSPEC_SHLSTRIP": "Schdspec Shlstrip",
@@ -6460,6 +6476,13 @@
       "LANG_ID": "装载方式语言",
       "LD_TYPE_CODE": "装载方式代码",
       "LD_TYPE_TEXT": "装载方式文本"
+    },
+    "EQUIP_AXLES": {
+      "EQPT_ID": "运输设备编号",
+      "AXLE_ID": "车轴编号",
+      "LIMIT_TYPE_ID": "车轴承重上限类型",
+      "AXLE_GROUP": "车轴组合",
+      "USER_WEIGHT_LIMIT": "车轴承重上限"
     },
     "EQUIP_TYPES": {
       "ETYP_ID": "运输设备类型编号",
@@ -8903,6 +8926,15 @@
       "SEQ": "Seq",
       "JNL_CAT": "Jnl Cat",
       "SOURCE": "Source"
+    },
+    "SPECAXLES": {
+      "TRIP_NO": "提单号",
+      "SUPP": "供应商",
+      "AXLE_ID": "车轴编号",
+      "AXLE_WEIGH_IN": "进库称重",
+      "AXLE_WEIGH_OUT": "出库称重",
+      "TIME_WEIGH_IN": "进库称重时间",
+      "TIME_WEIGH_OUT": "出库称重时间"
     },
     "SPECDETS": {
       "SCHD_PMV_NUM": "车头编号",

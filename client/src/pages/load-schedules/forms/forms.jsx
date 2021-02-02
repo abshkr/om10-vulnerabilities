@@ -26,6 +26,7 @@ import {
   Checkbox,
   InputNumber,
   Tooltip,
+  Divider,
 } from 'antd';
 
 import { useTranslation } from 'react-i18next';
@@ -67,6 +68,7 @@ import Transactions from './transactions';
 import Summary from './summary';
 import Seals from './seals';
 import BOL from './bol';
+import Axles from './axles';
 import { ManualTransactionsPopup } from '../../manual-transactions';
 
 const TabPane = Tabs.TabPane;
@@ -634,7 +636,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             {t('operations.cancel')}
           </Button>
 
-          {!READ_ONLY && tab !== '6' && tab !== '7' && tab !== '8' && tab !== '9' && (
+          {!READ_ONLY && tab !== '6' && tab !== '7' && tab !== '8' && tab !== '9' && tab !== '10' && (
             <Button
               type="primary"
               icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
@@ -646,19 +648,25 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             </Button>
           )}
 
-          {!IS_CREATING && !READ_ONLY && tab !== '6' && tab !== '7' && tab !== '8' && tab !== '9' && (
-            <>
-              <Button
-                type="danger"
-                icon={<DeleteOutlined />}
-                style={{ float: 'right', marginRight: 5 }}
-                disabled={!access?.canDelete}
-                onClick={onDelete}
-              >
-                {t('operations.delete')}
-              </Button>
-            </>
-          )}
+          {!IS_CREATING &&
+            !READ_ONLY &&
+            tab !== '6' &&
+            tab !== '7' &&
+            tab !== '8' &&
+            tab !== '9' &&
+            tab !== '10' && (
+              <>
+                <Button
+                  type="danger"
+                  icon={<DeleteOutlined />}
+                  style={{ float: 'right', marginRight: 5 }}
+                  disabled={!access?.canDelete}
+                  onClick={onDelete}
+                >
+                  {t('operations.delete')}
+                </Button>
+              </>
+            )}
 
           {tab === '3' && !IS_CREATING && (
             <Checkbox onChange={(e) => setFieldsValue({ supermode: e.target.checked })}>
@@ -1072,6 +1080,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               }}
             />
           </TabPane>
+
+          {config?.siteUseAxleWeightLimit && value && (
+            <TabPane tab={t('tabColumns.axleWeighInOut')} disabled={IS_CREATING} key="10">
+              <Axles value={value} />
+            </TabPane>
+          )}
         </Tabs>
       </Form>
     </Drawer>

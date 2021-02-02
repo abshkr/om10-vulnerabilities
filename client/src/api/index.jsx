@@ -64,6 +64,7 @@ import * as DELIVERY_DETAILS from './delivery-details';
 import * as NOMINATION_TRANSACTIONS from './nomination-transactions';
 import * as LOAD_BAYS from './load-bays';
 import * as AXLE_WEIGHTS from './axle-weights';
+import * as TRIP_AXLES from './trip-axles';
 
 export {
   AUTH,
@@ -130,6 +131,7 @@ export {
   NOMINATION_TRANSACTIONS,
   LOAD_BAYS,
   AXLE_WEIGHTS,
+  TRIP_AXLES,
 };
 
 export default api;
