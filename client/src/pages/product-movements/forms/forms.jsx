@@ -520,10 +520,10 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
       >
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-            <Divider orientation="left">{t('fields.beginMovement')}</Divider>
+            <Divider style={{marginBottom: 5 }} orientation="left">{t('fields.beginMovement')}</Divider>
             {/* <StartFolioDes form={form} value={value} /> */}
             <StartFolio form={form} value={value} />
-            <Divider orientation="left">{t('fields.details')}</Divider>
+            <Divider style={{marginBottom: 5 }} orientation="left">{t('fields.details')}</Divider>
             <Row gutter={[8, 8]}>
               <Col span={6}>
                 <BaseProduct form={form} value={value} setBase={setBase} />
@@ -565,7 +565,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
                 <Tag style={{width: '100%', textAlign: 'center'}}>{value?.percentage + "%"} </Tag>
               </Col>
             </Row>
-            <Divider orientation="left">{t('fields.endMovement')}</Divider>
+            <Divider style={{marginBottom: 5 }} orientation="left">{t('fields.endMovement')}</Divider>
             <EndFolio form={form} value={value} />
           </TabPane>
         </Tabs>

@@ -453,6 +453,10 @@ class Tanker extends CommonClass
             $this->tnkr_lock = 'N';
         }
 
+        if (!isset($this->tnkr_number)) {
+            $this->tnkr_number = null;
+        }
+
         $query = "
             INSERT INTO TANKERS (
                 TNKR_CODE,
@@ -474,7 +478,8 @@ class Tanker extends CommonClass
                 LAST_TRIP,
                 STATS,
                 TNKR_MAX_KG,
-                REMARKS
+                REMARKS,
+                TNKR_NUMBER
             )
             VALUES
             (
@@ -497,7 +502,8 @@ class Tanker extends CommonClass
                 :last_trip,
                 :stats,
                 :tnkr_max_kg,
-                :remarks
+                :remarks,
+                :tnkr_number
             )";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
@@ -519,6 +525,7 @@ class Tanker extends CommonClass
         oci_bind_by_name($stmt, ':tnkr_owner', $this->tnkr_owner);
         oci_bind_by_name($stmt, ':tnkr_carrier', $this->tnkr_carrier);
         oci_bind_by_name($stmt, ':tnkr_etp', $this->tnkr_etp);
+        oci_bind_by_name($stmt, ':tnkr_number', $this->tnkr_number);
         oci_bind_by_name($stmt, ':term_code', $term_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
@@ -874,6 +881,10 @@ class Tanker extends CommonClass
         } else {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
+        if (!isset($this->tnkr_number)) {
+            $this->tnkr_number = null;
         }
 
         $query = "
