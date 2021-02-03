@@ -93,7 +93,7 @@ class AllocationPeriod extends CommonClass
 
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             $previous_used = false;
-            if ($row['ALLOC_PER_CHILD'] > 0) {
+            if (intval($row['ALLOC_PER_CHILD']) > 0) {
                 $previous_used = true;
             }
 
@@ -120,11 +120,12 @@ class AllocationPeriod extends CommonClass
                 return false;
             }
 
-            if ($previous_used) {
+            if (!$previous_used) {
                 write_log("Update ALLOCS quantity", __FILE__, __LINE__, LogLevel::INFO);
 
                 $query = "UPDATE ALLOCS
                 SET ALLOC_LIMIT = :aiprd_qtylimit,
+                    ALLOC_LEFT = :aiprd_qtylimit,
                     ALLOC_UNITS = :aiprd_produnit
                 WHERE ALL_PROD_PRODCODE = :aiprd_prodcode
                     AND ALL_PROD_PRODCMPY = :aiprd_suppcode
