@@ -69,9 +69,6 @@ const PeriodForm = ({ value, units, parent, revalidate, data, onChange }) => {
       return;
     }
 
-    const coversToday = moment().format(SETTINGS.DATE_TIME_FORMAT) > tmp_start && 
-      moment().format(SETTINGS.DATE_TIME_FORMAT) < tmp_end
-
     const record = {
       aiprd_type: parent?.aitem_type,
       aiprd_cmpycode: parent?.aitem_cmpycode,
@@ -96,9 +93,7 @@ const PeriodForm = ({ value, units, parent, revalidate, data, onChange }) => {
             Modal.destroyAll();
 
             revalidate();
-            if (coversToday) {
-              onChange();
-            }
+            onChange();
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
               description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
@@ -131,6 +126,7 @@ const PeriodForm = ({ value, units, parent, revalidate, data, onChange }) => {
             Modal.destroyAll();
 
             revalidate();
+            onChange();
             notification.success({
               message: t('messages.deleteSuccess'),
               description: `${t('descriptions.deleteSuccess')}`,
