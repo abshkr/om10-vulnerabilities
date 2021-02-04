@@ -88,6 +88,13 @@ class CommonClass
     public $check_exists = true;
 
     /**
+     * Not every update call changes db. Once it changes, update() calls $journal->valueChange
+     * to write a journal, and change this $record_updated to be true, so post_update()
+     * can use this property. See objects\folio.php as a sample
+     */
+    protected $record_updated = false;
+
+    /**
      * If del_n_ins_children is true, then it calls delete_children()
      * and insert_children() when update children. 
      * If del_n_ins_children is false, call update_children() to update children.
@@ -421,6 +428,7 @@ class CommonClass
     public function update()
     {
         $this->commit_mode = OCI_NO_AUTO_COMMIT;
+        $this->record_updated = false;
 
         $query = "
             SELECT * FROM " . $this->VIEW_NAME . $this->view_primary_key_where();
@@ -465,6 +473,13 @@ class CommonClass
 
             throw new DatabaseException($e['message']);
             return false;
+        }
+
+        foreach ($this as $key => $value) {
+            if (array_key_exists(strtoupper($key), $row) && $value != $row[strtoupper($key)]) {
+                $this->record_updated = true;
+                break;
+            }
         }
 
         if ($this->post_update() === false) {

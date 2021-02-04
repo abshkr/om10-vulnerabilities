@@ -17,6 +17,8 @@ class FolioMeter extends CommonClass
 
     public function post_update()
     {
+        // write_log(sprintf("%s::%s() START.", __CLASS__, __FUNCTION__),
+        //     __FILE__, __LINE__);
         $next_folio = $this->closeout_nr + 1;
 
         $query = "
@@ -31,14 +33,33 @@ class FolioMeter extends CommonClass
         oci_bind_by_name($stmt, ':open_amb_tot', $this->close_amb_tot);
         oci_bind_by_name($stmt, ':closeout_nr', $next_folio);
         oci_bind_by_name($stmt, ':meter_code', $this->meter_code);
-        if (oci_execute($stmt, $this->commit_mode)) {
-            return true;
-        } else {
+        if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
+
+        if ($this->record_updated) {
+            $cur_user = Utilities::getCurrPsn();
+            $query = "
+                UPDATE " . $this->TABLE_NAME . " SET USER_CODE = :user_code, 
+                    LAST_CHG_TIME = SYSDATE
+                WHERE CLOSEOUT_NR = :closeout_nr
+                    AND METER_CODE = :meter_code";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':user_code', $cur_user);
+            oci_bind_by_name($stmt, ':closeout_nr', $this->closeout_nr);
+            oci_bind_by_name($stmt, ':meter_code', $this->meter_code);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return false;
+            }
+        }
+
+        return true;
     }
 }
 
@@ -74,14 +95,33 @@ class FolioTank extends CommonClass
         oci_bind_by_name($stmt, ':open_temp', $this->close_temp);
         oci_bind_by_name($stmt, ':closeout_nr', $next_folio);
         oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
-        if (oci_execute($stmt, $this->commit_mode)) {
-            return true;
-        } else {
+        if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
         }
+
+        if ($this->record_updated) {
+            $cur_user = Utilities::getCurrPsn();
+            $query = "
+                UPDATE " . $this->TABLE_NAME . " SET USER_CODE = :user_code,
+                    LAST_CHG_TIME = SYSDATE
+                WHERE CLOSEOUT_NR = :closeout_nr
+                    AND TANK_CODE = :tank_code";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':user_code', $cur_user);
+            oci_bind_by_name($stmt, ':closeout_nr', $this->closeout_nr);
+            oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return false;
+            }
+        }
+
+        return true;
     }
 }
 
