@@ -19,3 +19,4 @@ export const SET_SITE_AXLE_LIMIT_TYPE = '/api/pages/site_config/update.php';
 export const GET_ETYP_AXLE_WEIGHTS = '/api/pages/axle_weight/get_etyp_axle_weights.php';
 export const GET_EQPT_AXLE_WEIGHTS = '/api/pages/axle_weight/get_eqpt_axle_weights.php';
 export const GET_TNKR_AXLE_WEIGHTS = '/api/pages/axle_weight/get_tnkr_axle_weights.php';
+export const GET_TRIP_AXLE_WEIGHTS = '/api/pages/axle_weight/get_trip_axle_weights.php';

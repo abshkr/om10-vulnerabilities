@@ -367,4 +367,24 @@ class AxleWeight extends CommonClass
             return null;
         }
     }
+
+    public function get_trip_axle_weights()
+    {
+        $query = "
+            SELECT *
+            FROM TRIP_AXLES_VW
+            WHERE SUPP_CODE = :supp_code AND TRIP_NO=:trip_no
+            ORDER BY SUPP_CODE, TRIP_NO, TNKR_AXLE_ID
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supp_code', $this->supplier_code);
+        oci_bind_by_name($stmt, ':trip_no', $this->shls_trip_no);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
 }

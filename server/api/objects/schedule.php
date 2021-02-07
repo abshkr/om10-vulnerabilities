@@ -401,6 +401,32 @@ class Schedule extends CommonClass
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
+        // delete SPECAXLES
+        $query = "DELETE FROM SPECAXLES WHERE TRIP_NO = :trip_no AND SUPP = :supplier";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':trip_no', $this->shls_trip_no);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier_code);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(400, response("__SAVE_FAILED__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        // delete DOR_HISTORY
+        $query = "DELETE FROM DOR_HISTORY WHERE DH_SHLSTRIP = :trip_no AND DH_SHLSSUPP = :supplier";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':trip_no', $this->shls_trip_no);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier_code);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(400, response("__SAVE_FAILED__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
         $query = "DELETE FROM SEAL WHERE SEALSPEC_SHLSTRIP = :trip_no AND SEALSPEC_SHLSSUPP = :supplier";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':trip_no', $this->shls_trip_no);
