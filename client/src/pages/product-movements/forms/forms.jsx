@@ -23,7 +23,7 @@ import {
   EndFolio,
   BayLoaded
 } from './fields';
-
+import ProgressTable from './progress-table/progress-table'
 import { 
   Form, 
   Button, 
@@ -568,6 +568,11 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
             <Divider style={{marginBottom: 5 }} orientation="left">{t('fields.endMovement')}</Divider>
             <EndFolio form={form} value={value} />
           </TabPane>
+          {value.pmv_status === '3' && //Only display this tab when it is COMPLETE
+            <TabPane tab={t('tabColumns.summary')} key="2">
+              <ProgressTable value={value} />
+            </TabPane>
+          }
         </Tabs>
       </Form>
     </Drawer>
