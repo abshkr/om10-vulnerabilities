@@ -33,6 +33,7 @@ class ProdMovement extends CommonClass
         "BAY_AVL_SUM",
         "BAY_CVL_SUM",
         "PERCENTAGE", 
+        "PMV_NUMBER",
     );
 
     /*
