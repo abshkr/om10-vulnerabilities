@@ -628,7 +628,7 @@ class ProdMovement extends CommonClass
                     PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) + NVL(LOADED_CVL, 0), 
                     DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - PMV_OPEN_COR + NVL(LOADED_CVL, 0)) CVL_SUM,
                 DECODE(PMV_SRCTYPE, 3, 
-                    PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) + NVL(LOADED_KG, 0), 
+                    PMV_OPEN_KG - DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) + NVL(LOADED_KG, 0), 
                     DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) - PMV_OPEN_KG + NVL(LOADED_KG, 0)) KG_SUM
             FROM PRODUCT_MVMNTS, 
             (
@@ -774,7 +774,7 @@ class ProdMovement extends CommonClass
                     PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) + NVL(LOADED_CVL, 0), 
                     DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - PMV_OPEN_COR + NVL(LOADED_CVL, 0)) CVL_SUM,
                 DECODE(PMV_SRCTYPE, 3, 
-                    PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) + NVL(LOADED_KG, 0), 
+                    PMV_OPEN_KG - DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) + NVL(LOADED_KG, 0), 
                     DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) - PMV_OPEN_KG + NVL(LOADED_KG, 0)) KG_SUM
             FROM PRODUCT_MVMNTS, 
             (
