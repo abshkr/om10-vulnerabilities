@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Input, Form } from 'antd';
 import _ from 'lodash';
 
-const InputNumber = ({ 
+const InputNumber = ({
   form,
   value,
   name,
@@ -19,7 +19,7 @@ const InputNumber = ({
   allowClear,
   maxLength,
   onChange,
-  onPressEnter
+  onPressEnter,
 }) => {
   const { t } = useTranslation();
 
@@ -30,13 +30,15 @@ const InputNumber = ({
     const invalid = _.isNaN(number);
 
     const decimals = _.toString(number).split('.')[1]?.length || 0;
-    
+
     if ((required && input === '') || (required && !input)) {
       return Promise.reject(`${t('validate.set')} ─ ${label}`);
     }
 
     if (maxLength !== undefined && input && input.length > maxLength) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: ${maxLength} ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${maxLength} ─ ${t('descriptions.maxCharacters')}`
+      );
     }
 
     if (input && input !== '' && invalid) {
@@ -44,7 +46,9 @@ const InputNumber = ({
     }
 
     if (precision !== undefined && decimals > precision) {
-      return Promise.reject(`${t('validate.decimalPlacesExceeded')} ${precision} ─ ${t('descriptions.invalidDecimals')}`);
+      return Promise.reject(
+        `${t('validate.decimalPlacesExceeded')} ${precision} ─ ${t('descriptions.invalidDecimals')}`
+      );
     }
 
     if (max !== undefined && input !== '' && !invalid && number > max) {
@@ -59,7 +63,7 @@ const InputNumber = ({
   };
 
   useEffect(() => {
-//    if (value && setFieldsValue) {
+    //    if (value && setFieldsValue) {
     if (value || value === 0) {
       let index = value;
       if (_.isObject(value) && value.hasOwnProperty(name)) {
@@ -78,27 +82,32 @@ const InputNumber = ({
         });
       }
     }
+    if (value === '') {
+      form.setFieldsValue({
+        [name]: '',
+      });
+    }
   }, [value]);
-//  }, [value, setFieldsValue]);
+  //  }, [value, setFieldsValue]);
 
   const handleValueChange = (event) => {
     //console.log('handleValueChange in InputNumber', event?.target?.value);
     //console.log('handleValueChange in InputNumber', onChange);
     if (_.isFunction(onChange)) {
-       onChange(event?.target?.value);
+      onChange(event?.target?.value);
     }
-  }
+  };
 
   const handlePressEnter = (event) => {
     //console.log('handlePressEnter in InputNumber', event?.target?.value);
     if (_.isFunction(onPressEnter)) {
       onPressEnter(event?.target?.value);
     }
-  }
+  };
 
   return (
     <Form.Item name={name} label={label} rules={[{ required: required, validator: validate }]}>
-      <Input 
+      <Input
         //type="number"
         id={id}
         style={style}
