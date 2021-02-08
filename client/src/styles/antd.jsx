@@ -385,5 +385,9 @@ const AntdStyleProvider = createGlobalStyle`
     background: #040d17 !important;
   }
 
+  .ant-form-item-explain {
+    color: #ff4d4f;
+  }
+
 `;
 export default AntdStyleProvider;

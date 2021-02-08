@@ -33,6 +33,7 @@ class ProdMovement extends CommonClass
         "BAY_AVL_SUM",
         "BAY_CVL_SUM",
         "PERCENTAGE", 
+        "PMV_NUMBER",
     );
 
     /*
@@ -537,7 +538,7 @@ class ProdMovement extends CommonClass
                 PMV_INTENDED_QTY,
                 PMV_OPENING_QTY,
                 PMV_MOVED_QTY,
-                DECODE(PMV_INTENDED_QTY, 0, 0, PMV_MOVED_QTY / PMV_INTENDED_QTY) * 100 PERCENTAGE,
+                ROUND(DECODE(PMV_INTENDED_QTY, 0, 0, PMV_MOVED_QTY / PMV_INTENDED_QTY) * 100, 2) PERCENTAGE,
                 PMV_EXPCTD_DENS,
                 PMV_OBSVD_DENS,
                 PMV.PMV_DST_TERMINAL,
@@ -628,7 +629,7 @@ class ProdMovement extends CommonClass
                     PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) + NVL(LOADED_CVL, 0), 
                     DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - PMV_OPEN_COR + NVL(LOADED_CVL, 0)) CVL_SUM,
                 DECODE(PMV_SRCTYPE, 3, 
-                    PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) + NVL(LOADED_KG, 0), 
+                    PMV_OPEN_KG - DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) + NVL(LOADED_KG, 0), 
                     DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) - PMV_OPEN_KG + NVL(LOADED_KG, 0)) KG_SUM
             FROM PRODUCT_MVMNTS, 
             (
@@ -681,7 +682,7 @@ class ProdMovement extends CommonClass
                 // $result_array[$i]['bay_avl_sum'] = floatval($row['BAY_AVL_SUM']);
                 // $result_array[$i]['bay_cvl_sum'] = floatval($row['BAY_CVL_SUM']);
                 $result_array[$i]['percentage'] = 
-                    ($produce_moved) * 100 / floatval($result_array[$i]['pmv_intended_qty']);
+                    round(($produce_moved) * 100 / floatval($result_array[$i]['pmv_intended_qty']), 2);
             }
         }
     }
@@ -774,7 +775,7 @@ class ProdMovement extends CommonClass
                     PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) + NVL(LOADED_CVL, 0), 
                     DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - PMV_OPEN_COR + NVL(LOADED_CVL, 0)) CVL_SUM,
                 DECODE(PMV_SRCTYPE, 3, 
-                    PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) + NVL(LOADED_KG, 0), 
+                    PMV_OPEN_KG - DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) + NVL(LOADED_KG, 0), 
                     DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) - PMV_OPEN_KG + NVL(LOADED_KG, 0)) KG_SUM
             FROM PRODUCT_MVMNTS, 
             (
@@ -842,6 +843,63 @@ class ProdMovement extends CommonClass
         //         AND DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) = TANK_CODE";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    /**
+        Old implementation is in prod_movement.pc. Check https://dev.diamondkey.com/browse/OM5K-8428 for details
+        EXEC SQL DECLARE batch_cur CURSOR FOR
+        SELECT
+            PMV.PMV_NUMBER,
+            PMV.PMV_SRC_TERMINAL,
+            PMV.PMV_SRCTYPE,
+            PMV.PMV_SRCCODE,
+            PMV.PMV_DST_TERMINAL,
+            PMV_MOVED_QTY,
+            PMV.PMV_DSTTYPE,
+            PMV.PMV_DSTCODE,
+            PMV.PMV_PRDCTLNK,
+            PMV.PMV_BATCHCODE,
+            UPPER(ML.MESSAGE),
+            PMV.PMV_STATUS
+        FROM PRODUCT_MVMNTS PMV, ENUMITEM EI, MSG_LOOKUP ML
+        WHERE
+            (PMV.PMV_SRC_TERMINAL = :g_pmvDepot OR PMV.PMV_DST_TERMINAL = :g_pmvDepot)
+            AND PMV.PMV_STATUS = EI.ENUM_NO
+            AND EI.ENUM_TMM = ML.MSG_ID
+            AND EI.ENUMTYPENAME = 'PMV_STATE'
+            AND ML.LANG_ID = :o_LANG_ID
+            AND PMV_BATCHCODE = :o_PMV_BATCHCODE AND PMV_STATUS = 3
+            ORDER BY NVL(PMV.PMV_DATE2,SYSDATE) DESC, PMV.PMV_NUMBER DESC;
+    */
+    public function progress_table()
+    {
+        //PMV_STATUS == 3 means COMPLETE
+        $query = "
+            SELECT PMV.PMV_NUMBER,
+                PMV.PMV_SRC_TERMINAL,
+                PMV.PMV_SRCTYPE,
+                PMV.PMV_SRCCODE,
+                PMV.PMV_DST_TERMINAL,
+                PMV_MOVED_QTY,
+                PMV.PMV_DSTTYPE,
+                PMV.PMV_DSTCODE,
+                PMV.PMV_PRDCTLNK,
+                PMV.PMV_BATCHCODE,
+                PMV_STATE_NAME PMV_STATUS_NAME,
+                PMV.PMV_STATUS
+            FROM PRODUCT_MVMNTS PMV, PMV_STATE_TYP
+            WHERE PMV.PMV_STATUS = PMV_STATE_TYP.PMV_STATE_ID
+                AND PMV_BATCHCODE = :pmv_batchcode AND PMV_STATUS = 3
+            ORDER BY NVL(PMV.PMV_DATE2, SYSDATE) DESC, PMV.PMV_NUMBER DESC";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':pmv_batchcode', $this->pmv_batchcode);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {

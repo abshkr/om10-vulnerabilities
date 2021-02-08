@@ -10,8 +10,7 @@ const Carrier = ({ form, customer, value, onChange, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
-  const curCust = value ? value.order_cust_acnt : customer;
-  const { data: options, isValidating } = useSWR(`${ORDER_LISTINGS.CARRIERS}?customer=${curCust}`);
+  const { data: options, isValidating } = useSWR(`${ORDER_LISTINGS.CARRIERS}?customer=${customer}`);
 
   const validate = (rule, input) => {
     if (rule.required) {

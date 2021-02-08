@@ -101,6 +101,7 @@ const ConfigProvider = ({ children }) => {
     siteUseAxleWeightLimit: false,
     siteAxleWeightLimitType: false,
     siteAllowDragDrop: false,
+    siteCloseoutAutoClose: false,
     load_tolerance_type: 'PERCENT',
     siteTransferTankSource: 'FROM',
   });
@@ -267,6 +268,7 @@ const ConfigProvider = ({ children }) => {
         siteUseAxleWeightLimit: configurationObject?.SITE_USE_AXLE_WEIGHT_LIMIT,
         siteAxleWeightLimitType: configurationObject?.AXLE_WEIGHT_LIMIT_TYPE,
         siteAllowDragDrop: configurationObject?.SITE_USE_DRAG_DROP || false,
+        siteCloseoutAutoClose: configurationObject?.CLOSEOUT_AUTO_CLOSE || false,
         load_tolerance_type: configurationObject?.LOAD_TOLERANCE_TYPE,
         siteTransferTankSource: configurationObject?.SITE_TRANSFER_TANK_SOURCE || 'FROM',
         revalidate: () => onRevalidate(),
