@@ -537,7 +537,7 @@ class ProdMovement extends CommonClass
                 PMV_INTENDED_QTY,
                 PMV_OPENING_QTY,
                 PMV_MOVED_QTY,
-                DECODE(PMV_INTENDED_QTY, 0, 0, PMV_MOVED_QTY / PMV_INTENDED_QTY) * 100 PERCENTAGE,
+                ROUND(DECODE(PMV_INTENDED_QTY, 0, 0, PMV_MOVED_QTY / PMV_INTENDED_QTY) * 100, 2) PERCENTAGE,
                 PMV_EXPCTD_DENS,
                 PMV_OBSVD_DENS,
                 PMV.PMV_DST_TERMINAL,
@@ -681,7 +681,7 @@ class ProdMovement extends CommonClass
                 // $result_array[$i]['bay_avl_sum'] = floatval($row['BAY_AVL_SUM']);
                 // $result_array[$i]['bay_cvl_sum'] = floatval($row['BAY_CVL_SUM']);
                 $result_array[$i]['percentage'] = 
-                    ($produce_moved) * 100 / floatval($result_array[$i]['pmv_intended_qty']);
+                    round(($produce_moved) * 100 / floatval($result_array[$i]['pmv_intended_qty']), 2);
             }
         }
     }
