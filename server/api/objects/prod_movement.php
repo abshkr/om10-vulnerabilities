@@ -672,11 +672,11 @@ class ProdMovement extends CommonClass
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             if ($row) {
                 if ($row['PMV_UNIT'] == 17 /* KG */) {
-                    $produce_moved = floatval($row['KG_SUM']);
+                    $produce_moved = floatval($row['KG_SUM']) <= 0 ? $pmv['pmv_moved_qty'] : floatval($row['KG_SUM']);
                 } else if ($movement_liter_unit === 'AMB') {
-                    $produce_moved = floatval($row['AVL_SUM']);
+                    $produce_moved = floatval($row['AVL_SUM']) <= 0 ? $pmv['pmv_moved_qty'] : floatval($row['AVL_SUM']);
                 } else {
-                    $produce_moved = floatval($row['CVL_SUM']);
+                    $produce_moved = floatval($row['CVL_SUM']) <= 0 ? $pmv['pmv_moved_qty'] : floatval($row['CVL_SUM']);
                 }
 
                 // $result_array[$i]['bay_avl_sum'] = floatval($row['BAY_AVL_SUM']);
