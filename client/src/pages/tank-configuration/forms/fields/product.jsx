@@ -13,7 +13,7 @@ const Product = ({ form, value, onChange }) => {
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.baseProductName')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.baseProduct')}`);
     }
 
     return Promise.resolve();
@@ -22,7 +22,7 @@ const Product = ({ form, value, onChange }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tank_base: value.tank_base
+        tank_base: value.tank_base,
       });
 
       onChange(value.tank_base);
@@ -32,7 +32,7 @@ const Product = ({ form, value, onChange }) => {
   return (
     <Form.Item
       name="tank_base"
-      label={t('fields.baseProductName')}
+      label={t('fields.baseProduct')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select
@@ -48,7 +48,7 @@ const Product = ({ form, value, onChange }) => {
       >
         {options?.records.map((item, index) => (
           <Select.Option key={index} value={item.base_code}>
-            {item.base_name}
+            {item.base_desc}
           </Select.Option>
         ))}
       </Select>
