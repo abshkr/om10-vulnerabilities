@@ -1,14 +1,14 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import { Modal, Input } from 'antd';
 
-const KaytxtInput = ({setSearch, enterButton}) => {
+const KaytxtInput = ({ setSearch, enterButton }) => {
   const [data, setData] = useState('');
 
   const onChange = (event) => {
-    console.log(event.target.value)
-    console.log(event.target.value.toUpperCase())
+    console.log(event.target.value);
+    console.log(event.target.value.toUpperCase());
     setData(event.target.value.toUpperCase());
-  }
+  };
 
   return (
     <Input.Search
@@ -18,7 +18,7 @@ const KaytxtInput = ({setSearch, enterButton}) => {
       value={data}
       onSearch={(value) => {
         let card_txt = value.trim();
-        card_txt = card_txt.substring(2, card_txt.length-2);
+        card_txt = card_txt.substring(2, card_txt.length - 2);
         setSearch(card_txt);
         Modal.destroyAll();
       }}
@@ -26,10 +26,10 @@ const KaytxtInput = ({setSearch, enterButton}) => {
       autoFocus={true}
     />
   );
-}
+};
 
 const IButton = ({ setSearch, t, buttonType }) => {
-  Modal.info({
+  Modal.confirm({
     title: t('prompts.iButtonLookUp'),
     centered: true,
     width: '25vw',
@@ -40,10 +40,8 @@ const IButton = ({ setSearch, t, buttonType }) => {
     content: (
       <>
         <span>{t('descriptions.iButtonLookUp')}</span>
-        <KaytxtInput
-          setSearch={setSearch}
-          enterButton={t('operations.'+buttonType)}
-        />
+        <KaytxtInput setSearch={setSearch} enterButton={t('operations.' + buttonType)} />
+        <span>&nbsp;&nbsp;</span>
       </>
     ),
   });

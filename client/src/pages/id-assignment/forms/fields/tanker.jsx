@@ -3,10 +3,10 @@ import React, { useEffect } from 'react';
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
-
+import _ from 'lodash';
 import { ID_ASSIGNMENT } from '../../../../api';
 
-const Tanker = ({ form, value, carrier }) => {
+const Tanker = ({ form, value, carrier, setTnkrNumber }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -22,6 +22,13 @@ const Tanker = ({ form, value, carrier }) => {
 
     return Promise.resolve();
   };
+
+  const onChange = (value) => {
+    const target = _.find(options?.records, (item) => {
+      return item.tnkr_code === value;
+    })
+    setTnkrNumber(target?.tnkr_carrier, target?.tnkr_number);
+  }
 
   useEffect(() => {
     if (value) {
@@ -48,6 +55,7 @@ const Tanker = ({ form, value, carrier }) => {
         disabled={!carrier}
         loading={isValidating}
         showSearch
+        onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectTanker') : null}
         filterOption={(input, option) =>

@@ -17,6 +17,13 @@ class AxleWeight extends CommonClass
         "AXLE_LIMIT_TYPE_ID",
         "AXLE_GROUP_ID",
         "AXLE_WEIGHT_LIMIT",
+
+        "EQPT_ID",
+        "AXLE_ID",
+        "LIMIT_TYPE_ID",
+        "AXLE_GROUP",
+        "USER_WEIGHT_LIMIT",
+        "AXLE_WEIGHT_LIMIT",
     );
 
     protected $table_view_map = array(
@@ -248,6 +255,9 @@ class AxleWeight extends CommonClass
 
     public function read_by_type()
     {
+        if (!isset($this->limit_type)) {
+            $this->limit_type = -1;
+        }
         $query = "
             SELECT 
                 AXLE_LIMIT_TYPE_ID,
@@ -260,12 +270,15 @@ class AxleWeight extends CommonClass
             FROM 
                 AXLE_WEIGHT_LIMIT_LOOKUP_VW
             WHERE 
-                AXLE_LIMIT_TYPE_CODE = NVL((
+                (
+                    -1=:limit_type and AXLE_LIMIT_TYPE_CODE = NVL((
                         SELECT CONFIG_VALUE FROM SITE_CONFIG WHERE CONFIG_KEY='AXLE_WEIGHT_LIMIT_TYPE'
-                    ), 'GML')                    
+                    ), 'GML') 
+                ) or (AXLE_LIMIT_TYPE_ID = :limit_type)                    
             ORDER BY AXLE_LIMIT_TYPE_ID, AXLE_GROUP_ID
         ";
         $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':limit_type', $this->limit_type);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
@@ -284,6 +297,88 @@ class AxleWeight extends CommonClass
         ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':etyp_id', $this->etyp_id);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function get_eqpt_axle_weights()
+    {
+        $query = "
+            SELECT 
+                EQPT_ID,
+                AXLE_ID,
+                LIMIT_TYPE_ID,
+                AXLE_GROUP,
+                USER_WEIGHT_LIMIT,
+                LIMIT_TYPE_CODE,
+                LIMIT_TYPE_NAME,
+                AXLE_GROUP_NAME,
+                AXLE_WEIGHT_LIMIT
+            FROM EQPT_AXLES_VW
+            WHERE EQPT_ID = :eqpt_id
+            ORDER BY AXLE_ID
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function get_tnkr_axle_weights()
+    {
+        $query = "
+            SELECT 
+                TA.TNKR_CODE
+                , TA.TNKR_AXLE_ID
+                , TA.EQPT_SEQ
+                , TA.EQPT_ID
+                , TE.EQPT_CODE || '[' || NVL(TE.EQPT_TITLE, TE.EQPT_CODE) || ']'   AS EQPT_NAME
+                , TA.EQPT_AXLE_ID
+                , TA.LIMIT_TYPE_ID
+                , TA.AXLE_GROUP
+                , TA.USER_WEIGHT_LIMIT
+                , TA.LIMIT_TYPE_CODE
+                , TA.LIMIT_TYPE_NAME
+                , TA.AXLE_GROUP_NAME
+                , TA.AXLE_WEIGHT_LIMIT            
+            FROM 
+                TNKR_AXLES_VW TA, 
+                TRANSP_EQUIP TE
+            WHERE TA.TNKR_CODE = :tnkr_code AND TA.EQPT_ID=TE.EQPT_ID
+            ORDER BY TA.TNKR_AXLE_ID
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function get_trip_axle_weights()
+    {
+        $query = "
+            SELECT *
+            FROM TRIP_AXLES_VW
+            WHERE SUPP_CODE = :supp_code AND TRIP_NO=:trip_no
+            ORDER BY SUPP_CODE, TRIP_NO, TNKR_AXLE_ID
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supp_code', $this->supplier_code);
+        oci_bind_by_name($stmt, ':trip_no', $this->shls_trip_no);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {

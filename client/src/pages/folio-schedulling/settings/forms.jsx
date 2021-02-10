@@ -24,6 +24,7 @@ import useSWR from 'swr';
 
 import _ from 'lodash';
 import moment from 'moment';
+import { useConfig } from '../../../hooks';
 
 import api, { FOLIO_SCHEDULING } from '../../../api';
 
@@ -32,6 +33,7 @@ const Settings = ({ value, access }) => {
   const { data: manualDates, revalidate } = useSWR(FOLIO_SCHEDULING.SETTINGS_EX);
 
   const { t } = useTranslation();
+  const config = useConfig();
   const [form] = Form.useForm();
   const { setFieldsValue } = form;
 
@@ -264,11 +266,11 @@ const Settings = ({ value, access }) => {
     ) {
       _.filter(newSettings, function (item) {
         return item.param_key === 'NEXT_REPORT_TIME';
-      })[0].param_value = moment().format("YYYY-MM-DD") + " " + value.format('HH:mm:00');
+      })[0].param_value = moment().format('YYYY-MM-DD') + ' ' + value.format('HH:mm:00');
     } else {
       newSettings.push({
         param_key: 'NEXT_REPORT_TIME',
-        param_value: moment().format("YYYY-MM-DD") + " " + value.format('HH:mm:00'),
+        param_value: moment().format('YYYY-MM-DD') + ' ' + value.format('HH:mm:00'),
       });
     }
   };
@@ -623,7 +625,7 @@ const Settings = ({ value, access }) => {
             icon={<SafetyCertificateOutlined />}
             style={{ float: 'right', marginRight: 5 }}
             onClick={closeCloseout}
-            disabled={!access?.extra || closeoutIsBusy()}
+            disabled={!access?.extra || config?.siteCloseoutAutoClose || closeoutIsBusy()}
           >
             {t('operations.closeCloseout')}
           </Button>

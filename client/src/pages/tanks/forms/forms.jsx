@@ -58,6 +58,10 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       values.tank_code = value.tank_code;
     }
 
+    if (values?.tank_prod_c_of_e === '') {
+      values.tank_prod_c_of_e = 0;
+    }
+
     const payload = _.omit(
       {
         ...values,

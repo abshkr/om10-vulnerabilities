@@ -1622,6 +1622,13 @@
     "LD_TYPE_CODE": "NA",
     "LD_TYPE_TEXT": "NA"
   },
+  "EQUIP_AXLES": {
+    "EQPT_ID": "NA",
+    "AXLE_ID": "NA",
+    "LIMIT_TYPE_ID": "ENUM|AXLE_WEIGHT_LIMIT|ENUM_LANG|ENUM_NO|ENUM_TEXT",
+    "AXLE_GROUP": "ENUM|AXLE_GROUP|ENUM_LANG|ENUM_NO|ENUM_TEXT",
+    "USER_WEIGHT_LIMIT": "NA"
+  },
   "EQUIP_TYPES": {
     "ETYP_ID": "NA",
     "ETYP_CLASS": "NA",
@@ -4064,6 +4071,15 @@
     "SEQ": "NA",
     "JNL_CAT": "NA",
     "SOURCE": "NA"
+  },
+  "SPECAXLES": {
+    "TRIP_NO": "NA",
+    "SUPP": "NA",
+    "AXLE_ID": "NA",
+    "AXLE_WEIGH_IN": "NA",
+    "AXLE_WEIGH_OUT": "NA",
+    "TIME_WEIGH_IN": "NA",
+    "TIME_WEIGH_OUT": "NA"
   },
   "SPECDETS": {
     "SCHD_PMV_NUM": "NA",

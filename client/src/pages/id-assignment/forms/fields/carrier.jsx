@@ -6,7 +6,7 @@ import { Form, Select } from 'antd';
 
 import { ID_ASSIGNMENT } from '../../../../api';
 
-const Carrier = ({ form, value, onChange }) => {
+const Carrier = ({ form, value, setCarrier }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -27,9 +27,9 @@ const Carrier = ({ form, value, onChange }) => {
         kya_tnkr_cmpy: value.kya_tnkr_cmpy
       });
 
-      onChange(value.kya_tnkr_cmpy);
+      setCarrier(value.kya_tnkr_cmpy);
     }
-  }, [value, setFieldsValue, onChange]);
+  }, [value, setFieldsValue]);
 
   return (
     <Form.Item
@@ -41,7 +41,7 @@ const Carrier = ({ form, value, onChange }) => {
         dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
-        onChange={onChange}
+        onChange={setCarrier}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectCarrier') : null}
         filterOption={(input, option) =>

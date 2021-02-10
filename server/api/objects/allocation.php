@@ -203,40 +203,7 @@ class Allocation extends CommonClass
             $still_exist = false;
             foreach ($this->allocs as $alloc) {
                 if ($alloc->aitem_prodcode == $prodcode) {
-                    if ($alloc->aitem_qtylimit > 0 && $item_array['AITEM_QTYLEFT'] == 0) {
-                        $query = "INSERT INTO ALLOCS (
-                            ALL_PROD_PRODCODE,
-                            ALL_PROD_PRODCMPY,
-                            ALLOC_LEFT,
-                            ALLOC_LIMIT,
-                            ALLOC_UNITS,
-                            ALL_ATKY_AT_TYPE,
-                            ALL_ATKY_AT_CMPY,
-                            ALLOC_PER_CHILD)
-                        VALUES (
-                            :aitem_prodcode,
-                            :aitem_suppcode,
-                            :aitem_qtylimit,
-                            :aitem_qtylimit,
-                            :aitem_produnit,
-                            :aitem_type,
-                            :aitem_cmpycode,
-                            NULL
-                        )";
-                        $stmt = oci_parse($this->conn, $query);
-                        oci_bind_by_name($stmt, ':aitem_prodcode', $alloc->aitem_prodcode);
-                        oci_bind_by_name($stmt, ':aitem_suppcode', $this->alloc_suppcode);
-                        oci_bind_by_name($stmt, ':aitem_qtylimit', $alloc->aitem_qtylimit);
-                        oci_bind_by_name($stmt, ':aitem_produnit', $alloc->aitem_produnit);
-                        oci_bind_by_name($stmt, ':aitem_type', $this->alloc_type);
-                        oci_bind_by_name($stmt, ':aitem_cmpycode', $this->alloc_cmpycode);
-            
-                        if (!oci_execute($stmt, $this->commit_mode)) {
-                            $e = oci_error($stmt);
-                            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-                            return false;
-                        }
-                    } else if ($alloc->aitem_qtylimit == 0 && $item_array['AITEM_QTYLEFT'] > 0) {
+                    if ($alloc->aitem_qtylimit == 0) {
                         $query = "DELETE FROM ALL_CHILD
                             WHERE ALCH_ALP_ALL_PROD_PRODCMPY = :alloc_suppcode
                                 AND ALCH_ALP_ALL_ATKY_AT_TYPE = :alloc_type
@@ -266,7 +233,7 @@ class Allocation extends CommonClass
                             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                             return false;
                         }
-                    } else if ($alloc->aitem_qtylimit > 0 && $item_array['AITEM_QTYLEFT'] > 0) {
+                    } else if ($alloc->aitem_qtylimit > 0) {
                         $new_left = $item_array['AITEM_QTYLEFT'] + ($alloc->aitem_qtylimit - $item_array['AITEM_QTYLIMIT']);
                         $query = "UPDATE ALLOCS
                             SET ALLOC_LIMIT = :aitem_qtylimit,

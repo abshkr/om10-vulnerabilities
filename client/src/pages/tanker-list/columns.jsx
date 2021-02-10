@@ -1,4 +1,4 @@
-const columns = (expiryTypes, t, expiryDateMode) => {
+const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit, carrcode_tankernum_tag) => {
   const expiryColumns = [];
 
   if (expiryDateMode === '1') {
@@ -73,6 +73,16 @@ const columns = (expiryTypes, t, expiryDateMode) => {
       suppressSizeToFit: true,
       width: 120,
       pinned: 'left',
+    },
+    {
+      headerName: t('fields.number'),
+      field: 'tnkr_number',
+      sortable: true,
+      resizable: true,
+      filter: 'MultiFilter',
+      suppressSizeToFit: true,
+      hide: !carrcode_tankernum_tag,
+      width: 110,
     },
     {
       headerName: t('fields.schdCarrier'),
@@ -168,6 +178,26 @@ const columns = (expiryTypes, t, expiryDateMode) => {
       cellRenderer: 'DateRenderer',
       suppressSizeToFit: true,
       width: 160,
+    },
+    {
+      headerName: t('fields.axleGroups'),
+      field: 'tnkr_axle_groups',
+      filterable: true,
+      sortable: true,
+      resizable: true,
+      width: 240,
+      suppressSizeToFit: true,
+      hide: !siteUseAxleWeightLimit,
+    },
+    {
+      headerName: t('fields.axleWeightLimits') + ' (' + t('units.kg') + ')',
+      field: 'tnkr_axle_weights',
+      filterable: true,
+      sortable: true,
+      resizable: true,
+      width: 240,
+      suppressSizeToFit: true,
+      hide: !siteUseAxleWeightLimit,
     },
   ];
 };

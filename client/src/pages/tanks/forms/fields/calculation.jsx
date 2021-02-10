@@ -303,7 +303,9 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
 
       <OmegaInputNumber
         form={form}
-        value={value?.tank_prod_c_of_e}
+        value={
+          value?.tank_prod_c_of_e === '0' || value?.tank_prod_c_of_e === 0 ? '' : value?.tank_prod_c_of_e
+        }
         name="tank_prod_c_of_e"
         label={`${t('fields.expCoeff')} (0.000414 - 0.001674)`}
         min={0.000414}

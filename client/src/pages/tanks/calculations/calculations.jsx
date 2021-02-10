@@ -93,6 +93,10 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
     const values = await form.validateFields();
     values.tank_code = selected?.tank_code;
 
+    if (values?.tank_prod_c_of_e === '') {
+      values.tank_prod_c_of_e = 0;
+    }
+
     const payload = _.omit(
       {
         ...values,

@@ -3,7 +3,12 @@ import React, { useCallback, useState, useEffect } from 'react';
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { notification, Button, Modal } from 'antd';
-import { SafetyCertificateOutlined, ReconciliationOutlined, SyncOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import {
+  SafetyCertificateOutlined,
+  ReconciliationOutlined,
+  SyncOutlined,
+  QuestionCircleOutlined,
+} from '@ant-design/icons';
 import _ from 'lodash';
 
 import Forms from './forms';
@@ -13,11 +18,13 @@ import api, { FOLIO_SUMMARY } from '../../api';
 import { Page, DataTable } from '../../components';
 
 import { useAuth } from '../../hooks';
+import { useConfig } from '../../hooks';
 
 import './folio-summary.css';
 
 const FolioSummary = () => {
   const { t } = useTranslation();
+  const config = useConfig();
 
   const { data: payload, isValidating, revalidate } = useSWR(FOLIO_SUMMARY.READ);
 
@@ -61,8 +68,7 @@ const FolioSummary = () => {
   });
 
   const showCloseoutStatus = () => {
-    if (!closeoutIsIdle)
-    {
+    if (!closeoutIsIdle) {
       return t('descriptions.closeoutIsBusy');
     }
   };
@@ -77,23 +83,23 @@ const FolioSummary = () => {
       centered: true,
       onOk: async () => {
         await api
-        .post(FOLIO_SUMMARY.MANUAL_CLOSE)
-        .then((response) => {
-          notification.success({
-            message: t('messages.submitSuccess'),
-            description: t('descriptions.closeFolioTriggered'),
-          });
-        })
-  
-        .catch((errors) => {
-          _.forEach(errors.response.data.errors, (error) => {
-            notification.error({
-              message: error.type,
-              description: error.message,
+          .post(FOLIO_SUMMARY.MANUAL_CLOSE)
+          .then((response) => {
+            notification.success({
+              message: t('messages.submitSuccess'),
+              description: t('descriptions.closeFolioTriggered'),
+            });
+          })
+
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
             });
           });
-        });
-      }
+      },
     });
   };
 
@@ -109,7 +115,7 @@ const FolioSummary = () => {
         icon={<SafetyCertificateOutlined />}
         onClick={() => closeFolio(null)}
         style={{ float: 'right', marginRight: 5 }}
-        disabled={!access?.extra || !closeoutIsIdle}
+        disabled={!access?.extra || !closeoutIsIdle || config?.siteCloseoutAutoClose}
       >
         {t('operations.closeFirstFolio')}
       </Button>

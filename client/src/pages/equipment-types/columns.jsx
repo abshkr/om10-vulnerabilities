@@ -81,7 +81,7 @@ const columns = (t, config) => [
     resizable: true,
     width: 180,
     suppressSizeToFit: true,
-    hide: !config?.siteUseAxleWeightLimit,
+    hide: true, // !config?.siteUseAxleWeightLimit,
   },
   {
     headerName: t('fields.axleRearWeightLimit') + ' (' + t('units.kg') + ')',
@@ -91,7 +91,7 @@ const columns = (t, config) => [
     resizable: true,
     width: 180,
     suppressSizeToFit: true,
-    hide: !config?.siteUseAxleWeightLimit,
+    hide: true, // !config?.siteUseAxleWeightLimit,
   },
 
   {

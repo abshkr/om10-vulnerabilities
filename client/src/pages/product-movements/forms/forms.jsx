@@ -23,6 +23,7 @@ import {
   EndFolio,
   BayLoaded
 } from './fields';
+import ProgressTable from './progress-table/progress-table'
 
 import { 
   Form, 
@@ -48,7 +49,7 @@ import useSWR from 'swr';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
+const FormModal = ({ value, visible, handleFormState, access, setFilterValue, refresh }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -67,7 +68,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
 
   const onComplete = (pmv_batchcode) => {
     handleFormState(false, null);
-    mutate(PRODUCT_MOVEMENTS.READ);
+    refresh();
     setMovementType('NEW');
     if (pmv_batchcode) {
       setFilterValue('' + pmv_batchcode);
@@ -100,8 +101,12 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
         await api
           .post(PRODUCT_MOVEMENTS.CREATE, values)
           .then((response) => {
-            onComplete(values?.pmv_batchcode);
-
+            handleFormState(false, null);
+            refresh();
+            if (values?.pmv_batchcode) {
+              setFilterValue('' + values.pmv_batchcode);
+            }
+            
             notification.success({
               message: t('messages.createSuccess'),
               description: t('descriptions.createSuccess'),
@@ -516,12 +521,12 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       >
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-            <Divider orientation="left">{t('fields.beginMovement')}</Divider>
+            <Divider style={{marginBottom: 5 }} orientation="left">{t('fields.beginMovement')}</Divider>
             {/* <StartFolioDes form={form} value={value} /> */}
             <StartFolio form={form} value={value} />
-            <Divider orientation="left">{t('fields.details')}</Divider>
+            <Divider style={{marginBottom: 5 }} orientation="left">{t('fields.details')}</Divider>
             <Row gutter={[8, 8]}>
-              <Col span={8}>
+              <Col span={6}>
                 <BaseProduct form={form} value={value} setBase={setBase} />
               </Col>
               <BayLoaded form={form} value={value} />
@@ -548,18 +553,27 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               <Col span={4}>
                 <Tag color="#0097df" style={{width: '100%', textAlign: 'center'}}>{t('fields.progress')}</Tag>
               </Col>
-              <Col span={20}>
+              <Col span={18}>
                 <Progress 
                   strokeWidth={15} 
-                  // strokeColor="#0097df"
+                  // strokeColor={value?.percentage > 100 ? "red" : null}
                   percent={value?.percentage} 
-                  status={value?.percentage < 100 ? 'active' : 'success'}
+                  showInfo={false}
+                  status={value?.percentage < 100 ? 'active' : value?.percentage > 120 ? "exception" : "success"}
                 />
               </Col>
+              <Col span={2}>
+                <Tag style={{width: '100%', textAlign: 'center'}}>{value?.percentage + "%"} </Tag>
+              </Col>
             </Row>
-            <Divider orientation="left">{t('fields.endMovement')}</Divider>
+            <Divider style={{marginBottom: 5 }} orientation="left">{t('fields.endMovement')}</Divider>
             <EndFolio form={form} value={value} />
           </TabPane>
+          {value.pmv_status === '3' && //Only display this tab when it is COMPLETE
+            <TabPane tab={t('tabColumns.summary')} key="2">
+              <ProgressTable value={value} />
+            </TabPane>
+          }
         </Tabs>
       </Form>
     </Drawer>
