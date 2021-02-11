@@ -133,10 +133,15 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
   };
 
   const validate = (rule, input) => {
+    const min = 1;
     const limit = rule?.max || 256;
 
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.set')} ─ ${rule?.label}`);
+    }
+
+    if (input && _.toNumber(input) < min) {
+      return Promise.reject(`${t('placeholder.minNumber')}: ${min} ─ ${t('descriptions.minNumber')}`);
     }
 
     if (input && input.length > limit) {
@@ -204,7 +209,7 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
     <>
       <Card hoverable>
         <Row gutter={[12, 12]}>
-          <Col span={12}>
+          <Col span={24}>
             <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }}>
               <Descriptions.Item label={t('fields.tankCode')} span={24}>
                 {value?.tank_code}
@@ -236,25 +241,24 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
               </Descriptions.Item>
             </Descriptions>
           </Col>
-          {/* </Row>
-        <Row gutter={[12, 12]}> */}
-          <Col span={12}>
-            <Row gutter={[12, 8]}>
-              <Col span={24}>{modifiers}</Col>
-            </Row>
-            <Row gutter={[12, 8]}>
-              <Col span={24}>
-                <DataTable
-                  minimal={true}
-                  columns={fields}
-                  data={data?.records}
-                  // extra={modifiers}
-                  parentHeight="272px"
-                  onClick={(payload) => handleFormState(true, payload)}
-                  handleSelect={(payload) => handleFormState(true, payload[0])}
-                />
-              </Col>
-            </Row>
+        </Row>
+
+        <Row gutter={[12, 12]}>
+          <Col span={24}>
+            <div>{modifiers}</div>
+          </Col>
+        </Row>
+
+        <Row gutter={[12, 12]}>
+          <Col span={24}>
+            <DataTable
+              minimal={true}
+              columns={fields}
+              data={data?.records}
+              parentHeight="272px"
+              onClick={(payload) => handleFormState(true, payload)}
+              handleSelect={(payload) => handleFormState(true, payload[0])}
+            />
           </Col>
         </Row>
       </Card>
@@ -308,7 +312,7 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
               <Form.Item
                 name="tank_code"
                 label={t('fields.tank')}
-                rules={[{ required: true, validator: validate, label: t('fields.tank') }]}
+                rules={[{ required: true, label: t('fields.tank') }]}
               >
                 <Select
                   dropdownMatchSelectWidth={false}
@@ -345,7 +349,7 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
                   type="number"
                   disabled={!IS_CREATING}
                   style={{ width: '100%' }}
-                  min={0}
+                  min={1}
                   addonAfter={t('units.mm')}
                 />
               </Form.Item>
@@ -355,7 +359,7 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
                 label={t('fields.flowRate')}
                 rules={[{ required: true, validator: validate, label: t('fields.flowRate') }]}
               >
-                <Input type="number" style={{ width: '100%' }} min={0} addonAfter={t('units.lpm')} />
+                <Input type="number" style={{ width: '100%' }} min={1} addonAfter={t('units.lpm')} />
               </Form.Item>
             </TabPane>
           </Tabs>
