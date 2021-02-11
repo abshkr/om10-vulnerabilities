@@ -17,6 +17,14 @@ const columns = (t) => [
   },
 
   {
+    headerName: t('fields.strapType'),
+    field: 'strap_type_name',
+    sortable: true,
+    resizable: true,
+    filter: 'MultiFilter',
+  },
+
+  {
     headerName: t('fields.baseProductCode'),
     field: 'strap_basecode',
     sortable: true,

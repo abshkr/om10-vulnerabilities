@@ -1,4 +1,6 @@
-const columns = (t) => [
+import _ from 'lodash';
+
+const columns = (t, strap_types) => [
   {
     headerName: `${t('fields.tankLevel')} (${t('units.mm')})`,
     field: 'strap_height',
@@ -54,6 +56,36 @@ const columns = (t) => [
     editable: true,
     cellClass: 'editable-ag-grid-cell',
     width: 160,
+  },
+
+  {
+    headerName: t('fields.strapType'),
+    field: 'strap_type',
+    sortable: true,
+    resizable: true,
+    filter: 'MultiFilter',
+    hide: false,
+    editable: true,
+    cellClass: 'editable-ag-grid-cell',
+    width: 130,
+    cellRenderer: 'ListRenderer',
+    cellRendererParams: {
+      values: _.uniq(
+        _.map(strap_types?.records, (item) => {
+          // return { code: _.toNumber(item.strap_type_id), name: item.strap_type_name };
+          return { code: item.strap_type_id, name: item.strap_type_name };
+        })
+      ),
+    },
+    cellEditor: 'ListEditor',
+    cellEditorParams: {
+      values: _.uniq(
+        _.map(strap_types?.records, (item) => {
+          // return { code: _.toNumber(item.strap_type_id), name: item.strap_type_name };
+          return { code: item.strap_type_id, name: item.strap_type_name };
+        })
+      ),
+    },
   },
 ];
 

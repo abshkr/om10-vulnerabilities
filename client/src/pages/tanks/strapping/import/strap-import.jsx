@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { DataTable } from '../../../../components';
 import api, { TANK_STRAPPING } from '../../../../api';
 import columns from './columns';
-import {csvToJSON} from '../../../../utils';
+import { csvToJSON } from '../../../../utils';
 
 const StrapImport = ({ value, onClose }) => {
   const { t } = useTranslation();
@@ -20,39 +20,38 @@ const StrapImport = ({ value, onClose }) => {
   const [invalid, setInvalid] = useState(false);
 
   const props = {
-    accept: '.csv', 
-    onRemove: file => {
+    accept: '.csv',
+    onRemove: (file) => {
       const index = fileList.indexOf(file);
       const newFileList = fileList.slice();
       newFileList.splice(index, 1);
       setFileList(newFileList);
-      setCanPreview(newFileList.length>0 ? true : false);
-      setCanUpload(newFileList.length>0 ? canUpload : false);
+      setCanPreview(newFileList.length > 0 ? true : false);
+      setCanUpload(newFileList.length > 0 ? canUpload : false);
       setStrapList([]);
       console.log(newFileList);
     },
-    beforeUpload: file => {
+    beforeUpload: (file) => {
       // Limited to one file in the list always
       const newFileList = []; // fileList.slice();
       newFileList.push(file);
       setFileList(newFileList);
-      setCanPreview(newFileList.length>0 ? true : false);
-      setCanUpload(newFileList.length>0 ? canUpload : false);
+      setCanPreview(newFileList.length > 0 ? true : false);
+      setCanUpload(newFileList.length > 0 ? canUpload : false);
       console.log(newFileList);
 
       return false;
     },
     fileList,
-  };  
+  };
 
-  const fields = columns(t);
+  const fields = columns(t, value?.strap_types);
   const [form] = Form.useForm();
 
   const onFinish = () => {
     Modal.destroyAll();
-    onClose({total: strapList.length});
+    onClose({ total: strapList.length });
   };
-
 
   const onDeleteLine = () => {
     const index = strapList.indexOf(selected);
@@ -66,18 +65,20 @@ const StrapImport = ({ value, onClose }) => {
   const onAddLine = () => {
     const strap = {};
     // ['strap_height', 'strap_volume', 'strap_tankcode', 'strap_sitecode']
-    
+
     if (strapList.length > 0) {
-      const line = strapList[strapList.length-1];
+      const line = strapList[strapList.length - 1];
       strap.strap_height = String(_.toInteger(line.strap_height) + 1);
       strap.strap_volume = line.strap_volume;
       strap.strap_tankcode = line.strap_tankcode;
       strap.strap_sitecode = line.strap_sitecode;
+      strap.strap_type = line.strap_type;
     } else {
       strap.strap_height = '0';
       strap.strap_volume = '0';
       strap.strap_tankcode = value?.tank_code;
       strap.strap_sitecode = value?.tank_terminal;
+      strap.strap_type = '0';
     }
     const newList = strapList.slice();
     newList.push(strap);
@@ -102,30 +103,32 @@ const StrapImport = ({ value, onClose }) => {
       // loop all lines to see if enabling Upload button
       onVerifyData(newList, false);
     }
-
   };
 
   const onPreviewData = () => {
-
     const reader = new FileReader();
 
-    reader.onload = function(e) {
+    reader.onload = function (e) {
       const text = reader.result;
       console.log('file contents', text);
       const json = csvToJSON(
-        text, 
-        [0,1,2,3], 
-        ['strap_height', 'strap_volume', 'strap_tankcode', 'strap_sitecode']
+        text,
+        [0, 1, 2, 3, 4],
+        ['strap_height', 'strap_volume', 'strap_tankcode', 'strap_sitecode', 'strap_type']
       );
+      _.forEach(json, (item) => {
+        if (item.strap_type !== '0' && item.strap_type !== '1') {
+          item.strap_type = '0';
+        }
+      });
       setStrapList(json);
       onVerifyData(json);
-    }
-    
-    reader.readAsText(fileList?.[0]);
+    };
 
+    reader.readAsText(fileList?.[0]);
   };
 
-  const verifyStrap = (strap, line, showWarning=true) => {
+  const verifyStrap = (strap, line, showWarning = true) => {
     let invalid = false;
     // ['strap_height', 'strap_volume', 'strap_tankcode', 'strap_sitecode']
     if (!_.isInteger(_.toNumber(strap.strap_height))) {
@@ -133,7 +136,12 @@ const StrapImport = ({ value, onClose }) => {
       if (showWarning) {
         notification.error({
           message: t('descriptions.tankLevelMustBeInteger'),
-          description: strap.strap_height + ' - ' + t('descriptions.tankLevelInLine') + (line+1) + t('descriptions.notInteger'),
+          description:
+            strap.strap_height +
+            ' - ' +
+            t('descriptions.tankLevelInLine') +
+            (line + 1) +
+            t('descriptions.notInteger'),
         });
       }
     }
@@ -142,7 +150,12 @@ const StrapImport = ({ value, onClose }) => {
       if (showWarning) {
         notification.error({
           message: t('descriptions.tankLevelCannotNegative'),
-          description: strap.strap_height + ' - ' + t('descriptions.tankLevelInLine') + (line+1) + t('descriptions.isNegative'),
+          description:
+            strap.strap_height +
+            ' - ' +
+            t('descriptions.tankLevelInLine') +
+            (line + 1) +
+            t('descriptions.isNegative'),
         });
       }
     }
@@ -152,7 +165,12 @@ const StrapImport = ({ value, onClose }) => {
       if (showWarning) {
         notification.error({
           message: t('descriptions.tankVolumeMustBeNumber'),
-          description: strap.strap_volume + ' - ' + t('descriptions.tankVolumeInLine') + (line+1) + t('descriptions.notNumber'),
+          description:
+            strap.strap_volume +
+            ' - ' +
+            t('descriptions.tankVolumeInLine') +
+            (line + 1) +
+            t('descriptions.notNumber'),
         });
       }
     }
@@ -161,7 +179,12 @@ const StrapImport = ({ value, onClose }) => {
       if (showWarning) {
         notification.error({
           message: t('descriptions.tankVolumeCannotNegative'),
-          description: strap.strap_volume + ' - ' + t('descriptions.tankVolumeInLine') + (line+1) + t('descriptions.isNegative'),
+          description:
+            strap.strap_volume +
+            ' - ' +
+            t('descriptions.tankVolumeInLine') +
+            (line + 1) +
+            t('descriptions.isNegative'),
         });
       }
     }
@@ -171,7 +194,14 @@ const StrapImport = ({ value, onClose }) => {
       if (showWarning) {
         notification.error({
           message: t('descriptions.tankNotMatch'),
-          description: t('descriptions.shouldBe') + value?.tank_code + ', ' + t('descriptions.butIs') + strap.strap_tankcode + t('descriptions.inLine') + (line+1),
+          description:
+            t('descriptions.shouldBe') +
+            value?.tank_code +
+            ', ' +
+            t('descriptions.butIs') +
+            strap.strap_tankcode +
+            t('descriptions.inLine') +
+            (line + 1),
         });
       }
     }
@@ -180,19 +210,25 @@ const StrapImport = ({ value, onClose }) => {
       if (showWarning) {
         notification.error({
           message: t('descriptions.terminalNotMatch'),
-          description: t('descriptions.shouldBe') + value?.tank_terminal + ', ' + t('descriptions.butIs') + strap.strap_sitecode + t('descriptions.inLine') + (line+1),
+          description:
+            t('descriptions.shouldBe') +
+            value?.tank_terminal +
+            ', ' +
+            t('descriptions.butIs') +
+            strap.strap_sitecode +
+            t('descriptions.inLine') +
+            (line + 1),
         });
       }
     }
 
     return invalid;
-
   };
-  
-  const onVerifyData = (json, showWarning=true) => {
+
+  const onVerifyData = (json, showWarning = true) => {
     const len = json.length;
     let invalid = false;
-    for (let i=0; i<len; i++) {
+    for (let i = 0; i < len; i++) {
       invalid = verifyStrap(json[i], i, showWarning);
       if (invalid) {
         break;
@@ -220,7 +256,6 @@ const StrapImport = ({ value, onClose }) => {
         await api
           .post(TANK_STRAPPING.IMPORT, values)
           .then((response) => {
-
             notification.success({
               message: t('messages.uploadSuccess'),
               description: t('descriptions.uploadStrapSuccess'),
@@ -250,27 +285,19 @@ const StrapImport = ({ value, onClose }) => {
   );
 
   return (
-    <Form 
-      layout="vertical" 
-      form={form} 
-      onFinish={onFinish} 
-      scrollToFirstError style={{marginTop: "1rem"}}
-    >
+    <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError style={{ marginTop: '1rem' }}>
       <Row gutter={[8, 10]}>
-        <Col span={12}>
-          {t('fields.tank') + ' : ' + value?.tank_code}
-        </Col>
+        <Col span={12}>{t('fields.tank') + ' : ' + value?.tank_code}</Col>
 
-        <Col span={12}>
-          {t('fields.terminal') + ' : ' + value?.tank_terminal}
-        </Col>
+        <Col span={12}>{t('fields.terminal') + ' : ' + value?.tank_terminal}</Col>
       </Row>
 
       <Row gutter={[8, 10]}>
         <Col span={12}>
-          <Upload {...props} style={{ marginRight: 10, width: '100%' }} >
+          <Upload {...props} style={{ marginRight: 10, width: '100%' }}>
             <Button style={{ marginRight: 10, width: '100%' }} type="primary">
-              <UploadOutlined />{t('operations.selectFile')}
+              <UploadOutlined />
+              {t('operations.selectFile')}
             </Button>
           </Upload>
         </Col>
@@ -307,8 +334,8 @@ const StrapImport = ({ value, onClose }) => {
         onCellUpdate={(value) => onCellUpdate(value)}
         height={'40vh'}
       />
-      
-      <div style={{marginTop: "2rem"}}>
+
+      <div style={{ marginTop: '2rem' }}>
         <Button
           htmlType="button"
           icon={<CloseOutlined />}

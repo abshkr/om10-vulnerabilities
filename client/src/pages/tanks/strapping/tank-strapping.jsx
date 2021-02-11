@@ -25,6 +25,7 @@ const TankStrapping = ({ terminal, code, isLoading, access, tanks }) => {
   const url = code ? `${TANK_STRAPPING.READ}?strap_tankcode=${code}` : null;
 
   const { data } = useSWR(url);
+  const { data: types } = useSWR(TANK_STRAPPING.TYPES);
   const { t } = useTranslation();
 
   const [form] = Form.useForm();
@@ -130,40 +131,39 @@ const TankStrapping = ({ terminal, code, isLoading, access, tanks }) => {
 
   const loadStraps = async (value) => {
     console.log('Forms: loadStraps', value);
-  }
+  };
 
   const handleImport = () => {
     // pop up the dialog to manage straping data import
     StrapImportManager(
       t('operations.importStrapping'),
-      {tank_code: code, tank_terminal: terminal},
+      { tank_code: code, tank_terminal: terminal, strap_types: types },
       loadStraps,
       '60vw',
-      '50vh',
+      '50vh'
     );
   };
 
   const modifiers = (
     <>
-    <Button
-      style={{ marginRight: 10 }}
-      type="primary"
-      loading={isLoading}
-      disabled={!access.canCreate}
-      onClick={handleImport}
-    >
-      {t('operations.importStrapping')}
-    </Button>
+      <Button
+        style={{ marginRight: 10 }}
+        type="primary"
+        loading={isLoading}
+        disabled={!access.canCreate}
+        onClick={handleImport}
+      >
+        {t('operations.importStrapping')}
+      </Button>
 
-
-    <Button
-      type="primary"
-      loading={isLoading}
-      disabled={!access.canCreate}
-      onClick={() => handleFormState(true, null)}
-    >
-      {t('operations.addStrapping')}
-    </Button>
+      <Button
+        type="primary"
+        loading={isLoading}
+        disabled={!access.canCreate}
+        onClick={() => handleFormState(true, null)}
+      >
+        {t('operations.addStrapping')}
+      </Button>
     </>
   );
 
@@ -173,6 +173,7 @@ const TankStrapping = ({ terminal, code, isLoading, access, tanks }) => {
 
       setFieldsValue({
         strap_tankcode: code,
+        strap_type: 0,
       });
     }
   }, [resetFields, setFieldsValue, code, selected]);
@@ -183,6 +184,7 @@ const TankStrapping = ({ terminal, code, isLoading, access, tanks }) => {
         strap_tankcode: selected?.strap_tankcode,
         strap_height: selected?.strap_height,
         strap_volume: selected?.strap_volume,
+        strap_type: selected?.strap_type,
       });
     } else {
     }
@@ -284,7 +286,13 @@ const TankStrapping = ({ terminal, code, isLoading, access, tanks }) => {
                 label={t('fields.level')}
                 rules={[{ required: true, validator: validate, label: t('fields.level') }]}
               >
-                <Input type="number" disabled={!IS_CREATING} style={{ width: '100%' }} min={0} addonAfter={t('units.mm')} />
+                <Input
+                  type="number"
+                  disabled={!IS_CREATING}
+                  style={{ width: '100%' }}
+                  min={0}
+                  addonAfter={t('units.mm')}
+                />
               </Form.Item>
 
               <Form.Item
@@ -293,6 +301,28 @@ const TankStrapping = ({ terminal, code, isLoading, access, tanks }) => {
                 rules={[{ required: true, validator: validate, label: t('fields.observedVolume') }]}
               >
                 <Input type="number" style={{ width: '100%' }} min={0} addonAfter={t('units.litres')} />
+              </Form.Item>
+
+              <Form.Item
+                name="strap_type"
+                label={t('fields.strapType')}
+                rules={[{ required: true, validator: validate, label: t('fields.strapType') }]}
+              >
+                <Select
+                  dropdownMatchSelectWidth={false}
+                  loading={isLoading}
+                  showSearch
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  {types?.records.map((item, index) => (
+                    <Select.Option key={index} value={_.toNumber(item.strap_type_id)}>
+                      {item.strap_type_name}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
             </TabPane>
           </Tabs>
