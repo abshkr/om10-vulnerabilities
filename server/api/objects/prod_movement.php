@@ -86,6 +86,25 @@ class ProdMovement extends CommonClass
             return;
         }
 
+        //Make sure it is a START or a RESUME
+        $prod_start = false;
+        $query = "
+            SELECT PMV.PMV_STATUS
+            FROM PRODUCT_MVMNTS PMV
+            WHERE PMV_NUMBER = :pmv_number";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        } else {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            write_log($row["PMV_STATUS"], __FILE__, __LINE__);
+            if ($row["PMV_STATUS"] == '0') {    //status was NEW
+                $prod_start = true;
+            }
+        }
+
         $serv = new SiteService($this->conn);
         $site_code = $serv->site_code();
         $query_string = "pmvDepot=" . rawurlencode(strip_tags($site_code)) . 
@@ -117,53 +136,56 @@ class ProdMovement extends CommonClass
             return;
         }
 
-        //Doing some copy
-        $query = "
-            SELECT TANK_COR_VOL,
-                TANK_AMB_VOL,
-                TANK_LIQUID_KG,
-                TANK_DENSITY,
-                TANK_TEMP,
-                TANK_PROD_LVL
-            FROM TANKS
-            WHERE TANK_CODE = (
-                    SELECT DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)
-                    FROM PRODUCT_MVMNTS
-                    WHERE PMV_NUMBER = :pmv_number
-                )";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
-        if (!oci_execute($stmt, $this->commit_mode)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-        }
-        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-        $tank_cor_vol = $row["TANK_COR_VOL"];
-        $tank_amb_vol = $row["TANK_AMB_VOL"];
-        $tank_liquid_kg = $row["TANK_LIQUID_KG"];
-        $tank_density = $row["TANK_DENSITY"];
-        $tank_temp = $row["TANK_TEMP"];
-        $tank_prod_lvl = $row["TANK_PROD_LVL"];
-        
-        $query = "UPDATE PRODUCT_MVMNTS
-            SET PMV_OPEN_AMB = :tank_amb_vol,
-                PMV_OPEN_COR = :tank_cor_vol,
-                PMV_OPEN_KG = :tank_liquid_kg,
-                PMV_TEMPERATURE = :tank_temp,
-                PMV_OBSVD_DENS = :tank_density,
-                PMV_OPEN_TANKLEVEL = :pmv_open_tanklevel
-            WHERE PMV_NUMBER = :pmv_number";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
-        oci_bind_by_name($stmt, ':tank_amb_vol', $tank_amb_vol);
-        oci_bind_by_name($stmt, ':tank_cor_vol', $tank_cor_vol);
-        oci_bind_by_name($stmt, ':tank_liquid_kg', $tank_liquid_kg);
-        oci_bind_by_name($stmt, ':tank_temp', $tank_temp);
-        oci_bind_by_name($stmt, ':tank_density', $tank_density);
-        oci_bind_by_name($stmt, ':pmv_open_tanklevel', $tank_prod_lvl);
-        if (!oci_execute($stmt, $this->commit_mode)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        if ($prod_start) {    //status was NEW
+            write_log("Update readings", __FILE__, __LINE__);
+            //Doing some copy
+            $query = "
+                SELECT TANK_COR_VOL,
+                    TANK_AMB_VOL,
+                    TANK_LIQUID_KG,
+                    TANK_DENSITY,
+                    TANK_TEMP,
+                    TANK_PROD_LVL
+                FROM TANKS
+                WHERE TANK_CODE = (
+                        SELECT DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)
+                        FROM PRODUCT_MVMNTS
+                        WHERE PMV_NUMBER = :pmv_number
+                    )";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            }
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            $tank_cor_vol = $row["TANK_COR_VOL"];
+            $tank_amb_vol = $row["TANK_AMB_VOL"];
+            $tank_liquid_kg = $row["TANK_LIQUID_KG"];
+            $tank_density = $row["TANK_DENSITY"];
+            $tank_temp = $row["TANK_TEMP"];
+            $tank_prod_lvl = $row["TANK_PROD_LVL"];
+            
+            $query = "UPDATE PRODUCT_MVMNTS
+                SET PMV_OPEN_AMB = :tank_amb_vol,
+                    PMV_OPEN_COR = :tank_cor_vol,
+                    PMV_OPEN_KG = :tank_liquid_kg,
+                    PMV_TEMPERATURE = :tank_temp,
+                    PMV_OBSVD_DENS = :tank_density,
+                    PMV_OPEN_TANKLEVEL = :pmv_open_tanklevel
+                WHERE PMV_NUMBER = :pmv_number";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
+            oci_bind_by_name($stmt, ':tank_amb_vol', $tank_amb_vol);
+            oci_bind_by_name($stmt, ':tank_cor_vol', $tank_cor_vol);
+            oci_bind_by_name($stmt, ':tank_liquid_kg', $tank_liquid_kg);
+            oci_bind_by_name($stmt, ':tank_temp', $tank_temp);
+            oci_bind_by_name($stmt, ':tank_density', $tank_density);
+            oci_bind_by_name($stmt, ':pmv_open_tanklevel', $tank_prod_lvl);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            }
         }
         
         $error = new EchoSchema(200, response("__PRODUCTMOVEMENT_STARTED__"));
@@ -672,11 +694,11 @@ class ProdMovement extends CommonClass
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
             if ($row) {
                 if ($row['PMV_UNIT'] == 17 /* KG */) {
-                    $produce_moved = floatval($row['KG_SUM']) <= 0 ? $pmv['pmv_moved_qty'] : floatval($row['KG_SUM']);
+                    $produce_moved = floatval($row['KG_SUM']);
                 } else if ($movement_liter_unit === 'AMB') {
-                    $produce_moved = floatval($row['AVL_SUM']) <= 0 ? $pmv['pmv_moved_qty'] : floatval($row['AVL_SUM']);
+                    $produce_moved = floatval($row['AVL_SUM']);
                 } else {
-                    $produce_moved = floatval($row['CVL_SUM']) <= 0 ? $pmv['pmv_moved_qty'] : floatval($row['CVL_SUM']);
+                    $produce_moved = floatval($row['CVL_SUM']);
                 }
 
                 // $result_array[$i]['bay_avl_sum'] = floatval($row['BAY_AVL_SUM']);
