@@ -175,7 +175,11 @@ const columns = (t, config) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: !(config?.temperatureUnit === 'degC' && config?.referenceTemperature === '15' && config?.vsmCompensation === '30'),
+    hide: !(
+      config?.temperatureUnit === 'degC' &&
+      config?.referenceTemperature === '15' &&
+      config?.vsmCompensation === '30'
+    ),
     width: 140,
     suppressSizeToFit: true,
   },
@@ -249,6 +253,27 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     width: 120,
+    suppressSizeToFit: true,
+  },
+
+  {
+    headerName: t('fields.adaptiveArmPriority'),
+    field: 'afc_priority',
+    sortable: true,
+    resizable: true,
+    hide: !config?.siteUseAFC,
+    width: 200,
+    suppressSizeToFit: true,
+  },
+
+  {
+    headerName: t('fields.tankMaxFlowRate'),
+    field: 'tank_max_flow',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'FlowRateRenderer',
+    hide: !config?.siteUseAFC,
+    width: 160,
     suppressSizeToFit: true,
   },
 
