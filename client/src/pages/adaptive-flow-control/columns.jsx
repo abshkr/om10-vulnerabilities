@@ -33,6 +33,20 @@ const columns = (data, t) => [
     filters: generateOptions(data, 'baseName'),
     onFilter: (value, record) => record.baseName.indexOf(value) === 0,
   },
+
+  {
+    title: t('fields.enabled'),
+    dataIndex: 'enabled',
+    key: 'enabled',
+    width: 200,
+    align: 'center',
+    render: (enabled) => (
+      <span>
+        <Tag color={enabled ? 'green' : 'error'}>{enabled ? 'True' : 'False'}</Tag>
+      </span>
+    ),
+  },
+
   {
     title: t('fields.armPriority'),
     dataIndex: 'armPriority',
@@ -61,11 +75,25 @@ const columns = (data, t) => [
       </span>
     ),
   },
+
   {
-    title: t('fields.totalFlowContribution'),
+    title: t('fields.maxFlowRate'),
+    dataIndex: 'max',
+    key: 'max',
+    width: 150,
+    align: 'center',
+    render: (value) => (
+      <span>
+        {value} {t('units.lpm')}
+      </span>
+    ),
+  },
+  {
+    title: t('fields.flowRate%'),
     dataIndex: 'flowRate',
     key: 'flowRate',
     align: 'center',
+    width: '20%',
     render: (percent) => (
       <div style={{ display: 'flex', flexDirection: 'column', width: '95%' }}>
         <Progress

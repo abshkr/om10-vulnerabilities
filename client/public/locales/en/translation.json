@@ -1674,7 +1674,9 @@
     "bayKG": "Bay KG",
     "finalAmb": "Final AMB",
     "finalStd": "Final STD",
-	"finalKG": "Final KG"
+    "finalKG": "Final KG",
+    "flowRate%": "Flow Rate %",
+    "maxFlowRate": "Max Flow Rate"
   },
   "generic": {
     "about": "About (EULA)",
