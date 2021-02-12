@@ -32,26 +32,30 @@ const AdaptiveFlowControl = () => {
 
   const isLoading = !products || !flow || !current;
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const data = load();
-
-      const payload = generator(data?.products, data?.flow, data?.current);
-
-      setTotal(_.sumBy(data?.flow, 'current_flow_rate'));
-      setData(payload);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
   // useEffect(() => {
-  //   if (products?.records && flow?.records && current) {
-  //     const payload = generator(products?.records, flow?.records, current);
+  //   const interval = setInterval(() => {
+  //     const data = load();
 
-  //     setTotal(_.sumBy(flow.data, 'current_flow_rate'));
+  //     const payload = generator(data?.products, data?.flow, data?.current);
+
+  //     setTotal(_.sumBy(data?.flow, 'current_flow_rate'));
   //     setData(payload);
-  //   }
-  // }, [isLoading, flow, current, products]);
+  //   }, 1000);
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  useEffect(() => {
+    if (products?.records && flow?.records && current) {
+      const payload = generator(products?.records, flow?.records, current);
+      // console.log('...........products?.records && flow?.records && current', products, flow, current);
+      // _.forEach(flow?.records, (arm) => {
+      //   arm.current_flow_rate = 1000;
+      // });
+
+      setTotal(_.sumBy(flow?.records, 'current_flow_rate'));
+      setData(payload);
+    }
+  }, [isLoading, flow, current, products]);
 
   console.log(data);
   return (

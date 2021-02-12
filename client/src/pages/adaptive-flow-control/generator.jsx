@@ -16,6 +16,12 @@ export default function generator(products, flow, current) {
     const currentFlowRate = _.round(_.sumBy(arms, 'current_flow_rate'), 2);
     const rate = _.round((currentFlowRate / 0) * 100, 2);
 
+    // add arm number to arms
+    _.forEach(arms, (arm) => {
+      arm.baa_index = _.toNumber(arm?.baa_code?.substr(4, 2));
+      arm.baa_desc = String(arm.baa_index) + ' - ' + arm.baa_code;
+    });
+
     payload.push({
       tankCode: tank?.tank_code,
       baseCode: tank?.base_code,
