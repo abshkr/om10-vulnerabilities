@@ -286,6 +286,8 @@ class ProdMovement extends CommonClass
             $this->pmv_obsvd_dens = 0;
         }
 
+        $unit = $this->pmv_unit == '17' ? 'kg' : 'liter';
+
         // write_log(json_encode($this), __FILE__, __LINE__);
         
         $serv = new SiteService($this->conn);
@@ -300,7 +302,7 @@ class ProdMovement extends CommonClass
             "&h_PMV_DSTCODE=" . rawurlencode(strip_tags($this->pmv_dstcode)) . 
             "&h_PMV_TRANS_TYPE=" . rawurlencode(strip_tags($this->pmv_trans_type)) . 
             "&h_PMV_INTENDED_QTY=" . rawurlencode(strip_tags($this->pmv_intended_qty)) . 
-            "&QuantityScale=1" . 
+            "&QuantityScale=" . $unit .
             "&h_PMV_OPENING_QTY=" . rawurlencode(strip_tags($this->pmv_opening_qty)) . 
             "&h_PMV_OBSVD_DENS=" . rawurlencode(strip_tags($this->pmv_obsvd_dens)) . 
             "&op=202";
