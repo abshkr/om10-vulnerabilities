@@ -306,7 +306,7 @@ class ProdMovement extends CommonClass
             "&op=202";
 
         $res = Utilities::http_cgi_invoke("cgi-bin/en/stck_mgmt/prod_movement.cgi", $query_string);
-        write_log($res, __FILE__, __LINE__);
+        // write_log($res, __FILE__, __LINE__);
         if (strpos($res, "op=\"212\"") === false) {
             $error = new EchoSchema(400, response("__CGI_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
