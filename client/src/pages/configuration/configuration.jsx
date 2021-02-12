@@ -40,6 +40,23 @@ const FormSwitch = ({ config, onChange }) => {
         </Select>
       );
 
+    case 'SITE_AFC_ARM_PRIORITY':
+      return (
+        <Select
+          // dropdownMatchSelectWidth={false}
+          defaultValue={config.config_value}
+          style={{ width: 280 }}
+          onChange={(value) => onChange(config, value)}
+        >
+          <Option value="LILO">
+            {'LILO (' + t('descriptions.listLastIn') + ' / ' + t('descriptions.listLastOut') + ')'}
+          </Option>
+          <Option value="LIFO">
+            {'LIFO (' + t('descriptions.listLastIn') + ' / ' + t('descriptions.listFirstOut') + ')'}
+          </Option>
+        </Select>
+      );
+
     case 'SHLS_SEAL_FMT':
       return (
         <Select
@@ -681,6 +698,14 @@ const Configuration = ({ user, config }) => {
               />
             </TabPane>
           )}
+
+          <TabPane tab={t('tabColumns.adaptiveFlowControl')} key="10">
+            <ConfigurationItems
+              data={_.filter(configuration, ['config_required_by_gui', 'F'])}
+              onChange={onConfigurationEdit}
+              t={t}
+            />
+          </TabPane>
         </Tabs>
       </Page>
     </ConfigurationContainer>

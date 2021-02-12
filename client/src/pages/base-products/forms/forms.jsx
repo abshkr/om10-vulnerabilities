@@ -225,7 +225,12 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
                     <AdaptiveFlowControlFlag form={form} value={value} onChange={setAfcEnabled} />
                   </Col>
                   <Col span={12}>
-                    <AdaptiveFlowControlPriority form={form} value={value} flag={afcEnabled} />
+                    <AdaptiveFlowControlPriority
+                      form={form}
+                      value={value}
+                      config={config}
+                      flag={afcEnabled}
+                    />
                   </Col>
                 </Row>
               </>

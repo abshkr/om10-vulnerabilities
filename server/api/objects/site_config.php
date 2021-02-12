@@ -50,6 +50,8 @@ class SiteConfig extends CommonClass
         "SITE_AUDIT_SCREEN_ENABLED" => "是否启用审计管理屏幕",
         "SITE_AUTO_COMPLETE_TRANSACTOIN" => "自动终结发油进程",
         "SITE_MAX_TAGS" => "油库允许的身份识别标记卡数上限",
+        "SITE_AFC_ARM_PRIORITY" => "油库范围适应性鹤管优先级(LILO/LIFO)",
+        "SITE_USE_ADAPTIVE_FLOW_CONTROL" => "启用适应性油品流动控制",
         "MONTHLY_REPORT_INCLUSIVE" => "月度总计报表是否包括该月之前开始该月中结束的FOLIO",
         "THIRD_PARTY_LOADING" => "第三方提油必须使用属于油库管理公司的开放客户订单",
         "LIVE_JOURNAL_SORT" => "显示实时日志记录时把最新发生的事件列在底部",
@@ -167,6 +169,8 @@ class SiteConfig extends CommonClass
         "SITE_SHLS_REQ_DRVR" => "dispatcher require to add the driver to schedule",
         "SITE_TANK_STATUS_ENFORCEMENT_FLAG" => "The Tank Status Enforcement flag",
         "SITE_TKRCODE_LEN_LIMIT" => "If Y tanker code length max 20 chars; N then max 40 chars",
+        "SITE_AFC_ARM_PRIORITY" => "Site-wide Arm Priority for all arms (LILO/LIFO)",
+        "SITE_USE_ADAPTIVE_FLOW_CONTROL" => "Use Adaptive Flow Control",
         "SITE_USE_LSI" => "Load Security Info in Manual Transactions",
         "SITE_USE_SEAL" => "Site Level, whether security seal is used on site",
         "SITE_USE_WEIGHBRIDGE" => "Site Level, whether weighbridge is used on site",
@@ -307,6 +311,10 @@ class SiteConfig extends CommonClass
 
             oci_commit($this->conn);
             return true;
+        }
+
+        if ($this->config_key === "SITE_AFC_ARM_PRIORITY") {
+            $this->update_base_arm_priorities($this->config_key, $this->config_value);
         }
 
         // Now call the parent function to update settings in SITE_CONFIG
@@ -474,5 +482,33 @@ class SiteConfig extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    // need update arm priority value in all base products to the site-wide setting
+    protected function update_base_arm_priorities($key, $value)
+    {
+        // check if the flag is turned on
+
+        $query = "
+            UPDATE BASE_PRODS 
+            SET AFC_PRIORITY = :arm_priority 
+            WHERE 1=1
+        ";
+        write_log(
+            sprintf("%s::%s BASE_PRODS. key:%s, value:%s", __CLASS__, __FUNCTION__, 
+                $key, $value),
+            __FILE__, __LINE__
+        );
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':arm_priority', $value);
+        if (!oci_execute($stmt)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            // $error = new EchoSchema(500, response("__INTERNAL_ERROR__", "Internal Error: " . $e['message']));
+            // echo json_encode($error, JSON_PRETTY_PRINT);
+            return false;
+        };
+
+        return true;
     }
 }
