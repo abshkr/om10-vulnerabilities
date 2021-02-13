@@ -22,6 +22,8 @@
     "cannotCopyQuantityTitle": "无法复制油量",
     "cannotDeleteLocked": "被锁定的运输设备不能被删除",
     "cannotDeleteTareIn": "预称重的运输设备不能被删除",
+    "cannotEnableAfcNoTank": "该基础油品尚无油罐，因此无法启用适应性油品流动控制。",
+    "cannotEnableAfcNoFlowRate": "如欲启用该基础油品的适应性油品流动控制，其相关的每个油罐必须定义至少一条油品液位最大流量的关联数据。这些油罐尚未定义：",
     "changeUseProfile": "修改用户档案",
     "changeUserLanguage": "修改用户语言",
     "changeYourPassword": "修改您的密码",
@@ -225,7 +227,7 @@
     "valueTooHigh": "数值太高",
     "valueTooLow": "数值太低",
     "zeroCompartmentCount": "油仓数目不能为零",
-	"periodOverlap": "周期时间与已有周期重叠"
+    "periodOverlap": "周期时间与已有周期重叠"
   },
   "divider": {
     "baseProducts": "基础油品",
@@ -1673,7 +1675,7 @@
     "bayStd": "油台标量",
     "finalAmb": "最终视量",
     "finalStd": "最终视量",
-	"finalKG": "最终质量(公斤)"
+    "finalKG": "最终质量(公斤)"
   },
   "generic": {
     "about": "关于(EULA)",
@@ -1707,6 +1709,7 @@
     "archiveSuccess": "提单成功归档",
     "calculateSuccess": "计算成功完成",
     "calculating": "计算中......",
+    "cannotEnable": "无法启用",
     "clearTransferSuccess": "发油数据成功清除",
     "closeFolioSuccess": "首个冻结预盘成功结束",
     "closeSuccess": "油品交易成功终止",

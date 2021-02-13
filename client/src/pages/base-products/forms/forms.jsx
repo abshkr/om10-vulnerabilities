@@ -10,7 +10,7 @@ import {
 
 import { Form, Button, Tabs, Modal, notification, message, Drawer, Divider, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { mutate } from 'swr';
+import useSWR, { mutate } from 'swr';
 
 import _ from 'lodash';
 
@@ -28,7 +28,7 @@ import {
   AdaptiveFlowControlPriority,
 } from './fields';
 
-import api, { BASE_PRODUCTS } from '../../../api';
+import api, { BASE_PRODUCTS, ADAPTIVE_FLOW_CONTROL } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
@@ -36,6 +36,14 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
   const { manageHotProduct, manageBaseProductDensityRange, siteUseAFC } = config;
   const [classification, setClassification] = useState(undefined);
   const [afcEnabled, setAfcEnabled] = useState(value?.afc_enabled);
+
+  const [afcEnabledNote, setAfcEnabledNote] = useState('');
+
+  const url =
+    value && value?.base_code
+      ? `${ADAPTIVE_FLOW_CONTROL.MAX_FLOW_DETAILS}?base_code=${value?.base_code}`
+      : null;
+  const { data: payload } = useSWR(url);
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -139,10 +147,27 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
   };
 
   useEffect(() => {
-    if (!value & !visible) {
+    if (!value && !visible) {
       resetFields();
     }
   }, [resetFields, value, visible]);
+
+  useEffect(() => {
+    if (value && payload) {
+      const tanks = value?.base_tank_list.split(', ');
+      let rest = '';
+      _.forEach(tanks, (tank) => {
+        const found = _.find(payload?.records, (item) => item.tank_code === tank);
+        if (!found) {
+          if (rest.length > 0) {
+            rest += ', ';
+          }
+          rest += tank;
+        }
+      });
+      setAfcEnabledNote(rest);
+    }
+  }, [value, payload]);
 
   return (
     <Drawer
@@ -222,7 +247,12 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
                 <Divider />
                 <Row gutter={[12, 12]}>
                   <Col span={12}>
-                    <AdaptiveFlowControlFlag form={form} value={value} onChange={setAfcEnabled} />
+                    <AdaptiveFlowControlFlag
+                      form={form}
+                      value={value}
+                      note={afcEnabledNote}
+                      onChange={setAfcEnabled}
+                    />
                   </Col>
                   <Col span={12}>
                     <AdaptiveFlowControlPriority

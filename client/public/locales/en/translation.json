@@ -22,6 +22,8 @@
     "cannotCopyQuantityTitle": "Cannot copy quantity",
     "cannotDeleteLocked": "Locked equipment cannot be deleted",
     "cannotDeleteTareIn": "Must-tare-in equipment cannot be deleted",
+    "cannotEnableAfcNoTank": "The base product currently has no tank allocated so AFC cannot be enabled.",
+    "cannotEnableAfcNoFlowRate": "AFC cannot be enabled because the following tanks do not have at least 1 Tank Level --> Flow Rate mapping entered: ",
     "changeUseProfile": "Change User Profile",
     "changeUserLanguage": "Change User Language",
     "changeYourPassword": "Change Your Password",
@@ -225,7 +227,7 @@
     "valueTooHigh": "Value too high",
     "valueTooLow": "Value too low",
     "zeroCompartmentCount": "The compartment count cannot be zero",
-	"periodOverlap": "Allcation period dates overlap with existing period"
+    "periodOverlap": "Allcation period dates overlap with existing period"
   },
   "divider": {
     "baseProducts": "Base Products",
@@ -1710,6 +1712,7 @@
     "archiveSuccess": "Successfully archived",
     "calculateSuccess": "Successfully calculated",
     "calculating": "Calculating...",
+    "cannotEnable": "Cannot be enabled",
     "clearTransferSuccess": "Successfully cleared",
     "closeFolioSuccess": "First Frozen Folio closed",
     "closeSuccess": "Successfully closed",

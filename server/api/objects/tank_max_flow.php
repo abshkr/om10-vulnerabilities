@@ -64,11 +64,17 @@ class TankMaxFlow extends CommonClass
         if (isset($this->tank_code)) {
             $query .= "AND tmf.TANK_CODE = :tank_code ";
         }
+        if (isset($this->base_code)) {
+            $query .= "AND gt.TANK_BASE = :base_code ";
+        }
         $query .= "ORDER BY tmf.TANK_CODE, tmf.TANK_LEVEL";
 
         $stmt = oci_parse($this->conn, $query);
         if (isset($this->tank_code)) {
             oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+        }
+        if (isset($this->base_code)) {
+            oci_bind_by_name($stmt, ':base_code', $this->base_code);
         }
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
