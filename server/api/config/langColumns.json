@@ -4149,6 +4149,7 @@
     "STRAPS": {
       "STRAP_HEIGHT": "Height",
       "STRAP_VOL": "Volume",
+      "STRAP_TYPE": "Strapping Type",
       "STR_TK_TANKCODE": "Tank",
       "STR_TK_TANKDEPO": "Terminal"
     },
@@ -4323,6 +4324,7 @@
       "TANK_MAX_LEVEL": "Tank Max. Level",
       "TANK_MAX_CAPACITY": "Tank Max. Capacity",
       "TANK_AMB_CLOSE": "Tank Ambient Closeout",
+      "TANK_IFC": "Internal Floating Roof Compensation",
       "TANK_SG": "Tank Specific Gravity"
     },
     "TANKSWITCH": {
@@ -9027,6 +9029,7 @@
     "STRAPS": {
       "STRAP_HEIGHT": "液位",
       "STRAP_VOL": "校正容量",
+      "STRAP_TYPE": "校正容量类型",
       "STR_TK_TANKCODE": "油罐",
       "STR_TK_TANKDEPO": "油库"
     },
@@ -9201,6 +9204,7 @@
       "TANK_MAX_LEVEL": "油罐最高液位",
       "TANK_MAX_CAPACITY": "油罐最大容量",
       "TANK_AMB_CLOSE": "油罐盘点视量",
+      "TANK_IFC": "内部浮板补偿容积",
       "TANK_SG": "油罐比重"
     },
     "TANKSWITCH": {
