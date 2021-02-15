@@ -272,11 +272,13 @@ class Utilities
             if ($data) {
                 foreach ($data as $key => $value) {
                     $object->$key = $value;
+                    $object->uri_arugments[$key] = $value;
                 }
             } else {
                 // write_log(json_encode($_GET), __FILE__, __LINE__);
                 foreach ($_GET as $key => $value) {
                     $object->$key = $value;
+                    $object->uri_arugments[$key] = $value;
                 }
             }
         }
@@ -310,8 +312,26 @@ class Utilities
         $result = array();
         if (READ_PAGINATION) {
             $result["count"] = $object->pagination_count();
-            // $result["next"] = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . 
-            //     "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+            $result["next"] = null;
+            $result["previous"] = null;
+            if (intval($object->start_num) > 1) {
+                $prev_start = $object->start_num - ($object->end_num - $object->start_num) - 1;
+                if ($prev_start < 0) {
+                    $prev_start = 0;
+                }
+                $prev_end = intval($object->start_num) - 1;
+                $result["previous"] = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . 
+                    "://$_SERVER[HTTP_HOST]" . strtok($_SERVER["REQUEST_URI"], '?') . '?start_num=' . $prev_start . '&end_num=' . $prev_end;
+                
+                foreach ($object->uri_arugments as $key => $value) {
+                    if ($key === 'start_num' || $key === 'end_num') {
+                        continue;
+                    }
+
+                    $result["previous"] .= '&' . $key . '=' . rawurlencode(strip_tags($value));
+                }
+            }
+
             $result["start_num"] = intval($object->start_num);
             $result["end_num"] = intval($object->end_num);
         }
@@ -326,6 +346,20 @@ class Utilities
         $num = self::retrieve($temp_array, $object, $stmt, $method);
         if (READ_PAGINATION) {
             $result["retrieved"] = $num;
+            if (intval($object->start_num) + $num < $result["count"]) {
+                $next_start = $object->end_num + 1;
+                $next_end = $next_start + $num - 1;
+                $result["next"] = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . 
+                    "://$_SERVER[HTTP_HOST]" . strtok($_SERVER["REQUEST_URI"], '?') . '?start_num=' . $next_start . '&end_num=' . $next_end;
+                
+                foreach ($object->uri_arugments as $key => $value) {
+                    if ($key === 'start_num' || $key === 'end_num') {
+                        continue;
+                    }
+
+                    $result["next"] .= '&' . $key . '=' . rawurlencode(strip_tags($value));
+                }
+            }
         }
 
         $result["records"] = $temp_array;

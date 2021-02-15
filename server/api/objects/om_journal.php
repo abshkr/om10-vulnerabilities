@@ -97,7 +97,7 @@ class OMJournal extends CommonClass
     {
         if (!isset($this->start_date) || !isset($this->end_date)) {
             //get journal in 30 min
-            $query = "SELECT COUNT(*) CN FROM GUI_SITE_JOURNAL WHERE REGION_CODE = :lang ";
+            $query = "SELECT COUNT(*) CN FROM GUI_SITE_JOURNAL WHERE GEN_DATE >= SYSDATE - 30 / 1440 AND REGION_CODE = :lang ";
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':lang', $this->lang);
         } else {

@@ -105,6 +105,11 @@ class CommonClass
     */
     protected $del_n_ins_children = true;
 
+    /**
+     * array that is in POST or GET
+     */
+    public $uri_arugments = array();
+
     //read imp will be called inside read. Make it public because Utilities::update() calls it
     public function read_hook(&$hook_item)
     {
