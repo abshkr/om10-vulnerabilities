@@ -77,6 +77,9 @@ class Tank extends CommonClass
         "TANK_DTOL_PERCENT",
         "TANK_MTOL_VOLUME",
         "TANK_MTOL_PERCENT",
+        "TANK_VISCOSITY",
+        "TANK_AMB_CLOSE",
+        "TANK_IFC",
         "TANK_SG"
     );
 

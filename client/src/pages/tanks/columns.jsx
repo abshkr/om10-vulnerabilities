@@ -103,6 +103,35 @@ const columns = (t, config) => [
     width: 130,
     suppressSizeToFit: true,
   },
+
+  {
+    headerName: t('fields.waterLevel'),
+    field: 'tank_water_lvl',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    width: 130,
+    suppressSizeToFit: true,
+  },
+  {
+    headerName: t('fields.waterVolume'),
+    field: 'tank_water',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    width: 130,
+    suppressSizeToFit: true,
+  },
+  {
+    headerName: t('fields.tankIFC'),
+    field: 'tank_ifc',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    width: 260,
+    suppressSizeToFit: true,
+  },
+
   {
     headerName: t('fields.levelAlarmState'),
     field: 'tank_lvlalarm_desc',
@@ -175,7 +204,11 @@ const columns = (t, config) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: !(config?.temperatureUnit === 'degC' && config?.referenceTemperature === '15' && config?.vsmCompensation === '30'),
+    hide: !(
+      config?.temperatureUnit === 'degC' &&
+      config?.referenceTemperature === '15' &&
+      config?.vsmCompensation === '30'
+    ),
     width: 140,
     suppressSizeToFit: true,
   },
