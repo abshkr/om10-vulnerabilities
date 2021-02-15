@@ -1563,6 +1563,7 @@
     "tankGroupMemebers": "Tank Group Members",
     "tankId": "Tank ID",
     "tankIFC": "IFC",
+    "tankIFC2": "Internal Floating Roof Compensation",
     "tankLevel": "Tank Level",
     "tankMaxFlowRate": "Max Flow Rates",
     "tankMaxLevel": "Tank Max Level",

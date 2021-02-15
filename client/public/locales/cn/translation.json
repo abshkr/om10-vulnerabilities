@@ -1563,6 +1563,7 @@
     "tankGroupMemebers": "油罐组成员列表",
     "tankId": "油罐ID",
     "tankIFC": "内部浮板补偿容积",
+    "tankIFC2": "内部浮板补偿容积",
     "tankLevel": "油罐液位",
     "tankMaxFlowRate": "油罐最大流量",
     "tankMaxLevel": "油罐最大液位",
