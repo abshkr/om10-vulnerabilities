@@ -701,7 +701,9 @@ const Configuration = ({ user, config }) => {
 
           <TabPane tab={t('tabColumns.adaptiveFlowControl')} key="10">
             <ConfigurationItems
-              data={_.filter(configuration, ['config_required_by_gui', 'F'])}
+              data={_.filter(_.filter(configuration, ['config_required_by_gui', 'F']), (item) => {
+                return user?.per_code === '9999' || item?.config_key !== 'SITE_USE_ADAPTIVE_FLOW_CONTROL';
+              })}
               onChange={onConfigurationEdit}
               t={t}
             />
