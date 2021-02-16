@@ -44,6 +44,43 @@ const TankStrapping = ({ terminal, code, isLoading, access, tanks }) => {
     setSelected(value);
   };
 
+  const checkTypes = (type) => {
+    let banChange = false;
+    if (type === 1) {
+      // Make sure it is in water section before changing to Water Level
+      for (let i = 0; i < data?.records?.length; i++) {
+        const item = data?.records?.[i];
+        if (item?.strap_type === 0 && (item?.strap_height < selected?.strap_height || !selected)) {
+          banChange = true;
+          notification.warning({
+            message: t('messages.cannotChange'),
+            description: t('descriptions.strapTypeProductSection'),
+            description: 'Current level is within product section',
+          });
+          break;
+        }
+      }
+    } else {
+      // Make sure it is in product section before changing to Product Level
+      for (let i = 0; i < data?.records?.length; i++) {
+        const item = data?.records?.[i];
+        if (item?.strap_type === 1 && item?.strap_height > selected?.strap_height) {
+          banChange = true;
+          notification.warning({
+            message: t('messages.cannotChange'),
+            description: t('descriptions.strapTypeWaterSection'),
+          });
+          break;
+        }
+      }
+    }
+    if (banChange === true) {
+      setFieldsValue({
+        strap_type: selected?.strap_type,
+      });
+    }
+  };
+
   const onComplete = () => {
     handleFormState(false, null);
     mutate(url);
@@ -312,6 +349,7 @@ const TankStrapping = ({ terminal, code, isLoading, access, tanks }) => {
                   dropdownMatchSelectWidth={false}
                   loading={isLoading}
                   showSearch
+                  onChange={checkTypes}
                   optionFilterProp="children"
                   filterOption={(input, option) =>
                     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0

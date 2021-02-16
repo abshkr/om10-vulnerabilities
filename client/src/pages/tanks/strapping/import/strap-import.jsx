@@ -102,6 +102,7 @@ const StrapImport = ({ value, onClose }) => {
       setStrapList(newList);
       // loop all lines to see if enabling Upload button
       onVerifyData(newList, false);
+      onVerifyTypes(newList, false);
     }
   };
 
@@ -123,6 +124,7 @@ const StrapImport = ({ value, onClose }) => {
       });
       setStrapList(json);
       onVerifyData(json);
+      onVerifyTypes(json);
     };
 
     reader.readAsText(fileList?.[0]);
@@ -223,6 +225,49 @@ const StrapImport = ({ value, onClose }) => {
     }
 
     return invalid;
+  };
+
+  const onVerifyTypes = (json, showWarning = true) => {
+    const len = json.length;
+    let invalid = false;
+    let type1, type2, type3;
+    let line1, line2, line3;
+    for (let i = 0; i < len; i++) {
+      if (i === 0) {
+        type1 = json?.[i].strap_type;
+        type2 = json?.[i].strap_type;
+        type3 = json?.[i].strap_type;
+        line1 = 0;
+        line2 = 0;
+        line3 = 0;
+      } else {
+        if (type1 !== json?.[i].strap_type) {
+          type2 = json?.[i].strap_type;
+          type3 = json?.[i].strap_type;
+          line2 = i;
+          line3 = i;
+        }
+        if (type2 !== json?.[i].strap_type) {
+          type3 = json?.[i].strap_type;
+          line3 = i;
+        }
+      }
+      if ((type1 === '0' && type2 !== type1) || (type1 === '1' && type2 !== type3)) {
+        let line = line2;
+        if (type1 === '1' && type2 !== type3) {
+          line = line3;
+        }
+        notification.warning({
+          message: t('messages.cannotImport'),
+          description: t('descriptions.strapTypeWrongLine') + (line + 1),
+        });
+        invalid = true;
+        break;
+      }
+    }
+
+    setInvalid(invalid);
+    setCanUpload(!invalid);
   };
 
   const onVerifyData = (json, showWarning = true) => {
