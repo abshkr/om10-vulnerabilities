@@ -30,7 +30,7 @@ const AdaptiveFlowControlPriority = ({ form, value, config, flag }) => {
 
   useEffect(() => {
     setFieldsValue({
-      afc_priority: value ? value.afc_priority : config?.siteArmPriority,
+      afc_priority: value && value?.afc_priority ? value.afc_priority : config?.siteArmPriority,
     });
   }, [value, config, setFieldsValue]);
 
