@@ -1,4 +1,4 @@
-const columns = t => [
+const columns = (t) => [
   {
     headerName: t('fields.code'),
     field: 'tank_code',
@@ -24,9 +24,22 @@ const columns = t => [
     resizable: true,
     filter: 'MultiFilter',
   },
+
+  {
+    headerName: t('fields.waterLevel') + ' (' + t('units.mm') + ')',
+    field: 'tank_water_lvl',
+    sortable: true,
+    resizable: true,
+  },
   {
     headerName: `${t('fields.tankLevel')} (${t('units.mm')})`,
     field: 'tank_prod_lvl',
+    sortable: true,
+    resizable: true,
+  },
+  {
+    headerName: t('fields.tankIFC') + ' (' + t('units.ltr') + ')',
+    field: 'tank_ifc',
     sortable: true,
     resizable: true,
   },
