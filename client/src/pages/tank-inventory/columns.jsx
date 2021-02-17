@@ -32,6 +32,13 @@ const columns = (t) => [
     resizable: true,
   },
   {
+    headerName: t('fields.waterVolume') + ' (' + t('units.ltr') + ')',
+    field: 'tank_water',
+    sortable: true,
+    resizable: true,
+    hide: true,
+  },
+  {
     headerName: `${t('fields.tankLevel')} (${t('units.mm')})`,
     field: 'tank_prod_lvl',
     sortable: true,
