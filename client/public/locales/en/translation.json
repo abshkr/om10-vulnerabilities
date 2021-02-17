@@ -1572,6 +1572,8 @@
     "tankMaxLevel": "Tank Max Level",
     "tankName": "Tank Name",
     "tankProdLevel": "Tank Product Level",
+    "tankProdVolume": "Total Volume",
+    "tankRoofWeight": "Roof Weight",
     "tankStatusId": "Tank Status Id",
     "tankStatus": "Tank Status",
     "tankWater": "Tank Water Volume",

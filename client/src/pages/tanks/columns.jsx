@@ -94,8 +94,28 @@ const columns = (t, config) => [
     width: 110,
     suppressSizeToFit: true,
   },
+
   {
-    headerName: t('fields.productLevel'),
+    headerName: t('fields.waterLevel') + ' (' + t('units.mm') + ')',
+    field: 'tank_water_lvl',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    width: 130,
+    suppressSizeToFit: true,
+  },
+  {
+    headerName: t('fields.waterVolume') + ' (' + t('units.ltr') + ')',
+    field: 'tank_water',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    width: 130,
+    suppressSizeToFit: true,
+  },
+
+  {
+    headerName: t('fields.productLevel') + ' (' + t('units.mm') + ')',
     field: 'tank_prod_lvl',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -105,25 +125,7 @@ const columns = (t, config) => [
   },
 
   {
-    headerName: t('fields.waterLevel'),
-    field: 'tank_water_lvl',
-    filter: 'FuzzyFilter',
-    sortable: true,
-    resizable: true,
-    width: 130,
-    suppressSizeToFit: true,
-  },
-  {
-    headerName: t('fields.waterVolume'),
-    field: 'tank_water',
-    filter: 'FuzzyFilter',
-    sortable: true,
-    resizable: true,
-    width: 130,
-    suppressSizeToFit: true,
-  },
-  {
-    headerName: t('fields.tankIFC'),
+    headerName: t('fields.tankIFC') + ' (' + t('units.ltr') + ')',
     field: 'tank_ifc',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -151,7 +153,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.ambientVolume'),
+    headerName: t('fields.ambientVolume') + ' (' + t('units.ltr') + ')',
     field: 'tank_amb_vol',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -160,7 +162,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.standardVolume'),
+    headerName: t('fields.standardVolume') + ' (' + t('units.ltr') + ')',
     field: 'tank_cor_vol',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -169,7 +171,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.liquidMass'),
+    headerName: t('fields.liquidMass') + ' (' + t('units.kg') + ')',
     field: 'tank_liquid_kg',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -189,7 +191,7 @@ const columns = (t, config) => [
   },
 
   {
-    headerName: t('fields.standardDensity'),
+    headerName: t('fields.standardDensity') + ' (' + t('units.kg/m3') + ')',
     field: 'tank_density',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -199,7 +201,7 @@ const columns = (t, config) => [
   },
 
   {
-    headerName: t('fields.density'),
+    headerName: t('fields.density') + ' (' + t('units.kg/m3') + ')',
     field: 'tank_15_density',
     filter: 'FuzzyFilter',
     sortable: true,

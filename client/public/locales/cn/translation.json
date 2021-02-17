@@ -1572,6 +1572,8 @@
     "tankMaxLevel": "油罐最大液位",
     "tankName": "油罐名称",
     "tankProdLevel": "油罐油品液位",
+    "tankProdVolume": "油罐总容积",
+    "tankRoofWeight": "内部浮板重量",
     "tankStatusId": "油罐状态编号",
     "tankStatus": "油罐状态",
     "tankWater": "油罐水容积",
