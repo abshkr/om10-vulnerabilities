@@ -195,6 +195,7 @@
     "siteAxleLimitType": "Please note: the selection of dropdown list will change the type of axle mass limit on site instantly",
     "startFailed": "Failed to start the process",
     "startSuccess": "You have started the record",
+    "strapDataNotFound": "Strapping data not found for tank",
     "strapTypeProductSection": "Current level is within product section",
     "strapTypeWaterSection": "Current level is within water section",
     "strapTypeWrongLine": "Wrong strapping type in line: ",
