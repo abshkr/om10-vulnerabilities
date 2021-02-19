@@ -30,7 +30,7 @@ export default function generator(products, flow, current) {
       armPriority: product?.afc_priority !== '' ? product?.afc_priority : 'Not Set',
       level: levels.tank_level,
       arms,
-      max: _.round(0, 2),
+      max: _.round(levels.flow_rate, 2),
       flowRate: rate,
       currentFlowRate: currentFlowRate,
     });
