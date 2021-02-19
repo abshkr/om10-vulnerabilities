@@ -25,8 +25,9 @@ abstract class LogLevel
 //         error_log($formatted, 3, $log_file);
 //     }
 // }
-
-date_default_timezone_set('UTC');
+if (!ini_get('date.timezone')) {
+    date_default_timezone_set('UTC');
+}
 
 if (strpos(PHP_OS, 'WIN') !== false) { 
     $log_file = "C:\\Workshop\\DKI\GIT\\frontend\\server\\logs\\api.log";
