@@ -160,6 +160,10 @@ class Personnel extends CommonClass
     // pure php function
     public function create()
     {
+        if (!isset($this->per_lock)) {
+            $this->per_lock = 'N';
+        }
+
         // query to insert record
         //'a1qhH6yu9Tjg.', // encryption of default pw '12345'
         $query = "INSERT INTO PERSONNEL
