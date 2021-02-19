@@ -112,6 +112,7 @@ const columns = (t, config) => [
     resizable: true,
     width: 130,
     suppressSizeToFit: true,
+    hide: true,
   },
 
   {

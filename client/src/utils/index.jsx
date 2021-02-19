@@ -6,6 +6,8 @@ import getDateTimeFormat from './get-date-time-format';
 import getDateRangeOffset from './get-date-range-offset';
 import getDensityRange from './get-density-range';
 import getRangeDays from './get-range-days';
+import getTankVCF from './get-tank-vcf';
+import getQtyByLevel from './get-qty-bylevel';
 import adjustProductArms from './adjust-product-arms';
 import getAvailableArms from './get-available-arms';
 import calcApiFromSg from './calculate-api-from-sg';
@@ -41,6 +43,8 @@ export {
   getDateRangeOffset,
   getDensityRange,
   getRangeDays,
+  getTankVCF,
+  getQtyByLevel,
   adjustProductArms,
   getAvailableArms,
   calcApiFromSg,

@@ -160,6 +160,8 @@ select
     , tnk.TANK_AMB_CLOSE
     , tnk.TANK_SG
     , tnk.TANK_IFC
+    , 0 as TANK_ROOF_WEIGHT
+    , (NVL(tnk.TANK_AMB_VOL,0) + NVL(tnk.TANK_WATER,0) + NVL(tnk.TANK_IFC,0)) as TANK_PROD_VOL
 from
     TANKS                                  tnk
     , TERMINAL                             trm

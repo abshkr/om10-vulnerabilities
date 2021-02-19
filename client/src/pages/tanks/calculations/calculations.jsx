@@ -8,7 +8,7 @@ import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
 
 import Calculation from '../forms/fields/calculation';
-import { VCFManager, getDensityRange } from '../../../utils';
+import { VCFManager, getDensityRange, getQtyByLevel } from '../../../utils';
 import api, { TANKS, TANK_STATUS } from '../../../api';
 
 const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
@@ -332,7 +332,7 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
       tank_prod_lvl: payload?.tank_prod_lvl,
     };
 
-    const isAdtv = selected?.tank_base_class === '6';
+    const isAdtv = selected?.tank_base_class === '6' || selected?.tank_base_class === '11';
 
     Modal.confirm({
       title: t('prompts.calculate'),
@@ -366,6 +366,159 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
                   isAdtv ? config.precisionAdditive : config.precisionMass
                 ),
               });
+              notification.success({
+                message: t('messages.calculateSuccess'),
+                description: t('descriptions.calculateSuccess'),
+              });
+            }
+          })
+
+          .catch((error) => {
+            notification.error({
+              message: error.message,
+              description: t('descriptions.calculateFailed'),
+            });
+          });
+      },
+    });
+  };
+
+  const onCalculateByAllLevels = async () => {
+    const { getFieldsValue, setFieldsValue } = form;
+
+    const payload = getFieldsValue([
+      'tank_amb_vol',
+      'tank_temp',
+      'tank_density',
+      'tank_15_density',
+      'tank_prod_lvl',
+      'tank_water_lvl',
+      'tank_ifc',
+    ]);
+
+    if (!payload?.tank_ifc || String(payload?.tank_ifc).trim().length === 0) {
+      notification.error({
+        message: t('validate.set'),
+        description: t('fields.tankIFC'),
+      });
+      return;
+    }
+    if (_.toNumber(payload?.tank_ifc) < 0) {
+      notification.error({
+        message: t('descriptions.CannotBeNegative'),
+        description: t('fields.tankIFC'),
+      });
+      return;
+    }
+
+    if (!payload?.tank_water_lvl || String(payload?.tank_water_lvl).trim().length === 0) {
+      notification.error({
+        message: t('validate.set'),
+        description: t('fields.waterLevel'),
+      });
+      return;
+    }
+    if (_.toNumber(payload?.tank_water_lvl) < 0) {
+      notification.error({
+        message: t('descriptions.CannotBeNegative'),
+        description: t('fields.waterLevel'),
+      });
+      return;
+    }
+
+    if (!payload?.tank_prod_lvl || String(payload?.tank_prod_lvl).trim().length === 0) {
+      notification.error({
+        message: t('validate.set'),
+        description: t('fields.productLevel'),
+      });
+      return;
+    }
+    if (_.toNumber(payload?.tank_prod_lvl) < 0) {
+      notification.error({
+        message: t('descriptions.CannotBeNegative'),
+        description: t('fields.productLevel'),
+      });
+      return;
+    }
+    if ((!payload?.tank_temp && payload?.tank_temp !== 0) || String(payload?.tank_temp).trim().length === 0) {
+      notification.error({
+        message: t('validate.set'),
+        description: t('fields.observedTemperature'),
+      });
+      return;
+    }
+    if (!payload?.tank_density || String(payload?.tank_density).trim().length === 0) {
+      notification.error({
+        message: t('validate.set'),
+        description: t('fields.density'),
+      });
+      return;
+    }
+    if (_.toNumber(payload?.tank_density) < 0) {
+      notification.error({
+        message: t('descriptions.CannotBeNegative'),
+        description: t('fields.density'),
+      });
+      return;
+    }
+
+    const isAdtv = selected?.tank_base_class === '6' || selected?.tank_base_class === '11';
+
+    Modal.confirm({
+      title: t('prompts.calculate'),
+      okText: t('operations.calculate'),
+      okType: 'primary',
+      width: '30vw',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        // get the water volume from water level
+        const waterVol = await getQtyByLevel(selected?.tank_code, _.toNumber(payload?.tank_water_lvl));
+        // get the total volume from prod level
+        const prodVol = await getQtyByLevel(selected?.tank_code, _.toNumber(payload?.tank_prod_lvl));
+        // get the ambient volume
+        const ambVol = prodVol - waterVol - _.toNumber(payload?.tank_ifc);
+        setFieldsValue({ tank_prod_vol: prodVol });
+        setFieldsValue({ tank_water: waterVol });
+        setFieldsValue({ tank_amb_vol: ambVol });
+
+        const values = {
+          tank_base: selected?.tank_base,
+          tank_qty_type: 'LT',
+          tank_qty_amount: ambVol,
+          tank_temp: payload?.tank_temp,
+          tank_density: payload?.tank_density,
+          tank_prod_lvl: payload?.tank_prod_lvl,
+          tank_code: selected?.tank_code,
+        };
+
+        await api
+          .post(TANK_STATUS.CALCULATE_QUANTITY, values)
+          .then((response) => {
+            if (!response?.data?.REAL_LITRE) {
+              notification.error({
+                message: t('descriptions.calculateFailed'),
+                description: response?.data?.MSG_CODE + ': ' + response?.data?.MSG_DESC,
+              });
+            } else {
+              setFieldsValue({
+                tank_amb_vol: _.round(
+                  response?.data?.REAL_LITRE,
+                  isAdtv ? config.precisionAdditive : config.precisionVolume
+                ),
+                tank_cor_vol: _.round(
+                  response?.data?.REAL_LITRE15,
+                  isAdtv ? config.precisionAdditive : config.precisionVolume
+                ),
+                tank_liquid_kg: _.round(
+                  response?.data?.REAL_KG,
+                  isAdtv ? config.precisionAdditive : config.precisionMass
+                ),
+              });
+              // selected.tank_amb_vol = _.round(response?.data?.REAL_LITRE, isAdtv ? config.precisionAdditive : config.precisionVolume);
+              // selected.tank_cor_vol = _.round(response?.data?.REAL_LITRE15, isAdtv ? config.precisionAdditive : config.precisionVolume);
+              // selected.tank_liquid_kg = _.round(response?.data?.REAL_LITRE15, isAdtv ? config.precisionAdditive : config.precisionMass);
               notification.success({
                 message: t('messages.calculateSuccess'),
                 description: t('descriptions.calculateSuccess'),
@@ -461,7 +614,7 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
       return;
     }
 
-    const isAdtv = selected?.tank_base_class === '6';
+    const isAdtv = selected?.tank_base_class === '6' || selected?.tank_base_class === '11';
 
     Modal.confirm({
       title:
@@ -644,7 +797,7 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
               type="primary"
               icon={<RedoOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              onClick={onCalculateByLevel}
+              onClick={config?.useWaterStrapping ? onCalculateByAllLevels : onCalculateByLevel}
               disabled={_.toNumber(counter?.records?.[0]?.cnt) === 0}
             >
               {t('operations.calculateQuantityByLevel')}
@@ -669,6 +822,7 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
           config={config}
           pinQuantity={setQuantitySource}
           pinDensity={setDensitySource}
+          noStrap={_.toNumber(counter?.records?.[0]?.cnt) === 0}
         />
       </Card>
     </Form>

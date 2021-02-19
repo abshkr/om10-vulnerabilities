@@ -10,3 +10,4 @@ export const CALCULATE_QUANTITY = '/api/pages/tank_status/calc_tank_qty.php';
 export const CALCULATE_BY_LEVEL = '/api/pages/tank_status/calc_tank_qty_bylevel.php';
 export const UPDATE_STATUS = '/api/pages/tank_status/update_status.php';
 export const UPDATE_GAUGE = '/api/pages/tank_status/update_gauge.php';
+export const QTY_BY_LEVEL = '/api/pages/tank_status/calc_qty_bylevel.php';

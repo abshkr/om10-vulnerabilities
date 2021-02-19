@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, Input, InputNumber, Select } from 'antd';
+import { Form, Input, InputNumber, Select, Row, Col } from 'antd';
 import _ from 'lodash';
-import { VCFManager, calcApiFromSg, calcSgFromApi } from '../../../../utils';
+import { VCFManager, calcApiFromSg, calcSgFromApi, getTankVCF, getQtyByLevel } from '../../../../utils';
 import { InputNumber as OmegaInputNumber } from '../../../../components';
 // import CheckboxGroup from 'antd/es/checkbox/Group';
+// import api, { TANK_STATUS } from '../../../../api';
 
 const { Option } = Select;
 
-const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDensity }) => {
+const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDensity, noStrap }) => {
   const { t } = useTranslation();
 
-  const { setFieldsValue } = form;
+  const { setFieldsValue, getFieldsValue } = form;
 
   const [tempBounds, setTempBounds] = useState({
     min: value?.tank_bclass_temp_lo || config.minTemperature,
@@ -23,6 +24,28 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
   const lowSGDef = _.round(calcSgFromApi(85), config?.precisionSG);
   const highSG = _.round(calcSgFromApi(range?.low), config?.precisionSG);
   const highSGDef = _.round(calcSgFromApi(0), config?.precisionSG);
+
+  /* const getTankVCF = async (base, temp, density) => {
+    const values = {
+      tank_base: base,
+      tank_qty_type: "LT",
+      tank_qty_amount: 10000,
+      tank_temp: temp,
+      tank_density: density,
+    };
+
+    const results = await api.post(TANK_STATUS.CALCULATE_QUANTITY, values);
+    // console.log('............getTankVCF', results);
+
+    return results?.data;
+  };
+
+  const getQtyByLevel = async (code, level) => {
+    const results = await api.get(`${TANK_STATUS.QTY_BY_LEVEL}?tank_code=${code}&tank_lvl=${level}`);
+    console.log('............getQtyByLevel', results);
+
+    return results?.data;
+  }; */
 
   useEffect(() => {
     if (value) {
@@ -116,6 +139,146 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
     }
 
     return Promise.resolve();
+  };
+
+  const handleIfcVolFieldChange = (v) => {
+    const values = getFieldsValue(['tank_prod_vol', 'tank_water', 'tank_ifc']);
+    const prodVol =
+      values?.tank_prod_vol === '' || values?.tank_prod_vol === undefined ? 0 : values?.tank_prod_vol;
+    const waterVol = values?.tank_water === '' || values?.tank_water === undefined ? 0 : values?.tank_water;
+    const ifcVol = v;
+    const vol = prodVol - waterVol - ifcVol;
+    setFieldsValue({ tank_roof_weight: '' });
+    setFieldsValue({ tank_amb_vol: vol });
+    handleAmbVolFieldChange(vol);
+  };
+
+  const handleWaterLvlFieldChange = async (v) => {
+    if (noStrap) {
+      return;
+    }
+    if (!v || String(v).trim().length === 0) {
+      return;
+    }
+    if (_.isNaN(_.toNumber(v))) {
+      return;
+    }
+    if (_.toNumber(v) < 0) {
+      return;
+    }
+
+    const values = getFieldsValue(['tank_prod_vol', 'tank_water', 'tank_ifc']);
+    const prodVol =
+      values?.tank_prod_vol === '' || values?.tank_prod_vol === undefined ? 0 : values?.tank_prod_vol;
+    const waterVol = await getQtyByLevel(value?.tank_code, v);
+    const ifcVol = values?.tank_ifc === '' || values?.tank_ifc === undefined ? 0 : values?.tank_ifc;
+    const vol = prodVol - waterVol - ifcVol;
+    setFieldsValue({ tank_amb_vol: vol });
+    setFieldsValue({ tank_water: waterVol });
+    handleAmbVolFieldChange(vol);
+  };
+
+  const handleWaterVolFieldChange = (v) => {
+    const values = getFieldsValue(['tank_prod_vol', 'tank_water', 'tank_ifc']);
+    const prodVol =
+      values?.tank_prod_vol === '' || values?.tank_prod_vol === undefined ? 0 : values?.tank_prod_vol;
+    const waterVol = v;
+    const ifcVol = values?.tank_ifc === '' || values?.tank_ifc === undefined ? 0 : values?.tank_ifc;
+    const vol = prodVol - waterVol - ifcVol;
+    setFieldsValue({ tank_amb_vol: vol });
+    handleAmbVolFieldChange(vol);
+  };
+
+  const handleProdLvlFieldChange = async (v) => {
+    if (noStrap) {
+      return;
+    }
+    if (!v || String(v).trim().length === 0) {
+      return;
+    }
+    if (_.isNaN(_.toNumber(v))) {
+      return;
+    }
+    if (_.toNumber(v) < 0) {
+      return;
+    }
+
+    const values = getFieldsValue(['tank_prod_vol', 'tank_water', 'tank_ifc']);
+    const prodVol = await getQtyByLevel(value?.tank_code, v);
+    const waterVol = values?.tank_water === '' || values?.tank_water === undefined ? 0 : values?.tank_water;
+    const ifcVol = values?.tank_ifc === '' || values?.tank_ifc === undefined ? 0 : values?.tank_ifc;
+    const vol = prodVol - waterVol - ifcVol;
+    setFieldsValue({ tank_amb_vol: vol });
+    setFieldsValue({ tank_prod_vol: prodVol });
+    handleAmbVolFieldChange(vol);
+  };
+
+  const handleProdVolFieldChange = (v) => {
+    const values = getFieldsValue(['tank_prod_vol', 'tank_water', 'tank_ifc']);
+    const prodVol = v;
+    const waterVol = values?.tank_water === '' || values?.tank_water === undefined ? 0 : values?.tank_water;
+    const ifcVol = values?.tank_ifc === '' || values?.tank_ifc === undefined ? 0 : values?.tank_ifc;
+    const vol = prodVol - waterVol - ifcVol;
+    setFieldsValue({ tank_amb_vol: vol });
+    handleAmbVolFieldChange(vol);
+  };
+
+  const handleRoofWeightFieldChange = async (v) => {
+    if (!v || String(v).trim().length === 0) {
+      return;
+    }
+    if (_.toNumber(v) < 0) {
+      return;
+    }
+
+    const values = getFieldsValue([
+      'tank_prod_vol',
+      'tank_ifc',
+      'tank_water',
+      'tank_roof_weight',
+      'tank_temp',
+      'tank_density',
+    ]);
+    const prodVol =
+      values?.tank_prod_vol === '' || values?.tank_prod_vol === undefined ? 0 : values?.tank_prod_vol;
+    const waterVol = values?.tank_water === '' || values?.tank_water === undefined ? 0 : values?.tank_water;
+    const roofMass = v;
+    const vcf = await getTankVCF(value?.tank_base, values?.tank_temp, values?.tank_density);
+    const densAir = (vcf?.REAL_KG / 10000) * 1000;
+    const ifcVol = (roofMass / densAir) * 1000;
+    const vol = prodVol - waterVol - ifcVol;
+    const isAdtv = value?.tank_base_class === '6' || value?.tank_base_class === '11';
+    const precision = isAdtv ? config?.precisionAdditive : config?.precisionVolume;
+    setFieldsValue({ tank_amb_vol: _.round(vol, precision) });
+    setFieldsValue({ tank_ifc: _.round(ifcVol, precision) });
+    handleAmbVolFieldChange(vol);
+  };
+
+  const handleTempFieldChange = async (v) => {
+    const values = getFieldsValue([
+      'tank_prod_vol',
+      'tank_ifc',
+      'tank_water',
+      'tank_roof_weight',
+      'tank_temp',
+      'tank_density',
+    ]);
+    const prodVol =
+      values?.tank_prod_vol === '' || values?.tank_prod_vol === undefined ? 0 : values?.tank_prod_vol;
+    const waterVol = values?.tank_water === '' || values?.tank_water === undefined ? 0 : values?.tank_water;
+    const roofMass =
+      values?.tank_roof_weight === '' || values?.tank_roof_weight === undefined
+        ? 0
+        : values?.tank_roof_weight;
+    const vcf = await getTankVCF(value?.tank_base, v?.target?.value, values?.tank_density);
+    const densAir = (vcf?.REAL_KG / 10000) * 1000;
+    const ifcVol = (roofMass / densAir) * 1000;
+    const vol = prodVol - waterVol - ifcVol;
+    const isAdtv = value?.tank_base_class === '6' || value?.tank_base_class === '11';
+    const precision = isAdtv ? config?.precisionAdditive : config?.precisionVolume;
+    setFieldsValue({ tank_amb_vol: _.round(vol, precision) });
+    setFieldsValue({ tank_ifc: _.round(ifcVol, precision) });
+    handleAmbVolFieldChange(vol);
   };
 
   const handleAmbVolFieldChange = (value) => {
@@ -287,19 +450,105 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
         </Form.Item> */
       )}
 
-      <OmegaInputNumber
-        form={form}
-        value={value?.tank_prod_lvl}
-        name="tank_prod_lvl"
-        label={`${t('fields.productLevel')} (${t('units.mm')})`}
-        min={0}
-        max={999999999}
-        precision={config.precisionLevel}
-        style={{ width: '100%' }}
-      />
-      {/* <Form.Item name="tank_prod_lvl" label={`${t('fields.productLevel')} (${t('units.mm')})`}>
-        <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
-      </Form.Item> */}
+      {config?.useWaterStrapping && (
+        <Row gutter={[8, 8]}>
+          <Col span={12}>
+            <OmegaInputNumber
+              form={form}
+              value={value?.tank_water_lvl}
+              name="tank_water_lvl"
+              label={`${t('fields.waterLevel')} (${t('units.mm')}) ${
+                noStrap ? '(' + t('descriptions.strapDataNotFound') + ')' : ''
+              }`}
+              min={0}
+              max={999999999}
+              precision={config.precisionLevel}
+              style={{ width: '100%' }}
+              onChange={handleWaterLvlFieldChange}
+            />
+          </Col>
+          <Col span={12}>
+            <OmegaInputNumber
+              form={form}
+              value={value?.tank_water}
+              name="tank_water"
+              label={`${t('fields.waterVolume')} (${t('units.litres')})`}
+              min={0}
+              max={999999999}
+              style={{ width: '100%' }}
+              precision={config.precisionVolume}
+              onChange={handleWaterVolFieldChange}
+            />
+          </Col>
+        </Row>
+      )}
+
+      {config?.useWaterStrapping && (
+        <Row gutter={[8, 8]}>
+          <Col span={12}>
+            <OmegaInputNumber
+              form={form}
+              value={value?.tank_roof_weight}
+              name="tank_roof_weight"
+              label={`${t('fields.tankRoofWeight')} (${t('units.kg')})`}
+              min={0}
+              max={999999999}
+              style={{ width: '100%' }}
+              precision={config.precisionVolume}
+              onChange={handleRoofWeightFieldChange}
+            />
+          </Col>
+          <Col span={12}>
+            <OmegaInputNumber
+              form={form}
+              value={value?.tank_ifc}
+              name="tank_ifc"
+              label={`${t('fields.tankIFC')} (${t('units.litres')})`}
+              min={0}
+              max={999999999}
+              style={{ width: '100%' }}
+              precision={config.precisionVolume}
+              onChange={handleIfcVolFieldChange}
+            />
+          </Col>
+        </Row>
+      )}
+
+      <Row gutter={[8, 8]}>
+        <Col span={config?.useWaterStrapping ? 12 : 24}>
+          <OmegaInputNumber
+            form={form}
+            value={value?.tank_prod_lvl}
+            name="tank_prod_lvl"
+            label={`${t('fields.productLevel')} (${t('units.mm')}) ${
+              noStrap ? '(' + t('descriptions.strapDataNotFound') + ')' : ''
+            }`}
+            min={0}
+            max={999999999}
+            precision={config.precisionLevel}
+            style={{ width: '100%' }}
+            onChange={handleProdLvlFieldChange}
+          />
+          {/* <Form.Item name="tank_prod_lvl" label={`${t('fields.productLevel')} (${t('units.mm')})`}>
+            <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
+          </Form.Item> */}
+        </Col>
+        {config?.useWaterStrapping && (
+          <Col span={12}>
+            <OmegaInputNumber
+              form={form}
+              value={value?.tank_prod_vol}
+              name="tank_prod_vol"
+              label={`${t('fields.tankProdVolume')} (${t('units.litres')})`}
+              min={0}
+              max={999999999}
+              style={{ width: '100%' }}
+              precision={config.precisionVolume}
+              onChange={handleProdVolFieldChange}
+            />
+          </Col>
+        )}
+      </Row>
 
       <OmegaInputNumber
         form={form}
@@ -323,7 +572,12 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
         })`}
         rules={[{ validator: validateTemperature }]}
       >
-        <Input style={{ width: '100%' }} addonAfter={temperaturePostfix} type="number" />
+        <Input
+          style={{ width: '100%' }}
+          addonAfter={temperaturePostfix}
+          type="number"
+          onChange={handleTempFieldChange}
+        />
       </Form.Item>
 
       <OmegaInputNumber

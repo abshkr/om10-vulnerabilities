@@ -6,6 +6,7 @@ include_once __DIR__ . '/../shared/utilities.php';
 include_once __DIR__ . '/../config/setups.php';
 include_once __DIR__ . '/../service/enum_service.php';
 include_once __DIR__ . '/../service/site_service.php';
+include_once __DIR__ . '/../service/strap_service.php';
 include_once 'common_class.php';
 
 /**
@@ -238,6 +239,21 @@ class TankStatus extends CommonClass
         $res = Utilities::http_cgi_invoke("cgi-bin/en/calcvcf.cgi", $query_string);
         $xml = simplexml_load_string($res);
         echo json_encode($xml, JSON_PRETTY_PRINT);
+    }
+
+    /*
+    SCRIPT_NAME: /cgi-bin/en/calcvcf.cgi
+    begin: 20190206_16:52:22.908323+11
+    REQUEST_METHOD: POST
+    COOKIE:
+    REQUEST: sess_id=igiVvGkQPtkp&frm_baseCd=400003030&frm_which_type=LT&frm_real_amount=2666065&frm_real_temp=31.30&frm_real_dens=747.200
+     */
+    public function calc_qty_by_level()
+    {
+        // get water volume by water strapping
+        $strap_service = new StrapService($this->conn);
+        $strap_vol = $strap_service->get_amb($this->tank_code, $this->tank_lvl);
+        echo $strap_vol;
     }
 
     //Because in db, some status like tank_hh_state is -1, which means null. This is old CGI legacy
