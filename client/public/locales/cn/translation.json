@@ -195,6 +195,7 @@
     "siteAxleLimitType": "请注意：改变此下拉框选项将会立即重新设定油库的车轴承重上限类型",
     "startFailed": "进程开始失败",
     "startSuccess": "您已成功开始了进程",
+    "strapDataNotFound": "此油罐尚无校正容积数据",
     "strapTypeProductSection": "当前液位处于油品区域",
     "strapTypeWaterSection": "当前液位处于积水区域",
     "strapTypeWrongLine": "校正容积数据类型错误，行号：",
