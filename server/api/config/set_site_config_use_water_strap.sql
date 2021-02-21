@@ -1,13 +1,13 @@
 /*
-    define the SITE_USE_DRAG_DROP for usage of Drag&Drop feature in Omega system
-    Y: Enable the Drag&Drop feature in Omega system
-    N: Disable the Drag&Drop feature in Omega system
+    define the SITE_USE_WATER_STRAPPING for usage of strapping data to calculate water volume from level
+    Y: Calculate water volume from level by strapping data
+    N: Don't consider the water volume
 */
-delete from SITE_CONFIG where CONFIG_KEY='SITE_USE_DRAG_DROP';
+delete from SITE_CONFIG where CONFIG_KEY='SITE_USE_WATER_STRAPPING';
 
 commit;
 
 insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIRED_BY_GUI) 
-values ('SITE_USE_DRAG_DROP', 'N', 'Use Drag and Drop in Omega system', NULL );
+values ('SITE_USE_WATER_STRAPPING', 'N', 'Calculate water volume from level by strapping data', NULL );
 
 commit;
