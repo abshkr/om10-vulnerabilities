@@ -1,21 +1,22 @@
 import React, { useState } from 'react';
 
 import useSWR, { mutate } from 'swr';
-import { Button } from 'antd';
+import { Button, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { SyncOutlined } from '@ant-design/icons';
+import { SyncOutlined, IdcardOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download } from '../../components';
-import { PERSONNEL_ON_SITE } from '../../api';
+import api, { PERSONNEL_ON_SITE, ON_DEMAND_REPORTS } from 'api';
 import columns from './columns';
 import auth from '../../auth';
 import useAuth from 'hooks/use-auth';
-
+import _ from 'lodash';
 import Forms from './forms';
 
 const PersonnelOnSite = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [reporting, setReporting] = useState(false);
 
   const { t } = useTranslation();
 
@@ -28,6 +29,39 @@ const PersonnelOnSite = () => {
     setSelected(value);
   };
 
+  const generateReport = () => {
+    const payload = {
+      report: "Personnel_onsite.jrxml", //Hardcode here
+      supplier: "ANY",
+      output: "pdf"
+    };
+  
+    setReporting(true);
+
+    api
+      .post(ON_DEMAND_REPORTS.CREATE, payload)
+      .then((response) => {
+        setReporting(false);
+        const file = response?.data?.filepath;
+
+        window.open(file, '_blank');
+
+        notification.success({
+          message: t('messages.reportGenerationSuccessful'),
+          description: t('descriptions.reportGenerationSuccessful'),
+        });
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
+        });
+        setReporting(false);
+      });
+  }
+
   const fields = columns(t);
 
   const data = payload?.records;
@@ -38,18 +72,19 @@ const PersonnelOnSite = () => {
 
   const site = {value:"ON_SITE"};
 
-
   const modifiers = (
     <>
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
         {t('operations.refresh')}
+      </Button>
+      <Button icon={<IdcardOutlined />} onClick={generateReport} loading={reporting}>
+        {t('operations.generateReport')}
       </Button>
       <Download data={data} isLoading={isLoading} columns={fields} />
     </>
   );
   
   
-
   return (
     <Page page={page} name={name} modifiers={modifiers} access={access} avatar="personnelOnSite">
       
