@@ -13,7 +13,8 @@ import { Page, Download, ListView } from '../../components';
 
 import ConnectedArms from './connected-arms';
 import Calculations from './calculations';
-import TankStrapping from './strapping';
+// import TankStrapping from './strapping';
+import TankStrapping from './prod-strapping';
 import TankAdaptiveFlowControl from './afc';
 import Overview from './overview';
 import Gauging from './gauging';

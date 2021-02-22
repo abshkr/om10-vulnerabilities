@@ -19,7 +19,8 @@ import { Gauging, General, Calculation, Levels } from './fields';
 import { TANKS, TANK_STATUS } from '../../../api';
 import { VCFManager, getDensityRange, getQtyByLevel } from '../../../utils';
 
-import TankStrapping from '../strapping';
+// import TankStrapping from '../strapping';
+import TankStrapping from '../prod-strapping';
 import TankAdaptiveFlowControl from '../afc';
 
 const TabPane = Tabs.TabPane;
