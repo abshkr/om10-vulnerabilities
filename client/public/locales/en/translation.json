@@ -2424,6 +2424,7 @@
     "dataOutRange": " out of range",
     "dataTypeNumber": " data type is the number",
     "decimalPlacesExceeded": "Decimal places exceeded",
+    "expiryDateEarlierThanCurrentDate": "The Expiry Date Time is earlier than Current Date Time",
     "effectiveDateLaterThanExpiryDate": "The Effective Date Time should be earlier than Expiry Date Time",
     "errors": "error(s)",
     "expiryDateEarlierThanEffectiveDate": "The Expiry Date Time should be later than Effective Date Time",

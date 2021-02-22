@@ -2422,6 +2422,7 @@
     "dataOutRange": "超出范围",
     "dataTypeNumber": "类型是数值",
     "decimalPlacesExceeded": "小数点后位数超限",
+    "expiryDateEarlierThanCurrentDate": "失效日期时间早于当前日期时间",
     "effectiveDateLaterThanExpiryDate": "生效日期时间应该早于失效日期时间",
     "errors": "错误",
     "expiryDateEarlierThanEffectiveDate": "失效日期时间应该晚于生效日期时间",

@@ -9,9 +9,11 @@ import {
   UnlockOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal, Drawer, Row, Col, Divider, Tag, Tooltip } from 'antd';
+import { Scrollbars } from 'react-custom-scrollbars';
+import { Form, Button, Tabs, notification, Modal, Drawer, Row, Col, Divider, Tag, Tooltip, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
+import moment from 'moment';
 
 import _ from 'lodash';
 
@@ -100,6 +102,63 @@ const FormModal = ({
     handleFormState(false, null);
   };
 
+  const checkExpiry = (expiry) => {
+    let invalid = false;
+    if (expiry !== null && expiry !== '' && expiry !== undefined) {
+      const expDate = moment(expiry, SETTINGS.DATE_TIME_FORMAT);
+      const curDate = moment();
+      if (curDate.isAfter(expDate)) {
+        invalid = true;
+      }
+    }
+    return invalid;
+  };
+
+  const onDatesValidation = (values) => {
+    const errors = [];
+
+    // expiryDateMode: '1', Legacy Expiry; '2', Customized Expiry
+    if (expiryDateMode === '1') {
+      if (checkExpiry(values?.tnkr_lic_exp)) {
+        errors.push({
+          field: expiryTypes?.records?.[0].expiry_date_titl,
+          message: `${t('validate.expiryDateEarlierThanCurrentDate')}`,
+          key: `${'tnkr_lic_exp'}`,
+          line: errors.length,
+        });
+      }
+      if (checkExpiry(values?.tnkr_dglic_exp)) {
+        errors.push({
+          field: expiryTypes?.records?.[1].expiry_date_titl,
+          message: `${t('validate.expiryDateEarlierThanCurrentDate')}`,
+          key: `${'tnkr_dglic_exp'}`,
+          line: errors.length,
+        });
+      }
+      if (checkExpiry(values?.tnkr_ins_exp)) {
+        errors.push({
+          field: expiryTypes?.records?.[2].expiry_date_titl,
+          message: `${t('validate.expiryDateEarlierThanCurrentDate')}`,
+          key: `${'tnkr_ins_exp'}`,
+          line: errors.length,
+        });
+      }
+    } else {
+      _.forEach(values?.expiry_dates, (item) => {
+        if (checkExpiry(item?.ed_exp_date)) {
+          errors.push({
+            field: item?.edt_type_desc,
+            message: `${t('validate.expiryDateEarlierThanCurrentDate')}`,
+            key: item?.edt_type_code,
+            line: errors.length,
+          });
+        }
+      });
+    }
+
+    return errors;
+  };
+
   const onFinish = async () => {
     const values = await form.validateFields();
     let matches = [];
@@ -135,18 +194,50 @@ const FormModal = ({
     values.tnkr_dglic_exp = values?.tnkr_dglic_exp?.format(SETTINGS.DATE_TIME_FORMAT);
     values.tnkr_ins_exp = values?.tnkr_ins_exp?.format(SETTINGS.DATE_TIME_FORMAT);
 
+    // validate the expiry dates and warn the users if any of expiry dates is/are earlier than current date
+    // but allow the users to carry on if they insist.
+    let errors = [];
+    let lines = null;
+    errors = onDatesValidation(values);
+    if (errors.length > 0) {
+      lines = (
+        <Scrollbars
+          style={{
+            height: '300px',
+            width: '25vw',
+            marginTop: 15,
+            padding: 5,
+            marginBottom: 15,
+          }}
+        >
+          <>
+            {errors?.map((error, index) => (
+              <Card size="small" title={error.field}>
+                {error.message}
+              </Card>
+            ))}
+          </>
+        </Scrollbars>
+      );
+    }
+    let submitPrompt = IS_CREATING ? createPrompt : t('prompts.update');
+    if (errors.length > 0 && IS_CREATING) {
+      submitPrompt += ' (' + String(errors.length) + ' ' + t('validate.warnings') + ')';
+    }
+
     Modal.confirm({
-      title: IS_CREATING ? createPrompt : t('prompts.update'),
+      title: submitPrompt,
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
       okType: 'primary',
-      width: !eqpt_selected ? '40vw' : null,
+      width: !eqpt_selected ? '40vw' : errors.length > 0 && IS_CREATING ? '30vw' : null,
       icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
-      content:
-        matches.length > 0 ? (
-          <CheckList form={form} matches={matches} columns={fields} rowKey="tnkr_code" setBulk={setBulk} />
-        ) : null,
+      content: IS_CREATING ? (
+        lines
+      ) : matches.length > 0 ? (
+        <CheckList form={form} matches={matches} columns={fields} rowKey="tnkr_code" setBulk={setBulk} />
+      ) : null,
       onOk: async () => {
         values.bulk_edit = bulk_edit;
         await api
