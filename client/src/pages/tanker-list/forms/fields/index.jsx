@@ -1,6 +1,7 @@
 import Depot from './depot';
 import Owner from './owner';
 import Code from './code';
+import Number from './number';
 import Name from './name';
 import EquipmentType from './equipment-type';
 import Carrier from './carrier';
@@ -36,4 +37,5 @@ export {
   Locks,
   SLP,
   LegacyExpires,
+  Number,
 };

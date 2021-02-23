@@ -34,11 +34,13 @@ import {
 
 import api, { ID_ASSIGNMENT } from '../../../api';
 import _ from 'lodash';
+import { useConfig } from 'hooks';
 
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
   const { t } = useTranslation();
+  const { carrcode_tankernum_tag } = useConfig();
   const [form] = Form.useForm();
   const { resetFields, getFieldsValue, setFieldsValue } = form;
 
@@ -49,6 +51,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   const [carrier, setCarrier] = useState(null);
   const [employer, setEmployer] = useState(null);
   const [role, setRole] = useState(null);
+  const [autoTag, setAutoTag] = useState(null);
 
   const IS_CREATING = !value;
 
@@ -243,6 +246,12 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     makeDefaultCard();
   };
 
+  const onTnkrNumberChange = (carrier, tnkr_number) => {
+    if (carrcode_tankernum_tag) {
+      setAutoTag(carrier + tnkr_number);
+    }
+  }
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -316,7 +325,13 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             </Row>
             <Row gutter={[8, 3]}>
               <Col span={24}>
-                <PhysicalTagText form={form} value={value} physType={physType} />
+                <PhysicalTagText 
+                  form={form} 
+                  value={value} 
+                  physType={physType} 
+                  autoTag={autoTag} 
+                  disabled={carrcode_tankernum_tag && type == '4' /* 4 means TANKER */ } 
+                />
               </Col>
             </Row>
             <Row gutter={[8, 3]}>
@@ -372,10 +387,10 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
                 <div>
                   <Row gutter={[8, 3]}>
                     <Col span={12}>
-                      <Carrier form={form} value={value} onChange={setCarrier} />
+                      <Carrier form={form} value={value} setCarrier={setCarrier} />
                     </Col>
                     <Col span={12}>
-                      <Tanker form={form} value={value} carrier={carrier} />
+                      <Tanker form={form} value={value} carrier={carrier} setTnkrNumber={onTnkrNumberChange} />
                     </Col>
                   </Row>
                 </div>

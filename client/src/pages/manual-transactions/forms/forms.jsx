@@ -8,6 +8,7 @@ import { useState } from 'react';
 import api, { MANUAL_TRANSACTIONS, TANKER_LIST } from '../../../api';
 import { getDateTimeFormat, validateField } from '../../../utils';
 import TripSealManager from './trip-seals';
+import Carrier from './fields/carrier';
 import OrderSealManager from './order-seals';
 import { SETTINGS } from '../../../constants';
 
@@ -178,11 +179,13 @@ const Forms = ({
 
     setTankers(tankerResults);
     setSelectedTrip(trip);
+    setSelectedCustomer(value?.shls_cust)
     setSelectedTanker(value?.tnkr_code);
     setProductArms(undefined);
 
     setFieldsValue({
       tanker: value?.tnkr_code,
+      customer: value?.shls_cust,
       carrier: value?.carrier,
       driver: !value?.driver ? drivers?.records?.[0]?.per_code : value?.driver,
       seal_range: sealResults?.records?.[0]?.shls_seal_no,
@@ -631,28 +634,13 @@ const Forms = ({
         </Col>
 
         <Col span={8}>
-          <Form.Item name="carrier" label={t('fields.mtDataCarrier')} rules={[{ required: true }]}>
-            <Select
-              dropdownMatchSelectWidth={false}
-              allowClear
-              showSearch
-              // disabled={sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT'}
-              disabled={sourceType === 'SCHEDULE' && (loadType === 'BY_COMPARTMENT' || activeFlag === true)}
-              loading={carriersLoading}
-              onChange={handleCarrierSelect}
-              optionFilterProp="children"
-              placeholder={t('placeholder.selectCarrier')}
-              filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              {carriers?.records?.map((item, index) => (
-                <Select.Option key={index} value={item.cmpy_code}>
-                  {item.cmpy_code + ' - ' + item.cmpy_name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
+          <Carrier
+            form={form}
+            customer= {sourceType === 'SCHEDULE' && config?.site_customer_carrier ? selectedCustomer : ""}
+            onChange={handleCarrierSelect}
+            disabled={sourceType === 'SCHEDULE' && (loadType === 'BY_COMPARTMENT' || activeFlag === true)}
+            config={config}
+          />
         </Col>
 
         <Col span={8}>
@@ -748,7 +736,8 @@ const Forms = ({
               dropdownMatchSelectWidth={false}
               allowClear
               showSearch
-              disabled={sourceType !== 'OPENORDER' || !selectedSupplier || popup}
+              disabled={ (sourceType !== 'OPENORDER' && !(config?.site_customer_carrier && loadType == "BY_PRODUCT")) 
+                || !selectedSupplier || popup }
               loading={customersLoading}
               optionFilterProp="children"
               placeholder={t('placeholder.selectCustomer')}

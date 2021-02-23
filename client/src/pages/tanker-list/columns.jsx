@@ -1,4 +1,4 @@
-const columns = (expiryTypes, t, expiryDateMode) => {
+const columns = (expiryTypes, t, expiryDateMode, carrcode_tankernum_tag) => {
   const expiryColumns = [];
 
   if (expiryDateMode === '1') {
@@ -73,6 +73,16 @@ const columns = (expiryTypes, t, expiryDateMode) => {
       suppressSizeToFit: true,
       width: 120,
       pinned: 'left',
+    },
+    {
+      headerName: t('fields.number'),
+      field: 'tnkr_number',
+      sortable: true,
+      resizable: true,
+      filter: 'MultiFilter',
+      suppressSizeToFit: true,
+      hide: !carrcode_tankernum_tag,
+      width: 110,
     },
     {
       headerName: t('fields.schdCarrier'),
