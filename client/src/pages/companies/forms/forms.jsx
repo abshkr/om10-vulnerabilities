@@ -30,7 +30,7 @@ import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 
 import api, { COMPANIES } from '../../../api';
-import { InputNumber } from '../../../components';
+import { InputNumber, NumericInput } from '../../../components';
 import { REGEX } from '../../../constants';
 import useSWR from 'swr';
 import _ from 'lodash';
@@ -48,7 +48,7 @@ const FormModal = ({
   setFilterValue,
 }) => {
   const { t } = useTranslation();
-  const { siteCompanyRelationAllowed, maxLengthCmpyCode } = useConfig();
+  const { siteCompanyRelationAllowed, maxLengthCmpyCode, carrcode_tankernum_tag } = useConfig();
   const { data: addresses, isValidating } = useSWR(COMPANIES.ADDRESSES);
 
   const [form] = Form.useForm();
@@ -417,7 +417,17 @@ const FormModal = ({
               label={t('fields.companyCode')}
               rules={[{ required: true, validator: validateCode }]}
             >
+              {carrcode_tankernum_tag ? 
+              <NumericInput 
+                inputValue={value?.cmpy_code} 
+                disabled={!IS_CREATING} 
+                onChange={(cmpy_code)=>setFieldsValue({
+                  cmpy_code: cmpy_code,
+                })}
+              />
+              :
               <Input disabled={!IS_CREATING}></Input>
+              }
             </Form.Item>
             <Form.Item
               name="cmpy_plant"

@@ -923,8 +923,12 @@ class CommonClass
                 //     $value = strtolower($this->table_view_map[strtoupper($value)]);
                 // }
 
-                if (!property_exists($this, $value) || $this->$value == null) {
+                // Note: null == 0 <-- returns true, so $this->$value == null will have problem when value is an integer ZERO
+                // if (!property_exists($this, $value) || $this->$value == null) {
+                if (!property_exists($this, $value) || is_null($this->$value) === TRUE) {
                     write_log($value . " is not set for class " . get_class($this),
+                        __FILE__, __LINE__);
+                    write_log($value . "=" . $this->$value . " [".($this->$value == null)."]" . "[".(is_null($this->$value))."]",
                         __FILE__, __LINE__);
                     throw new NullableException(
                         "Mandatory fields are missing. Please check these fields: " .

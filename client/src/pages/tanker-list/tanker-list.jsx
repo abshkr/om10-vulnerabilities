@@ -28,7 +28,9 @@ const TankerList = () => {
   const { data: payload, isValidating, revalidate } = useSWR(TANKER_LIST.READ);
   const { data: expiryTypes } = useSWR(TANKER_LIST.EXPIRY);
 
-  const [fields, setFields] = useState(columns(expiryTypes?.records, t, expiryDateMode));
+  const [fields, setFields] = useState(
+    columns(expiryTypes?.records, t, expiryDateMode, config?.carrcode_tankernum_tag)
+    );
 
   const data = payload?.records;
 
@@ -39,7 +41,7 @@ const TankerList = () => {
 
   useEffect(() => {
     if (expiryTypes) {
-      setFields(columns(expiryTypes?.records, t, expiryDateMode));
+      setFields(columns(expiryTypes?.records, t, expiryDateMode, config?.carrcode_tankernum_tag));
     }
   }, [expiryTypes]);
 

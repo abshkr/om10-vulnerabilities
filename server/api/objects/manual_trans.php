@@ -304,7 +304,8 @@ class ManualTrans extends CommonClass
                 SELECT C.CMPY_CODE CARRIER, 
                     C.CMPY_NAME CARRIER_NAME,
                     T.TNKR_CODE,
-                    S.SHLS_DRIVER DRIVER
+                    S.SHLS_DRIVER DRIVER,
+                    S.SHLS_CUST
                 FROM SCHEDULE S, COMPANYS C, TANKERS T 
                 WHERE S.SHL_TANKER = T.TNKR_CODE 
                     AND T.TNKR_CARRIER = C.CMPY_CODE 
