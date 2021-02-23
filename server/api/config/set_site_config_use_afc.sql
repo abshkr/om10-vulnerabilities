@@ -25,3 +25,11 @@ insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIR
 values ('SITE_AFC_ARM_PRIORITY', 'LILO', 'The sitewide Arm Priority (LILO or LIFO) for all arms in Adaptive Flow Control', 'F' );
 
 commit;
+
+/*
+    Set all base arm priorities with site-wide value
+*/
+UPDATE BASE_PRODS 
+SET AFC_PRIORITY = NVL((select NVL(config_value, 'LILO') from site_config where config_key='SITE_AFC_ARM_PRIORITY'), 'LILO'); 
+
+commit;
