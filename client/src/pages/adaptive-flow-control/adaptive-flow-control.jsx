@@ -54,7 +54,7 @@ const AdaptiveFlowControl = () => {
       //   arm.current_flow_rate = 1000;
       // });
 
-      setTotal(_.sumBy(flow?.records, 'current_flow_rate'));
+      setTotal(_.round(_.sumBy(flow?.records, 'current_flow_rate'), 2));
       setData(payload);
     }
   }, [isLoading, flow, current, products]);
