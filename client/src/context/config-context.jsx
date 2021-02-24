@@ -271,7 +271,7 @@ const ConfigProvider = ({ children }) => {
         siteAxleWeightLimitType: configurationObject?.AXLE_WEIGHT_LIMIT_TYPE,
         siteAllowDragDrop: configurationObject?.SITE_USE_DRAG_DROP || false,
         siteCloseoutAutoClose: configurationObject?.CLOSEOUT_AUTO_CLOSE || false,
-        load_tolerance_type: configurationObject?.LOAD_TOLERANCE_TYPE,
+        load_tolerance_type: configurationObject?.LOAD_TOLERANCE_TYPE || 'PERCENT',
         siteTransferTankSource: configurationObject?.SITE_TRANSFER_TANK_SOURCE || 'FROM',
         revalidate: () => onRevalidate(),
       });
