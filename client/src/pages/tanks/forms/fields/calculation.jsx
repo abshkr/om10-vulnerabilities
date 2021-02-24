@@ -148,7 +148,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
     const waterVol = values?.tank_water === '' || values?.tank_water === undefined ? 0 : values?.tank_water;
     const ifcVol = v;
     const vol = prodVol - waterVol - ifcVol;
-    setFieldsValue({ tank_roof_weight: '' });
+    // setFieldsValue({ tank_roof_weight: '' });
     setFieldsValue({ tank_amb_vol: vol });
     handleAmbVolFieldChange(vol);
   };

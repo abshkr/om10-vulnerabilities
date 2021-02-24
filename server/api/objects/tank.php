@@ -80,6 +80,7 @@ class Tank extends CommonClass
         "TANK_VISCOSITY",
         "TANK_AMB_CLOSE",
         "TANK_IFC",
+        "TANK_ROOF_WEIGHT",
         "TANK_SG"
     );
 

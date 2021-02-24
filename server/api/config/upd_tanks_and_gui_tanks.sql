@@ -2,6 +2,8 @@
 -- the columns to store water related data were designed already: TANK_WATER_LVL and TANK_WATER 
 -- add new column TANK_IFC to store the Internal Floating Roof Compensation
 alter table TANKS add TANK_IFC FLOAT;
+-- add new column TANK_ROOF_WEIGHT to store the Internal Floating Roof weight
+alter table TANKS add TANK_ROOF_WEIGHT FLOAT;
 
 -- add new column to GUI_TANKS
 CREATE OR REPLACE FORCE VIEW GUI_TANKS AS 
@@ -160,7 +162,7 @@ select
     , tnk.TANK_AMB_CLOSE
     , tnk.TANK_SG
     , tnk.TANK_IFC
-    , 0 as TANK_ROOF_WEIGHT
+    , tnk.TANK_ROOF_WEIGHT
     , (NVL(tnk.TANK_AMB_VOL,0) + NVL(tnk.TANK_WATER,0) + NVL(tnk.TANK_IFC,0)) as TANK_PROD_VOL
 from
     TANKS                                  tnk
