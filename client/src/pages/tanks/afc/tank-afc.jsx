@@ -132,6 +132,16 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
     });
   };
 
+  const checkLevels = (level) => {
+    const flow = _.find(data?.records, (item) => _.toNumber(item.tank_level) === _.toNumber(level));
+    // console.log('..........check', data?.records, flow);
+    if (!flow) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
   const validate = (rule, input) => {
     const min = 1;
     const limit = rule?.max || 256;
@@ -148,6 +158,11 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
       return Promise.reject(
         `${t('placeholder.maxCharacters')}: ${limit} ─ ${t('descriptions.maxCharacters')}`
       );
+    }
+
+    // console.log('...............valid', rule, input, checkLevels(input));
+    if (rule?.field === 'tank_level' && checkLevels(input)) {
+      return Promise.reject(`${t('descriptions.alreadyExists')} ─ ${rule?.label}`);
     }
 
     return Promise.resolve();
