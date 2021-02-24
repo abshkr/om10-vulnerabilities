@@ -220,7 +220,7 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
               <Descriptions.Item label={`${t('fields.currentTankLevel')} (${t('units.mm')})`} span={24}>
                 {currTankLevel}
               </Descriptions.Item>
-              <Descriptions.Item label={`${t('fields.currentFlowRate')} (${t('units.lpm')})`} span={24}>
+              <Descriptions.Item label={`${t('fields.currentMaxFlowRate')} (${t('units.lpm')})`} span={24}>
                 {currFlowRate}
               </Descriptions.Item>
               <Descriptions.Item label={t('fields.baseProductCode')} span={24}>

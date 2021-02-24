@@ -489,6 +489,7 @@
     "createdAt": "Created At",
     "currentDepot": "Current Depot",
     "currentFlowRate": "Current Flow Rate",
+    "currentMaxFlowRate": "Current Max Flow Rate",
     "currentPassword": "Current Password",
     "currentTankLevel": "Current Tank Level",
     "custAccount": "Customer Account",

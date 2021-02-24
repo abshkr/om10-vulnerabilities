@@ -489,6 +489,7 @@
     "createdAt": "创建时间",
     "currentDepot": "当前所在油库",
     "currentFlowRate": "当前流量",
+    "currentMaxFlowRate": "当前最大流量",
     "currentPassword": "当前密码",
     "currentTankLevel": "当前油罐液位",
     "custAccount": "客户账号",
