@@ -107,6 +107,7 @@ const useConfig = () => {
     siteCloseoutAutoClose: false,
     load_tolerance_type: 'PERCENT',
     siteTransferTankSource: 'FROM',
+    siteMtLimitPercent: '0.3',
     refreshAlarm: 10000,
     refreshProductMovement: 10000,
     carrcode_tankernum_tag: false,
@@ -274,6 +275,7 @@ const useConfig = () => {
         siteAllowDragDrop: configurationObject?.SITE_USE_DRAG_DROP || false,
         siteCloseoutAutoClose: configurationObject?.CLOSEOUT_AUTO_CLOSE || false,
         load_tolerance_type: configurationObject?.LOAD_TOLERANCE_TYPE || 'PERCENT',
+        siteMtLimitPercent: configurationObject?.SITE_MT_LIMIT_PERCENT || '0.3',
         siteTransferTankSource: configurationObject?.SITE_TRANSFER_TANK_SOURCE || 'FROM',
         refreshAlarm: configurationObject?.SITE_REFRESH_ALARM_INTERVAL
           ? configurationObject?.SITE_REFRESH_ALARM_INTERVAL * 1000

@@ -104,6 +104,7 @@ const ConfigProvider = ({ children }) => {
     siteAllowDragDrop: false,
     siteCloseoutAutoClose: false,
     load_tolerance_type: 'PERCENT',
+    siteMtLimitPercent: '0.3',
     siteTransferTankSource: 'FROM',
   });
 
@@ -272,6 +273,7 @@ const ConfigProvider = ({ children }) => {
         siteAllowDragDrop: configurationObject?.SITE_USE_DRAG_DROP || false,
         siteCloseoutAutoClose: configurationObject?.CLOSEOUT_AUTO_CLOSE || false,
         load_tolerance_type: configurationObject?.LOAD_TOLERANCE_TYPE || 'PERCENT',
+        siteMtLimitPercent: configurationObject?.SITE_MT_LIMIT_PERCENT || '0.3',
         siteTransferTankSource: configurationObject?.SITE_TRANSFER_TANK_SOURCE || 'FROM',
         revalidate: () => onRevalidate(),
       });

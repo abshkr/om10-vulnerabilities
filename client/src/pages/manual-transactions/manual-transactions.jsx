@@ -229,23 +229,37 @@ const ManualTransactions = ({ popup, params }) => {
             (pitem) => pitem.prod_code === item.trsf_prod_code && pitem.prod_cmpycode === item.trsf_prod_cmpy
           );
           // console.log('......itemValidation', prodItem, drawerProducts?.records, item);
+          let sitePercent;
+          let siteLimit;
+          if (!config?.siteMtLimitPercent) {
+            sitePercent = '0.3';
+            siteLimit = 0.003;
+          } else {
+            if (_.isNaN(_.toNumber(config?.siteMtLimitPercent))) {
+              sitePercent = '0.3';
+              siteLimit = 0.003;
+            } else {
+              sitePercent = config?.siteMtLimitPercent;
+              siteLimit = _.toNumber(config?.siteMtLimitPercent) / 100.0;
+            }
+          }
           let tolRatio = 0.003;
           let qtyDiff = 0;
           let noteDiff = '';
           if (!prodItem) {
-            tolRatio = 0.003;
+            tolRatio = siteLimit;
             qtyDiff = _.round(_.toNumber(item.trsf_qty_plan) * tolRatio, 0);
-            noteDiff = String(qtyDiff) + ' (' + item.trsf_qty_plan + ' X 0.3%)';
+            noteDiff = String(qtyDiff) + ' (' + item.trsf_qty_plan + ' X ' + sitePercent + '%)';
           } else {
             if (!prodItem?.prod_ldtol_flag) {
-              tolRatio = 0.003;
+              tolRatio = siteLimit;
               qtyDiff = _.round(_.toNumber(item.trsf_qty_plan) * tolRatio, 0);
-              noteDiff = String(qtyDiff) + ' (' + item.trsf_qty_plan + ' X 0.3%)';
+              noteDiff = String(qtyDiff) + ' (' + item.trsf_qty_plan + ' X ' + sitePercent + '%)';
             } else {
               if (_.toNumber(prodItem?.prod_ldtol_ptol) === 0) {
-                tolRatio = 0.003;
+                tolRatio = siteLimit;
                 qtyDiff = _.round(_.toNumber(item.trsf_qty_plan) * tolRatio, 0);
-                noteDiff = String(qtyDiff) + ' (' + item.trsf_qty_plan + ' X 0.3%)';
+                noteDiff = String(qtyDiff) + ' (' + item.trsf_qty_plan + ' X ' + sitePercent + '%)';
               } else {
                 if (config?.load_tolerance_type === 'PERCENT') {
                   tolRatio = _.toNumber(prodItem?.prod_ldtol_ptol) / 100.0;
