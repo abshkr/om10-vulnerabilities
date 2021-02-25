@@ -5,12 +5,14 @@ import { Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import api, { FOLIO_SUMMARY } from '../../../../api';
 import { DataTable } from '../../../../components';
+import { useConfig } from 'hooks';
 
 import generator from './generator';
 import columns from './columns';
 
 const Tanks = ({ id, enabled, saveToFolioTrigger, saveToTanksTrigger, calculateTrigger }) => {
   const { t } = useTranslation();
+  const { useWaterStrapping } = useConfig();
 
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(false);
@@ -18,7 +20,7 @@ const Tanks = ({ id, enabled, saveToFolioTrigger, saveToTanksTrigger, calculateT
   const [preSelected, setPreSelected] = useState([]);
   const [tableAPI, setTableAPI] = useState(null);
 
-  const fields = columns(t, enabled);
+  const fields = columns(t, enabled, useWaterStrapping);
 
   const fetch = useCallback(() => {
     setLoading(true);

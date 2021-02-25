@@ -785,6 +785,18 @@ class Folio extends CommonClass
             if (isset($value->tank_prod_lvl)) {
                 $tank_staus->tank_prod_lvl = $value->tank_prod_lvl;
             }
+            if (isset($value->tank_water_lvl)) {
+                $tank_staus->tank_water_lvl = $value->tank_water_lvl;
+            }
+            if (isset($value->tank_water)) {
+                $tank_staus->tank_water = $value->tank_water;
+            }
+            if (isset($value->tank_roof_weight)) {
+                $tank_staus->tank_roof_weight = $value->tank_roof_weight;
+            }
+            if (isset($value->tank_ifc)) {
+                $tank_staus->tank_ifc = $value->tank_ifc;
+            }
             if (!$tank_staus->update()) {
                 return false;
             }

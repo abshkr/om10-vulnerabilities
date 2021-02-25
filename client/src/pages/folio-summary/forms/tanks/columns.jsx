@@ -1,4 +1,4 @@
-const columns = (t, enabled) => [
+const columns = (t, enabled, useWaterStrapping) => [
   {
     headerName: t('fields.tankCode'),
     field: 'tank_code',
@@ -16,7 +16,6 @@ const columns = (t, enabled) => [
     width: 100,
     suppressSizeToFit: true,
   },
-
   {
     headerName: t('fields.productName'),
     field: 'base_name',
@@ -25,7 +24,6 @@ const columns = (t, enabled) => [
     width: 100,
     suppressSizeToFit: true,
   },
-
   {
     headerName: t('fields.class'),
     field: 'bclass_desc',
@@ -34,7 +32,6 @@ const columns = (t, enabled) => [
     width: 100,
     suppressSizeToFit: true,
   },
-
   {
     headerName: `${t('fields.closingAmbient')} (${t('units.ltr')})`,
     field: 'close_amb_tot',
@@ -53,7 +50,6 @@ const columns = (t, enabled) => [
     },
     suppressSizeToFit: true,
   },
-
   {
     headerName: `${t('fields.closingCorrected')} (${t('units.ltr')})`,
     field: 'close_std_tot',
@@ -72,7 +68,6 @@ const columns = (t, enabled) => [
     },
     suppressSizeToFit: true,
   },
-
   {
     headerName: `${t('fields.closingMass')} (${t('units.kg')})`,
     field: 'close_mass_tot',
@@ -91,7 +86,6 @@ const columns = (t, enabled) => [
     },
     suppressSizeToFit: true,
   },
-
   {
     headerName: `${t('fields.calculate')}`,
     field: 'tank_code',
@@ -102,7 +96,6 @@ const columns = (t, enabled) => [
     cellRenderer: 'NullRenderer',
     suppressSizeToFit: true,
   },
-
   {
     headerName: `${t('fields.tankLevel')} (${t('units.mm')})`,
     field: 'tank_prod_lvl',
@@ -120,7 +113,42 @@ const columns = (t, enabled) => [
     },
     cellClass: enabled ? 'editable-ag-grid-cell' : '',
   },
-
+  {
+    headerName: `${t('fields.tankWaterLevel')} (${t('units.mm')})`,
+    field: 'tank_water_lvl',
+    hide: !useWaterStrapping,
+    sortable: true,
+    resizable: true,
+    width: 100,
+    editable: enabled,
+    cellEditor: 'NumericEditor',
+    cellEditorParams: {
+      // ranges: {
+      //   max: 999999999,
+      //   min: 0,
+      // },
+      t,
+    },
+    cellClass: enabled ? 'editable-ag-grid-cell' : '',
+  },
+  {
+    headerName: `${t('fields.tankIFC')}`,
+    field: 'tank_ifc',
+    hide: !useWaterStrapping,
+    sortable: true,
+    resizable: true,
+    width: 100,
+    editable: enabled,
+    cellEditor: 'NumericEditor',
+    cellEditorParams: {
+      // ranges: {
+      //   max: 999999999,
+      //   min: 0,
+      // },
+      t,
+    },
+    cellClass: enabled ? 'editable-ag-grid-cell' : '',
+  },
   {
     headerName: `${t('fields.closingTemp')} (°C)`,
     field: 'close_temp',
@@ -143,7 +171,6 @@ const columns = (t, enabled) => [
     },
     suppressSizeToFit: true,
   },
-
   {
     headerName: `${t('fields.closingDensity')} (${t('units.kg/m3')})`,
     field: 'close_density',
@@ -166,7 +193,6 @@ const columns = (t, enabled) => [
     },
     suppressSizeToFit: true,
   },
-
   {
     headerName: t('fields.gainLossExplanation'),
     field: 'description',
@@ -177,7 +203,6 @@ const columns = (t, enabled) => [
     width: 160,
     suppressSizeToFit: true,
   },
-
   {
     headerName: t('fields.lastModifiedBy'),
     field: 'user_code',
@@ -186,7 +211,6 @@ const columns = (t, enabled) => [
     width: 100,
     suppressSizeToFit: true,
   },
-
   {
     headerName: t('fields.lastModified'),
     field: 'last_chg_time',
