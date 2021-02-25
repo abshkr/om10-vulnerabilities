@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import jwtDecode from 'jwt-decode';
 import moment from 'moment';
+import useSWR from 'swr';
 
 import { Page } from '../../components';
 
@@ -21,7 +22,7 @@ import DataManager from './data-manager';
 import DataColumns from './data-manager/columns';
 import DrawerProductTransfers from './drawer-product-transfer';
 import Forms from './forms';
-import api, { MANUAL_TRANSACTIONS } from '../../api';
+import api, { MANUAL_TRANSACTIONS, DRAWER_PRODUCTS } from '../../api';
 import useAuth from 'hooks/use-auth';
 import useConfig from 'hooks/use-config';
 import { SETTINGS } from '../../constants';
@@ -31,6 +32,8 @@ import { buildPayloadToSubmit, buildPayloadToLoad, buildPayloadToSave } from './
 const { confirm } = Modal;
 
 const ManualTransactions = ({ popup, params }) => {
+  const { data: drawerProducts } = useSWR(DRAWER_PRODUCTS.READ);
+
   const config = useConfig();
   //console.log("params", params);
   const { t } = useTranslation();
@@ -75,7 +78,6 @@ const ManualTransactions = ({ popup, params }) => {
   const [productArms, setProductArms] = useState(undefined);
 
   const [isFormLoading, setFormLoading] = useState(false);
-
 
   const resetFormGrids = () => {
     setDataDrawTransfers([]);
@@ -139,7 +141,9 @@ const ManualTransactions = ({ popup, params }) => {
   const onItemValidation = (items) => {
     const errors = [];
 
-    _.forEach(drawerChanges, (o) => {errors.push(o);});
+    _.forEach(drawerChanges, (o) => {
+      errors.push(o);
+    });
 
     // check the start and end date
     const start_date = form.getFieldValue('start_date');
@@ -161,10 +165,10 @@ const ManualTransactions = ({ popup, params }) => {
       });
     }
 
-
     for (let tidx = 0; tidx < items?.length; tidx++) {
       const item = items?.[tidx];
-      if (item.trsf_arm_cd === t('placeholder.selectArmCode') || 
+      if (
+        item.trsf_arm_cd === t('placeholder.selectArmCode') ||
         item.trsf_arm_cd === t('placeholder.noArmAvailable') ||
         item.trsf_prod_name === t('placeholder.selectDrawerProduct')
       ) {
@@ -172,7 +176,7 @@ const ManualTransactions = ({ popup, params }) => {
       }
 
       // The density must be filled
-      if (!item.trsf_density || String(item.trsf_density).trim()==='') {
+      if (!item.trsf_density || String(item.trsf_density).trim() === '') {
         errors.push({
           field: `${t('fields.density')} (${t('units.kg/m3')})`,
           message: `${t('descriptions.requiredAndCannotBeZeroCmptField')}${item.trsf_cmpt_no}`,
@@ -182,7 +186,7 @@ const ManualTransactions = ({ popup, params }) => {
       }
 
       // The temperature must be filled and can be zero
-      if ((item.trsf_temp!==0 && !item.trsf_temp) || String(item.trsf_temp).trim()==='') {
+      if ((item.trsf_temp !== 0 && !item.trsf_temp) || String(item.trsf_temp).trim() === '') {
         errors.push({
           field: `${t('fields.temperature')} (${t('units.degC')})`,
           message: `${t('descriptions.requiredCmptField')}${item.trsf_cmpt_no}`,
@@ -198,14 +202,16 @@ const ManualTransactions = ({ popup, params }) => {
       if (plan_qty > 0 && load_qty > 0 && plan_qty === load_qty) {
         errors.push({
           field: `${t('fields.drawerProduct')} (${t('fields.compartment')} ${item.trsf_cmpt_no})`,
-          message: `${t('prompts.productFullyLoaded')} [${t('fields.scheduled')}: ${plan_qty}, ${t('fields.loaded')}: ${load_qty}]`,
+          message: `${t('prompts.productFullyLoaded')} [${t('fields.scheduled')}: ${plan_qty}, ${t(
+            'fields.loaded'
+          )}: ${load_qty}]`,
           key: `${'trsf_prod_name'}${item.trsf_cmpt_no}`,
           line: item.trsf_cmpt_no,
         });
       }
 
       // The observed quantity must be filled and cannot be zero
-      if (!item.trsf_qty_amb || String(item.trsf_qty_amb).trim()==='') {
+      if (!item.trsf_qty_amb || String(item.trsf_qty_amb).trim() === '') {
         errors.push({
           field: `${t('fields.observedQuantity')} (${t('units.ltr')})`,
           message: `${t('descriptions.requiredAndCannotBeZeroCmptField')}${item.trsf_cmpt_no}`,
@@ -216,10 +222,56 @@ const ManualTransactions = ({ popup, params }) => {
         // Compare the observed quantity with scheduled quantity or compartment capacity
         if (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') {
           // Compare with scheduled quantity for Pre-Schedule
-          if ( _.round(_.toNumber(item.trsf_qty_amb), 0) > _.round((_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left)), 0) ) {
+
+          // get the tolerance limit of the drawer product
+          const prodItem = _.find(
+            drawerProducts?.records,
+            (pitem) => pitem.prod_code === item.trsf_prod_code && pitem.prod_cmpycode === item.trsf_prod_cmpy
+          );
+          // console.log('......itemValidation', prodItem, drawerProducts?.records, item);
+          let tolRatio = 0.003;
+          let qtyDiff = 0;
+          let noteDiff = '';
+          if (!prodItem) {
+            tolRatio = 0.003;
+            qtyDiff = _.round(_.toNumber(item.trsf_qty_plan) * tolRatio, 0);
+            noteDiff = String(qtyDiff) + ' (' + item.trsf_qty_plan + ' X 0.3%)';
+          } else {
+            if (!prodItem?.prod_ldtol_flag) {
+              tolRatio = 0.003;
+              qtyDiff = _.round(_.toNumber(item.trsf_qty_plan) * tolRatio, 0);
+              noteDiff = String(qtyDiff) + ' (' + item.trsf_qty_plan + ' X 0.3%)';
+            } else {
+              if (_.toNumber(prodItem?.prod_ldtol_ptol) === 0) {
+                tolRatio = 0.003;
+                qtyDiff = _.round(_.toNumber(item.trsf_qty_plan) * tolRatio, 0);
+                noteDiff = String(qtyDiff) + ' (' + item.trsf_qty_plan + ' X 0.3%)';
+              } else {
+                if (config?.load_tolerance_type === 'PERCENT') {
+                  tolRatio = _.toNumber(prodItem?.prod_ldtol_ptol) / 100.0;
+                  qtyDiff = _.round(_.toNumber(item.trsf_qty_plan) * tolRatio, 0);
+                  noteDiff =
+                    String(qtyDiff) + ' (' + item.trsf_qty_plan + ' X ' + prodItem?.prod_ldtol_ptol + '%)';
+                } else {
+                  qtyDiff = _.toNumber(prodItem?.prod_ldtol_ptol);
+                  noteDiff = prodItem?.prod_ldtol_ptol;
+                }
+              }
+            }
+          }
+
+          if (
+            _.round(_.toNumber(item.trsf_qty_amb), 0) >
+            _.round(_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left) + qtyDiff, 0)
+          ) {
             errors.push({
               field: `${t('fields.observedQuantity')} (${t('units.ltr')})`,
-              message: `${t('fields.compartment')} ${item.trsf_cmpt_no}: ${t('fields.observedQuantity')} ${_.round(_.toNumber(item.trsf_qty_amb), 0)} > ${t('fields.scheduled')} ${_.round((_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left)), 0)}`,
+              message: `${t('fields.compartment')} ${item.trsf_cmpt_no}: ${t(
+                'fields.observedQuantity'
+              )} ${_.round(_.toNumber(item.trsf_qty_amb), 0)} > ${t('fields.scheduled')} ${_.round(
+                _.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left),
+                0
+              )} + ${t('fields.prodLdtolPtol')} ${noteDiff}`,
               key: `${'trsf_qty_amb'}${item.trsf_cmpt_no}`,
               line: item.trsf_cmpt_no,
             });
@@ -227,18 +279,31 @@ const ManualTransactions = ({ popup, params }) => {
         }
         if (sourceType === 'OPENORDER' || (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT')) {
           // Compare with planned quantity and compartment capacity for Pre-Order and Open Order
-          if ( _.round(_.toNumber(item.trsf_qty_amb), 0) > _.round((_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left)), 0) ) {
+          if (
+            _.round(_.toNumber(item.trsf_qty_amb), 0) >
+            _.round(_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left), 0)
+          ) {
             errors.push({
               field: `${t('fields.observedQuantity')} (${t('units.ltr')})`,
-              message: `${t('fields.compartment')} ${item.trsf_cmpt_no}: ${t('fields.observedQuantity')} ${_.round(_.toNumber(item.trsf_qty_amb), 0)} > ${t('fields.planned')} ${_.round((_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left)), 0)}`,
+              message: `${t('fields.compartment')} ${item.trsf_cmpt_no}: ${t(
+                'fields.observedQuantity'
+              )} ${_.round(_.toNumber(item.trsf_qty_amb), 0)} > ${t('fields.planned')} ${_.round(
+                _.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left),
+                0
+              )}`,
               key: `${'trsf_qty_amb'}${item.trsf_cmpt_no}`,
               line: item.trsf_cmpt_no,
             });
           } else {
-            if ( _.round(_.toNumber(item.trsf_qty_amb), 0) > _.round(_.toNumber(item.trsf_cmpt_capacit), 0) ) {
+            if (_.round(_.toNumber(item.trsf_qty_amb), 0) > _.round(_.toNumber(item.trsf_cmpt_capacit), 0)) {
               errors.push({
                 field: `${t('fields.observedQuantity')} (${t('units.ltr')})`,
-                message: `${t('fields.compartment')} ${item.trsf_cmpt_no}: ${t('fields.observedQuantity')} ${_.round(_.toNumber(item.trsf_qty_amb), 0)} > ${t('fields.capacity')} ${_.round(_.toNumber(item.trsf_cmpt_capacit), 0)}`,
+                message: `${t('fields.compartment')} ${item.trsf_cmpt_no}: ${t(
+                  'fields.observedQuantity'
+                )} ${_.round(_.toNumber(item.trsf_qty_amb), 0)} > ${t('fields.capacity')} ${_.round(
+                  _.toNumber(item.trsf_cmpt_capacit),
+                  0
+                )}`,
                 key: `${'trsf_qty_amb'}${item.trsf_cmpt_no}`,
                 line: item.trsf_cmpt_no,
               });
@@ -248,7 +313,7 @@ const ManualTransactions = ({ popup, params }) => {
       }
 
       // The standard quantity must be filled and cannot be zero
-      if (!item.trsf_qty_cor || String(item.trsf_qty_cor).trim()==='') {
+      if (!item.trsf_qty_cor || String(item.trsf_qty_cor).trim() === '') {
         errors.push({
           field: `${t('fields.standardQuantity')} (${t('units.ltr')})`,
           message: `${t('descriptions.requiredAndCannotBeZeroCmptField')}${item.trsf_cmpt_no}`,
@@ -258,7 +323,7 @@ const ManualTransactions = ({ popup, params }) => {
       }
 
       // The mass quantity must be filled and cannot be zero
-      if (!item.trsf_load_kg || String(item.trsf_load_kg).trim()==='') {
+      if (!item.trsf_load_kg || String(item.trsf_load_kg).trim() === '') {
         errors.push({
           field: `${t('fields.massQuantity')} (${t('units.kg')})`,
           message: `${t('descriptions.requiredAndCannotBeZeroCmptField')}${item.trsf_cmpt_no}`,
@@ -266,7 +331,7 @@ const ManualTransactions = ({ popup, params }) => {
           line: item.trsf_cmpt_no,
         });
       }
-    };
+    }
 
     /* if (errors.length > 0) {
       const lines = (
@@ -303,7 +368,13 @@ const ManualTransactions = ({ popup, params }) => {
     for (let tidx = 0; tidx < dptrsf.length; tidx++) {
       const titem = dptrsf?.[tidx];
       // console.log('---------------onSubmit', titem.trsf_density, titem.trsf_temp, titem.trsf_qty_amb, titem.trsf_qty_cor, titem.trsf_load_kg);
-      if (titem.trsf_density && (titem.trsf_temp===0 || titem.trsf_temp) && titem.trsf_qty_amb && titem.trsf_qty_cor && titem.trsf_load_kg) {
+      if (
+        titem.trsf_density &&
+        (titem.trsf_temp === 0 || titem.trsf_temp) &&
+        titem.trsf_qty_amb &&
+        titem.trsf_qty_cor &&
+        titem.trsf_load_kg
+      ) {
         found = true;
         break;
       }
@@ -330,11 +401,11 @@ const ManualTransactions = ({ popup, params }) => {
             }}
           >
             <>
-            {errors?.map((error, index) => (
-              <Card size="small" title={error.field}>
-                {error.message}
-              </Card>
-            ))}
+              {errors?.map((error, index) => (
+                <Card size="small" title={error.field}>
+                  {error.message}
+                </Card>
+              ))}
             </>
           </Scrollbars>
         );
@@ -343,7 +414,7 @@ const ManualTransactions = ({ popup, params }) => {
     }
 
     let submitPrompt = t('prompts.submit');
-    if (errors.length>0) {
+    if (errors.length > 0) {
       submitPrompt += ' (' + String(errors.length) + ' ' + t('validate.warnings') + ')';
     }
 
@@ -372,10 +443,11 @@ const ManualTransactions = ({ popup, params }) => {
               // resetFormGrids();
 
               if (sourceType === 'SCHEDULE' && params) {
-                !!params?.onComplete && params.onComplete({
-                  supplier_code: params?.supplier,
-                  shls_trip_no: params?.trip_no,
-                });
+                !!params?.onComplete &&
+                  params.onComplete({
+                    supplier_code: params?.supplier,
+                    shls_trip_no: params?.trip_no,
+                  });
               }
 
               if (sourceType === 'OPENORDER' && params) {
@@ -387,7 +459,7 @@ const ManualTransactions = ({ popup, params }) => {
                 description: t('descriptions.submitSuccess'),
               });
             })
-            
+
             .catch((errors) => {
               _.forEach(errors?.response?.data?.errors, (error) => {
                 notification.error({
@@ -409,7 +481,7 @@ const ManualTransactions = ({ popup, params }) => {
 
   const onReset = () => {
     confirm({
-      title:  t('prompts.reset'),
+      title: t('prompts.reset'),
       icon: <ExclamationCircleOutlined />,
       okText: t('operations.reset'),
       okType: 'danger',
@@ -460,7 +532,7 @@ const ManualTransactions = ({ popup, params }) => {
         // console.log('MTmain: loadMTData - prepareValuesToLoad', values);
 
         setDataLoaded(values);
-    
+
         // setDataDrawTransfers(values?.transfers);
         // setDataBaseTransfers(values?.base_transfers);
         // setDataBaseTotals(values?.base_totals);
@@ -473,12 +545,18 @@ const ManualTransactions = ({ popup, params }) => {
 
   const onLoad = () => {
     DataManager(
-      t('fields.mtDataTitle'), 
-      DataColumns(t), 
-      null, 
-      loadMTData, 
-      {popup: popup, type: sourceType, supplier: selectedSupplier, trip: selectedTrip, order: selectedOrder},
-      '80vw', 
+      t('fields.mtDataTitle'),
+      DataColumns(t),
+      null,
+      loadMTData,
+      {
+        popup: popup,
+        type: sourceType,
+        supplier: selectedSupplier,
+        trip: selectedTrip,
+        order: selectedOrder,
+      },
+      '80vw',
       '40vh'
     );
   };
@@ -563,7 +641,12 @@ const ManualTransactions = ({ popup, params }) => {
 
   const modifiers = (
     <>
-      <Button type="primary" icon={<SyncOutlined />} onClick={onLoad} disabled={!access.canCreate/* || popup*/}>
+      <Button
+        type="primary"
+        icon={<SyncOutlined />}
+        onClick={onLoad}
+        disabled={!access.canCreate /* || popup*/}
+      >
         {t('operations.load')}
       </Button>
 
@@ -583,80 +666,80 @@ const ManualTransactions = ({ popup, params }) => {
 
   return (
     <Spin spinning={isFormLoading}>
-    <Page
-      page={t('pageMenu.operations')}
-      name={t('pageNames.manualTransactions')}
-      modifiers={modifiers}
-      standalone={popup}
-      access={access}
-    >
-      <Form layout="vertical" form={form} scrollToFirstError>
-        <Forms
-          form={form}
-          sourceType={sourceType}
-          setSourceType={setSourceType}
-          loadType={loadType}
-          setLoadType={setLoadType}
-          loadNumber={loadNumber}
-          setLoadNumber={setLoadNumber}
-          trips={trips}
-          setTrips={setTrips}
-          tankers={tankers}
-          setTankers={setTankers}
-          orders={orders}
-          setOrders={setOrders}
-          customers={customers}
-          setCustomers={setCustomers}
-          selectedSupplier={selectedSupplier}
-          setSelectedSupplier={setSelectedSupplier}
-          selectedCustomer={selectedCustomer}
-          setSelectedCustomer={setSelectedCustomer}
-          selectedTrip={selectedTrip}
-          setSelectedTrip={setSelectedTrip}
-          selectedOrder={selectedOrder}
-          setSelectedOrder={setSelectedOrder}
-          selectedTanker={selectedTanker}
-          setSelectedTanker={setSelectedTanker}
-          params={dataLoaded}
-          popup={popup}
-          setOrderSeals={setOrderSeals}
-          setProductArms={setProductArms}
-          resetFormGrids={resetFormGrids}
-          setFormLoading={setFormLoading}
-          config={config}
-        />
+      <Page
+        page={t('pageMenu.operations')}
+        name={t('pageNames.manualTransactions')}
+        modifiers={modifiers}
+        standalone={popup}
+        access={access}
+      >
+        <Form layout="vertical" form={form} scrollToFirstError>
+          <Forms
+            form={form}
+            sourceType={sourceType}
+            setSourceType={setSourceType}
+            loadType={loadType}
+            setLoadType={setLoadType}
+            loadNumber={loadNumber}
+            setLoadNumber={setLoadNumber}
+            trips={trips}
+            setTrips={setTrips}
+            tankers={tankers}
+            setTankers={setTankers}
+            orders={orders}
+            setOrders={setOrders}
+            customers={customers}
+            setCustomers={setCustomers}
+            selectedSupplier={selectedSupplier}
+            setSelectedSupplier={setSelectedSupplier}
+            selectedCustomer={selectedCustomer}
+            setSelectedCustomer={setSelectedCustomer}
+            selectedTrip={selectedTrip}
+            setSelectedTrip={setSelectedTrip}
+            selectedOrder={selectedOrder}
+            setSelectedOrder={setSelectedOrder}
+            selectedTanker={selectedTanker}
+            setSelectedTanker={setSelectedTanker}
+            params={dataLoaded}
+            popup={popup}
+            setOrderSeals={setOrderSeals}
+            setProductArms={setProductArms}
+            resetFormGrids={resetFormGrids}
+            setFormLoading={setFormLoading}
+            config={config}
+          />
 
-        <DrawerProductTransfers
-          form={form}
-          sourceType={sourceType}
-          loadType={loadType}
-          loadNumber={loadNumber}
-          supplier={selectedSupplier}
-          trip={selectedTrip}
-          order={selectedOrder}
-          tanker={selectedTanker}
-          repost={repost}
-          dataBoard={dataBoard}
-          setDataBoard={setDataBoard}
-          payload={dataDrawTransfers}
-          setPayload={setDataDrawTransfers}
-          dataBaseTransfers={dataBaseTransfers}
-          setDataBaseTransfers={setDataBaseTransfers}
-          dataBaseTotals={dataBaseTotals}
-          setDataBaseTotals={setDataBaseTotals}
-          dataMeterTransfers={dataMeterTransfers}
-          setDataMeterTransfers={setDataMeterTransfers}
-          dataMeterTotals={dataMeterTotals}
-          setDataMeterTotals={setDataMeterTotals}
-          dataLoaded={dataLoaded}
-          setDataLoaded={setDataLoaded}
-          productArms={productArms}
-          setProductArms={setProductArms}
-          drawerChanges={drawerChanges}
-          setDrawerChanges={setDrawerChanges}
-        />
-      </Form>
-    </Page>
+          <DrawerProductTransfers
+            form={form}
+            sourceType={sourceType}
+            loadType={loadType}
+            loadNumber={loadNumber}
+            supplier={selectedSupplier}
+            trip={selectedTrip}
+            order={selectedOrder}
+            tanker={selectedTanker}
+            repost={repost}
+            dataBoard={dataBoard}
+            setDataBoard={setDataBoard}
+            payload={dataDrawTransfers}
+            setPayload={setDataDrawTransfers}
+            dataBaseTransfers={dataBaseTransfers}
+            setDataBaseTransfers={setDataBaseTransfers}
+            dataBaseTotals={dataBaseTotals}
+            setDataBaseTotals={setDataBaseTotals}
+            dataMeterTransfers={dataMeterTransfers}
+            setDataMeterTransfers={setDataMeterTransfers}
+            dataMeterTotals={dataMeterTotals}
+            setDataMeterTotals={setDataMeterTotals}
+            dataLoaded={dataLoaded}
+            setDataLoaded={setDataLoaded}
+            productArms={productArms}
+            setProductArms={setProductArms}
+            drawerChanges={drawerChanges}
+            setDrawerChanges={setDrawerChanges}
+          />
+        </Form>
+      </Page>
     </Spin>
   );
 };
