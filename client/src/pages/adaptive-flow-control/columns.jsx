@@ -7,7 +7,7 @@ const columns = (data, t) => [
     title: t('fields.tankCode'),
     dataIndex: 'tankCode',
     key: 'tankCode',
-    width: 200,
+    width: 160,
     align: 'center',
     render: (tank) => (
       <span>
@@ -38,7 +38,7 @@ const columns = (data, t) => [
     title: t('fields.enabled'),
     dataIndex: 'enabled',
     key: 'enabled',
-    width: 200,
+    width: 120,
     align: 'center',
     render: (enabled) => (
       <span>
@@ -60,7 +60,7 @@ const columns = (data, t) => [
     title: t('fields.tankLevel'),
     dataIndex: 'level',
     key: 'level',
-    width: 250,
+    width: 160,
     align: 'center',
   },
   {
@@ -97,10 +97,12 @@ const columns = (data, t) => [
     render: (percent) => (
       <div style={{ display: 'flex', flexDirection: 'column', width: '95%' }}>
         <Progress
-          percent={percent}
-          strokeColor={percent > 100 ? '#ec6e68' : '#0054A4'}
+          percent={percent > 100 ? 100 : percent}
+          strokeColor={percent > 100 ? '#ec6e68' : '#00A454'}
           strokeWidth={6}
-          status={percent > 100 ? 'exception' : 'active'}
+          // if using exception, the percentage won't be showed
+          status={percent > 100 ? 'active' : 'normal'}
+          trailColor={'#e0e0e0'}
         />
       </div>
     ),

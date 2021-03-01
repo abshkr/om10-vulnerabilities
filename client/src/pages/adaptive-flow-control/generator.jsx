@@ -14,7 +14,7 @@ export default function generator(products, flow, current) {
     const levels = _.find(current, ['tank_code', tank?.tank_code]);
 
     const currentFlowRate = _.round(_.sumBy(arms, 'current_flow_rate'), 2);
-    const rate = _.round((currentFlowRate / 0) * 100, 2);
+    const rate = _.round((currentFlowRate / levels.flow_rate) * 100, 2);
 
     // add arm number to arms
     _.forEach(arms, (arm) => {
