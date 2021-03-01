@@ -13,14 +13,18 @@ import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
 import { useAuth } from 'hooks';
-import { useConfig } from '../../hooks';
+import { useConfig, useQuery } from '../../hooks';
 
 const TankConfiguration = () => {
+  const query = useQuery();
+
+  const product = query.get('product') || '';
+
   const config = useConfig();
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [filterValue, setFilterValue] = useState('');
+  const [filterValue, setFilterValue] = useState(product);
 
   const access = useAuth('M_TANKCONFIGURATION');
 

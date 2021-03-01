@@ -1,3 +1,5 @@
+import { BASE_PRODUCTS } from 'constants/routes';
+
 const columns = (t, config) => [
   {
     headerName: t('fields.prodCmpycode'),
@@ -6,8 +8,8 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     width: 120,
-    suppressSizeToFit: true, 
-    pinned: "left",
+    suppressSizeToFit: true,
+    pinned: 'left',
   },
   {
     headerName: t('fields.prodCmpyname'),
@@ -17,7 +19,7 @@ const columns = (t, config) => [
     resizable: true,
     suppressSizeToFit: true,
     width: 180,
-    pinned: "left",
+    pinned: 'left',
   },
   {
     headerName: t('fields.prodCode'),
@@ -27,7 +29,13 @@ const columns = (t, config) => [
     resizable: true,
     suppressSizeToFit: true,
     width: 140,
-    pinned: "left",
+    pinned: 'left',
+    cellRenderer: 'LinkRenderer',
+    cellRendererParams: {
+      endpoint: BASE_PRODUCTS,
+      field: 'product',
+      index: 'prod_code',
+    },
   },
   {
     headerName: t('fields.prodName'),
@@ -37,7 +45,7 @@ const columns = (t, config) => [
     resizable: true,
     suppressSizeToFit: true,
     width: 220,
-    pinned: "left",
+    pinned: 'left',
   },
   {
     headerName: t('fields.prodIsCompliant'),
@@ -177,7 +185,7 @@ const columns = (t, config) => [
     width: 100,
     hide: true,
   },
-  
+
   {
     headerName: t('fields.prodIsBlend'),
     field: 'prod_is_blend',
@@ -303,7 +311,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
     cellRenderer: 'BooleanRenderer',
     width: 100,
-    hide: !config.manageHotProduct
+    hide: !config.manageHotProduct,
   },
   {
     headerName: t('fields.prod15Density'),
@@ -313,7 +321,7 @@ const columns = (t, config) => [
     resizable: true,
     suppressSizeToFit: true,
     width: 120,
-    hide: !config.manageHotProduct
+    hide: !config.manageHotProduct,
   },
   {
     headerName: t('fields.prodHotTemp'),
@@ -323,7 +331,7 @@ const columns = (t, config) => [
     resizable: true,
     suppressSizeToFit: true,
     width: 100,
-    hide: !config.manageHotProduct
+    hide: !config.manageHotProduct,
   },
 
   {
@@ -335,7 +343,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
     cellRenderer: 'BooleanRenderer',
     width: 100,
-    hide: !config.manageDCS
+    hide: !config.manageDCS,
   },
   {
     headerName: t('fields.prod2ndDrawerCode'),
@@ -345,7 +353,7 @@ const columns = (t, config) => [
     resizable: true,
     suppressSizeToFit: true,
     width: 100,
-    hide: !config.manageDCS
+    hide: !config.manageDCS,
   },
   {
     headerName: t('fields.prod2ndDrawer'),
@@ -355,7 +363,7 @@ const columns = (t, config) => [
     resizable: true,
     suppressSizeToFit: true,
     width: 150,
-    hide: !config.manageDCS
+    hide: !config.manageDCS,
   },
   {
     headerName: t('fields.prod2ndProductCode'),
@@ -365,7 +373,7 @@ const columns = (t, config) => [
     resizable: true,
     suppressSizeToFit: true,
     width: 120,
-    hide: !config.manageDCS
+    hide: !config.manageDCS,
   },
   {
     headerName: t('fields.prod2ndProduct'),
@@ -375,7 +383,7 @@ const columns = (t, config) => [
     resizable: true,
     suppressSizeToFit: true,
     width: 120,
-    hide: !config.manageDCS
+    hide: !config.manageDCS,
   },
 
   {

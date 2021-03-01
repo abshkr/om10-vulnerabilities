@@ -21,6 +21,7 @@ import ExpiryDateRenderer from './expiry-date-renderer';
 import DraggableRenderer from './draggable';
 import FlowRateRenderer from './flow-rate';
 import OffsetAlarmRenderer from './offset-alarm';
+import LinkRenderer from './link';
 
 export {
   BooleanRenderer,
@@ -46,4 +47,5 @@ export {
   DraggableRenderer,
   FlowRateRenderer,
   OffsetAlarmRenderer,
+  LinkRenderer,
 };

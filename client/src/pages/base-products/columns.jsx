@@ -1,3 +1,5 @@
+import { TANK_CONFIGURATION } from 'constants/routes';
+
 const columns = (t, config) => [
   {
     headerName: t('fields.baseProductCode'),
@@ -110,6 +112,12 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
     width: 180,
     suppressSizeToFit: true,
+    cellRenderer: 'LinkRenderer',
+    cellRendererParams: {
+      endpoint: TANK_CONFIGURATION,
+      field: 'product',
+      index: 'base_code',
+    },
   },
   {
     headerName: `${t('fields.baseClassMinDensity')} [${t(`units.${config.densityUnit}`)}]`,

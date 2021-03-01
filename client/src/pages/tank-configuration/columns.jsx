@@ -1,3 +1,5 @@
+import { BASE_PRODUCTS } from 'constants/routes';
+
 const columns = (config, t) => [
   {
     headerName: t('fields.code'),
@@ -36,6 +38,12 @@ const columns = (config, t) => [
     sortable: true,
     resizable: true,
     filter: 'FuzzyFilter',
+    cellRenderer: 'LinkRenderer',
+    cellRendererParams: {
+      endpoint: BASE_PRODUCTS,
+      field: 'product',
+      index: 'tank_base',
+    },
   },
   {
     headerName: t('fields.baseProductName'),
