@@ -57,6 +57,12 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
   const fields = columns(t);
 
   const handleFormState = (visibility, value) => {
+    if (!visibility) {
+      setFieldsValue({
+        tank_level: null,
+        flow_rate: null,
+      });
+    }
     setVisible(visibility);
     setSelected(value);
   };
@@ -161,7 +167,7 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
     }
 
     // console.log('...............valid', rule, input, checkLevels(input));
-    if (rule?.field === 'tank_level' && checkLevels(input)) {
+    if (IS_CREATING && rule?.field === 'tank_level' && checkLevels(input)) {
       return Promise.reject(`${t('descriptions.alreadyExists')} ─ ${rule?.label}`);
     }
 
@@ -201,7 +207,7 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
 
   useEffect(() => {
     if (code && !selected) {
-      form.resetFields();
+      resetFields();
 
       setFieldsValue({
         tank_code: code,
@@ -211,6 +217,7 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
 
   useEffect(() => {
     if (selected) {
+      resetFields();
       setFieldsValue({
         tank_code: selected?.tank_code,
         tank_level: selected?.tank_level,
