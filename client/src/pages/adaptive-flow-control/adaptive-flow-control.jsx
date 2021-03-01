@@ -78,6 +78,7 @@ const AdaptiveFlowControl = () => {
               {t('descriptions.totalFlow')}: {total} {t('units.lpm')}{' '}
             </AdaptiveFlowFooter>
           )}
+          scroll={{ x: 1500 }}
         />
       </Page>
     );
