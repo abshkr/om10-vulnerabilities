@@ -291,7 +291,7 @@ const FormModal = ({
                 <Owner form={form} value={value} />
               </Col>
               <Col span={8}>
-                <Code form={form} value={value} />
+                <Code form={form} value={value} config={config} />
               </Col>
               <Col span={8}>
                 <Title form={form} value={value} />
