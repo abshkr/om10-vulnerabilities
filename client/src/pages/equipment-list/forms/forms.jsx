@@ -9,7 +9,22 @@ import {
   UnlockOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal, Drawer, Divider, Row, Col, Tag, Tooltip } from 'antd';
+import { Scrollbars } from 'react-custom-scrollbars';
+import {
+  Form,
+  Button,
+  Tabs,
+  notification,
+  message,
+  Modal,
+  Drawer,
+  Divider,
+  Row,
+  Col,
+  Tag,
+  Tooltip,
+  Card,
+} from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
@@ -77,10 +92,77 @@ const FormModal = ({
     }
   };
 
+  const checkCompartments = (cmpts) => {
+    const errors = [];
+
+    _.forEach(cmpts, (item) => {
+      /*
+        data structure:
+        adj_cmpt_lock: false
+        ​​​cmpt_no: "1"
+        ​​​cmpt_units: "l (amb)"
+        ​​​cmpt_units2: "l (amb)"
+        ​​​cmpt_units_code: "5"
+        ​​​eqpt_code: "ZZZ999"
+        ​​​eqpt_etp: "963410319"
+        ​​​safefill: 9010
+        ​​​sfl: 9000
+      */
+      if (item?.safefill > item?.sfl) {
+        errors.push({
+          field: `${t('fields.compartment')} ${item.cmpt_no}: ${t('fields.safeFill')} ${item.safefill} > ${t(
+            'fields.capacity'
+          )} ${item.sfl} ${item.cmpt_units}`,
+          message: t('validate.cmptSafefillHigh'),
+          key: `${'safefill'}${item.cmpt_no}`,
+          line: item.cmpt_no,
+        });
+      }
+    });
+
+    if (errors.length > 0) {
+      /* const lines = (
+        <Scrollbars
+          style={{
+            height: '300px',
+            width: '25vw',
+            marginTop: 15,
+            padding: 5,
+            marginBottom: 15,
+          }}
+        >
+          <>
+            {errors?.map((error, index) => (
+              <Card size="small" title={error.field}>
+                {error.message}
+              </Card>
+            ))}
+          </>
+        </Scrollbars>
+      );
+      message.error(lines); */
+      _.forEach(errors, (item) => {
+        notification.error({
+          message: item.message,
+          description: item.field,
+          width: '30vw',
+        });
+      });
+    }
+
+    return errors;
+  };
+
   const onFinish = async () => {
     const values = await form.validateFields();
 
-    console.log('............', form.getFieldValue('axles'));
+    // console.log('............', form.getFieldValue('axles'));
+    console.log('............values in onFinish', values);
+
+    const errors = checkCompartments(values?.compartments);
+    if (errors.length > 0) {
+      return;
+    }
 
     let matches = [];
     let bulk_edit = [];
