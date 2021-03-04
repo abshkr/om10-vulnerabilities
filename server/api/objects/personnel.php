@@ -849,18 +849,20 @@ class Personnel extends CommonClass
             }
         }
 
-        $query = "UPDATE PERS_IN_AREA SET PERL_ARA = :perl_ara
-            WHERE TRIM(PERL_PSN) = :per_code";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':perl_ara', $this->perl_ara);
-        oci_bind_by_name($stmt, ':per_code', $this->per_code);
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            oci_rollback($this->conn);
-            return false;
+        if (isset($this->perl_ara)) {
+            $query = "UPDATE PERS_IN_AREA SET PERL_ARA = :perl_ara
+                WHERE TRIM(PERL_PSN) = :per_code";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':perl_ara', $this->perl_ara);
+            oci_bind_by_name($stmt, ':per_code', $this->per_code);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return false;
+            }
         }
-
+        
         $query = "DELETE FROM PERM_OF_AREA WHERE PERM_PSN = :per_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':per_code', $this->per_code);
