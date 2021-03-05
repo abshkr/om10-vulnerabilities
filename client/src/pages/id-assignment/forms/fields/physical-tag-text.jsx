@@ -18,13 +18,19 @@ const PhysicalTagText = ({ form, value, physType, autoTag, disabled }) => {
   const { data: idAssignments, isValidating } = useSWR(ID_ASSIGNMENT.READ);
 
   const validate = (rule, input) => {
-    const match = _.find(idAssignments?.records, ['kya_txt', _.toString(input)]);
+    let exists = idAssignments?.records;
+    if (value) {
+      exists = _.filter(exists, (item) => {
+        return item.kya_txt != value.kya_txt;
+      })
+    }
+    const match = _.find(exists, ['kya_txt', _.toString(input)]);
 
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.physicalTagText')}`);
     }
 
-    if (input && !!match && !value) {
+    if (input && !!match) {
       return Promise.reject(t('descriptions.alreadyExists'));
     }
 
