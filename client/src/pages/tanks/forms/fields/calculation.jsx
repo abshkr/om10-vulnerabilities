@@ -632,26 +632,49 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
         />
       </Form.Item> */}
 
-      <OmegaInputNumber
-        form={form}
-        value={value?.tank_liquid_kg}
-        name="tank_liquid_kg"
-        label={`${isOryxLabel ? t('fields.oryxWeightInVacuum') : t('fields.liquidMass')} (${t('units.kg')})`}
-        min={0}
-        max={999999999}
-        style={{ width: '100%' }}
-        precision={value?.tank_base_class === '6' ? config.precisionAdditive : config.precisionMass}
-        onChange={handleMassQtyFieldChange}
-      />
-      {/* <Form.Item name="tank_liquid_kg" label={`${t('fields.liquidMass')} (${t('units.kg')})`}>
-        <InputNumber
-          min={0}
-          max={999999999}
-          style={{ width: '100%' }}
-          precision={value?.tank_base_class==='6' ? config.precisionAdditive : config.precisionMass}
-          onChange={handleMassQtyFieldChange}
-        />
-      </Form.Item> */}
+      <Row gutter={[8, 8]}>
+        <Col span={config?.useWaterStrapping ? 12 : 24}>
+          <OmegaInputNumber
+            form={form}
+            value={value?.tank_liquid_kg}
+            name="tank_liquid_kg"
+            label={`${isOryxLabel ? t('fields.oryxWeightInVacuum') : t('fields.liquidMass')} (${t(
+              'units.kg'
+            )})`}
+            min={0}
+            max={999999999}
+            style={{ width: '100%' }}
+            precision={value?.tank_base_class === '6' ? config.precisionAdditive : config.precisionMass}
+            onChange={handleMassQtyFieldChange}
+          />
+          {/* <Form.Item name="tank_liquid_kg" label={`${t('fields.liquidMass')} (${t('units.kg')})`}>
+            <InputNumber
+              min={0}
+              max={999999999}
+              style={{ width: '100%' }}
+              precision={value?.tank_base_class==='6' ? config.precisionAdditive : config.precisionMass}
+              onChange={handleMassQtyFieldChange}
+            />
+          </Form.Item> */}
+        </Col>
+        {config?.useWaterStrapping && (
+          <Col span={12}>
+            <OmegaInputNumber
+              form={form}
+              value={value?.tank_air_kg}
+              name="tank_air_kg"
+              label={`${isOryxLabel ? t('fields.oryxWeightInAir') : t('fields.oryxWeightInAir')} (${t(
+                'units.kg'
+              )})`}
+              min={0}
+              max={999999999}
+              style={{ width: '100%' }}
+              precision={value?.tank_base_class === '6' ? config.precisionAdditive : config.precisionMass}
+              // onChange={handleMassQtyFieldChange}
+            />
+          </Col>
+        )}
+      </Row>
     </>
   );
 };
