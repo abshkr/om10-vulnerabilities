@@ -609,28 +609,48 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
         />
       </Form.Item> */}
 
-      <OmegaInputNumber
-        form={form}
-        value={value?.tank_cor_vol}
-        name="tank_cor_vol"
-        label={`${isOryxLabel ? t('fields.oryxGrossStandardVolume') : t('fields.standardVolume')} (${t(
-          'units.litres'
-        )})`}
-        min={0}
-        max={999999999}
-        style={{ width: '100%' }}
-        precision={value?.tank_base_class === '6' ? config.precisionAdditive : config.precisionVolume}
-        onChange={handleCorVolFieldChange}
-      />
-      {/* <Form.Item name="tank_cor_vol" label={`${t('fields.standardVolume')} (${t('units.litres')})`}>
-        <InputNumber
-          min={0}
-          max={999999999}
-          style={{ width: '100%' }}
-          precision={value?.tank_base_class==='6' ? config.precisionAdditive : config.precisionVolume}
-          onChange={handleCorVolFieldChange}
-        />
-      </Form.Item> */}
+      <Row gutter={[8, 8]}>
+        <Col span={config?.useWaterStrapping ? 12 : 24}>
+          <OmegaInputNumber
+            form={form}
+            value={value?.tank_cor_vol}
+            name="tank_cor_vol"
+            label={`${isOryxLabel ? t('fields.oryxGrossStandardVolume') : t('fields.standardVolume')} (${t(
+              'units.litres'
+            )})`}
+            min={0}
+            max={999999999}
+            style={{ width: '100%' }}
+            precision={value?.tank_base_class === '6' ? config.precisionAdditive : config.precisionVolume}
+            onChange={handleCorVolFieldChange}
+          />
+          {/* <Form.Item name="tank_cor_vol" label={`${t('fields.standardVolume')} (${t('units.litres')})`}>
+            <InputNumber
+              min={0}
+              max={999999999}
+              style={{ width: '100%' }}
+              precision={value?.tank_base_class==='6' ? config.precisionAdditive : config.precisionVolume}
+              onChange={handleCorVolFieldChange}
+            />
+          </Form.Item> */}
+        </Col>
+        {config?.useWaterStrapping && (
+          <Col span={12}>
+            <OmegaInputNumber
+              form={form}
+              value={value?.tank_vcf}
+              name="tank_vcf"
+              label={t('fields.vcf')}
+              min={0}
+              max={999999999}
+              style={{ width: '100%' }}
+              precision={4}
+              disabled={true}
+              // onChange={handleCorVolFieldChange}
+            />
+          </Col>
+        )}
+      </Row>
 
       <Row gutter={[8, 8]}>
         <Col span={config?.useWaterStrapping ? 12 : 24}>
@@ -670,6 +690,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
               max={999999999}
               style={{ width: '100%' }}
               precision={value?.tank_base_class === '6' ? config.precisionAdditive : config.precisionMass}
+              disabled={true}
               // onChange={handleMassQtyFieldChange}
             />
           </Col>

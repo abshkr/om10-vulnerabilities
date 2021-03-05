@@ -164,6 +164,8 @@ select
     , tnk.TANK_IFC
     , tnk.TANK_ROOF_WEIGHT
     , (NVL(tnk.TANK_AMB_VOL,0) + NVL(tnk.TANK_WATER,0) + NVL(tnk.TANK_IFC,0)) as TANK_PROD_VOL
+    , (NVL(tnk.TANK_LIQUID_KG,0) - NVL(tnk.TANK_COR_VOL,0)*0.0011) as TANK_AIR_KG
+    , DECODE(tnk.TANK_AMB_VOL, NULL, 0, 0, 0, (NVL(tnk.TANK_COR_VOL,0)/tnk.TANK_AMB_VOL)) as TANK_VCF
 from
     TANKS                                  tnk
     , TERMINAL                             trm
