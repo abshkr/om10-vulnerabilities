@@ -13,6 +13,7 @@ import {
   TankIndicator,
   IndicatorContainer,
   TankLevel,
+  WaterLevel,
 } from './style';
 import Image from './img.png';
 
@@ -20,6 +21,14 @@ import config from './config';
 
 const Tank = React.memo(function Tank({ item }) {
   const { t } = useTranslation();
+
+  const getLevels = () => {
+    let levels = item?.tank_prod_lvl?.toLocaleString('en-AU') || '0' + ' ' + t('units.mm');
+    if (item?.waterFlag) {
+      levels += ' (' + item?.tank_water_lvl?.toLocaleString('en-AU') || '0' + ' ' + t('units.mm') + ')';
+    }
+    return levels;
+  };
 
   return (
     <TankContainer critical={item?.critical} status={item?.status}>
@@ -88,7 +97,15 @@ const Tank = React.memo(function Tank({ item }) {
         </TankIndicators>
 
         <TankVolume>{item?.percentage}%</TankVolume>
-        <TankLevel>{item?.tank_prod_lvl?.toLocaleString('en-AU')||'0'} {t('units.mm')}</TankLevel>
+        <TankLevel>
+          {item?.tank_prod_lvl?.toLocaleString('en-AU') || '0'} {t('units.mm')}
+        </TankLevel>
+        {item?.waterFlag && (
+          <WaterLevel>
+            {'W:'}
+            {item?.tank_water_lvl?.toLocaleString('en-AU') || '0'} {t('units.mm')}
+          </WaterLevel>
+        )}
       </Card>
     </TankContainer>
   );

@@ -107,7 +107,7 @@ function getLevelStatus(level, hhValue, hValue, lValue, llValue, userH, userL) {
   };
 }
 
-function transform(data, showAdditives) {
+function transform(data, showAdditives, waterFlag) {
   const tanks = [];
   const summary = [];
 
@@ -153,7 +153,10 @@ function transform(data, showAdditives) {
 
   _.forEach(data, (tank) => {
     const capacity = _.toNumber(tank?.tank_max_level) || 0;
-    const level = _.toNumber(tank?.tank_prod_lvl) || 0;
+    const level =
+      (!waterFlag
+        ? _.toNumber(tank?.tank_prod_lvl)
+        : _.toNumber(tank?.tank_prod_lvl) - _.toNumber(tank?.tank_water_lvl)) || 0;
 
     const percent = _.round(capacity === 0 ? 0 : (level * 100) / capacity, 2);
 
@@ -187,6 +190,7 @@ function transform(data, showAdditives) {
       percentage,
       capacity,
       totalCapacity,
+      waterFlag: waterFlag,
 
       critical: Object.values(levelStatus)?.includes('error'),
       baseColour,

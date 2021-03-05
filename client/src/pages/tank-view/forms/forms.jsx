@@ -154,9 +154,21 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, 
                   {value?.tank_max_level?.toLocaleString('en-AU')} {t('units.mm')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label={t('fields.level')} span={24}>
+                {config?.useWaterStrapping && (
+                  <Descriptions.Item label={t('fields.waterLevel')} span={24}>
+                    {value?.tank_water_lvl?.toLocaleString('en-AU')} {t('units.mm')}
+                  </Descriptions.Item>
+                )}
+
+                <Descriptions.Item label={t('fields.productLevel')} span={24}>
                   {value?.tank_prod_lvl?.toLocaleString('en-AU')} {t('units.mm')}
                 </Descriptions.Item>
+
+                {config?.useWaterStrapping && (
+                  <Descriptions.Item label={t('fields.tankIFC')} span={24}>
+                    {value?.tank_ifc?.toLocaleString('en-AU')} {t('units.litres')}
+                  </Descriptions.Item>
+                )}
 
                 <Descriptions.Item label={t('fields.observedQuantity')} span={24}>
                   {value?.tank_amb_vol?.toLocaleString('en-AU')} {t('units.litres')}

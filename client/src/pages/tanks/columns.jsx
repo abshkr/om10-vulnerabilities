@@ -103,6 +103,7 @@ const columns = (t, config) => [
     resizable: true,
     width: 130,
     suppressSizeToFit: true,
+    hide: !config?.useWaterStrapping,
   },
   {
     headerName: t('fields.waterVolume') + ' (' + t('units.ltr') + ')',
@@ -133,6 +134,7 @@ const columns = (t, config) => [
     resizable: true,
     width: 260,
     suppressSizeToFit: true,
+    hide: !config?.useWaterStrapping,
   },
 
   {

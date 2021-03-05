@@ -72,7 +72,7 @@ const TankView = () => {
   useEffect(() => {
     if (data?.records) {
       const filtered = search(searchQuery, data?.records);
-      const payload = transform(filtered, showAdditives);
+      const payload = transform(filtered, showAdditives, config?.useWaterStrapping);
 
       setTanks(payload?.tanks);
       setSummary(payload?.summary);

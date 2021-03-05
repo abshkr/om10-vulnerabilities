@@ -1,4 +1,4 @@
-const columns = (t) => [
+const columns = (t, config) => [
   {
     headerName: t('fields.code'),
     field: 'tank_code',
@@ -30,6 +30,7 @@ const columns = (t) => [
     field: 'tank_water_lvl',
     sortable: true,
     resizable: true,
+    hide: !config?.useWaterStrapping,
   },
   {
     headerName: t('fields.waterVolume') + ' (' + t('units.ltr') + ')',
@@ -49,6 +50,7 @@ const columns = (t) => [
     field: 'tank_ifc',
     sortable: true,
     resizable: true,
+    hide: !config?.useWaterStrapping,
   },
   {
     headerName: `${t('fields.temperature')} (°C)`,
