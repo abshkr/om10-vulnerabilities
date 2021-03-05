@@ -29,6 +29,7 @@ import {
   DraggableRenderer,
   FlowRateRenderer,
   OffsetAlarmRenderer,
+  LinkRenderer,
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -81,6 +82,7 @@ const defaultComponents = {
   PowerListEditor,
   InputPopupEditor,
   DraggableRenderer,
+  LinkRenderer,
 };
 
 const defaultColumnDef = {};

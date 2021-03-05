@@ -9,7 +9,7 @@ import { REGEX } from '../../../../constants';
 
 import { validatorStatus } from '../../../../utils';
 
-const Code = ({ form, value }) => {
+const Code = ({ form, value, config }) => {
   const [eqptCode, setEqptCode] = useState(value?.eqpt_code);
   const [matched, setMatched] = useState(false);
   const { t } = useTranslation();
@@ -71,9 +71,12 @@ const Code = ({ form, value }) => {
     }
 
     const len = new TextEncoder().encode(input).length;
-    if (input && len > 20) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && len > config?.maxLengthEqptCode) {
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${config?.maxLengthEqptCode} ─ ${t('descriptions.maxCharacters')}`
+      );
     }
+
     return Promise.resolve();
   };
 

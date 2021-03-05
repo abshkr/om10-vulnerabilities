@@ -7,13 +7,17 @@ import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download } from '../../components';
 import { BASE_PRODUCTS } from '../../api';
-import { useAuth, useConfig } from '../../hooks';
+import { useAuth, useConfig, useQuery } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 
 import Forms from './forms';
 
 const BaseProducts = () => {
+  const query = useQuery();
+
+  const product = query.get('product') || '';
+
   const { t } = useTranslation();
 
   const config = useConfig();
@@ -23,7 +27,7 @@ const BaseProducts = () => {
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [filterValue, setFilterValue] = useState('');
+  const [filterValue, setFilterValue] = useState(product);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);

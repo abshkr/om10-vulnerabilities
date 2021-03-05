@@ -1181,7 +1181,7 @@ class OpenOrder extends CommonClass
                     and sc.SCHDSPEC_SHLSSUPP = TRSF.TRIP_SUPPLIER (+)
                     AND sc.SCHDSPEC_SHLSTRIP = TRSF.TRIP_NO (+)
                     AND sc.SCHD_COMP_ID = TRSF.TRIP_COMPARTMENT (+)
-                    AND pd.PROD_CLASS = TRSF.PROD_CLASS (+)
+                    AND pd.PROD_CLASS (+) = TRSF.PROD_CLASS
                 order by
                     sc.SCHDSPEC_SHLSSUPP, sc.SCHDSPEC_SHLSTRIP, sc.SCHD_COMP_ID 
             ";

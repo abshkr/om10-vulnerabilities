@@ -4,5 +4,6 @@ import useAudio from './use-audio';
 import useConfig from './use-config';
 import useTime from './use-time';
 import usePrevious from './use-previous';
+import useQuery from './use-query';
 
-export { useIdle, useAuth, useAudio, useConfig, useTime, usePrevious };
+export { useIdle, useAuth, useAudio, useConfig, useTime, usePrevious, useQuery };

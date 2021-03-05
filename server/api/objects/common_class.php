@@ -127,26 +127,6 @@ class CommonClass
     {
         $paginaged_query = $query;
         if (READ_PAGINATION) {
-            //sort_by sample: desc(start_date), asc(end_date)
-            if (isset($this->sort_by)) {
-                $order_pos = strpos(strtoupper($query), 'ORDER BY');
-                if ($order_pos > 0) {
-                    $query = substr($query, 0, $order_pos);
-                }
-                
-                $query .= " ORDER BY ";
-                $sort_bys = explode(",", $this->sort_by);
-                for ($i = 0; $i < count($sort_bys); $i ++) {
-                    $asc_n_desc = substr($sort_bys[$i], 0, strpos($sort_bys[$i], '('));
-                    preg_match('#\((.*?)\)#', $sort_bys[$i], $match);
-                    $sort_by_item = $match[1];
-                    if ($i > 0) {
-                        $query .= " , ";
-                    }
-                    $query .= $sort_by_item . " " . $asc_n_desc . " ";
-                }
-            }
-
             $paginaged_query = "
             SELECT * FROM(
                 SELECT RES.*, ROWNUM AS RN
