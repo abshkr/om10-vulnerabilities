@@ -14,6 +14,8 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
 
   const { setFieldsValue, getFieldsValue } = form;
 
+  const isOryxLabel = config?.useWaterStrapping;
+
   const [tempBounds, setTempBounds] = useState({
     min: value?.tank_bclass_temp_lo || config.minTemperature,
     max: value?.tank_bclass_temp_hi || config.maxTemperature,
@@ -472,7 +474,9 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
               form={form}
               value={value?.tank_water}
               name="tank_water"
-              label={`${t('fields.waterVolume')} (${t('units.litres')})`}
+              label={`${isOryxLabel ? t('fields.oryxFreeWaterVolume') : t('fields.waterVolume')} (${t(
+                'units.litres'
+              )})`}
               min={0}
               max={999999999}
               style={{ width: '100%' }}
@@ -539,7 +543,9 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
               form={form}
               value={value?.tank_prod_vol}
               name="tank_prod_vol"
-              label={`${t('fields.tankProdVolume')} (${t('units.litres')})`}
+              label={`${isOryxLabel ? t('fields.oryxTotalObservedVolume') : t('fields.tankProdVolume')} (${t(
+                'units.litres'
+              )})`}
               min={0}
               max={999999999}
               style={{ width: '100%' }}
@@ -584,7 +590,9 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
         form={form}
         value={value?.tank_amb_vol}
         name="tank_amb_vol"
-        label={`${t('fields.ambientVolume')} (${t('units.litres')})`}
+        label={`${isOryxLabel ? t('fields.oryxGrossObservedVolume') : t('fields.ambientVolume')} (${t(
+          'units.litres'
+        )})`}
         min={0}
         max={999999999}
         style={{ width: '100%' }}
@@ -605,7 +613,9 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
         form={form}
         value={value?.tank_cor_vol}
         name="tank_cor_vol"
-        label={`${t('fields.standardVolume')} (${t('units.litres')})`}
+        label={`${isOryxLabel ? t('fields.oryxGrossStandardVolume') : t('fields.standardVolume')} (${t(
+          'units.litres'
+        )})`}
         min={0}
         max={999999999}
         style={{ width: '100%' }}
@@ -626,7 +636,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
         form={form}
         value={value?.tank_liquid_kg}
         name="tank_liquid_kg"
-        label={`${t('fields.liquidMass')} (${t('units.kg')})`}
+        label={`${isOryxLabel ? t('fields.oryxWeightInVacuum') : t('fields.liquidMass')} (${t('units.kg')})`}
         min={0}
         max={999999999}
         style={{ width: '100%' }}

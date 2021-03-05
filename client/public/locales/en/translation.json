@@ -1244,7 +1244,7 @@
     "oryxGrossStandardVolume": "Gross Standard Volume (GSV)",
     "oryxNetStandardVolume": "Net Standard Volume (NSV)",
     "oryxWeightInAir": "Weight in Air (WiA)",
-    "oryxWeightInVacuo": "Weight in Vacuo (WiV)",
+    "oryxWeightInVacuum": "Weight in Vacuum (WiV)",
     "outgoingMessages": "Outgoing Messages",
     "override": "Override",
     "owner": "Owner",

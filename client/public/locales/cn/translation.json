@@ -1244,7 +1244,7 @@
     "oryxGrossStandardVolume": "标量容积(GSV)",
     "oryxNetStandardVolume": "标量净容积(NSV)",
     "oryxWeightInAir": "空气中重量(WiA)",
-    "oryxWeightInVacuo": "真空中重量(WiV)",
+    "oryxWeightInVacuum": "真空中重量(WiV)",
     "outgoingMessages": "发送信息",
     "override": "否决",
     "owner": "车主",
