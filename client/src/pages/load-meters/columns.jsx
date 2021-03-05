@@ -1,4 +1,4 @@
-const columns = (t) => [
+const columns = (t, enable_meter_facor) => [
   {
     headerName: t('fields.meterUsage'),
     field: 'bam_usage_name',
@@ -52,8 +52,17 @@ const columns = (t) => [
     headerName: t('fields.kFactor'),
     field: 'bam_kfa',
     filter: 'FuzzyFilter',
+    width: 110,
     sortable: true,
     resizable: true,
+  },
+  {
+    headerName: t('fields.meterFactor'),
+    field: 'bam_factor',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: !enable_meter_facor
   },
   {
     headerName: t('fields.lastModified'),

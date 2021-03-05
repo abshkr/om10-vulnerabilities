@@ -891,6 +891,7 @@
     "itemLock": "Lock/Unlock",
     "itemStatus": "Item Status",
     "kFactor": "K Factor",
+    "meterFactor": "Meter Factor",
     "kg": "kg",
     "lLevel": "L Level",
     "lState": "L State",

@@ -107,6 +107,7 @@ const useConfig = () => {
     refreshAlarm: 10000,
     refreshProductMovement: 10000,
     carrcode_tankernum_tag: false,
+    enable_meter_facor: false,
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -276,6 +277,7 @@ const useConfig = () => {
           ? configurationObject?.SITE_REFRESH_PRODMV_INTERVAL * 1000
           : 10000,
         carrcode_tankernum_tag: configurationObject?.SITE_CARRCODE_TANKERNUM_TAG,
+        enable_meter_facor: configurationObject?.SITE_ENABLE_METER_FACTOR,
       });
     }
     // eslint-disable-next-line

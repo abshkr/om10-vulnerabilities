@@ -891,6 +891,7 @@
     "itemLock": "锁定?",
     "itemStatus": "明细状态",
     "kFactor": "K系数",
+	"meterFactor": "流量计系数",
     "kg": "公斤",
     "lLevel": "低报警点液位",
     "lState": "低报警点状态",
