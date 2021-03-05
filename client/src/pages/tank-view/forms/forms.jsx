@@ -179,7 +179,7 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, 
                 </Descriptions.Item>
 
                 <Descriptions.Item label={t('fields.weightInAir')} span={24}>
-                  {value?.tank_vapour_kg?.toLocaleString('en-AU')} {t('units.kg')}
+                  {value?.tank_air_kg?.toLocaleString('en-AU')} {t('units.kg')}
                 </Descriptions.Item>
 
                 <Descriptions.Item label={t('fields.ullage')} span={24}>
@@ -190,9 +190,11 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, 
                   {value?.tank_pump_vol?.toLocaleString('en-AU')} {t('units.litres')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label={t('fields.waterLevel')} span={24}>
-                  {value?.tank_water_lvl?.toLocaleString('en-AU')} {t('units.mm')}
-                </Descriptions.Item>
+                {config?.useWaterStrapping && (
+                  <Descriptions.Item label={t('fields.waterVolume')} span={24}>
+                    {value?.tank_water?.toLocaleString('en-AU')} {t('units.litres')}
+                  </Descriptions.Item>
+                )}
 
                 <Descriptions.Item label={t('fields.weightInVacuum')} span={24}>
                   {value?.tank_liquid_kg?.toLocaleString('en-AU')} {t('units.kg')}
