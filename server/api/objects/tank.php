@@ -81,6 +81,9 @@ class Tank extends CommonClass
         "TANK_AMB_CLOSE",
         "TANK_IFC",
         "TANK_ROOF_WEIGHT",
+        "TANK_TOTAL_VOL",
+        "TANK_AIR_KG",
+        "TANK_VCF",
         "TANK_SG"
     );
 

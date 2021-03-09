@@ -4325,6 +4325,10 @@
       "TANK_MAX_CAPACITY": "Tank Max. Capacity",
       "TANK_AMB_CLOSE": "Tank Ambient Closeout",
       "TANK_IFC": "Internal Floating Roof Compensation",
+      "TANK_ROOF_WEIGHT": "Internal Floating Roof Weight",
+      "TANK_TOTAL_VOL": "Total Observed Volume",
+      "TANK_AIR_KG": "Weight In Air",
+      "TANK_VCF": "VCF",
       "TANK_SG": "Tank Specific Gravity"
     },
     "TANKSWITCH": {
@@ -9205,6 +9209,10 @@
       "TANK_MAX_CAPACITY": "油罐最大容量",
       "TANK_AMB_CLOSE": "油罐盘点视量",
       "TANK_IFC": "内部浮板补偿容积",
+      "TANK_ROOF_WEIGHT": "内部浮板重量",
+      "TANK_TOTAL_VOL": "油罐总视量容积",
+      "TANK_AIR_KG": "空气中重量",
+      "TANK_VCF": "VCF",
       "TANK_SG": "油罐比重"
     },
     "TANKSWITCH": {

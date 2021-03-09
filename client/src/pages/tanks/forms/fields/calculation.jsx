@@ -144,12 +144,12 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
   };
 
   const handleIfcVolFieldChange = (v) => {
-    const values = getFieldsValue(['tank_prod_vol', 'tank_water', 'tank_ifc']);
-    const prodVol =
-      values?.tank_prod_vol === '' || values?.tank_prod_vol === undefined ? 0 : values?.tank_prod_vol;
+    const values = getFieldsValue(['tank_total_vol', 'tank_water', 'tank_ifc']);
+    const totalVol =
+      values?.tank_total_vol === '' || values?.tank_total_vol === undefined ? 0 : values?.tank_total_vol;
     const waterVol = values?.tank_water === '' || values?.tank_water === undefined ? 0 : values?.tank_water;
     const ifcVol = v;
-    const vol = prodVol - waterVol - ifcVol;
+    const vol = totalVol - waterVol - ifcVol;
     // setFieldsValue({ tank_roof_weight: '' });
     setFieldsValue({ tank_amb_vol: vol });
     handleAmbVolFieldChange(vol);
@@ -169,24 +169,24 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
       return;
     }
 
-    const values = getFieldsValue(['tank_prod_vol', 'tank_water', 'tank_ifc']);
-    const prodVol =
-      values?.tank_prod_vol === '' || values?.tank_prod_vol === undefined ? 0 : values?.tank_prod_vol;
+    const values = getFieldsValue(['tank_total_vol', 'tank_water', 'tank_ifc']);
+    const totalVol =
+      values?.tank_total_vol === '' || values?.tank_total_vol === undefined ? 0 : values?.tank_total_vol;
     const waterVol = await getQtyByLevel(value?.tank_code, v);
     const ifcVol = values?.tank_ifc === '' || values?.tank_ifc === undefined ? 0 : values?.tank_ifc;
-    const vol = prodVol - waterVol - ifcVol;
+    const vol = totalVol - waterVol - ifcVol;
     setFieldsValue({ tank_amb_vol: vol });
     setFieldsValue({ tank_water: waterVol });
     handleAmbVolFieldChange(vol);
   };
 
   const handleWaterVolFieldChange = (v) => {
-    const values = getFieldsValue(['tank_prod_vol', 'tank_water', 'tank_ifc']);
-    const prodVol =
-      values?.tank_prod_vol === '' || values?.tank_prod_vol === undefined ? 0 : values?.tank_prod_vol;
+    const values = getFieldsValue(['tank_total_vol', 'tank_water', 'tank_ifc']);
+    const totalVol =
+      values?.tank_total_vol === '' || values?.tank_total_vol === undefined ? 0 : values?.tank_total_vol;
     const waterVol = v;
     const ifcVol = values?.tank_ifc === '' || values?.tank_ifc === undefined ? 0 : values?.tank_ifc;
-    const vol = prodVol - waterVol - ifcVol;
+    const vol = totalVol - waterVol - ifcVol;
     setFieldsValue({ tank_amb_vol: vol });
     handleAmbVolFieldChange(vol);
   };
@@ -205,22 +205,22 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
       return;
     }
 
-    const values = getFieldsValue(['tank_prod_vol', 'tank_water', 'tank_ifc']);
-    const prodVol = await getQtyByLevel(value?.tank_code, v);
+    const values = getFieldsValue(['tank_total_vol', 'tank_water', 'tank_ifc']);
+    const totalVol = await getQtyByLevel(value?.tank_code, v);
     const waterVol = values?.tank_water === '' || values?.tank_water === undefined ? 0 : values?.tank_water;
     const ifcVol = values?.tank_ifc === '' || values?.tank_ifc === undefined ? 0 : values?.tank_ifc;
-    const vol = prodVol - waterVol - ifcVol;
+    const vol = totalVol - waterVol - ifcVol;
     setFieldsValue({ tank_amb_vol: vol });
-    setFieldsValue({ tank_prod_vol: prodVol });
+    setFieldsValue({ tank_total_vol: totalVol });
     handleAmbVolFieldChange(vol);
   };
 
-  const handleProdVolFieldChange = (v) => {
-    const values = getFieldsValue(['tank_prod_vol', 'tank_water', 'tank_ifc']);
-    const prodVol = v;
+  const handleTotalVolFieldChange = (v) => {
+    const values = getFieldsValue(['tank_total_vol', 'tank_water', 'tank_ifc']);
+    const totalVol = v;
     const waterVol = values?.tank_water === '' || values?.tank_water === undefined ? 0 : values?.tank_water;
     const ifcVol = values?.tank_ifc === '' || values?.tank_ifc === undefined ? 0 : values?.tank_ifc;
-    const vol = prodVol - waterVol - ifcVol;
+    const vol = totalVol - waterVol - ifcVol;
     setFieldsValue({ tank_amb_vol: vol });
     handleAmbVolFieldChange(vol);
   };
@@ -234,21 +234,21 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
     }
 
     const values = getFieldsValue([
-      'tank_prod_vol',
+      'tank_total_vol',
       'tank_ifc',
       'tank_water',
       'tank_roof_weight',
       'tank_temp',
       'tank_density',
     ]);
-    const prodVol =
-      values?.tank_prod_vol === '' || values?.tank_prod_vol === undefined ? 0 : values?.tank_prod_vol;
+    const totalVol =
+      values?.tank_total_vol === '' || values?.tank_total_vol === undefined ? 0 : values?.tank_total_vol;
     const waterVol = values?.tank_water === '' || values?.tank_water === undefined ? 0 : values?.tank_water;
     const roofMass = v;
     const vcf = await getTankVCF(value?.tank_base, values?.tank_temp, values?.tank_density);
     const densAir = (vcf?.REAL_KG / 10000) * 1000;
     const ifcVol = (roofMass / densAir) * 1000;
-    const vol = prodVol - waterVol - ifcVol;
+    const vol = totalVol - waterVol - ifcVol;
     const isAdtv = value?.tank_base_class === '6' || value?.tank_base_class === '11';
     const precision = isAdtv ? config?.precisionAdditive : config?.precisionVolume;
     setFieldsValue({ tank_amb_vol: _.round(vol, precision) });
@@ -258,15 +258,15 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
 
   const handleTempFieldChange = async (v) => {
     const values = getFieldsValue([
-      'tank_prod_vol',
+      'tank_total_vol',
       'tank_ifc',
       'tank_water',
       'tank_roof_weight',
       'tank_temp',
       'tank_density',
     ]);
-    const prodVol =
-      values?.tank_prod_vol === '' || values?.tank_prod_vol === undefined ? 0 : values?.tank_prod_vol;
+    const totalVol =
+      values?.tank_total_vol === '' || values?.tank_total_vol === undefined ? 0 : values?.tank_total_vol;
     const waterVol = values?.tank_water === '' || values?.tank_water === undefined ? 0 : values?.tank_water;
     const roofMass =
       values?.tank_roof_weight === '' || values?.tank_roof_weight === undefined
@@ -275,7 +275,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
     const vcf = await getTankVCF(value?.tank_base, v?.target?.value, values?.tank_density);
     const densAir = (vcf?.REAL_KG / 10000) * 1000;
     const ifcVol = (roofMass / densAir) * 1000;
-    const vol = prodVol - waterVol - ifcVol;
+    const vol = totalVol - waterVol - ifcVol;
     const isAdtv = value?.tank_base_class === '6' || value?.tank_base_class === '11';
     const precision = isAdtv ? config?.precisionAdditive : config?.precisionVolume;
     setFieldsValue({ tank_amb_vol: _.round(vol, precision) });
@@ -541,8 +541,8 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
           <Col span={12}>
             <OmegaInputNumber
               form={form}
-              value={value?.tank_prod_vol}
-              name="tank_prod_vol"
+              value={value?.tank_total_vol}
+              name="tank_total_vol"
               label={`${isOryxLabel ? t('fields.oryxTotalObservedVolume') : t('fields.tankProdVolume')} (${t(
                 'units.litres'
               )})`}
@@ -550,7 +550,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
               max={999999999}
               style={{ width: '100%' }}
               precision={config.precisionVolume}
-              onChange={handleProdVolFieldChange}
+              onChange={handleTotalVolFieldChange}
             />
           </Col>
         )}

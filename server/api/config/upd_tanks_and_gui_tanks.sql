@@ -4,6 +4,12 @@
 alter table TANKS add TANK_IFC FLOAT;
 -- add new column TANK_ROOF_WEIGHT to store the Internal Floating Roof weight
 alter table TANKS add TANK_ROOF_WEIGHT FLOAT;
+-- add new column TANK_TOTAL_VOL to store the total observed volume
+alter table TANKS add TANK_TOTAL_VOL FLOAT;
+-- add new column TANK_AIR_KG to store the weight in air
+alter table TANKS add TANK_AIR_KG FLOAT;
+-- add new column TANK_AIR_KG to store the VCF
+alter table TANKS add TANK_VCF FLOAT;
 
 -- add new column to GUI_TANKS
 CREATE OR REPLACE FORCE VIEW GUI_TANKS AS 
@@ -163,9 +169,9 @@ select
     , tnk.TANK_SG
     , tnk.TANK_IFC
     , tnk.TANK_ROOF_WEIGHT
-    , (NVL(tnk.TANK_AMB_VOL,0) + NVL(tnk.TANK_WATER,0) + NVL(tnk.TANK_IFC,0)) as TANK_PROD_VOL
-    , (NVL(tnk.TANK_LIQUID_KG,0) - NVL(tnk.TANK_COR_VOL,0)*0.0011) as TANK_AIR_KG
-    , DECODE(tnk.TANK_AMB_VOL, NULL, 0, 0, 0, (NVL(tnk.TANK_COR_VOL,0)/tnk.TANK_AMB_VOL)) as TANK_VCF
+    , NVL(tnk.TANK_TOTAL_VOL, (NVL(tnk.TANK_AMB_VOL,0) + NVL(tnk.TANK_WATER,0) + NVL(tnk.TANK_IFC,0))) as TANK_TOTAL_VOL
+    , NVL(tnk.TANK_AIR_KG, (NVL(tnk.TANK_LIQUID_KG,0) - NVL(tnk.TANK_COR_VOL,0)*0.0011)) as TANK_AIR_KG
+    , NVL(tnk.TANK_VCF, DECODE(tnk.TANK_AMB_VOL, NULL, 0, 0, 0, (NVL(tnk.TANK_COR_VOL,0)/tnk.TANK_AMB_VOL))) as TANK_VCF
 from
     TANKS                                  tnk
     , TERMINAL                             trm

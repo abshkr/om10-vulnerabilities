@@ -4337,7 +4337,22 @@
     "TANK_L_LEVEL": "NA",
     "TANK_LL_LEVEL": "NA",
     "TANK_UH_LEVEL": "NA",
-    "TANK_UL_LEVEL": "NA"
+    "TANK_UL_LEVEL": "NA",
+    "TANK_EXC_PDS": "NA",
+    "TANK_EXC_PID": "NA",
+    "TANK_EXC_SPMV": "NA",
+    "TANK_EXC_STCKRPT": "NA",
+    "TANK_VISCOSITY": "NA",
+    "TANK_BATCH_NO": "NA",
+    "TANK_MAX_LEVEL": "NA",
+    "TANK_MAX_CAPACITY": "NA",
+    "TANK_AMB_CLOSE": "NA",
+    "TANK_IFC": "NA",
+    "TANK_ROOF_WEIGHT": "NA",
+    "TANK_TOTAL_VOL": "NA",
+    "TANK_AIR_KG": "NA",
+    "TANK_VCF": "NA",
+    "TANK_SG": "NA"
   },
   "TANKSWITCH": {
     "TSW_ENABLED": "NA",

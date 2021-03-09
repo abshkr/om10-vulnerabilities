@@ -352,6 +352,8 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
                 description: response?.data?.MSG_CODE + ': ' + response?.data?.MSG_DESC,
               });
             } else {
+              const WIA =
+                _.toNumber(response?.data?.REAL_KG) - _.toNumber(response?.data?.REAL_LITRE15) * 0.0011;
               setFieldsValue({
                 tank_amb_vol: _.round(
                   response?.data?.REAL_LITRE,
@@ -365,6 +367,8 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
                   response?.data?.REAL_KG,
                   isAdtv ? config.precisionAdditive : config.precisionMass
                 ),
+                tank_vcf: _.round(response?.data?.REAL_VCF, 4),
+                tank_air_kg: _.round(WIA, isAdtv ? config.precisionAdditive : config.precisionMass),
               });
               notification.success({
                 message: t('messages.calculateSuccess'),
@@ -396,7 +400,10 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
       'tank_ifc',
     ]);
 
-    if (!payload?.tank_ifc || String(payload?.tank_ifc).trim().length === 0) {
+    if (
+      (!payload?.tank_ifc && _.toNumber(payload?.tank_ifc) !== 0) ||
+      String(payload?.tank_ifc).trim().length === 0
+    ) {
       notification.error({
         message: t('validate.set'),
         description: t('fields.tankIFC'),
@@ -476,10 +483,10 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
         // get the water volume from water level
         const waterVol = await getQtyByLevel(selected?.tank_code, _.toNumber(payload?.tank_water_lvl));
         // get the total volume from prod level
-        const prodVol = await getQtyByLevel(selected?.tank_code, _.toNumber(payload?.tank_prod_lvl));
+        const totalVol = await getQtyByLevel(selected?.tank_code, _.toNumber(payload?.tank_prod_lvl));
         // get the ambient volume
-        const ambVol = prodVol - waterVol - _.toNumber(payload?.tank_ifc);
-        setFieldsValue({ tank_prod_vol: prodVol });
+        const ambVol = totalVol - waterVol - _.toNumber(payload?.tank_ifc);
+        setFieldsValue({ tank_total_vol: totalVol });
         setFieldsValue({ tank_water: waterVol });
         setFieldsValue({ tank_amb_vol: ambVol });
 
@@ -502,6 +509,8 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
                 description: response?.data?.MSG_CODE + ': ' + response?.data?.MSG_DESC,
               });
             } else {
+              const WIA =
+                _.toNumber(response?.data?.REAL_KG) - _.toNumber(response?.data?.REAL_LITRE15) * 0.0011;
               setFieldsValue({
                 tank_amb_vol: _.round(
                   response?.data?.REAL_LITRE,
@@ -515,6 +524,8 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
                   response?.data?.REAL_KG,
                   isAdtv ? config.precisionAdditive : config.precisionMass
                 ),
+                tank_vcf: _.round(response?.data?.REAL_VCF, 4),
+                tank_air_kg: _.round(WIA, isAdtv ? config.precisionAdditive : config.precisionMass),
               });
               // selected.tank_amb_vol = _.round(response?.data?.REAL_LITRE, isAdtv ? config.precisionAdditive : config.precisionVolume);
               // selected.tank_cor_vol = _.round(response?.data?.REAL_LITRE15, isAdtv ? config.precisionAdditive : config.precisionVolume);
@@ -683,6 +694,8 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
                 description: response?.data?.MSG_CODE + ': ' + response?.data?.MSG_DESC,
               });
             } else {
+              const WIA =
+                _.toNumber(response?.data?.REAL_KG) - _.toNumber(response?.data?.REAL_LITRE15) * 0.0011;
               setFieldsValue({
                 tank_amb_vol: _.round(
                   response?.data?.REAL_LITRE,
@@ -696,6 +709,8 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
                   response?.data?.REAL_KG,
                   isAdtv ? config.precisionAdditive : config.precisionMass
                 ),
+                tank_vcf: _.round(response?.data?.REAL_VCF, 4),
+                tank_air_kg: _.round(WIA, isAdtv ? config.precisionAdditive : config.precisionMass),
               });
               // selected.tank_amb_vol = _.round(response?.data?.REAL_LITRE, isAdtv ? config.precisionAdditive : config.precisionVolume);
               // selected.tank_cor_vol = _.round(response?.data?.REAL_LITRE15, isAdtv ? config.precisionAdditive : config.precisionVolume);
