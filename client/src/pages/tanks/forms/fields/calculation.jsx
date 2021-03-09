@@ -257,6 +257,9 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
   };
 
   const handleTempFieldChange = async (v) => {
+    if (!config?.useWaterStrapping) {
+      return;
+    }
     const values = getFieldsValue([
       'tank_total_vol',
       'tank_ifc',
