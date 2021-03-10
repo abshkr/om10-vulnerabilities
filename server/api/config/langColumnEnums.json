@@ -4352,6 +4352,7 @@
     "TANK_TOTAL_VOL": "NA",
     "TANK_AIR_KG": "NA",
     "TANK_VCF": "NA",
+    "TANK_DENS_MODE": "NA",
     "TANK_SG": "NA"
   },
   "TANKSWITCH": {

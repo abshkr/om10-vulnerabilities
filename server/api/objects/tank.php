@@ -33,6 +33,7 @@ class Tank extends CommonClass
         "TANK_INV_NEEDED" => "Y",
         "TANK_ADHOC_IVRQ" => "Y",
         "TANK_ACTIVE" => 1,
+        "TANK_DENS_MODE" => 1,
     );
 
     public $NUMBER_FIELDS = array(

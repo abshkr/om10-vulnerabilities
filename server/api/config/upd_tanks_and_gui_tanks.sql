@@ -10,6 +10,8 @@ alter table TANKS add TANK_TOTAL_VOL FLOAT;
 alter table TANKS add TANK_AIR_KG FLOAT;
 -- add new column TANK_AIR_KG to store the VCF
 alter table TANKS add TANK_VCF FLOAT;
+-- add new column TANK_DENS_MODE to store the mode of density, 1: theoretical density; 0: standard density
+alter table TANKS add TANK_DENS_MODE NUMBER(1) DEFAULT 0;
 
 -- add new column to GUI_TANKS
 CREATE OR REPLACE FORCE VIEW GUI_TANKS AS 
@@ -172,6 +174,7 @@ select
     , NVL(tnk.TANK_TOTAL_VOL, (NVL(tnk.TANK_AMB_VOL,0) + NVL(tnk.TANK_WATER,0) + NVL(tnk.TANK_IFC,0))) as TANK_TOTAL_VOL
     , NVL(tnk.TANK_AIR_KG, (NVL(tnk.TANK_LIQUID_KG,0) - NVL(tnk.TANK_COR_VOL,0)*0.0011)) as TANK_AIR_KG
     , NVL(tnk.TANK_VCF, DECODE(tnk.TANK_AMB_VOL, NULL, 0, 0, 0, (NVL(tnk.TANK_COR_VOL,0)/tnk.TANK_AMB_VOL))) as TANK_VCF
+    , tnk.TANK_DENS_MODE
 from
     TANKS                                  tnk
     , TERMINAL                             trm

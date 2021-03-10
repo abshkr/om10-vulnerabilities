@@ -4329,6 +4329,7 @@
       "TANK_TOTAL_VOL": "Total Observed Volume",
       "TANK_AIR_KG": "Weight In Air",
       "TANK_VCF": "VCF",
+      "TANK_DENS_MODE": "Standard Density Mode",
       "TANK_SG": "Tank Specific Gravity"
     },
     "TANKSWITCH": {
@@ -9213,6 +9214,7 @@
       "TANK_TOTAL_VOL": "油罐总视量容积",
       "TANK_AIR_KG": "空气中重量",
       "TANK_VCF": "VCF",
+      "TANK_DENS_MODE": "标准密度模式",
       "TANK_SG": "油罐比重"
     },
     "TANKSWITCH": {
