@@ -7,6 +7,7 @@ import { VCFManager, calcApiFromSg, calcSgFromApi, getTankVCF, getQtyByLevel } f
 import { InputNumber as OmegaInputNumber } from '../../../../components';
 // import CheckboxGroup from 'antd/es/checkbox/Group';
 // import api, { TANK_STATUS } from '../../../../api';
+import DensityManager from '../../theoretical-density';
 
 const { Option } = Select;
 
@@ -56,6 +57,19 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
     setFieldsValue({
       tank_dens_mode: v.target.checked,
     });
+  };
+
+  const loadTheoreticalDensity = async (value) => {
+    // const sealResults = await getTripSealByTrip(selectedSupplier, selectedTrip);
+
+    setFieldsValue({
+      tank_density: value?.std_dens_final,
+    });
+  };
+
+  const onCalcTheoreticalDensity = () => {
+    // pop up the dialog to calculate the theoretical density
+    DensityManager(t('fields.theoreticalDensityCalc'), {}, loadTheoreticalDensity, '80vw', '40vh');
   };
 
   useEffect(() => {
@@ -346,81 +360,73 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
 
   return (
     <>
-      <Row gutter={[8, 8]}>
-        <Col span={config?.useWaterStrapping ? 12 : 24}>
-          <OmegaInputNumber
-            form={form}
-            value={value?.tank_density}
-            name="tank_density"
-            label={`${densityMode ? t('fields.theoreticalDensity') : t('fields.standardDensity')} (${
-              densRange?.min
-            } - ${densRange?.max})${t('units.kg/m3')} ${`@ ${t('fields.referenceTemperature')} ${
-              config?.referenceTemperature
-            }ºC/${VCFManager.temperatureC2F(config?.referenceTemperature)}ºF`}`}
-            min={densRange?.min}
-            max={densRange?.max}
+      {/* config?.useWaterStrapping && (
+        <Form.Item
+          name="tank_batch_no"
+          label={t('fields.batch')}
+        >
+          <Input
             style={{ width: '100%' }}
-            precision={config.precisionDensity}
-            onChange={handleStdDensFieldChange} // D15C
+            // type="number"
+            // onChange={handleTempFieldChange}
           />
-          {/* <Form.Item
-            name="tank_density"
-            label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${`@${
-              config?.vsmCompensation || config?.referenceTemperature
-            }ºC/${VCFManager.temperatureC2F(config?.vsmCompensation || config?.referenceTemperature)}ºF`}`}
-          >
-            <InputNumber
-              min={value?.tank_base_dens_lo}
-              max={value?.tank_base_dens_hi}
-              style={{ width: '100%' }}
-              precision={config.precisionDensity}
-              onChange={handleCorDensFieldChange}
-            />
-          </Form.Item> */}
-        </Col>
-        {config?.useWaterStrapping && (
+        </Form.Item>
+      ) */}
+
+      {config?.useWaterStrapping && (
+        <Row gutter={[0, 0]}>
           <Col span={12}>
-            <Row gutter={[0, 0]}>
-              <Col span={24}>
-                <Form.Item name="tank_theodens_calc" label={''}>
-                  <Button
-                    type="primary"
-                    icon={<RedoOutlined />}
-                    style={{ float: 'left', marginTop: 0, marginBottom: 0, paddingTop: 0, paddingBottom: 0 }}
-                    disabled={!densityMode}
-                    // onClick={onCalculateByQuantity}
-                  >
-                    {t('fields.theoreticalDensityCalc')}
-                  </Button>
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row gutter={[0, 0]}>
-              <Col span={24}>
-                <Form.Item name="tank_dens_mode" label={''}>
-                  <Checkbox checked={densityMode} onChange={onCheck}>
-                    {t('fields.theoreticalDensityEnabled')}
-                  </Checkbox>
-                </Form.Item>
-              </Col>
-            </Row>
-          </Col>
-        )}
-        {/*config?.useWaterStrapping && (
-          <Col span={4}>
-            <Form.Item
-              name="tank_batch_no"
-              label={t('fields.batch')}
-            >
-              <Input
-                style={{ width: '100%' }}
-                // type="number"
-                // onChange={handleTempFieldChange}
-              />
+            <Form.Item name="tank_dens_mode" label={''}>
+              <Checkbox checked={densityMode} onChange={onCheck}>
+                {t('fields.theoreticalDensityEnabled')}
+              </Checkbox>
             </Form.Item>
           </Col>
-        )*/}
-      </Row>
+          <Col span={12}>
+            <Form.Item name="tank_theodens_calc" label={''}>
+              <Button
+                type="primary"
+                icon={<RedoOutlined />}
+                style={{ float: 'right', marginTop: 0, marginBottom: 0, paddingTop: 0, paddingBottom: 0 }}
+                disabled={!densityMode}
+                onClick={onCalcTheoreticalDensity}
+              >
+                {t('fields.theoreticalDensityCalc')}
+              </Button>
+            </Form.Item>
+          </Col>
+        </Row>
+      )}
+
+      <OmegaInputNumber
+        form={form}
+        value={value?.tank_density}
+        name="tank_density"
+        label={`${densityMode ? t('fields.theoreticalDensity') : t('fields.standardDensity')} (${
+          densRange?.min
+        } - ${densRange?.max})${t('units.kg/m3')} ${`@ ${t('fields.referenceTemperature')} ${
+          config?.referenceTemperature
+        }ºC/${VCFManager.temperatureC2F(config?.referenceTemperature)}ºF`}`}
+        min={densRange?.min}
+        max={densRange?.max}
+        style={{ width: '100%' }}
+        precision={config.precisionDensity}
+        onChange={handleStdDensFieldChange} // D15C
+      />
+      {/* <Form.Item
+        name="tank_density"
+        label={`${t('fields.density')} (${value?.tank_base_dens_lo} - ${value?.tank_base_dens_hi}) ${`@${
+          config?.vsmCompensation || config?.referenceTemperature
+        }ºC/${VCFManager.temperatureC2F(config?.vsmCompensation || config?.referenceTemperature)}ºF`}`}
+      >
+        <InputNumber
+          min={value?.tank_base_dens_lo}
+          max={value?.tank_base_dens_hi}
+          style={{ width: '100%' }}
+          precision={config.precisionDensity}
+          onChange={handleCorDensFieldChange}
+        />
+      </Form.Item> */}
 
       {config?.temperatureUnit === 'degC' &&
         config?.referenceTemperature === '15' &&
@@ -460,56 +466,61 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
         </Form.Item> */
         )}
 
-      {config?.manageAPI && config?.siteUseSG && (
-        <OmegaInputNumber
-          form={form}
-          value={value?.tank_sg}
-          name="tank_sg"
-          label={`${t('fields.specificGravity')} (${lowSG || lowSGDef} - ${highSG || highSGDef})`}
-          min={lowSG || lowSGDef}
-          max={highSG || highSGDef}
-          style={{ width: '100%' }}
-          precision={config.precisionSG}
-          onChange={handleSgDensFieldChange}
-        />
-        /* <Form.Item
-          name="tank_sg"
-          label={`${t('fields.specificGravity')} (${lowSG || lowSGDef} - ${highSG || highSGDef})`}
-        >
-          <InputNumber
-            min={lowSG || lowSGDef}
-            max={highSG || highSGDef}
-            style={{ width: '100%' }}
-            precision={config.precisionSG}
-            onChange={handleSgDensFieldChange}
-          />
-        </Form.Item> */
-      )}
-
       {config?.manageAPI && (
-        <OmegaInputNumber
-          form={form}
-          value={value?.tank_api}
-          name="tank_api"
-          label={`${t('fields.api')} (${range?.low || 0} - ${range?.high || 85})`}
-          min={range?.low || 0}
-          max={range?.high || 85}
-          style={{ width: '100%' }}
-          precision={config.precisionAPI}
-          onChange={handleApiDensFieldChange}
-        />
-        /* <Form.Item
-          name="tank_api"
-          label={`${t('fields.api')} (${range?.low || 0} - ${range?.high || 85})`}
-        >
-          <InputNumber
-            min={range?.low || 0}
-            max={range?.high || 85}
-            style={{ width: '100%' }}
-            precision={config.precisionAPI}
-            onChange={handleApiDensFieldChange}
-          />
-        </Form.Item> */
+        <Row gutter={[8, 8]}>
+          {config?.siteUseSG && (
+            <Col span={12}>
+              <OmegaInputNumber
+                form={form}
+                value={value?.tank_sg}
+                name="tank_sg"
+                label={`${t('fields.specificGravity')} (${lowSG || lowSGDef} - ${highSG || highSGDef})`}
+                min={lowSG || lowSGDef}
+                max={highSG || highSGDef}
+                style={{ width: '100%' }}
+                precision={config.precisionSG}
+                onChange={handleSgDensFieldChange}
+              />
+              {/* <Form.Item
+                name="tank_sg"
+                label={`${t('fields.specificGravity')} (${lowSG || lowSGDef} - ${highSG || highSGDef})`}
+              >
+                <InputNumber
+                  min={lowSG || lowSGDef}
+                  max={highSG || highSGDef}
+                  style={{ width: '100%' }}
+                  precision={config.precisionSG}
+                  onChange={handleSgDensFieldChange}
+                />
+              </Form.Item> */}
+            </Col>
+          )}
+          <Col span={config?.siteUseSG ? 12 : 24}>
+            <OmegaInputNumber
+              form={form}
+              value={value?.tank_api}
+              name="tank_api"
+              label={`${t('fields.api')} (${range?.low || 0} - ${range?.high || 85})`}
+              min={range?.low || 0}
+              max={range?.high || 85}
+              style={{ width: '100%' }}
+              precision={config.precisionAPI}
+              onChange={handleApiDensFieldChange}
+            />
+            {/* <Form.Item
+              name="tank_api"
+              label={`${t('fields.api')} (${range?.low || 0} - ${range?.high || 85})`}
+            >
+              <InputNumber
+                min={range?.low || 0}
+                max={range?.high || 85}
+                style={{ width: '100%' }}
+                precision={config.precisionAPI}
+                onChange={handleApiDensFieldChange}
+              />
+            </Form.Item> */}
+          </Col>
+        </Row>
       )}
 
       {config?.useWaterStrapping && (
