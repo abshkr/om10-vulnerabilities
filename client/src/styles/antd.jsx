@@ -389,5 +389,11 @@ const AntdStyleProvider = createGlobalStyle`
     color: #ff4d4f;
   }
 
+  .ant-notification-topRight {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    right: unset !important;
+  }
+
 `;
 export default AntdStyleProvider;
