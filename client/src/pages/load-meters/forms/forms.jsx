@@ -12,12 +12,12 @@ import { Form, Button, Tabs, Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 
-import { Usage, Type, QuantityType, Code, Name, Flow } from './fields';
+import { Usage, Type, QuantityType, Code, Name, Flow, MeterFactor } from './fields';
 import api, { LOAD_METERS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, handleFilter }) => {
+const FormModal = ({ value, handleFilter, enable_meter_facor }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -103,7 +103,7 @@ const FormModal = ({ value, handleFilter }) => {
           <QuantityType form={form} value={value} />
           <Code form={form} value={value} />
           <Name form={form} value={value} />
-          <Flow form={form} value={value} />
+          <Flow form={form} value={value} enable_meter_facor={enable_meter_facor} />
         </TabPane>
       </Tabs>
 

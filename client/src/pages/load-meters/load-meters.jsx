@@ -11,9 +11,11 @@ import columns from './columns';
 import auth from '../../auth';
 
 import Forms from './forms';
-import useAuth from 'hooks/use-auth';
+import { useAuth, useConfig } from 'hooks';
 
 const LoadMeters = () => {
+  const { enable_meter_facor } = useConfig();
+
   const { t } = useTranslation();
   const [filterValue, setFilterValue] = useState('');
 
@@ -21,7 +23,7 @@ const LoadMeters = () => {
 
   const access = useAuth('M_LOADMETERS');
 
-  const fields = columns(t);
+  const fields = columns(t, enable_meter_facor);
   const data = payload?.records;
 
   const handleFilter = (value) => {
@@ -31,7 +33,7 @@ const LoadMeters = () => {
   const handleClick = (value) => {
     FormModal({
       value,
-      form: <Forms value={value} handleFilter={handleFilter} />,
+      form: <Forms value={value} handleFilter={handleFilter} enable_meter_facor={enable_meter_facor} />,
       id: value?.bam_code,
       name: value?.bam_name,
       t,

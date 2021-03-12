@@ -621,7 +621,7 @@ class Utilities
                 if (isset($object->BOOLEAN_FIELDS) &&
                     array_key_exists($key, $object->BOOLEAN_FIELDS)) {
                     // write_log("getit", __FILE__, __LINE__);
-                    if ($value == 1 || $value === 'T' || $value === 'Y' ||
+                    if ($value > 0 || $value === 1 || $value === 'T' || $value === 'Y' ||
                         $value === 't' || $value === 'y') {
                         $base_item[$lower_key] = true;
                     } else {

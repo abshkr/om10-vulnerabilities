@@ -98,6 +98,7 @@ const useConfig = () => {
     maxLengthEqptCode: 20,
     siteUseSG: false,
     siteUseAFC: false,
+    siteArmPriority: 'LILO',
     siteUseSpecIns: false,
     siteUseSafefillOnly: false,
     useWaterStrapping: false,
@@ -111,6 +112,7 @@ const useConfig = () => {
     refreshAlarm: 10000,
     refreshProductMovement: 10000,
     carrcode_tankernum_tag: false,
+    enable_meter_facor: false,
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -267,6 +269,7 @@ const useConfig = () => {
         maxLengthEqptCode: _.min([_.toNumber(configurationObject?.SITE_MAXLEN_EQPTCODE) || 20, 40]),
         siteUseSG: configurationObject?.SITE_USE_SG,
         siteUseAFC: configurationObject?.SITE_USE_ADAPTIVE_FLOW_CONTROL,
+        siteArmPriority: configurationObject?.SITE_AFC_ARM_PRIORITY || 'LILO',
         siteUseSpecIns: configurationObject?.SITE_USE_SHLS_SPEC_INS,
         siteUseSafefillOnly: configurationObject?.SITE_USE_SAFEFILL_ONLY,
         useWaterStrapping: configurationObject?.SITE_USE_WATER_STRAPPING || false,
@@ -284,6 +287,7 @@ const useConfig = () => {
           ? configurationObject?.SITE_REFRESH_PRODMV_INTERVAL * 1000
           : 10000,
         carrcode_tankernum_tag: configurationObject?.SITE_CARRCODE_TANKERNUM_TAG,
+        enable_meter_facor: configurationObject?.SITE_ENABLE_METER_FACTOR,
       });
     }
     // eslint-disable-next-line

@@ -84,13 +84,15 @@ const OnDemandReports = () => {
         const filters = res.data.records;
 
         //If there are CARRIER_CODE or CUST_CODE in filter. Skip first 2 filters
-        for (let i = 2; i < filters.length; i ++) {
-          if (filters[i] === "CUST_CODE" || filters[i] === "CUSTOMER_CODE") {
-            setCustomerFilter(true);
-          }
-
-          if (filters[i] === "CARR_CODE" || filters[i] === "CARRIER_CODE") {
-            setCarrierFilter(true);
+        if (filters) {
+          for (let i = 2; i < filters.length; i ++) {
+            if (filters[i] === "CUST_CODE" || filters[i] === "CUSTOMER_CODE") {
+              setCustomerFilter(true);
+            }
+  
+            if (filters[i] === "CARR_CODE" || filters[i] === "CARRIER_CODE") {
+              setCarrierFilter(true);
+            }
           }
         }
       });

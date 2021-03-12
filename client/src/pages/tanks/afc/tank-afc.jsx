@@ -57,6 +57,12 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
   const fields = columns(t);
 
   const handleFormState = (visibility, value) => {
+    if (!visibility) {
+      setFieldsValue({
+        tank_level: null,
+        flow_rate: null,
+      });
+    }
     setVisible(visibility);
     setSelected(value);
   };
@@ -132,6 +138,16 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
     });
   };
 
+  const checkLevels = (level) => {
+    const flow = _.find(data?.records, (item) => _.toNumber(item.tank_level) === _.toNumber(level));
+    // console.log('..........check', data?.records, flow);
+    if (!flow) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
   const validate = (rule, input) => {
     const min = 1;
     const limit = rule?.max || 256;
@@ -148,6 +164,11 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
       return Promise.reject(
         `${t('placeholder.maxCharacters')}: ${limit} ─ ${t('descriptions.maxCharacters')}`
       );
+    }
+
+    // console.log('...............valid', rule, input, checkLevels(input));
+    if (IS_CREATING && rule?.field === 'tank_level' && checkLevels(input)) {
+      return Promise.reject(`${t('descriptions.alreadyExists')} ─ ${rule?.label}`);
     }
 
     return Promise.resolve();
@@ -186,7 +207,7 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
 
   useEffect(() => {
     if (code && !selected) {
-      form.resetFields();
+      resetFields();
 
       setFieldsValue({
         tank_code: code,
@@ -196,6 +217,7 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
 
   useEffect(() => {
     if (selected) {
+      resetFields();
       setFieldsValue({
         tank_code: selected?.tank_code,
         tank_level: selected?.tank_level,
@@ -220,7 +242,7 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
               <Descriptions.Item label={`${t('fields.currentTankLevel')} (${t('units.mm')})`} span={24}>
                 {currTankLevel}
               </Descriptions.Item>
-              <Descriptions.Item label={`${t('fields.currentFlowRate')} (${t('units.lpm')})`} span={24}>
+              <Descriptions.Item label={`${t('fields.currentMaxFlowRate')} (${t('units.lpm')})`} span={24}>
                 {currFlowRate}
               </Descriptions.Item>
               <Descriptions.Item label={t('fields.baseProductCode')} span={24}>

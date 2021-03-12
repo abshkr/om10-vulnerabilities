@@ -45,7 +45,7 @@ const Tanks = () => {
   const [mode, setMode] = useState('1');
 
   const simple = mode === '1';
-  const fields = columns(t);
+  const fields = columns(t, config);
   const isLoading = !read || isValidating;
 
   const page = t('pageMenu.stock');

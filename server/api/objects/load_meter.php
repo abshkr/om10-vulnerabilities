@@ -135,7 +135,8 @@ class LoadMeter extends CommonClass
                 BM.BAM_USAGE,
                 BU.BAM_USAGE_NAME,
                 BQ.QTY_ID BAM_QTY_TYPE ,
-                BQ.QTY_NAME BAM_QTY_TYPENAME 
+                BQ.QTY_NAME BAM_QTY_TYPENAME,
+                BM.BAM_FACTOR 
             FROM BA_METERS BM,
                 BAM_USAGE_TYP BU,
                 QTY_TYP BQ,

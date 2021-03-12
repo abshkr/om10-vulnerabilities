@@ -11,7 +11,9 @@ const columns = (t) => [
     render: (text) => <a>{text}</a>,
   },
   { title: t('fields.bay'), dataIndex: 'bad_physcode', align: 'center', key: 'bay' },
-  { title: t('fields.arm'), dataIndex: 'baa_code', align: 'center', key: 'arm' },
+  // { title: t('fields.arm'), dataIndex: 'baa_code', align: 'center', key: 'arm' },
+  // { title: t('fields.arm'), dataIndex: 'baa_desc', align: 'center', key: 'arm' },
+  { title: t('fields.arm'), dataIndex: 'baa_index', align: 'center', key: 'arm' },
   { title: t('fields.meter'), dataIndex: 'bam_code', align: 'center', key: 'meter' },
   {
     title: t('fields.flowing'),

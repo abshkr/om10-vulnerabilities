@@ -291,6 +291,27 @@ const columns = (t, config) => [
   },
 
   {
+    headerName: t('fields.adaptiveArmPriority'),
+    field: 'afc_priority',
+    sortable: true,
+    resizable: true,
+    hide: !config?.siteUseAFC,
+    width: 200,
+    suppressSizeToFit: true,
+  },
+
+  {
+    headerName: t('fields.tankMaxFlowRate'),
+    field: 'tank_max_flow',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'FlowRateRenderer',
+    hide: !config?.siteUseAFC,
+    width: 160,
+    suppressSizeToFit: true,
+  },
+
+  {
     headerName: t('fields.tankStatusId'),
     field: 'tank_status',
     filter: 'FuzzyFilter',

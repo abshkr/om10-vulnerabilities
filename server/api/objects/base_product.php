@@ -159,7 +159,10 @@ class BaseProduct extends CommonClass
                 BASE_REF_TUNT,
                 BASE_LIMIT_PRESET_HT,
                 BASE_REF_TEMP_SPEC,
-                BASE_CODE)
+                AFC_ENABLED,
+                AFC_PRIORITY,
+                BASE_CODE
+            )
             VALUES (
                 :base_color,
                 :base_name,
@@ -172,6 +175,8 @@ class BaseProduct extends CommonClass
                 :base_ref_tunt,
                 :base_limit_preset_ht,
                 :base_ref_temp_spec,
+                :afc_enabled,
+                :afc_priority,
                 :base_code
             )";
         $stmt = oci_parse($this->conn, $query);
@@ -186,6 +191,8 @@ class BaseProduct extends CommonClass
         oci_bind_by_name($stmt, ':base_ref_tunt', $this->base_ref_tunt);
         oci_bind_by_name($stmt, ':base_limit_preset_ht', $this->base_limit_preset_ht);
         oci_bind_by_name($stmt, ':base_ref_temp_spec', $this->base_ref_temp_spec);
+        oci_bind_by_name($stmt, ':afc_enabled', $this->afc_enabled);
+        oci_bind_by_name($stmt, ':afc_priority', $this->afc_priority);
         oci_bind_by_name($stmt, ':base_code', $this->base_code);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {

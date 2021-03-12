@@ -87,6 +87,7 @@ const FormModal = ({
   const [soldTo, setSoldTo] = useState(value?.order_sold_to_num);
 
   const [orderItems, setOrderItems] = useState([]);
+  const [drawerOrderItems, setDrawerOrderItems] = useState([]);
   const [showPeriod, setShowPeriod] = useState(false);
   const [showDeliveryDetails, setShowDeliveryDetails] = useState(false);
 
@@ -178,6 +179,7 @@ const FormModal = ({
       const payload = response.data?.records || [];
 
       setOrderItems(payload);
+      setDrawerOrderItems(payload);
       if (value) {
         setCustomer(value?.order_cust_acnt)
       }
@@ -409,8 +411,8 @@ const FormModal = ({
         })
         .then((res) => {
           const cust_prods = res?.data?.records;
-          
-          const filtered = _.filter(orderItems, (item) => {
+
+          const filtered = _.filter(drawerOrderItems, (item) => {
             for (let i = 0; i < cust_prods.length; i += 1) {
               if (item.oitem_prod_code === cust_prods[i].prod_code) {
                 return true;

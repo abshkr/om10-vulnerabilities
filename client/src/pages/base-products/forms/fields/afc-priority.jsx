@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Form, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-const AdaptiveFlowControlPriority = ({ form, value, flag }) => {
+const AdaptiveFlowControlPriority = ({ form, value, config, flag }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -30,9 +30,9 @@ const AdaptiveFlowControlPriority = ({ form, value, flag }) => {
 
   useEffect(() => {
     setFieldsValue({
-      afc_priority: value ? value.afc_priority : '',
+      afc_priority: value && value?.afc_priority ? value.afc_priority : config?.siteArmPriority,
     });
-  }, [value, setFieldsValue]);
+  }, [value, config, setFieldsValue]);
 
   return (
     <Form.Item
@@ -44,6 +44,7 @@ const AdaptiveFlowControlPriority = ({ form, value, flag }) => {
         dropdownMatchSelectWidth={false}
         showSearch
         allowClear
+        disabled={true}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectRefTempSpec') : null}
         filterOption={(input, option) =>
