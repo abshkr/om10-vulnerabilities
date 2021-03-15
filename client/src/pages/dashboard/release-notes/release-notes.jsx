@@ -8,6 +8,45 @@ const { Panel } = Collapse;
 
 const data = [
   {
+    title: `Release Notes (10.1.16-rc.1) - 15/03/2021`,
+    content: (
+      <>
+        <>
+          <p>OM5K-8268 - <a href="https://dev.diamondkey.com/browse/OM5K-8268">https://dev.diamondkey.com/browse/OM5K-8268</a></p>
+          <p>OM5K-8271 - <a href="https://dev.diamondkey.com/browse/OM5K-8271">https://dev.diamondkey.com/browse/OM5K-8271</a></p>
+          <p>OM5K-8491 - <a href="https://dev.diamondkey.com/browse/OM5K-8491">https://dev.diamondkey.com/browse/OM5K-8491</a></p>
+          <p>OM5K-8492 - <a href="https://dev.diamondkey.com/browse/OM5K-8492">https://dev.diamondkey.com/browse/OM5K-8492</a></p>
+          <p>OM5K-8499 - <a href="https://dev.diamondkey.com/browse/OM5K-8499">https://dev.diamondkey.com/browse/OM5K-8499</a></p>
+          <p>OM5K-8507 - <a href="https://dev.diamondkey.com/browse/OM5K-8507">https://dev.diamondkey.com/browse/OM5K-8507</a></p>
+          <p>OM5K-8585 - <a href="https://dev.diamondkey.com/browse/OM5K-8585">https://dev.diamondkey.com/browse/OM5K-8585</a></p>
+          <p>OM5K-8586 - <a href="https://dev.diamondkey.com/browse/OM5K-8586">https://dev.diamondkey.com/browse/OM5K-8586</a></p>
+          <p>OM5K-8587 - <a href="https://dev.diamondkey.com/browse/OM5K-8587">https://dev.diamondkey.com/browse/OM5K-8587</a></p>
+          <p>OM5K-8588 - <a href="https://dev.diamondkey.com/browse/OM5K-8588">https://dev.diamondkey.com/browse/OM5K-8588</a></p>
+          <p>OM5K-8589 - <a href="https://dev.diamondkey.com/browse/OM5K-8589">https://dev.diamondkey.com/browse/OM5K-8589</a></p>
+          <p>OM5K-8591 - <a href="https://dev.diamondkey.com/browse/OM5K-8591">https://dev.diamondkey.com/browse/OM5K-8591</a></p>
+          <p>OM5K-8593 - <a href="https://dev.diamondkey.com/browse/OM5K-8593">https://dev.diamondkey.com/browse/OM5K-8593</a></p>
+          <p>OM5K-8665 - <a href="https://dev.diamondkey.com/browse/OM5K-8665">https://dev.diamondkey.com/browse/OM5K-8665</a></p>
+          <p>OM5K-8704 - <a href="https://dev.diamondkey.com/browse/OM5K-8704">https://dev.diamondkey.com/browse/OM5K-8704</a></p>
+          <p>OM5K-8705 - <a href="https://dev.diamondkey.com/browse/OM5K-8705">https://dev.diamondkey.com/browse/OM5K-8705</a></p>
+          <p>OM5K-8706 - <a href="https://dev.diamondkey.com/browse/OM5K-8706">https://dev.diamondkey.com/browse/OM5K-8706</a></p>
+          <p>OM5K-8707 - <a href="https://dev.diamondkey.com/browse/OM5K-8707">https://dev.diamondkey.com/browse/OM5K-8707</a></p>
+          <p>OM5K-7816 - <a href="https://dev.diamondkey.com/browse/OM5K-7816">https://dev.diamondkey.com/browse/OM5K-7816</a></p>
+          <p>OM5K-7818 - <a href="https://dev.diamondkey.com/browse/OM5K-7818">https://dev.diamondkey.com/browse/OM5K-7818</a></p>
+          <p>OM5K-7835 - <a href="https://dev.diamondkey.com/browse/OM5K-7835">https://dev.diamondkey.com/browse/OM5K-7835</a></p>
+          <p>OM5K-8253 - <a href="https://dev.diamondkey.com/browse/OM5K-8253">https://dev.diamondkey.com/browse/OM5K-8253</a></p>
+          <p>OM5K-8450 - <a href="https://dev.diamondkey.com/browse/OM5K-8450">https://dev.diamondkey.com/browse/OM5K-8450</a></p>
+          <p>OM5K-8460 - <a href="https://dev.diamondkey.com/browse/OM5K-8460">https://dev.diamondkey.com/browse/OM5K-8460</a></p>
+          <p>OM5K-8498 - <a href="https://dev.diamondkey.com/browse/OM5K-8498">https://dev.diamondkey.com/browse/OM5K-8498</a></p>
+          <p>OM5K-8544 - <a href="https://dev.diamondkey.com/browse/OM5K-8544">https://dev.diamondkey.com/browse/OM5K-8544</a></p>
+          <p>OM5K-8670 - <a href="https://dev.diamondkey.com/browse/OM5K-8670">https://dev.diamondkey.com/browse/OM5K-8670</a></p>
+          <p>OM5K-8710 - <a href="https://dev.diamondkey.com/browse/OM5K-8710">https://dev.diamondkey.com/browse/OM5K-8710</a></p>
+          <p>OM5K-7815 - <a href="https://dev.diamondkey.com/browse/OM5K-7815">https://dev.diamondkey.com/browse/OM5K-7815</a></p>
+
+        </>
+      </>
+    ),
+  },
+  {
     title: `Release Notes (10.1.15b) - 11/03/2021`,
     content: (
       <>
