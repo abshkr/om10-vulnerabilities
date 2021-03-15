@@ -169,12 +169,12 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
   };
 
   return (
-    <Form.Item name="compartments">
-      <Row gutter={[8, 8]}>
-        <Col flex={1}>
-          <DataTable data={products} columns={productFields} parentHeight="320px" minimal />
-        </Col>
-        <Col flex={4}>
+    <Row gutter={[8, 8]}>
+      <Col flex={1}>
+        <DataTable data={products} columns={productFields} parentHeight="320px" minimal />
+      </Col>
+      <Col flex={4}>
+        <Form.Item name="compartments">
           <DataTable
             data={compartments}
             columns={fields}
@@ -184,9 +184,9 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
             apiContext={setTableAPI}
             rowEditingStopped={rowEditingStopped}
           />
-        </Col>
-      </Row>
-    </Form.Item>
+        </Form.Item>
+      </Col>
+    </Row>
   );
 };
 
