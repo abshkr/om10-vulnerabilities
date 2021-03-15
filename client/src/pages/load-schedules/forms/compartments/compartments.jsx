@@ -51,10 +51,14 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
     if (IS_CREATING) {
       api
         .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
-          params: {
-            drawer_code: drawer,
-            customer: value ? value.shls_cust : customer,
-          },
+          params: config?.site_customer_product
+            ? {
+                drawer_code: drawer,
+                customer: value ? value.shls_cust : customer,
+              }
+            : {
+                drawer_code: drawer,
+              },
         })
         .then((res) => setProducts(res.data.records));
     }
@@ -83,10 +87,14 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
     if (!IS_CREATING) {
       api
         .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
-          params: {
-            drawer_code: value.supplier_code,
-            customer: value ? value.shls_cust : customer,
-          },
+          params: config?.site_customer_product
+            ? {
+                drawer_code: value.supplier_code,
+                customer: value ? value.shls_cust : customer,
+              }
+            : {
+                drawer_code: value.supplier_code,
+              },
         })
         .then((res) => setProducts(res.data.records));
     }
