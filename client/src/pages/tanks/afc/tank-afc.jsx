@@ -35,7 +35,7 @@ import columns from './columns';
 
 const { TabPane } = Tabs;
 
-const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
+const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks, config }) => {
   const url = code ? `${ADAPTIVE_FLOW_CONTROL.MAX_FLOW_DETAILS}?tank_code=${code}` : null;
 
   const { data } = useSWR(url);
@@ -230,8 +230,8 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
   return (
     <>
       <Card hoverable>
-        <Row gutter={[12, 12]}>
-          <Col span={24}>
+        <Row gutter={[2, 12]}>
+          <Col span={10}>
             <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }}>
               <Descriptions.Item label={t('fields.tankCode')} span={24}>
                 {value?.tank_code}
@@ -239,18 +239,32 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks }) => {
               <Descriptions.Item label={t('fields.tankName')} span={24}>
                 {value?.tank_name}
               </Descriptions.Item>
+              {config?.useWaterStrapping && (
+                <Descriptions.Item label={`${t('fields.waterLevel')} (${t('units.mm')})`} span={24}>
+                  {value?.tank_water_lvl}
+                </Descriptions.Item>
+              )}
               <Descriptions.Item label={`${t('fields.currentTankLevel')} (${t('units.mm')})`} span={24}>
                 {currTankLevel}
               </Descriptions.Item>
               <Descriptions.Item label={`${t('fields.currentMaxFlowRate')} (${t('units.lpm')})`} span={24}>
                 {currFlowRate}
               </Descriptions.Item>
+            </Descriptions>
+          </Col>
+          <Col span={14}>
+            <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }}>
               <Descriptions.Item label={t('fields.baseProductCode')} span={24}>
                 {value?.tank_base}
               </Descriptions.Item>
               <Descriptions.Item label={t('fields.baseProductName')} span={24}>
                 {value?.tank_base_name}
               </Descriptions.Item>
+              {config?.useWaterStrapping && (
+                <Descriptions.Item label={t('fields.baseProdClassDesc')} span={24}>
+                  {value?.tank_bclass_name}
+                </Descriptions.Item>
+              )}
               <Descriptions.Item label={t('fields.adaptiveFlowControl')} span={24}>
                 {value?.afc_enabled === 'Y' ? (
                   <CheckCircleOutlined style={{ fontSize: 16, color: '#52c41a' }} />

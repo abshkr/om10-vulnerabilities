@@ -189,11 +189,10 @@ const Tanks = () => {
                   tanks={read?.records}
                   access={access}
                   value={selected}
+                  config={config}
                 />
               </TabPane>
             )}
-
-            {/* <TabPane key="8" tab={t('tabColumns.adaptiveFlowControl')} disabled /> */}
           </Tabs>
         </ListView>
       ) : (

@@ -950,6 +950,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
                 tanks={tanks}
                 access={access}
                 value={value}
+                config={config}
               />
             </TabPane>
           )}
