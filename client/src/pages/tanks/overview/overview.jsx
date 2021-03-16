@@ -29,11 +29,11 @@ const Overview = ({ selected, isLoading }) => {
               </Descriptions.Item>
 
               <Descriptions.Item label={t('fields.terminal')} span={24}>
-                {selected?.tank_sitename}
+                {selected?.tank_terminal + ' - ' + selected?.tank_sitename}
               </Descriptions.Item>
 
               <Descriptions.Item label={t('fields.product')} span={24}>
-                {selected?.tank_base_name}
+                {selected?.tank_base + ' - ' + selected?.tank_base_name}
               </Descriptions.Item>
 
               <Descriptions.Item label={t('fields.productLevel')} span={24}>

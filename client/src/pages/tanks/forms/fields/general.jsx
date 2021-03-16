@@ -93,7 +93,7 @@ const General = ({ form, value, config, densRange }) => {
             >
               {terminals?.records?.map((item, index) => (
                 <Select.Option key={index} value={item.term_code}>
-                  {item.term_name}
+                  {item.term_desc}
                 </Select.Option>
               ))}
             </Select>
