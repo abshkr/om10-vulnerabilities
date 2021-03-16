@@ -1,8 +1,20 @@
 import React, { useState, useEffect } from 'react';
 
-import { EditOutlined, PlusOutlined, MinusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import Icon, { EditOutlined, PlusOutlined, MinusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 
-import { Tabs, List, Switch, InputNumber, Button, Modal, notification, Select, Input } from 'antd';
+import {
+  AutoComplete,
+  Tabs,
+  List,
+  Switch,
+  InputNumber,
+  Button,
+  Modal,
+  notification,
+  Select,
+  Input,
+  Divider,
+} from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
@@ -15,6 +27,12 @@ import api, { SITE_CONFIGURATION, FOLIO_SCHEDULING } from '../../api';
 import { Page } from '../../components';
 import auth from '../../auth';
 import { complexityDesc } from 'utils';
+
+import { ReactComponent as SearchIcon } from '../../components/nav-bar/search_two.svg';
+
+const SearchIconOutlined = (props) => (
+  <Icon style={{ transform: 'scale(1.8)' }} component={SearchIcon} {...props} />
+);
 
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -461,6 +479,12 @@ const Configuration = ({ user, config }) => {
 
   const UPDATING_AXLES = tab === '9';
 
+  const [featureKey, setFeatureKey] = useState('');
+
+  const onSearch = (e) => {
+    setFeatureKey(e.target.value);
+  };
+
   const countFrozenFolios = async () => {
     const results = await api.get(FOLIO_SCHEDULING.CHECK_FROZEN_FOLIOS);
 
@@ -707,7 +731,21 @@ const Configuration = ({ user, config }) => {
 
           {user?.per_code === '9999' && (
             <TabPane tab={t('tabColumns.features')} key="7">
-              <FeatureItems data={features} onChange={onFeatureEdit} t={t} />
+              <Input.Search
+                enterButton={<SearchIconOutlined />}
+                placeholder={t('operations.filter')}
+                onChange={onSearch}
+                allowClear
+                style={{ width: '50%', paddingBottom: '4px' }}
+              />
+              <FeatureItems
+                data={_.filter(
+                  features,
+                  (item) => featureKey === '' || t('features.' + item.feature_code).indexOf(featureKey) >= 0
+                )}
+                onChange={onFeatureEdit}
+                t={t}
+              />
             </TabPane>
           )}
 
