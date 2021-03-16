@@ -4364,6 +4364,25 @@
     "TSWSWTO_TANKCODE": "NA",
     "TSWSWTO_TANKDEPO": "NA"
   },
+  "TANK_BATCHES": {
+    "TANK_BATCH_CODE": "NA",
+    "TANK_BATCH_TIME": "NA",
+    "TANK_CODE": "NA",
+    "TANK_TERMINAL": "NA",
+    "TANK_BASE": "NA",
+    "TANK_DENSITY": "NA",
+    "TANK_PROD_QCR": "NA",
+    "TANK_API": "NA",
+    "TANK_STD_TEMP": "NA",
+    "TANK_PROD_C_OF_E": "NA",
+    "TANK_15_DENSITY": "NA",
+    "TANK_SULPHUR": "NA",
+    "TANK_FLASHPOINT": "NA",
+    "TANK_VISCOSITY": "NA",
+    "TANK_ROOF_WEIGHT": "NA",
+    "TANK_DENS_MODE": "NA",
+    "TANK_SG": "NA"
+  },
   "TANK_HISTORY": {
     "TKH_MEANINGLESS": "NA",
     "TKH_DATE": "NA",

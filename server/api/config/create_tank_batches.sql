@@ -1,3 +1,9 @@
+-- increase the size of column TRSB_BATCH_NO
+ALTER TABLE TRANBASE MODIFY TRSB_BATCH_NO VARCHAR2(200);
+
+-- increase the size of column TANK_BATCH_NO
+ALTER TABLE TANKS MODIFY TANK_BATCH_NO VARCHAR2(200);
+
 drop table TANK_BATCHES;
 
 -- Tank Batch History

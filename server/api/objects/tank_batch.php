@@ -3,6 +3,7 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once __DIR__ . '/../objects/tank.php';
 include_once 'common_class.php';
 
 class TankBatch extends CommonClass
@@ -197,4 +198,60 @@ class TankBatch extends CommonClass
             return null;
         }
     }
+
+    private function is_batch_num_existed()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT 
+            FROM TANK_BATCHES
+            WHERE TANK_BATCH_CODE=:code 
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':code', $this->tank_batch_no);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return -1;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        return (int)$row['CNT'];
+    }
+
+    public function pre_update() 
+    {
+        // check if the batch number exists in history
+        if (isset($this->tank_batch_code) && strlen(trim($this->tank_batch_code)) > 0) {
+            $this->tank_batch_code = trim($this->tank_batch_code);
+            $isExisted = $this->is_batch_num_existed();
+
+            if ($isExisted <= 0) {
+                // not existed, do insertion
+                $this->create();
+            } else {
+                // existed, do modification
+                // return parent::update();
+            }
+        }
+    }
+
+    protected function post_update() {
+        // update TANKS
+        $tank = new Tank($this->conn);
+        if (isset($this->tank_code)) {
+            $tank->tank_code = $this->tank_code;
+        }
+        if (isset($this->tank_terminal)) {
+            $tank->tank_terminal = $this->tank_terminal;
+        }
+        if (isset($this->tank_batch_no)) {
+            $tank->tank_batch_no = $this->tank_batch_no;
+        }
+        if (isset($tank->tank_code) && isset($tank->tank_terminal) && isset($tank->tank_batch_no)) {
+            $tank->update();
+        }
+
+        return true;
+    }
+
 }

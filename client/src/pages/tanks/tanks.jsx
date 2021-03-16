@@ -16,6 +16,7 @@ import Calculations from './calculations';
 // import TankStrapping from './strapping';
 import TankStrapping from './prod-strapping';
 import TankAdaptiveFlowControl from './afc';
+import TankBatches from './batches';
 import Overview from './overview';
 import Gauging from './gauging';
 import Details from './details';
@@ -184,6 +185,19 @@ const Tanks = () => {
             {config.siteUseAFC && (
               <TabPane key="8" tab={t('tabColumns.adaptiveFlowControl')}>
                 <TankAdaptiveFlowControl
+                  terminal={selected?.tank_terminal}
+                  code={selected?.tank_code}
+                  tanks={read?.records}
+                  access={access}
+                  value={selected}
+                  config={config}
+                />
+              </TabPane>
+            )}
+
+            {config.useWaterStrapping && (
+              <TabPane key="9" tab={t('tabColumns.tankBatches')}>
+                <TankBatches
                   terminal={selected?.tank_terminal}
                   code={selected?.tank_code}
                   tanks={read?.records}

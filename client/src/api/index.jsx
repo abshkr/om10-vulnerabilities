@@ -65,6 +65,7 @@ import * as NOMINATION_TRANSACTIONS from './nomination-transactions';
 import * as LOAD_BAYS from './load-bays';
 import * as AXLE_WEIGHTS from './axle-weights';
 import * as TRIP_AXLES from './trip-axles';
+import * as TANK_BATCHES from './tank-batches';
 
 export {
   AUTH,
@@ -132,6 +133,7 @@ export {
   LOAD_BAYS,
   AXLE_WEIGHTS,
   TRIP_AXLES,
+  TANK_BATCHES,
 };
 
 export default api;
