@@ -73,6 +73,12 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
     setRefreshed(true);
   };
 
+  const getBatches = async (code) => {
+    const results = await api.get(`${TANK_BATCHES.READ}?tank_batch_code=${code}`);
+
+    return results?.data?.records;
+  };
+
   const onComplete = () => {
     setData(null);
     setRefreshed(true);
@@ -101,8 +107,42 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
     values.tank_roof_weight = value?.tank_roof_weight;
     values.tank_dens_mode = value?.tank_dens_mode;
 
+    const batches = await getBatches(values.tank_batch_code);
+
+    let customTitles = t('prompts.update');
+    if (batches?.length > 0) {
+      // batch code used
+      if (
+        batches?.[0]?.tank_code === value?.tank_code &&
+        batches?.[0]?.tank_terminal === value?.tank_terminal
+      ) {
+        // batch code used by current tank
+        customTitles = t('descriptions.batchCodeUsedByCurrentTank');
+        customTitles = customTitles.replace(
+          '[[TANK]]',
+          '"' + value?.tank_code + ' - ' + value?.tank_name + ' [' + value?.tank_terminal + ']"'
+        );
+      } else {
+        // batch code used by another tank
+        customTitles = t('descriptions.batchCodeUsedByAnotherTank');
+        customTitles = customTitles.replace(
+          '[[TANK]]',
+          '"' +
+            batches?.[0]?.tank_code +
+            ' - ' +
+            batches?.[0]?.tank_name +
+            ' [' +
+            batches?.[0]?.tank_terminal +
+            ']"'
+        );
+      }
+    } else {
+      // batch code not used
+      customTitles = t('descriptions.batchCodeNotUsed');
+    }
+
     Modal.confirm({
-      title: t('prompts.update'),
+      title: customTitles,
       okText: t('operations.update'),
       okType: 'primary',
       icon: <QuestionCircleOutlined />,
