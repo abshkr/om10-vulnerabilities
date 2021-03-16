@@ -22,6 +22,7 @@ import { VCFManager, getDensityRange, getQtyByLevel } from '../../../utils';
 // import TankStrapping from '../strapping';
 import TankStrapping from '../prod-strapping';
 import TankAdaptiveFlowControl from '../afc';
+import TankBatches from '../batches';
 
 const TabPane = Tabs.TabPane;
 
@@ -851,7 +852,12 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             htmlType="submit"
             style={{ float: 'right', marginRight: 5 }}
             onClick={onFinish}
-            disabled={(IS_CREATING ? !access?.canCreate : !access?.canUpdate) || tab === '5' || tab === '6'}
+            disabled={
+              (IS_CREATING ? !access?.canCreate : !access?.canUpdate) ||
+              tab === '5' ||
+              tab === '6' ||
+              tab === '7'
+            }
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -945,6 +951,19 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
           {config.siteUseAFC && (
             <TabPane key="6" tab={t('tabColumns.adaptiveFlowControl')}>
               <TankAdaptiveFlowControl
+                terminal={value?.tank_terminal}
+                code={value?.tank_code}
+                tanks={tanks}
+                access={access}
+                value={value}
+                config={config}
+              />
+            </TabPane>
+          )}
+
+          {config.useWaterStrapping && (
+            <TabPane key="7" tab={t('tabColumns.tankBatches')}>
+              <TankBatches
                 terminal={value?.tank_terminal}
                 code={value?.tank_code}
                 tanks={tanks}

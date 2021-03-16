@@ -91,7 +91,7 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
     values.tank_density = value?.tank_density;
     // values.tank_prod_qcr    = value?.tank_prod_qcr;
     values.tank_api = value?.tank_api;
-    values.tank_std_temp = 15;
+    values.tank_std_temp = config?.referenceTemperature; // 15;
     values.tank_prod_c_of_e = value?.tank_prod_c_of_e;
     values.tank_15_density = value?.tank_15_density;
     values.tank_sulphur = value?.tank_sulphur;
@@ -182,7 +182,7 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
     if (value) {
       setFieldsValue({
         tank_code: value?.tank_code,
-        tank_batch_no: value?.tank_level,
+        tank_batch_no: value?.tank_batch_no,
       });
     }
   }, [value, setFieldsValue]);
@@ -243,15 +243,19 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
               htmlType="submit"
               onClick={onFinish}
               disabled={!access?.canUpdate}
-              style={{ float: 'right', marginRight: 5 }}
+              style={{ float: 'right' }}
             >
               {t('operations.update')}
             </Button>
           </Form.Item>
         </Form>
       </Card>
-
       <Card hoverable>
+        <Row gutter={[12, 4]}>
+          <Col span={24}>
+            <div style={{ float: 'right' }}>{modifiers}</div>
+          </Col>
+        </Row>
         <Row gutter={[12, 12]}>
           <Col span={24}>
             <DataTable
@@ -261,7 +265,7 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
               // parentHeight="272px"
               // onClick={(payload) => handleFormState(true, payload)}
               // handleSelect={(payload) => handleFormState(true, payload[0])}
-              extra={modifiers}
+              // extra={modifiers}
               isLoading={isLoading}
             />
           </Col>
