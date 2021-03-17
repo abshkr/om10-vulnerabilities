@@ -8,7 +8,20 @@ import {
   CloseOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, message, Drawer, Divider, Row, Col } from 'antd';
+import {
+  Form,
+  Button,
+  Tabs,
+  Modal,
+  notification,
+  message,
+  Drawer,
+  Divider,
+  Row,
+  Col,
+  Tag,
+  Tooltip,
+} from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 
@@ -38,12 +51,25 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
   const [afcEnabled, setAfcEnabled] = useState(value?.afc_enabled);
 
   const [afcEnabledNote, setAfcEnabledNote] = useState('');
+  const [ratioCount, setRatioCount] = useState(0);
+  const [tankCount, setTankCount] = useState(0);
+  const [transCount, setTransCount] = useState(0);
 
   const url =
     value && value?.base_code
       ? `${ADAPTIVE_FLOW_CONTROL.MAX_FLOW_DETAILS}?base_code=${value?.base_code}`
       : null;
   const { data: payload } = useSWR(url);
+
+  const { data: ratios } = useSWR(`${BASE_PRODUCTS.CHECK_BASE_RATIOS}?base_code=${value?.base_code}`, {
+    refreshInterval: 0,
+  });
+  const { data: tanks } = useSWR(`${BASE_PRODUCTS.CHECK_BASE_TANKS}?base_code=${value?.base_code}`, {
+    refreshInterval: 0,
+  });
+  const { data: trans } = useSWR(`${BASE_PRODUCTS.CHECK_BASE_TRANS}?base_code=${value?.base_code}`, {
+    refreshInterval: 0,
+  });
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -169,6 +195,24 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     }
   }, [value, payload]);
 
+  useEffect(() => {
+    if (ratios) {
+      setRatioCount(ratios?.records?.[0]?.cnt);
+    }
+  }, [ratios]);
+
+  useEffect(() => {
+    if (tanks) {
+      setTankCount(tanks?.records?.[0]?.cnt);
+    }
+  }, [tanks]);
+
+  useEffect(() => {
+    if (trans) {
+      setTransCount(trans?.records?.[0]?.cnt);
+    }
+  }, [trans]);
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -178,10 +222,30 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="40vw"
+      width="45vw"
       visible={visible}
       footer={
         <>
+          {!IS_CREATING && (
+            <div style={{ float: 'left', marginRight: 5 }}>
+              <Tooltip placement="topRight" title={t('descriptions.countBaseRatios')}>
+                <Tag color={ratioCount > 0 ? 'red' : 'green'}>
+                  {t('fields.countBaseRatios') + ': ' + ratioCount}
+                </Tag>
+              </Tooltip>
+              <Tooltip placement="topRight" title={t('descriptions.countBaseTanks')}>
+                <Tag color={tankCount > 0 ? 'red' : 'green'}>
+                  {t('fields.countBaseTanks') + ': ' + tankCount}
+                </Tag>
+              </Tooltip>
+              <Tooltip placement="topRight" title={t('descriptions.countBaseTrans')}>
+                <Tag color={transCount > 0 ? 'red' : 'green'}>
+                  {t('fields.countBaseTrans') + ': ' + transCount}
+                </Tag>
+              </Tooltip>
+            </div>
+          )}
+
           <Button
             htmlType="button"
             icon={<CloseOutlined />}
@@ -206,7 +270,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
               type="danger"
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={!access?.canDelete}
+              disabled={!access?.canDelete || ratioCount > 0 || tankCount > 0 || transCount > 0}
               onClick={onDelete}
             >
               {t('operations.delete')}

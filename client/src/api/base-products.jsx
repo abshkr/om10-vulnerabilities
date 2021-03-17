@@ -7,3 +7,7 @@ export const REF_TEMP = '/api/pages/base_prod/ref_temp_specs.php';
 export const CREATE = '/api/pages/base_prod/create.php';
 export const UPDATE = '/api/pages/base_prod/update.php';
 export const DELETE = '/api/pages/base_prod/delete.php';
+
+export const CHECK_BASE_RATIOS = '/api/pages/base_prod/check_base_ratios.php';
+export const CHECK_BASE_TANKS = '/api/pages/base_prod/check_base_tanks.php';
+export const CHECK_BASE_TRANS = '/api/pages/base_prod/check_base_trans.php';

@@ -449,4 +449,80 @@ class BaseProduct extends CommonClass
         oci_commit($this->conn);
         return true;
     }
+
+    /*
+        The child tables and columns which refers to BASE_PRODS
+        BAM_PRODUCT             2	BAP_BASEPROD	
+        BASE_PROD_OWNSHIP       2	BASE_PROD_CODE	
+        BASE_TRANSLATE          2	BASE_TRANS_CODE	
+        BA_METERS               18	BAM_BASE_PROD	
+        BL_HISTORY              7	BL_PRODUCT	    
+        DELV_PUBDATA            2	BASE_CODE	    
+        INVPROD_BASE            4	IPB_BASE_PROD	
+        MOV_LOAD_ITEMS          15	MLITM_BASECODE	
+        MOV_TRSF_ITEMS          15	MTITM_BASECODE	
+        O_CLOSEOUT              3	OC_BASEPROD	    
+        PRODOWNSHIP_TRANSACT    2	BASE_PROD_CODE	
+        PRODUCT_MVMNTS          7	PMV_PRDCTLNK	
+        PRODUCT_SWAP            11	PRDS_BASE_CODE	
+        RATIOS                  1	RATIO_BASE	    
+        TANKS                   1	TANK_BASE	    
+        TRANBASE                3	TRSB_BS	        
+        TRANSFERS               15	TRSF_BASE_P	    
+    */
+
+    // check if the base product has been used by drawer product ratios
+    //  RATIOS                  1	RATIO_BASE
+    // note: need exclude the default drawer product belongs to default supplier BaSePrOd
+    public function check_base_ratios()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM RATIOS WHERE RATIO_BASE=:base_code and RAT_PROD_PRODCMPY!='BaSePrOd'
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':base_code', $this->base_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    // check if the base product has been used by tanks
+    //  TANKS                   1	TANK_BASE
+    public function check_base_tanks()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM TANKS WHERE TANK_BASE=:base_code
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':base_code', $this->base_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    // check if the base product has been used by tranbases
+    //  TRANBASE                3	TRSB_BS
+    public function check_base_trans()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM TRANBASE WHERE TRSB_BS=:base_code
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':base_code', $this->base_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
 }
