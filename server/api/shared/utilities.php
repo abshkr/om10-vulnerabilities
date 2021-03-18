@@ -1107,7 +1107,7 @@ class Utilities
                 echo '}';
             } else {
                 $error = new EchoSchema(500, response("__DELETE_FAILED__", 
-                    sprintf("Unable to delete %s . Internal server error.", $desc)));
+                    sprintf("Unable to delete %s. Most likely this record may have child record(s).", $desc)));
                 echo json_encode($error, JSON_PRETTY_PRINT);
             }
         } catch (DatabaseException $e) {

@@ -70,8 +70,10 @@ function response($case_name, $default = null, $params = null)
             "CHN" => "修改成功"
         ),
         "__DELETE_FAILED__" => array(
-            "ENG" => "Unable to delete. Internal server error",
-            "CHN" => "删除失败，请检查日志文件获取详情"
+            // "ENG" => "Unable to delete. Internal server error",
+            // "CHN" => "删除失败，请检查日志文件获取详情"
+            "ENG" => "Unable to delete. Most likely this record may have child record(s).",
+            "CHN" => "删除失败，很可能该记录仍有子记录存在，请联系客服人员获取帮助。"
         ),
         "__DELETE_SUCCEEDED__" => array(
             "ENG" => "Successfully deleted",
