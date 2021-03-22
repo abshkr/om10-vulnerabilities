@@ -749,15 +749,16 @@ const Configuration = ({ user, config }) => {
             </TabPane>
           )}
 
-          {user?.per_code === '9999' && (
-            <TabPane tab={t('tabColumns.hostMessaging')} key="8">
-              <HostMessagingItems
-                data={_.filter(configuration, ['config_required_by_gui', 'H'])}
-                onChange={onConfigurationEdit}
-                t={t}
-              />
-            </TabPane>
-          )}
+          <TabPane tab={t('tabColumns.hostMessaging')} key="8">
+            <HostMessagingItems
+              // data={_.filter(configuration, ['config_required_by_gui', 'H'])}
+              data={_.filter(_.filter(configuration, ['config_required_by_gui', 'H']), (item) => {
+                return user?.per_code === '9999' || item?.config_key === 'HOST_MESSAGING_IN_SUBMIT_ON';
+              })}
+              onChange={onConfigurationEdit}
+              t={t}
+            />
+          </TabPane>
 
           <TabPane tab={t('tabColumns.adaptiveFlowControl')} key="10">
             <ConfigurationItems
