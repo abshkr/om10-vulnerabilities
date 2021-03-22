@@ -4,20 +4,24 @@ const productColumns = (t) => [
     field: 'base_code',
     sortable: true,
     resizable: true,
+    width: 120,
+    suppressSizeToFit: true,
   },
-
   {
     headerName: t('fields.name'),
     field: 'base_name',
     sortable: true,
     resizable: true,
+    width: 180,
+    suppressSizeToFit: true,
   },
-
   {
     headerName: t('fields.tankCode'),
     field: 'trsb_tk_tankcode',
     sortable: true,
     resizable: true,
+    width: 120,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.ambient') + ' (' + t('units.ltr') + ')',
@@ -60,6 +64,14 @@ const productColumns = (t) => [
     field: 'trsb_tmp_f',
     sortable: true,
     resizable: true,
+  },
+  {
+    headerName: t('fields.batch'),
+    field: 'trsb_batch_no',
+    sortable: true,
+    resizable: true,
+    width: 120,
+    suppressSizeToFit: true,
   },
 ];
 

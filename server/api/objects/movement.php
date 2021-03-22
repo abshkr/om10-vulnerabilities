@@ -2305,7 +2305,8 @@ class Movement extends CommonClass
                 DECODE(TRSB_UNT, 34, 5, TRSB_UNT) TRSB_UNT, 
                 BASE_PRODS.BASE_CODE, 
                 BASE_PRODS.BASE_NAME, 
-                BASE_PRODS.BASE_CAT
+                BASE_PRODS.BASE_CAT,
+                TRANBASE.TRSB_BATCH_NO
             FROM TRANBASE, BASE_PRODS
             WHERE BASE_PRODS.BASE_CODE = TRANBASE.TRSB_BS AND 
                 TRANBASE.TRSB_ID_TRSF_ID = :trsf_id
