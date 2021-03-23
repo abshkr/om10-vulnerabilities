@@ -1,0 +1,9 @@
+<?php
+// required headers
+include_once '../../shared/header.php';
+
+// include database and object files
+include_once '../../config/database.php';
+include_once '../../objects/tank_owner.php';
+
+Utilities::read('TankOwner', $method = 'check_ownership_by_cmpy', $filter = true);

@@ -66,6 +66,7 @@ import * as LOAD_BAYS from './load-bays';
 import * as AXLE_WEIGHTS from './axle-weights';
 import * as TRIP_AXLES from './trip-axles';
 import * as TANK_BATCHES from './tank-batches';
+import * as TANK_OWNERS from './tank-owners';
 
 export {
   AUTH,
@@ -134,6 +135,7 @@ export {
   AXLE_WEIGHTS,
   TRIP_AXLES,
   TANK_BATCHES,
+  TANK_OWNERS,
 };
 
 export default api;
