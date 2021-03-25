@@ -30,7 +30,8 @@ function http_post_cgi($cgi)
 {
     global $PROTOCOL;
     global $HOST;
-    $url = $PROTOCOL . $HOST . "/" . $cgi . "?";
+    global $PORT;
+    $url = $PROTOCOL . $HOST . ":" . $PORT . "/" . $cgi . "?";
     foreach ($_POST as $key => $value)
     {
         $url .= $key . "=". rawurlencode(strip_tags($value)) . "&";
