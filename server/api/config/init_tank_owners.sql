@@ -1,3 +1,19 @@
+/*
+    define the SITE_USE_PROD_OWNERSHIP for usage of Product Ownership in Omega system
+    Y: Enable the Product Ownership in Omega system
+    N: Disable the Product Ownership in Omega system
+*/
+delete from SITE_CONFIG where CONFIG_KEY='SITE_USE_PROD_OWNERSHIP';
+
+commit;
+
+insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIRED_BY_GUI) 
+values ('SITE_USE_PROD_OWNERSHIP', 'N', 'Use Product Ownership in Omega system', NULL );
+
+commit;
+
+
+
 -- initialize the TK_OWNERS with the site manager company if the tank does not have an owner yet.
 insert into TK_OWNERS (
     TKCMPY_LINK

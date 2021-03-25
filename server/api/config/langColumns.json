@@ -4478,7 +4478,7 @@
       "TKO_ADJ_STD": "Standard Volume Adjusted",
       "TKO_ADJ_AMB": "Ambient Volume Adjusted",
       "TKO_ADJ_KG": "Mass Quantity Adjusted",
-      "TKO_PERCENTAGE": "Qty Percentage %"
+      "TKO_PERCENTAGE": "Quantity Percentage %"
     },
     "TMM_FLAGS": {
       "TMMF_TMM_CODE": "Tmmf Tmm Code",

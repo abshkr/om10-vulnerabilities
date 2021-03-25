@@ -221,4 +221,45 @@ class TankOwner extends CommonClass
         }
     }
 
+    public function update_percentages()
+    {
+        $query = "
+            update TK_OWNERS A 
+            set A.TKO_PERCENTAGE = TRUNC(100 * A.TKOWNER_QTY / (
+                select sum(B.TKOWNER_QTY) 
+                from TK_OWNERS B 
+                where B.TKLINK_TANKDEPO=:term and B.TKLINK_TANKCODE=:code
+            ), 4)
+            where A.TKLINK_TANKDEPO=:term and A.TKLINK_TANKCODE=:code
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':code', $this->tklink_tankcode);
+        oci_bind_by_name($stmt, ':term', $this->tklink_tankdepo);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function post_create()
+    {
+        // return true;
+        return $this->update_percentages();
+    }
+
+    protected function post_update()
+    {
+        // return true;
+        return $this->update_percentages();
+    }
+
+    protected function post_delete()
+    {
+        // return true;
+        return $this->update_percentages();
+    }
+
 }
