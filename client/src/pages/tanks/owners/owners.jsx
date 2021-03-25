@@ -58,6 +58,17 @@ const TankOwners = ({ terminal, code, value, access, tanks, config }) => {
 
   const fields = columns(t);
 
+  // Find if the owner has the ownership in the current tank
+  // and the existing owner will be disabled in owner list when adding new ownership
+  const isOwnerFound = (list, item) => {
+    const ownership = _.find(list, (o) => o.tkcmpy_link === item.cmpy_code);
+    if (!ownership) {
+      return false;
+    } else {
+      return true;
+    }
+  };
+
   const handleFormState = (visibility, value) => {
     if (!visibility) {
       setFieldsValue({
@@ -477,7 +488,12 @@ const TankOwners = ({ terminal, code, value, access, tanks, config }) => {
                   }
                 >
                   {options?.records.map((item, index) => (
-                    <Select.Option key={index} value={item.cmpy_code}>
+                    <Select.Option
+                      key={index}
+                      value={item.cmpy_code}
+                      // disabled={!!_.find(data?.records, (o)=>(o.tkcmpy_link===item.cmpy_code))}
+                      disabled={isOwnerFound(data?.records, item)}
+                    >
                       {item.cmpy_desc}
                     </Select.Option>
                   ))}
