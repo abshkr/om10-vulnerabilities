@@ -10,6 +10,10 @@ class OMJournal extends CommonClass
     protected $TABLE_NAME = 'GUI_SITE_JOURNAL';
     protected $VIEW_NAME = 'GUI_SITE_JOURNAL';
 
+    public $NUMBER_FIELDS = array(
+        "RECORDS",
+    );
+
     public $gen_date;
     public $region_code;
     public $print_date;
@@ -289,6 +293,146 @@ class OMJournal extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    public function statistics()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+        // write_log(json_encode($this), __FILE__, __LINE__);
+
+        $result = array();
+        $query = "SELECT COUNT(*) CN FROM GUI_SITE_JOURNAL WHERE GEN_DATE > TRUNC(SYSDATE)";
+        if (isset($this->msg_event)) {
+            $query .= " AND MSG_EVENT = :msg_event ";
+        }
+        $stmt = oci_parse($this->conn, $query);
+        if (isset($this->msg_event)) {
+            oci_bind_by_name($stmt, ':msg_event', $this->msg_event);
+        }
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $result = array();
+        $result["today"] = intval($row['CN']);
+
+        $query = "SELECT COUNT(*) CN FROM GUI_SITE_JOURNAL WHERE GEN_DATE > TRUNC(SYSDATE) - 1 AND GEN_DATE < TRUNC(SYSDATE)";
+        if (isset($this->msg_event)) {
+            $query .= " AND MSG_EVENT = :msg_event ";
+        }
+        $stmt = oci_parse($this->conn, $query);
+        if (isset($this->msg_event)) {
+            oci_bind_by_name($stmt, ':msg_event', $this->msg_event);
+        }
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $result["yesterday"] = intval($row['CN']);
+
+        $query = "SELECT COUNT(*) CN FROM GUI_SITE_JOURNAL WHERE GEN_DATE > SYSDATE - 1";
+        if (isset($this->msg_event)) {
+            $query .= " AND MSG_EVENT = :msg_event ";
+        }
+        $stmt = oci_parse($this->conn, $query);
+        if (isset($this->msg_event)) {
+            oci_bind_by_name($stmt, ':msg_event', $this->msg_event);
+        }
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $result["day"] = intval($row['CN']);
+
+        $query = "SELECT COUNT(*) CN FROM GUI_SITE_JOURNAL WHERE GEN_DATE > SYSDATE - 7";
+        if (isset($this->msg_event)) {
+            $query .= " AND MSG_EVENT = :msg_event ";
+        }
+        $stmt = oci_parse($this->conn, $query);
+        if (isset($this->msg_event)) {
+            oci_bind_by_name($stmt, ':msg_event', $this->msg_event);
+        }
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $result["week"] = intval($row['CN']);
+
+        $query = "SELECT COUNT(*) CN FROM GUI_SITE_JOURNAL WHERE GEN_DATE > SYSDATE - 30";
+        if (isset($this->msg_event)) {
+            $query .= " AND MSG_EVENT = :msg_event ";
+        }
+        $stmt = oci_parse($this->conn, $query);
+        if (isset($this->msg_event)) {
+            oci_bind_by_name($stmt, ':msg_event', $this->msg_event);
+        }
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $result["month"] = intval($row['CN']);
+
+        $catetories = array();
+        if (isset($this->msg_event)) {
+            $query = "SELECT COUNT(*) RECORDS, 
+                TRIM(TO_CHAR(GEN_DATE, 'Day')) DAY, 
+                TO_CHAR(GEN_DATE, 'D') DAY_OF_WEEK,
+                MSG_CLASS CATEGORY 
+            FROM GUI_SITE_JOURNAL 
+            WHERE REGION_CODE = 'ENG' AND MSG_EVENT = :msg_event
+            GROUP BY TO_CHAR(GEN_DATE, 'Day'), MSG_CLASS, TO_CHAR(GEN_DATE, 'D')
+            ORDER BY TO_CHAR(GEN_DATE, 'D'), MSG_CLASS";
+        } else {
+            $query = "SELECT COUNT(*) RECORDS, 
+                    TRIM(TO_CHAR(GEN_DATE, 'Day')) DAY, 
+                    TO_CHAR(GEN_DATE, 'D') DAY_OF_WEEK,
+                    MSG_CLASS CATEGORY 
+                FROM GUI_SITE_JOURNAL 
+                WHERE REGION_CODE = 'ENG' 
+                GROUP BY TO_CHAR(GEN_DATE, 'Day'), MSG_CLASS, TO_CHAR(GEN_DATE, 'D')
+                ORDER BY TO_CHAR(GEN_DATE, 'D'), MSG_CLASS";
+        }
+        $stmt = oci_parse($this->conn, $query);
+        if (isset($this->msg_event)) {
+            oci_bind_by_name($stmt, ':msg_event', $this->msg_event);
+        }
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+        Utilities::retrieve($catetories, $this, $stmt, $method=__FUNCTION__);
+        $result["catetories"] = $catetories;
+
+        $alarms = array();
+        $query = "SELECT COUNT(*) RECORDS, 
+                    TO_CHAR(GEN_DATE, 'Month') MONTH, 
+                    TO_CHAR(GEN_DATE, 'MM') MONTH_SEQ, 
+                    TO_CHAR(GEN_DATE, 'DD') DAY
+                FROM GUI_SITE_JOURNAL WHERE REGION_CODE = 'ENG' AND MSG_EVENT = 'ALARM' 
+                GROUP BY TO_CHAR(GEN_DATE, 'Month'), TO_CHAR(GEN_DATE, 'DD'), TO_CHAR(GEN_DATE, 'MM')
+                ORDER BY TO_CHAR(GEN_DATE, 'MM'), TO_CHAR(GEN_DATE, 'DD')";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+        Utilities::retrieve($alarms, $this, $stmt, $method=__FUNCTION__);
+        $result["alarms"] = $alarms;
+
+        echo json_encode($result, JSON_PRETTY_PRINT);
     }
 
     // public function alarms()
