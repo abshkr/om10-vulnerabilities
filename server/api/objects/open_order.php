@@ -1115,7 +1115,7 @@ class OpenOrder extends CommonClass
         return (int)$row['CNT'];
     }
 
-    public function order_item_schedules()
+    public function order_item_schedules_by_config()
     {
         $query = "";
         $singleOO = $this->order_assign_mode();
@@ -1221,6 +1221,157 @@ class OpenOrder extends CommonClass
                     so.SCHO_DAD_SCHDSPEC_SHLSSUPP, so.SCHO_DAD_SCHDSPEC_SHLSTRIP, so.SCHO_DAD_SCHDCMPT 
             ";
         }
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':order_id', $this->oitem_order_id);
+        oci_bind_by_name($stmt, ':order_prod_code', $this->oitem_prod_code);
+        oci_bind_by_name($stmt, ':order_prod_cmpy', $this->oitem_prod_cmpy);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function order_item_schedules()
+    {
+        $query = "
+            select TRIPORD.* 
+            from (
+                (
+                select 
+                    sc.SCHD_ORDER as SCHD_ORDER_ID 
+                    , sc.SCHDSPEC_SHLSSUPP as SCHD_SUPP_CODE 
+                    , sp.CMPY_NAME as SCHD_SUPPLIER 
+                    , sc.SCHDSPEC_SHLSTRIP as SCHD_TRIP_NO 
+                    , sc.SCHD_COMP_ID as SCHD_CMPT_NO 
+                    , sc.SCHDPROD_PRODCODE as SCHD_PROD_CODE 
+                    , sc.SCHDPROD_PRODCMPY as SCHD_PROD_CMPY  
+                    , pd.PROD_NAME as SCHD_PROD_NAME 
+                    , sc.SCHD_SPECQTY as SCHD_PROD_QTY 
+                    , sc.SCHD_UNITS as SCHD_PROD_UNIT 
+                    , un.DESCRIPTION as SCHD_UNIT_NAME 
+                    , DECODE(sc.SCHD_UNITS, 5, TRSF.TRIP_QTY_AMB, 11, TRSF.TRIP_QTY_STD, 17, TRSF.TRIP_QTY_KG, TRSF.TRIP_QTY_DELIVERED) 
+                        AS QTY_LOADED 
+                    , TRSF.TRIP_QTY_AMB QTY_AMB
+                    , TRSF.TRIP_QTY_STD QTY_STD
+                    , TRSF.TRIP_QTY_KG QTY_KG        
+                from 
+                    SPECDETS sc 
+                    , COMPANYS sp 
+                    , PRODUCTS pd 
+                    , UNIT_SCALE_VW un 
+                    , (
+                        SELECT SCHEDULE.SHLS_SUPP AS TRIP_SUPPLIER,
+                            PRODUCTS.PROD_CLASS AS PROD_CLASS,
+                            SCHEDULE.SHLS_TRIP_NO AS TRIP_NO,
+                            TRANSFERS.TRSF_DES AS TRIP_COMPARTMENT,
+                            TRANSFERS.TRSFPROD_PRODCMPY AS TRIP_PRODCMPY,
+                            TRANSFERS.TRSFPROD_PRODCODE AS TRIP_PRODCODE,
+                            SUM(TRANSFERS.TRSF_QTY_AMB) AS TRIP_QTY_AMB,
+                            SUM(TRANSFERS.TRSF_QTY_COR) AS TRIP_QTY_STD,
+                            SUM(TRANSFERS.TRSF_LOAD_KG) AS TRIP_QTY_KG,
+                            SUM(TRANSFERS.TRSF_RETURNS) AS TRIP_QTY_RTN,
+                            SUM(TRANSFERS.TRSF_PRELOAD_KG) AS TRIP_QTY_PKG,
+                            SUM(TRANSFERS.TRSF_DELIVERED) AS TRIP_QTY_DELIVERED
+                        FROM SCHEDULE, LOADS, TRANSACTIONS, TRANSFERS, PRODUCTS
+                        WHERE SCHEDULE.SHLSLOAD_LD_TRM = LOADS.LD_TERMINAL
+                            AND SCHEDULE.SHLSLOAD_LOAD_ID = LOADS.LOAD_ID
+                            AND LOADS.LOAD_ID = TRANSACTIONS.TRSALDID_LOAD_ID
+                            AND LOADS.LD_TERMINAL = TRANSACTIONS.TRSALDID_LD_TRM
+                            AND TRANSACTIONS.TRSA_ID = TRANSFERS.TRSFTRID_TRSA_ID
+                            AND TRANSACTIONS.TRSA_TERMINAL = TRANSFERS.TRSFTRID_TRSA_TRM
+                            AND TRSFPROD_PRODCMPY = PRODUCTS.PROD_CMPY AND TRSFPROD_PRODCODE = PRODUCTS.PROD_CODE
+                        GROUP BY SCHEDULE.SHLS_SUPP, SCHEDULE.SHLS_TRIP_NO, TRANSFERS.TRSF_DES, 
+                            TRANSFERS.TRSFPROD_PRODCMPY, TRANSFERS.TRSFPROD_PRODCODE, PROD_CLASS
+                    ) TRSF
+                where 
+                    sc.SCHD_ORDER = :order_id 
+                    and sc.SCHDPROD_PRODCODE = :order_prod_code 
+                    and sc.SCHDPROD_PRODCMPY = :order_prod_cmpy 
+                    and sc.SCHDSPEC_SHLSSUPP = sp.CMPY_CODE 
+                    and sc.SCHDPROD_PRODCODE = pd.PROD_CODE  
+                    and sc.SCHDPROD_PRODCMPY = pd.PROD_CMPY  
+                    and sc.SCHD_UNITS = un.UNIT_ID 
+                    and sc.SCHDSPEC_SHLSSUPP = TRSF.TRIP_SUPPLIER (+)
+                    AND sc.SCHDSPEC_SHLSTRIP = TRSF.TRIP_NO (+)
+                    AND sc.SCHD_COMP_ID = TRSF.TRIP_COMPARTMENT (+)
+                    AND pd.PROD_CLASS (+) = TRSF.PROD_CLASS
+                -- order by
+                --     sc.SCHDSPEC_SHLSSUPP, sc.SCHDSPEC_SHLSTRIP, sc.SCHD_COMP_ID 
+                )
+                union all
+                (
+                select 
+                    so.SCHORDER_ORD as SCHD_ORDER_ID 
+                    , so.SCHO_DAD_SCHDSPEC_SHLSSUPP as SCHD_SUPP_CODE 
+                    , sp.CMPY_NAME as SCHD_SUPPLIER 
+                    , so.SCHO_DAD_SCHDSPEC_SHLSTRIP as SCHD_TRIP_NO 
+                    , so.SCHO_DAD_SCHDCMPT as SCHD_CMPT_NO 
+                    , sc.SCHDPROD_PRODCODE as SCHD_PROD_CODE 
+                    , sc.SCHDPROD_PRODCMPY as SCHD_PROD_CMPY  
+                    , pd.PROD_NAME as SCHD_PROD_NAME 
+                    , so.SCHORDER_QTY as SCHD_PROD_QTY 
+                    , sc.SCHD_UNITS as SCHD_PROD_UNIT 
+                    , un.DESCRIPTION as SCHD_UNIT_NAME 
+                    , DECODE(sc.SCHD_UNITS, 5, TRSF.TRIP_QTY_AMB, 11, TRSF.TRIP_QTY_STD, 17, TRSF.TRIP_QTY_KG, TRSF.TRIP_QTY_DELIVERED) 
+                        AS QTY_LOADED 
+                    , TRSF.TRIP_QTY_AMB QTY_AMB
+                    , TRSF.TRIP_QTY_STD QTY_STD
+                    , TRSF.TRIP_QTY_KG QTY_KG        
+                from 
+                    SPECDETS sc 
+                    , SPEC_ORDERS so
+                    , COMPANYS sp 
+                    , PRODUCTS pd 
+                    , UNIT_SCALE_VW un 
+                    , (
+                        SELECT SCHEDULE.SHLS_SUPP AS TRIP_SUPPLIER,
+                            PRODUCTS.PROD_CLASS AS PROD_CLASS,
+                            SCHEDULE.SHLS_TRIP_NO AS TRIP_NO,
+                            TRANSFERS.TRSF_DES AS TRIP_COMPARTMENT,
+                            TRANSFERS.TRSFPROD_PRODCMPY AS TRIP_PRODCMPY,
+                            TRANSFERS.TRSFPROD_PRODCODE AS TRIP_PRODCODE,
+                            SUM(TRANSFERS.TRSF_QTY_AMB) AS TRIP_QTY_AMB,
+                            SUM(TRANSFERS.TRSF_QTY_COR) AS TRIP_QTY_STD,
+                            SUM(TRANSFERS.TRSF_LOAD_KG) AS TRIP_QTY_KG,
+                            SUM(TRANSFERS.TRSF_RETURNS) AS TRIP_QTY_RTN,
+                            SUM(TRANSFERS.TRSF_PRELOAD_KG) AS TRIP_QTY_PKG,
+                            SUM(TRANSFERS.TRSF_DELIVERED) AS TRIP_QTY_DELIVERED
+                        FROM SCHEDULE, LOADS, TRANSACTIONS, TRANSFERS, PRODUCTS
+                        WHERE SCHEDULE.SHLSLOAD_LD_TRM = LOADS.LD_TERMINAL
+                            AND SCHEDULE.SHLSLOAD_LOAD_ID = LOADS.LOAD_ID
+                            AND LOADS.LOAD_ID = TRANSACTIONS.TRSALDID_LOAD_ID
+                            AND LOADS.LD_TERMINAL = TRANSACTIONS.TRSALDID_LD_TRM
+                            AND TRANSACTIONS.TRSA_ID = TRANSFERS.TRSFTRID_TRSA_ID
+                            AND TRANSACTIONS.TRSA_TERMINAL = TRANSFERS.TRSFTRID_TRSA_TRM
+                            AND TRSFPROD_PRODCMPY = PRODUCTS.PROD_CMPY AND TRSFPROD_PRODCODE = PRODUCTS.PROD_CODE
+                        GROUP BY SCHEDULE.SHLS_SUPP, SCHEDULE.SHLS_TRIP_NO, TRANSFERS.TRSF_DES, 
+                            TRANSFERS.TRSFPROD_PRODCMPY, TRANSFERS.TRSFPROD_PRODCODE, PROD_CLASS
+                    ) TRSF
+                where 
+                    so.SCHORDER_ORD = :order_id 
+                    and sc.SCHDPROD_PRODCODE = :order_prod_code 
+                    and sc.SCHDPROD_PRODCMPY = :order_prod_cmpy 
+                    and sc.SCHDSPEC_SHLSSUPP = sp.CMPY_CODE 
+                    and sc.SCHDPROD_PRODCODE = pd.PROD_CODE  
+                    and sc.SCHDPROD_PRODCMPY = pd.PROD_CMPY  
+                    and sc.SCHD_UNITS = un.UNIT_ID 
+                    and sc.SCHDSPEC_SHLSSUPP = so.SCHO_DAD_SCHDSPEC_SHLSSUPP 
+                    and sc.SCHDSPEC_SHLSTRIP = so.SCHO_DAD_SCHDSPEC_SHLSTRIP 
+                    and sc.SCHD_COMP_ID = so.SCHO_DAD_SCHDCMPT 
+                    and sc.SCHDSPEC_SHLSSUPP = TRSF.TRIP_SUPPLIER (+)
+                    AND sc.SCHDSPEC_SHLSTRIP = TRSF.TRIP_NO (+)
+                    AND sc.SCHD_COMP_ID = TRSF.TRIP_COMPARTMENT (+)
+                    AND pd.PROD_CLASS (+) = TRSF.PROD_CLASS
+                -- order by 
+                --     so.SCHO_DAD_SCHDSPEC_SHLSSUPP, so.SCHO_DAD_SCHDSPEC_SHLSTRIP, so.SCHO_DAD_SCHDCMPT 
+                )
+            ) TRIPORD
+            ORDER BY TRIPORD.SCHD_SUPP_CODE, TRIPORD.SCHD_TRIP_NO, TRIPORD.SCHD_CMPT_NO
+        ";
+		
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':order_id', $this->oitem_order_id);
         oci_bind_by_name($stmt, ':order_prod_code', $this->oitem_prod_code);

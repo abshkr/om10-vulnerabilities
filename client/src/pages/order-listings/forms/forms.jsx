@@ -181,7 +181,7 @@ const FormModal = ({
       setOrderItems(payload);
       setDrawerOrderItems(payload);
       if (value) {
-        setCustomer(value?.order_cust_acnt)
+        setCustomer(value?.order_cust_acnt);
       }
     });
   }, [orderNo, supplier, pageState]);
@@ -406,7 +406,7 @@ const FormModal = ({
         .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
           params: {
             drawer_code: supplier,
-            customer: value ? value.order_cust_acnt: customer,
+            customer: value ? value.order_cust_acnt : customer,
           },
         })
         .then((res) => {
@@ -441,7 +441,7 @@ const FormModal = ({
     if (value) {
       value.editable = pageState === 'detail' ? false : true;
     }
-    
+
     setSelected(value);
   };
 
@@ -557,7 +557,13 @@ const FormModal = ({
               </Col>
 
               <Col span={6}>
-                <Customer form={form} value={value} supplier={supplier} onChange={setCustomer} pageState={pageState} />
+                <Customer
+                  form={form}
+                  value={value}
+                  supplier={supplier}
+                  onChange={setCustomer}
+                  pageState={pageState}
+                />
               </Col>
 
               <Col span={6}>
@@ -589,12 +595,12 @@ const FormModal = ({
 
             <Row gutter={[8, 8]}>
               <Col span={6}>
-                <Carrier 
-                  form={form} 
-                  customer={site_customer_carrier ? customer : undefined} 
-                  value={value} 
-                  onChange={setCarrier} 
-                  pageState={pageState} 
+                <Carrier
+                  form={form}
+                  customer={site_customer_carrier ? customer : undefined}
+                  value={value}
+                  onChange={setCarrier}
+                  pageState={pageState}
                 />
               </Col>
 
@@ -723,8 +729,15 @@ const FormModal = ({
           <TabPane tab={t('tabColumns.orderTrips')} disabled={IS_CREATING} key="2">
             <OrderTrips value={value} orderNo={orderNo} />
           </TabPane>
-          <TabPane tab={t('tabColumns.orderItemTrips')} disabled={IS_CREATING || !selected} key="3">
-            <OrderItemTrips value={value} orderItem={selected} />
+          <TabPane tab={t('tabColumns.orderItemTrips')} disabled={IS_CREATING} key="3">
+            <OrderItemTrips
+              form={form}
+              value={value}
+              orderItem={selected}
+              items={
+                value?.order_approved ? orderItems.filter((item) => item.oitem_prod_qty > 0) : orderItems
+              }
+            />
           </TabPane>
           <TabPane
             tab={t('tabColumns.deliveryDetails')}
