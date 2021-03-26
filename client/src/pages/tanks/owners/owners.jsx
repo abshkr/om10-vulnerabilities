@@ -48,8 +48,6 @@ const TankOwners = ({ terminal, code, value, access, tanks, config }) => {
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [currTankLevel, setCurrTankLevel] = useState(value?.tank_prod_lvl);
-  const [currFlowRate, setCurrFlowRate] = useState(0);
 
   const IS_CREATING = !selected;
   const percentPrecision = 4;
