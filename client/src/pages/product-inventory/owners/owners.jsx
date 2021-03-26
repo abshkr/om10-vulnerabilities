@@ -37,13 +37,15 @@ import transform from './transform';
 const { TabPane } = Tabs;
 
 const ProductOwners = ({ value, access, config, unit, units }) => {
+  const [volUnit, setVolUnit] = useState(unit);
+
   const url = value ? `${TANK_OWNERS.SUMMARY}?tank_base=${value?.base_code}` : null;
 
   const { data, isValidating } = useSWR(url);
 
   const isLoading = isValidating || !data;
 
-  const payload = transform(data?.records, unit);
+  const payload = transform(data?.records, volUnit);
 
   const { t } = useTranslation();
 
@@ -69,21 +71,27 @@ const ProductOwners = ({ value, access, config, unit, units }) => {
     <>
       <Card hoverable>
         <Row gutter={[2, 12]}>
-          <Col span={16}>
+          <Col span={24}>
             <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }}>
               <Descriptions.Item label={t('fields.baseProduct')} span={24}>
                 {value?.base_code + ' - ' + value?.base_name}
               </Descriptions.Item>
-            </Descriptions>
-          </Col>
-          <Col span={8}>
-            <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }}>
-              <Descriptions.Item label={t('fields.productUnit')} span={24}>
-                {unit +
-                  ' - ' +
-                  units?.find((o) => {
-                    return o.code === unit;
-                  })?.title}
+              <Descriptions.Item label={t('fields.volumeUnit')} span={24}>
+                <Select
+                  dropdownMatchSelectWidth={false}
+                  key="1"
+                  style={{ width: '100%' }}
+                  defaultValue={unit}
+                  onChange={setVolUnit}
+                >
+                  {units.map((item) => {
+                    return (
+                      <Select.Option key={item.code} value={item.code}>
+                        {item.title}
+                      </Select.Option>
+                    );
+                  })}
+                </Select>
               </Descriptions.Item>
             </Descriptions>
           </Col>

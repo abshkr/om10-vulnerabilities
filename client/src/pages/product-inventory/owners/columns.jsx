@@ -71,6 +71,7 @@ const columns = (t) => [
     resizable: true,
     width: 180,
     suppressSizeToFit: true,
+    hide: true,
   },
   {
     headerName: t('fields.tkoAmbLtr'), // + ' (' + t('units.ltr') + ')',
@@ -90,6 +91,7 @@ const columns = (t) => [
     resizable: true,
     width: 180,
     suppressSizeToFit: true,
+    hide: true,
   },
 ];
 
