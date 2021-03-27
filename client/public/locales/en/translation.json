@@ -973,6 +973,8 @@
     "logicalPrinter": "Logical Printer",
     "lowerLimit": "Lower Limit %",
     "mass": "Mass",
+    "massInAir": "Mass in Air",
+    "massInVacuum": "Mass in Vacuum",
     "massQuantity": "Mass Quantity",
     "massUnit": "Mass Unit",
     "material": "Material",

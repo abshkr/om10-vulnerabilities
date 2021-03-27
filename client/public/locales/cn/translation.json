@@ -973,6 +973,8 @@
     "logicalPrinter": "逻辑打印机",
     "lowerLimit": "超标下限 %",
     "mass": "重量",
+    "massInAir": "空气中重量",
+    "massInVacuum": "真空中重量",
     "massQuantity": "重量油量",
     "massUnit": "重量单位",
     "material": "物料",
