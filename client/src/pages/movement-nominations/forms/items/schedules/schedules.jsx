@@ -6,24 +6,26 @@ import { MOVEMENT_NOMIATIONS } from '../../../../../api';
 import useSWR from 'swr';
 import { Tabs } from 'antd';
 import columns from './columns';
-import { useAuth } from '../../../../../hooks';
+import { useAuth, useConfig } from '../../../../../hooks';
 
 import Forms from '../../../../load-schedules/forms/nomforms';
 
 const Schedules = ({ selected, cbFunction, closeForm }) => {
-  const url = selected 
-    ? `${MOVEMENT_NOMIATIONS.SCHEDULES}?mv_key=${selected?.mvitm_key}&mvitm_item_id=${selected?.mvitm_item_id}` 
+  const url = selected
+    ? `${MOVEMENT_NOMIATIONS.SCHEDULES}?mv_key=${selected?.mvitm_key}&mvitm_item_id=${selected?.mvitm_item_id}`
     : `${MOVEMENT_NOMIATIONS.SCHEDULES}`;
 
   const [visible, setVisible] = useState(false);
   const [picked, setPicked] = useState(null);
   const [filterValue, setFilterValue] = useState('');
 
+  const config = useConfig();
+
   const access = useAuth('M_LOADSCHEDULES');
   const { data } = useSWR(url);
   const { t } = useTranslation();
 
-  const fields = columns(true, t);
+  const fields = columns(true, t, config);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -32,11 +34,11 @@ const Schedules = ({ selected, cbFunction, closeForm }) => {
 
   const locateTrip = (value) => {
     if (value?.shls_trip_no) {
-      setFilterValue("" + value?.shls_trip_no);
+      setFilterValue('' + value?.shls_trip_no);
     } else {
       setFilterValue(' ');
     }
-  }
+  };
 
   return (
     <>
