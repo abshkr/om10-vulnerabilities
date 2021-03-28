@@ -15,7 +15,8 @@ import Forms from './forms';
 import { useAuth, useConfig } from 'hooks';
 
 const TransactionList = () => {
-  const { transactionsDateRange } = useConfig();
+  // const { transactionsDateRange } = useConfig();
+  const config = useConfig();
   const { t } = useTranslation();
 
   const access = useAuth('M_TRANSACTIONLIST');
@@ -70,7 +71,7 @@ const TransactionList = () => {
   const handleClick = (value) => {
     FormModal({
       value,
-      form: <Forms value={value} start={start} end={end} access={access} />,
+      form: <Forms value={value} start={start} end={end} access={access} config={config} />,
       id: value?.trsa_id,
       name: value?.trsa_trip,
       t,
@@ -96,7 +97,7 @@ const TransactionList = () => {
     <>
       <DateTimeRangePicker
         handleChange={setRange}
-        rangeSetting={transactionsDateRange}
+        rangeSetting={config.transactionsDateRange}
         refreshed={refreshed}
         setRefreshed={setRefreshed}
         disabled={false}
