@@ -1,4 +1,4 @@
-const detailColumns = (t) => [
+const detailColumns = (t, config) => [
   {
     headerName: t('fields.code'),
     field: 'base_code',
@@ -36,6 +36,19 @@ const detailColumns = (t) => [
     field: 'trsb_kg',
     sortable: true,
     resizable: true,
+  },
+  {
+    headerName: t('fields.massInAir') + ' (' + t('units.kg') + ')',
+    field: 'trsb_air_kg',
+    sortable: true,
+    resizable: true,
+    hide: !config?.useWaterStrapping,
+    cellRenderer: 'MassInAirRenderer',
+    cellRendererParams: {
+      digits: '3',
+      massInVacuum: 'trsb_kg',
+      standardVolume: 'trsb_cvl',
+    },
   },
   {
     headerName: t('fields.density') + ' (' + t('units.kg/m3') + ')',
