@@ -475,6 +475,7 @@ const DrawerProductTransfers = ({
       transfer.trsf_qty_amb = response?.qty_amb;
       transfer.trsf_qty_cor = response?.qty_cor;
       transfer.trsf_load_kg = response?.load_kg;
+      transfer.trsf_air_kg = response?.load_kg - response?.qty_cor * 0.0011;
       transfer.trsf_bases = response?.bases;
     }
     return transfer;
@@ -699,6 +700,7 @@ const DrawerProductTransfers = ({
         item.trsf_qty_amb = null;
         item.trsf_qty_cor = null;
         item.trsf_load_kg = null;
+        item.trsf_air_kg = null;
         item.trsf_temp = null;
         // tableAPI.updateRowData({ update: [item] });
         updateTransferRow(item);
@@ -707,6 +709,7 @@ const DrawerProductTransfers = ({
           item.trsf_qty_amb = null;
           item.trsf_qty_cor = null;
           item.trsf_load_kg = null;
+          item.trsf_air_kg = null;
           item.trsf_temp = null;
           // tableAPI.updateRowData({ update: [item] });
           updateTransferRow(item);
