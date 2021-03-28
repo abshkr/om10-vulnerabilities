@@ -87,6 +87,19 @@ const columns = (t, enabled, useWaterStrapping) => [
     suppressSizeToFit: true,
   },
   {
+    headerName: t('fields.massInAir') + ' (' + t('units.kg') + ')',
+    field: 'close_mass_tot_air',
+    sortable: true,
+    resizable: true,
+    hide: !useWaterStrapping,
+    cellRenderer: 'MassInAirRenderer',
+    cellRendererParams: {
+      digits: '3',
+      massInVacuum: 'close_mass_tot',
+      standardVolume: 'close_std_tot',
+    },
+  },
+  {
     headerName: `${t('fields.calculate')}`,
     field: 'tank_code',
     width: 80,
