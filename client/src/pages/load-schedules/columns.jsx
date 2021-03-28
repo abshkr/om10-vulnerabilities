@@ -242,6 +242,21 @@ const columns = (IS_NOMINATION, t) => [
     width: 120,
     suppressSizeToFit: true,
   },
+  {
+    headerName: t('fields.massInAir'),
+    field: 'trsf_air_kg',
+    sortable: true,
+    resizable: true,
+    hide: !IS_NOMINATION,
+    width: 120,
+    suppressSizeToFit: true,
+    cellRenderer: 'MassInAirRenderer',
+    cellRendererParams: {
+      digits: '3',
+      massInVacuum: 'trsf_load_kg',
+      standardVolume: 'trsf_qty_cor',
+    },
+  },
 
   {
     headerName: t('fields.postedOn'),
