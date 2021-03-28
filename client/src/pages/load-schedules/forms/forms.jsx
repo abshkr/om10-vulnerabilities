@@ -194,6 +194,14 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
     setDrawer(supplier);
   };
 
+  const changeCustomer = (customer) => {
+    setCustomer(customer);
+    setFieldsValue({
+      tnkr_code: undefined,
+      carrier_code: undefined,
+    });
+  };
+
   const onFinish = async () => {
     const record = await form.validateFields();
     if (record?.shls_ld_type === '3' /* Preorder*/) {
@@ -810,7 +818,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
                       form={form}
                       supplier={value ? value.supplier_code : supplier}
                       value={value}
-                      onChange={setCustomer}
+                      onChange={changeCustomer}
                     />
                   </Col>
                 </Fragment>
