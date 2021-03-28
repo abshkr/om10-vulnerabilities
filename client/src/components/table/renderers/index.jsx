@@ -22,6 +22,7 @@ import DraggableRenderer from './draggable';
 import FlowRateRenderer from './flow-rate';
 import OffsetAlarmRenderer from './offset-alarm';
 import LinkRenderer from './link';
+import MassInAirRenderer from './mass-in-air';
 
 export {
   BooleanRenderer,
@@ -48,4 +49,5 @@ export {
   FlowRateRenderer,
   OffsetAlarmRenderer,
   LinkRenderer,
+  MassInAirRenderer,
 };
