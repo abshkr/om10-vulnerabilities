@@ -97,6 +97,7 @@ const Tanks = ({ id, enabled, saveToFolioTrigger, saveToTanksTrigger, calculateT
                 rowNode.data.close_amb_tot = filtered.close_amb_tot;
                 rowNode.data.close_std_tot = filtered.close_std_tot;
                 rowNode.data.close_mass_tot = filtered.close_mass_tot;
+                rowNode.data.close_mass_tot_air = filtered.close_mass_tot - filtered.close_std_tot * 0.0011;
                 rowNode.data.tank_prod_lvl = filtered.tank_prod_lvl;
                 rowNode.data.close_temp = filtered.close_temp;
                 rowNode.data.close_density = filtered.close_density;
@@ -146,7 +147,7 @@ const Tanks = ({ id, enabled, saveToFolioTrigger, saveToTanksTrigger, calculateT
       onOk: async () => {
         await api
           .post(FOLIO_SUMMARY.SAVE_TO_TANKS, {
-            folio_tanks: data
+            folio_tanks: data,
           })
           .then((response) => {
             notification.success({
