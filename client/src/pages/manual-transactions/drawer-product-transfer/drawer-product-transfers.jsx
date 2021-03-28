@@ -81,6 +81,7 @@ const DrawerProductTransfers = ({
   setProductArms,
   drawerChanges,
   setDrawerChanges,
+  config,
 }) => {
   // console.log('--------------------------', sourceType, supplier, trip, order, tanker);
   const { data } = useSWR(
@@ -975,11 +976,24 @@ const DrawerProductTransfers = ({
       payload,
       products,
       composition,
-      productArms
+      productArms,
+      config
     );
     // console.log('!!!!!!!!!!!!!!!!!!!!!!!I am here !!!!!', sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms);
     setFields(values);
-  }, [t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms]);
+  }, [
+    t,
+    form,
+    sourceType,
+    loadType,
+    loadNumber,
+    setPayload,
+    payload,
+    products,
+    composition,
+    productArms,
+    config,
+  ]);
 
   useEffect(() => {
     setLoading(true);
@@ -1164,6 +1178,7 @@ const DrawerProductTransfers = ({
               setData={setDataBaseTransfers}
               dataLoaded={dataLoaded}
               setDataLoaded={setDataLoaded}
+              config={config}
             />
           </TabPane>
           <TabPane tab={t('tabColumns.cumulativeBaseProduct')} key="2" forceRender={true}>
@@ -1183,6 +1198,7 @@ const DrawerProductTransfers = ({
               setData={setDataBaseTotals}
               dataLoaded={dataLoaded}
               setDataLoaded={setDataLoaded}
+              config={config}
             />
           </TabPane>
         </Tabs>

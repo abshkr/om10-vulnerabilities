@@ -6,14 +6,14 @@ import _ from 'lodash';
 import { DataTable } from '../../../../components';
 import columns from './columns';
 import api, { MANUAL_TRANSACTIONS } from '../../../../api';
-import {calcBaseRatios} from '../../../../utils'
+import { calcBaseRatios } from '../../../../utils';
 
 import { buildBaseTransfers, buildBaseTotals } from '../../data-builder';
 
-const BaseProductTotals = ({ 
-  form, 
-  sourceType, 
-  selected, 
+const BaseProductTotals = ({
+  form,
+  sourceType,
+  selected,
   transfers,
   productArms,
   clicked,
@@ -26,6 +26,7 @@ const BaseProductTotals = ({
   setData,
   dataLoaded,
   setDataLoaded,
+  config,
 }) => {
   const { t } = useTranslation();
 
@@ -35,7 +36,7 @@ const BaseProductTotals = ({
   const [isLoading, setLoading] = useState(true);
   const [dataRendered, setDataRendered] = useState(false);
 
-  const fields = columns(t);
+  const fields = columns(t, config);
 
   const sumBaseTotals = (totals) => {
     const obs = _.sumBy(totals, 'trsf_bs_qty_amb_tot');
@@ -55,13 +56,22 @@ const BaseProductTotals = ({
       itemExisted = false;
       for (let index = 0; index < totals.length; index++) {
         const total = totals[index];
-        if (total.trsf_bs_prodcd_tot === item.trsf_bs_prodcd_tot && total.trsf_bs_tk_cd_tot === item.trsf_bs_tk_cd_tot) {
-          total.trsf_bs_qty_amb_tot = _.toNumber(total.trsf_bs_qty_amb_tot) + _.toNumber(item.trsf_bs_qty_amb_tot);
-          total.trsf_bs_qty_cor_tot = _.toNumber(total.trsf_bs_qty_cor_tot) + _.toNumber(item.trsf_bs_qty_cor_tot);
-          total.trsf_bs_load_kg_tot = _.toNumber(total.trsf_bs_load_kg_tot) + _.toNumber(item.trsf_bs_load_kg_tot);
-          total.trsf_bs_temp_mass_tot = _.toNumber(total.trsf_bs_temp_mass_tot) + _.toNumber(item.trsf_bs_temp_mass_tot);
-          total.trsf_bs_temp_tot = _.toNumber(total.trsf_bs_load_kg_tot) > 0 
-          ? _.toNumber(total.trsf_bs_temp_mass_tot) / _.toNumber(total.trsf_bs_load_kg_tot) : null;
+        if (
+          total.trsf_bs_prodcd_tot === item.trsf_bs_prodcd_tot &&
+          total.trsf_bs_tk_cd_tot === item.trsf_bs_tk_cd_tot
+        ) {
+          total.trsf_bs_qty_amb_tot =
+            _.toNumber(total.trsf_bs_qty_amb_tot) + _.toNumber(item.trsf_bs_qty_amb_tot);
+          total.trsf_bs_qty_cor_tot =
+            _.toNumber(total.trsf_bs_qty_cor_tot) + _.toNumber(item.trsf_bs_qty_cor_tot);
+          total.trsf_bs_load_kg_tot =
+            _.toNumber(total.trsf_bs_load_kg_tot) + _.toNumber(item.trsf_bs_load_kg_tot);
+          total.trsf_bs_temp_mass_tot =
+            _.toNumber(total.trsf_bs_temp_mass_tot) + _.toNumber(item.trsf_bs_temp_mass_tot);
+          total.trsf_bs_temp_tot =
+            _.toNumber(total.trsf_bs_load_kg_tot) > 0
+              ? _.toNumber(total.trsf_bs_temp_mass_tot) / _.toNumber(total.trsf_bs_load_kg_tot)
+              : null;
           // console.log('.........basetotals calc: ', total.trsf_bs_temp_tot, total.trsf_bs_load_kg_tot, total.trsf_bs_temp_mass_tot)
           totals[index] = total;
           itemExisted = true;
@@ -80,7 +90,7 @@ const BaseProductTotals = ({
     sumBaseTotals(totals);
 
     return totals;
-  }
+  };
 
   const getBaseTotals = () => {
     setLoading(true);
@@ -140,16 +150,14 @@ const BaseProductTotals = ({
     // console.log('BaseProductTotals: onCellUpdate', value);
 
     const bases = _.clone(data);
-    let index=0;
-    for (index=0; index<bases.length; index++) {
+    let index = 0;
+    for (index = 0; index < bases.length; index++) {
       const base = bases[index];
-      if (base.trsf_bs_prodcd_tot === value?.data?.trsf_bs_prodcd_tot &&
-        base.trsf_bs_tk_cd_tot === value?.data?.trsf_bs_tk_cd_tot 
-        ) {
-        if (
-          value?.colDef?.field === 'trsf_bs_den_tot' || 
-          value?.colDef?.field === 'trsf_bs_qty_amb_tot'
-        ) {
+      if (
+        base.trsf_bs_prodcd_tot === value?.data?.trsf_bs_prodcd_tot &&
+        base.trsf_bs_tk_cd_tot === value?.data?.trsf_bs_tk_cd_tot
+      ) {
+        if (value?.colDef?.field === 'trsf_bs_den_tot' || value?.colDef?.field === 'trsf_bs_qty_amb_tot') {
           bases[index] = value?.data;
           setData(bases);
         }
@@ -184,30 +192,46 @@ const BaseProductTotals = ({
           // isLoading={updating}
           isLoading={updating}
           minimal={true}
-          data={data} 
-          height="70vh" 
-          columns={fields} 
+          data={data}
+          height="70vh"
+          columns={fields}
           apiContext={setChildTableAPI}
           onCellUpdate={(value) => onCellUpdate(value)}
           editType={false}
         />
       </Form.Item>
 
-      <Row gutter={[8,8]}>
-        <Col span={9}>
-        </Col>
+      <Row gutter={[8, 8]}>
+        <Col span={config?.useWaterStrapping ? 4 : 9}></Col>
         <Col span={5}>
           {/* <strong>{t('fields.nomtranObsTotal')} {_.round(obsTotal, 3)}</strong> */}
-          <strong>{t('fields.nomtranObsTotal')} {_.round(_.sumBy(data, 'trsf_bs_qty_amb_tot'), 3)}</strong>
+          <strong>
+            {t('fields.nomtranObsTotal')} {_.round(_.sumBy(data, 'trsf_bs_qty_amb_tot'), 3)}
+          </strong>
         </Col>
         <Col span={5}>
           {/* <strong>{t('fields.nomtranStdTotal')} {_.round(stdTotal, 3)}</strong> */}
-          <strong>{t('fields.nomtranStdTotal')} {_.round(_.sumBy(data, 'trsf_bs_qty_cor_tot'), 3)}</strong>
+          <strong>
+            {t('fields.nomtranStdTotal')} {_.round(_.sumBy(data, 'trsf_bs_qty_cor_tot'), 3)}
+          </strong>
         </Col>
         <Col span={5}>
           {/* <strong>{t('fields.nomtranMassTotal')} {_.round(massTotal, 3)}</strong> */}
-          <strong>{t('fields.nomtranMassTotal')} {_.round(_.sumBy(data, 'trsf_bs_load_kg_tot'), 3)}</strong>
+          <strong>
+            {t('fields.nomtranMassTotal')} {_.round(_.sumBy(data, 'trsf_bs_load_kg_tot'), 3)}
+          </strong>
         </Col>
+        {config?.useWaterStrapping && (
+          <Col span={5}>
+            <strong>
+              {t('fields.massInAir')}{' '}
+              {_.round(
+                _.sumBy(data, 'trsf_bs_load_kg_tot') - _.sumBy(data, 'trsf_bs_qty_cor_tot') * 0.0011,
+                3
+              )}
+            </strong>
+          </Col>
+        )}
       </Row>
     </Spin>
   );

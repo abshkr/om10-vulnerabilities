@@ -1,4 +1,4 @@
-const columns = (t) => [
+const columns = (t, config) => [
   {
     headerName: t('fields.compartment'),
     field: 'trsf_bs_cmpt_no',
@@ -112,6 +112,20 @@ const columns = (t) => [
     cellRendererParams: {
       digits: '0',
       min: '100',
+    },
+  },
+  {
+    headerName: t('fields.massInAir') + ' (' + t('units.kg') + ')',
+    field: 'trsf_bs_air_kg',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: !config?.useWaterStrapping,
+    cellRenderer: 'MassInAirRenderer',
+    cellRendererParams: {
+      digits: '3',
+      massInVacuum: 'trsf_bs_load_kg',
+      standardVolume: 'trsf_bs_qty_cor',
     },
   },
   {
