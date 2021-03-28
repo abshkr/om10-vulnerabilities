@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { OverviewContainer, Container } from './style';
 import { Icons } from '../../../components';
 
-const Overview = ({ selected, isLoading }) => {
+const Overview = ({ selected, isLoading, config }) => {
   const { t } = useTranslation();
 
   return (
@@ -64,6 +64,12 @@ const Overview = ({ selected, isLoading }) => {
               <Descriptions.Item label={t('fields.weightInVacuum')} span={24}>
                 {selected?.tank_liquid_kg} {t('units.kg')}
               </Descriptions.Item>
+
+              {config?.useWaterStrapping && (
+                <Descriptions.Item label={t('fields.oryxWeightInAir')} span={24}>
+                  {selected?.tank_air_kg} {t('units.kg')}
+                </Descriptions.Item>
+              )}
 
               {/* <Descriptions.Item label={t('fields.waterLevel')} span={24}>
                 {selected?.tank_water_lvl} {t('units.mm')}

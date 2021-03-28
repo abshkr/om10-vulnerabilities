@@ -147,7 +147,7 @@ const Tanks = () => {
         >
           <Tabs defaultActiveKey="1" type="card">
             <TabPane key="1" tab={t('tabColumns.overview')} disabled={isLoading}>
-              <Overview selected={selected} />
+              <Overview selected={selected} isLoading={isLoading} config={config} />
             </TabPane>
 
             <TabPane key="2" tab={t('tabColumns.details')} disabled={isLoading}>
