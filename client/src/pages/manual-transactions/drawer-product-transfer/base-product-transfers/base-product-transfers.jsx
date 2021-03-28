@@ -213,7 +213,7 @@ const BaseProductTransfers = ({
           {config?.useWaterStrapping && (
             <Col span={5}>
               <strong>
-                {t('fields.massInAir')} {_.round(massTotal - stdTotal * 0.0011, 3)}
+                {t('fields.massInAir') + ': '} {_.round(massTotal - stdTotal * 0.0011, 3)}
               </strong>
             </Col>
           )}

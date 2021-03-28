@@ -224,7 +224,7 @@ const BaseProductTotals = ({
         {config?.useWaterStrapping && (
           <Col span={5}>
             <strong>
-              {t('fields.massInAir')}{' '}
+              {t('fields.massInAir') + ': '}{' '}
               {_.round(
                 _.sumBy(data, 'trsf_bs_load_kg_tot') - _.sumBy(data, 'trsf_bs_qty_cor_tot') * 0.0011,
                 3

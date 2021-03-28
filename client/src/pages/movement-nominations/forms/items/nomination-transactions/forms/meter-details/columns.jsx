@@ -1,4 +1,4 @@
-const columns = (t, pageState, form, arm) => [
+const columns = (t, pageState, form, arm, config) => [
   {
     headerName: t('fields.nomtranBaseGui'),
     field: 'trsb_bs',
@@ -40,6 +40,11 @@ const columns = (t, pageState, form, arm) => [
     sortable: true,
     resizable: true,
     editable: false,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: '0',
+      min: '100',
+    },
   },
   {
     headerName: t('fields.meterOpeningCorrected') + ' (' + t('units.ltr') + ')',
@@ -66,6 +71,11 @@ const columns = (t, pageState, form, arm) => [
     sortable: true,
     resizable: true,
     editable: false,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: '0',
+      min: '100',
+    },
   },
   {
     headerName: t('fields.meterOpeningMass') + ' (' + t('units.kg') + ')',
@@ -92,6 +102,24 @@ const columns = (t, pageState, form, arm) => [
     sortable: true,
     resizable: true,
     editable: false,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: '0',
+      min: '100',
+    },
+  },
+  {
+    headerName: t('fields.massInAir') + ' (' + t('units.kg') + ')',
+    field: 'trsf_air_kg',
+    sortable: true,
+    resizable: true,
+    hide: !config?.useWaterStrapping,
+    cellRenderer: 'MassInAirRenderer',
+    cellRendererParams: {
+      digits: '3',
+      massInVacuum: 'trsf_load_kg',
+      standardVolume: 'trsf_qty_cor',
+    },
   },
 ];
 

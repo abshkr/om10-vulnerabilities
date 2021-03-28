@@ -1,4 +1,4 @@
-const columns = (t, pageState, form, arm) => [
+const columns = (t, pageState, form, arm, config) => [
   /* {
     headerName: t('fields.nomtranBaseGui'),
     field: 'trsf_bs_prodcd',
@@ -74,7 +74,6 @@ const columns = (t, pageState, form, arm) => [
     editable: pageState === 'disposal' && !!arm ? true : false,
     cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
   }, */
-
 
   {
     headerName: t('fields.compartment'),
@@ -198,6 +197,20 @@ const columns = (t, pageState, form, arm) => [
     },
   },
   {
+    headerName: t('fields.massInAir') + ' (' + t('units.kg') + ')',
+    field: 'trsf_bs_air_kg',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: !config?.useWaterStrapping,
+    cellRenderer: 'MassInAirRenderer',
+    cellRendererParams: {
+      digits: '3',
+      massInVacuum: 'trsf_bs_load_kg',
+      standardVolume: 'trsf_bs_qty_cor',
+    },
+  },
+  {
     headerName: 'Additive?',
     field: 'trsf_bs_adtv_flag',
     filter: 'FuzzyFilter',
@@ -229,7 +242,6 @@ const columns = (t, pageState, form, arm) => [
     resizable: true,
     hide: true,
   },
-
 ];
 
 export default columns;
