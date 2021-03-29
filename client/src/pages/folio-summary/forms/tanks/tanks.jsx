@@ -12,7 +12,7 @@ import columns from './columns';
 
 const Tanks = ({ id, enabled, saveToFolioTrigger, saveToTanksTrigger, calculateTrigger }) => {
   const { t } = useTranslation();
-  const { useWaterStrapping } = useConfig();
+  const config = useConfig();
 
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(false);
@@ -20,7 +20,7 @@ const Tanks = ({ id, enabled, saveToFolioTrigger, saveToTanksTrigger, calculateT
   const [preSelected, setPreSelected] = useState([]);
   const [tableAPI, setTableAPI] = useState(null);
 
-  const fields = columns(t, enabled, useWaterStrapping);
+  const fields = columns(t, enabled, config);
 
   const fetch = useCallback(() => {
     setLoading(true);
@@ -97,7 +97,8 @@ const Tanks = ({ id, enabled, saveToFolioTrigger, saveToTanksTrigger, calculateT
                 rowNode.data.close_amb_tot = filtered.close_amb_tot;
                 rowNode.data.close_std_tot = filtered.close_std_tot;
                 rowNode.data.close_mass_tot = filtered.close_mass_tot;
-                rowNode.data.close_mass_tot_air = filtered.close_mass_tot - filtered.close_std_tot * 0.0011;
+                rowNode.data.close_mass_tot_air =
+                  filtered.close_mass_tot - filtered.close_std_tot * config?.airBuoyancyFactor;
                 rowNode.data.tank_prod_lvl = filtered.tank_prod_lvl;
                 rowNode.data.close_temp = filtered.close_temp;
                 rowNode.data.close_density = filtered.close_density;

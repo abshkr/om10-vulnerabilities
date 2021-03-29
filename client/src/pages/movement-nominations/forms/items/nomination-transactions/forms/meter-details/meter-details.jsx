@@ -108,7 +108,10 @@ const MeterDetails = ({ form, value, pageState, arm, temperature, amb, cor, mass
             <Col span={5}>
               <strong>
                 {t('fields.massInAir') + ': '}{' '}
-                {_.round(_.sumBy(data, 'trsf_load_kg') - _.sumBy(data, 'trsf_qty_cor') * 0.0011, 3)}
+                {_.round(
+                  _.sumBy(data, 'trsf_load_kg') - _.sumBy(data, 'trsf_qty_cor') * config?.airBuoyancyFactor,
+                  3
+                )}
               </strong>
             </Col>
           )}

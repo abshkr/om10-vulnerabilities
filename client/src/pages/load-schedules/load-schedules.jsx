@@ -18,7 +18,7 @@ import SourceRender from './source-render';
 import _ from 'lodash';
 
 const LoadSchedules = () => {
-  const { scheduleDateRange } = useConfig();
+  const config = useConfig();
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -101,7 +101,7 @@ const LoadSchedules = () => {
       });
   };
 
-  const fields = columns(false, t);
+  const fields = columns(false, t, config);
 
   const components = {
     SourceRender,
@@ -126,7 +126,7 @@ const LoadSchedules = () => {
     <>
       <DateTimeRangePicker
         handleChange={setRange}
-        rangeSetting={scheduleDateRange}
+        rangeSetting={config?.scheduleDateRange}
         refreshed={refreshed}
         setRefreshed={setRefreshed}
         disabled={false}

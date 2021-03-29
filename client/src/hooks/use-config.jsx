@@ -114,6 +114,7 @@ const useConfig = () => {
     refreshProductMovement: 10000,
     carrcode_tankernum_tag: false,
     enable_meter_facor: false,
+    airBuoyancyFactor: 0.0011,
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -290,6 +291,7 @@ const useConfig = () => {
           : 10000,
         carrcode_tankernum_tag: configurationObject?.SITE_CARRCODE_TANKERNUM_TAG,
         enable_meter_facor: configurationObject?.SITE_ENABLE_METER_FACTOR,
+        airBuoyancyFactor: configurationObject?.AIR_BUOYANCY_FACTOR || 0.0011,
       });
     }
     // eslint-disable-next-line

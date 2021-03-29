@@ -475,7 +475,7 @@ const DrawerProductTransfers = ({
       transfer.trsf_qty_amb = response?.qty_amb;
       transfer.trsf_qty_cor = response?.qty_cor;
       transfer.trsf_load_kg = response?.load_kg;
-      transfer.trsf_air_kg = response?.load_kg - response?.qty_cor * 0.0011;
+      transfer.trsf_air_kg = response?.load_kg - response?.qty_cor * config?.airBuoyancyFactor;
       transfer.trsf_bases = response?.bases;
     }
     return transfer;

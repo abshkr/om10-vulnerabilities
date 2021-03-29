@@ -126,6 +126,7 @@ const columns = (t, config) => [
       digits: '3',
       massInVacuum: 'trsf_bs_load_kg',
       standardVolume: 'trsf_bs_qty_cor',
+      factor: config?.airBuoyancyFactor,
     },
   },
   {

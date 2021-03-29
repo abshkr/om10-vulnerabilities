@@ -353,7 +353,8 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
               });
             } else {
               const WIA =
-                _.toNumber(response?.data?.REAL_KG) - _.toNumber(response?.data?.REAL_LITRE15) * 0.0011;
+                _.toNumber(response?.data?.REAL_KG) -
+                _.toNumber(response?.data?.REAL_LITRE15) * config?.airBuoyancyFactor;
               setFieldsValue({
                 tank_amb_vol: _.round(
                   response?.data?.REAL_LITRE,
@@ -510,7 +511,8 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
               });
             } else {
               const WIA =
-                _.toNumber(response?.data?.REAL_KG) - _.toNumber(response?.data?.REAL_LITRE15) * 0.0011;
+                _.toNumber(response?.data?.REAL_KG) -
+                _.toNumber(response?.data?.REAL_LITRE15) * config?.airBuoyancyFactor;
               setFieldsValue({
                 tank_amb_vol: _.round(
                   response?.data?.REAL_LITRE,
@@ -695,7 +697,8 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
               });
             } else {
               const WIA =
-                _.toNumber(response?.data?.REAL_KG) - _.toNumber(response?.data?.REAL_LITRE15) * 0.0011;
+                _.toNumber(response?.data?.REAL_KG) -
+                _.toNumber(response?.data?.REAL_LITRE15) * config?.airBuoyancyFactor;
               setFieldsValue({
                 tank_amb_vol: _.round(
                   response?.data?.REAL_LITRE,

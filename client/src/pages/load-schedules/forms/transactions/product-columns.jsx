@@ -52,6 +52,7 @@ const productColumns = (t, config) => [
       digits: '3',
       massInVacuum: 'trsb_kg',
       standardVolume: 'trsb_cvl',
+      factor: config?.airBuoyancyFactor,
     },
   },
   {

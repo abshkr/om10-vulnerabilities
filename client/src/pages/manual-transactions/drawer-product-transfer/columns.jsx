@@ -329,6 +329,7 @@ const columns = (
       digits: '3',
       massInVacuum: 'trsf_load_kg',
       standardVolume: 'trsf_qty_cor',
+      factor: config?.airBuoyancyFactor,
     },
   },
 ];

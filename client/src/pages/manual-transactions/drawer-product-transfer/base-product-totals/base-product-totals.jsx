@@ -226,7 +226,8 @@ const BaseProductTotals = ({
             <strong>
               {t('fields.massInAir') + ': '}{' '}
               {_.round(
-                _.sumBy(data, 'trsf_bs_load_kg_tot') - _.sumBy(data, 'trsf_bs_qty_cor_tot') * 0.0011,
+                _.sumBy(data, 'trsf_bs_load_kg_tot') -
+                  _.sumBy(data, 'trsf_bs_qty_cor_tot') * config?.airBuoyancyFactor,
                 3
               )}
             </strong>

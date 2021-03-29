@@ -49,6 +49,7 @@ const columns = (t, config) => [
     //   digits: '3',
     //   massInVacuum: 'mass',
     //   standardVolume: 'standardvolume',
+    //   factor: config?.airBuoyancyFactor,
     // },
   },
 ];

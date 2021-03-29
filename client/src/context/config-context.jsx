@@ -108,6 +108,7 @@ const ConfigProvider = ({ children }) => {
     load_tolerance_type: 'PERCENT',
     siteMtLimitPercent: '0.3',
     siteTransferTankSource: 'FROM',
+    airBuoyancyFactor: 0.0011,
   });
 
   const { data: configuration, revalidate: revalidateConfiguration } = useSWR(SITE_CONFIGURATION.READ, {
@@ -279,6 +280,7 @@ const ConfigProvider = ({ children }) => {
         load_tolerance_type: configurationObject?.LOAD_TOLERANCE_TYPE || 'PERCENT',
         siteMtLimitPercent: configurationObject?.SITE_MT_LIMIT_PERCENT || '0.3',
         siteTransferTankSource: configurationObject?.SITE_TRANSFER_TANK_SOURCE || 'FROM',
+        airBuoyancyFactor: configurationObject?.AIR_BUOYANCY_FACTOR || 0.0011,
         revalidate: () => onRevalidate(),
       });
     }

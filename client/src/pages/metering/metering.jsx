@@ -26,7 +26,7 @@ const Metering = () => {
   const [massUnit, setMassUnit] = useState('KG');
 
   const fields = columns(t, config);
-  const payload = transform(data?.records, unit, massUnit);
+  const payload = transform(data?.records, unit, massUnit, config);
 
   // const units = ['Litres', 'Cubic Metre', 'Imperial Gallon', 'U.S Gallon', 'Imperial Barrel', 'U.S Barrel'];
   const units = [
