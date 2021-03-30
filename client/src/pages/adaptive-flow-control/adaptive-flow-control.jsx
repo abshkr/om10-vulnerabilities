@@ -79,7 +79,15 @@ const AdaptiveFlowControl = () => {
     return (
       <Page page={t('pageMenu.modules')} name={t('pageNames.adaptiveFlow')} access={access}>
         {!connected && (
-          <div style={{ backgroundColor: 'orange', textAlign: 'center' }}>
+          <div
+            style={{
+              backgroundColor: 'orange',
+              textAlign: 'center',
+              padding: '10px',
+              fontWeight: 'bold',
+              fontSize: '16px',
+            }}
+          >
             {t('descriptions.afcProcNotConnected')}
           </div>
         )}
