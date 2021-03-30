@@ -14,6 +14,7 @@ export default function generator(products, flow, current) {
     const levels = _.find(current, ['tank_code', tank?.tank_code]);
 
     const currentFlowRate = _.round(_.sumBy(arms, 'current_flow_rate'), 2);
+    // const rate = _.round(159.98-100*(index%2), 2);
     const rate = _.round((currentFlowRate / levels.flow_rate) * 100, 2);
 
     // add arm number to arms
@@ -31,7 +32,7 @@ export default function generator(products, flow, current) {
       level: levels.tank_level,
       arms,
       max: _.round(levels.flow_rate, 2),
-      flowRate: rate,
+      flowRate: _.isNaN(rate) ? 0 : rate,
       currentFlowRate: currentFlowRate,
     });
   }
