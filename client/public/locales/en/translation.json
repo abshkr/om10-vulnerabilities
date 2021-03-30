@@ -1,6 +1,7 @@
 {
   "descriptions": {
     "activateSuccess": "You have activated the record",
+    "afcProcNotConnected": "The Adaptive Flow Control process is not running or connected yet!",
     "availableAttempts": "Your available attempts left: ",
     "blankDateFillWithServerTime": "If this date is not entered, system will use current server time as default",
     "CannotBeNegative": "Value cannot be a negative number",

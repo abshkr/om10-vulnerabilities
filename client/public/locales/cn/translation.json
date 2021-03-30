@@ -1,6 +1,7 @@
 {
   "descriptions": {
     "activateSuccess": "您已成功激活了记录",
+    "afcProcNotConnected": "适应性油品流动控制后台进程尚未启动或通讯有误!",
     "availableAttempts": "您尚余可尝试次数",
     "blankDateFillWithServerTime": "该日期数据为空，如果您不想输入，系统会默认使用服务器的日期",
     "CannotBeNegative": "数值不能为负数",
@@ -891,7 +892,7 @@
     "itemLock": "锁定?",
     "itemStatus": "明细状态",
     "kFactor": "K系数",
-	"meterFactor": "流量计系数",
+    "meterFactor": "流量计系数",
     "kg": "公斤",
     "lLevel": "低报警点液位",
     "lState": "低报警点状态",

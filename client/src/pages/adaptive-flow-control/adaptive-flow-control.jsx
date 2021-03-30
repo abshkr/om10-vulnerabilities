@@ -28,9 +28,11 @@ const AdaptiveFlowControl = () => {
   const { data: products } = useSWR(BASE_PRODUCTS.READ, { refreshInterval: 1000 });
   const { data: flow } = useSWR(ADAPTIVE_FLOW_CONTROL.READ, { refreshInterval: 1000 });
   const { data: current } = useSWR(ADAPTIVE_FLOW_CONTROL.CURRENT_FLOW, { refreshInterval: 1000 });
+  const { data: comms } = useSWR(ADAPTIVE_FLOW_CONTROL.COMMS, { refreshInterval: 1000 });
 
   const [data, setData] = useState([]);
   const [total, setTotal] = useState(0);
+  const [connected, setConnected] = useState(false);
 
   const isLoading = !products || !flow || !current;
 
@@ -59,6 +61,16 @@ const AdaptiveFlowControl = () => {
     }
   }, [isLoading, flow, current, products]);
 
+  useEffect(() => {
+    console.log('...........', comms);
+    if (!comms) {
+      setConnected(false);
+    } else {
+      setConnected(comms?.records?.[0]?.status);
+      // setConnected(true);
+    }
+  }, [comms]);
+
   console.log(data);
 
   if (!config?.siteUseAFC) {
@@ -66,6 +78,11 @@ const AdaptiveFlowControl = () => {
   } else {
     return (
       <Page page={t('pageMenu.modules')} name={t('pageNames.adaptiveFlow')} access={access}>
+        {!connected && (
+          <div style={{ backgroundColor: 'orange', textAlign: 'center' }}>
+            {t('descriptions.afcProcNotConnected')}
+          </div>
+        )}
         <Table
           dataSource={data}
           rowKey="baseCode"
