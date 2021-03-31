@@ -184,7 +184,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
       resizable: true,
       width: 300,
       suppressSizeToFit: true,
-      editable: true,
+      editable: false,
       cellRenderer: 'DraggableRenderer',
 
       cellRendererParams: {
