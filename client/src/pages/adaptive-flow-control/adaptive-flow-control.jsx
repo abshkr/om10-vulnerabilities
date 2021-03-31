@@ -66,7 +66,8 @@ const AdaptiveFlowControl = () => {
     if (!comms) {
       setConnected(false);
     } else {
-      setConnected(comms?.records?.[0]?.status);
+      // setConnected(comms?.records?.[0]?.is_afc_running);
+      setConnected(comms?.is_afc_running);
       // setConnected(true);
     }
   }, [comms]);
