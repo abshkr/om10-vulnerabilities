@@ -7,7 +7,23 @@ import { VERSION } from 'constants/settings';
 const { Panel } = Collapse;
 
 const data = [
-  {
+ {
+    title: `Release Notes (10.1.16-rc.3) - 29/03/2021`,
+    content: (
+      <>
+        <>
+        <p>OM5K-8785 - <a href="https://dev.diamondkey.com/browse/OM5K-8785">https://dev.diamondkey.com/browse/OM5K-8785</a></p>
+	<p>OM5K-8786 - <a href="https://dev.diamondkey.com/browse/OM5K-8786">https://dev.diamondkey.com/browse/OM5K-8786</a></p>
+	<p>OM5K-8787 - <a href="https://dev.diamondkey.com/browse/OM5K-8787">https://dev.diamondkey.com/browse/OM5K-8787</a></p>
+	<p>OM5K-8666 - <a href="https://dev.diamondkey.com/browse/OM5K-8666">https://dev.diamondkey.com/browse/OM5K-8666</a></p>
+	<p>OM5K-8738 - <a href="https://dev.diamondkey.com/browse/OM5K-8738">https://dev.diamondkey.com/browse/OM5K-8738</a></p>
+
+	</>
+      </>
+    ),
+  },
+ 
+ {
     title: `Release Notes (10.1.16-rc.2) - 22/03/2021`,
     content: (
       <>

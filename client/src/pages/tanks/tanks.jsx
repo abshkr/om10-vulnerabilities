@@ -17,6 +17,7 @@ import Calculations from './calculations';
 import TankStrapping from './prod-strapping';
 import TankAdaptiveFlowControl from './afc';
 import TankBatches from './batches';
+import TankOwners from './owners';
 import Overview from './overview';
 import Gauging from './gauging';
 import Details from './details';
@@ -146,7 +147,7 @@ const Tanks = () => {
         >
           <Tabs defaultActiveKey="1" type="card">
             <TabPane key="1" tab={t('tabColumns.overview')} disabled={isLoading}>
-              <Overview selected={selected} />
+              <Overview selected={selected} isLoading={isLoading} config={config} />
             </TabPane>
 
             <TabPane key="2" tab={t('tabColumns.details')} disabled={isLoading}>
@@ -198,6 +199,19 @@ const Tanks = () => {
             {config.useWaterStrapping && (
               <TabPane key="9" tab={t('tabColumns.tankBatches')}>
                 <TankBatches
+                  terminal={selected?.tank_terminal}
+                  code={selected?.tank_code}
+                  tanks={read?.records}
+                  access={access}
+                  value={selected}
+                  config={config}
+                />
+              </TabPane>
+            )}
+
+            {config.siteUseProdOwnership && (
+              <TabPane key="10" tab={t('tabColumns.tankOwners')}>
+                <TankOwners
                   terminal={selected?.tank_terminal}
                   code={selected?.tank_code}
                   tanks={read?.records}

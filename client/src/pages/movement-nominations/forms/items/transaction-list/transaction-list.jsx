@@ -13,7 +13,7 @@ import detailColumns from './detail-columns';
 import columns from './columns';
 import TrueRenderer from './true-render';
 
-const TransactionList = ({ selected }) => {
+const TransactionList = ({ selected, config }) => {
   const url = selected
     ? `${MOVEMENT_NOMIATIONS.TRANSACTIONS}?mv_id=${selected?.mvitm_move_id}&line_id=${selected?.mvitm_line_id}`
     : null;
@@ -26,8 +26,8 @@ const TransactionList = ({ selected }) => {
   const [products, setProducts] = useState([]);
   const [meters, setMeters] = useState([]);
 
-  const transferFields = transferColumns(t);
-  const detailFields = detailColumns(t);
+  const transferFields = transferColumns(t, config);
+  const detailFields = detailColumns(t, config);
   const meterFields = meterColumns(t);
   const fields = columns(t);
 

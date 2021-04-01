@@ -221,4 +221,101 @@ class TankOwner extends CommonClass
         }
     }
 
+    protected function get_percentages()
+    {
+        $query = "
+            SELECT * 
+            FROM TK_OWNERS
+            WHERE 
+                TKLINK_TANKCODE=:tank 
+                and TKLINK_TANKDEPO=:term 
+        ";
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tank', $this->tklink_tankcode);
+        oci_bind_by_name($stmt, ':term', $this->tklink_tankdepo);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+
+        $percentages = array();
+        while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            $percentages[$row['TKCMPY_LINK']] = $row['TKO_PERCENTAGE'];
+        }
+
+        return $percentages;
+    }
+
+    protected function journal_percentages($old, $new)
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+            
+        $journal = new Journal($this->conn, false);
+        $module = $this->TABLE_NAME;
+        foreach ($old as $item_key => $item_value) {
+            // write_log($item_key, __FILE__, __LINE__);
+            // write_log($value, __FILE__, __LINE__);
+            // the change of current owner was journaled already in create, update, or delete
+            // if (isset($new[$item_key])) {
+            if (isset($new[$item_key]) && $item_key != $this->tkcmpy_link) {
+                $old_value = number_format($item_value, 4, '.', '');
+                $new_value = number_format($new[$item_key], 4, '.', '');
+                if ($old_value != $new_value) {
+                    $record = sprintf("tklink_tankcode:%s, tklink_tankdepo:%s, tkcmpy_link:%s", 
+                        $this->tklink_tankcode, $this->tklink_tankdepo, $item_key);
+                    $journal->valueChange($module, $record, 'TKO_PERCENTAGE', $old_value, $new_value);
+                }
+            } 
+        }
+    }
+
+    public function update_percentages()
+    {
+        $old = $this->get_percentages();
+
+        $query = "
+            update TK_OWNERS A 
+            set A.TKO_PERCENTAGE = TRUNC(100 * A.TKOWNER_QTY / (
+                select sum(B.TKOWNER_QTY) 
+                from TK_OWNERS B 
+                where B.TKLINK_TANKDEPO=:term and B.TKLINK_TANKCODE=:code
+            ), 4)
+            where A.TKLINK_TANKDEPO=:term and A.TKLINK_TANKCODE=:code
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':code', $this->tklink_tankcode);
+        oci_bind_by_name($stmt, ':term', $this->tklink_tankdepo);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        $new = $this->get_percentages();
+        $this->journal_percentages($old, $new);
+
+        return true;
+    }
+
+    protected function post_create()
+    {
+        // return true;
+        return $this->update_percentages();
+    }
+
+    protected function post_update()
+    {
+        // return true;
+        return $this->update_percentages();
+    }
+
+    protected function post_delete()
+    {
+        // return true;
+        return $this->update_percentages();
+    }
+
 }

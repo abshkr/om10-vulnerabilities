@@ -563,7 +563,7 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
           visible={transactionVisible}
           width="100vw"
         >
-          <TransactionList selected={selected?.[0]} />
+          <TransactionList selected={selected?.[0]} config={config} />
         </Drawer>
       )}
 

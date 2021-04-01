@@ -975,7 +975,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             disabled={IS_CREATING || !CAN_VIEW_TRANSACTIONS}
             key="1"
           >
-            <Transactions value={value} />
+            <Transactions value={value} config={config} />
           </TabPane>
 
           <TabPane tab={t('tabColumns.driverInstructions')} disabled={IS_CREATING} key="2">

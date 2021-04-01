@@ -23,6 +23,7 @@ import { VCFManager, getDensityRange, getQtyByLevel } from '../../../utils';
 import TankStrapping from '../prod-strapping';
 import TankAdaptiveFlowControl from '../afc';
 import TankBatches from '../batches';
+import TankOwners from '../owners';
 
 const TabPane = Tabs.TabPane;
 
@@ -396,7 +397,8 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
               });
             } else {
               const WIA =
-                _.toNumber(response?.data?.REAL_KG) - _.toNumber(response?.data?.REAL_LITRE15) * 0.0011;
+                _.toNumber(response?.data?.REAL_KG) -
+                _.toNumber(response?.data?.REAL_LITRE15) * config?.airBuoyancyFactor;
               setFieldsValue({
                 tank_amb_vol: _.round(
                   response?.data?.REAL_LITRE,
@@ -553,7 +555,8 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
               });
             } else {
               const WIA =
-                _.toNumber(response?.data?.REAL_KG) - _.toNumber(response?.data?.REAL_LITRE15) * 0.0011;
+                _.toNumber(response?.data?.REAL_KG) -
+                _.toNumber(response?.data?.REAL_LITRE15) * config?.airBuoyancyFactor;
               setFieldsValue({
                 tank_amb_vol: _.round(
                   response?.data?.REAL_LITRE,
@@ -738,7 +741,8 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
               });
             } else {
               const WIA =
-                _.toNumber(response?.data?.REAL_KG) - _.toNumber(response?.data?.REAL_LITRE15) * 0.0011;
+                _.toNumber(response?.data?.REAL_KG) -
+                _.toNumber(response?.data?.REAL_LITRE15) * config?.airBuoyancyFactor;
               setFieldsValue({
                 tank_amb_vol: _.round(
                   response?.data?.REAL_LITRE,
@@ -856,7 +860,8 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
               (IS_CREATING ? !access?.canCreate : !access?.canUpdate) ||
               tab === '5' ||
               tab === '6' ||
-              tab === '7'
+              tab === '7' ||
+              tab === '8'
             }
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
@@ -964,6 +969,19 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
           {config.useWaterStrapping && (
             <TabPane key="7" tab={t('tabColumns.tankBatches')}>
               <TankBatches
+                terminal={value?.tank_terminal}
+                code={value?.tank_code}
+                tanks={tanks}
+                access={access}
+                value={value}
+                config={config}
+              />
+            </TabPane>
+          )}
+
+          {config.siteUseProdOwnership && (
+            <TabPane key="8" tab={t('tabColumns.tankOwners')}>
+              <TankOwners
                 terminal={value?.tank_terminal}
                 code={value?.tank_code}
                 tanks={tanks}

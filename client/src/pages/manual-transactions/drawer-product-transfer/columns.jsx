@@ -10,7 +10,8 @@ const columns = (
   payload,
   products,
   composition,
-  productArms
+  productArms,
+  config
 ) => [
   {
     headerName: t('fields.compartment'),
@@ -313,6 +314,22 @@ const columns = (
     cellRendererParams: {
       digits: '0',
       min: '100',
+    },
+  },
+  {
+    headerName: t('fields.massInAir') + ' (' + t('units.kg') + ')',
+    field: 'trsf_air_kg',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    width: 150,
+    hide: !config?.useWaterStrapping,
+    cellRenderer: 'MassInAirRenderer',
+    cellRendererParams: {
+      digits: '3',
+      massInVacuum: 'trsf_load_kg',
+      standardVolume: 'trsf_qty_cor',
+      factor: config?.airBuoyancyFactor,
     },
   },
 ];

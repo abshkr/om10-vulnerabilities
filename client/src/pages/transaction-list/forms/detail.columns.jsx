@@ -1,4 +1,4 @@
-const detailColumns = (isFromNomination, t) => [
+const detailColumns = (isFromNomination, t, config) => [
   {
     headerName: t('fields.meters'),
     children: [
@@ -100,6 +100,20 @@ const detailColumns = (isFromNomination, t) => [
         sortable: true,
         resizable: true,
         hide: !isFromNomination,
+      },
+      {
+        headerName: t('fields.massInAir') + ' (' + t('units.kg') + ')',
+        field: 'trsb_air_kg',
+        sortable: true,
+        resizable: true,
+        hide: !isFromNomination || !config?.useWaterStrapping,
+        cellRenderer: 'MassInAirRenderer',
+        cellRendererParams: {
+          digits: '3',
+          massInVacuum: 'trsb_kg',
+          standardVolume: 'trsb_cvl',
+          factor: config?.airBuoyancyFactor,
+        },
       },
       {
         headerName: t('fields.density') + ' (' + t('units.kg/m3') + ')',

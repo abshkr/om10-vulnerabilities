@@ -30,6 +30,7 @@ import {
   FlowRateRenderer,
   OffsetAlarmRenderer,
   LinkRenderer,
+  MassInAirRenderer,
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -83,6 +84,7 @@ const defaultComponents = {
   InputPopupEditor,
   DraggableRenderer,
   LinkRenderer,
+  MassInAirRenderer,
 };
 
 const defaultColumnDef = {};

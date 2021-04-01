@@ -751,6 +751,7 @@ const ManualTransactions = ({ popup, params }) => {
             setProductArms={setProductArms}
             drawerChanges={drawerChanges}
             setDrawerChanges={setDrawerChanges}
+            config={config}
           />
         </Form>
       </Page>

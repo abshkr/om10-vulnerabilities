@@ -98,6 +98,7 @@ const useConfig = () => {
     maxLengthEqptCode: 20,
     siteUseSG: false,
     siteUseAFC: false,
+    siteUseProdOwnership: false,
     siteArmPriority: 'LILO',
     siteUseSpecIns: false,
     siteUseSafefillOnly: false,
@@ -113,6 +114,7 @@ const useConfig = () => {
     refreshProductMovement: 10000,
     carrcode_tankernum_tag: false,
     enable_meter_facor: false,
+    airBuoyancyFactor: 0.0011,
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -269,6 +271,7 @@ const useConfig = () => {
         maxLengthEqptCode: _.min([_.toNumber(configurationObject?.SITE_MAXLEN_EQPTCODE) || 20, 40]),
         siteUseSG: configurationObject?.SITE_USE_SG,
         siteUseAFC: configurationObject?.SITE_USE_ADAPTIVE_FLOW_CONTROL,
+        siteUseProdOwnership: configurationObject?.SITE_USE_PROD_OWNERSHIP || false,
         siteArmPriority: configurationObject?.SITE_AFC_ARM_PRIORITY || 'LILO',
         siteUseSpecIns: configurationObject?.SITE_USE_SHLS_SPEC_INS,
         siteUseSafefillOnly: configurationObject?.SITE_USE_SAFEFILL_ONLY,
@@ -288,6 +291,7 @@ const useConfig = () => {
           : 10000,
         carrcode_tankernum_tag: configurationObject?.SITE_CARRCODE_TANKERNUM_TAG,
         enable_meter_facor: configurationObject?.SITE_ENABLE_METER_FACTOR,
+        airBuoyancyFactor: configurationObject?.AIR_BUOYANCY_FACTOR || 0.0011,
       });
     }
     // eslint-disable-next-line

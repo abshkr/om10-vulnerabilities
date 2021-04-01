@@ -63,8 +63,8 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks, config 
         flow_rate: null,
       });
     }
-    setVisible(visibility);
     setSelected(value);
+    setVisible(visibility);
   };
 
   const onComplete = () => {

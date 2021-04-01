@@ -1,4 +1,4 @@
-const transferColumns = (t) => [
+const transferColumns = (t, config) => [
   {
     headerName: t('fields.transfer'),
     field: 'trsf_id',
@@ -46,6 +46,20 @@ const transferColumns = (t) => [
     field: 'trsf_load_kg',
     sortable: true,
     resizable: true,
+  },
+  {
+    headerName: t('fields.massInAir') + ' (' + t('units.kg') + ')',
+    field: 'trsf_air_kg',
+    sortable: true,
+    resizable: true,
+    hide: !config?.useWaterStrapping,
+    cellRenderer: 'MassInAirRenderer',
+    cellRendererParams: {
+      digits: '3',
+      massInVacuum: 'trsf_load_kg',
+      standardVolume: 'trsf_qty_cor',
+      factor: config?.airBuoyancyFactor,
+    },
   },
   {
     headerName: t('fields.density') + ' (' + t('units.kg/m3') + ')',

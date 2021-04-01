@@ -1,16 +1,16 @@
 import React from 'react';
-import {Row, Col, Form, Spin} from 'antd';
+import { Row, Col, Form, Spin } from 'antd';
 
 import { useTranslation } from 'react-i18next';
 
 import { DataTable } from '../../../../../../../components';
 import columns from './columns';
-import { useState,useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import _ from 'lodash';
 
 import { buildBaseTransfersByArm } from '../../../../../../../pages/manual-transactions/data-builder';
 
-const BaseDetails = ({ form, value, pageState, arm, temperature, amb, cor, mass, bases }) => {
+const BaseDetails = ({ form, value, pageState, arm, temperature, amb, cor, mass, bases, config }) => {
   const { t } = useTranslation();
   const [data, setData] = useState([]);
   const [isLoading, setLoading] = useState(true);
@@ -54,33 +54,50 @@ const BaseDetails = ({ form, value, pageState, arm, temperature, amb, cor, mass,
       });
     }
   }, [data]);
-  
+
   return (
     <>
-    <Spin indicator={null} spinning={isLoading}>
-      <Form.Item name="base_transfers">
-        <DataTable
-          minimal={true}
-          data={data}
-          height="80vh"
-          columns={columns(t, pageState, form, arm)}
-          //columns={fields}
-        />
-      </Form.Item>
-      <Row gutter={[8,8]}>
-        <Col span={9}>
-        </Col>
-        <Col span={5}>
-          <strong>{t('fields.nomtranObsTotal')} {_.round(_.sumBy(data, 'trsf_bs_qty_amb'), 3)}</strong>
-        </Col>
-        <Col span={5}>
-          <strong>{t('fields.nomtranStdTotal')} {_.round(_.sumBy(data, 'trsf_bs_qty_cor'), 3)}</strong>
-        </Col>
-        <Col span={5}>
-          <strong>{t('fields.nomtranMassTotal')} {_.round(_.sumBy(data, 'trsf_bs_load_kg'), 3)}</strong>
-        </Col>
-      </Row>
-    </Spin>
+      <Spin indicator={null} spinning={isLoading}>
+        <Form.Item name="base_transfers">
+          <DataTable
+            minimal={true}
+            data={data}
+            height="80vh"
+            columns={columns(t, pageState, form, arm, config)}
+            //columns={fields}
+          />
+        </Form.Item>
+        <Row gutter={[8, 8]}>
+          <Col span={config?.useWaterStrapping ? 4 : 9}></Col>
+          <Col span={5}>
+            <strong>
+              {t('fields.nomtranObsTotal')} {_.round(_.sumBy(data, 'trsf_bs_qty_amb'), 3)}
+            </strong>
+          </Col>
+          <Col span={5}>
+            <strong>
+              {t('fields.nomtranStdTotal')} {_.round(_.sumBy(data, 'trsf_bs_qty_cor'), 3)}
+            </strong>
+          </Col>
+          <Col span={5}>
+            <strong>
+              {t('fields.nomtranMassTotal')} {_.round(_.sumBy(data, 'trsf_bs_load_kg'), 3)}
+            </strong>
+          </Col>
+          {config?.useWaterStrapping && (
+            <Col span={5}>
+              <strong>
+                {t('fields.massInAir') + ': '}{' '}
+                {_.round(
+                  _.sumBy(data, 'trsf_bs_load_kg') -
+                    _.sumBy(data, 'trsf_bs_qty_cor') * config?.airBuoyancyFactor,
+                  3
+                )}
+              </strong>
+            </Col>
+          )}
+        </Row>
+      </Spin>
     </>
   );
 };

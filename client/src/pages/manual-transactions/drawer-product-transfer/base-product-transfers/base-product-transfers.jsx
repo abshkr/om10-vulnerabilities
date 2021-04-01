@@ -6,14 +6,14 @@ import _ from 'lodash';
 import { DataTable } from '../../../../components';
 import columns from './columns';
 import api, { MANUAL_TRANSACTIONS } from '../../../../api';
-import {calcBaseRatios} from '../../../../utils'
+import { calcBaseRatios } from '../../../../utils';
 
 import { buildBaseTransfers, buildBaseTotals } from '../../data-builder';
 
 const BaseProductTransfers = ({
-  form, 
-  sourceType, 
-  selected, 
+  form,
+  sourceType,
+  selected,
   transfers,
   productArms,
   clicked,
@@ -26,6 +26,7 @@ const BaseProductTransfers = ({
   setData,
   dataLoaded,
   setDataLoaded,
+  config,
 }) => {
   const { t } = useTranslation();
 
@@ -35,12 +36,21 @@ const BaseProductTransfers = ({
   const [isLoading, setLoading] = useState(true);
   const [dataRendered, setDataRendered] = useState(false);
 
-  const fields = columns(t);
+  const fields = columns(t, config);
 
   const sumBaseTotals = (tranbases, selected) => {
-    const obs = _.sumBy(tranbases.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_qty_amb');
-    const std = _.sumBy(tranbases.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_qty_cor');
-    const mass = _.sumBy(tranbases.filter((o)=>(o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no)), 'trsf_bs_load_kg');
+    const obs = _.sumBy(
+      tranbases.filter((o) => o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no),
+      'trsf_bs_qty_amb'
+    );
+    const std = _.sumBy(
+      tranbases.filter((o) => o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no),
+      'trsf_bs_qty_cor'
+    );
+    const mass = _.sumBy(
+      tranbases.filter((o) => o?.trsf_bs_cmpt_no === selected?.trsf_cmpt_no),
+      'trsf_bs_load_kg'
+    );
     setObsTotal(obs);
     setStdTotal(std);
     setMassTotal(mass);
@@ -96,9 +106,18 @@ const BaseProductTransfers = ({
   useEffect(() => {
     // console.log('BaseProductTransfers: base quantity totals changed on data and clicked', clicked);
     if (data) {
-      const obs = _.sumBy(data.filter((o)=>(o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no)), 'trsf_bs_qty_amb');
-      const std = _.sumBy(data.filter((o)=>(o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no)), 'trsf_bs_qty_cor');
-      const mass = _.sumBy(data.filter((o)=>(o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no)), 'trsf_bs_load_kg');
+      const obs = _.sumBy(
+        data.filter((o) => o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no),
+        'trsf_bs_qty_amb'
+      );
+      const std = _.sumBy(
+        data.filter((o) => o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no),
+        'trsf_bs_qty_cor'
+      );
+      const mass = _.sumBy(
+        data.filter((o) => o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no),
+        'trsf_bs_load_kg'
+      );
       setObsTotal(obs);
       setStdTotal(std);
       setMassTotal(mass);
@@ -107,7 +126,7 @@ const BaseProductTransfers = ({
       setStdTotal(0);
       setMassTotal(0);
     }
-    setUpdating(false)
+    setUpdating(false);
   }, [data, clicked]);
 
   useEffect(() => {
@@ -121,17 +140,15 @@ const BaseProductTransfers = ({
     // console.log('BaseProductTransfers: onCellUpdate', value);
 
     const bases = _.clone(data);
-    let index=0;
-    for (index=0; index<bases.length; index++) {
+    let index = 0;
+    for (index = 0; index < bases.length; index++) {
       const base = bases[index];
-      if (base.trsf_bs_cmpt_no === value?.data?.trsf_bs_cmpt_no && 
+      if (
+        base.trsf_bs_cmpt_no === value?.data?.trsf_bs_cmpt_no &&
         base.trsf_bs_prodcd === value?.data?.trsf_bs_prodcd &&
-        base.trsf_bs_tk_cd === value?.data?.trsf_bs_tk_cd 
-        ) {
-        if (
-          value?.colDef?.field === 'trsf_bs_den' || 
-          value?.colDef?.field === 'trsf_bs_qty_amb'
-        ) {
+        base.trsf_bs_tk_cd === value?.data?.trsf_bs_tk_cd
+      ) {
+        if (value?.colDef?.field === 'trsf_bs_den' || value?.colDef?.field === 'trsf_bs_qty_amb') {
           bases[index] = value?.data;
           setData(bases);
         }
@@ -161,35 +178,47 @@ const BaseProductTransfers = ({
 
   return (
     <>
-    <Spin indicator={null} spinning={isLoading}>
-      <Form.Item name="base_transfers">
-        <DataTable 
-          // isLoading={updating}
-          isLoading={updating}
-          minimal={true}
-          data={data.filter((o)=>(o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no))} 
-          height="70vh" 
-          columns={fields} 
-          apiContext={setChildTableAPI}
-          onCellUpdate={(value) => onCellUpdate(value)}
-          editType={false}
-        />
-      </Form.Item>
+      <Spin indicator={null} spinning={isLoading}>
+        <Form.Item name="base_transfers">
+          <DataTable
+            // isLoading={updating}
+            isLoading={updating}
+            minimal={true}
+            data={data.filter((o) => o?.trsf_bs_cmpt_no === clicked?.trsf_cmpt_no)}
+            height="70vh"
+            columns={fields}
+            apiContext={setChildTableAPI}
+            onCellUpdate={(value) => onCellUpdate(value)}
+            editType={false}
+          />
+        </Form.Item>
 
-      <Row gutter={[8,8]}>
-        <Col span={9}>
-        </Col>
-        <Col span={5}>
-          <strong>{t('fields.nomtranObsTotal')} {_.round(obsTotal, 3)}</strong>
-        </Col>
-        <Col span={5}>
-          <strong>{t('fields.nomtranStdTotal')} {_.round(stdTotal, 3)}</strong>
-        </Col>
-        <Col span={5}>
-          <strong>{t('fields.nomtranMassTotal')} {_.round(massTotal, 3)}</strong>
-        </Col>
-      </Row>
-    </Spin>
+        <Row gutter={[8, 8]}>
+          <Col span={config?.useWaterStrapping ? 4 : 9}></Col>
+          <Col span={5}>
+            <strong>
+              {t('fields.nomtranObsTotal')} {_.round(obsTotal, 3)}
+            </strong>
+          </Col>
+          <Col span={5}>
+            <strong>
+              {t('fields.nomtranStdTotal')} {_.round(stdTotal, 3)}
+            </strong>
+          </Col>
+          <Col span={5}>
+            <strong>
+              {t('fields.nomtranMassTotal')} {_.round(massTotal, 3)}
+            </strong>
+          </Col>
+          {config?.useWaterStrapping && (
+            <Col span={5}>
+              <strong>
+                {t('fields.massInAir') + ': '} {_.round(massTotal - stdTotal * config?.airBuoyancyFactor, 3)}
+              </strong>
+            </Col>
+          )}
+        </Row>
+      </Spin>
     </>
   );
 };

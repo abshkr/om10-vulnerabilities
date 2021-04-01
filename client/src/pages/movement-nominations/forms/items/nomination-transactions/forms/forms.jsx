@@ -960,6 +960,7 @@ const FormModal = ({
                   cor={corrected}
                   mass={mass}
                   bases={armBases}
+                  config={config}
                 />
               </Col>
             </Row>
@@ -977,6 +978,7 @@ const FormModal = ({
                   amb={ambient}
                   cor={corrected}
                   mass={mass}
+                  config={config}
                 />
               </Col>
             </Row>

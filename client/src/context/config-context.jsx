@@ -93,6 +93,7 @@ const ConfigProvider = ({ children }) => {
     maxLengthEqptCode: 20,
     siteUseSG: false,
     siteUseAFC: false,
+    siteUseProdOwnership: false,
     siteArmPriority: 'LILO',
     siteUseSpecIns: false,
     siteUseSafefillOnly: false,
@@ -104,6 +105,7 @@ const ConfigProvider = ({ children }) => {
     load_tolerance_type: 'PERCENT',
     siteMtLimitPercent: '0.3',
     siteTransferTankSource: 'FROM',
+    airBuoyancyFactor: 0.0011,
   });
 
   const { data: configuration, revalidate: revalidateConfiguration } = useSWR(SITE_CONFIGURATION.READ, {
@@ -263,6 +265,7 @@ const ConfigProvider = ({ children }) => {
         maxLengthEqptCode: _.min([_.toNumber(configurationObject?.SITE_MAXLEN_EQPTCODE) || 20, 40]),
         siteUseSG: configurationObject?.SITE_USE_SG,
         siteUseAFC: configurationObject?.SITE_USE_ADAPTIVE_FLOW_CONTROL,
+        siteUseProdOwnership: configurationObject?.SITE_USE_PROD_OWNERSHIP || false,
         siteArmPriority: configurationObject?.SITE_AFC_ARM_PRIORITY || 'LILO',
         siteUseSpecIns: configurationObject?.SITE_USE_SHLS_SPEC_INS,
         siteUseSafefillOnly: configurationObject?.SITE_USE_SAFEFILL_ONLY,
@@ -274,6 +277,7 @@ const ConfigProvider = ({ children }) => {
         load_tolerance_type: configurationObject?.LOAD_TOLERANCE_TYPE || 'PERCENT',
         siteMtLimitPercent: configurationObject?.SITE_MT_LIMIT_PERCENT || '0.3',
         siteTransferTankSource: configurationObject?.SITE_TRANSFER_TANK_SOURCE || 'FROM',
+        airBuoyancyFactor: configurationObject?.AIR_BUOYANCY_FACTOR || 0.0011,
         revalidate: () => onRevalidate(),
       });
     }

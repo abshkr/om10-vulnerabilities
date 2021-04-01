@@ -14,7 +14,7 @@ import transferColumns from './transfer-columns';
 import meterColumns from './meter-columns';
 import TrueRenderer from './true-render';
 
-const Transactions = ({ value }) => {
+const Transactions = ({ value, config }) => {
   const { t } = useTranslation();
 
   const [isLoading, setLoading] = useState(true);
@@ -23,9 +23,9 @@ const Transactions = ({ value }) => {
   const [products, setProducts] = useState([]);
   const [meters, setMeters] = useState([]);
 
-  const productFields = productColumns(t);
+  const productFields = productColumns(t, config);
   const transactionsFields = transactionColumns(t);
-  const transferFields = transferColumns(t);
+  const transferFields = transferColumns(t, config);
   const meterFields = meterColumns(t);
 
   const adjustTransactions = (transactions) => {
@@ -96,25 +96,25 @@ const Transactions = ({ value }) => {
     <Spin spinning={isLoading} indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />}>
       <div style={{ marginTop: 20 }} />
 
-      <DataTable 
-        data={transactions} 
-        columns={transactionsFields} 
-        height="80vh" 
+      <DataTable
+        data={transactions}
+        columns={transactionsFields}
+        height="80vh"
         handleSelect={(payload) => onTransactionSelect(payload[0])}
         components={components}
         autoColWidth
-        minimal 
+        minimal
       />
 
       <div style={{ marginTop: 10, marginBottom: 30 }} />
 
-      <Divider orientation="left">{t("tabColumns.transferDetails")}</Divider>
+      <Divider orientation="left">{t('tabColumns.transferDetails')}</Divider>
 
-      <DataTable 
-        data={transfers} 
-        columns={transferFields} 
-        height="80vh" 
-        minimal 
+      <DataTable
+        data={transfers}
+        columns={transferFields}
+        height="80vh"
+        minimal
         handleSelect={(payload) => onTransferSelect(payload[0])}
       />
 
@@ -122,11 +122,11 @@ const Transactions = ({ value }) => {
 
       <Tabs defaultActiveKey="1">
         <Tabs.TabPane tab={t('tabColumns.baseProductDetails')} key="1">
-          <DataTable data={products} columns={productFields} height="80vh" minimal/>
+          <DataTable data={products} columns={productFields} height="80vh" minimal />
         </Tabs.TabPane>
 
         <Tabs.TabPane tab={t('tabColumns.meterDetails')} key="2">
-          <DataTable data={meters} columns={meterFields} height="80vh" minimal/>
+          <DataTable data={meters} columns={meterFields} height="80vh" minimal />
         </Tabs.TabPane>
       </Tabs>
     </Spin>

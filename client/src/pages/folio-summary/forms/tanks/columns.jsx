@@ -1,4 +1,4 @@
-const columns = (t, enabled, useWaterStrapping) => [
+const columns = (t, enabled, config) => [
   {
     headerName: t('fields.tankCode'),
     field: 'tank_code',
@@ -87,6 +87,20 @@ const columns = (t, enabled, useWaterStrapping) => [
     suppressSizeToFit: true,
   },
   {
+    headerName: t('fields.massInAir') + ' (' + t('units.kg') + ')',
+    field: 'close_mass_tot_air',
+    sortable: true,
+    resizable: true,
+    hide: !config?.useWaterStrapping,
+    cellRenderer: 'MassInAirRenderer',
+    cellRendererParams: {
+      digits: '3',
+      massInVacuum: 'close_mass_tot',
+      standardVolume: 'close_std_tot',
+      factor: config?.airBuoyancyFactor,
+    },
+  },
+  {
     headerName: `${t('fields.calculate')}`,
     field: 'tank_code',
     width: 80,
@@ -116,7 +130,7 @@ const columns = (t, enabled, useWaterStrapping) => [
   {
     headerName: `${t('fields.tankWaterLevel')} (${t('units.mm')})`,
     field: 'tank_water_lvl',
-    hide: !useWaterStrapping,
+    hide: !config?.useWaterStrapping,
     sortable: true,
     resizable: true,
     width: 100,
@@ -134,7 +148,7 @@ const columns = (t, enabled, useWaterStrapping) => [
   {
     headerName: `${t('fields.tankIFC')}`,
     field: 'tank_ifc',
-    hide: !useWaterStrapping,
+    hide: !config?.useWaterStrapping,
     sortable: true,
     resizable: true,
     width: 100,

@@ -8,7 +8,7 @@ import {
   LockOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Button, Form } from 'antd';
+import { Button, Form, Select } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
 
@@ -17,17 +17,19 @@ import { ORDER_LISTINGS } from '../../../../api';
 
 import columns from './columns';
 
-const OrderItemTrips = ({ value, orderItem }) => {
+const OrderItemTrips = ({ form, value, orderItem, items }) => {
   const [selected, setSelected] = useState(null);
+  const [productCode, setProductCode] = useState(orderItem?.oitem_prod_code);
+  const [productCompany, setProductCompany] = useState(orderItem?.oitem_prod_cmpy);
 
-  console.log("I am here!!! ", orderItem);
-  console.log("values: ", value);
+  // console.log("I am here!!! ", orderItem);
+  // console.log("values: ", value);
 
   const { t } = useTranslation();
   const fields = columns(t);
 
   const { data: payload, isValidating } = useSWR(
-    `${ORDER_LISTINGS.ORDER_ITEM_TRIPS}?oitem_order_id=${orderItem?.oitem_order_id}&oitem_prod_code=${orderItem?.oitem_prod_code}&oitem_prod_cmpy=${orderItem?.oitem_prod_cmpy}`
+    `${ORDER_LISTINGS.ORDER_ITEM_TRIPS}?oitem_order_id=${value?.order_sys_no}&oitem_prod_code=${productCode}&oitem_prod_cmpy=${productCompany}`
   );
 
   const data = payload?.records;
@@ -38,8 +40,55 @@ const OrderItemTrips = ({ value, orderItem }) => {
     //adjustModifiers(options);
   };
 
+  const onChange = (item) => {
+    if (!item) {
+      setProductCode(undefined);
+      setProductCompany(undefined);
+    } else {
+      const arr = item.split('|');
+      console.log('...............items', item, arr);
+      setProductCode(arr?.[0]);
+      setProductCompany(arr?.[1]);
+    }
+  };
+
+  useEffect(() => {
+    if (orderItem) {
+      form.setFieldsValue({
+        order_prod_list: orderItem.oitem_prod_code + '|' + orderItem.oitem_prod_cmpy,
+      });
+    }
+  }, [orderItem]);
+
   return (
     <>
+      <Form.Item name="order_prod_list" label={''} rules={[{ required: false }]}>
+        <Select
+          dropdownMatchSelectWidth={false}
+          loading={isValidating}
+          showSearch
+          allowClear
+          onChange={onChange}
+          optionFilterProp="children"
+          placeholder={t('placeholder.selectDrawerProduct')}
+          filterOption={(value, option) =>
+            option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
+          }
+        >
+          {items.map((item, index) => (
+            <Select.Option key={index} value={item.oitem_prod_code + '|' + item.oitem_prod_cmpy}>
+              {item.oitem_prod_code +
+                ' - ' +
+                item.oitem_prod_name +
+                ' [' +
+                item.oitem_prod_cmpy +
+                ' - ' +
+                item.oitem_drwr_name +
+                ']'}
+            </Select.Option>
+          ))}
+        </Select>
+      </Form.Item>
 
       <Form.Item name="order_trips">
         <DataTable

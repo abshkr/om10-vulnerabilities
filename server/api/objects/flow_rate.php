@@ -213,4 +213,19 @@ class FlowRate extends CommonClass
 
         return true;
     }
+
+    public function check_afc_process()
+    {
+        $result = array();
+        $result["is_afc_running"] = false;
+
+        $output = shell_exec('ps -ef | grep "[a]daptive_flow"');
+        if (strlen($output) > 0) {
+            $result["is_afc_running"] = true;
+        }
+
+        http_response_code(200);
+        echo json_encode($result, JSON_PRETTY_PRINT);
+        return $result;
+    }
 }

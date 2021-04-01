@@ -33,7 +33,7 @@ class Tank extends CommonClass
         "TANK_INV_NEEDED" => "Y",
         "TANK_ADHOC_IVRQ" => "Y",
         "TANK_ACTIVE" => 1,
-        "TANK_DENS_MODE" => 1,
+        "TANK_DENS_MODE" => 1
     );
 
     public $NUMBER_FIELDS = array(
@@ -85,7 +85,9 @@ class Tank extends CommonClass
         "TANK_TOTAL_VOL",
         "TANK_AIR_KG",
         "TANK_VCF",
-        "TANK_SG"
+        "TANK_SG",
+        "ATG_CHANGED_PAST",
+        "TANK_POLL_GAP"
     );
 
     protected $primary_keys = array("tank_code");
@@ -191,7 +193,8 @@ class Tank extends CommonClass
     public function read()
     {
         $query = "
-            SELECT * FROM GUI_TANKS ORDER BY TANK_CODE";
+            SELECT GUI_TANKS.*, (SYSDATE - NVL(TANK_DATE, SYSDATE)) *  24 * 60 * 60 ATG_CHANGED_PAST 
+            FROM GUI_TANKS ORDER BY TANK_CODE";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
@@ -235,7 +238,18 @@ class Tank extends CommonClass
             } 
             if ( !isset($tank_item["tank_base_dens_hi"]) ) {
                 $result_array[$key]["tank_base_dens_hi"] = $result_array[$key]["tank_bclass_dens_hi"];
-            } 
+            }
+            
+            if ($tank_item['tank_poll_gap'] == 0) {
+                $result_array[$key]['tank_atg_status'] = 0;
+                $result_array[$key]['tank_atg_status_name'] = 'Not in service';
+            } else if ($tank_item['atg_changed_past'] <= $tank_item['tank_poll_gap']) {
+                $result_array[$key]['tank_atg_status'] = 1;
+                $result_array[$key]['tank_atg_status_name'] = 'Working';
+            } else {
+                $result_array[$key]['tank_atg_status'] = 2;
+                $result_array[$key]['tank_atg_status_name'] = 'Not updated on time';
+            }
         }
     }
 

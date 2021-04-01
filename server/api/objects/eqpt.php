@@ -578,46 +578,89 @@ class Equipment extends CommonClass
             $adj_capacity = (int) $this->compartments[$i - 1]->sfl;
             $adj_cmpt_lock = (int) $this->compartments[$i - 1]->adj_cmpt_lock;
 
-            /* Old data*/
+            $existed = true;
             $query = "
-                SELECT ADJ_AMNT, ADJ_CAPACITY, ADJ_CMPT_LOCK
+                SELECT COUNT(*) CN
                 FROM SFILL_ADJUST
                 WHERE ADJ_EQP = :eqpt_id
                     AND ADJ_CMPT = :cmpt_no";
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
             oci_bind_by_name($stmt, ':cmpt_no', $i);
-            if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-                $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-                $old_limit = (int) $row['ADJ_AMNT'] + $base_cap;
-                $old_capacity = (int) $row['ADJ_CAPACITY'];
-                $old_lock = $row['ADJ_CMPT_LOCK'];
-            } else {
-                $e = oci_error($stmt);
-                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-                return false;
-            }
-
-            $query = "
-                UPDATE SFILL_ADJUST
-                SET ADJ_AMNT = :adj_amnt,
-                    ADJ_CAPACITY = :adj_capacity,
-                    ADJ_CMPT_LOCK = :adj_cmpt_lock
-                WHERE ADJ_EQP = :eqpt_id AND ADJ_CMPT = :cmpt_no";
-
-            $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
-            oci_bind_by_name($stmt, ':cmpt_no', $i);
-            oci_bind_by_name($stmt, ':adj_amnt', $adj_amnt);
-            oci_bind_by_name($stmt, ':adj_capacity', $adj_capacity);
-            oci_bind_by_name($stmt, ':adj_cmpt_lock', $adj_cmpt_lock);
             if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
                 $e = oci_error($stmt);
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-                oci_rollback($this->conn);
                 return false;
+            } else {
+                $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+                if ((int) $row['CN'] <= 0) {
+                    $existed = false;
+                }
             }
 
+            if ($existed) {
+                /* Old data*/
+                $query = "
+                    SELECT ADJ_AMNT, ADJ_CAPACITY, ADJ_CMPT_LOCK
+                    FROM SFILL_ADJUST
+                    WHERE ADJ_EQP = :eqpt_id
+                        AND ADJ_CMPT = :cmpt_no";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
+                oci_bind_by_name($stmt, ':cmpt_no', $i);
+                if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                    $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+                    $old_limit = (int) $row['ADJ_AMNT'] + $base_cap;
+                    $old_capacity = (int) $row['ADJ_CAPACITY'];
+                    $old_lock = $row['ADJ_CMPT_LOCK'];
+                } else {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    return false;
+                }
+
+                $query = "
+                    UPDATE SFILL_ADJUST
+                    SET ADJ_AMNT = :adj_amnt,
+                        ADJ_CAPACITY = :adj_capacity,
+                        ADJ_CMPT_LOCK = :adj_cmpt_lock
+                    WHERE ADJ_EQP = :eqpt_id AND ADJ_CMPT = :cmpt_no";
+
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
+                oci_bind_by_name($stmt, ':cmpt_no', $i);
+                oci_bind_by_name($stmt, ':adj_amnt', $adj_amnt);
+                oci_bind_by_name($stmt, ':adj_capacity', $adj_capacity);
+                oci_bind_by_name($stmt, ':adj_cmpt_lock', $adj_cmpt_lock);
+                if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+            } else {
+                /* Old data*/
+                $old_limit = $base_cap;
+                $old_capacity = 0;
+                $old_lock = 0;
+
+                $query = "
+                    INSERT INTO SFILL_ADJUST (ADJ_EQP, ADJ_CMPT, ADJ_AMNT, ADJ_CAPACITY, ADJ_CMPT_LOCK)
+                    VALUES (:eqpt_id, :cmpt_no, :adj_amnt, :adj_capacity, :adj_cmpt_lock)";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
+                oci_bind_by_name($stmt, ':cmpt_no', $i);
+                oci_bind_by_name($stmt, ':adj_amnt', $adj_amnt);
+                oci_bind_by_name($stmt, ':adj_capacity', $adj_capacity);
+                oci_bind_by_name($stmt, ':adj_cmpt_lock', $adj_cmpt_lock);
+                if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+            }
+            
             if ($insert) {
                 continue;
             }

@@ -81,6 +81,7 @@ const DrawerProductTransfers = ({
   setProductArms,
   drawerChanges,
   setDrawerChanges,
+  config,
 }) => {
   // console.log('--------------------------', sourceType, supplier, trip, order, tanker);
   const { data } = useSWR(
@@ -474,6 +475,7 @@ const DrawerProductTransfers = ({
       transfer.trsf_qty_amb = response?.qty_amb;
       transfer.trsf_qty_cor = response?.qty_cor;
       transfer.trsf_load_kg = response?.load_kg;
+      transfer.trsf_air_kg = response?.load_kg - response?.qty_cor * config?.airBuoyancyFactor;
       transfer.trsf_bases = response?.bases;
     }
     return transfer;
@@ -698,6 +700,7 @@ const DrawerProductTransfers = ({
         item.trsf_qty_amb = null;
         item.trsf_qty_cor = null;
         item.trsf_load_kg = null;
+        item.trsf_air_kg = null;
         item.trsf_temp = null;
         // tableAPI.updateRowData({ update: [item] });
         updateTransferRow(item);
@@ -706,6 +709,7 @@ const DrawerProductTransfers = ({
           item.trsf_qty_amb = null;
           item.trsf_qty_cor = null;
           item.trsf_load_kg = null;
+          item.trsf_air_kg = null;
           item.trsf_temp = null;
           // tableAPI.updateRowData({ update: [item] });
           updateTransferRow(item);
@@ -975,11 +979,24 @@ const DrawerProductTransfers = ({
       payload,
       products,
       composition,
-      productArms
+      productArms,
+      config
     );
     // console.log('!!!!!!!!!!!!!!!!!!!!!!!I am here !!!!!', sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms);
     setFields(values);
-  }, [t, form, sourceType, loadType, loadNumber, setPayload, payload, products, composition, productArms]);
+  }, [
+    t,
+    form,
+    sourceType,
+    loadType,
+    loadNumber,
+    setPayload,
+    payload,
+    products,
+    composition,
+    productArms,
+    config,
+  ]);
 
   useEffect(() => {
     setLoading(true);
@@ -1164,6 +1181,7 @@ const DrawerProductTransfers = ({
               setData={setDataBaseTransfers}
               dataLoaded={dataLoaded}
               setDataLoaded={setDataLoaded}
+              config={config}
             />
           </TabPane>
           <TabPane tab={t('tabColumns.cumulativeBaseProduct')} key="2" forceRender={true}>
@@ -1183,6 +1201,7 @@ const DrawerProductTransfers = ({
               setData={setDataBaseTotals}
               dataLoaded={dataLoaded}
               setDataLoaded={setDataLoaded}
+              config={config}
             />
           </TabPane>
         </Tabs>

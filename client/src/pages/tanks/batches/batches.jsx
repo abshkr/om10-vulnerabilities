@@ -248,7 +248,7 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
               {tanks.map((item, index) => (
                 <Select.Option key={index} value={item.tank_code}>
                   {item.tank_code +
-                    ': ' +
+                    ' - ' +
                     item.tank_name +
                     ' [' +
                     item.tank_base +
@@ -256,6 +256,11 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
                     item.tank_base_name +
                     ' - ' +
                     item.tank_bclass_name +
+                    ']' +
+                    ' [' +
+                    item.tank_terminal +
+                    ' - ' +
+                    item.tank_sitename +
                     ']'}
                 </Select.Option>
               ))}

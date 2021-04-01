@@ -182,6 +182,16 @@ const columns = (t, config) => [
     width: 120,
     suppressSizeToFit: true,
   },
+  {
+    headerName: t('fields.oryxWeightInAir') + ' (' + t('units.kg') + ')',
+    field: 'tank_air_kg',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    width: 120,
+    suppressSizeToFit: true,
+    hide: !config?.useWaterStrapping,
+  },
 
   {
     headerName: t('fields.ullage'),

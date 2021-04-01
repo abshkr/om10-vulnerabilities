@@ -1,4 +1,4 @@
-const columns = (IS_NOMINATION, t) => [
+const columns = (IS_NOMINATION, t, config) => [
   {
     headerName: t('fields.terminal'),
     field: 'shls_terminal',
@@ -241,6 +241,22 @@ const columns = (IS_NOMINATION, t) => [
     hide: !IS_NOMINATION,
     width: 120,
     suppressSizeToFit: true,
+  },
+  {
+    headerName: t('fields.massInAir'),
+    field: 'trsf_air_kg',
+    sortable: true,
+    resizable: true,
+    hide: !IS_NOMINATION || !config?.useWaterStrapping,
+    width: 120,
+    suppressSizeToFit: true,
+    cellRenderer: 'MassInAirRenderer',
+    cellRendererParams: {
+      digits: '3',
+      massInVacuum: 'trsf_load_kg',
+      standardVolume: 'trsf_qty_cor',
+      factor: config?.airBuoyancyFactor,
+    },
   },
 
   {

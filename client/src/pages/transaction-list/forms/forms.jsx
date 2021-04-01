@@ -13,7 +13,7 @@ import detailColumns from './detail.columns';
 
 const TabPane = Tabs.TabPane;
 
-const Forms = ({ value, isFromNomination, start, end, access }) => {
+const Forms = ({ value, isFromNomination, start, end, access, config }) => {
   const { data: transfer } = useSWR(`${TRANSACTION_LIST.TRANSFER}?trsa_id=${value?.trsa_id}`);
   const { data: meters } = useSWR(`${TRANSACTION_LIST.METER}?trsa_id=${value?.trsa_id}`);
 
@@ -25,8 +25,8 @@ const Forms = ({ value, isFromNomination, start, end, access }) => {
   const [details, setDetails] = useState([]);
   const [isLoading, setLoading] = useState(false);
 
-  const transferFields = transferColumns(isFromNomination, t);
-  const detailFields = detailColumns(isFromNomination, t);
+  const transferFields = transferColumns(isFromNomination, t, config);
+  const detailFields = detailColumns(isFromNomination, t, config);
 
   useEffect(() => {
     if (isFromNomination && value?.transfers) {
