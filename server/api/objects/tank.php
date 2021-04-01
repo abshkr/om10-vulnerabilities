@@ -240,10 +240,10 @@ class Tank extends CommonClass
                 $result_array[$key]["tank_base_dens_hi"] = $result_array[$key]["tank_bclass_dens_hi"];
             }
             
-            if ($tank_item['tank_poll_gap'] == 0) {
+            if ($tank_item['tank_poll_gap'] == 0 || $tank_item['tank_poll_gap'] == "") {
                 $result_array[$key]['tank_atg_status'] = 0;
                 $result_array[$key]['tank_atg_status_name'] = 'Not in service';
-            } else if ($tank_item['atg_changed_past'] <= $tank_item['tank_poll_gap']) {
+            } else if ($tank_item['atg_changed_past'] <= $tank_item['tank_poll_gap'] + 10) {
                 $result_array[$key]['tank_atg_status'] = 1;
                 $result_array[$key]['tank_atg_status_name'] = 'Working';
             } else {
