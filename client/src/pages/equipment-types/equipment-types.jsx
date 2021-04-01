@@ -8,19 +8,23 @@ import { SyncOutlined, PlusOutlined, ExclamationCircleOutlined } from '@ant-desi
 import { Page, DataTable, Download } from '../../components';
 import { EQUIPMENT_TYPES } from '../../api';
 import { useAuth } from '../../hooks';
-import { useConfig } from '../../hooks';
+import { useConfig, useQuery } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 
 import Forms from './forms';
 
 const EquipmentTypes = () => {
+  const query = useQuery();
+
   const config = useConfig();
+
+  const equipment = query.get('equipment') || '';
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [isCombination, setCombination] = useState(false);
-  const [filterValue, setFilterValue] = useState('');
+  const [filterValue, setFilterValue] = useState(equipment);
 
   const { t } = useTranslation();
 

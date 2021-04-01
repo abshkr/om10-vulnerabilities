@@ -12,6 +12,7 @@ import cn from 'antd/es/locale/zh_CN';
 
 import { GlobalStyleProvider, AntdStyleProvider } from '../styles';
 import { Interface, Loading } from '../components';
+
 import { authStore } from '../stores';
 import { ROUTES } from '../constants';
 
@@ -41,14 +42,14 @@ const App = () => {
   const { i18n } = useTranslation();
 
   const language = locale[i18n.language];
-  
+
   useEffect(() => {
     const sessionLanguage = sessionStorage.getItem('language');
     if (sessionLanguage !== 'en') {
       i18n.changeLanguage(sessionLanguage);
     }
   }, []);
-  
+
   return (
     <ConfigProvider locale={language}>
       <Provider store={authStore}>

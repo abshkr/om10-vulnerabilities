@@ -1,10 +1,12 @@
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
+const ENDPOINT = 'https://10.1.10.66';
+
 module.exports = function (app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      target: 'https://10.1.10.66',
+      target: ENDPOINT,
       changeOrigin: true,
       secure: false, // for self-signed cert to work
     })
@@ -13,7 +15,7 @@ module.exports = function (app) {
   app.use(
     '/reports',
     createProxyMiddleware({
-      target: 'https://10.1.10.66',
+      target: ENDPOINT,
       changeOrigin: true,
       secure: false, // for self-signed cert to work
     })
@@ -22,7 +24,7 @@ module.exports = function (app) {
   app.use(
     '/phpwrapper',
     createProxyMiddleware({
-      target: 'https://10.1.10.66',
+      target: ENDPOINT,
       changeOrigin: true,
       secure: false, // for self-signed cert to work
     })
@@ -31,7 +33,7 @@ module.exports = function (app) {
   app.use(
     '/scadaviews/bayview',
     createProxyMiddleware({
-      target: 'https://10.1.10.66',
+      target: ENDPOINT,
       changeOrigin: true,
       secure: false, // for self-signed cert to work
     })

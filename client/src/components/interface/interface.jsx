@@ -6,12 +6,15 @@ import { Layout } from 'antd';
 import { NavBar, Navigation, Status } from '..';
 import { InterfaceContainer } from './style';
 
+import useMode from 'hooks/use-mode';
 import ConfigProvider from 'context/config-context';
 import * as actions from 'actions/auth';
 
-const { Content, Sider, Footer } = Layout;
+const { Content, Sider } = Layout;
 
 const Interface = ({ token, onRefresh, children }) => {
+  const { isFSC } = useMode();
+
   useEffect(() => {
     const interval = setInterval(() => {
       onRefresh(token);
@@ -21,7 +24,7 @@ const Interface = ({ token, onRefresh, children }) => {
   }, []);
 
   return token ? (
-    <InterfaceContainer>
+    <InterfaceContainer isFSC={isFSC}>
       <ConfigProvider>
         <Layout>
           <Sider width={250} collapsedWidth={120} collapsible defaultCollapsed>
@@ -36,12 +39,9 @@ const Interface = ({ token, onRefresh, children }) => {
             </div>
           </Sider>
           <Layout>
-            <Status />
+            <Status isFSC={isFSC} />
             <NavBar />
             <Content>{children}</Content>
-            {/* <Footer>
-              <Status />
-            </Footer> */}
           </Layout>
         </Layout>
       </ConfigProvider>

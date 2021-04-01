@@ -5,5 +5,7 @@ import useConfig from './use-config';
 import useTime from './use-time';
 import usePrevious from './use-previous';
 import useQuery from './use-query';
+import usePagination from './use-pagination';
+import useMode from './use-mode';
 
-export { useIdle, useAuth, useAudio, useConfig, useTime, usePrevious, useQuery };
+export { useIdle, useAuth, useAudio, useConfig, useTime, usePrevious, useQuery, usePagination, useMode };

@@ -1,3 +1,5 @@
+import { EQUIPMENT_TYPES, EQUIPMENT_LIST } from 'constants/routes';
+
 const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit, carrcode_tankernum_tag) => {
   const expiryColumns = [];
 
@@ -102,6 +104,23 @@ const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit, carrcod
       suppressSizeToFit: true,
       width: 180,
     },
+
+    {
+      headerName: t('fields.equipment'),
+      field: 'tnkr_etp',
+      sortable: true,
+      resizable: true,
+      filter: 'MultiFilter',
+      suppressSizeToFit: true,
+      width: 160,
+      cellRenderer: 'LinkRenderer',
+      cellRendererParams: {
+        endpoint: EQUIPMENT_LIST,
+        field: 'equipment',
+        index: 'tnkr_etp',
+      },
+    },
+
     {
       headerName: t('fields.equipmentType'),
       field: 'tnkr_eqpt_name',
@@ -110,6 +129,12 @@ const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit, carrcod
       filter: 'MultiFilter',
       suppressSizeToFit: true,
       width: 160,
+      cellRenderer: 'LinkRenderer',
+      cellRendererParams: {
+        endpoint: EQUIPMENT_TYPES,
+        field: 'equipment',
+        index: 'tnkr_eqpt_name',
+      },
     },
     {
       headerName: t('fields.baseDepot'),

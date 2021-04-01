@@ -1,3 +1,5 @@
+import { EQUIPMENT_TYPES } from 'constants/routes';
+
 const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit) => {
   const expiryColumns = [];
 
@@ -90,6 +92,12 @@ const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit) => {
       resizable: true,
       suppressSizeToFit: true,
       width: 160,
+      cellRenderer: 'LinkRenderer',
+      cellRendererParams: {
+        endpoint: EQUIPMENT_TYPES,
+        field: 'equipment',
+        index: 'eqpt_etp_title',
+      },
     },
     ...expiryColumns,
     {

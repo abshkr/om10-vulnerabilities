@@ -7,31 +7,41 @@ const columns = (t) => [
     cellRenderer: 'DateRenderer',
     width: 150,
     suppressSizeToFit: true,
+    comparator: (valueA, valueB, nodeA, nodeB, isInverted) => {
+      return 0;
+    },
   },
   {
     headerName: t('fields.category'),
     field: 'msg_class',
     sortable: true,
-    filter: 'MultiFilter',
     resizable: true,
     width: 100,
     suppressSizeToFit: true,
+    comparator: (valueA, valueB, nodeA, nodeB, isInverted) => {
+      return 0;
+    },
   },
   {
     headerName: t('fields.event'),
     field: 'msg_event',
     sortable: true,
-    filter: 'MultiFilter',
+
     resizable: true,
     width: 100,
     suppressSizeToFit: true,
+    comparator: (valueA, valueB, nodeA, nodeB, isInverted) => {
+      return 0;
+    },
   },
   {
     headerName: t('fields.details'),
     field: 'message',
     sortable: true,
-    filter: 'FuzzyFilter',
     resizable: true,
+    comparator: (valueA, valueB, nodeA, nodeB, isInverted) => {
+      return 0;
+    },
   },
 ];
 

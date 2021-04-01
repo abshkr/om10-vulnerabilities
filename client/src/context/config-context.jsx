@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import useSWR from 'swr';
 import _ from 'lodash';
 import { AUTH, SITE_CONFIGURATION } from 'api';
 import ConfigStore from 'stores/config-store';
 
 const ConfigProvider = ({ children }) => {
-  const { authenticated } = useSelector((state) => state.auth);
-
   const [config, setConfig] = useState({
     dateTimeFormat: null,
     temperatureUnit: null,

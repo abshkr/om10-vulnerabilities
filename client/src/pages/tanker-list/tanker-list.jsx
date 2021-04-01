@@ -8,19 +8,23 @@ import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 import { Page, DataTable, Download } from '../../components';
 import { TANKER_LIST } from '../../api';
 import columns from './columns';
-import { useAuth, useConfig } from '../../hooks';
+import { useAuth, useConfig, useQuery } from '../../hooks';
 import auth from '../../auth';
 import Forms from './forms';
-// import { useEffect } from 'react';
 
 const TankerList = () => {
+  const query = useQuery();
   const config = useConfig();
+
+  const tanker = query.get('tanker') || '';
+
   const { expiryDateMode, siteUseAxleWeightLimit } = useConfig();
 
   const { t } = useTranslation();
+
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [filterValue, setFilterValue] = useState('');
+  const [filterValue, setFilterValue] = useState(tanker);
 
   const access = useAuth('M_TANKERS');
 
@@ -40,7 +44,15 @@ const TankerList = () => {
 
   useEffect(() => {
     if (expiryTypes) {
-      setFields(columns(expiryTypes?.records, t, expiryDateMode, siteUseAxleWeightLimit, config?.carrcode_tankernum_tag));
+      setFields(
+        columns(
+          expiryTypes?.records,
+          t,
+          expiryDateMode,
+          siteUseAxleWeightLimit,
+          config?.carrcode_tankernum_tag
+        )
+      );
     }
   }, [expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit]);
 

@@ -114,6 +114,7 @@ const Table = ({
   editType,
   rowEditingStopped,
   clearFilterPlus,
+  onSortChanged,
 }) => {
   const { t } = useTranslation();
   const { windowWidth } = useWindowSize();
@@ -235,6 +236,24 @@ const Table = ({
     />
   );
 
+  function onHandleSortChange(payload) {
+    const sortedBy = [];
+
+    const columns = payload?.columnApi?.columnController?.gridColumns || [];
+
+    for (let index = 0; index < columns?.length; index++) {
+      const column = columns[index];
+
+      if (column?.sort) {
+        sortedBy.push(`${column?.sort}(${column?.colId})`);
+      }
+    }
+
+    if (onSortChanged) {
+      onSortChanged(sortedBy?.join(', '));
+    }
+  }
+
   return (
     <Spin
       spinning={!data || !!isLoading}
@@ -292,6 +311,8 @@ const Table = ({
                   onCellValueChanged={onCellUpdate}
                   onFirstDataRendered={handleFirstDataRendered}
                   pinnedBottomRowData={footer}
+                  onSortChanged={onHandleSortChange}
+                  suppressMultiSort={true}
                   stopEditingWhenGridLosesFocus={
                     stopEditingWhenGridLosesFocus === undefined ? true : stopEditingWhenGridLosesFocus
                   }

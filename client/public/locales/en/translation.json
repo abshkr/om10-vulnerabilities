@@ -1,5 +1,6 @@
 {
   "descriptions": {
+    "currentlyInFSCMode": "Currently In FSC Mode.",
     "activateSuccess": "You have activated the record",
     "availableAttempts": "Your available attempts left: ",
     "blankDateFillWithServerTime": "If this date is not entered, system will use current server time as default",

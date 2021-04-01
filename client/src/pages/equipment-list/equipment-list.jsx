@@ -10,12 +10,15 @@ import { EQUIPMENT_LIST } from '../../api';
 
 import columns from './columns';
 import auth from '../../auth';
-import { useAuth, useConfig } from 'hooks';
+import { useAuth, useConfig, useQuery } from 'hooks';
 import Forms from './forms';
 
 const EquipmentList = () => {
+  const query = useQuery();
   const config = useConfig();
   const { expiryDateMode, siteUseAxleWeightLimit } = useConfig();
+
+  const equipment = query.get('equipment') || '';
 
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
@@ -35,7 +38,7 @@ const EquipmentList = () => {
     setSelected(value);
   };
 
-  const [filterValue, setFilterValue] = useState('');
+  const [filterValue, setFilterValue] = useState(equipment);
 
   const page = t('pageMenu.operations');
   const name = t('pageNames.equipmentList');

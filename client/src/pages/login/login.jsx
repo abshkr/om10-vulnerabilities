@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import Icon, { SmileOutlined, 
-  FrownOutlined, 
-  IdcardOutlined, 
-  LockOutlined, 
-  QuestionCircleOutlined, 
-  SafetyCertificateOutlined 
+import Icon, {
+  SmileOutlined,
+  FrownOutlined,
+  IdcardOutlined,
+  LockOutlined,
+  QuestionCircleOutlined,
+  SafetyCertificateOutlined,
 } from '@ant-design/icons';
 import { Form, Input, Button, notification, Divider, Carousel, Modal, Select, Row, Col } from 'antd';
 
@@ -15,6 +16,7 @@ import { Helmet } from 'react-helmet';
 import _ from 'lodash';
 import api, { COMMON, AUTH } from 'api';
 import hash from 'utils/hash';
+import useMode from 'hooks/use-mode';
 import { AUTHORIZED, UNAUTHORIZED } from 'actions/types';
 import { ReactComponent as LoginIcon } from './login.svg';
 
@@ -44,6 +46,8 @@ const LoginOutlined = (props) => (
 );
 
 const Login = ({ handleLogin, auth }) => {
+  const { isFSC } = useMode();
+
   const [form] = Form.useForm();
   const { i18n, t } = useTranslation();
 
@@ -55,16 +59,16 @@ const Login = ({ handleLogin, auth }) => {
 
   const handleLanguage = (value) => {
     i18n.changeLanguage(value);
-    sessionStorage.setItem('language', (value));
-    sessionStorage.setItem('user', document.getElementById("code")?.value);
-    sessionStorage.setItem('password', document.getElementById("password")?.value);
+    sessionStorage.setItem('language', value);
+    sessionStorage.setItem('user', document.getElementById('code')?.value);
+    sessionStorage.setItem('password', document.getElementById('password')?.value);
   };
 
   const onChangePassword = (ret) => {
-    if (ret.ret_code === "cancel") {
+    if (ret.ret_code === 'cancel') {
       history.push(ROUTES.LOG_OUT);
     } else {
-      const {dispatch} = ret;
+      const { dispatch } = ret;
       const payload = hash(ret.language, ret.user_code, ret.new_password);
       const payload2 = hash(ret.language, ret.user_code, ret.old_password);
       api
@@ -77,9 +81,9 @@ const Login = ({ handleLogin, auth }) => {
         .then(() => {
           const token = sessionStorage.getItem('token_as_new');
           sessionStorage.setItem('token', token);
-          dispatch({ type: AUTHORIZED, payload: token});
+          dispatch({ type: AUTHORIZED, payload: token });
           history.push(ROUTES.HOME);
-          
+
           notification.success({
             placement: 'bottomRight',
             message: t('messages.loginSuccess'),
@@ -98,39 +102,34 @@ const Login = ({ handleLogin, auth }) => {
           history.push(ROUTES.LOG_OUT);
         });
     }
-  }
+  };
 
-  const changePwd = (
-    language,
-    user_code,
-    password,
-    dispatch
-  ) => {
+  const changePwd = (language, user_code, password, dispatch) => {
     Modal.info({
       className: 'form-container',
-      title: t("operations.changePassword"),
+      title: t('operations.changePassword'),
       centered: true,
       width: '25vw',
       icon: <SafetyCertificateOutlined />,
       keyboard: false,
       content: (
-      // <SWRConfig
-      //     value={{
-      //     refreshInterval: 0,
-      //     fetcher,
-      //     }}
-      // >
-        <ChangePassword 
-          language={language} 
-          user_code={user_code} 
-          old={password} 
-          dispatch={dispatch} 
-          onReturn={onChangePassword} 
+        // <SWRConfig
+        //     value={{
+        //     refreshInterval: 0,
+        //     fetcher,
+        //     }}
+        // >
+        <ChangePassword
+          language={language}
+          user_code={user_code}
+          old={password}
+          dispatch={dispatch}
+          onReturn={onChangePassword}
         />
-      // </SWRConfig>
+        // </SWRConfig>
       ),
       okButtonProps: {
-      style: { display: 'none' },
+        style: { display: 'none' },
       },
     });
 
@@ -138,10 +137,10 @@ const Login = ({ handleLogin, auth }) => {
   };
 
   const onFaAuth = (ret) => {
-    if (ret.ret_code === "cancel") {
+    if (ret.ret_code === 'cancel') {
       history.push(ROUTES.LOG_OUT);
     } else {
-      const {dispatch} = ret;
+      const { dispatch } = ret;
       api
         .post(AUTH.FA_AUTH, {
           per_code: ret.user_code,
@@ -151,9 +150,9 @@ const Login = ({ handleLogin, auth }) => {
         .then(() => {
           const token = sessionStorage.getItem('token_as_fa');
           sessionStorage.setItem('token', token);
-          dispatch({ type: AUTHORIZED, payload: token});
+          dispatch({ type: AUTHORIZED, payload: token });
           history.push(ROUTES.HOME);
-          
+
           notification.success({
             placement: 'bottomRight',
             message: t('messages.loginSuccess'),
@@ -172,39 +171,34 @@ const Login = ({ handleLogin, auth }) => {
           history.push(ROUTES.LOG_OUT);
         });
     }
-  }
+  };
 
-  const faAuth = (
-    language,
-    user_code,
-    password,
-    dispatch
-  ) => {
+  const faAuth = (language, user_code, password, dispatch) => {
     Modal.info({
       className: 'form-container',
-      title: t("operations.faCode"),
+      title: t('operations.faCode'),
       centered: true,
       width: '25vw',
       icon: <SafetyCertificateOutlined />,
       keyboard: false,
       content: (
-      // <SWRConfig
-      //     value={{
-      //     refreshInterval: 0,
-      //     fetcher,
-      //     }}
-      // >
-        <FaAuth 
-          language={language} 
-          user_code={user_code} 
-          old={password} 
-          dispatch={dispatch} 
-          onReturn={onFaAuth} 
+        // <SWRConfig
+        //     value={{
+        //     refreshInterval: 0,
+        //     fetcher,
+        //     }}
+        // >
+        <FaAuth
+          language={language}
+          user_code={user_code}
+          old={password}
+          dispatch={dispatch}
+          onReturn={onFaAuth}
         />
-      // </SWRConfig>
+        // </SWRConfig>
       ),
       okButtonProps: {
-      style: { display: 'none' },
+        style: { display: 'none' },
       },
     });
 
@@ -227,7 +221,7 @@ const Login = ({ handleLogin, auth }) => {
             onOk: async () => {
               sessionStorage.setItem('token', response.data.token);
               dispatch({ type: AUTHORIZED, payload: response.data.token });
-                  
+
               await api
                 .post(COMMON.KILL_SESSIONS, {
                   per_code: values?.code,
@@ -235,7 +229,7 @@ const Login = ({ handleLogin, auth }) => {
                 })
                 .then(() => {
                   history.push(ROUTES.HOME);
-                  
+
                   notification.success({
                     placement: 'bottomRight',
                     message: t('messages.loginSuccess'),
@@ -248,7 +242,7 @@ const Login = ({ handleLogin, auth }) => {
                     console.log(error.message);
                   });
                 });
-              },
+            },
             onCancel() {
               sessionStorage.setItem('token', response.data.token); //So log out can delete session from db
               history.push(ROUTES.LOG_OUT);
@@ -335,10 +329,14 @@ const Login = ({ handleLogin, auth }) => {
 
           <Divider />
           <h3>{t('generic.help')}</h3>
-          <a href="/manual.pdf" target="_blank">{t('operations.clickHere')}</a>
+          <a href="/manual.pdf" target="_blank">
+            {t('operations.clickHere')}
+          </a>
           <Divider />
           <h3>{t('generic.about')}</h3>
-          <a href="/eula.pdf" target="_blank">{t('operations.clickHere')}</a>
+          <a href="/eula.pdf" target="_blank">
+            {t('operations.clickHere')}
+          </a>
         </div>
       ),
     });
@@ -354,7 +352,7 @@ const Login = ({ handleLogin, auth }) => {
     form.setFieldsValue({
       code: sessionStorage.getItem('user'),
       password: sessionStorage.getItem('password'),
-    })
+    });
   }, []);
 
   return (
@@ -364,13 +362,13 @@ const Login = ({ handleLogin, auth }) => {
       </Helmet>
 
       <Version>
-        {t('generic.version')}: {SETTINGS.VERSION}
+        {t('generic.version')}: {SETTINGS.VERSION} {isFSC ? ' - FSC' : ''}
       </Version>
 
-      <FormContainer>
+      <FormContainer isFSC={isFSC}>
         <FormBlock>
           <LoginTitle>
-            <img src="/images/omega.png" alt="OMEGA 5000" />
+            <img src={isFSC ? '/images/om_fsc.png' : '/images/omega.png'} alt="OMEGA 5000" />
           </LoginTitle>
 
           <LoginSubtitle>{t('generic.login')}</LoginSubtitle>
@@ -398,7 +396,9 @@ const Login = ({ handleLogin, auth }) => {
             </Form.Item>
 
             <div style={{ textAlign: 'center', color: 'red', marginBottom: 10 }}>
-              {attempts !== null && !isNaN(attempts) && status !== -1 ? `${t('descriptions.availableAttempts')}${attempts}` : ``}
+              {attempts !== null && !isNaN(attempts) && status !== -1
+                ? `${t('descriptions.availableAttempts')}${attempts}`
+                : ``}
             </div>
 
             <Row gutter={[12, 12]}>
@@ -447,7 +447,7 @@ const Login = ({ handleLogin, auth }) => {
         </LoginFooter>
       </FormContainer>
 
-      <GraphicContainer>
+      <GraphicContainer isFSC={isFSC}>
         <Carousel autoplay dotPosition="bottom">
           <>
             <SliderContainer>

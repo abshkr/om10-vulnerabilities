@@ -2,14 +2,23 @@ import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
 
 import columns from './columns';
+import usePagination from 'hooks/use-pagination';
+
 import { JOURNAL } from '../../../api';
 import { DataTable } from '../../../components';
 import api from 'api';
 
 const Historical = ({ t, start, end, setData, setFields, search }) => {
-  const { data: payload, isValidating, revalidate } = useSWR(`${JOURNAL.READ}?start_date=${start}&end_date=${end}`);
-  
   const [localData, setLocalData] = useState([]);
+  const [sortBy, setSortBy] = useState(null);
+
+  const { setCount, take, offset, paginator } = usePagination(500);
+
+  const { data: payload, isValidating, revalidate } = useSWR(
+    `${JOURNAL.READ}?start_date=${start}&end_date=${end}&start_num=${take}&end_num=${offset}${
+      sortBy ? `&sort_by=${sortBy}` : ''
+    }`
+  );
 
   const fields = columns(t);
 
@@ -19,7 +28,7 @@ const Historical = ({ t, start, end, setData, setFields, search }) => {
         params: values,
       })
       .then((res) => {
-        // setCompartments(res.data.records);
+        setCount(res?.data?.count);
         setLocalData(res.data.records);
         setData(res.data.records);
       });
@@ -35,6 +44,7 @@ const Historical = ({ t, start, end, setData, setFields, search }) => {
 
   useEffect(() => {
     if (payload?.records) {
+      setCount(payload?.count || 0);
       setData(payload?.records);
       setLocalData(payload?.records);
       setFields(fields);
@@ -42,7 +52,28 @@ const Historical = ({ t, start, end, setData, setFields, search }) => {
     }
   }, [payload]);
 
-  return <DataTable columns={columns(t)} data={localData} isLoading={isValidating} />;
+  return (
+    <>
+      <DataTable
+        height="295px"
+        columns={columns(t)}
+        data={localData}
+        isLoading={isValidating}
+        onSortChanged={setSortBy}
+      />
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignContent: 'center',
+          alignItems: 'center',
+          marginTop: 10,
+        }}
+      >
+        {paginator}
+      </div>
+    </>
+  );
 };
 
 export default Historical;

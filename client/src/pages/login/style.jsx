@@ -28,8 +28,8 @@ const ButtonContainer = styled.span`
 
 const FormContainer = styled.div`
   width: 33.3vw;
-  border: 1px solid #e2eefb;
-  background-color: #a9bfd2;
+  border: 1px solid ${(props) => (props?.isFSC ? '#d2a9ab' : '#e2eefb')};
+  background-color: ${(props) => (props?.isFSC ? '#d2a9ab' : '#a9bfd2')};
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -110,11 +110,12 @@ const SliderContainer = styled.div`
 `;
 
 const GraphicContainer = styled.div`
-  width: 66vw;
+  width: 67vw;
   height: 100vh;
 
   & .ant-carousel {
-    background: #0054a4;
+    background: ${(props) =>
+      props?.isFSC ? 'radial-gradient(circle, rgba(254,111,111,1) 0%, rgba(95,98,152,1) 100%)' : '#0054a4'};
     height: 100vh;
   }
 
