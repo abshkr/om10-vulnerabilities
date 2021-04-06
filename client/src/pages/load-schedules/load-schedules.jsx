@@ -192,6 +192,7 @@ const LoadSchedules = () => {
           access={access}
           url={url}
           locateTrip={locateTrip}
+          tabMode={config?.scheduleTabMode}
         />
       )}
     </Page>

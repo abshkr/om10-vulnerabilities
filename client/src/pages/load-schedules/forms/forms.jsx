@@ -73,10 +73,11 @@ import { ManualTransactionsPopup } from '../../manual-transactions';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, url, locateTrip }) => {
+const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, tabMode }) => {
   // const { manageMakeManualTransaction, showSeals, manageAdditionalHostData, manageViewDeliveryDetails } = useConfig();
   const config = useConfig();
   const {
+    // scheduleTabMode,
     manageMakeManualTransaction,
     showSeals,
     manageAdditionalHostData,
@@ -93,7 +94,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const [tab, setTab] = useState('0');
   const [drawerWidth, setDrawerWidth] = useState('75vw');
 
-  const [mode, setMode] = useState('2');
+  const [mode, setMode] = useState(tabMode);
   const [unload, setUnload] = useState(false);
   const [supplier, setSupplier] = useState(undefined);
   const [drawer, setDrawer] = useState(undefined);
@@ -587,6 +588,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   }, [setFieldsValue, value]);
 
   useEffect(() => {
+    const modeSet = config.scheduleTabMode;
+
     if (!value && !visible) {
       setSupplier(undefined);
       setDrawer(undefined);
@@ -594,11 +597,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       setTanker(undefined);
 
       resetFields();
-
-      setMode('2'); //By default, set preschedule
+      setMode(modeSet);
       setUnload(false);
       setFieldsValue({
-        shls_ld_type: '2',
+        shls_ld_type: modeSet,
       });
 
       /* setFieldsValue({
@@ -606,7 +608,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
         shls_exp2: !expHour ? moment() : moment().add(_.toNumber(expHour), 'hours'),
       }); */
     }
-  }, [resetFields, setFieldsValue, visible, value, expHour]);
+  }, [resetFields, setFieldsValue, visible, value, expHour, mode, setMode]);
 
   useEffect(() => {
     if (trips) {
@@ -753,7 +755,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
         </>
       }
     >
-      <Form layout="vertical" form={form} scrollToFirstError initialValues={{ shls_ld_type: '2' }}>
+      <Form layout="vertical" form={form} scrollToFirstError initialValues={{ shls_ld_type: mode }}>
         <Tabs defaultActiveKey="1" activeKey={tab} onChange={onTabChange} animated={false}>
           <TabPane tab={t('tabColumns.general')} key="0">
             <Form.Item name="supermode" noStyle />
