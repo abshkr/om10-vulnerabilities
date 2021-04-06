@@ -148,6 +148,7 @@
     "preSchedProd": "Select product for compartment",
     "preSchedProdUnit": "Select unit for compartment",
     "prescheduleReady": "Select product in at least one compartment",
+    "prescheduleReadyByDragDrop": "Drag and drop the product in at least one compartment",
     "printBOLFailed": "Failed to reverse the BOL",
     "printBOLSuccess": "You have Printed the BOL",
     "productGrpUsed": "Cannot delete product group that has product in it",

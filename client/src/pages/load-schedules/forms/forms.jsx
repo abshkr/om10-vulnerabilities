@@ -248,7 +248,9 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       if (!findResult) {
         notification.error({
           message: t('messages.validationFailed'),
-          description: t('descriptions.prescheduleReady'),
+          description: config?.siteAllowDragDrop
+            ? t('descriptions.prescheduleReadyByDragDrop')
+            : t('descriptions.prescheduleReady'),
         });
         return;
       }
