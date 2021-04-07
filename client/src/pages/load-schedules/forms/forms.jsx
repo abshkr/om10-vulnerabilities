@@ -874,13 +874,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
                   onChange={setSoldTo}
                   popupManager={PartnershipManager}
                   popupTitle={t('fields.soldTo') + ' - ' + t('pageNames.partnership')}
-                  popupDisabled={!supplier}
+                  popupDisabled={!(value ? value.supplier_code : supplier)}
                   popupIcon={<CaretDownOutlined />}
                   popupLabel={''}
                   popupParams={{
                     partner_code: soldTo,
                     partner_type: 'AG',
-                    partner_cmpy_code: supplier,
+                    partner_cmpy_code: value ? value.supplier_code : supplier,
                     partner_cust_acct: '',
                   }}
                 />
@@ -900,13 +900,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
                   onChange={setShipTo}
                   popupManager={PartnershipManager}
                   popupTitle={t('fields.shipTo') + ' - ' + t('pageNames.partnership')}
-                  popupDisabled={!supplier}
+                  popupDisabled={!(value ? value.supplier_code : supplier)}
                   popupIcon={<CaretDownOutlined />}
                   popupLabel={''}
                   popupParams={{
                     partner_code: shipTo,
                     partner_type: 'WE',
-                    partner_cmpy_code: supplier,
+                    partner_cmpy_code: value ? value.supplier_code : supplier,
                     partner_cust_acct: '',
                   }}
                 />
@@ -951,9 +951,9 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               <Compartments
                 form={form}
                 value={value}
-                drawer={supplier} //Same as v9, when supplier != drawer, use supplier product
-                tanker={tanker}
-                supplier={supplier}
+                drawer={value ? value.supplier_code : supplier} //Same as v9, when supplier != drawer, use supplier product
+                tanker={!tanker ? value?.tnkr_code : tanker}
+                supplier={value ? value.supplier_code : supplier}
                 customer={site_customer_product ? customer : undefined}
                 config={config}
               />
@@ -963,7 +963,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               <Products
                 form={form}
                 value={value}
-                drawer={supplier}
+                drawer={value ? value.supplier_code : supplier}
                 customer={site_customer_product ? customer : undefined}
                 access={access}
               />

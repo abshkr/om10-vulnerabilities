@@ -24,11 +24,10 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
   const [tableAPI, setTableAPI] = useState(null);
 
   useEffect(() => {
-    // console.log('............A', value, setFieldsValue, config?.site_customer_product);
-    if (value) {
-      setCompartments([]);
+    setCompartments([]);
+    setProducts([]);
 
-      // get compartments
+    if (value) {
       api
         .get(LOAD_SCHEDULES.COMPARTMENTS, {
           params: {
@@ -43,70 +42,27 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
             compartments: res.data.records,
           });
         });
-
-      // get products
-      if (config) {
-        setProducts([]);
-
-        api
-          .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
-            params: config?.site_customer_product
-              ? {
-                  drawer_code: value.supplier_code,
-                  // customer: value ? value.shls_cust : customer,
-                  customer: value.shls_cust,
-                }
-              : {
-                  drawer_code: value.supplier_code,
-                },
-          })
-          .then((res) => setProducts(res.data.records));
-      }
     }
-  }, [value, config, setFieldsValue, setCompartments, setProducts]);
+  }, [value, setFieldsValue]);
 
   useEffect(() => {
-    // console.log('............B', drawer, tanker, customer, config?.site_customer_product, IS_CREATING);
     if (IS_CREATING) {
-      if (tanker) {
-        api
-          .get(LOAD_SCHEDULES.COMPARTMENTS_BY_TANKER, {
-            params: {
-              tnkr_code: tanker,
-            },
-          })
-          .then((res) => {
-            setCompartments(res.data.records);
-
-            setFieldsValue({
-              compartments: res.data.records,
-            });
-          });
-      }
-
-      if (
-        drawer &&
-        config &&
-        (!config?.site_customer_product || (config?.site_customer_product && customer))
-      ) {
-        api
-          .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
-            params: config?.site_customer_product
-              ? {
-                  drawer_code: drawer,
-                  customer: customer,
-                  // customer: value ? value.shls_cust : customer,
-                }
-              : {
-                  drawer_code: drawer,
-                },
-          })
-          .then((res) => setProducts(res.data.records));
-      }
+      api
+        .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
+          params: config?.site_customer_product
+            ? {
+                drawer_code: drawer,
+                customer: value ? value.shls_cust : customer,
+              }
+            : {
+                drawer_code: drawer,
+              },
+        })
+        .then((res) => setProducts(res.data.records));
     }
-  }, [IS_CREATING, tanker, drawer, config, customer, setCompartments, setProducts]);
+  }, [drawer, tanker, customer]);
 
-  /* useEffect(() => {
+  useEffect(() => {
     setCompartments([]);
     setProducts([]);
 
@@ -132,8 +88,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
           params: config?.site_customer_product
             ? {
                 drawer_code: value.supplier_code,
-                // customer: value ? value.shls_cust : customer,
-                customer: value.shls_cust,
+                customer: value ? value.shls_cust : customer,
               }
             : {
                 drawer_code: value.supplier_code,
@@ -141,8 +96,8 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
         })
         .then((res) => setProducts(res.data.records));
     }
-  }, [value, tanker, config?.site_customer_product, setFieldsValue, setCompartments, setProducts]);
- */
+  }, [value, tanker, setFieldsValue, setCompartments]);
+
   const rowEditingStopped = (values) => {
     // console.log(values)
 
