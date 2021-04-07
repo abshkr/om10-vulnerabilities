@@ -115,7 +115,7 @@ const useConfig = () => {
     carrcode_tankernum_tag: false,
     enable_meter_facor: false,
     airBuoyancyFactor: 0.0011,
-    scheduleTabMode: '2',
+    scheduleTabMode: null,
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
