@@ -108,6 +108,7 @@ const useConfig = () => {
     refreshProductMovement: 10000,
     carrcode_tankernum_tag: false,
     enable_meter_facor: false,
+    site_default_shls_ld_type: '2',
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -278,6 +279,7 @@ const useConfig = () => {
           : 10000,
         carrcode_tankernum_tag: configurationObject?.SITE_CARRCODE_TANKERNUM_TAG,
         enable_meter_facor: configurationObject?.SITE_ENABLE_METER_FACTOR,
+        site_default_shls_ld_type: configurationObject?.SITE_DEFAULT_SHLS_LD_TYPE || '2',
       });
     }
     // eslint-disable-next-line

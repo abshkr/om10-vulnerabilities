@@ -71,7 +71,7 @@ import { ManualTransactionsPopup } from '../../manual-transactions';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, url, locateTrip }) => {
+const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, default_shls_ld_type }) => {
   // const { manageMakeManualTransaction, showSeals, manageAdditionalHostData, manageViewDeliveryDetails } = useConfig();
   const config = useConfig();
   const {
@@ -91,7 +91,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const [tab, setTab] = useState('0');
   const [drawerWidth, setDrawerWidth] = useState('75vw');
 
-  const [mode, setMode] = useState('2');
+  const [mode, setMode] = useState(default_shls_ld_type);
   const [unload, setUnload] = useState(false);
   const [supplier, setSupplier] = useState(undefined);
   const [drawer, setDrawer] = useState(undefined);
@@ -603,10 +603,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
       resetFields();
 
-      setMode('2'); //By default, set preschedule
+      setMode(default_shls_ld_type);
       setUnload(false);
       setFieldsValue({
-        shls_ld_type: '2',
+        shls_ld_type: default_shls_ld_type,
       });
 
       /* setFieldsValue({
@@ -755,7 +755,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
         </>
       }
     >
-      <Form layout="vertical" form={form} scrollToFirstError initialValues={{ shls_ld_type: '2' }}>
+      <Form layout="vertical" form={form} scrollToFirstError initialValues={{ shls_ld_type: default_shls_ld_type }}>
         <Tabs defaultActiveKey="1" activeKey={tab} onChange={onTabChange} animated={false}>
           <TabPane tab={t('tabColumns.general')} key="0">
             <Form.Item name="supermode" noStyle />

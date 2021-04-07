@@ -18,7 +18,7 @@ import SourceRender from './source-render';
 import _ from 'lodash';
 
 const LoadSchedules = () => {
-  const { scheduleDateRange } = useConfig();
+  const { scheduleDateRange, site_default_shls_ld_type } = useConfig();
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -192,6 +192,7 @@ const LoadSchedules = () => {
           access={access}
           url={url}
           locateTrip={locateTrip}
+          default_shls_ld_type={site_default_shls_ld_type}
         />
       )}
     </Page>
