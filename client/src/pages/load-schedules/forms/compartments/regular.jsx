@@ -46,7 +46,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
   }, [value, setFieldsValue]);
 
   useEffect(() => {
-    if (IS_CREATING) {
+    if (IS_CREATING && drawer) {
       api
         .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
           params: config?.site_customer_product

@@ -23,9 +23,15 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
   const [products, setProducts] = useState([]);
   const [tableAPI, setTableAPI] = useState(null);
 
+  // this section is for debugging purpose
+  // useEffect(() => {
+  //   console.log('xxxxxxxxxxxxxxxxxx products', products);
+  // }, [products]);
+
   useEffect(() => {
     setCompartments([]);
     setProducts([]);
+    // console.log('yyyyyyyyyyyyyyyyyy products, value', products, value);
 
     if (value) {
       api
@@ -46,7 +52,13 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
   }, [value, setFieldsValue]);
 
   useEffect(() => {
-    if (IS_CREATING) {
+    // this seems the place that caused the disappearance of product list
+    // IS_CREATING could be true even in EDIT mode when the form is just opened, because "value" is NULL or undefined then
+    // and the drawer is also undefined. API will return nothing when it is called with undefined drawer/customer
+    // if (IS_CREATING) {
+    // So we add one more check on drawer here - only calls API when drawer is not NULL and IS_CREATING is true,
+    // which will never happen in EDIT_MODE, so the issue is solved.
+    if (IS_CREATING && drawer) {
       api
         .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
           params: config?.site_customer_product
@@ -58,7 +70,10 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
                 drawer_code: drawer,
               },
         })
-        .then((res) => setProducts(res.data.records));
+        .then((res) => {
+          setProducts(res.data.records);
+          // console.log('zzzzzzzzzzzzzzzzzzz res.data.records, value', res.data.records, IS_CREATING, drawer, tanker, customer);
+        });
     }
   }, [drawer, tanker, customer]);
 
