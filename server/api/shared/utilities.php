@@ -310,7 +310,7 @@ class Utilities
         }
 
         $result = array();
-        if (READ_PAGINATION) {
+        if (isset($object->start_num) && isset($object->end_num)) {
             $result["count"] = $object->pagination_count();
             $result["next"] = null;
             $result["previous"] = null;
@@ -344,7 +344,7 @@ class Utilities
          * in Tanker, so the hook method is composition_hook
          */
         $num = self::retrieve($temp_array, $object, $stmt, $method);
-        if (READ_PAGINATION) {
+        if (isset($start_num->start_num) && isset($start_num->end_num)) {
             $result["retrieved"] = $num;
             if (intval($object->start_num) + $num < $result["count"]) {
                 $next_start = $object->end_num + 1;

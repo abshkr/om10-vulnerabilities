@@ -52,10 +52,10 @@ define('EXPIRY_TOKEN_ENABLED', false);
 
 //If it is true, then for some read.php, use pagination
 //For pagination, object must implement pagination_count() function inherited from common_class.php
-define('READ_PAGINATION', false);
+// define('READ_PAGINATION', true);
 
-//One page include 100 records by default
-define('PAGINATION_PAGECOUNT', 100);
+//One page include 500 records by default
+// define('PAGINATION_PAGECOUNT', 500);
 
 define('JASPERREPORT_DIR', 'reports/');
 
