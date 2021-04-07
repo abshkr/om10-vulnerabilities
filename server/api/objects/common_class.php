@@ -126,7 +126,7 @@ class CommonClass
     protected function pagination_query($query)
     {
         $paginaged_query = $query;
-        if (READ_PAGINATION) {
+        if (isset($this->start_num) && isset($this->end_num)) {
             //sort_by sample: desc(start_date), asc(end_date)
             if (isset($this->sort_by)) {
                 $order_pos = strpos(strtoupper($query), 'ORDER BY');
@@ -161,14 +161,15 @@ class CommonClass
 
     protected function pagination_binds($stmt)
     {
-        if (READ_PAGINATION) {
+        if (isset($this->start_num) && isset($this->end_num)) {
+        // if (READ_PAGINATION) {
             if (!isset($this->start_num)) {
                 $this->start_num = 0;
             }
 
-            if (!isset($this->end_num)) {
-                $this->end_num = $this->start_num + PAGINATION_PAGECOUNT;
-            }
+            // if (!isset($this->end_num)) {
+            //     $this->end_num = $this->start_num + PAGINATION_PAGECOUNT;
+            // }
 
             oci_bind_by_name($stmt, ':start_num', $this->start_num);
             oci_bind_by_name($stmt, ':end_num', $this->end_num);

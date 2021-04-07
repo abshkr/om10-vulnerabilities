@@ -390,7 +390,7 @@ class OMJournal extends CommonClass
                 TO_CHAR(GEN_DATE, 'D') DAY_OF_WEEK,
                 MSG_CLASS CATEGORY 
             FROM GUI_SITE_JOURNAL 
-            WHERE REGION_CODE = 'ENG' AND MSG_EVENT = :msg_event
+            WHERE REGION_CODE = 'ENG' AND MSG_EVENT = :msg_event AND GEN_DATE > SYSDATE - 7
             GROUP BY TO_CHAR(GEN_DATE, 'Day'), MSG_CLASS, TO_CHAR(GEN_DATE, 'D')
             ORDER BY TO_CHAR(GEN_DATE, 'D'), MSG_CLASS";
         } else {
@@ -399,7 +399,7 @@ class OMJournal extends CommonClass
                     TO_CHAR(GEN_DATE, 'D') DAY_OF_WEEK,
                     MSG_CLASS CATEGORY 
                 FROM GUI_SITE_JOURNAL 
-                WHERE REGION_CODE = 'ENG' 
+                WHERE REGION_CODE = 'ENG' AND GEN_DATE > SYSDATE - 7
                 GROUP BY TO_CHAR(GEN_DATE, 'Day'), MSG_CLASS, TO_CHAR(GEN_DATE, 'D')
                 ORDER BY TO_CHAR(GEN_DATE, 'D'), MSG_CLASS";
         }
@@ -416,12 +416,14 @@ class OMJournal extends CommonClass
         $result["catetories"] = $catetories;
 
         $alarms = array();
-        $query = "SELECT COUNT(*) RECORDS, 
+        $query = "SELECT COUNT(*) RECORDS, TO_CHAR(GEN_DATE, 'YYYY-MM-DD') FORMATED_DATE, 
                     TO_CHAR(GEN_DATE, 'Month') MONTH, 
                     TO_CHAR(GEN_DATE, 'MM') MONTH_SEQ, 
                     TO_CHAR(GEN_DATE, 'DD') DAY
                 FROM GUI_SITE_JOURNAL WHERE REGION_CODE = 'ENG' AND MSG_EVENT = 'ALARM' 
-                GROUP BY TO_CHAR(GEN_DATE, 'Month'), TO_CHAR(GEN_DATE, 'DD'), TO_CHAR(GEN_DATE, 'MM')
+                GROUP BY TO_CHAR(GEN_DATE, 'Month'), 
+                    TO_CHAR(GEN_DATE, 'DD'), TO_CHAR(GEN_DATE, 'MM'), 
+                    TO_CHAR(GEN_DATE, 'YYYY-MM-DD')
                 ORDER BY TO_CHAR(GEN_DATE, 'MM'), TO_CHAR(GEN_DATE, 'DD')";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, $this->commit_mode)) {

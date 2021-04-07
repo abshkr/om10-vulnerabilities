@@ -1050,7 +1050,7 @@ class Schedule extends CommonClass
             ";
         }
         $query .= "
-            ORDER BY SHLS_CALDATE DESC
+            ORDER BY SHLS_CALDATE DESC, SUPPLIER_CODE, SHLS_TRIP_NO
         ";
         $query = $this->pagination_query($query);
         $stmt = oci_parse($this->conn, $query);
