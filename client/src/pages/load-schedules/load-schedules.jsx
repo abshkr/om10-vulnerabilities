@@ -16,6 +16,7 @@ import Forms from './forms';
 import api from 'api';
 import SourceRender from './source-render';
 import _ from 'lodash';
+import usePagination from 'hooks/use-pagination';
 
 const LoadSchedules = () => {
   const config = useConfig();
@@ -32,7 +33,8 @@ const LoadSchedules = () => {
   const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
-  const url = `${LOAD_SCHEDULES.READ}?start_date=${start}&end_date=${end}`;
+  const { setCount, take, offset, paginator } = usePagination(500);
+  const url = `${LOAD_SCHEDULES.READ}?start_date=${start}&end_date=${end}&start_num=${take}&end_num=${offset}`;
 
   const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
 
@@ -119,6 +121,7 @@ const LoadSchedules = () => {
       setData(payload?.records);
       // setLoading(false);
       payload.records = null;
+      setCount(payload?.count || 0);
     }
   }, [payload]);
 
@@ -183,7 +186,17 @@ const LoadSchedules = () => {
         autoColWidth
         clearFilterPlus={revalidate}
       />
-
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignContent: 'center',
+          alignItems: 'center',
+          marginTop: 10,
+        }}
+      >
+        {paginator}
+      </div>
       {visible && (
         <Forms
           value={selected}
