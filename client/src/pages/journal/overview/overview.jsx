@@ -30,14 +30,14 @@ export default function Overview({ doSearch, setTab, setRange }) {
   const startOfYesterday = moment().subtract(1, 'day').startOf('day').format(DATE_TIME_FORMAT);
   const endOfYesterday = moment().subtract(1, 'day').endOf('day').format(DATE_TIME_FORMAT);
 
-  function onNavigateToHistorical(start, end, messageClass = undefined) {
+  function onNavigateToHistorical(start, end, messageEvent = undefined) {
     const startIndex = start;
     const endIndex = end || moment().format(DATE_TIME_FORMAT);
 
     doSearch({
       end_date: endIndex,
-      msg_class: messageClass,
-      msg_event: undefined,
+      msg_class: undefined,
+      msg_event: messageEvent,
       start_date: startIndex,
       target_str: undefined,
       use_date_range: undefined,
