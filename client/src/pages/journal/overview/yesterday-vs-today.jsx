@@ -1,25 +1,42 @@
 import React from 'react';
 import ReactApexChart from 'react-apexcharts';
 
-const options = {
-  legend: {
-    position: 'bottom',
-
-    markers: {
-      radius: 2,
+const YesterdayVsToday = ({ data }) => {
+  const options = {
+    chart: {
+      type: 'bar',
+      stacked: true,
+      stackType: '100%',
+      toolbar: {
+        show: false,
+      },
     },
-  },
-  chart: {
-    toolbar: {
-      show: false,
+    plotOptions: {
+      bar: {
+        horizontal: true,
+      },
     },
-  },
+    xaxis: {
+      categories: ['Alarms'],
+    },
+  };
 
-  labels: ['Yesterday', 'Today'],
-};
+  const series = [
+    {
+      name: 'Today',
+      data: [1],
+    },
+    {
+      name: 'Yesterday',
+      data: [3],
+    },
+  ];
 
-const YesterdayVsToday = ({ yesterday, today }) => {
-  return <ReactApexChart options={options} series={[yesterday, today]} type="donut" height={337} />;
+  return (
+    <div>
+      <ReactApexChart options={options} series={series} type="bar" height={310} />
+    </div>
+  );
 };
 
 export default YesterdayVsToday;

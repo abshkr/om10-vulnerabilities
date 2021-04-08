@@ -1,5 +1,9 @@
 {
   "descriptions": {
+    "notInService": "Not In Service",
+    "working": "Working",
+    "notUpdatedOnTime": "Not Updated On Time",
+    "atgConnectionUnknown": "ATG Connection Unknown",
     "currentlyInFSCMode": "Currently In FSC Mode.",
     "activateSuccess": "You have activated the record",
     "availableAttempts": "Your available attempts left: ",

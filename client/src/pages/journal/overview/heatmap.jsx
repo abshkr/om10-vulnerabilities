@@ -1,91 +1,147 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactApexChart from 'react-apexcharts';
+import { groupBy, toNumber } from 'lodash';
 
-function random(min, max) {
-  return Math.floor(Math.random() * (max - min + 1) + min);
-}
+import useConfig from 'hooks/use-config';
 
-function generate() {
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const Heatmap = ({ data, onClick }) => {
+  const {
+    heatmapAverageFrom,
+    heatmapAverageTo,
+    heatmapHighFrom,
+    heatmapHighTo,
+    heatmapExtremeFrom,
+    heatmapExtremeTo,
+  } = useConfig();
 
-  const payload = [];
+  const [series, setSeries] = useState([]);
+  const [selected, setSelected] = useState(null);
 
-  for (let month = 0; month < months.length; month++) {
-    const data = [];
+  const low = heatmapAverageFrom >= 9999999 ? 'Low (Not Set)' : `Low (${0} - ${heatmapAverageFrom})`;
 
-    for (let day = 0; day < 30; day++) {
-      data.push({
-        x: day,
-        y: random(1, 100),
-      });
-    }
+  const average =
+    heatmapAverageFrom >= 9999999 || heatmapAverageTo >= 9999999
+      ? 'Average (Not Set)'
+      : `Average (${heatmapAverageFrom} - ${heatmapAverageTo})`;
 
-    payload.push({
-      name: months[month],
-      data,
-    });
-  }
+  const high =
+    heatmapHighFrom >= 9999999 || heatmapHighTo >= 9999999
+      ? 'High (Not Set)'
+      : `High (${heatmapHighFrom} - ${heatmapHighTo})`;
 
-  return payload;
-}
+  const extreme =
+    heatmapExtremeFrom >= 9999999 || heatmapExtremeTo >= 9999999
+      ? 'Extreme (Not Set)'
+      : `Extreme (${heatmapExtremeFrom} - ${heatmapExtremeTo})`;
 
-const series = generate();
+  const options = {
+    chart: {
+      height: 350,
+      type: 'heatmap',
+      toolbar: {
+        show: false,
+      },
+      events: {
+        dataPointSelection: (event, chartContext, config) => {
+          const x = toNumber(event.target.attributes['i'].value);
+          const y = toNumber(event.target.attributes['j'].value);
 
-const options = {
-  chart: {
-    height: 350,
-    type: 'heatmap',
-    toolbar: {
-      show: false,
-    },
-  },
-  legend: {
-    position: 'bottom',
-
-    markers: {
-      radius: 2,
-    },
-  },
-
-  plotOptions: {
-    heatmap: {
-      shadeIntensity: 0.5,
-      radius: 0,
-      useFillColorAsStroke: true,
-      colorScale: {
-        ranges: [
-          {
-            from: 0,
-            to: 5,
-            name: 'low',
-            color: '#00A100',
-          },
-          {
-            from: 6,
-            to: 20,
-            name: 'medium',
-            color: '#128FD9',
-          },
-          {
-            from: 21,
-            to: 45,
-            name: 'high',
-            color: '#FFB200',
-          },
-          {
-            from: 46,
-            to: 99999999,
-            name: 'extreme',
-            color: '#FF0000',
-          },
-        ],
+          setSelected({ x, y });
+        },
       },
     },
-  },
-};
 
-const Heatmap = () => {
-  return <ReactApexChart options={options} series={series} type="heatmap" height={290} />;
+    legend: {
+      position: 'bottom',
+
+      markers: {
+        radius: 2,
+      },
+    },
+
+    plotOptions: {
+      heatmap: {
+        shadeIntensity: 0.5,
+        radius: 0,
+        useFillColorAsStroke: true,
+        colorScale: {
+          ranges: [
+            {
+              from: 0,
+              to: heatmapAverageFrom,
+              name: low,
+              color: '#00A100',
+            },
+            {
+              from: heatmapAverageFrom,
+              to: heatmapAverageTo,
+              name: average,
+              color: '#128FD9',
+            },
+            {
+              from: heatmapHighFrom,
+              to: heatmapHighTo,
+              name: high,
+              color: '#FFB200',
+            },
+            {
+              from: heatmapExtremeFrom,
+              to: heatmapExtremeTo,
+              name: extreme,
+              color: '#FF0000',
+            },
+          ],
+        },
+      },
+    },
+  };
+
+  useEffect(() => {
+    const node = series[selected?.x]?.data[selected?.y];
+
+    if (node?.date) {
+      onClick(`${node?.date} 00:00:00`, `${node?.date} 23:59:59`, 'ALARM');
+    }
+  }, [selected]);
+
+  useEffect(() => {
+    if (data) {
+      const payload = [];
+
+      const grouped = groupBy(data, 'month');
+      const months = Object.keys(grouped);
+
+      for (let index = 0; index < months.length; index++) {
+        const month = months[index];
+        const points = [];
+
+        const node = grouped[month];
+
+        for (let index = 0; index < 31; index++) {
+          const day = index + 1;
+
+          const item = node.find((element) => toNumber(element?.day) === day);
+
+          const value = item?.records || 0;
+
+          points.push({
+            x: String(day),
+            y: value,
+            date: item?.formated_date,
+          });
+        }
+
+        payload.push({
+          name: month,
+          data: points,
+        });
+      }
+
+      setSeries(payload);
+    }
+  }, [data]);
+
+  return <ReactApexChart options={options} series={series} type="heatmap" height={220} />;
 };
 
 export default Heatmap;

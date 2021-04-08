@@ -141,7 +141,9 @@ const Journal = () => {
       access={access}
     >
       <JournalContainer>
-        {selected === '0' && <Overview start={start} end={end} />}
+        {selected === '0' && (
+          <Overview start={start} end={end} doSearch={doSearch} setTab={setSelected} setRange={setRange} />
+        )}
         {selected === '1' && <Live t={t} setData={setData} setFields={setFields} />}
         {selected === '2' && (
           <Historical t={t} start={start} end={end} setData={setData} setFields={setFields} search={search} />

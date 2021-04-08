@@ -23,6 +23,8 @@ const Historical = ({ t, start, end, setData, setFields, search }) => {
   const fields = columns(t);
 
   const doSearch = (values) => {
+    console.log(values);
+
     api
       .get(JOURNAL.SEARCH, {
         params: values,

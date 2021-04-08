@@ -115,6 +115,12 @@ const useConfig = () => {
     carrcode_tankernum_tag: false,
     enable_meter_facor: false,
     airBuoyancyFactor: 0.0011,
+    heatmapAverageFrom: 40,
+    heatmapAverageTo: 149,
+    heatmapHighFrom: 150,
+    heatmapHighTo: 199,
+    heatmapExtremeFrom: 200,
+    heatmapExtremeTo: 99999,
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -292,6 +298,12 @@ const useConfig = () => {
         carrcode_tankernum_tag: configurationObject?.SITE_CARRCODE_TANKERNUM_TAG,
         enable_meter_facor: configurationObject?.SITE_ENABLE_METER_FACTOR,
         airBuoyancyFactor: configurationObject?.AIR_BUOYANCY_FACTOR || 0.0011,
+        heatmapAverageFrom: configurationObject?.HEATMAP_AVERAGE_FROM || 9999999,
+        heatmapAverageTo: configurationObject?.HEATMAP_AVERAGE_TO || 999999999999999,
+        heatmapHighFrom: configurationObject?.HEATMAP_HIGH_FROM || 999999999999999,
+        heatmapHighTo: configurationObject?.HEATMAP_HIGH_TO || 999999999999999,
+        heatmapExtremeFrom: configurationObject?.HEATMAP_EXTREME_FROM || 999999999999999,
+        heatmapExtremeTo: configurationObject?.HEATMAP_EXTREME_TO || 999999999999999,
       });
     }
     // eslint-disable-next-line
