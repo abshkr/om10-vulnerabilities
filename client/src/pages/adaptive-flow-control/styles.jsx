@@ -12,4 +12,9 @@ const AdaptiveFlowSummary = styled.div`
   display: flex;
   justify-content: space-around;
 `;
-export { AdaptiveFlowFooter, AdaptiveFlowSummary };
+
+const AdaptiveFlowExpansion = styled.div`
+  margin-top: 0px;
+  border: 2px solid orange;
+`;
+export { AdaptiveFlowFooter, AdaptiveFlowSummary, AdaptiveFlowExpansion };

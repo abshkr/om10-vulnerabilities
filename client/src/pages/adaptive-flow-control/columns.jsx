@@ -94,15 +94,19 @@ const columns = (data, t) => [
     key: 'flowRate',
     align: 'center',
     width: '20%',
-    render: (percent) => (
-      <div style={{ display: 'flex', flexDirection: 'column', width: '95%' }}>
+    render: (percentage) => (
+      <div style={{ display: 'flex', flexDirection: 'column', width: '90%' }}>
         <Progress
-          percent={percent > 100 ? 100 : percent}
-          strokeColor={percent > 100 ? '#ec6e68' : '#00A454'}
+          // percent={percentage > 100 ? 100 : percentage}
+          percent={percentage}
+          strokeColor={percentage > 100 ? '#ec6e68' : '#00A454'}
           strokeWidth={6}
           // if using exception, the percentage won't be showed
-          status={percent > 100 ? 'active' : 'normal'}
+          status={percentage > 100 ? 'active' : 'normal'}
           trailColor={'#e0e0e0'}
+          // Please note: Progress will adjust the "percentage" to <= 100 into "percent",
+          // so do not use Progress's "percent" attribute for display purpose
+          format={(percent) => `${percentage}%`}
         />
       </div>
     ),

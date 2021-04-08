@@ -205,6 +205,7 @@ const LoadSchedules = () => {
           access={access}
           url={url}
           locateTrip={locateTrip}
+          default_shls_ld_type={site_default_shls_ld_type}
         />
       )}
     </Page>

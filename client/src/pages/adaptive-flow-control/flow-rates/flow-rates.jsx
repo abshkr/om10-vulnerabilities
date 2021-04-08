@@ -1,8 +1,8 @@
 import React from 'react';
-import { Table } from 'antd';
+import { Table, Space } from 'antd';
 import _ from 'lodash';
 import columns from './columns';
-import { AdaptiveFlowSummary } from '../styles';
+import { AdaptiveFlowSummary, AdaptiveFlowExpansion } from '../styles';
 
 const summary = (arms, tank, t) => {
   return (
@@ -25,14 +25,19 @@ const summary = (arms, tank, t) => {
 
 const FlowRates = (tank, t) => {
   return (
-    <Table
-      size="small"
-      columns={columns(t)}
-      dataSource={tank.arms}
-      pagination={false}
-      title={arms => summary(arms, tank, t)}
-      rowKey="baa_code"
-    />
+    <>
+      <AdaptiveFlowExpansion>
+        <Table
+          size="small"
+          columns={columns(t)}
+          dataSource={tank.arms}
+          pagination={false}
+          title={(arms) => summary(arms, tank, t)}
+          rowKey="baa_code"
+        />
+      </AdaptiveFlowExpansion>
+      <Space size={'middle'}>&nbsp;</Space>
+    </>
   );
 };
 
