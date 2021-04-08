@@ -363,7 +363,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
       {/* config?.useWaterStrapping && (
         <Form.Item
           name="tank_batch_no"
-          label={t('fields.batch')}
+          label={t('fields.tankBatchNumber')}
         >
           <Input
             style={{ width: '100%' }}

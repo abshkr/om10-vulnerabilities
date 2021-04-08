@@ -75,6 +75,15 @@ const detailColumns = (t, config) => [
     sortable: true,
     resizable: true,
   },
+  {
+    headerName: t('fields.tankBatchNumber'),
+    field: 'trsb_batch_no',
+    sortable: true,
+    resizable: true,
+    width: 150,
+    suppressSizeToFit: true,
+    hide: !config?.useWaterStrapping,
+  },
 ];
 
 export default detailColumns;

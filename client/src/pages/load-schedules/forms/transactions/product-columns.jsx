@@ -80,12 +80,13 @@ const productColumns = (t, config) => [
     resizable: true,
   },
   {
-    headerName: t('fields.batch'),
+    headerName: t('fields.tankBatchNumber'),
     field: 'trsb_batch_no',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 150,
     suppressSizeToFit: true,
+    hide: !config?.useWaterStrapping,
   },
 ];
 
