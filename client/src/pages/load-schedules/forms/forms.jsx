@@ -160,6 +160,21 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
   const { resetFields, setFieldsValue } = form;
 
+  const validateTripNumber = (rule, input) => {
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.set')} ─ ${t('fields.tripNumber')}`);
+      }
+    }
+
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 9) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 9 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    return Promise.resolve();
+  };
+
   const onFormClosed = () => {
     setDrawerWidth('75vw');
     handleFormState(false, null);
@@ -914,7 +929,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             <Row gutter={[8, 8]}>
               <Col span={6}>
                 {/* <TripNumber form={form} value={value} supplier={supplier} onChange={setTrip} /> */}
-                <Form.Item name="shls_trip_no" label={t('fields.tripNumber')}>
+                <Form.Item
+                  name="shls_trip_no"
+                  label={t('fields.tripNumber')}
+                  rules={[{ required: true, validator: validateTripNumber }]}
+                >
                   <InputNumber min={1} style={{ width: '100%' }} disabled={!supplier || !!value} />
                 </Form.Item>
               </Col>
