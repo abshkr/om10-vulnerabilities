@@ -55,26 +55,26 @@ export default function Overview({ doSearch, setTab, setRange }) {
           <Row gutter={[10, 10]}>
             <Col span={8}>
               <Card className="statistic" size="small" loading={isInitialLoading}>
-                <Statistic title="Over the Last 24 Hours" value={overview?.day} suffix="Journal Entries" />
+                <Statistic title={t('fields.journal24h')} value={overview?.day} suffix={t('fields.journalEntry')} />
               </Card>
             </Col>
 
             <Col span={8}>
               <Card className="statistic" size="small" loading={isInitialLoading}>
-                <Statistic title="Over the Last 7 Days" value={overview?.week} suffix="Journal Entries" />
+                <Statistic title={t('fields.journal7d')} value={overview?.week} suffix={t('fields.journalEntry')} />
               </Card>
             </Col>
 
             <Col span={8} style={{ paddingRight: 15 }}>
               <Card className="statistic" size="small" loading={isInitialLoading}>
-                <Statistic title="Over the Last 30 Days" value={overview?.month} suffix="Journal Entries" />
+                <Statistic title={t('fields.journal30d')} value={overview?.month} suffix={t('fields.journalEntry')} />
               </Card>
             </Col>
           </Row>
 
           <Row gutter={[10, 10]}>
             <Col span={24} style={{ paddingRight: 15 }}>
-              <Card title="Events By Weekday Over The Last 7 Days" size="small">
+              <Card title={t('fields.journalEventsByWeek')} size="small">
                 <Events data={overview?.catetories} />
               </Card>
             </Col>
@@ -82,7 +82,7 @@ export default function Overview({ doSearch, setTab, setRange }) {
 
           <Row gutter={[10, 10]}>
             <Col span={24} style={{ paddingRight: 15 }}>
-              <Card title="Alarm Heatmap" size="small">
+              <Card title={t('fields.journalHeatmap')} size="small">
                 <Heatmap data={overview?.alarms} onClick={onNavigateToHistorical} />
               </Card>
             </Col>
@@ -94,16 +94,16 @@ export default function Overview({ doSearch, setTab, setRange }) {
             <Col span={24}>
               <Card size="small" loading={isInitialLoading}>
                 <Statistic
-                  title="Daily Alarm Comparison"
+                  title={t('fields.journalEventsByWeek')}
                   value={overview?.today}
                   suffix={
                     <div>
                       <a onClick={() => onNavigateToHistorical(startOfToday, endOfToday, 'ALARM')}>
-                        Alarms Today
+                        {t('fields.journalAlarmsToday')}
                       </a>{' '}
                       /{' '}
                       <a onClick={() => onNavigateToHistorical(startOfYesterday, endOfYesterday, 'ALARM')}>
-                        Alarms Yesterday ({overview?.yesterday})
+                        {t('fields.journalAlarmsYsd')} ({overview?.yesterday})
                       </a>
                     </div>
                   }

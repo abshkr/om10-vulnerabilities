@@ -1781,7 +1781,16 @@
     "finalStd": "最终视量",
     "finalKG": "最终质量(公斤)",
     "flowRate%": "流量 %",
-    "maxFlowRate": "最大流量"
+    "maxFlowRate": "最大流量",
+	"journalEntry": "日志记录",
+	"journal24h": "最近24小时",
+	"journal7d": "最近7天",
+	"journal30d": "最近30天",
+	"journalDailyAlram": "每日警报比较",
+	"journalEventsByWeek": "最近7天日志",
+	"journalHeatmap": "警报热点图",
+	"journalAlarmsToday": "当日警报",
+	"journalAlarmsYsd": "昨天警报"
   },
   "generic": {
     "about": "关于(EULA)",

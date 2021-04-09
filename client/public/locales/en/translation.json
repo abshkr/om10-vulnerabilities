@@ -1781,7 +1781,16 @@
     "finalStd": "Final STD",
     "finalKG": "Final KG",
     "flowRate%": "Flow Rate %",
-    "maxFlowRate": "Max Flow Rate"
+    "maxFlowRate": "Max Flow Rate",
+	"journalEntry": "Journal Entries",
+	"journal24h": "Over the Last 24 Hours",
+	"journal7d": "Over the Last 7 Days",
+	"journal30d": "Over the Last 30 Days",
+	"journalDailyAlram": "Daily Alarm Comparison",
+	"journalEventsByWeek": "Events By Weekday Over The Last 7 Days",
+	"journalHeatmap": "Alarm Heatmap",
+	"journalAlarmsToday": "Alarms Today",
+	"journalAlarmsYsd": "Alarm Yesterday"
   },
   "generic": {
     "about": "About (EULA)",
