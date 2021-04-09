@@ -17,19 +17,19 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
         config={config}
       />
     );
+  } else {
+    return (
+      <Regular
+        form={form}
+        value={value}
+        tanker={tanker}
+        drawer={drawer}
+        supplier={supplier}
+        customer={customer}
+        config={config}
+      />
+    );
   }
-
-  return (
-    <Regular
-      form={form}
-      value={value}
-      tanker={tanker}
-      drawer={drawer}
-      supplier={supplier}
-      customer={customer}
-      config={config}
-    />
-  );
 };
 
 export default Compartments;

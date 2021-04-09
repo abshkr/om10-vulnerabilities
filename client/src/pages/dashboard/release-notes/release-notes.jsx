@@ -78,6 +78,18 @@ const data = [
     ),
   },
   {
+    title: `Release Notes (10.1.15d-rc.1) - 22/03/2021`,
+    content: (
+      <>
+        <>
+          <p>OM5K-8827 - <a href="https://dev.diamondkey.com/browse/OM5K-8827">https://dev.diamondkey.com/browse/OM5K-8827</a></p>
+          <p>OM5K-8845 - <a href="https://dev.diamondkey.com/browse/OM5K-8845">https://dev.diamondkey.com/browse/OM5K-8845</a></p>
+          <p>OM5K-8304 - <a href="https://dev.diamondkey.com/browse/OM5K-8304">https://dev.diamondkey.com/browse/OM5K-8304</a></p>
+        </>
+      </>
+    ),
+  },
+  {
     title: `Release Notes (10.1.15c) - 22/03/2021`,
     content: (
       <>

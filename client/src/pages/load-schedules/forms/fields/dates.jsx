@@ -38,7 +38,7 @@ const Dates = ({ form, value, expiry }) => {
     // compare scheduleDate with expiryDate
     const expiredAfter = form.getFieldValue('shls_exp2');
     if (!(!input || !expiredAfter)) {
-      if (input.isAfter(expiredAfter)) {
+      if (NEED_EXPIRY && input.isAfter(expiredAfter)) {
         return Promise.reject(`${t('validate.tripScheduleDateLaterThanExpiryDate')}`);
       }
     }

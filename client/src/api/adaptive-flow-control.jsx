@@ -6,3 +6,5 @@ export const MAX_FLOW_DETAILS = '/api/pages/tank_max_flow/read_details.php';
 export const CREATE = '/api/pages/tank_max_flow/create.php';
 export const UPDATE = '/api/pages/tank_max_flow/update.php';
 export const DELETE = '/api/pages/tank_max_flow/delete.php';
+
+export const COMMS = '/api/pages/flow_rate/check_afc_process.php';

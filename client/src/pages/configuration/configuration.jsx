@@ -741,7 +741,11 @@ const Configuration = ({ user, config }) => {
               <FeatureItems
                 data={_.filter(
                   features,
-                  (item) => featureKey === '' || t('features.' + item.feature_code).indexOf(featureKey) >= 0
+                  (item) =>
+                    featureKey === '' ||
+                    t('features.' + item.feature_code)
+                      .toUpperCase()
+                      .indexOf(featureKey.toUpperCase()) >= 0
                 )}
                 onChange={onFeatureEdit}
                 t={t}

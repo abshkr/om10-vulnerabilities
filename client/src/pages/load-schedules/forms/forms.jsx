@@ -73,7 +73,7 @@ import { ManualTransactionsPopup } from '../../manual-transactions';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, url, locateTrip }) => {
+const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, default_shls_ld_type }) => {
   // const { manageMakeManualTransaction, showSeals, manageAdditionalHostData, manageViewDeliveryDetails } = useConfig();
   const config = useConfig();
   const {
@@ -93,7 +93,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
   const [tab, setTab] = useState('0');
   const [drawerWidth, setDrawerWidth] = useState('75vw');
 
-  const [mode, setMode] = useState('2');
+  const [mode, setMode] = useState(default_shls_ld_type);
   const [unload, setUnload] = useState(false);
   const [supplier, setSupplier] = useState(undefined);
   const [drawer, setDrawer] = useState(undefined);
@@ -160,6 +160,21 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
   const { resetFields, setFieldsValue } = form;
 
+  const validateTripNumber = (rule, input) => {
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.set')} ─ ${t('fields.tripNumber')}`);
+      }
+    }
+
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 9) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 9 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    return Promise.resolve();
+  };
+
   const onFormClosed = () => {
     setDrawerWidth('75vw');
     handleFormState(false, null);
@@ -194,6 +209,14 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
     setSupplier(supplier);
     setDrawer(supplier);
+  };
+
+  const changeCustomer = (customer) => {
+    setCustomer(customer);
+    setFieldsValue({
+      tnkr_code: undefined,
+      carrier_code: undefined,
+    });
   };
 
   const onFinish = async () => {
@@ -242,7 +265,9 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
       if (!findResult) {
         notification.error({
           message: t('messages.validationFailed'),
-          description: t('descriptions.prescheduleReady'),
+          description: config?.siteAllowDragDrop
+            ? t('descriptions.prescheduleReadyByDragDrop')
+            : t('descriptions.prescheduleReady'),
         });
         return;
       }
@@ -595,10 +620,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
 
       resetFields();
 
-      setMode('2'); //By default, set preschedule
+      setMode(default_shls_ld_type);
       setUnload(false);
       setFieldsValue({
-        shls_ld_type: '2',
+        shls_ld_type: default_shls_ld_type,
       });
 
       /* setFieldsValue({
@@ -753,7 +778,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
         </>
       }
     >
-      <Form layout="vertical" form={form} scrollToFirstError initialValues={{ shls_ld_type: '2' }}>
+      <Form layout="vertical" form={form} scrollToFirstError initialValues={{ shls_ld_type: default_shls_ld_type }}>
         <Tabs defaultActiveKey="1" activeKey={tab} onChange={onTabChange} animated={false}>
           <TabPane tab={t('tabColumns.general')} key="0">
             <Form.Item name="supermode" noStyle />
@@ -818,7 +843,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
                       form={form}
                       supplier={value ? value.supplier_code : supplier}
                       value={value}
-                      onChange={setCustomer}
+                      onChange={changeCustomer}
                     />
                   </Col>
                 </Fragment>
@@ -872,13 +897,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
                   onChange={setSoldTo}
                   popupManager={PartnershipManager}
                   popupTitle={t('fields.soldTo') + ' - ' + t('pageNames.partnership')}
-                  popupDisabled={!supplier}
+                  popupDisabled={!(value ? value.supplier_code : supplier)}
                   popupIcon={<CaretDownOutlined />}
                   popupLabel={''}
                   popupParams={{
                     partner_code: soldTo,
                     partner_type: 'AG',
-                    partner_cmpy_code: supplier,
+                    partner_cmpy_code: value ? value.supplier_code : supplier,
                     partner_cust_acct: '',
                   }}
                 />
@@ -898,13 +923,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
                   onChange={setShipTo}
                   popupManager={PartnershipManager}
                   popupTitle={t('fields.shipTo') + ' - ' + t('pageNames.partnership')}
-                  popupDisabled={!supplier}
+                  popupDisabled={!(value ? value.supplier_code : supplier)}
                   popupIcon={<CaretDownOutlined />}
                   popupLabel={''}
                   popupParams={{
                     partner_code: shipTo,
                     partner_type: 'WE',
-                    partner_cmpy_code: supplier,
+                    partner_cmpy_code: value ? value.supplier_code : supplier,
                     partner_cust_acct: '',
                   }}
                 />
@@ -914,7 +939,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
             <Row gutter={[8, 8]}>
               <Col span={6}>
                 {/* <TripNumber form={form} value={value} supplier={supplier} onChange={setTrip} /> */}
-                <Form.Item name="shls_trip_no" label={t('fields.tripNumber')}>
+                <Form.Item
+                  name="shls_trip_no"
+                  label={t('fields.tripNumber')}
+                  rules={[{ required: true, validator: validateTripNumber }]}
+                >
                   <InputNumber min={1} style={{ width: '100%' }} disabled={!supplier || !!value} />
                 </Form.Item>
               </Col>
@@ -949,9 +978,9 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               <Compartments
                 form={form}
                 value={value}
-                drawer={supplier} //Same as v9, when supplier != drawer, use supplier product
-                tanker={tanker}
-                supplier={supplier}
+                drawer={value ? value.supplier_code : supplier} //Same as v9, when supplier != drawer, use supplier product
+                tanker={!tanker ? value?.tnkr_code : tanker}
+                supplier={value ? value.supplier_code : supplier}
                 customer={site_customer_product ? customer : undefined}
                 config={config}
               />
@@ -961,7 +990,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip })
               <Products
                 form={form}
                 value={value}
-                drawer={supplier}
+                drawer={value ? value.supplier_code : supplier}
                 customer={site_customer_product ? customer : undefined}
                 access={access}
               />

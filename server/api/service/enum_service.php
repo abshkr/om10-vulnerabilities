@@ -308,7 +308,7 @@ class EnumService
     {
         $query = "
             SELECT *
-            FROM TRANSPORT_TYP
+            FROM TRANSPORT_TYP WHERE TRANSPORT_ID = 0
             ORDER BY TRANSPORT_ID";
         // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
         $stmt = oci_parse($this->conn, $query);
