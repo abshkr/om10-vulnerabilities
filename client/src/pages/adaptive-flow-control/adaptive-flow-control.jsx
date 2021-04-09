@@ -9,7 +9,7 @@ import { BASE_PRODUCTS, ADAPTIVE_FLOW_CONTROL } from '../../api';
 import { Page } from '../../components';
 import CannotAccess from '../../components/cannot-access';
 
-import { AdaptiveFlowFooter } from './styles';
+import { AdaptiveFlowFooter, AdaptiveFlowContainer } from './styles';
 
 import generator from './generator';
 import FlowRates from './flow-rates';
@@ -34,52 +34,52 @@ const AdaptiveFlowControl = () => {
 
   const isLoading = !products || !flow || !current;
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     const data = load();
-
-  //     const payload = generator(data?.products, data?.flow, data?.current);
-
-  //     setTotal(_.sumBy(data?.flow, 'current_flow_rate'));
-  //     setData(payload);
-  //   }, 1000);
-  //   return () => clearInterval(interval);
-  // }, []);
-
   useEffect(() => {
-    if (products?.records && flow?.records && current) {
-      const payload = generator(products?.records, flow?.records, current);
-      // console.log('...........products?.records && flow?.records && current', products, flow, current);
-      // _.forEach(flow?.records, (arm) => {
-      //   arm.current_flow_rate = 1000;
-      // });
+    const interval = setInterval(() => {
+      const data = load();
 
-      setTotal(_.round(_.sumBy(flow?.records, 'current_flow_rate'), 2));
+      const payload = generator(data?.products, data?.flow, data?.current);
+
+      setTotal(_.sumBy(data?.flow, 'current_flow_rate'));
       setData(payload);
-    }
-  }, [isLoading, flow, current, products]);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
-  console.log(data);
+  // useEffect(() => {
+  //   if (products?.records && flow?.records && current) {
+  //     const payload = generator(products?.records, flow?.records, current);
+  //     // console.log('...........products?.records && flow?.records && current', products, flow, current);
+  //     // _.forEach(flow?.records, (arm) => {
+  //     //   arm.current_flow_rate = 1000;
+  //     // });
 
-  if (!config?.siteUseAFC) {
+  //     setTotal(_.round(_.sumBy(flow?.records, 'current_flow_rate'), 2));
+  //     setData(payload);
+  //   }
+  // }, [isLoading, flow, current, products]);
+
+  if (config?.siteUseAFC) {
     return <CannotAccess target={t('pageNames.adaptiveFlowControl')} />;
   } else {
     return (
       <Page page={t('pageMenu.modules')} name={t('pageNames.adaptiveFlow')} access={access}>
-        <Table
-          dataSource={data}
-          rowKey="baseCode"
-          bordered
-          loading={false}
-          columns={columns(data, t)}
-          expandedRowRender={(tank) => FlowRates(tank, t)}
-          footer={() => (
-            <AdaptiveFlowFooter>
-              {t('descriptions.totalFlow')}: {total} {t('units.lpm')}{' '}
-            </AdaptiveFlowFooter>
-          )}
-          scroll={{ x: 1500 }}
-        />
+        <AdaptiveFlowContainer>
+          <Table
+            dataSource={data}
+            rowKey="baseCode"
+            bordered
+            loading={false}
+            columns={columns(data, t)}
+            expandedRowRender={(tank) => FlowRates(tank, t)}
+            footer={() => (
+              <AdaptiveFlowFooter>
+                {t('descriptions.totalFlow')}: {total} {t('units.lpm')}{' '}
+              </AdaptiveFlowFooter>
+            )}
+            scroll={{ x: 1500 }}
+          />
+        </AdaptiveFlowContainer>
       </Page>
     );
   }

@@ -1,6 +1,6 @@
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
-const ENDPOINT = 'https://10.1.10.66';
+const ENDPOINT = 'https://groundhog-day.diamondkey.com/';
 
 module.exports = function (app) {
   app.use(
