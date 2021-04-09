@@ -4,7 +4,7 @@ const OverviewContainer = styled.div`
   display: flex;
   align-content: center;
   align-items: center;
-  height: -webkit-fill-available;
+  height: 100%
   overflow-y: auto;
 `;
 

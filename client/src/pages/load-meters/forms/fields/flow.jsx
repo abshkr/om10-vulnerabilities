@@ -68,7 +68,7 @@ const Flow = ({ form, value, enable_meter_facor }) => {
               label={`${t('fields.meterFactor')}`}
               rules={[{ required: true }]}
             >
-              <InputNumber style={{ width: '100%' }} min={1} max={20} />
+              <InputNumber style={{ width: '100%' }} min={0} max={20} />
             </Form.Item>
           </Col>
         </Row>

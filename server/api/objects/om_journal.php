@@ -301,6 +301,19 @@ class OMJournal extends CommonClass
             __FILE__, __LINE__);
         // write_log(json_encode($this), __FILE__, __LINE__);
 
+        if (!isset($this->lang)) {
+            $this->lang = Utilities::getCurrLang();
+            // if ($this->lang == 'CHN') {
+            //     $query = "ALTER SESSION SET NLS_LANGUAGE = 'SIMPLIFIED CHINESE'";
+            //     $stmt = oci_parse($this->conn, $query);
+            //     if (!oci_execute($stmt, $this->commit_mode)) {
+            //         $e = oci_error($stmt);
+            //         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            //         return;
+            //     }
+            // }
+        }
+
         $result = array();
         $query = "SELECT COUNT(*) CN FROM GUI_SITE_JOURNAL WHERE GEN_DATE > TRUNC(SYSDATE)";
         if (isset($this->msg_event)) {
@@ -404,6 +417,7 @@ class OMJournal extends CommonClass
                 ORDER BY TO_CHAR(GEN_DATE, 'D'), MSG_CLASS";
         }
         $stmt = oci_parse($this->conn, $query);
+        // oci_bind_by_name($stmt, ':lang', $this->lang);
         if (isset($this->msg_event)) {
             oci_bind_by_name($stmt, ':msg_event', $this->msg_event);
         }

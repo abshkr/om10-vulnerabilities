@@ -9,7 +9,7 @@ import { BASE_PRODUCTS, ADAPTIVE_FLOW_CONTROL } from '../../api';
 import { Page } from '../../components';
 import CannotAccess from '../../components/cannot-access';
 
-import { AdaptiveFlowFooter } from './styles';
+import { AdaptiveFlowFooter, AdaptiveFlowContainer } from './styles';
 
 import generator from './generator';
 import FlowRates from './flow-rates';
@@ -59,27 +59,27 @@ const AdaptiveFlowControl = () => {
     }
   }, [isLoading, flow, current, products]);
 
-  console.log(data);
-
-  if (!config?.siteUseAFC) {
+  if (config?.siteUseAFC) {
     return <CannotAccess target={t('pageNames.adaptiveFlowControl')} />;
   } else {
     return (
       <Page page={t('pageMenu.modules')} name={t('pageNames.adaptiveFlow')} access={access}>
-        <Table
-          dataSource={data}
-          rowKey="baseCode"
-          bordered
-          loading={false}
-          columns={columns(data, t)}
-          expandedRowRender={(tank) => FlowRates(tank, t)}
-          footer={() => (
-            <AdaptiveFlowFooter>
-              {t('descriptions.totalFlow')}: {total} {t('units.lpm')}{' '}
-            </AdaptiveFlowFooter>
-          )}
-          scroll={{ x: 1500 }}
-        />
+        <AdaptiveFlowContainer>
+          <Table
+            dataSource={data}
+            rowKey="baseCode"
+            bordered
+            loading={false}
+            columns={columns(data, t)}
+            expandedRowRender={(tank) => FlowRates(tank, t)}
+            footer={() => (
+              <AdaptiveFlowFooter>
+                {t('descriptions.totalFlow')}: {total} {t('units.lpm')}{' '}
+              </AdaptiveFlowFooter>
+            )}
+            scroll={{ x: 1500 }}
+          />
+        </AdaptiveFlowContainer>
       </Page>
     );
   }

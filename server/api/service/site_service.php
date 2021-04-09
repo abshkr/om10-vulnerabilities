@@ -30,7 +30,7 @@ class SiteService
         return $row['SITE_CODE'];
     }
 
-    public function site_config_boolean($config_key, $default)
+    private function site_config_boolean($config_key, $default)
     {
         // write_log(sprintf("%s(%s, %s) START", __FUNCTION__, $config_key, $default), __FILE__, __LINE__);
         $query = "SELECT CONFIG_VALUE
@@ -97,6 +97,12 @@ class SiteService
     public function FA2_enabled()
     {
         $config_value = $this->site_config_boolean('SITE_2FA_ENABLED', 'N');
+        return ($config_value === 'Y' || $config_value === 'y');
+    }
+
+    public function site_customer_carrier()
+    {
+        $config_value = $this->site_config_boolean('SITE_CUSTOMER_CARRIER', 'N');
         return ($config_value === 'Y' || $config_value === 'y');
     }
 

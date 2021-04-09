@@ -3,14 +3,14 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
 
-const BatchCode = ({ form, value }) => {
+const BatchCode = ({ form, value, config }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.batch')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t(config?.siteLabelUser + 'fields.batch')}`);
     }
 
     return Promise.resolve();
@@ -27,7 +27,7 @@ const BatchCode = ({ form, value }) => {
   return (
     <Form.Item
       name="pmv_batchcode"
-      label={t('fields.batch')}
+      label={t(config?.siteLabelUser + 'fields.batch')}
       rules={[{ required: true, validator: validate }]}
     >
       <Input disabled={!!value} />

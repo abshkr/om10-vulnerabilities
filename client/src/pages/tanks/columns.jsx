@@ -106,7 +106,7 @@ const columns = (t, config) => [
     hide: !config?.useWaterStrapping,
   },
   {
-    headerName: t('fields.waterVolume') + ' (' + t('units.ltr') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.waterVolume') + ' (' + t('units.ltr') + ')',
     field: 'tank_water',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -156,7 +156,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.ambientVolume') + ' (' + t('units.ltr') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.ambientVolume') + ' (' + t('units.ltr') + ')',
     field: 'tank_amb_vol',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -165,7 +165,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.standardVolume') + ' (' + t('units.ltr') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.standardVolume') + ' (' + t('units.ltr') + ')',
     field: 'tank_cor_vol',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -174,7 +174,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.liquidMass') + ' (' + t('units.kg') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.liquidMass') + ' (' + t('units.kg') + ')',
     field: 'tank_liquid_kg',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -183,7 +183,8 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.oryxWeightInAir') + ' (' + t('units.kg') + ')',
+    // headerName: t('fields.oryxWeightInAir') + ' (' + t('units.kg') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.weightInAir') + ' (' + t('units.kg') + ')',
     field: 'tank_air_kg',
     filter: 'FuzzyFilter',
     sortable: true,

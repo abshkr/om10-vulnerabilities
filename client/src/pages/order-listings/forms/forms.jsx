@@ -146,6 +146,13 @@ const FormModal = ({
     }
   };
 
+  const changeCustomer = (customer) => {
+    setCustomer(customer);
+    setFieldsValue({
+      order_carr_code: undefined,
+    });
+  }
+
   const onFormClosed = () => {
     setDrawerWidth('80vw');
     setMainTabOn(true);
@@ -557,13 +564,7 @@ const FormModal = ({
               </Col>
 
               <Col span={6}>
-                <Customer
-                  form={form}
-                  value={value}
-                  supplier={supplier}
-                  onChange={setCustomer}
-                  pageState={pageState}
-                />
+                <Customer form={form} value={value} supplier={supplier} onChange={changeCustomer} pageState={pageState} />
               </Col>
 
               <Col span={6}>

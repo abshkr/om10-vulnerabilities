@@ -100,6 +100,7 @@ const useConfig = () => {
     siteUseAFC: false,
     siteUseProdOwnership: false,
     siteArmPriority: 'LILO',
+    siteLabelUser: '',
     siteUseSpecIns: false,
     siteUseSafefillOnly: false,
     useWaterStrapping: false,
@@ -115,6 +116,13 @@ const useConfig = () => {
     carrcode_tankernum_tag: false,
     enable_meter_facor: false,
     airBuoyancyFactor: 0.0011,
+    heatmapAverageFrom: 40,
+    heatmapAverageTo: 149,
+    heatmapHighFrom: 150,
+    heatmapHighTo: 199,
+    heatmapExtremeFrom: 200,
+    heatmapExtremeTo: 99999,
+    site_default_shls_ld_type: '2',
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -273,6 +281,9 @@ const useConfig = () => {
         siteUseAFC: configurationObject?.SITE_USE_ADAPTIVE_FLOW_CONTROL,
         siteUseProdOwnership: configurationObject?.SITE_USE_PROD_OWNERSHIP || false,
         siteArmPriority: configurationObject?.SITE_AFC_ARM_PRIORITY || 'LILO',
+        siteLabelUser: !configurationObject?.SITE_LABEL_USER
+          ? ''
+          : configurationObject?.SITE_LABEL_USER + '.',
         siteUseSpecIns: configurationObject?.SITE_USE_SHLS_SPEC_INS,
         siteUseSafefillOnly: configurationObject?.SITE_USE_SAFEFILL_ONLY,
         useWaterStrapping: configurationObject?.SITE_USE_WATER_STRAPPING || false,
@@ -292,6 +303,13 @@ const useConfig = () => {
         carrcode_tankernum_tag: configurationObject?.SITE_CARRCODE_TANKERNUM_TAG,
         enable_meter_facor: configurationObject?.SITE_ENABLE_METER_FACTOR,
         airBuoyancyFactor: configurationObject?.AIR_BUOYANCY_FACTOR || 0.0011,
+        heatmapAverageFrom: configurationObject?.HEATMAP_AVERAGE_FROM || 9999999,
+        heatmapAverageTo: configurationObject?.HEATMAP_AVERAGE_TO || 999999999999999,
+        heatmapHighFrom: configurationObject?.HEATMAP_HIGH_FROM || 999999999999999,
+        heatmapHighTo: configurationObject?.HEATMAP_HIGH_TO || 999999999999999,
+        heatmapExtremeFrom: configurationObject?.HEATMAP_EXTREME_FROM || 999999999999999,
+        heatmapExtremeTo: configurationObject?.HEATMAP_EXTREME_TO || 999999999999999,
+        site_default_shls_ld_type: configurationObject?.SITE_DEFAULT_SHLS_LD_TYPE || '2',
       });
     }
     // eslint-disable-next-line

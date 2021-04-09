@@ -1,7 +1,12 @@
 {
   "descriptions": {
+    "notInService": "Not In Service",
+    "working": "Working",
+    "notUpdatedOnTime": "Not Updated On Time",
+    "atgConnectionUnknown": "ATG Connection Unknown",
     "currentlyInFSCMode": "Currently In FSC Mode.",
     "activateSuccess": "You have activated the record",
+    "afcProcNotConnected": "The Adaptive Flow Control process is not running or connected yet!",
     "availableAttempts": "Your available attempts left: ",
     "blankDateFillWithServerTime": "If this date is not entered, system will use current server time as default",
     "CannotBeNegative": "Value cannot be a negative number",
@@ -10,9 +15,14 @@
     "actualTankFlowRate": "Actual Tank Flowrate",
     "alreadyExists": "This value already exists",
     "applicationName": "OMEGA 5000",
-    "batchCodeNotUsed": "The batch number is not used yet. You can continue to save it to the current tank and add it to the batch history.",
-    "batchCodeUsedByCurrentTank": "The batch number has been used by current tank [[TANK]]. You can continue to update but the existing historical data will be replaced by the details in current tank.",
-    "batchCodeUsedByAnotherTank": "The batch number has been used by another tank [[TANK]]. You can continue to update but the existing historical data will be replaced by the details in current tank.",
+    "batchCodeTankActive": "The tank is still active so the batch number can not be changed.",
+    "batchCodeNotReady": "The tank does not have batch number yet so it cannot be activated.",
+    "batchCodeBlank": "The batch number is blank. You can continue to save it to the current tank and the previous batch will be ended.",
+    "batchCodeNotUsed": "The batch number is not used yet. You can continue to save it to the current tank and add it to the batch history. The previous batch will be ended.",
+    "batchCodeUsedByCurrentTank": "The batch number has been used by current tank [[TANK]]. Please try another unused batch number.",
+    "batchCodeUsedByAnotherTank": "The batch number has been used by another tank [[TANK]]. Please try another unused batch number.",
+    "batchCodeUsedByCurrentTankCont": "The batch number has been used by current tank [[TANK]]. You can continue to update but the existing historical data will be replaced by the details in current tank.",
+    "batchCodeUsedByAnotherTankCont": "The batch number has been used by another tank [[TANK]]. You can continue to update but the existing historical data will be replaced by the details in current tank.",
     "butIs": "but is ",
     "calculateFailed": "Failed to calculate the values",
     "calculateSuccess": "You have calculated the values successfully",
@@ -154,6 +164,7 @@
     "preSchedProd": "Select product for compartment",
     "preSchedProdUnit": "Select unit for compartment",
     "prescheduleReady": "Select product in at least one compartment",
+    "prescheduleReadyByDragDrop": "Drag and drop the product in at least one compartment",
     "printBOLFailed": "Failed to reverse the BOL",
     "printBOLSuccess": "You have Printed the BOL",
     "productGrpUsed": "Cannot delete product group that has product in it",
@@ -1567,6 +1578,7 @@
     "standardQuantity": "Standard Quantity",
     "standardTemperature": "Standard Temperature",
     "standardVolume": "Standard Volume",
+    "standardVolumeNet": "Net Standard Volume",
     "startAt": "Start At",
     "startCloseout": "Start Closeout",
     "startDate": "Start Date",
@@ -1774,7 +1786,16 @@
     "finalStd": "Final STD",
     "finalKG": "Final KG",
     "flowRate%": "Flow Rate %",
-    "maxFlowRate": "Max Flow Rate"
+    "maxFlowRate": "Max Flow Rate",
+    "journalEntry": "Journal Entries",
+    "journal24h": "Over the Last 24 Hours",
+    "journal7d": "Over the Last 7 Days",
+    "journal30d": "Over the Last 30 Days",
+    "journalDailyAlram": "Daily Alarm Comparison",
+    "journalEventsByWeek": "Events By Weekday Over The Last 7 Days",
+    "journalHeatmap": "Alarm Heatmap",
+    "journalAlarmsToday": "Alarms Today",
+    "journalAlarmsYsd": "Alarm Yesterday"
   },
   "generic": {
     "about": "About (EULA)",
@@ -2547,5 +2568,29 @@
     "tripScheduleDateLaterThanExpiryDate": "The Schedule Date Time should be earlier than Expiry Date Time",
     "warnings": "warning(s)",
     "wrongType": "Incorrect type"
+  },
+  "oryx": {
+    "fields": {
+      "batch": "Source Batch Number",
+      "oryxTotalObservedVolume": "Total Observed Volume (TOV)",
+      "oryxGrossObservedVolume": "Gross Observed Volume (GOV)",
+      "oryxFreeWaterVolume": "Free Water Volume (FWV)",
+      "oryxGrossStandardVolume": "Gross Standard Volume (GSV)",
+      "oryxNetStandardVolume": "Net Standard Volume (NSV)",
+      "oryxWeightInAir": "Weight in Air (WiA)",
+      "oryxWeightInVacuum": "Weight in Vacuum (WiV)",
+      "tankProdVolume": "Total Observed Volume (TOV)",
+      "ambientVolume": "Gross Observed Volume (GOV)",
+      "waterVolume": "Free Water Volume (FWV)",
+      "standardVolume": "Gross Standard Volume (GSV)",
+      "standardVolumeNet": "Net Standard Volume (NSV)",
+      "weightInAir": "Weight in Air (WiA)",
+      "liquidMass": "Weight in Vacuum (WiV)"
+    },
+    "units": {
+      "lamb": "L(amb)",
+      "lcor": "L(std)",
+      "lobs": "L(obs)"
+    }
   }
 }
