@@ -141,6 +141,76 @@ class EquipmentType extends CommonClass
         }
     }
 
+    public function total_composition()
+    {
+        $query = "
+            SELECT EQUIP_TYPES_VW.ETYP_ID,
+                EQUIP_TYPES_VW.ETYP_TITLE,
+                EQUIP_TYPES_VW.ETYP_ISRIGID,
+                EQUIP_TYPES_VW.CMPTNU
+            FROM EQUIP_TYPES_VW
+	    ORDER BY EQUIP_TYPES_VW.ETYP_TITLE";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':etyp_id', $this->etyp_id);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+	public function total_composition_hook(&$hook_item)
+    {
+        // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+        //     __FILE__, __LINE__);
+
+        $result = array();
+        $hook_item['compartments'] = $result;
+
+        if (!array_key_exists('etyp_id', $hook_item)) {
+            write_log("hook_item does not have etyp_id item, cannot do composition_hook",
+                __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        $query = "
+            SELECT CMPT_NO,
+                CMPT_UNITS CMPT_UNIT_ID,
+                DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS2,
+                UNIT_SCALE_VW.DESCRIPTION CMPT_UNITS,
+                CMPT_CAPACIT,
+                CMPT_CAPACIT SAFEFILL,
+                CMPT_CAPACIT SFL,
+                COMPARTMENT.CMPT_ETYP ETYP_ID,
+                CMPT_N_SEALS
+            FROM COMPARTMENT, UNIT_SCALE_VW
+            WHERE COMPARTMENT.CMPT_ETYP = :etyp_id
+                and COMPARTMENT.CMPT_UNITS = UNIT_SCALE_VW.UNIT_ID
+            ORDER BY CMPT_NO";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':etyp_id', $hook_item['etyp_id']);
+        
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        Utilities::retrieve($result, $this, $stmt, $method = __FUNCTION__);
+        $hook_item['compartments'] = $result;
+
+        $eqpt_types = new EquipmentType($this->conn);
+        $stmt = $eqpt_types->equipments($hook_item['etyp_id']);
+        $result = array();
+        Utilities::retrieve($result, $eqpt_types, $stmt, $method = 'equipments');
+        // write_log(json_encode($result), __FILE__, __LINE__);
+        $hook_item['eqpt_list'] = $result;
+    }
+
+
+
     public function composition_hook(&$hook_item)
     {
         // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
@@ -241,6 +311,45 @@ class EquipmentType extends CommonClass
             return null;
         }
     }
+
+	public function equipments_hook(&$hook_item)
+    {
+
+        $result = array();
+        $hook_item['compartments'] = $result;
+
+        if (!array_key_exists('eqpt_id', $hook_item)) {
+            write_log("hook_item does not have eqpt_id item, cannot do composition_hook",
+                __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        $query = "SELECT EQPT_CODE,
+                    EQPT_ID EQPT_ETP,
+                    CMPT_NO,
+                    UNIT_ID CMPT_UNITS_CODE,
+                    UNIT_TITLE CMPT_UNITS2,
+                    UNIT_TITLE CMPT_UNITS,
+                    ADJ_SAFEFILL SAFEFILL,
+                    ADJ_CAPACITY SFL,
+                    NVL(ADJ_CMPT_LOCK, 0) ADJ_CMPT_LOCK
+                FROM GUI_EQUIPLIST_CMPT_VW 
+                WHERE EQPT_ID = :eqpt_id
+                    ORDER BY CMPT_NO";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':eqpt_id', $hook_item['eqpt_id']);
+        
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        Utilities::retrieve($result, $this, $stmt, $method = __FUNCTION__);
+        $hook_item['compartments'] = $result;
+    }
+
+
 
     public function searchCount($etyp_title = '%', $cmptnu = null)
     {
@@ -694,6 +803,55 @@ class EquipmentType extends CommonClass
             return null;
         }
     }
+
+public function non_combo_only_hook(&$hook_item)
+    {
+        // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+        //     __FILE__, __LINE__);
+
+        $result = array();
+        $hook_item['compartments'] = $result;
+
+        if (!array_key_exists('etyp_id', $hook_item)) {
+            write_log("hook_item does not have etyp_id item, cannot do composition_hook",
+                __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        $query = "
+            SELECT CMPT_NO,
+                CMPT_UNITS CMPT_UNIT_ID,
+                DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS2,
+                UNIT_SCALE_VW.DESCRIPTION CMPT_UNITS,
+                CMPT_CAPACIT,
+                CMPT_CAPACIT SAFEFILL,
+                CMPT_CAPACIT SFL,
+                COMPARTMENT.CMPT_ETYP ETYP_ID,
+                CMPT_N_SEALS
+            FROM COMPARTMENT, UNIT_SCALE_VW
+            WHERE COMPARTMENT.CMPT_ETYP = :etyp_id
+                and COMPARTMENT.CMPT_UNITS = UNIT_SCALE_VW.UNIT_ID
+            ORDER BY CMPT_NO";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':etyp_id', $hook_item['etyp_id']);
+        
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        Utilities::retrieve($result, $this, $stmt, $method = __FUNCTION__);
+        $hook_item['compartments'] = $result;
+
+        $eqpt_types = new EquipmentType($this->conn);
+        $stmt = $eqpt_types->equipments($hook_item['etyp_id']);
+        $result = array();
+        Utilities::retrieve($result, $eqpt_types, $stmt, $method = 'equipments');
+        // write_log(json_encode($result), __FILE__, __LINE__);
+        $hook_item['eqpt_list'] = $result;
+    }
+
 
     public function search()
     {

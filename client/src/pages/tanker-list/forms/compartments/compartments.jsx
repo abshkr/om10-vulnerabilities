@@ -138,7 +138,6 @@ const Compartments = ({ form, value, equipment }) => {
     if (!col.editable) {
       return col;
     }
-
     return {
       ...col,
       onCell: (record) => ({
@@ -189,7 +188,12 @@ const Compartments = ({ form, value, equipment }) => {
                 {!isLoading &&
                   item.eqpt_list.map((item, index) => (
                     <Select.Option key={index} value={item.eqpt_id}>
-                      {item.eqpt_name}
+                      {`${item.eqpt_name}: [Compartments:${
+                        item.compartments.length
+                      }]${item?.compartments?.map(
+                        (item2, index) =>
+                          `[${item2.cmpt_units}:(${item2.cmpt_no})${item2.safefill},${item2.sfl}]`
+                      )}`}
                     </Select.Option>
                   ))}
               </Select>

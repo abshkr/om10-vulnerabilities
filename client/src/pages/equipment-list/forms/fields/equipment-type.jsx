@@ -50,7 +50,11 @@ const EquipmentType = ({ form, value, onChange }) => {
       >
         {options?.records.map((item, index) => (
           <Select.Option key={index} value={item.etyp_id}>
-            {`${item.etyp_title} / Compartments: ${item.cmptnu} `}
+            {`${item.etyp_id}[${item.etyp_title}]: [Compartments:${
+              item.compartments.length
+            }]${item?.compartments?.map(
+              (item2, index) => `[${item2.cmpt_units}:(${item2.cmpt_no})${item2.safefill},${item2.sfl}]`
+            )}`}
           </Select.Option>
         ))}
       </Select>

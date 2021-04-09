@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { TANKER_LIST } from '../../../../api';
+import React, { useEffect, useState, useCallback } from 'react';
+import api, { TANKER_LIST } from '../../../../api';
 import useSWR from 'swr';
 import { Form, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +10,8 @@ const EquipmentType = ({ form, value, onChange }) => {
 
   const { setFieldsValue } = form;
 
-  const { data: options, isValidating } = useSWR(TANKER_LIST.EQUIPMENT_TYPES);
+  // const { data: options, isValidating } = useSWR(TANKER_LIST.EQUIPMENT_TYPES);
+  const { data: options, isValidating } = useSWR(TANKER_LIST.TOTAL_COMPOSITION);
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
@@ -48,7 +49,12 @@ const EquipmentType = ({ form, value, onChange }) => {
         {options?.records?.map((item, index) => (
           <Select.Option key={index} value={item.etyp_id}>
             {/* {`${item.etyp_id} - ${item.etyp_title} `} */}
-            {`${item.etyp_title} `}
+            {`${item.etyp_id}[${item.etyp_title}]: [Compartments:${
+              item.compartments.length
+            }]${item?.compartments?.map(
+              (item2, index) =>
+                `[${item2.cmpt_units}:(${item2.cmpt_no})${item2.safefill},${item2.cmpt_capacit}]`
+            )}`}
           </Select.Option>
         ))}
       </Select>

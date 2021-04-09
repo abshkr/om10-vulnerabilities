@@ -5,6 +5,7 @@ export const EQUIPMENT_TYPES = '/api/pages/tanker/eqpt_types.php';
 export const TERMINAL = '/api/pages/tanker/terminals.php';
 export const COMPOSITION = '/api/pages/tanker/tnkr_composition.php';
 export const TYPE_COMPOSITION = '/api/pages/tanker/etyp_composition.php';
+export const TOTAL_COMPOSITION = '/api/pages/tanker/total_composition.php';
 export const EXPIRY = '/api/pages/tanker/expiry_types.php';
 export const COMPARTMENT = '/api/pages/tanker/eqpt_compartments.php';
 export const TOGGLE_LOCKS = '/api/pages/tanker/toggle_lock.php';

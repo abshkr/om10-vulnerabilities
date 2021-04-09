@@ -202,6 +202,40 @@ class Equipment extends CommonClass
         // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
         //     __FILE__, __LINE__);
 
+        $result = array();
+        $hook_item['compartments'] = $result;
+
+        $query = "
+            SELECT CMPT_NO,
+                CMPT_UNITS CMPT_UNIT_ID,
+                DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS2,
+                UNIT_SCALE_VW.DESCRIPTION CMPT_UNITS,
+                CMPT_CAPACIT,
+                CMPT_CAPACIT SAFEFILL,
+                CMPT_CAPACIT SFL,
+                COMPARTMENT.CMPT_ETYP ETYP_ID,
+                CMPT_N_SEALS
+            FROM COMPARTMENT, UNIT_SCALE_VW
+            WHERE COMPARTMENT.CMPT_ETYP = :eqpt_etp
+                and COMPARTMENT.CMPT_UNITS = UNIT_SCALE_VW.UNIT_ID
+            ORDER BY CMPT_NO";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':eqpt_etp', $hook_item['eqpt_etp']);
+        
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        Utilities::retrieve($result, $this, $stmt, $method = __FUNCTION__);
+        $hook_item['compartments'] = $result;
+
+
+	
+	// write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+        //     __FILE__, __LINE__);
+
         $expiry_date = new ExpiryDate($this->conn);
         $expiry_date->ed_target_code = ExpiryTarget::TRANSP_EQUIP;
         $expiry_date->ed_object_id = $hook_item['eqpt_id'];

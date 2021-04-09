@@ -143,7 +143,11 @@ const Compartments = ({ form, value, equipment, onChange, config }) => {
         >
           {options.map((item, index) => (
             <Select.Option key={item.eqpt_id} value={item.eqpt_id}>
-              {item.eqpt_code}[{item.eqpt_title}]
+              {`${item.eqpt_code}[${item.eqpt_title}]: [Compartments:${
+                item.compartments.length
+              }]${item?.compartments?.map(
+                (item2, index) => `[${item2.cmpt_units}:(${item2.cmpt_no})${item2.safefill},${item2.sfl}]`
+              )}`}
             </Select.Option>
           ))}
         </Select>
