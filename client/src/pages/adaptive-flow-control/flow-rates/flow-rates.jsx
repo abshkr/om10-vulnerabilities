@@ -2,7 +2,8 @@ import React from 'react';
 import { Table, Space } from 'antd';
 import _ from 'lodash';
 import columns from './columns';
-import { AdaptiveFlowSummary, AdaptiveFlowExpansion } from '../styles';
+import { AdaptiveFlowSummary } from '../styles';
+import { ExpansionContainer } from './style';
 
 const summary = (arms, tank, t) => {
   return (
@@ -25,19 +26,16 @@ const summary = (arms, tank, t) => {
 
 const FlowRates = (tank, t) => {
   return (
-    <>
-      <AdaptiveFlowExpansion>
-        <Table
-          size="small"
-          columns={columns(t)}
-          dataSource={tank.arms}
-          pagination={false}
-          title={(arms) => summary(arms, tank, t)}
-          rowKey="baa_code"
-        />
-      </AdaptiveFlowExpansion>
-      <Space size={'middle'}>&nbsp;</Space>
-    </>
+    <ExpansionContainer>
+      <Table
+        size="small"
+        columns={columns(t)}
+        dataSource={tank.arms}
+        pagination={false}
+        title={(arms) => summary(arms, tank, t)}
+        rowKey="baa_code"
+      />
+    </ExpansionContainer>
   );
 };
 

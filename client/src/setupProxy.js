@@ -1,5 +1,7 @@
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
+const ENDPOINT = 'https://groundhog-day.diamondkey.com/';
+
 module.exports = function (app) {
   app.use(
     '/api',
