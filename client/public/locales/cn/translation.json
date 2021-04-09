@@ -1,5 +1,10 @@
 {
   "descriptions": {
+    "notInService": "服务已中断/停止",
+    "working": "工作中......",
+    "notUpdatedOnTime": "未准时更新",
+    "atgConnectionUnknown": "自动油罐计量系统(ATG)连接状态未知",
+    "currentlyInFSCMode": "当前处于FSC运行模式。",
     "activateSuccess": "您已成功激活了记录",
     "afcProcNotConnected": "适应性油品流动控制后台进程尚未启动或通讯有误!",
     "availableAttempts": "您尚余可尝试次数",
@@ -1568,6 +1573,7 @@
     "standardQuantity": "标量油量",
     "standardTemperature": "标准温度",
     "standardVolume": "标量容积",
+    "standardVolumeNet": "标量容积",
     "startAt": "起始单号",
     "startCloseout": "开始盘点",
     "startDate": "开始日期",
@@ -2548,5 +2554,29 @@
     "tripScheduleDateLaterThanExpiryDate": "提单下单日期时间应该早于提单失效日期时间",
     "warnings": "警告",
     "wrongType": "数据类型错误"
+  },
+  "oryx": {
+    "fields": {
+      "batch": "油品移动源批号",
+      "oryxTotalObservedVolume": "总油罐容积(TOV)",
+      "oryxGrossObservedVolume": "视量容积(GOV)",
+      "oryxFreeWaterVolume": "水容积(FWV)",
+      "oryxGrossStandardVolume": "标量容积(GSV)",
+      "oryxNetStandardVolume": "标量净容积(NSV)",
+      "oryxWeightInAir": "空气中重量(WiA)",
+      "oryxWeightInVacuum": "真空中重量(WiV)",
+      "tankProdVolume": "总油罐容积(TOV)",
+      "ambientVolume": "视量容积(GOV)",
+      "waterVolume": "水容积(FWV)",
+      "standardVolume": "标量容积(GSV)",
+      "standardVolumeNet": "标量净容积(NSV)",
+      "weightInAir": "空气中重量(WiA)",
+      "liquidMass": "真空中重量(WiV)"
+    },
+    "units": {
+      "lamb": "升(视量)",
+      "lcor": "升(标量)",
+      "lobs": "升(视量)"
+    }
   }
 }

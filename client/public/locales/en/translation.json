@@ -1573,6 +1573,7 @@
     "standardQuantity": "Standard Quantity",
     "standardTemperature": "Standard Temperature",
     "standardVolume": "Standard Volume",
+    "standardVolumeNet": "Net Standard Volume",
     "startAt": "Start At",
     "startCloseout": "Start Closeout",
     "startDate": "Start Date",
@@ -2553,5 +2554,29 @@
     "tripScheduleDateLaterThanExpiryDate": "The Schedule Date Time should be earlier than Expiry Date Time",
     "warnings": "warning(s)",
     "wrongType": "Incorrect type"
+  },
+  "oryx": {
+    "fields": {
+      "batch": "Source Batch Number",
+      "oryxTotalObservedVolume": "Total Observed Volume (TOV)",
+      "oryxGrossObservedVolume": "Gross Observed Volume (GOV)",
+      "oryxFreeWaterVolume": "Free Water Volume (FWV)",
+      "oryxGrossStandardVolume": "Gross Standard Volume (GSV)",
+      "oryxNetStandardVolume": "Net Standard Volume (NSV)",
+      "oryxWeightInAir": "Weight in Air (WiA)",
+      "oryxWeightInVacuum": "Weight in Vacuum (WiV)",
+      "tankProdVolume": "Total Observed Volume (TOV)",
+      "ambientVolume": "Gross Observed Volume (GOV)",
+      "waterVolume": "Free Water Volume (FWV)",
+      "standardVolume": "Gross Standard Volume (GSV)",
+      "standardVolumeNet": "Net Standard Volume (NSV)",
+      "weightInAir": "Weight in Air (WiA)",
+      "liquidMass": "Weight in Vacuum (WiV)"
+    },
+    "units": {
+      "lamb": "L(amb)",
+      "lcor": "L(std)",
+      "lobs": "L(obs)"
+    }
   }
 }
