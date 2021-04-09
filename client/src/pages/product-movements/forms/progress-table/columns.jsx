@@ -1,4 +1,4 @@
-const columns = (t) => [
+const columns = (t, config) => [
   {
     headerName: t('fields.id'),
     field: 'pmv_number',
@@ -36,7 +36,7 @@ const columns = (t) => [
     width: 140,
   },
   {
-    headerName: t('fields.batch'),
+    headerName: t(config?.siteLabelUser + 'fields.batch'),
     field: 'pmv_batchcode',
     sortable: true,
     resizable: true,

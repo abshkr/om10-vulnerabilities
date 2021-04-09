@@ -10,7 +10,7 @@ import { PRODUCT_MOVEMENTS } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
 import { SETTINGS } from '../../constants';
-import { useAuth, useConfig} from 'hooks';
+import { useAuth, useConfig } from 'hooks';
 import _ from 'lodash';
 
 import Forms from './forms';
@@ -23,12 +23,15 @@ const ProductMovements = () => {
   const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
+  const config = useConfig();
   const { refreshProductMovement, scheduleDateRange } = useConfig();
-  const { 
-    data: payload, 
-    isValidating, 
-    revalidate } = 
-  useSWR(`${PRODUCT_MOVEMENTS.READ}?start_date=${start}&end_date=${end}`, { refreshInterval: refreshProductMovement });
+  const {
+    data: payload,
+    isValidating,
+    revalidate,
+  } = useSWR(`${PRODUCT_MOVEMENTS.READ}?start_date=${start}&end_date=${end}`, {
+    refreshInterval: refreshProductMovement,
+  });
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -39,9 +42,9 @@ const ProductMovements = () => {
     setEnd(end);
   };
 
-  const fields = columns(t);
-  const data = (payload?.records);
-  
+  const fields = columns(t, config);
+  const data = payload?.records;
+
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
     setSelected(value);
@@ -49,10 +52,10 @@ const ProductMovements = () => {
 
   useEffect(() => {
     if (selected) {
-      const result = _.find(data, (item) =>{
+      const result = _.find(data, (item) => {
         return item.pmv_number === selected.pmv_number;
       });
-  
+
       setSelected(result);
     }
   }, [payload]);
@@ -103,13 +106,14 @@ const ProductMovements = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         filterValue={filterValue}
       />
-      <Forms 
-        value={selected} 
-        visible={visible} 
-        handleFormState={handleFormState} 
-        access={access} 
+      <Forms
+        value={selected}
+        visible={visible}
+        handleFormState={handleFormState}
+        access={access}
         setFilterValue={setFilterValue}
         refresh={revalidate}
+        config={config}
       />
     </Page>
   );

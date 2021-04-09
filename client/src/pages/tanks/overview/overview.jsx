@@ -66,7 +66,7 @@ const Overview = ({ selected, isLoading, config }) => {
               </Descriptions.Item>
 
               {config?.useWaterStrapping && (
-                <Descriptions.Item label={t('fields.oryxWeightInAir')} span={24}>
+                <Descriptions.Item label={t(config?.siteLabelUser + 'fields.weightInAir')} span={24}>
                   {selected?.tank_air_kg} {t('units.kg')}
                 </Descriptions.Item>
               )}

@@ -10,35 +10,35 @@ import {
   StepForwardOutlined,
 } from '@ant-design/icons';
 
-import { 
-  MovementType, 
-  Unit, 
-  Source, 
+import {
+  MovementType,
+  Unit,
+  Source,
   Destination,
-  BatchCode, 
-  Quantity, 
-  Class, 
+  BatchCode,
+  Quantity,
+  Class,
   BaseProduct,
   StartFolio,
   EndFolio,
-  BayLoaded
+  BayLoaded,
 } from './fields';
-import ProgressTable from './progress-table/progress-table'
+import ProgressTable from './progress-table/progress-table';
 
-import { 
-  Form, 
-  Button, 
-  Tabs, 
-  Modal, 
-  notification, 
-  Drawer, 
-  Input, 
-  InputNumber, 
-  Divider, 
-  Row, 
+import {
+  Form,
+  Button,
+  Tabs,
+  Modal,
+  notification,
+  Drawer,
+  Input,
+  InputNumber,
+  Divider,
+  Row,
   Col,
   Progress,
-  Tag
+  Tag,
 } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
@@ -49,7 +49,7 @@ import useSWR from 'swr';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, setFilterValue, refresh }) => {
+const FormModal = ({ value, visible, handleFormState, access, setFilterValue, refresh, config }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -106,7 +106,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
             if (values?.pmv_batchcode) {
               setFilterValue('' + values.pmv_batchcode);
             }
-            
+
             notification.success({
               message: t('messages.createSuccess'),
               description: t('descriptions.createSuccess'),
@@ -316,102 +316,100 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
   //   },
   // };
 
-  return (
-    IS_CREATING || value?.pmv_status === '0' ? 
-      <Drawer
-        bodyStyle={{ paddingTop: 5 }}
-        forceRender
-        onClose={() => handleFormState(false, null)}
-        maskClosable={IS_CREATING}
-        destroyOnClose={true}
-        mask={IS_CREATING}
-        placement="right"
-        width="50vw"
-        visible={visible}
-        footer={
-          <>
+  return IS_CREATING || value?.pmv_status === '0' ? (
+    <Drawer
+      bodyStyle={{ paddingTop: 5 }}
+      forceRender
+      onClose={() => handleFormState(false, null)}
+      maskClosable={IS_CREATING}
+      destroyOnClose={true}
+      mask={IS_CREATING}
+      placement="right"
+      width="50vw"
+      visible={visible}
+      footer={
+        <>
+          <Button
+            htmlType="button"
+            icon={<CloseOutlined />}
+            style={{ float: 'right' }}
+            onClick={() => handleFormState(false, null)}
+          >
+            {t('operations.cancel')}
+          </Button>
+
+          {IS_CREATING && (
             <Button
-              htmlType="button"
-              icon={<CloseOutlined />}
-              style={{ float: 'right' }}
-              onClick={() => handleFormState(false, null)}
+              type="primary"
+              icon={<EditOutlined />}
+              htmlType="submit"
+              style={{ float: 'right', marginRight: 5 }}
+              onClick={onFinish}
+              disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
             >
-              {t('operations.cancel')}
+              {t('operations.create')}
             </Button>
+          )}
 
-            {IS_CREATING && (
-              <Button
-                type="primary"
-                icon={<EditOutlined />}
-                htmlType="submit"
-                style={{ float: 'right', marginRight: 5 }}
-                onClick={onFinish}
-                disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
-              >
-                {t('operations.create')}
-              </Button>
-            )}
-
-            {!IS_CREATING && (value.pmv_status === '0') /* New */ && (
-              <Button
-                type="primary"
-                icon={<RedoOutlined />}
-                onClick={onStart}
-                style={{ float: 'right', marginRight: 5 }}
-                disabled={!access?.canDelete}
-              >
-                {t('operations.start')}
-              </Button>
-            )}
-
-          </>
-        }
+          {!IS_CREATING && value.pmv_status === '0' /* New */ && (
+            <Button
+              type="primary"
+              icon={<RedoOutlined />}
+              onClick={onStart}
+              style={{ float: 'right', marginRight: 5 }}
+              disabled={!access?.canDelete}
+            >
+              {t('operations.start')}
+            </Button>
+          )}
+        </>
+      }
+    >
+      <Form
+        layout="vertical"
+        // layout={{...layout}}
+        form={form}
+        onFinish={onFinish}
+        scrollToFirstError
+        initialValues={{
+          pmv_state_name: 'NEW',
+          pmv_unit_name: 'l',
+          pmv_unit: '28',
+        }}
       >
-        <Form
-          layout="vertical"
-          // layout={{...layout}}
-          form={form}
-          onFinish={onFinish}
-          scrollToFirstError
-          initialValues={{
-            pmv_state_name: 'NEW',
-            pmv_unit_name: 'l',
-            pmv_unit: '28',
-          }}
-        >
-          <Tabs defaultActiveKey="1">
-            <TabPane tab={t('tabColumns.general')} key="1">
-              <MovementType value={value} onChange={setMovementType} />
-              <BaseProduct form={form} value={value} setBase={setBase} />
-              <Source form={form} value={value} base={base} />
-              <Destination form={form} value={value} base={base} />
-              <BatchCode form={form} value={value} />
-              <Class form={form} value={value} />
-              <Quantity form={form} value={value} />
-              <Unit form={form} value={value} />
-              {IS_CREATING && movementType === 'COMPLETE' && (
-                <Form.Item
-                  name="pmv_opening_qty"
-                  label={t('fields.initialStandardVolume')}
-                  rules={[{ required: true, validator: validateInitial }]}
-                >
-                  <Input disabled={!!value} />
-                </Form.Item>
-              )}
-              {IS_CREATING && movementType === 'COMPLETE' && (
-                <Form.Item
-                  name="pmv_obsvd_dens"
-                  label={t('fields.prodMovDens')}
-                  rules={[{ required: true, validator: validateDens }]}
-                >
-                  <InputNumber min={0} disabled={!!value} />
-                </Form.Item>
-              )}
-            </TabPane>
-          </Tabs>
-        </Form>
-      </Drawer>
-    :
+        <Tabs defaultActiveKey="1">
+          <TabPane tab={t('tabColumns.general')} key="1">
+            <MovementType value={value} onChange={setMovementType} />
+            <BaseProduct form={form} value={value} setBase={setBase} />
+            <Source form={form} value={value} base={base} />
+            <Destination form={form} value={value} base={base} />
+            <BatchCode form={form} value={value} config={config} />
+            <Class form={form} value={value} />
+            <Quantity form={form} value={value} />
+            <Unit form={form} value={value} />
+            {IS_CREATING && movementType === 'COMPLETE' && (
+              <Form.Item
+                name="pmv_opening_qty"
+                label={t('fields.initialStandardVolume')}
+                rules={[{ required: true, validator: validateInitial }]}
+              >
+                <Input disabled={!!value} />
+              </Form.Item>
+            )}
+            {IS_CREATING && movementType === 'COMPLETE' && (
+              <Form.Item
+                name="pmv_obsvd_dens"
+                label={t('fields.prodMovDens')}
+                rules={[{ required: true, validator: validateDens }]}
+              >
+                <InputNumber min={0} disabled={!!value} />
+              </Form.Item>
+            )}
+          </TabPane>
+        </Tabs>
+      </Form>
+    </Drawer>
+  ) : (
     //Modify/View
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -447,17 +445,17 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
             </Button>
           )}
 
-          {!IS_CREATING && (value.pmv_status === '2') /* Halted */ && (
-              <Button
-                type="primary"
-                icon={<StepForwardOutlined />}
-                onClick={onCompletePmv}
-                style={{ float: 'right', marginRight: 5 }}
-                disabled={!access?.canDelete}
-              >
-                {t('operations.complete')}
-              </Button>
-            )}
+          {!IS_CREATING && value.pmv_status === '2' /* Halted */ && (
+            <Button
+              type="primary"
+              icon={<StepForwardOutlined />}
+              onClick={onCompletePmv}
+              style={{ float: 'right', marginRight: 5 }}
+              disabled={!access?.canDelete}
+            >
+              {t('operations.complete')}
+            </Button>
+          )}
 
           {!IS_CREATING && (value.pmv_status === '0' || value.pmv_status === '2') /* New Or Halted */ && (
             <Button
@@ -521,10 +519,14 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
       >
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-            <Divider style={{marginBottom: 5 }} orientation="left">{t('fields.beginMovement')}</Divider>
+            <Divider style={{ marginBottom: 5 }} orientation="left">
+              {t('fields.beginMovement')}
+            </Divider>
             {/* <StartFolioDes form={form} value={value} /> */}
             <StartFolio form={form} value={value} />
-            <Divider style={{marginBottom: 5 }} orientation="left">{t('fields.details')}</Divider>
+            <Divider style={{ marginBottom: 5 }} orientation="left">
+              {t('fields.details')}
+            </Divider>
             <Row gutter={[8, 8]}>
               <Col span={6}>
                 <BaseProduct form={form} value={value} setBase={setBase} />
@@ -537,7 +539,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
             </Row>
             <Row gutter={[8, 8]}>
               <Col span={6}>
-                <BatchCode form={form} value={value} />
+                <BatchCode form={form} value={value} config={config} />
               </Col>
               <Col span={6}>
                 <Class form={form} value={value} />
@@ -551,29 +553,35 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
             </Row>
             <Row gutter={[8, 8]}>
               <Col span={4}>
-                <Tag color="#0097df" style={{width: '100%', textAlign: 'center'}}>{t('fields.progress')}</Tag>
+                <Tag color="#0097df" style={{ width: '100%', textAlign: 'center' }}>
+                  {t('fields.progress')}
+                </Tag>
               </Col>
               <Col span={18}>
-                <Progress 
-                  strokeWidth={15} 
+                <Progress
+                  strokeWidth={15}
                   // strokeColor={value?.percentage > 100 ? "red" : null}
-                  percent={value?.percentage} 
+                  percent={value?.percentage}
                   showInfo={false}
-                  status={value?.percentage < 100 ? 'active' : value?.percentage > 120 ? "exception" : "success"}
+                  status={
+                    value?.percentage < 100 ? 'active' : value?.percentage > 120 ? 'exception' : 'success'
+                  }
                 />
               </Col>
               <Col span={2}>
-                <Tag style={{width: '100%', textAlign: 'center'}}>{value?.percentage + "%"} </Tag>
+                <Tag style={{ width: '100%', textAlign: 'center' }}>{value?.percentage + '%'} </Tag>
               </Col>
             </Row>
-            <Divider style={{marginBottom: 5 }} orientation="left">{t('fields.endMovement')}</Divider>
+            <Divider style={{ marginBottom: 5 }} orientation="left">
+              {t('fields.endMovement')}
+            </Divider>
             <EndFolio form={form} value={value} />
           </TabPane>
-          {value.pmv_status === '3' && //Only display this tab when it is COMPLETE
+          {value.pmv_status === '3' && ( //Only display this tab when it is COMPLETE
             <TabPane tab={t('tabColumns.summary')} key="2">
-              <ProgressTable value={value} />
+              <ProgressTable value={value} config={config} />
             </TabPane>
-          }
+          )}
         </Tabs>
       </Form>
     </Drawer>

@@ -7,12 +7,14 @@ import columns from './columns';
 import { DataTable } from 'components';
 import { PRODUCT_MOVEMENTS } from 'api';
 
-const ProgressTable = ({ value }) => {
+const ProgressTable = ({ value, config }) => {
   const { t } = useTranslation();
 
-  const { data: payload, isValidating } = useSWR(`${PRODUCT_MOVEMENTS.PROGRESS_TABLE}?pmv_batchcode=${value?.pmv_batchcode}`);
+  const { data: payload, isValidating } = useSWR(
+    `${PRODUCT_MOVEMENTS.PROGRESS_TABLE}?pmv_batchcode=${value?.pmv_batchcode}`
+  );
   const data = payload?.records;
-  const fields = columns(t);
+  const fields = columns(t, config);
 
   return (
     <DataTable

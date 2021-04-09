@@ -100,6 +100,7 @@ const useConfig = () => {
     siteUseAFC: false,
     siteUseProdOwnership: false,
     siteArmPriority: 'LILO',
+    siteLabelUser: '',
     siteUseSpecIns: false,
     siteUseSafefillOnly: false,
     useWaterStrapping: false,
@@ -280,6 +281,9 @@ const useConfig = () => {
         siteUseAFC: configurationObject?.SITE_USE_ADAPTIVE_FLOW_CONTROL,
         siteUseProdOwnership: configurationObject?.SITE_USE_PROD_OWNERSHIP || false,
         siteArmPriority: configurationObject?.SITE_AFC_ARM_PRIORITY || 'LILO',
+        siteLabelUser: !configurationObject?.SITE_LABEL_USER
+          ? ''
+          : configurationObject?.SITE_LABEL_USER + '.',
         siteUseSpecIns: configurationObject?.SITE_USE_SHLS_SPEC_INS,
         siteUseSafefillOnly: configurationObject?.SITE_USE_SAFEFILL_ONLY,
         useWaterStrapping: configurationObject?.SITE_USE_WATER_STRAPPING || false,

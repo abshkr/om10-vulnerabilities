@@ -545,9 +545,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
               form={form}
               value={value?.tank_water}
               name="tank_water"
-              label={`${isOryxLabel ? t('fields.oryxFreeWaterVolume') : t('fields.waterVolume')} (${t(
-                'units.litres'
-              )})`}
+              label={`${t(config?.siteLabelUser + 'fields.waterVolume')} (${t('units.litres')})`}
               min={0}
               max={999999999}
               style={{ width: '100%' }}
@@ -614,9 +612,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
               form={form}
               value={value?.tank_total_vol}
               name="tank_total_vol"
-              label={`${isOryxLabel ? t('fields.oryxTotalObservedVolume') : t('fields.tankProdVolume')} (${t(
-                'units.litres'
-              )})`}
+              label={`${t(config?.siteLabelUser + 'fields.tankProdVolume')} (${t('units.litres')})`}
               min={0}
               max={999999999}
               style={{ width: '100%' }}
@@ -661,9 +657,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
         form={form}
         value={value?.tank_amb_vol}
         name="tank_amb_vol"
-        label={`${isOryxLabel ? t('fields.oryxGrossObservedVolume') : t('fields.ambientVolume')} (${t(
-          'units.litres'
-        )})`}
+        label={`${t(config?.siteLabelUser + 'fields.ambientVolume')} (${t('units.litres')})`}
         min={0}
         max={999999999}
         style={{ width: '100%' }}
@@ -686,9 +680,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
             form={form}
             value={value?.tank_cor_vol}
             name="tank_cor_vol"
-            label={`${isOryxLabel ? t('fields.oryxGrossStandardVolume') : t('fields.standardVolume')} (${t(
-              'units.litres'
-            )})`}
+            label={`${t(config?.siteLabelUser + 'fields.standardVolume')} (${t('units.litres')})`}
             min={0}
             max={999999999}
             style={{ width: '100%' }}
@@ -729,9 +721,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
             form={form}
             value={value?.tank_liquid_kg}
             name="tank_liquid_kg"
-            label={`${isOryxLabel ? t('fields.oryxWeightInVacuum') : t('fields.liquidMass')} (${t(
-              'units.kg'
-            )})`}
+            label={`${t(config?.siteLabelUser + 'fields.liquidMass')} (${t('units.kg')})`}
             min={0}
             max={999999999}
             style={{ width: '100%' }}
@@ -754,9 +744,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
               form={form}
               value={value?.tank_air_kg}
               name="tank_air_kg"
-              label={`${isOryxLabel ? t('fields.oryxWeightInAir') : t('fields.oryxWeightInAir')} (${t(
-                'units.kg'
-              )})`}
+              label={`${t(config?.siteLabelUser + 'fields.weightInAir')} (${t('units.kg')})`}
               min={0}
               max={999999999}
               style={{ width: '100%' }}
