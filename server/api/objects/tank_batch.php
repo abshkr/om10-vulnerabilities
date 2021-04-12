@@ -199,6 +199,28 @@ class TankBatch extends CommonClass
         }
     }
 
+    public function read_by_code()
+    {
+        if (!isset($this->tank_batch_code)) {
+            $this->tank_batch_code = "-1";
+        }
+        $query = "
+            SELECT * 
+            FROM TANK_BATCHES_VW
+            WHERE TANK_BATCH_CODE=:code 
+        ";
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':code', $this->tank_batch_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     private function is_batch_num_existed()
     {
         $query = "
@@ -218,7 +240,7 @@ class TankBatch extends CommonClass
         return (int)$row['CNT'];
     }
 
-    public function pre_update() 
+    /* public function pre_update() 
     {
         // check if the batch number exists in history
         if (isset($this->tank_batch_code) && strlen(trim($this->tank_batch_code)) > 0) {
@@ -252,6 +274,6 @@ class TankBatch extends CommonClass
         }
 
         return true;
-    }
+    } */
 
 }

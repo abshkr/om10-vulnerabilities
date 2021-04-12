@@ -1,4 +1,5 @@
 export const READ = '/api/pages/tank_batch/read.php';
+export const READ_BY_CODE = '/api/pages/tank_batch/read_by_code.php';
 export const CHECK_BATCHES_BY_CODE = '/api/pages/tank_batch/check_batches_by_code.php';
 export const CHECK_BATCHES_BY_TANK = '/api/pages/tank_batch/check_batches_by_tank.php';
 export const CHECK_BATCHES_BY_DETAIL = '/api/pages/tank_batch/check_batches_by_detail.php';

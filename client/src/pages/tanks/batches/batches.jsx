@@ -14,6 +14,8 @@ import {
   Col,
   Descriptions,
   Divider,
+  Switch,
+  Tag,
 } from 'antd';
 
 import {
@@ -30,9 +32,12 @@ import {
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
+import moment from 'moment';
 
 import { DataTable, Download, DateTimeRangePicker } from '../../../components';
-import api, { TANK_BATCHES } from '../../../api';
+import api, { TANK_BATCHES, TANKS } from '../../../api';
+import { SETTINGS } from '../../../constants';
+import { getCurrentTime } from '../../../utils';
 import columns from './columns';
 
 const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
@@ -47,6 +52,9 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
   const [refreshed, setRefreshed] = useState(false);
   const [start, setStart] = useState(null);
   const [end, setEnd] = useState(null);
+  const [historyCreated, setHistoryCreated] = useState(0);
+  const [historyUpdated, setHistoryUpdated] = useState(0);
+  const [tankUpdated, setTankUpdated] = useState(0);
 
   // const url = code ? `${TANK_BATCHES.READ}?tank_code=${code}&tank_terminal=${terminal}` : null;
   const url =
@@ -74,7 +82,13 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
   };
 
   const getBatches = async (code) => {
-    const results = await api.get(`${TANK_BATCHES.READ}?tank_batch_code=${code}`);
+    const results = await api.get(`${TANK_BATCHES.READ_BY_CODE}?tank_batch_code=${code}`);
+
+    return results?.data?.records;
+  };
+
+  const checkBatches = async (code) => {
+    const results = await api.get(`${TANK_BATCHES.CHECK_BATCHES_BY_CODE}?tank_batch_code=${code}`);
 
     return results?.data?.records;
   };
@@ -86,11 +100,120 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
     // mutate(url);
   };
 
+  const updateTankBatchNumber = async (vobj) => {
+    const values = {};
+    values.tank_code = vobj?.tank_code;
+    values.tank_terminal = vobj?.tank_terminal;
+    values.tank_batch_no = vobj?.tank_batch_no;
+
+    await api
+      .post(TANKS.UPDATE, values)
+      .then(() => {
+        // mutate(TANKS.READ);
+
+        let notes = t('descriptions.updateSuccessTankBatchNumber');
+        notes = notes.replace('[[TANK]]', '"' + vobj?.tank_code + ' [' + vobj?.tank_terminal + ']"');
+        notes = notes.replace('[[BATCH]]', '"' + vobj?.tank_batch_no + '"');
+
+        setFieldsValue({
+          tank_batch_no: values?.tank_batch_no,
+        });
+
+        notification.success({
+          message: t('messages.updateSuccess'),
+          description: notes,
+        });
+
+        setTankUpdated(1);
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
+        });
+
+        setTankUpdated(-1);
+      });
+  };
+
+  const updateTankBatchHistory = async (vobj) => {
+    const values = {};
+    values.tank_batch_code = vobj?.tank_batch_prev;
+    values.tank_code = vobj?.tank_code;
+    values.tank_terminal = vobj?.tank_terminal;
+    values.tank_base = vobj?.tank_base;
+    // const currTime = config?.serverTime;
+    const currTime = await getCurrentTime();
+    const serverCurrent = moment(currTime, SETTINGS.DATE_TIME_FORMAT);
+    values.tank_batch_end = serverCurrent.format(SETTINGS.DATE_TIME_FORMAT);
+
+    await api
+      .post(TANK_BATCHES.UPDATE, values)
+      .then(() => {
+        // onComplete();
+
+        let notes = t('descriptions.updateSuccessTankBatchHistory');
+        notes = notes.replace('[[TANK]]', '"' + vobj?.tank_code + ' [' + vobj?.tank_terminal + ']"');
+        notes = notes.replace('[[BATCH]]', '"' + vobj?.tank_batch_prev + '"');
+
+        notification.success({
+          message: t('messages.updateSuccess'),
+          description: notes,
+        });
+
+        setHistoryUpdated(1);
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
+        });
+
+        setHistoryUpdated(-1);
+      });
+  };
+
+  const createTankBatchHistory = async (vobj) => {
+    const values = vobj;
+
+    await api
+      .post(TANK_BATCHES.CREATE, values)
+      .then(() => {
+        // onComplete();
+
+        let notes = t('descriptions.createSuccessTankBatchHistory');
+        notes = notes.replace('[[TANK]]', '"' + vobj?.tank_code + ' [' + vobj?.tank_terminal + ']"');
+        notes = notes.replace('[[BATCH]]', '"' + vobj?.tank_batch_no + '"');
+
+        notification.success({
+          message: t('messages.createSuccess'),
+          description: notes,
+        });
+
+        setHistoryCreated(1);
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
+        });
+
+        setHistoryCreated(-1);
+      });
+  };
+
   const onFinish = async () => {
     const valids = await form.validateFields();
     const values = {};
     values.tank_batch_no = valids?.tank_batch_no;
     values.tank_batch_code = valids?.tank_batch_no;
+    values.tank_batch_prev = value?.tank_batch_no;
     values.tank_code = value?.tank_code;
     values.tank_terminal = value?.tank_terminal;
     values.tank_base = value?.tank_base;
@@ -110,8 +233,10 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
     const batches = await getBatches(values.tank_batch_code);
 
     let customTitles = t('prompts.update');
+    let okEnabled = true;
     if (batches?.length > 0) {
       // batch code used
+      okEnabled = false;
       if (
         batches?.[0]?.tank_code === value?.tank_code &&
         batches?.[0]?.tank_terminal === value?.tank_terminal
@@ -138,7 +263,12 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
       }
     } else {
       // batch code not used
-      customTitles = t('descriptions.batchCodeNotUsed');
+      okEnabled = true;
+      if (_.trim(values.tank_batch_code).length === 0) {
+        customTitles = t('descriptions.batchCodeBlank');
+      } else {
+        customTitles = t('descriptions.batchCodeNotUsed');
+      }
     }
 
     Modal.confirm({
@@ -148,25 +278,33 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
       icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
-      onOk: async () => {
-        await api
-          .post(TANK_BATCHES.UPDATE, values)
-          .then(() => {
-            onComplete();
-
-            notification.success({
-              message: t('messages.updateSuccess'),
-              description: t('messages.updateSuccess'),
-            });
-          })
-          .catch((errors) => {
-            _.forEach(errors.response.data.errors, (error) => {
-              notification.error({
-                message: error.type,
-                description: error.message,
-              });
-            });
+      okButtonProps: {
+        hidden: !okEnabled,
+      },
+      onCancel: () => {
+        if (value) {
+          setFieldsValue({
+            tank_batch_no: values?.tank_batch_prev,
           });
+        }
+      },
+      onOk: async () => {
+        // when previous batch number is not blank, end it
+        if (_.trim(values.tank_batch_prev).length > 0) {
+          // end the previous batch
+          await updateTankBatchHistory(values);
+        } else {
+          setHistoryUpdated(2);
+        }
+        // when batch number is not blank, a new record is added to history
+        if (_.trim(values.tank_batch_code).length > 0) {
+          // add the next batch
+          await createTankBatchHistory(values);
+        } else {
+          setHistoryCreated(2);
+        }
+        // update tank record
+        await updateTankBatchNumber(values);
       },
     });
   };
@@ -223,49 +361,75 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
       setFieldsValue({
         tank_code: value?.tank_code,
         tank_batch_no: value?.tank_batch_no,
+        tank_active: value?.tank_active,
       });
     }
   }, [value, setFieldsValue]);
+
+  useEffect(() => {
+    if (historyCreated !== 0 && historyUpdated !== 0 && tankUpdated !== 0) {
+      mutate(TANKS.READ);
+      onComplete();
+      setHistoryCreated(0);
+      setHistoryUpdated(0);
+      setTankUpdated(0);
+    }
+  }, [historyCreated, historyUpdated, tankUpdated]);
 
   return (
     <>
       <Card hoverable>
         <Form layout="horizontal" form={form} scrollToFirstError>
-          <Form.Item
-            name="tank_code"
-            label={t('fields.tank')}
-            rules={[{ required: false, label: t('fields.tank') }]}
-          >
-            <Select
-              dropdownMatchSelectWidth={false}
-              disabled={true}
-              showSearch
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              {tanks.map((item, index) => (
-                <Select.Option key={index} value={item.tank_code}>
-                  {item.tank_code +
-                    ' - ' +
-                    item.tank_name +
-                    ' [' +
-                    item.tank_base +
-                    ' - ' +
-                    item.tank_base_name +
-                    ' - ' +
-                    item.tank_bclass_name +
-                    ']' +
-                    ' [' +
-                    item.tank_terminal +
-                    ' - ' +
-                    item.tank_sitename +
-                    ']'}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
+          <Row gutter={[12, 4]}>
+            <Col span={20}>
+              <Form.Item
+                name="tank_code"
+                label={t('fields.tank')}
+                rules={[{ required: false, label: t('fields.tank') }]}
+              >
+                <Select
+                  dropdownMatchSelectWidth={false}
+                  disabled={true}
+                  showSearch
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  {tanks.map((item, index) => (
+                    <Select.Option key={index} value={item.tank_code}>
+                      {item.tank_code +
+                        ' - ' +
+                        item.tank_name +
+                        ' [' +
+                        item.tank_base +
+                        ' - ' +
+                        item.tank_base_name +
+                        ' - ' +
+                        item.tank_bclass_name +
+                        ']' +
+                        ' [' +
+                        item.tank_terminal +
+                        ' - ' +
+                        item.tank_sitename +
+                        ']'}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={4}>
+              <Form.Item name="tank_active" label={t('fields.inUse')}>
+                <Switch
+                  checked={value?.tank_active}
+                  style={{ visibility: 'visible', width: '100%' }}
+                  checkedChildren={<span>{t('operations.yes')}</span>}
+                  unCheckedChildren={<span>{t('operations.no')}</span>}
+                  // disabled={true}
+                />
+              </Form.Item>
+            </Col>
+          </Row>
 
           <Form.Item
             name="tank_batch_no"
@@ -279,20 +443,37 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
               },
             ]}
           >
-            <Input style={{ width: '100%' }} />
+            <Input style={{ width: '100%' }} disabled={value?.tank_active} />
+            {/* <Input style={{ width: '100%' }} disabled={value?.tank_active && value?.tank_batch_no?.length>0} /> */}
           </Form.Item>
-          <Form.Item>
-            <Button
-              type="primary"
-              icon={<EditOutlined />}
-              htmlType="submit"
-              onClick={onFinish}
-              disabled={!access?.canUpdate}
-              style={{ float: 'right' }}
-            >
-              {t('operations.update')}
-            </Button>
-          </Form.Item>
+          <Row gutter={[12, 4]}>
+            <Col span={16}>
+              <Tag
+                color={'red'}
+                style={{
+                  fontWeight: 'bold',
+                  fontSize: '14px',
+                  visibility: value?.tank_active ? 'visible' : 'hidden',
+                }}
+              >
+                {t('descriptions.batchCodeTankActive')}
+              </Tag>
+            </Col>
+            <Col span={8}>
+              <Form.Item>
+                <Button
+                  type="primary"
+                  icon={<EditOutlined />}
+                  htmlType="submit"
+                  onClick={onFinish}
+                  disabled={!access?.canUpdate || value?.tank_active}
+                  style={{ float: 'right' }}
+                >
+                  {t('operations.update')}
+                </Button>
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
       </Card>
       <Card hoverable>
