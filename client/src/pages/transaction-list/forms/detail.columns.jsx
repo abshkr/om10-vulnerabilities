@@ -150,7 +150,7 @@ const detailColumns = (isFromNomination, t, config) => [
         resizable: true,
         width: 150,
         suppressSizeToFit: true,
-        hide: !isFromNomination || !config?.useWaterStrapping,
+        hide: !isFromNomination || !config?.siteUseTankBatch,
       },
     ],
   },

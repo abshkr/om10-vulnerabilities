@@ -183,7 +183,7 @@ const columns = (t, config) => [
     resizable: true,
     width: 260,
     suppressSizeToFit: true,
-    hide: !config?.useWaterStrapping,
+    hide: true, //!config?.useWaterStrapping,
   },
 
   {

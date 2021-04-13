@@ -86,7 +86,7 @@ const productColumns = (t, config) => [
     resizable: true,
     width: 150,
     suppressSizeToFit: true,
-    hide: !config?.useWaterStrapping,
+    hide: !config?.siteUseTankBatch,
   },
 ];
 
