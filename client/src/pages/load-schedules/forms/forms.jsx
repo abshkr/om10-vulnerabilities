@@ -635,7 +635,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
 
   useEffect(() => {
     if (trips) {
-      setActiveTrips(trips?.records?.[0]?.cnt);
+      const count = trips?.records?.[0]?.cnt;
+      if (value?.status === 'A' || value?.status === 'L') {
+        setActiveTrips(count - 1);
+      } else {
+        setActiveTrips(count);
+      }
     }
   }, [trips]);
 
@@ -778,7 +783,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
         </>
       }
     >
-      <Form layout="vertical" form={form} scrollToFirstError initialValues={{ shls_ld_type: default_shls_ld_type }}>
+      <Form
+        layout="vertical"
+        form={form}
+        scrollToFirstError
+        initialValues={{ shls_ld_type: default_shls_ld_type }}
+      >
         <Tabs defaultActiveKey="1" activeKey={tab} onChange={onTabChange} animated={false}>
           <TabPane tab={t('tabColumns.general')} key="0">
             <Form.Item name="supermode" noStyle />
