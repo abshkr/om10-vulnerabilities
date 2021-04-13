@@ -55,6 +55,7 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
   const [historyCreated, setHistoryCreated] = useState(0);
   const [historyUpdated, setHistoryUpdated] = useState(0);
   const [tankUpdated, setTankUpdated] = useState(0);
+  const [currentBatch, setCurrentBatch] = useState(value?.tank_batch_no);
 
   // const url = code ? `${TANK_BATCHES.READ}?tank_code=${code}&tank_terminal=${terminal}` : null;
   const url =
@@ -115,9 +116,10 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
         notes = notes.replace('[[TANK]]', '"' + vobj?.tank_code + ' [' + vobj?.tank_terminal + ']"');
         notes = notes.replace('[[BATCH]]', '"' + vobj?.tank_batch_no + '"');
 
-        setFieldsValue({
+        /* setFieldsValue({
           tank_batch_no: values?.tank_batch_no,
-        });
+        }); */
+        setCurrentBatch(values.tank_batch_no);
 
         notification.success({
           message: t('messages.updateSuccess'),
@@ -213,7 +215,7 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
     const values = {};
     values.tank_batch_no = valids?.tank_batch_no;
     values.tank_batch_code = valids?.tank_batch_no;
-    values.tank_batch_prev = value?.tank_batch_no;
+    values.tank_batch_prev = currentBatch; //value?.tank_batch_no;
     values.tank_code = value?.tank_code;
     values.tank_terminal = value?.tank_terminal;
     values.tank_base = value?.tank_base;
@@ -363,8 +365,17 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
         tank_batch_no: value?.tank_batch_no,
         tank_active: value?.tank_active,
       });
+      setCurrentBatch(value?.tank_batch_no);
     }
   }, [value, setFieldsValue]);
+
+  /* useEffect(() => {
+    if (currentBatch !== undefined) {
+      setFieldsValue({
+        tank_batch_no: currentBatch,
+      });
+    }
+  }, [currentBatch, setFieldsValue]); */
 
   useEffect(() => {
     if (historyCreated !== 0 && historyUpdated !== 0 && tankUpdated !== 0) {
