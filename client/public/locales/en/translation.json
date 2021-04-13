@@ -15,7 +15,7 @@
     "actualTankFlowRate": "Actual Tank Flowrate",
     "alreadyExists": "This value already exists",
     "applicationName": "OMEGA 5000",
-    "batchCodeTankActive": "The tank is still active so the batch number can not be changed.",
+    "batchCodeTankActive": "The tank is still active so the batch number can not be changed. Tick to enable.",
     "batchCodeNotReady": "The tank does not have batch number yet so it cannot be activated.",
     "batchCodeBlank": "The batch number is blank. You can continue to save it to the current tank and the previous batch will be ended.",
     "batchCodeNotUsed": "The batch number is not used yet. You can continue to save it to the current tank and add it to the batch history. The previous batch will be ended.",

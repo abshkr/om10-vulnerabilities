@@ -15,7 +15,7 @@
     "actualTankFlowRate": "油罐实际流量",
     "alreadyExists": "该字段数据已经存在",
     "applicationName": "OMEGA 5000",
-    "batchCodeTankActive": "油罐仍然活跃使用中，不可以修改油罐批次编号。",
+    "batchCodeTankActive": "油罐仍然活跃使用中，不可以修改油罐批次编号。但是勾选后可以允许修改。",
     "batchCodeNotReady": "油罐还没有批次编号，不可以激活使用。",
     "batchCodeBlank": "油罐批次编号为空，您可以继续将此空批号保存到当前油罐，上一批次将被终止。",
     "batchCodeNotUsed": "油罐批次编号尚未使用，您可以继续将此批次编号保存到当前油罐，并将该批号及油罐相关数据添加到油罐批次历史数据中。上一批次将被终止。",

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Card,
   Button,
+  Checkbox,
   Drawer,
   Modal,
   Form,
@@ -56,6 +57,7 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
   const [historyUpdated, setHistoryUpdated] = useState(0);
   const [tankUpdated, setTankUpdated] = useState(0);
   const [currentBatch, setCurrentBatch] = useState(value?.tank_batch_no);
+  const [batchEditable, setBatchEditable] = useState(false);
 
   // const url = code ? `${TANK_BATCHES.READ}?tank_code=${code}&tank_terminal=${terminal}` : null;
   const url =
@@ -80,6 +82,10 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
 
   const onRefresh = () => {
     setRefreshed(true);
+  };
+
+  const onCheck = (v) => {
+    setBatchEditable(v.target.checked);
   };
 
   const getBatches = async (code) => {
@@ -366,6 +372,7 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
         tank_active: value?.tank_active,
       });
       setCurrentBatch(value?.tank_batch_no);
+      setBatchEditable(!value?.tank_active);
     }
   }, [value, setFieldsValue]);
 
@@ -454,21 +461,29 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
               },
             ]}
           >
-            <Input style={{ width: '100%' }} disabled={value?.tank_active} />
-            {/* <Input style={{ width: '100%' }} disabled={value?.tank_active && value?.tank_batch_no?.length>0} /> */}
+            <Input
+              style={{ width: '100%', color: value?.tank_active ? 'red' : 'green' }}
+              disabled={!batchEditable}
+            />
           </Form.Item>
           <Row gutter={[12, 4]}>
             <Col span={16}>
-              <Tag
-                color={'red'}
-                style={{
-                  fontWeight: 'bold',
-                  fontSize: '14px',
-                  visibility: value?.tank_active ? 'visible' : 'hidden',
-                }}
+              <Checkbox
+                checked={batchEditable}
+                onChange={onCheck}
+                style={{ visibility: value?.tank_active ? 'visible' : 'hidden' }}
               >
-                {t('descriptions.batchCodeTankActive')}
-              </Tag>
+                <Tag
+                  color={'red'}
+                  style={{
+                    fontWeight: 'bold',
+                    fontSize: '14px',
+                    visibility: value?.tank_active ? 'visible' : 'hidden',
+                  }}
+                >
+                  {t('descriptions.batchCodeTankActive')}
+                </Tag>
+              </Checkbox>
             </Col>
             <Col span={8}>
               <Form.Item>
@@ -477,7 +492,7 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
                   icon={<EditOutlined />}
                   htmlType="submit"
                   onClick={onFinish}
-                  disabled={!access?.canUpdate || value?.tank_active}
+                  disabled={!access?.canUpdate || !batchEditable}
                   style={{ float: 'right' }}
                 >
                   {t('operations.update')}
