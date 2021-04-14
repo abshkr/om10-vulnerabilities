@@ -16,8 +16,6 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
 
   const { setFieldsValue, getFieldsValue } = form;
 
-  const isOryxLabel = config?.useWaterStrapping;
-
   const [densityMode, setDensityMode] = useState(value?.tank_dens_mode);
   const [tempBounds, setTempBounds] = useState({
     min: value?.tank_bclass_temp_lo || config.minTemperature,
@@ -360,7 +358,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
 
   return (
     <>
-      {/* config?.useWaterStrapping && (
+      {/* config?.siteUseTankBatch && (
         <Form.Item
           name="tank_batch_no"
           label={t('fields.tankBatchNumber')}
@@ -716,30 +714,23 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
       </Row>
 
       <Row gutter={[8, 8]}>
-        <Col span={config?.useWaterStrapping ? 12 : 24}>
-          <OmegaInputNumber
-            form={form}
-            value={value?.tank_liquid_kg}
-            name="tank_liquid_kg"
-            label={`${t(config?.siteLabelUser + 'fields.liquidMass')} (${t('units.kg')})`}
-            min={0}
-            max={999999999}
-            style={{ width: '100%' }}
-            precision={value?.tank_base_class === '6' ? config.precisionAdditive : config.precisionMass}
-            onChange={handleMassQtyFieldChange}
-          />
-          {/* <Form.Item name="tank_liquid_kg" label={`${t('fields.liquidMass')} (${t('units.kg')})`}>
-            <InputNumber
+        {config?.siteMassInVacuum && (
+          <Col span={config?.siteMassInAir ? 12 : 24}>
+            <OmegaInputNumber
+              form={form}
+              value={value?.tank_liquid_kg}
+              name="tank_liquid_kg"
+              label={`${t(config?.siteLabelUser + 'fields.liquidMass')} (${t('units.kg')})`}
               min={0}
               max={999999999}
               style={{ width: '100%' }}
-              precision={value?.tank_base_class==='6' ? config.precisionAdditive : config.precisionMass}
+              precision={value?.tank_base_class === '6' ? config.precisionAdditive : config.precisionMass}
               onChange={handleMassQtyFieldChange}
             />
-          </Form.Item> */}
-        </Col>
-        {config?.useWaterStrapping && (
-          <Col span={12}>
+          </Col>
+        )}
+        {config?.siteMassInAir && (
+          <Col span={config?.siteMassInVacuum ? 12 : 24}>
             <OmegaInputNumber
               form={form}
               value={value?.tank_air_kg}

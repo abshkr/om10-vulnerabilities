@@ -36,13 +36,14 @@ const detailColumns = (t, config) => [
     field: 'trsb_kg',
     sortable: true,
     resizable: true,
+    hide: !config?.siteMassInVacuum,
   },
   {
     headerName: t('fields.massInAir') + ' (' + t('units.kg') + ')',
     field: 'trsb_air_kg',
     sortable: true,
     resizable: true,
-    hide: !config?.useWaterStrapping,
+    hide: !config?.siteMassInAir,
     cellRenderer: 'MassInAirRenderer',
     cellRendererParams: {
       digits: '3',

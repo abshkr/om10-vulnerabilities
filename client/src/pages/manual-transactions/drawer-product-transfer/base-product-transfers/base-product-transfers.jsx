@@ -194,7 +194,7 @@ const BaseProductTransfers = ({
         </Form.Item>
 
         <Row gutter={[8, 8]}>
-          <Col span={config?.useWaterStrapping ? 4 : 9}></Col>
+          <Col span={config?.siteMassFieldMode === 3 ? 4 : 9}></Col>
           <Col span={5}>
             <strong>
               {t('fields.nomtranObsTotal')} {_.round(obsTotal, 3)}
@@ -205,12 +205,14 @@ const BaseProductTransfers = ({
               {t('fields.nomtranStdTotal')} {_.round(stdTotal, 3)}
             </strong>
           </Col>
-          <Col span={5}>
-            <strong>
-              {t('fields.nomtranMassTotal')} {_.round(massTotal, 3)}
-            </strong>
-          </Col>
-          {config?.useWaterStrapping && (
+          {config?.siteMassInVacuum && (
+            <Col span={5}>
+              <strong>
+                {t('fields.nomtranMassTotal')} {_.round(massTotal, 3)}
+              </strong>
+            </Col>
+          )}
+          {config?.siteMassInAir && (
             <Col span={5}>
               <strong>
                 {t('fields.massInAir') + ': '} {_.round(massTotal - stdTotal * config?.airBuoyancyFactor, 3)}

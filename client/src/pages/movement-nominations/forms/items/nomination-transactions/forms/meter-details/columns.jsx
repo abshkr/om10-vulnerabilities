@@ -101,6 +101,7 @@ const columns = (t, pageState, form, arm, config) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    hide: !config?.siteMassInVacuum,
     editable: false,
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
@@ -113,7 +114,7 @@ const columns = (t, pageState, form, arm, config) => [
     field: 'trsf_air_kg',
     sortable: true,
     resizable: true,
-    hide: !config?.useWaterStrapping,
+    hide: !config?.siteMassInAir,
     cellRenderer: 'MassInAirRenderer',
     cellRendererParams: {
       digits: '3',

@@ -181,6 +181,7 @@ const columns = (t, config) => [
     resizable: true,
     width: 120,
     suppressSizeToFit: true,
+    hide: !config?.siteMassInVacuum,
   },
   {
     // headerName: t('fields.oryxWeightInAir') + ' (' + t('units.kg') + ')',
@@ -191,7 +192,7 @@ const columns = (t, config) => [
     resizable: true,
     width: 120,
     suppressSizeToFit: true,
-    hide: !config?.useWaterStrapping,
+    hide: !config?.siteMassInAir,
   },
 
   {

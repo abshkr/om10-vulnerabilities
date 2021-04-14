@@ -99,14 +99,14 @@ const detailColumns = (isFromNomination, t, config) => [
         field: 'trsb_kg',
         sortable: true,
         resizable: true,
-        hide: !isFromNomination,
+        hide: !isFromNomination || !config?.siteMassInVacuum,
       },
       {
         headerName: t('fields.massInAir') + ' (' + t('units.kg') + ')',
         field: 'trsb_air_kg',
         sortable: true,
         resizable: true,
-        hide: !isFromNomination || !config?.useWaterStrapping,
+        hide: !isFromNomination || !config?.siteMassInAir,
         cellRenderer: 'MassInAirRenderer',
         cellRendererParams: {
           digits: '3',

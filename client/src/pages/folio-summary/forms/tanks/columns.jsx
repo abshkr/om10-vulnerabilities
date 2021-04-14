@@ -74,6 +74,7 @@ const columns = (t, enabled, config) => [
     sortable: true,
     resizable: true,
     editable: enabled,
+    // hide: !config?.siteMassInVacuum,
     cellClass: enabled ? 'editable-ag-grid-cell' : '',
     width: 100,
     cellEditor: 'NumericEditor',
@@ -91,7 +92,7 @@ const columns = (t, enabled, config) => [
     field: 'close_mass_tot_air',
     sortable: true,
     resizable: true,
-    hide: !config?.useWaterStrapping,
+    hide: !config?.siteMassInAir,
     cellRenderer: 'MassInAirRenderer',
     cellRendererParams: {
       digits: '3',

@@ -88,7 +88,7 @@ const MeterDetails = ({ form, value, pageState, arm, temperature, amb, cor, mass
           />
         </Form.Item>
         <Row gutter={[8, 8]}>
-          <Col span={config?.useWaterStrapping ? 4 : 9}></Col>
+          <Col span={config?.siteMassFieldMode === 3 ? 4 : 9}></Col>
           <Col span={5}>
             <strong>
               {t('fields.nomtranObsTotal')} {_.round(_.sumBy(data, 'trsf_qty_amb'), 3)}
@@ -99,12 +99,14 @@ const MeterDetails = ({ form, value, pageState, arm, temperature, amb, cor, mass
               {t('fields.nomtranStdTotal')} {_.round(_.sumBy(data, 'trsf_qty_cor'), 3)}
             </strong>
           </Col>
-          <Col span={5}>
-            <strong>
-              {t('fields.nomtranMassTotal')} {_.round(_.sumBy(data, 'trsf_load_kg'), 3)}
-            </strong>
-          </Col>
-          {config?.useWaterStrapping && (
+          {config?.siteMassInVacuum && (
+            <Col span={5}>
+              <strong>
+                {t('fields.nomtranMassTotal')} {_.round(_.sumBy(data, 'trsf_load_kg'), 3)}
+              </strong>
+            </Col>
+          )}
+          {config?.siteMassInAir && (
             <Col span={5}>
               <strong>
                 {t('fields.massInAir') + ': '}{' '}

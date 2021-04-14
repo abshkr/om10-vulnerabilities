@@ -18,6 +18,7 @@ commit;
     The following site settings are added in SITE_CONFIG for Oryx customers
         SITE_USE_WATER_STRAPPING: Calculate water volume from level by strapping data, Y/N
         SITE_STOCK_CALC_ENHANCED: Apply enhanced site stock calculation with more fields, Y/N
+        SITE_MASS_FIELD_MODE: The mode of mass fields - 1: Mass in Vacuum; 2: Mass in Air; 3: Both.
 
         SITE_USE_TANK_BATCH: Use the tank batch number in stock management and transactions, Y/N
         SITE_TANK_BATCH_STRICT_MODE: Tank batch number is mandatory in transactions, Y/N
@@ -57,6 +58,23 @@ commit;
 
 insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIRED_BY_GUI) 
 values ('SITE_STOCK_CALC_ENHANCED', 'Y', 'Apply enhanced site stock calculation with more fields', NULL );
+
+commit;
+
+
+/*
+    define the SITE_MASS_FIELD_MODE for management of mass field(s) in form and list
+    0: no mass fields in form and list
+    1: Enable "Mass in Vacuum" field in form and list, as default
+    2: Enable "Mass in Air" field in form and list
+    3: Enable both "Mass in Vacuum" and "Mass in Air" field in form and list
+*/
+delete from SITE_CONFIG where CONFIG_KEY='SITE_MASS_FIELD_MODE';
+
+commit;
+
+insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIRED_BY_GUI) 
+values ('SITE_MASS_FIELD_MODE', '3', 'The mode of mass fields - 1: Mass in Vacuum; 2: Mass in Air; 3: Both.', NULL );
 
 commit;
 

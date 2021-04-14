@@ -57,15 +57,13 @@ const Overview = ({ selected, isLoading, config }) => {
                 {/* {selected?.tank_15_density} {t('units.kg/m3')} */}
               </Descriptions.Item>
 
-              {/* <Descriptions.Item label={t('fields.weightInAir')} span={24}>
-                {selected?.tank_vapour_kg} {t('units.kg')}
-              </Descriptions.Item> */}
+              {config?.siteMassInVacuum && (
+                <Descriptions.Item label={t('fields.weightInVacuum')} span={24}>
+                  {selected?.tank_liquid_kg} {t('units.kg')}
+                </Descriptions.Item>
+              )}
 
-              <Descriptions.Item label={t('fields.weightInVacuum')} span={24}>
-                {selected?.tank_liquid_kg} {t('units.kg')}
-              </Descriptions.Item>
-
-              {config?.useWaterStrapping && (
+              {config?.siteMassInAir && (
                 <Descriptions.Item label={t(config?.siteLabelUser + 'fields.weightInAir')} span={24}>
                   {selected?.tank_air_kg} {t('units.kg')}
                 </Descriptions.Item>

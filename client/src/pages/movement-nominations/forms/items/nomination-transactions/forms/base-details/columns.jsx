@@ -188,6 +188,7 @@ const columns = (t, pageState, form, arm, config) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    hide: !config?.siteMassInVacuum,
     // editable: pageState === 'disposal' && !!arm ? true : false,
     // cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
     cellRenderer: 'QuantityRenderer',
@@ -202,7 +203,7 @@ const columns = (t, pageState, form, arm, config) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: !config?.useWaterStrapping,
+    hide: !config?.siteMassInAir,
     cellRenderer: 'MassInAirRenderer',
     cellRendererParams: {
       digits: '3',

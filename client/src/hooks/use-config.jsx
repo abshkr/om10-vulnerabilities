@@ -103,6 +103,9 @@ const useConfig = () => {
     siteLabelUser: '',
     useWaterStrapping: false,
     siteStockCalcEnhanced: false,
+    siteMassFieldMode: 1,
+    siteMassInVacuum: true,
+    siteMassInAir: false,
     siteUseTankBatch: false,
     siteTankBatchStrictMode: false,
     siteStdLitreUnit: 'COR',
@@ -291,6 +294,11 @@ const useConfig = () => {
           : configurationObject?.SITE_LABEL_USER + '.',
         useWaterStrapping: configurationObject?.SITE_USE_WATER_STRAPPING || false,
         siteStockCalcEnhanced: configurationObject?.SITE_STOCK_CALC_ENHANCED || false,
+        siteMassFieldMode: _.toNumber(configurationObject?.SITE_MASS_FIELD_MODE || '1'),
+        siteMassInVacuum:
+          (_.toNumber(configurationObject?.SITE_MASS_FIELD_MODE || '1') & 1) === 1 ? true : false,
+        siteMassInAir:
+          (_.toNumber(configurationObject?.SITE_MASS_FIELD_MODE || '1') & 2) === 2 ? true : false,
         siteUseTankBatch: configurationObject?.SITE_USE_TANK_BATCH || false,
         siteTankBatchStrictMode: configurationObject?.SITE_TANK_BATCH_STRICT_MODE || false,
         siteStdLitreUnit: configurationObject?.SITE_STD_LITRE_UNIT || 'COR',
