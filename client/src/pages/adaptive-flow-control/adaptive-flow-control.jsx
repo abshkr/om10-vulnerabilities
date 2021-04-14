@@ -61,7 +61,8 @@ const AdaptiveFlowControl = () => {
     }
   }, [isLoading, flow, current, products]);
 
-  if (config?.siteUseAFC) {
+  // NOTE: it should be !config?.siteUseAFC
+  if (!config?.siteUseAFC) {
     return <CannotAccess target={t('pageNames.adaptiveFlowControl')} />;
   } else {
     return (
