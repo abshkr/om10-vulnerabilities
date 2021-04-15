@@ -2589,7 +2589,8 @@
       "standardVolume": "Gross Standard Volume (GSV)",
       "standardVolumeNet": "Net Standard Volume (NSV)",
       "weightInAir": "Weight in Air (WiA)",
-      "liquidMass": "Weight in Vacuum (WiV)"
+      "liquidMass": "Weight in Vacuum (WiV)",
+      "nomtranMass": "Weight in Vacuum (WiV)"
     },
     "units": {
       "lamb": "L(amb)",

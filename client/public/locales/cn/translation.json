@@ -2589,7 +2589,8 @@
       "standardVolume": "标量容积(GSV)",
       "standardVolumeNet": "标量净容积(NSV)",
       "weightInAir": "空气中重量(WiA)",
-      "liquidMass": "真空中重量(WiV)"
+      "liquidMass": "真空中重量(WiV)",
+      "nomtranMass": "真空中重量(WiV)"
     },
     "units": {
       "lamb": "升(视量)",

@@ -28,33 +28,39 @@ const ObsMass = ({ form, value, onChange, setValue, pageState, config }) => {
         mlitm_qty_kg: value.mlitm_qty_kg,
       });
 
-      onChange({ qty: value.mlitm_qty_kg, type: 'KG', title: t('fields.nomtranMass') });
+      onChange({
+        qty: value.mlitm_qty_kg,
+        type: 'KG',
+        title: t(config?.siteLabelUser + 'fields.nomtranMass'),
+      });
       setValue(value.mlitm_qty_kg);
     }
   }, [value, t, setFieldsValue, onChange, setValue]);
 
   const handleFieldChange = (value) => {
-    onChange({ qty: value, type: 'KG', title: t('fields.nomtranMass') });
+    onChange({ qty: value, type: 'KG', title: t(config?.siteLabelUser + 'fields.nomtranMass') });
     setValue(value);
   };
 
   return (
     <Form.Item
       name="mlitm_qty_kg"
-      label={t('fields.nomtranMass') + '(' + t('units.kg') + ')'}
+      label={t(config?.siteLabelUser + 'fields.nomtranMass') + '(' + t('units.kg') + ')'}
       // rules={[{ required: false, validator: validate }]}
-      rules={[{ 
-        required: false,
-        title: t('fields.nomtranMass'), 
-        dataType: 'NUMBER',
-        // maxLength: 9, 
-        precision: null, // config.precisionMass,
-        min: 0, 
-        max: 999999999,
-        prompts: t,
-        // returnType: 'notice',
-        validator: validateField 
-      }]}
+      rules={[
+        {
+          required: false,
+          title: t(config?.siteLabelUser + 'fields.nomtranMass'),
+          dataType: 'NUMBER',
+          // maxLength: 9,
+          precision: null, // config.precisionMass,
+          min: 0,
+          max: 999999999,
+          prompts: t,
+          // returnType: 'notice',
+          validator: validateField,
+        },
+      ]}
     >
       <InputNumber
         // min={0}
