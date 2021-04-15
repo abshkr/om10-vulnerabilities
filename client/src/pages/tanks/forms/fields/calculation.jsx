@@ -96,13 +96,25 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
       }
       // initialize the quantity source for calculation
       if (value?.tank_amb_vol) {
-        pinQuantity({ qty: value?.tank_amb_vol, type: 'LT', title: t('fields.ambientVolume') });
+        pinQuantity({
+          qty: value?.tank_amb_vol,
+          type: 'LT',
+          title: t(config?.siteLabelUser + 'fields.ambientVolume'),
+        });
       } else if (value?.tank_cor_vol) {
-        pinQuantity({ qty: value?.tank_cor_vol, type: 'L15', title: t('fields.standardVolume') });
+        pinQuantity({
+          qty: value?.tank_cor_vol,
+          type: 'L15',
+          title: t(config?.siteLabelUser + 'fields.standardVolume'),
+        });
       } else if (value?.tank_liquid_kg) {
-        pinQuantity({ qty: value?.tank_liquid_kg, type: 'KG', title: t('fields.liquidMass') });
+        pinQuantity({
+          qty: value?.tank_liquid_kg,
+          type: 'KG',
+          title: t(config?.siteLabelUser + 'fields.liquidMass'),
+        });
       } else {
-        pinQuantity({ qty: '', type: 'NA', title: t('fields.ambientVolume') });
+        pinQuantity({ qty: '', type: 'NA', title: t(config?.siteLabelUser + 'fields.ambientVolume') });
       }
     }
   }, [value, setFieldsValue, pinDensity, pinQuantity]);
@@ -311,19 +323,19 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
 
   const handleAmbVolFieldChange = (value) => {
     if (value !== undefined && value !== null && String(value).trim().length > 0) {
-      pinQuantity({ qty: value, type: 'LT', title: t('fields.ambientVolume') });
+      pinQuantity({ qty: value, type: 'LT', title: t(config?.siteLabelUser + 'fields.ambientVolume') });
     }
   };
 
   const handleCorVolFieldChange = (value) => {
     if (value !== undefined && value !== null && String(value).trim().length > 0) {
-      pinQuantity({ qty: value, type: 'L15', title: t('fields.standardVolume') });
+      pinQuantity({ qty: value, type: 'L15', title: t(config?.siteLabelUser + 'fields.standardVolume') });
     }
   };
 
   const handleMassQtyFieldChange = (value) => {
     if (value !== undefined && value !== null && String(value).trim().length > 0) {
-      pinQuantity({ qty: value, type: 'KG', title: t('fields.liquidMass') });
+      pinQuantity({ qty: value, type: 'KG', title: t(config?.siteLabelUser + 'fields.liquidMass') });
     }
   };
 
