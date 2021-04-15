@@ -2590,6 +2590,7 @@
       "standardVolumeNet": "Net Standard Volume (NSV)",
       "weightInAir": "Weight in Air (WiA)",
       "liquidMass": "Weight in Vacuum (WiV)",
+      "observedMass": "Weight in Vacuum (WiV)",
       "nomtranMass": "Weight in Vacuum (WiV)"
     },
     "units": {

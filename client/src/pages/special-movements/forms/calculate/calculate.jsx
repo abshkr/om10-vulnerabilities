@@ -149,13 +149,18 @@ const Calculate = ({
       } else if (value?.mlitm_qty_cor) {
         pinQuantity({ qty: value?.mlitm_qty_cor, type: 'L15', title: t('fields.standardQuantity') });
       } else if (value?.mlitm_qty_kg) {
-        pinQuantity({ qty: value?.mlitm_qty_kg, type: 'KG', title: t('fields.observedMass') });
+        pinQuantity({
+          qty: value?.mlitm_qty_kg,
+          type: 'KG',
+          title: t(config?.siteLabelUser + 'fields.observedMass'),
+        });
       } else {
         pinQuantity({ qty: '', type: 'NA', title: t('fields.observedQuantity') });
       }
 
       handleTemperatureChange(value?.mlitm_temp_amb);
       handleDensityChange(value?.mlitm_dens_cor);
+      setWiA();
     }
   }, [value, setFieldsValue]);
 
@@ -178,6 +183,23 @@ const Calculate = ({
     }
   }, [getLimit, tank, value, tankSelected]);
 
+  const setWiA = () => {
+    // WiA = WiV - GSV x 0.0011
+    const WiV = getFieldValue('mlitm_qty_kg');
+    const GSV = getFieldValue('mlitm_qty_kg');
+    const AIR = config?.airBuoyancyFactor;
+    let WiA = undefined;
+    if (!WiV || !GSV) {
+      WiA = '';
+    } else {
+      WiA = _.toNumber(WiV) - _.toNumber(GSV) * AIR;
+    }
+
+    setFieldsValue({
+      mlitm_air_kg: WiA,
+    });
+  };
+
   const handleAmbVolFieldChange = (value) => {
     if (value !== undefined && value !== null && String(value).trim().length > 0) {
       pinQuantity({ qty: value, type: 'LT', title: t('fields.observedQuantity') });
@@ -188,12 +210,14 @@ const Calculate = ({
     if (value !== undefined && value !== null && String(value).trim().length > 0) {
       pinQuantity({ qty: value, type: 'L15', title: t('fields.standardQuantity') });
     }
+    setWiA();
   };
 
   const handleMassQtyFieldChange = (value) => {
     if (value !== undefined && value !== null && String(value).trim().length > 0) {
-      pinQuantity({ qty: value, type: 'KG', title: t('fields.observedMass') });
+      pinQuantity({ qty: value, type: 'KG', title: t(config?.siteLabelUser + 'fields.observedMass') });
     }
+    setWiA();
   };
 
   const handleDensityChange = (value) => {
@@ -246,10 +270,6 @@ const Calculate = ({
             />
           </Form.Item>
         </Col>
-        <Col span={12}></Col>
-      </Row>
-
-      <Row gutter={[8, 8]}>
         <Col span={12}>
           <Form.Item name="mlitm_qty_cor" label={t('fields.standardQuantity') + '(' + t('units.ltr') + ')'}>
             <InputNumber
@@ -262,18 +282,43 @@ const Calculate = ({
             />
           </Form.Item>
         </Col>
-        <Col span={12}>
-          <Form.Item name="mlitm_qty_kg" label={t('fields.observedMass') + '(' + t('units.kg') + ')'}>
-            <InputNumber
-              min={0}
-              max={999999999}
-              precision={config.precisionMass}
-              disabled={IS_DISALBED}
-              style={{ width: '100%' }}
-              onChange={handleMassQtyFieldChange}
-            />
-          </Form.Item>
-        </Col>
+      </Row>
+
+      <Row gutter={[8, 8]}>
+        {config?.siteMassInVacuum && (
+          <Col span={config?.siteMassInAir ? 12 : 24}>
+            <Form.Item
+              name="mlitm_qty_kg"
+              label={t(config?.siteLabelUser + 'fields.observedMass') + '(' + t('units.kg') + ')'}
+            >
+              <InputNumber
+                min={0}
+                max={999999999}
+                precision={config.precisionMass}
+                disabled={IS_DISALBED}
+                style={{ width: '100%' }}
+                onChange={handleMassQtyFieldChange}
+              />
+            </Form.Item>
+          </Col>
+        )}
+        {config?.siteMassInAir && (
+          <Col span={config?.siteMassInVacuum ? 12 : 24}>
+            <Form.Item
+              name="mlitm_air_kg"
+              label={t(config?.siteLabelUser + 'fields.weightInAir') + '(' + t('units.kg') + ')'}
+            >
+              <InputNumber
+                min={0}
+                max={999999999}
+                precision={config.precisionMass}
+                disabled={true}
+                style={{ width: '100%' }}
+                // onChange={handleMassQtyFieldChange}
+              />
+            </Form.Item>
+          </Col>
+        )}
       </Row>
 
       <Row gutter={[8, 8]}>
