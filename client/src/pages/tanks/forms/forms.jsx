@@ -966,7 +966,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             </TabPane>
           )}
 
-          {config.useWaterStrapping && (
+          {config.siteUseTankBatch && (
             <TabPane key="7" tab={t('tabColumns.tankBatches')}>
               <TankBatches
                 terminal={value?.tank_terminal}

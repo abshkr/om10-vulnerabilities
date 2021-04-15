@@ -99,6 +99,7 @@ const columns = (t, config) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    hide: !config?.siteMassInVacuum,
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
       digits: '0',
@@ -111,7 +112,7 @@ const columns = (t, config) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    hide: !config?.useWaterStrapping,
+    hide: !config?.siteMassInAir,
     cellRenderer: 'MassInAirRenderer',
     cellRendererParams: {
       digits: '3',

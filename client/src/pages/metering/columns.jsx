@@ -37,13 +37,14 @@ const columns = (t, config) => [
     field: 'mass',
     sortable: true,
     resizable: true,
+    hide: !config?.siteMassInVacuum,
   },
   {
     headerName: t('fields.massInAir'),
     field: 'mass_in_air',
     sortable: true,
     resizable: true,
-    hide: !config?.useWaterStrapping,
+    hide: !config?.siteMassInAir,
     // cellRenderer: 'MassInAirRenderer',
     // cellRendererParams: {
     //   digits: '3',

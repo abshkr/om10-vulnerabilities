@@ -196,7 +196,7 @@ const Tanks = () => {
               </TabPane>
             )}
 
-            {config.useWaterStrapping && (
+            {config.siteUseTankBatch && (
               <TabPane key="9" tab={t('tabColumns.tankBatches')}>
                 <TankBatches
                   terminal={selected?.tank_terminal}

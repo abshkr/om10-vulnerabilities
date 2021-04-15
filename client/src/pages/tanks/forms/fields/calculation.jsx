@@ -16,8 +16,6 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
 
   const { setFieldsValue, getFieldsValue } = form;
 
-  const isOryxLabel = config?.useWaterStrapping;
-
   const [densityMode, setDensityMode] = useState(value?.tank_dens_mode);
   const [tempBounds, setTempBounds] = useState({
     min: value?.tank_bclass_temp_lo || config.minTemperature,
@@ -98,13 +96,25 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
       }
       // initialize the quantity source for calculation
       if (value?.tank_amb_vol) {
-        pinQuantity({ qty: value?.tank_amb_vol, type: 'LT', title: t('fields.ambientVolume') });
+        pinQuantity({
+          qty: value?.tank_amb_vol,
+          type: 'LT',
+          title: t(config?.siteLabelUser + 'fields.ambientVolume'),
+        });
       } else if (value?.tank_cor_vol) {
-        pinQuantity({ qty: value?.tank_cor_vol, type: 'L15', title: t('fields.standardVolume') });
+        pinQuantity({
+          qty: value?.tank_cor_vol,
+          type: 'L15',
+          title: t(config?.siteLabelUser + 'fields.standardVolume'),
+        });
       } else if (value?.tank_liquid_kg) {
-        pinQuantity({ qty: value?.tank_liquid_kg, type: 'KG', title: t('fields.liquidMass') });
+        pinQuantity({
+          qty: value?.tank_liquid_kg,
+          type: 'KG',
+          title: t(config?.siteLabelUser + 'fields.liquidMass'),
+        });
       } else {
-        pinQuantity({ qty: '', type: 'NA', title: t('fields.ambientVolume') });
+        pinQuantity({ qty: '', type: 'NA', title: t(config?.siteLabelUser + 'fields.ambientVolume') });
       }
     }
   }, [value, setFieldsValue, pinDensity, pinQuantity]);
@@ -313,19 +323,19 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
 
   const handleAmbVolFieldChange = (value) => {
     if (value !== undefined && value !== null && String(value).trim().length > 0) {
-      pinQuantity({ qty: value, type: 'LT', title: t('fields.ambientVolume') });
+      pinQuantity({ qty: value, type: 'LT', title: t(config?.siteLabelUser + 'fields.ambientVolume') });
     }
   };
 
   const handleCorVolFieldChange = (value) => {
     if (value !== undefined && value !== null && String(value).trim().length > 0) {
-      pinQuantity({ qty: value, type: 'L15', title: t('fields.standardVolume') });
+      pinQuantity({ qty: value, type: 'L15', title: t(config?.siteLabelUser + 'fields.standardVolume') });
     }
   };
 
   const handleMassQtyFieldChange = (value) => {
     if (value !== undefined && value !== null && String(value).trim().length > 0) {
-      pinQuantity({ qty: value, type: 'KG', title: t('fields.liquidMass') });
+      pinQuantity({ qty: value, type: 'KG', title: t(config?.siteLabelUser + 'fields.liquidMass') });
     }
   };
 
@@ -360,7 +370,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
 
   return (
     <>
-      {/* config?.useWaterStrapping && (
+      {/* config?.siteUseTankBatch && (
         <Form.Item
           name="tank_batch_no"
           label={t('fields.tankBatchNumber')}
@@ -716,30 +726,23 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
       </Row>
 
       <Row gutter={[8, 8]}>
-        <Col span={config?.useWaterStrapping ? 12 : 24}>
-          <OmegaInputNumber
-            form={form}
-            value={value?.tank_liquid_kg}
-            name="tank_liquid_kg"
-            label={`${t(config?.siteLabelUser + 'fields.liquidMass')} (${t('units.kg')})`}
-            min={0}
-            max={999999999}
-            style={{ width: '100%' }}
-            precision={value?.tank_base_class === '6' ? config.precisionAdditive : config.precisionMass}
-            onChange={handleMassQtyFieldChange}
-          />
-          {/* <Form.Item name="tank_liquid_kg" label={`${t('fields.liquidMass')} (${t('units.kg')})`}>
-            <InputNumber
+        {config?.siteMassInVacuum && (
+          <Col span={config?.siteMassInAir ? 12 : 24}>
+            <OmegaInputNumber
+              form={form}
+              value={value?.tank_liquid_kg}
+              name="tank_liquid_kg"
+              label={`${t(config?.siteLabelUser + 'fields.liquidMass')} (${t('units.kg')})`}
               min={0}
               max={999999999}
               style={{ width: '100%' }}
-              precision={value?.tank_base_class==='6' ? config.precisionAdditive : config.precisionMass}
+              precision={value?.tank_base_class === '6' ? config.precisionAdditive : config.precisionMass}
               onChange={handleMassQtyFieldChange}
             />
-          </Form.Item> */}
-        </Col>
-        {config?.useWaterStrapping && (
-          <Col span={12}>
+          </Col>
+        )}
+        {config?.siteMassInAir && (
+          <Col span={config?.siteMassInVacuum ? 12 : 24}>
             <OmegaInputNumber
               form={form}
               value={value?.tank_air_kg}

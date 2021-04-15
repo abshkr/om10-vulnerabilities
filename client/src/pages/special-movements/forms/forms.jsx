@@ -366,10 +366,14 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
               frm_real_dens: values.mlitm_dens_cor,
             })
             .then((response) => {
+              const WIA =
+                _.toNumber(response?.data?.real_kg) -
+                _.toNumber(response?.data?.real_litre15) * config?.airBuoyancyFactor;
               setFieldsValue({
                 mlitm_qty_amb: response?.data?.real_litre,
                 mlitm_qty_cor: response?.data?.real_litre15,
                 mlitm_qty_kg: response?.data?.real_kg,
+                mlitm_air_kg: WIA,
               });
             });
         } catch (error) {

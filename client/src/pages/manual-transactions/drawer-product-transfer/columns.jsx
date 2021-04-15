@@ -304,6 +304,7 @@ const columns = (
     editable: true,
     cellClass: 'editable-ag-grid-cell',
     width: 150,
+    hide: !config?.siteMassInVacuum,
     cellEditorParams: {
       min: 0,
       max: 99999999,
@@ -323,7 +324,7 @@ const columns = (
     sortable: true,
     resizable: true,
     width: 150,
-    hide: !config?.useWaterStrapping,
+    hide: !config?.siteMassInAir,
     cellRenderer: 'MassInAirRenderer',
     cellRendererParams: {
       digits: '3',

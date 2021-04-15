@@ -287,6 +287,15 @@ ORDER BY TK.TNKR_CODE, TE.TC_SEQNO, TA.AXLE_ID
 ) TAV
 /
 
+/*
+This SQL works in Sql Developer, but will cause the following error in sqlplus:
+Error report -
+SQL Error: ORA-01417: a table may be outer joined to at most one other table
+01417. 00000 -  "a table may be outer joined to at most one other table"
+*Cause:    a.b (+) = b.b and a.c (+) = c.c is not allowed
+*Action:   Check that this is really what you want, then join b and c first
+           in a view.
+
 CREATE OR REPLACE VIEW TRIP_AXLES_VW
 AS
 SELECT
@@ -330,4 +339,51 @@ WHERE
     AND SD.SHLS_TRIP_NO = SA.TRIP_NO(+)
     AND SD.SHLS_SUPP = SA.SUPP(+)
     AND AX.TNKR_AXLE_ID = SA.AXLE_ID(+)
+/
+*/
+
+CREATE OR REPLACE VIEW TRIP_AXLES_VW
+AS
+SELECT
+    SA.AXLE_ID,
+    SA.AXLE_WEIGH_IN,
+    SA.AXLE_WEIGH_OUT,
+    SA.TIME_WEIGH_IN,
+    SA.TIME_WEIGH_OUT,
+    TX.*
+FROM
+    SPECAXLES       SA,
+    (
+        SELECT 
+            SD.SHLS_TRIP_NO             AS TRIP_NO
+            , SD.SHLS_SUPP                AS SUPP_CODE
+            , CP.CMPY_NAME                AS SUPP_NAME
+            , TA.TNKR_CODE
+            , TA.TNKR_AXLE_ID
+            , TA.EQPT_SEQ
+            , TA.EQPT_ID
+            , TE.EQPT_CODE
+            , TE.EQPT_CODE || '[' || NVL(TE.EQPT_TITLE, TE.EQPT_CODE) || ']'   AS EQPT_NAME
+            , TA.EQPT_AXLE_ID
+            , TA.LIMIT_TYPE_ID
+            , TA.AXLE_GROUP
+            , TA.USER_WEIGHT_LIMIT
+            , TA.LIMIT_TYPE_CODE
+            , TA.LIMIT_TYPE_NAME
+            , TA.AXLE_GROUP_NAME
+            , TA.AXLE_WEIGHT_LIMIT    
+        FROM 
+            SCHEDULE        SD,
+            COMPANYS        CP,
+            TNKR_AXLES_VW TA, 
+            TRANSP_EQUIP TE
+        WHERE 
+            TA.EQPT_ID = TE.EQPT_ID
+            AND SD.SHL_TANKER = TA.TNKR_CODE
+            AND SD.SHLS_SUPP = CP.CMPY_CODE
+    ) TX
+WHERE
+    TX.TRIP_NO = SA.TRIP_NO(+)
+    AND TX.SUPP_CODE = SA.SUPP(+)
+    AND TX.TNKR_AXLE_ID = SA.AXLE_ID(+)
 /

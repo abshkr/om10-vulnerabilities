@@ -5,7 +5,7 @@ const columns = (t, config) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 150,
     suppressSizeToFit: true,
   },
   {
@@ -14,7 +14,16 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     cellRenderer: 'DateRenderer',
-    width: 150,
+    width: 180,
+    suppressSizeToFit: true,
+  },
+  {
+    headerName: t('fields.tankBatchEnd'),
+    field: 'tank_batch_end',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'DateRenderer',
+    width: 180,
     suppressSizeToFit: true,
   },
 
@@ -174,7 +183,7 @@ const columns = (t, config) => [
     resizable: true,
     width: 260,
     suppressSizeToFit: true,
-    hide: !config?.useWaterStrapping,
+    hide: true, //!config?.useWaterStrapping,
   },
 
   {

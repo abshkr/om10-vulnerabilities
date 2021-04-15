@@ -43,6 +43,7 @@ import {
   ObsQty,
   StdQty,
   ObsMass,
+  AirMass,
   ObsTemp,
   StdDensity,
   AltQty,
@@ -449,10 +450,14 @@ const FormModal = ({
               description: response?.data?.msg_code || ' ' + ': ' + response?.data?.msg_desc || ' ',
             });
           } else {
+            const WIA =
+              _.toNumber(response?.data?.real_kg) -
+              _.toNumber(response?.data?.real_litre15) * config?.airBuoyancyFactor;
             form.setFieldsValue({
               mlitm_qty_amb: response?.data?.real_litre,
               mlitm_qty_cor: response?.data?.real_litre15,
               mlitm_qty_kg: response?.data?.real_kg,
+              mlitm_air_kg: WIA,
             });
             setAmbient(response?.data?.real_litre);
             setCorrected(response?.data?.real_litre15);
@@ -495,10 +500,12 @@ const FormModal = ({
           description: response?.message,
         });
       } else {
+        const WIA = _.toNumber(response?.load_kg) - _.toNumber(response?.qty_cor) * config?.airBuoyancyFactor;
         form.setFieldsValue({
           mlitm_qty_amb: response?.qty_amb,
           mlitm_qty_cor: response?.qty_cor,
           mlitm_qty_kg: response?.load_kg,
+          mlitm_air_kg: WIA,
         });
         setAmbient(response?.qty_amb);
         setCorrected(response?.qty_cor);
@@ -832,7 +839,21 @@ const FormModal = ({
             </Col>
 
             <Col span={8}>
-              <Card size="small" title={t('divider.calculation')}>
+              <Card
+                size="small"
+                title={t('divider.calculation')}
+                extra={
+                  <Button
+                    htmlType="button"
+                    size="small"
+                    icon={<CalculatorOutlined />}
+                    style={{ marginRight: 5, marginTop: 0, marginBottom: 0, float: 'right' }}
+                    onClick={onCalculate}
+                  >
+                    {t('operations.calculate')}
+                  </Button>
+                }
+              >
                 <Row gutter={[8, 1]}>
                   <Col span={12}>
                     <PlanQty form={form} value={value} pageState={pageState} config={config} />
@@ -856,31 +877,6 @@ const FormModal = ({
                   </Col>
 
                   <Col span={12}>
-                    <Row gutter={[8, 30]}>
-                      <Col span={24}></Col>
-                    </Row>
-                    <Row gutter={[8, 1]}>
-                      <Col span={10}></Col>
-                      <Col span={14}>
-                        <Form.Item>
-                          {!disableCalculation && (
-                            <Button
-                              htmlType="button"
-                              icon={<CalculatorOutlined />}
-                              style={{ marginRight: 5 }}
-                              onClick={onCalculate}
-                            >
-                              {t('operations.calculate')}
-                            </Button>
-                          )}
-                        </Form.Item>
-                      </Col>
-                    </Row>
-                  </Col>
-                </Row>
-
-                <Row gutter={[8, 1]}>
-                  <Col span={12}>
                     <StdQty
                       form={form}
                       value={value}
@@ -890,17 +886,51 @@ const FormModal = ({
                       config={config}
                     />
                   </Col>
+                  {/* <Col span={12}>
+                    {!disableCalculation && (
+                      <Form.Item 
+                        name="mlitm_calc_btn"
+                        label='   '
+                      >
+                        <Button
+                          htmlType="button"
+                          icon={<CalculatorOutlined />}
+                          style={{ marginRight: 5, float: 'right' }}
+                          onClick={onCalculate}
+                        >
+                          {t('operations.calculate')}
+                        </Button>
+                      </Form.Item>
+                    )}
+                  </Col> */}
+                </Row>
 
-                  <Col span={12}>
-                    <ObsMass
-                      form={form}
-                      value={value}
-                      onChange={setCalcSource}
-                      setValue={setMass}
-                      pageState={pageState}
-                      config={config}
-                    />
-                  </Col>
+                <Row gutter={[8, 1]}>
+                  {config?.siteMassInVacuum && (
+                    <Col span={config?.siteMassInAir ? 12 : 24}>
+                      <ObsMass
+                        form={form}
+                        value={value}
+                        onChange={setCalcSource}
+                        setValue={setMass}
+                        pageState={pageState}
+                        config={config}
+                      />
+                    </Col>
+                  )}
+
+                  {config?.siteMassInAir && (
+                    <Col span={config?.siteMassInVacuum ? 12 : 24}>
+                      <AirMass
+                        form={form}
+                        value={value}
+                        pageState={pageState}
+                        config={config}
+                        wiv={mass}
+                        gsv={corrected}
+                      />
+                    </Col>
+                  )}
                 </Row>
 
                 <Row gutter={[8, 1]}>
