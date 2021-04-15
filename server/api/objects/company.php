@@ -56,7 +56,8 @@ class Company extends CommonClass
         "DEFAULT_FLAG" => "Y",
         "CMPY_ADD_PROMPT" => "Y",
         "CMPY_CHECK_LICEN" => "Y",
-        "CMPY_WGH_AUTO_FL" => "Y"
+        "CMPY_WGH_AUTO_FL" => "Y",
+        "CMPY_REQ_PIN_FLAG" => 1
     );
 
     public function pre_create()

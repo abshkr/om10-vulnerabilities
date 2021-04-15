@@ -143,14 +143,6 @@ const OtherForm = ({ value, form }) => {
     // wrapperCol: { span: 16 },
   };
 
-  let cmpy_req_pin_flag_state = () => {
-    if (cmpy_req_pin_flag == '1') {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
   return (
     <div>
       {(value?.supplier || value?.drawer) && (
@@ -303,7 +295,7 @@ const OtherForm = ({ value, form }) => {
             <Switch
               checkedChildren={t('operations.yes')}
               unCheckedChildren={t('operations.no')}
-              checked={cmpy_req_pin_flag_state()}
+              checked={cmpy_req_pin_flag}
               onChange={onBlendTol}
             />
           </Form.Item>
