@@ -51,7 +51,8 @@ export default class DrawerProducts extends Component {
       current[index].trsf_qty_left = record?.item?.qty_loaded;
       const plan_qty = _.round(_.toNumber(record?.item?.qty_planned), 0);
       const load_qty = _.round(_.toNumber(record?.item?.qty_loaded), 0);
-      if (plan_qty > 0 && load_qty > 0 && plan_qty === load_qty) {
+      // if (plan_qty > 0 && load_qty > 0 && plan_qty === load_qty) {
+      if (plan_qty > 0 && load_qty > 0 && plan_qty <= load_qty) {
         notification.error({
           key: 'prod_plan_load',
           message: t('prompts.productFullyLoaded'),
