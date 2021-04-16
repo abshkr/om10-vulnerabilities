@@ -35,13 +35,26 @@ export default class DraggableRenderer extends Component {
     }
   };
 
+  gridHighlight = (event) => {
+    event.target.style.color = 'red';
+  };
+
+  rmvHighlight = (event) => {
+    event.target.style.color = '';
+  };
+
   render() {
     const { value, t } = this.props;
 
     return (
-      <div onDragOver={this.gridDragOver} onDrop={this.gridDrop.bind(this)}>
+      <div
+        onDragOver={this.gridDragOver}
+        onDrop={this.gridDrop.bind(this)}
+        onDragEnter={this.gridHighlight}
+        onDragLeave={this.rmvHighlight}
+      >
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <div>{value === '' ? t('placeholder.dragProduct') : value}</div>
+          <div style={{ width: '300px' }}>{value === '' ? t('placeholder.dragProduct') : value}</div>
           {value !== '' && (
             <div>
               <Button
