@@ -65,8 +65,11 @@ const FormModal = ({
 }) => {
   const { site_customer_product, site_customer_carrier } = useConfig();
 
+  const popupMT = config?.popupManualTransaction;
   const [drawerWidth, setDrawerWidth] = useState('80vw');
+  const [tabKey, setTabKey] = useState('1');
   const [mainTabOn, setMainTabOn] = useState(true);
+  const [manualTranTabOn, setManualTranTabOn] = useState(false);
   const [tableAPI, setTableAPI] = useState(undefined);
 
   const { data: units } = useSWR(ORDER_LISTINGS.UNIT_TYPES);
@@ -90,6 +93,7 @@ const FormModal = ({
   const [drawerOrderItems, setDrawerOrderItems] = useState([]);
   const [showPeriod, setShowPeriod] = useState(false);
   const [showDeliveryDetails, setShowDeliveryDetails] = useState(false);
+  const [showMakeTransactions, setShowMakeTransactions] = useState(false);
 
   //console.log("access in OO", access);
   //console.log('pageState in OO', pageState);
@@ -137,6 +141,12 @@ const FormModal = ({
   const site_code = decoded?.site_code;
 
   const doTabChanges = (tabPaneKey) => {
+    setTabKey(tabPaneKey);
+    if (tabPaneKey === '5') {
+      setManualTranTabOn(true);
+    } else {
+      setManualTranTabOn(false);
+    }
     if (tabPaneKey === '1') {
       setDrawerWidth('80vw');
       setMainTabOn(true);
@@ -151,11 +161,12 @@ const FormModal = ({
     setFieldsValue({
       order_carr_code: undefined,
     });
-  }
+  };
 
   const onFormClosed = () => {
     setDrawerWidth('80vw');
     setMainTabOn(true);
+    setManualTranTabOn(false);
     handleFormState(false, null);
   };
 
@@ -163,6 +174,7 @@ const FormModal = ({
     // console.log('start of onComplete');
     setDrawerWidth('80vw');
     setMainTabOn(true);
+    setManualTranTabOn(false);
     if (order) {
       locateOrder(order);
     } else {
@@ -459,7 +471,7 @@ const FormModal = ({
       onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
-      mask={IS_CREATING}
+      mask={IS_CREATING || tabKey === '5'}
       placement="right"
       width={drawerWidth}
       visible={visible}
@@ -518,6 +530,18 @@ const FormModal = ({
             </Button>
           )}
 
+          {!IS_CREATING && popupMT && (
+            <Button
+              type="primary"
+              icon={<ClockCircleOutlined />}
+              style={{ marginLeft: 5 }}
+              disabled={!CAN_MAKE_TRANSACTIONS || !mainTabOn}
+              onClick={() => setShowMakeTransactions(true)}
+            >
+              {t('pageNames.manualTransactions')}
+            </Button>
+          )}
+
           {/* {!IS_CREATING && (
             <Button
               type="primary"
@@ -564,7 +588,13 @@ const FormModal = ({
               </Col>
 
               <Col span={6}>
-                <Customer form={form} value={value} supplier={supplier} onChange={changeCustomer} pageState={pageState} />
+                <Customer
+                  form={form}
+                  value={value}
+                  supplier={supplier}
+                  onChange={changeCustomer}
+                  pageState={pageState}
+                />
               </Col>
 
               <Col span={6}>
@@ -754,26 +784,30 @@ const FormModal = ({
               }}
             />
           </TabPane>
-          <TabPane
-            tab={t('pageNames.manualTransactions')}
-            disabled={IS_CREATING || !CAN_MAKE_TRANSACTIONS}
-            key="5"
-          >
-            <ManualTransactionsPopup
-              popup={true}
-              params={{
-                supplier: value?.order_supp_code,
-                customer: value?.order_cust_acnt,
-                cust_cmpy: value?.order_cust_code,
-                carrier: value?.order_carr_code,
-                order_sys_no: value?.order_sys_no,
-                order_cust_no: value?.order_cust_no,
-                trans_type: 'OPENORDER',
-                repost: false,
-                onComplete: onComplete,
-              }}
-            />
-          </TabPane>
+          {!popupMT && (
+            <TabPane
+              tab={t('pageNames.manualTransactions')}
+              disabled={IS_CREATING || !CAN_MAKE_TRANSACTIONS}
+              key="5"
+            >
+              {manualTranTabOn && (
+                <ManualTransactionsPopup
+                  popup={true}
+                  params={{
+                    supplier: value?.order_supp_code,
+                    customer: value?.order_cust_acnt,
+                    cust_cmpy: value?.order_cust_code,
+                    carrier: value?.order_carr_code,
+                    order_sys_no: value?.order_sys_no,
+                    order_cust_no: value?.order_cust_no,
+                    trans_type: 'OPENORDER',
+                    repost: false,
+                    onComplete: onComplete,
+                  }}
+                />
+              )}
+            </TabPane>
+          )}
         </Tabs>
       </Form>
       {pageState !== 'create' && (
@@ -784,6 +818,32 @@ const FormModal = ({
           order={value}
           form={form}
         />
+      )}
+      {!IS_CREATING && CAN_MAKE_TRANSACTIONS && popupMT && (
+        <Drawer
+          title={t('pageNames.manualTransactions')}
+          placement="right"
+          bodyStyle={{ paddingTop: 5 }}
+          onClose={() => setShowMakeTransactions(false)}
+          visible={showMakeTransactions}
+          width="100vw"
+          destroyOnClose={true}
+        >
+          <ManualTransactionsPopup
+            popup={true}
+            params={{
+              supplier: value?.order_supp_code,
+              customer: value?.order_cust_acnt,
+              cust_cmpy: value?.order_cust_code,
+              carrier: value?.order_carr_code,
+              order_sys_no: value?.order_sys_no,
+              order_cust_no: value?.order_cust_no,
+              trans_type: 'OPENORDER',
+              repost: false,
+              onComplete: onComplete,
+            }}
+          />
+        </Drawer>
       )}
     </Drawer>
   );

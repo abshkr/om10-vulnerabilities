@@ -131,6 +131,7 @@ const useConfig = () => {
     heatmapExtremeFrom: 200,
     heatmapExtremeTo: 99999,
     site_default_shls_ld_type: '2',
+    popupManualTransaction: false,
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -328,6 +329,7 @@ const useConfig = () => {
         heatmapExtremeFrom: configurationObject?.HEATMAP_EXTREME_FROM || 999999999999999,
         heatmapExtremeTo: configurationObject?.HEATMAP_EXTREME_TO || 999999999999999,
         site_default_shls_ld_type: configurationObject?.SITE_DEFAULT_SHLS_LD_TYPE || '2',
+        popupManualTransaction: configurationObject?.SITE_POPUP_MT || false,
       });
     }
     // eslint-disable-next-line
