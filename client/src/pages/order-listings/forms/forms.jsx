@@ -530,10 +530,10 @@ const FormModal = ({
             </Button>
           )}
 
-          {!IS_CREATING && popupMT && (
+          {!IS_CREATING && popupMT && tabKey === '1' && (
             <Button
               type="primary"
-              icon={<ClockCircleOutlined />}
+              icon={<EditOutlined />}
               style={{ marginLeft: 5 }}
               disabled={!CAN_MAKE_TRANSACTIONS || !mainTabOn}
               onClick={() => setShowMakeTransactions(true)}
