@@ -381,7 +381,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
               </Col>
             </Row>
 
-            <TPP form={form} value={value} />
+            {config?.siteUseNomTpp && <TPP form={form} value={value} />}
 
             <TransportMode form={form} value={value} />
 
