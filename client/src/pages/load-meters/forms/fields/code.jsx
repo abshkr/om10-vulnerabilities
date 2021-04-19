@@ -30,6 +30,13 @@ const Code = ({ form, value }) => {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 32 ─ ${t('descriptions.maxCharacters')}`);
     }
 
+    if (input != input.trimLeft()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
+    }
+    if (input != input.trimRight()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
+    }
+
     return Promise.resolve();
   };
 

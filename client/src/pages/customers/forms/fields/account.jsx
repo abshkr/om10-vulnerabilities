@@ -66,6 +66,14 @@ const Account = ({ form, value, config }) => {
         `${t('placeholder.maxCharacters')}: ${config?.maxLengthCustAcct} ─ ${t('descriptions.maxCharacters')}`
       );
     }
+
+    if (input != input.trimLeft()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
+    }
+    if (input != input.trimRight()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
+    }
+
     return Promise.resolve();
   };
 

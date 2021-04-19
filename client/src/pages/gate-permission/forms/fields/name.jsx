@@ -16,13 +16,20 @@ const Name = ({ form, value }) => {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 30 ─ ${t('descriptions.maxCharacters')}`);
     }
 
+    if (input != input.trimLeft()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
+    }
+    if (input != input.trimRight()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
+    }
+
     return Promise.resolve();
   };
 
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        prmssn_name: value.prmssn_name
+        prmssn_name: value.prmssn_name,
       });
     } else {
       setFieldsValue({

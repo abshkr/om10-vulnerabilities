@@ -16,13 +16,13 @@ const Code = ({ form, value, config }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tank_code: value.tank_code
+        tank_code: value.tank_code,
       });
     }
   }, [value, setFieldsValue]);
 
   const validate = (rule, input) => {
-    const match = _.find(payload?.records, object => {
+    const match = _.find(payload?.records, (object) => {
       return object.tank_code.toLowerCase() === input?.toLowerCase();
     });
 
@@ -41,9 +41,18 @@ const Code = ({ form, value, config }) => {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('descriptions.mustBeAlphaNumeric')}`);
     }
 
-    const len = (new TextEncoder().encode(input)).length;
+    const len = new TextEncoder().encode(input).length;
     if (input && len > config?.maxLengthTankCode) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: ${config?.maxLengthTankCode} ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${config?.maxLengthTankCode} ─ ${t('descriptions.maxCharacters')}`
+      );
+    }
+
+    if (input != input.trimLeft()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
+    }
+    if (input != input.trimRight()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
     }
 
     return Promise.resolve();

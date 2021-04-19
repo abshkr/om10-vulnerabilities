@@ -217,7 +217,12 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.groupName')}`);
     }
-
+    if (input != input.trimLeft()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
+    }
+    if (input != input.trimRight()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
+    }
     const len = new TextEncoder().encode(input).length;
     if (input && len > 16) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 16 ─ ${t('descriptions.maxCharacters')}`);

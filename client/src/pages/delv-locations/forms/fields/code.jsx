@@ -17,13 +17,13 @@ const Code = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        delv_code: value.delv_code
+        delv_code: value.delv_code,
       });
     }
   }, [value, setFieldsValue]);
 
   const validate = (rule, input) => {
-    const match = _.find(delvLocations?.records, record => {
+    const match = _.find(delvLocations?.records, (record) => {
       return record.delv_code.toLowerCase() === input?.toLowerCase();
     });
 
@@ -39,11 +39,22 @@ const Code = ({ form, value }) => {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 16 ─ ${t('descriptions.maxCharacters')}`);
     }
 
+    if (input != input.trimLeft()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
+    }
+    if (input != input.trimRight()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
+    }
+
     return Promise.resolve();
   };
 
   return (
-    <Form.Item name="delv_code" label={t('fields.delvCode')} rules={[{ required: true, validator: validate }]}>
+    <Form.Item
+      name="delv_code"
+      label={t('fields.delvCode')}
+      rules={[{ required: true, validator: validate }]}
+    >
       <Input disabled={!!value || isValidating} />
     </Form.Item>
   );

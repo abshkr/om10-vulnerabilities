@@ -46,7 +46,7 @@ const NominationKey = ({ form, value }) => {
   }, [data, setMatched]);
 
   useEffect(() => {
-    if (nomkey?.length>0) {
+    if (nomkey?.length > 0) {
       validateFields(['mv_key']);
     }
   }, [matched, nomkey, validateFields]);
@@ -57,6 +57,12 @@ const NominationKey = ({ form, value }) => {
     }
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.nominationKey')}`);
+    }
+    if (input != input.trimLeft()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
+    }
+    if (input != input.trimRight()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
     }
     if (input && input.length > 20) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);

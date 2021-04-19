@@ -15,7 +15,7 @@ const Printer = ({ form, value }) => {
   const { data: physicalPrinters, isValidating } = useSWR(PHYSICAL_PRINTERS.READ);
 
   const validate = (rule, input) => {
-    const match = _.find(physicalPrinters?.records, object => {
+    const match = _.find(physicalPrinters?.records, (object) => {
       const result = object.prntr.toLowerCase() === input?.toLowerCase();
 
       return result;
@@ -41,13 +41,20 @@ const Printer = ({ form, value }) => {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 3 ─ ${t('descriptions.maxCharacters')}`);
     }
 
+    if (input != input.trimLeft()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
+    }
+    if (input != input.trimRight()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
+    }
+
     return Promise.resolve();
   };
 
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        prntr: value.prntr
+        prntr: value.prntr,
       });
     }
   }, [value, setFieldsValue]);

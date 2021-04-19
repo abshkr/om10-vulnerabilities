@@ -39,6 +39,13 @@ const AddressKey = ({ form, value, onChange }) => {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
     }
 
+    if (input != input.trimLeft()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
+    }
+    if (input != input.trimRight()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
+    }
+
     return Promise.resolve();
   };
 
@@ -52,7 +59,7 @@ const AddressKey = ({ form, value, onChange }) => {
       label={t('fields.addressCode')}
       rules={[{ required: true, validator: validate }]}
     >
-      <Input disabled={!!value || isValidating} onChange={handleFieldChange}/>
+      <Input disabled={!!value || isValidating} onChange={handleFieldChange} />
     </Form.Item>
   );
 };

@@ -33,7 +33,7 @@ import api, { COMPANIES } from '../../../api';
 import { InputNumber, NumericInput } from '../../../components';
 import { REGEX } from '../../../constants';
 import useSWR from 'swr';
-import _ from 'lodash';
+import _, { trim } from 'lodash';
 import { useConfig } from 'hooks';
 
 const TabPane = Tabs.TabPane;
@@ -65,6 +65,8 @@ const FormModal = ({
   const [plantRequired, setPlantRquired] = useState(value?.cmpy_plant);
 
   const IS_CREATING = !value;
+
+  const removeWhiteSpaceFrontBack = (s) => s.trim().split(/ +/).join(' ');
 
   const onComplete = (cmpy_code) => {
     handleFormState(false, null);
@@ -181,6 +183,10 @@ const FormModal = ({
 
   const onFinish = async () => {
     const values = await form.validateFields();
+
+    // if(values.cmpy_name){
+    //   values.cmpy_name = removeWhiteSpaceFrontBack(values.cmpy_name);
+    // };
 
     if (
       !values.carrier &&
@@ -321,6 +327,14 @@ const FormModal = ({
       }
     }
 
+    if (input != input.trimLeft()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
+    }
+
+    if (input != input.trimRight()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
+    }
+
     const regex = new RegExp(REGEX.DOCUMENT);
     const validated = regex.exec(input);
 
@@ -417,17 +431,19 @@ const FormModal = ({
               label={t('fields.companyCode')}
               rules={[{ required: true, validator: validateCode }]}
             >
-              {carrcode_tankernum_tag ? 
-              <NumericInput 
-                inputValue={value?.cmpy_code} 
-                disabled={!IS_CREATING} 
-                onChange={(cmpy_code)=>setFieldsValue({
-                  cmpy_code: cmpy_code,
-                })}
-              />
-              :
-              <Input disabled={!IS_CREATING}></Input>
-              }
+              {carrcode_tankernum_tag ? (
+                <NumericInput
+                  inputValue={value?.cmpy_code}
+                  disabled={!IS_CREATING}
+                  onChange={(cmpy_code) =>
+                    setFieldsValue({
+                      cmpy_code: cmpy_code,
+                    })
+                  }
+                />
+              ) : (
+                <Input disabled={!IS_CREATING}></Input>
+              )}
             </Form.Item>
             <Form.Item
               name="cmpy_plant"

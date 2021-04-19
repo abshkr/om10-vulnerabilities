@@ -14,6 +14,13 @@ const ProductCode = ({ form, value, config }) => {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.productCode')}`);
     }
 
+    if (input != input.trimLeft()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
+    }
+    if (input != input.trimRight()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
+    }
+
     const regex = new RegExp(REGEX.ALPHANUMERIC);
     const validated = regex.exec(input);
 

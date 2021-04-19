@@ -16,13 +16,20 @@ const SystemPrinter = ({ form, value }) => {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 30 ─ ${t('descriptions.maxCharacters')}`);
     }
 
+    if (value != value.trimLeft()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
+    }
+    if (value != value.trimRight()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
+    }
+
     return Promise.resolve();
   };
 
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        sys_prntr: value.sys_prntr
+        sys_prntr: value.sys_prntr,
       });
     }
   }, [value, setFieldsValue]);

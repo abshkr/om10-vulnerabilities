@@ -28,13 +28,20 @@ const Id = ({ form, value }) => {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
     }
 
+    if (input != input.trimLeft()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
+    }
+    if (input != input.trimRight()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
+    }
+
     return Promise.resolve();
   };
 
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        hzcf_id: value.hzcf_id
+        hzcf_id: value.hzcf_id,
       });
     }
   }, [value, setFieldsValue]);

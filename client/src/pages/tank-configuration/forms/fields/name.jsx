@@ -10,7 +10,7 @@ const Name = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tank_name: value.tank_name
+        tank_name: value.tank_name,
       });
     }
   }, [value, setFieldsValue]);
@@ -20,9 +20,16 @@ const Name = ({ form, value }) => {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.name')}`);
     }
 
-    const len = (new TextEncoder().encode(input)).length;
+    const len = new TextEncoder().encode(input).length;
     if (input && len > 30) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 30 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    if (input != input.trimLeft()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
+    }
+    if (input != input.trimRight()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
     }
 
     return Promise.resolve();

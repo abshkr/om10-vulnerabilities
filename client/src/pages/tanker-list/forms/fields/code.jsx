@@ -29,6 +29,12 @@ const Code = ({ form, value, tankers, config }) => {
       return Promise.reject(t('descriptions.alreadyExists'));
     }
 
+    if (input != input.trimLeft()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
+    }
+    if (input != input.trimRight()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
+    }
     // const regex = new RegExp(REGEX.ALPHANUMERIC_SPECIAL_NOSQ);
     const regex = new RegExp(REGEX.DOCUMENT);
     const validated = regex.exec(input);

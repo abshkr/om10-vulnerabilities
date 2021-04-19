@@ -22,7 +22,7 @@ const PhysicalTagText = ({ form, value, physType, autoTag, disabled }) => {
     if (value) {
       exists = _.filter(exists, (item) => {
         return item.kya_txt != value.kya_txt;
-      })
+      });
     }
     const match = _.find(exists, ['kya_txt', _.toString(input)]);
 
@@ -34,9 +34,16 @@ const PhysicalTagText = ({ form, value, physType, autoTag, disabled }) => {
       return Promise.reject(t('descriptions.alreadyExists'));
     }
 
-    const len = (new TextEncoder().encode(input)).length;
+    const len = new TextEncoder().encode(input).length;
     if (input && len > 256) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 256 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    if (input != input.trimLeft()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
+    }
+    if (input != input.trimRight()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
     }
 
     return Promise.resolve();
@@ -53,21 +60,21 @@ const PhysicalTagText = ({ form, value, physType, autoTag, disabled }) => {
   const setKeyText = (txt) => {
     if (txt) {
       setFieldsValue({
-        kya_txt: txt
+        kya_txt: txt,
       });
     }
-  }
+  };
 
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        kya_txt: value.kya_txt
+        kya_txt: value.kya_txt,
       });
     }
 
     if (autoTag) {
       setFieldsValue({
-        kya_txt: autoTag
+        kya_txt: autoTag,
       });
     }
   }, [value, setFieldsValue, autoTag]);

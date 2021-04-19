@@ -28,6 +28,13 @@ const Code = ({ form, value, config }) => {
       return record.base_code.toLowerCase() === input?.toLowerCase();
     });
 
+    if (input != input.trimLeft()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
+    }
+    if (input != input.trimRight()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
+    }
+
     const regex = new RegExp(REGEX.ALPHANUMERIC);
     const validated = regex.exec(input);
 

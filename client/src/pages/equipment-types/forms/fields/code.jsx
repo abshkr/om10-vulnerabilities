@@ -36,6 +36,13 @@ const Code = ({ form, value }) => {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.equipmentTypeCode')}`);
     }
 
+    if (input != input.trimLeft()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
+    }
+    if (input != input.trimRight()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
+    }
+
     const regex = new RegExp(REGEX.DOCUMENT);
     const validated = regex.exec(input);
 

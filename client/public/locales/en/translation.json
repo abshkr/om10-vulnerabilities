@@ -2571,7 +2571,9 @@
     "tripExpiryDateEarlierThanScheduleDate": "The Expiry Date Time should be later than Schedule Date Time",
     "tripScheduleDateLaterThanExpiryDate": "The Schedule Date Time should be earlier than Expiry Date Time",
     "warnings": "warning(s)",
-    "wrongType": "Incorrect type"
+    "wrongType": "Incorrect type",
+    "whiteSpaceInBeginning": "There is a whitespace at the beginning of the string.",
+    "whiteSpaceInEnd": "There is a whitespace at the end of the string."
   },
   "oryx": {
     "fields": {
