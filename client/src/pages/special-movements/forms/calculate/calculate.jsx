@@ -186,7 +186,7 @@ const Calculate = ({
   const setWiA = () => {
     // WiA = WiV - GSV x 0.0011
     const WiV = getFieldValue('mlitm_qty_kg');
-    const GSV = getFieldValue('mlitm_qty_kg');
+    const GSV = getFieldValue('mlitm_qty_cor');
     const AIR = config?.airBuoyancyFactor;
     let WiA = undefined;
     if (!WiV || !GSV) {

@@ -105,6 +105,8 @@ const ConfigProvider = ({ children }) => {
     siteTankBatchStrictMode: false,
     siteStdLitreUnit: 'COR',
     siteProdOwnershipLevel: 'TANK',
+    siteUseNomTpp: false,
+    siteUseIntoTransitGainLoss: false,
     siteUseSpecIns: false,
     siteUseSafefillOnly: false,
     siteUseAxleWeightLimit: false,
@@ -115,6 +117,7 @@ const ConfigProvider = ({ children }) => {
     siteMtLimitPercent: '0.3',
     siteTransferTankSource: 'FROM',
     airBuoyancyFactor: 0.0011,
+    popupManualTransaction: false,
   });
 
   const { data: configuration, revalidate: revalidateConfiguration } = useSWR(SITE_CONFIGURATION.READ, {
@@ -290,6 +293,8 @@ const ConfigProvider = ({ children }) => {
         siteTankBatchStrictMode: configurationObject?.SITE_TANK_BATCH_STRICT_MODE || false,
         siteStdLitreUnit: configurationObject?.SITE_STD_LITRE_UNIT || 'COR',
         siteProdOwnershipLevel: configurationObject?.SITE_PROD_OWNERSHIP_LEVEL || 'TANK',
+        siteUseNomTpp: configurationObject?.SITE_USE_NOM_TPP || false,
+        siteUseIntoTransitGainLoss: configurationObject?.SITE_USE_INTO_TRANSIT_GL || false,
         siteUseSpecIns: configurationObject?.SITE_USE_SHLS_SPEC_INS,
         siteUseSafefillOnly: configurationObject?.SITE_USE_SAFEFILL_ONLY,
         siteUseAxleWeightLimit: configurationObject?.SITE_USE_AXLE_WEIGHT_LIMIT,
@@ -300,6 +305,7 @@ const ConfigProvider = ({ children }) => {
         siteMtLimitPercent: configurationObject?.SITE_MT_LIMIT_PERCENT || '0.3',
         siteTransferTankSource: configurationObject?.SITE_TRANSFER_TANK_SOURCE || 'FROM',
         airBuoyancyFactor: configurationObject?.AIR_BUOYANCY_FACTOR || 0.0011,
+        popupManualTransaction: configurationObject?.SITE_POPUP_MT || false,
         revalidate: () => onRevalidate(),
       });
     }

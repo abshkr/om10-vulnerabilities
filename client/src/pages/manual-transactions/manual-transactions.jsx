@@ -138,6 +138,116 @@ const ManualTransactions = ({ popup, params }) => {
     return payload;
   };
 
+  const compareLoadedWithScheduled = (item, errors, trsf_qty_code, trsf_qty_text, trsf_qty_unit) => {
+    if (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') {
+      // Compare with scheduled quantity for Pre-Schedule
+
+      // get the tolerance limit of the drawer product
+      const prodItem = _.find(
+        drawerProducts?.records,
+        (pitem) => pitem.prod_code === item.trsf_prod_code && pitem.prod_cmpycode === item.trsf_prod_cmpy
+      );
+      // console.log('......itemValidation', prodItem, drawerProducts?.records, item);
+      let sitePercent;
+      let siteLimit;
+      if (!config?.siteMtLimitPercent) {
+        sitePercent = '0.3';
+        siteLimit = 0.003;
+      } else {
+        if (_.isNaN(_.toNumber(config?.siteMtLimitPercent))) {
+          sitePercent = '0.3';
+          siteLimit = 0.003;
+        } else {
+          sitePercent = config?.siteMtLimitPercent;
+          siteLimit = _.toNumber(config?.siteMtLimitPercent) / 100.0;
+        }
+      }
+      let tolRatio = 0.003;
+      let qtyDiff = 0;
+      let noteDiff = '';
+      if (!prodItem) {
+        tolRatio = siteLimit;
+        qtyDiff = _.round(_.toNumber(item.trsf_qty_plan) * tolRatio, 0);
+        noteDiff = String(qtyDiff) + ' (' + item.trsf_qty_plan + ' X ' + sitePercent + '%)';
+      } else {
+        if (!prodItem?.prod_ldtol_flag) {
+          tolRatio = siteLimit;
+          qtyDiff = _.round(_.toNumber(item.trsf_qty_plan) * tolRatio, 0);
+          noteDiff = String(qtyDiff) + ' (' + item.trsf_qty_plan + ' X ' + sitePercent + '%)';
+        } else {
+          if (_.toNumber(prodItem?.prod_ldtol_ptol) === 0) {
+            tolRatio = siteLimit;
+            qtyDiff = _.round(_.toNumber(item.trsf_qty_plan) * tolRatio, 0);
+            noteDiff = String(qtyDiff) + ' (' + item.trsf_qty_plan + ' X ' + sitePercent + '%)';
+          } else {
+            if (config?.load_tolerance_type === 'PERCENT') {
+              tolRatio = _.toNumber(prodItem?.prod_ldtol_ptol) / 100.0;
+              qtyDiff = _.round(_.toNumber(item.trsf_qty_plan) * tolRatio, 0);
+              noteDiff =
+                String(qtyDiff) + ' (' + item.trsf_qty_plan + ' X ' + prodItem?.prod_ldtol_ptol + '%)';
+            } else {
+              qtyDiff = _.toNumber(prodItem?.prod_ldtol_ptol);
+              noteDiff = prodItem?.prod_ldtol_ptol;
+            }
+          }
+        }
+      }
+
+      if (
+        _.round(_.toNumber(item[trsf_qty_code]), 0) >
+        _.round(_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left) + qtyDiff, 0)
+      ) {
+        errors.push({
+          field: `${t(trsf_qty_text)} (${t(trsf_qty_unit)})`,
+          message: `${t('fields.compartment')} ${item.trsf_cmpt_no}: ${t(trsf_qty_text)} ${_.round(
+            _.toNumber(item[trsf_qty_code]),
+            0
+          )} > ${t('fields.scheduled')} ${_.round(
+            _.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left),
+            0
+          )} + ${t('fields.prodLdtolPtol')} ${noteDiff}`,
+          key: `${trsf_qty_code}${item.trsf_cmpt_no}`,
+          line: item.trsf_cmpt_no,
+        });
+      }
+    }
+  };
+
+  const compareLoadedWithCapacity = (item, errors, trsf_qty_code, trsf_qty_text, trsf_qty_unit) => {
+    if (sourceType === 'OPENORDER' || (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT')) {
+      // Compare with planned quantity and compartment capacity for Pre-Order and Open Order
+      if (
+        _.round(_.toNumber(item[trsf_qty_code]), 0) >
+        _.round(_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left), 0)
+      ) {
+        errors.push({
+          field: `${t(trsf_qty_text)} (${t(trsf_qty_unit)})`,
+          message: `${t('fields.compartment')} ${item.trsf_cmpt_no}: ${t(trsf_qty_text)} ${_.round(
+            _.toNumber(item[trsf_qty_code]),
+            0
+          )} > ${t('fields.planned')} ${_.round(
+            _.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left),
+            0
+          )}`,
+          key: `${trsf_qty_code}${item.trsf_cmpt_no}`,
+          line: item.trsf_cmpt_no,
+        });
+      } else {
+        if (_.round(_.toNumber(item[trsf_qty_code]), 0) > _.round(_.toNumber(item.trsf_cmpt_capacit), 0)) {
+          errors.push({
+            field: `${t(trsf_qty_text)} (${t(trsf_qty_unit)})`,
+            message: `${t('fields.compartment')} ${item.trsf_cmpt_no}: ${t(trsf_qty_text)} ${_.round(
+              _.toNumber(item[trsf_qty_code]),
+              0
+            )} > ${t('fields.capacity')} ${_.round(_.toNumber(item.trsf_cmpt_capacit), 0)}`,
+            key: `${trsf_qty_code}${item.trsf_cmpt_no}`,
+            line: item.trsf_cmpt_no,
+          });
+        }
+      }
+    }
+  };
+
   const onItemValidation = (items) => {
     const errors = [];
 
@@ -165,8 +275,10 @@ const ManualTransactions = ({ popup, params }) => {
       });
     }
 
+    // check the compartment items
     for (let tidx = 0; tidx < items?.length; tidx++) {
       const item = items?.[tidx];
+      // need the product and arm to do loading, otherwise ignore and continue
       if (
         item.trsf_arm_cd === t('placeholder.selectArmCode') ||
         item.trsf_arm_cd === t('placeholder.noArmAvailable') ||
@@ -199,7 +311,8 @@ const ManualTransactions = ({ popup, params }) => {
       // check the planned qty and loaded qty
       const plan_qty = _.round(_.toNumber(item.trsf_qty_plan), 0);
       const load_qty = _.round(_.toNumber(item.trsf_qty_left), 0);
-      if (plan_qty > 0 && load_qty > 0 && plan_qty === load_qty) {
+      // if (plan_qty > 0 && load_qty > 0 && plan_qty === load_qty) {
+      if (plan_qty > 0 && load_qty > 0 && plan_qty <= load_qty) {
         errors.push({
           field: `${t('fields.drawerProduct')} (${t('fields.compartment')} ${item.trsf_cmpt_no})`,
           message: `${t('prompts.productFullyLoaded')} [${t('fields.scheduled')}: ${plan_qty}, ${t(
@@ -220,7 +333,26 @@ const ManualTransactions = ({ popup, params }) => {
         });
       } else {
         // Compare the observed quantity with scheduled quantity or compartment capacity
-        if (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') {
+        if (item.trsf_cmpt_unit === '5') {
+          compareLoadedWithScheduled(
+            item,
+            errors,
+            'trsf_qty_amb',
+            'fields.observedQuantity',
+            config?.siteLabelUser + 'units.lamb'
+          );
+        }
+        if (item.trsf_tc_unit === '5') {
+          compareLoadedWithCapacity(
+            item,
+            errors,
+            'trsf_qty_amb',
+            'fields.observedQuantity',
+            config?.siteLabelUser + 'units.lamb'
+          );
+        }
+
+        /* if (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') {
           // Compare with scheduled quantity for Pre-Schedule
 
           // get the tolerance limit of the drawer product
@@ -323,7 +455,7 @@ const ManualTransactions = ({ popup, params }) => {
               });
             }
           }
-        }
+        } */
       }
 
       // The standard quantity must be filled and cannot be zero
@@ -334,6 +466,26 @@ const ManualTransactions = ({ popup, params }) => {
           key: `${'trsf_qty_cor'}${item.trsf_cmpt_no}`,
           line: item.trsf_cmpt_no,
         });
+      } else {
+        // Compare the standard quantity with scheduled quantity or compartment capacity
+        if (item.trsf_cmpt_unit === '11') {
+          compareLoadedWithScheduled(
+            item,
+            errors,
+            'trsf_qty_cor',
+            'fields.standardQuantity',
+            config?.siteLabelUser + 'units.lcor'
+          );
+        }
+        if (item.trsf_tc_unit === '11') {
+          compareLoadedWithCapacity(
+            item,
+            errors,
+            'trsf_qty_cor',
+            'fields.standardQuantity',
+            config?.siteLabelUser + 'units.lcor'
+          );
+        }
       }
 
       // The mass quantity must be filled and cannot be zero
@@ -344,6 +496,14 @@ const ManualTransactions = ({ popup, params }) => {
           key: `${'trsf_load_kg'}${item.trsf_cmpt_no}`,
           line: item.trsf_cmpt_no,
         });
+      } else {
+        // Compare the mass quantity with scheduled quantity or compartment capacity
+        if (item.trsf_cmpt_unit === '17') {
+          compareLoadedWithScheduled(item, errors, 'trsf_load_kg', 'fields.massQuantity', 'units.kg');
+        }
+        if (item.trsf_tc_unit === '17') {
+          compareLoadedWithCapacity(item, errors, 'trsf_load_kg', 'fields.massQuantity', 'units.kg');
+        }
       }
     }
 

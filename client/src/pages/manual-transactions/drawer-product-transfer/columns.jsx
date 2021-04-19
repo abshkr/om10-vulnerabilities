@@ -8,6 +8,7 @@ const columns = (
   loadNumber,
   setPayload,
   payload,
+  units,
   products,
   composition,
   productArms,
@@ -102,6 +103,24 @@ const columns = (
     field: 'trsf_cmpt_capacit',
     hide: false,
     width: 100,
+  },
+  {
+    headerName: t('fields.unit'),
+    field: 'trsf_tc_unit',
+    filter: 'MultiFilter',
+    sortable: true,
+    resizable: true,
+    hide: false,
+    editable: false,
+    width: 100,
+    cellRenderer: 'ListRenderer',
+    cellRendererParams: {
+      values: _.uniq(
+        _.map(units?.records, (item) => {
+          return { code: item.unit_id, name: item.description };
+        })
+      ),
+    },
   },
 
   {
@@ -216,6 +235,28 @@ const columns = (
     cellRendererParams: {
       digits: '0',
       min: '100',
+    },
+  },
+  {
+    headerName: t('fields.unit'),
+    field: 'trsf_cmpt_unit',
+    filter: 'MultiFilter',
+    sortable: true,
+    resizable: true,
+    hide:
+      !sourceType ||
+      !loadNumber ||
+      (sourceType === 'SCHEDULE' && loadType === 'BY_PRODUCT') ||
+      sourceType === 'OPENORDER',
+    editable: false,
+    width: 130,
+    cellRenderer: 'ListRenderer',
+    cellRendererParams: {
+      values: _.uniq(
+        _.map(units?.records, (item) => {
+          return { code: item.unit_id, name: item.description };
+        })
+      ),
     },
   },
 

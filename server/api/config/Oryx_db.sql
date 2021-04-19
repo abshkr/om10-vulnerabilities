@@ -13,6 +13,23 @@ commit;
 
 
 
+/*
+    This one is not for Oryx but a general setting for a fix about MT in Load Schedules and Open Orders
+    define the SITE_POPUP_MT for the mode of Manual Transactions window
+    Y: use popup window to manage Manual Transactions.
+    N: use tab pane to manage Manual Transactions.
+*/
+delete from SITE_CONFIG where CONFIG_KEY='SITE_POPUP_MT';
+
+commit;
+
+insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIRED_BY_GUI) 
+values ('SITE_POPUP_MT', 'N', 'Use popup window to manage Manual Transactions', NULL );
+
+commit;
+
+
+
 
 /*
     The following site settings are added in SITE_CONFIG for Oryx customers
@@ -28,6 +45,10 @@ commit;
 
         SITE_USE_PROD_OWNERSHIP: Manage the product ownership in Omega system, Y/N
         SITE_PROD_OWNERSHIP_LEVEL: The level of product ownership management, TANK/SITE
+
+        SITE_USE_NOM_TPP: Show TPP fields in Nomination screen, Y/N
+        SITE_USE_INTO_TRANSIT_GL: Manage the into-transit gain/loss in Nomination, Y/N
+
 */
 
 
@@ -857,3 +878,34 @@ CREATE TABLE "CLOSEOUT_TK_OWNER"
         REFERENCES "TK_OWNERS" ("TKCMPY_LINK", "TKLINK_TANKCODE", "TKLINK_TANKDEPO") 
 )
 /
+
+
+
+
+
+/*
+    define the SITE_USE_NOM_TPP for the visibility of TPP fields in Nomination
+*/
+delete from SITE_CONFIG where CONFIG_KEY='SITE_USE_NOM_TPP';
+
+commit;
+
+insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIRED_BY_GUI) 
+values ('SITE_USE_NOM_TPP', 'N', 'Show TPP fields in Nomination screen', NULL );
+
+commit;
+
+
+/*
+    define the SITE_USE_INTO_TRANSIT_GL to manage the into-transit gain/loss in Nomination
+    Y: Show and manage the into-transit gain/loss fields in Nomination
+    N: Hide the into-transit gain/loss fields in Nomination
+*/
+delete from SITE_CONFIG where CONFIG_KEY='SITE_USE_INTO_TRANSIT_GL';
+
+commit;
+
+insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIRED_BY_GUI) 
+values ('SITE_USE_INTO_TRANSIT_GL', 'N', 'Manage the into-transit gain/loss in Nomination', NULL );
+
+commit;

@@ -16,7 +16,7 @@ import { DataTable } from '../../../components';
 import columns from './columns';
 import useSWR from 'swr';
 
-import api, { MANUAL_TRANSACTIONS } from '../../../api';
+import api, { MANUAL_TRANSACTIONS, ORDER_LISTINGS } from '../../../api';
 import {
   calcBaseRatios,
   calcArmDensity,
@@ -84,6 +84,8 @@ const DrawerProductTransfers = ({
   config,
 }) => {
   // console.log('--------------------------', sourceType, supplier, trip, order, tanker);
+  const { data: units } = useSWR(ORDER_LISTINGS.UNIT_TYPES);
+
   const { data } = useSWR(
     (sourceType === 'SCHEDULE' &&
       supplier &&
@@ -775,14 +777,37 @@ const DrawerProductTransfers = ({
         !(!item.trsf_density || String(item.trsf_density).trim() === '')
       ) {
         if (sourceType === 'SCHEDULE' && loadType === 'BY_COMPARTMENT') {
+          // check the schedule unit and assign the available qty to proper field !!!!
           // item.trsf_qty_amb = item.trsf_qty_plan;
-          item.trsf_qty_amb = String(_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left));
+          // Note: allowed_qty (qty scheduled) and qtyOnBoard (qty loaded) are already considered product unit
+          //          trsf_qty_plan: record?.allowed_qty === '' ? null : record?.allowed_qty,
+          //          trsf_qty_left: qtyOnboard,
+          const availQty = String(_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left));
+          if (item.trsf_cmpt_unit === '5') {
+            item.trsf_qty_amb = availQty;
+          } else if (item.trsf_cmpt_unit === '11') {
+            item.trsf_qty_cor = availQty;
+          } else if (item.trsf_cmpt_unit === '17') {
+            item.trsf_load_kg = availQty;
+          } else {
+            item.trsf_qty_amb = availQty;
+          }
           // console.log('DrawerProductTransfers: onCopy in loop after1', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
           // tableAPI.updateRowData({ update: [item] });
           updateTransferRow(item);
         } else {
           if (item.trsf_cmpt_capacit) {
-            item.trsf_qty_amb = item.trsf_cmpt_capacit;
+            // check the compartment unit and assign the safefill as available qty to proper field !!!!
+            const availQty = item.trsf_cmpt_capacit;
+            if (item.trsf_tc_unit === '5') {
+              item.trsf_qty_amb = availQty;
+            } else if (item.trsf_tc_unit === '11') {
+              item.trsf_qty_cor = availQty;
+            } else if (item.trsf_tc_unit === '17') {
+              item.trsf_load_kg = availQty;
+            } else {
+              item.trsf_qty_amb = availQty;
+            }
             // item.trsf_qty_amb = String(_.toNumber(item.trsf_cmpt_capacit) - _.toNumber(item.trsf_qty_left));
             // console.log('DrawerProductTransfers: onCopy in loop after2', item.trsf_qty_plan, item.trsf_cmpt_capacit, item.trsf_qty_amb);
             // tableAPI.updateRowData({ update: [item] });
@@ -977,6 +1002,7 @@ const DrawerProductTransfers = ({
       loadNumber,
       setPayload,
       payload,
+      units,
       products,
       composition,
       productArms,
@@ -992,6 +1018,7 @@ const DrawerProductTransfers = ({
     loadNumber,
     setPayload,
     payload,
+    units,
     products,
     composition,
     productArms,

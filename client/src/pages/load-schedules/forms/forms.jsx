@@ -87,10 +87,16 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     showLSI,
   } = config;
 
+  const popupMT = config?.popupManualTransaction;
+
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
   const [tab, setTab] = useState('0');
+  const [createTranTabOn, setCreateTranTabOn] = useState(false);
+  const [repostTranTabOn, setRepostTranTabOn] = useState(false);
+  const [showCreateTransactions, setShowCreateTransactions] = useState(false);
+  const [showRepostTransactions, setShowRepostTransactions] = useState(false);
   const [drawerWidth, setDrawerWidth] = useState('75vw');
 
   const [mode, setMode] = useState(default_shls_ld_type);
@@ -176,11 +182,15 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
   };
 
   const onFormClosed = () => {
+    setCreateTranTabOn(false);
+    setRepostTranTabOn(false);
     setDrawerWidth('75vw');
     handleFormState(false, null);
   };
 
   const onComplete = (value) => {
+    setCreateTranTabOn(false);
+    setRepostTranTabOn(false);
     setDrawerWidth('75vw');
     handleFormState(false, null);
     if (value) {
@@ -525,6 +535,19 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
   };
 
   const onTabChange = (v) => {
+    if (v === '8') {
+      setCreateTranTabOn(true);
+      setTab(v);
+    } else {
+      setCreateTranTabOn(false);
+    }
+    if (v === '9') {
+      setRepostTranTabOn(true);
+      setTab(v);
+    } else {
+      setRepostTranTabOn(false);
+    }
+
     if (v === '3' || v === '4') {
       if (value?.status === 'A') {
         Modal.confirm({
@@ -545,7 +568,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     }
 
     if (v === '6' || v === '8' || v === '9') {
-      setDrawerWidth('95vw');
+      setDrawerWidth('90vw');
     } else {
       setDrawerWidth('75vw');
     }
@@ -650,7 +673,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
       forceRender
       onClose={() => onFormClosed()}
       maskClosable={IS_CREATING}
-      mask={IS_CREATING}
+      mask={IS_CREATING || tab === '8' || tab === '9'}
       destroyOnClose
       placement="right"
       width={drawerWidth}
@@ -779,6 +802,38 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
                 {t('operations.archive')}
               </Button>
             </>
+          )}
+
+          {!(
+            IS_CREATING ||
+            !CAN_MAKE_TRANSACTIONS ||
+            !access.canCreate ||
+            value?.shls_ld_type === '6' ||
+            activeTrips > 0
+          ) &&
+            popupMT &&
+            tab === '0' && (
+              <Button
+                type="primary"
+                icon={<EditOutlined />}
+                style={{ marginLeft: 5 }}
+                disabled={!CAN_MAKE_TRANSACTIONS}
+                onClick={() => setShowCreateTransactions(true)}
+              >
+                {t('tabColumns.createTripTransactions')}
+              </Button>
+            )}
+
+          {!(IS_CREATING || !CAN_REPOST_TRANSACTIONS || !access.canUpdate) && popupMT && tab === '0' && (
+            <Button
+              type="primary"
+              icon={<EditOutlined />}
+              style={{ marginLeft: 5 }}
+              disabled={!CAN_REPOST_TRANSACTIONS}
+              onClick={() => setShowRepostTransactions(true)}
+            >
+              {t('tabColumns.repostTripTransactions')}
+            </Button>
           )}
         </>
       }
@@ -1068,24 +1123,90 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
             <AdditionalHostData value={value} />
           </TabPane>
 
-          <TabPane
-            tab={
-              !IS_CREATING && activeTrips > 0 ? (
-                <Tooltip placement="topRight" title={t('descriptions.countTankerActiveTrips')}>
-                  {t('tabColumns.createTripTransactions')}
-                </Tooltip>
-              ) : (
-                t('tabColumns.createTripTransactions')
-              )
-            }
-            disabled={
-              IS_CREATING ||
-              !CAN_MAKE_TRANSACTIONS ||
-              !access.canCreate ||
-              value.shls_ld_type === '6' ||
-              activeTrips > 0
-            }
-            key="8"
+          {!popupMT && (
+            <TabPane
+              tab={
+                !IS_CREATING && activeTrips > 0 ? (
+                  <Tooltip placement="topRight" title={t('descriptions.countTankerActiveTrips')}>
+                    {t('tabColumns.createTripTransactions')}
+                  </Tooltip>
+                ) : (
+                  t('tabColumns.createTripTransactions')
+                )
+              }
+              disabled={
+                IS_CREATING ||
+                !CAN_MAKE_TRANSACTIONS ||
+                !access.canCreate ||
+                value.shls_ld_type === '6' ||
+                activeTrips > 0
+              }
+              key="8"
+            >
+              {createTranTabOn && (
+                <ManualTransactionsPopup
+                  popup={true}
+                  params={{
+                    supplier: value?.supplier_code,
+                    trip_no: value?.shls_trip_no,
+                    carrier: value?.carrier_code,
+                    tanker: value?.tnkr_code,
+                    trans_type: 'SCHEDULE',
+                    repost: false,
+                    title: t('tabColumns.createTripTransactions'),
+                    onComplete: onComplete,
+                  }}
+                />
+              )}
+            </TabPane>
+          )}
+
+          {!popupMT && (
+            <TabPane
+              tab={t('tabColumns.repostTripTransactions')}
+              disabled={IS_CREATING || !CAN_REPOST_TRANSACTIONS || !access.canUpdate}
+              key="9"
+            >
+              {repostTranTabOn && (
+                <ManualTransactionsPopup
+                  popup={true}
+                  params={{
+                    supplier: value?.supplier_code,
+                    trip_no: value?.shls_trip_no,
+                    trans_type: 'SCHEDULE',
+                    repost: true,
+                    title: t('tabColumns.repostTripTransactions'),
+                    onComplete: onComplete,
+                  }}
+                />
+              )}
+            </TabPane>
+          )}
+
+          {config?.siteUseAxleWeightLimit && value && (
+            <TabPane tab={t('tabColumns.axleWeighInOut')} disabled={IS_CREATING} key="10">
+              <Axles value={value} />
+            </TabPane>
+          )}
+        </Tabs>
+      </Form>
+
+      {!(
+        IS_CREATING ||
+        !CAN_MAKE_TRANSACTIONS ||
+        !access.canCreate ||
+        value?.shls_ld_type === '6' ||
+        activeTrips > 0
+      ) &&
+        popupMT && (
+          <Drawer
+            title={t('tabColumns.createTripTransactions')}
+            placement="right"
+            bodyStyle={{ paddingTop: 5 }}
+            onClose={() => setShowCreateTransactions(false)}
+            visible={showCreateTransactions}
+            width="100vw"
+            destroyOnClose={true}
           >
             <ManualTransactionsPopup
               popup={true}
@@ -1100,33 +1221,32 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
                 onComplete: onComplete,
               }}
             />
-          </TabPane>
+          </Drawer>
+        )}
 
-          <TabPane
-            tab={t('tabColumns.repostTripTransactions')}
-            disabled={IS_CREATING || !CAN_REPOST_TRANSACTIONS || !access.canUpdate}
-            key="9"
-          >
-            <ManualTransactionsPopup
-              popup={true}
-              params={{
-                supplier: value?.supplier_code,
-                trip_no: value?.shls_trip_no,
-                trans_type: 'SCHEDULE',
-                repost: true,
-                title: t('tabColumns.repostTripTransactions'),
-                onComplete: onComplete,
-              }}
-            />
-          </TabPane>
-
-          {config?.siteUseAxleWeightLimit && value && (
-            <TabPane tab={t('tabColumns.axleWeighInOut')} disabled={IS_CREATING} key="10">
-              <Axles value={value} />
-            </TabPane>
-          )}
-        </Tabs>
-      </Form>
+      {!(IS_CREATING || !CAN_REPOST_TRANSACTIONS || !access.canUpdate) && popupMT && (
+        <Drawer
+          title={t('tabColumns.repostTripTransactions')}
+          placement="right"
+          bodyStyle={{ paddingTop: 5 }}
+          onClose={() => setShowRepostTransactions(false)}
+          visible={showRepostTransactions}
+          width="100vw"
+          destroyOnClose={true}
+        >
+          <ManualTransactionsPopup
+            popup={true}
+            params={{
+              supplier: value?.supplier_code,
+              trip_no: value?.shls_trip_no,
+              trans_type: 'SCHEDULE',
+              repost: true,
+              title: t('tabColumns.repostTripTransactions'),
+              onComplete: onComplete,
+            }}
+          />
+        </Drawer>
+      )}
     </Drawer>
   );
 };

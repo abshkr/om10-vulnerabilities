@@ -39,8 +39,8 @@ const LoadSchedules = () => {
   const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
 
   const handleFormState = (visibility, value) => {
-    setVisible(visibility);
     setSelected(value);
+    setVisible(visibility);
   };
 
   const setRange = (start, end) => {
