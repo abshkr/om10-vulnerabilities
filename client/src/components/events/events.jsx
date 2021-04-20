@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, List, Dropdown, Button, Badge } from 'antd';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import { BellOutlined, CloseOutlined, StopOutlined } from '@ant-design/icons';
 
@@ -13,7 +14,7 @@ import { useConfig } from 'hooks';
 const Events = () => {
   const [playing, toggle, muted, setMuted] = useAudio(COMMON.WARNING_SOUND);
   const { refreshAlarm } = useConfig();
-  
+
   const { data } = useSWR(AUTH.SESSION, { refreshInterval: refreshAlarm });
 
   const [alarms, setAlarms] = useState([]);
@@ -48,6 +49,15 @@ const Events = () => {
     });
 
     setEvents(filtered);
+    /* // testing 
+    const mockups = [];
+    for (let i=0; i<100; i++) {
+      mockups.push({
+        gen_date: '2021-04-20 10:10:10',
+        message: 'alarm ' + i,
+      });
+    }
+    setEvents(mockups); */
   }, [alarms, seen]);
 
   useEffect(() => {
@@ -86,27 +96,36 @@ const Events = () => {
         </Button>
       </div>
 
-      <List
-        style={{ width: '100%' }}
-        itemLayout="horizontal"
-        dataSource={events}
-        size="small"
-        renderItem={(item) => (
-          <List.Item
-            actions={[
-              <Button
-                type="danger"
-                size="small"
-                icon={<CloseOutlined />}
-                onClick={() => onRemove(`${item?.gen_date}-${item?.message}`)}
-                shape="circle"
-              ></Button>,
-            ]}
-          >
-            <List.Item.Meta title={item.gen_date} description={item.message} />
-          </List.Item>
-        )}
-      />
+      <Scrollbars
+        style={{
+          height: 'calc(100vh - 235px)',
+          width: '25vw',
+          marginTop: 5,
+          padding: 5,
+        }}
+      >
+        <List
+          style={{ width: '100%' }}
+          itemLayout="horizontal"
+          dataSource={events}
+          size="small"
+          renderItem={(item) => (
+            <List.Item
+              actions={[
+                <Button
+                  type="danger"
+                  size="small"
+                  icon={<CloseOutlined />}
+                  onClick={() => onRemove(`${item?.gen_date}-${item?.message}`)}
+                  shape="circle"
+                ></Button>,
+              ]}
+            >
+              <List.Item.Meta title={item.gen_date} description={item.message} />
+            </List.Item>
+          )}
+        />
+      </Scrollbars>
     </Menu>
   );
 
