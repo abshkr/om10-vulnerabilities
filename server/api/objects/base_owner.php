@@ -5,54 +5,36 @@ include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
 include_once 'common_class.php';
 
-class TankOwner extends CommonClass
+class BaseOwner extends CommonClass
 {
-    protected $TABLE_NAME = 'TK_OWNERS';
-    protected $VIEW_NAME = 'TANK_OWNERS_VW';
-    protected $primary_keys = array("tklink_tankcode", "tklink_tankdepo", "tkcmpy_link");
-    protected $view_keys = array("tklink_tankcode", "tklink_tankdepo", "tkcmpy_link");
+    protected $TABLE_NAME = 'BASE_PROD_OWNSHIP';
+    // protected $VIEW_NAME = 'GUI_BASE_PROD_OWNSHIP';
+    // protected $primary_keys = array("ownship_no");
+    protected $primary_keys = array("base_prod_code", "supp_cmpy");
+    // protected $view_keys = array("base_prod_code", "supp_cmpy");
 
-
-    /* protected $table_view_map = array(
-        "LIMIT_TYPE_ID" => "AXLE_LIMIT_TYPE_ID",
-    ); */
 
     public $NUMBER_FIELDS = array(
-        "TKO_PERCENTAGE",
-        "TKOWNER_QTY",
-        "TKO_STD_LTR",
-        "TKO_AMB_LTR",
-        "TKO_KG",
-        "TKO_IN",
-        "TKO_IN_KG",
-        "TKO_IN_TOTAL",
-        "TKO_OUT",
-        "TKO_OUT_KG",
-        "TKO_OUT_TOTAL",
-        "TKO_OUT_PRMV",
-        "TKO_OUT_LD",
-        "TKO_ADJ_STD",
-        "TKO_ADJ_AMB",
-        "TKO_ADJ_KG",
+        "OWNSHIP_NO",
+        "OWNSHIP_QTY",
+        "OWNSHIP_UNIT",
+        "BASE_CAT",
     );
 
     //All the fields that should be treated as BOOLEAN in JSON
     public $BOOLEAN_FIELDS = array(
-        "AFC_ENABLED" => "Y",
-        "TANK_DENS_MODE" => 1,
     );
     
     
-    public function check_ownership_by_tank()
+    public function check_ownership_by_base()
     {
         $query = "
             SELECT COUNT(*) AS CNT 
-            FROM TK_OWNERS
-            WHERE TKLINK_TANKCODE=:code and TKLINK_TANKDEPO=:term 
+            FROM BASE_PROD_OWNSHIP
+            WHERE BASE_PROD_CODE=:code 
         ";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':code', $this->tank_code);
-        oci_bind_by_name($stmt, ':term', $this->tank_terminal);
+        oci_bind_by_name($stmt, ':code', $this->base_code);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
@@ -66,8 +48,8 @@ class TankOwner extends CommonClass
     {
         $query = "
             SELECT COUNT(*) AS CNT 
-            FROM TK_OWNERS
-            WHERE TKCMPY_LINK=:code 
+            FROM BASE_PROD_OWNSHIP
+            WHERE SUPP_CMPY=:code 
         ";
 
         $stmt = oci_parse($this->conn, $query);
@@ -85,17 +67,15 @@ class TankOwner extends CommonClass
     {
         $query = "
             SELECT COUNT(*) AS CNT 
-            FROM TK_OWNERS
+            FROM BASE_PROD_OWNSHIP
             WHERE 
-                TKCMPY_LINK=:code 
-                and TKLINK_TANKCODE=:tank 
-                and TKLINK_TANKDEPO=:term 
+                BASE_PROD_CODE=:base 
+                and SUPP_CMPY=:cmpy 
         ";
 
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':code', $this->cmpy_code);
-        oci_bind_by_name($stmt, ':tank', $this->tank_code);
-        oci_bind_by_name($stmt, ':term', $this->tank_terminal);
+        oci_bind_by_name($stmt, ':base', $this->base_code);
+        oci_bind_by_name($stmt, ':cmpy', $this->cmpy_code);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
@@ -107,69 +87,56 @@ class TankOwner extends CommonClass
 
     public function read()
     {
+        if (!isset($this->base_code)) {
+            $this->base_code = "-1";
+        }
         if (!isset($this->cmpy_code)) {
             $this->cmpy_code = "-1";
         }
-        if (!isset($this->tank_code)) {
-            $this->tank_code = "-1";
-        }
-        if (!isset($this->tank_terminal)) {
-            $this->tank_terminal = "-1";
-        }
-        if (!isset($this->tank_base)) {
-            $this->tank_base = "-1";
-        }
-        if (!isset($this->tank_base_class)) {
-            $this->tank_base_class = -1;
-        }
-        // tko_percentage     float,
-        if (!isset($this->start_ratio)) {
-            $this->start_ratio = -1;
-        }
-        if (!isset($this->end_ratio)) {
-            $this->end_ratio = -1;
+        if (!isset($this->base_class)) {
+            $this->base_class = -1;
         }
 
         $query = "
-            SELECT * FROM " . $this->VIEW_NAME . "
-            WHERE 
-                1 = 1
+            select bro.*, bpd.*, bpc.*, cmp.*, unt.*
+            from
+                BASE_PROD_OWNSHIP   bro
+                , BASE_PRODS        bpd
+                , GUI_COMPANYS      cmp
+                , (
+                    select
+                        bcls.BCLASS_NO
+                        , NVL(bctyp.BCLASS_NAME, bcls.BCLASS_DESC)			as BCLASS_DESC
+                        , bcls.BCLASS_DENS_LO
+                        , bcls.BCLASS_DENS_HI
+                        , bcls.BCLASS_VCF_ALG
+                        , bcls.BCLASS_TEMP_LO
+                        , bcls.BCLASS_TEMP_HI
+                    from
+                        BASECLASS 			bcls
+                        , BCLASS_TYP		bctyp
+                    where
+                        1=1
+                        and bcls.BCLASS_NO = bctyp.BCLASS_ID(+)
+                ) 					bpc
+                , UNIT_SCALE_VW     unt
+            where
+                bro.BASE_PROD_CODE = bpd.BASE_CODE(+)
+                and bpd.BASE_CAT = bpc.BCLASS_NO(+)
+                and bro.SUPP_CMPY = cmp.CMPY_CODE(+)
+                and bro.OWNSHIP_UNIT = unt.UNIT_ID(+)
         ";
 
-        if ( $this->start_ratio === -1) {
-            $query .= "
-                AND (-1 = :start_ratio) 
-            ";
-        } else {
-            $query .= "
-                AND (TKO_PERCENTAGE > :start_ratio) 
-            ";
-        }
-        if ( $this->end_ratio === -1) {
-            $query .= "
-                AND (-1 = :end_ratio)
-            ";
-        } else {
-            $query .= "
-                AND (TKO_PERCENTAGE < :end_ratio)
-            ";
-        }
         $query .= "
-                AND ('-1' = :code OR TKCMPY_LINK LIKE '%'||:code||'%')
-                AND ('-1' = :tank OR TKLINK_TANKCODE = :tank)
-                AND ('-1' = :term OR TKLINK_TANKDEPO = :term)
-                AND ('-1' = :base OR TANK_BASE = :base)
-                AND (-1 = :catg OR TANK_BASE_CLASS = :catg)
-            ORDER BY TKLINK_TANKDEPO, TKLINK_TANKCODE, TKCMPY_LINK
+                and ('-1' = :base OR bro.BASE_PROD_CODE = :base)
+                and ('-1' = :cmpy OR bro.SUPP_CMPY = :cmpy)
+                and (-1 = :catg OR bpd.BASE_CAT = :catg)
+            ORDER BY bro.BASE_PROD_CODE, bro.SUPP_CMPY
         ";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':start_ratio', $this->start_ratio);
-        oci_bind_by_name($stmt, ':end_ratio', $this->end_ratio);
-        oci_bind_by_name($stmt, ':code', $this->cmpy_code);
-        oci_bind_by_name($stmt, ':tank', $this->tank_code);
-        oci_bind_by_name($stmt, ':term', $this->tank_terminal);
-        oci_bind_by_name($stmt, ':base', $this->tank_base);
-        oci_bind_by_name($stmt, ':catg', $this->tank_base_class);
+        oci_bind_by_name($stmt, ':base', $this->base_code);
+        oci_bind_by_name($stmt, ':cmpy', $this->cmpy_code);
+        oci_bind_by_name($stmt, ':catg', $this->base_class);
 
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
@@ -182,37 +149,52 @@ class TankOwner extends CommonClass
 
     public function read_by_summary()
     {
-        if (!isset($this->cmpy_code)) {
-            $this->cmpy_code = "-1";
-        }
-        if (!isset($this->tank_base)) {
-            $this->tank_base = "-1";
+        if (!isset($this->base_code)) {
+            $this->base_code = "-1";
         }
 
         $query = "
             SELECT 
-                TANK_BASE
-                , TANK_BASE_NAME
-                , CMPY_CODE
-                , CMPY_NAME
-                , SUM(TKO_PERCENTAGE)  AS TKO_PERCENTAGE2
-                , DECODE(SUM(TKOWNER_QTY), 0, 100, TRUNC(SUM(TKOWNER_QTY)/SUM(TKOWNER_QTY/(TKO_PERCENTAGE/100.0))*100,4) )   AS TKO_PERCENTAGE
-                , SUM(TKOWNER_QTY/(TKO_PERCENTAGE/100.0))  AS TKOWNER_TOTAL
-                , SUM(TKOWNER_QTY)     AS TKOWNER_QTY
-                , SUM(TKO_STD_LTR)     AS TKO_STD_LTR
-                , SUM(TKO_AMB_LTR)     AS TKO_AMB_LTR
-                , SUM(TKO_KG)          AS TKO_KG
-            FROM " . $this->VIEW_NAME . "
+                BASE_CODE           AS BASE_PROD_CODE
+                , BASE_NAME
+                , SUM(OWNSHIP_QTY)  AS OWNSHIP_QTY
+            FROM (
+                select bro.*, bpd.*, bpc.*, cmp.*, unt.*
+                from
+                    BASE_PROD_OWNSHIP   bro
+                    , BASE_PRODS        bpd
+                    , GUI_COMPANYS      cmp
+                    , (
+                        select
+                            bcls.BCLASS_NO
+                            , NVL(bctyp.BCLASS_NAME, bcls.BCLASS_DESC)			as BCLASS_DESC
+                            , bcls.BCLASS_DENS_LO
+                            , bcls.BCLASS_DENS_HI
+                            , bcls.BCLASS_VCF_ALG
+                            , bcls.BCLASS_TEMP_LO
+                            , bcls.BCLASS_TEMP_HI
+                        from
+                            BASECLASS 			bcls
+                            , BCLASS_TYP		bctyp
+                        where
+                            1=1
+                            and bcls.BCLASS_NO = bctyp.BCLASS_ID(+)
+                    ) 					bpc
+                    , UNIT_SCALE_VW     unt
+                where
+                    bro.BASE_PROD_CODE = bpd.BASE_CODE(+)
+                    and bpd.BASE_CAT = bpc.BCLASS_NO(+)
+                    and bro.SUPP_CMPY = cmp.CMPY_CODE(+)
+                    and bro.OWNSHIP_UNIT = unt.UNIT_ID(+)
+            )
             WHERE 
                 1 = 1
-                AND ('-1' = :code OR TKCMPY_LINK LIKE '%'||:code||'%')
-                AND ('-1' = :base OR TANK_BASE = :base)
-            GROUP BY TANK_BASE, TANK_BASE_NAME, CMPY_CODE, CMPY_NAME
-            ORDER BY TANK_BASE, TANK_BASE_NAME, CMPY_CODE, CMPY_NAME
+                AND ('-1' = :base OR BASE_CODE = :base)
+            GROUP BY BASE_CODE, BASE_NAME
+            ORDER BY BASE_CODE, BASE_NAME
         ";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':code', $this->cmpy_code);
-        oci_bind_by_name($stmt, ':base', $this->tank_base);
+        oci_bind_by_name($stmt, ':base', $this->base_code);
 
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
@@ -223,11 +205,33 @@ class TankOwner extends CommonClass
         }
     }
 
+    public function pre_create()
+    {
+        // get the next sequence ID from BASE_PROD_OWNSHIP_SEQ
+        $this->ownship_no = 1;
+
+        $query = "
+            SELECT BASE_PROD_OWNSHIP_SEQ.NEXTVAL ID FROM DUAL
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            $this->ownship_no = $row['ID'];
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        return true;
+    }
+
+/*
     protected function get_percentages()
     {
         $query = "
             SELECT * 
-            FROM TK_OWNERS
+            FROM BASE_PROD_OWNSHIP
             WHERE 
                 TKLINK_TANKCODE=:tank 
                 and TKLINK_TANKDEPO=:term 
@@ -279,10 +283,10 @@ class TankOwner extends CommonClass
         $old = $this->get_percentages();
 
         $query = "
-            update TK_OWNERS A 
+            update BASE_PROD_OWNSHIP A 
             set A.TKO_PERCENTAGE = TRUNC(100 * A.TKOWNER_QTY / (
                 select sum(B.TKOWNER_QTY) 
-                from TK_OWNERS B 
+                from BASE_PROD_OWNSHIP B 
                 where B.TKLINK_TANKDEPO=:term and B.TKLINK_TANKCODE=:code
             ), 4)
             where A.TKLINK_TANKDEPO=:term and A.TKLINK_TANKCODE=:code
@@ -319,5 +323,5 @@ class TankOwner extends CommonClass
         // return true;
         return $this->update_percentages();
     }
-
+*/
 }
