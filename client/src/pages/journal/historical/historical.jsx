@@ -14,11 +14,11 @@ const Historical = ({ t, start, end, setData, setFields, search }) => {
 
   const { setCount, take, offset, paginator } = usePagination(500);
 
-  const { data: payload, isValidating, revalidate } = useSWR(
-    `${JOURNAL.READ}?start_date=${start}&end_date=${end}&start_num=${take}&end_num=${offset}${
-      sortBy ? `&sort_by=${sortBy}` : ''
-    }`
-  );
+  const { data: payload, isValidating, revalidate } = useSWR(search ? null :
+      `${JOURNAL.READ}?start_date=${start}&end_date=${end}&start_num=${take}&end_num=${offset}${
+        sortBy ? `&sort_by=${sortBy}` : ''
+      }`
+    );
 
   const fields = columns(t);
 
@@ -39,8 +39,6 @@ const Historical = ({ t, start, end, setData, setFields, search }) => {
   useEffect(() => {
     if (!!search) {
       doSearch(search);
-    } else {
-      revalidate();
     }
   }, [search]);
 
