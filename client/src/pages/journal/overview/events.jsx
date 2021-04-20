@@ -30,18 +30,14 @@ const Events = ({ data }) => {
 
       const grouped = groupBy(data, 'category');
       const types = [
+        'DEBUG',
         'EVENT',
-        'COMMS',
-        'DOC',
-        'CONF',
-        'SYSTEM',
-        'LOAD',
-        'DELIVER',
-        'FAIL',
-        'MOVE',
-        'BAY',
-        'ALARM',
-        'SCHED',
+        'ERROR',
+        'CRITICAL',
+        'MAJOR',
+        'MINOR',
+        'WARNING',
+        'INCIDENT',
       ];
 
       for (let index = 0; index < types.length; index++) {
