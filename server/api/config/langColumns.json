@@ -622,11 +622,11 @@
       "AFC_PRIORITY": "AFC Arm Priority"
     },
     "BASE_PROD_OWNSHIP": {
-      "OWNSHIP_NO": "Ownship No",
-      "BASE_PROD_CODE": "Base Prod Code",
-      "SUPP_CMPY": "Supp Cmpy",
-      "OWNSHIP_QTY": "Ownship Qty",
-      "OWNSHIP_UNIT": "Ownship Unit"
+      "OWNSHIP_NO": "Ownership No",
+      "BASE_PROD_CODE": "Base Product Code",
+      "SUPP_CMPY": "Supplier Code",
+      "OWNSHIP_QTY": "Ownership Quantity",
+      "OWNSHIP_UNIT": "Ownership Unit"
     },
     "BASE_TRANSLATE": {
       "BASE_TRANS_CMPY": "Base Trans Cmpy",
@@ -3279,12 +3279,12 @@
       "PRBM_FLOWRATE": "Prbm Flowrate"
     },
     "PRODOWNSHIP_TRANSACT": {
-      "OWNSHIP_TRSA_NO": "Ownship Trsa No",
-      "BASE_PROD_CODE": "Base Prod Code",
-      "SUPP_CMPY": "Supp Cmpy",
-      "QTY": "Qty",
+      "OWNSHIP_TRSA_NO": "Ownership Transaction No",
+      "BASE_PROD_CODE": "Base Product Code",
+      "SUPP_CMPY": "Supplier Code",
+      "QTY": "Quantity",
       "REASON": "Reason",
-      "TRSA_TIME": "Trsa Time"
+      "TRSA_TIME": "Transaction Time"
     },
     "PRODUCTS": {
       "PROD_CODE": "Prod Code",
@@ -8183,12 +8183,12 @@
       "PRBM_FLOWRATE": "Prbm Flowrate"
     },
     "PRODOWNSHIP_TRANSACT": {
-      "OWNSHIP_TRSA_NO": "Ownship Trsa No",
-      "BASE_PROD_CODE": "Base Prod Code",
-      "SUPP_CMPY": "Supp Cmpy",
-      "QTY": "Qty",
-      "REASON": "Reason",
-      "TRSA_TIME": "Trsa Time"
+      "OWNSHIP_TRSA_NO": "所有权交易编号",
+      "BASE_PROD_CODE": "所有权交易基础油品",
+      "SUPP_CMPY": "所有权交易供应商",
+      "QTY": "所有权交易油品数量",
+      "REASON": "所有权交易原因",
+      "TRSA_TIME": "所有权交易时间"
     },
     "PRODUCTS": {
       "PROD_CODE": "油品代码",
