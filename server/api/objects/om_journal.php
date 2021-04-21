@@ -431,15 +431,24 @@ class OMJournal extends CommonClass
         $result["catetories"] = $catetories;
 
         $alarms = array();
-        $query = "SELECT COUNT(*) RECORDS, TO_CHAR(GEN_DATE, 'YYYY-MM-DD') FORMATED_DATE, 
-                    TO_CHAR(GEN_DATE, 'Month') MONTH, 
-                    TO_CHAR(GEN_DATE, 'MM') MONTH_SEQ, 
-                    TO_CHAR(GEN_DATE, 'DD') DAY
-                FROM GUI_SITE_JOURNAL WHERE REGION_CODE = 'ENG' AND MSG_EVENT = 'ALARM' 
-                GROUP BY TO_CHAR(GEN_DATE, 'Month'), 
-                    TO_CHAR(GEN_DATE, 'DD'), TO_CHAR(GEN_DATE, 'MM'), 
-                    TO_CHAR(GEN_DATE, 'YYYY-MM-DD')
-                ORDER BY TO_CHAR(GEN_DATE, 'MM'), TO_CHAR(GEN_DATE, 'DD')";
+        $query = " SELECT SKE.FORMATED_DATE, RECORDS, MONTH, MONTH_SEQ, DAY
+            FROM
+            (
+                SELECT TO_CHAR(DT, 'YYYY-MM-DD') FORMATED_DATE,  
+                    TO_CHAR(DT, 'Month') MONTH,
+                    TO_CHAR(DT, 'MM') MONTH_SEQ, 
+                    TO_CHAR(DT, 'DD') DAY
+                FROM (SELECT TRUNC (SYSDATE - ROWNUM) DT
+                FROM DUAL CONNECT BY ROWNUM < 366)
+            ) SKE, 
+            (
+                SELECT COUNT(*) RECORDS, TO_CHAR(GEN_DATE, 'YYYY-MM-DD') FORMATED_DATE
+                FROM GUI_SITE_JOURNAL 
+                WHERE REGION_CODE = 'ENG' AND MSG_EVENT = 'ALARM' 
+                GROUP BY TO_CHAR(GEN_DATE, 'YYYY-MM-DD')
+            ) JOURNAL_INFO
+            WHERE SKE.FORMATED_DATE = JOURNAL_INFO.FORMATED_DATE(+)
+            ORDER BY MONTH_SEQ, DAY";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);

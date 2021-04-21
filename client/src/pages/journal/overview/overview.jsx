@@ -117,8 +117,8 @@ export default function Overview({ doSearch, setTab, setRange }) {
               <Card
                 title="Timeline"
                 size="small"
-                style={{ height: 588 }}
-                bodyStyle={{ overflowY: 'scroll', maxHeight: 538 }}
+                style={{ height: 618 }}
+                bodyStyle={{ overflowY: 'scroll', maxHeight: 580 }}
                 extra={[
                   <Select
                     value={event}

@@ -141,7 +141,7 @@ const Heatmap = ({ data, onClick }) => {
     }
   }, [data]);
 
-  return <ReactApexChart options={options} series={series} type="heatmap" height={220} />;
+  return <ReactApexChart options={options} series={series} type="heatmap" height={250} />;
 };
 
 export default Heatmap;
