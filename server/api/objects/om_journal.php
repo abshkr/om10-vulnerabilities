@@ -315,7 +315,7 @@ class OMJournal extends CommonClass
         }
 
         $result = array();
-        $query = "SELECT COUNT(*) CN FROM GUI_SITE_JOURNAL WHERE GEN_DATE > TRUNC(SYSDATE)";
+        $query = "SELECT COUNT(*) CN FROM GUI_SITE_JOURNAL WHERE GEN_DATE > TRUNC(SYSDATE) AND MSG_EVENT = 'ALARM'";
         if (isset($this->msg_event)) {
             $query .= " AND MSG_EVENT = :msg_event ";
         }
@@ -332,7 +332,8 @@ class OMJournal extends CommonClass
         $result = array();
         $result["today"] = intval($row['CN']);
 
-        $query = "SELECT COUNT(*) CN FROM GUI_SITE_JOURNAL WHERE GEN_DATE > TRUNC(SYSDATE) - 1 AND GEN_DATE < TRUNC(SYSDATE)";
+        $query = "SELECT COUNT(*) CN FROM GUI_SITE_JOURNAL 
+            WHERE GEN_DATE > TRUNC(SYSDATE) - 1 AND GEN_DATE < TRUNC(SYSDATE) AND MSG_EVENT = 'ALARM'";
         if (isset($this->msg_event)) {
             $query .= " AND MSG_EVENT = :msg_event ";
         }
