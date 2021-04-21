@@ -36,7 +36,7 @@ import transform from './transform';
 
 const { TabPane } = Tabs;
 
-const ProductOwners = ({ value, access, config, unit, units }) => {
+const TankProductOwners = ({ value, access, config, unit, units }) => {
   const [volUnit, setVolUnit] = useState(unit);
 
   const url = value ? `${TANK_OWNERS.SUMMARY}?tank_base=${value?.base_code}` : null;
@@ -110,7 +110,7 @@ const ProductOwners = ({ value, access, config, unit, units }) => {
               columns={fields}
               // data={data?.records}
               data={payload}
-              // parentHeight="272px"
+              parentHeight={'calc(100vh - 360px)'}
               // onClick={(payload) => handleFormState(true, payload)}
               // handleSelect={(payload) => handleFormState(true, payload[0])}
             />
@@ -121,4 +121,4 @@ const ProductOwners = ({ value, access, config, unit, units }) => {
   );
 };
 
-export default ProductOwners;
+export default TankProductOwners;

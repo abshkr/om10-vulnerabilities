@@ -13,7 +13,8 @@ import { useConfig } from '../../hooks';
 
 import transform from './transform';
 import columns from './columns';
-import ProductOwners from './owners';
+import TankProductOwners from './owners';
+import BaseProductOwners from './base-owners';
 
 const { TabPane } = Tabs;
 
@@ -57,7 +58,11 @@ const ProductInventory = () => {
       value.tko_percentage = _.round(value.tko_percentage, 4);
     } */
     setSelected(value);
-    setVisible(visibility);
+    if (config?.siteUseProdOwnership) {
+      setVisible(visibility);
+    } else {
+      setVisible(false);
+    }
   };
 
   const modifiers = (
@@ -109,7 +114,7 @@ const ProductInventory = () => {
         destroyOnClose={true}
         mask={false}
         placement="right"
-        width="50vw"
+        width={config?.siteUseProdOwnership && config?.siteProdOwnershipLevel === 'TANK' ? '50vw' : '80vw'}
         visible={visible}
         footer={
           <>
@@ -125,8 +130,20 @@ const ProductInventory = () => {
         }
       >
         <Tabs defaultActiveKey="1">
-          <TabPane tab={t('tabColumns.tankOwnersSummary')} key="1">
-            <ProductOwners access={access} value={selected} config={config} unit={unit} units={units} />
+          <TabPane
+            tab={
+              config?.siteProdOwnershipLevel === 'TANK'
+                ? t('tabColumns.tankOwnersSummary')
+                : t('tabColumns.baseOwners')
+            }
+            key="1"
+          >
+            {config?.siteUseProdOwnership && config?.siteProdOwnershipLevel === 'TANK' && (
+              <TankProductOwners access={access} value={selected} config={config} unit={unit} units={units} />
+            )}
+            {config?.siteUseProdOwnership && config?.siteProdOwnershipLevel !== 'TANK' && (
+              <BaseProductOwners access={access} value={selected} config={config} unit={unit} units={units} />
+            )}
           </TabPane>
         </Tabs>
       </Drawer>

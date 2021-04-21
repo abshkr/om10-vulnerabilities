@@ -942,7 +942,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             </TabPane>
           )}
 
-          {config.manageTankStrapping && (
+          {config?.manageTankStrapping && (
             <TabPane key="5" tab={t('tabColumns.strapping')}>
               <TankStrapping
                 terminal={value?.tank_terminal}
@@ -953,7 +953,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             </TabPane>
           )}
 
-          {config.siteUseAFC && (
+          {config?.siteUseAFC && (
             <TabPane key="6" tab={t('tabColumns.adaptiveFlowControl')}>
               <TankAdaptiveFlowControl
                 terminal={value?.tank_terminal}
@@ -966,7 +966,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             </TabPane>
           )}
 
-          {config.siteUseTankBatch && (
+          {config?.siteUseTankBatch && (
             <TabPane key="7" tab={t('tabColumns.tankBatches')}>
               <TankBatches
                 terminal={value?.tank_terminal}
@@ -979,7 +979,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             </TabPane>
           )}
 
-          {config.siteUseProdOwnership && (
+          {config?.siteUseProdOwnership && config?.siteProdOwnershipLevel === 'TANK' && (
             <TabPane key="8" tab={t('tabColumns.tankOwners')}>
               <TankOwners
                 terminal={value?.tank_terminal}

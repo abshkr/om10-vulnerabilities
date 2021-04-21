@@ -172,7 +172,7 @@ const Tanks = () => {
               <Gauging selected={selected} access={access} setSelected={setSelected} />
             </TabPane>
 
-            {config.manageTankStrapping && (
+            {config?.manageTankStrapping && (
               <TabPane key="7" tab={t('tabColumns.strapping')}>
                 <TankStrapping
                   terminal={selected?.tank_terminal}
@@ -183,7 +183,7 @@ const Tanks = () => {
               </TabPane>
             )}
 
-            {config.siteUseAFC && (
+            {config?.siteUseAFC && (
               <TabPane key="8" tab={t('tabColumns.adaptiveFlowControl')}>
                 <TankAdaptiveFlowControl
                   terminal={selected?.tank_terminal}
@@ -196,7 +196,7 @@ const Tanks = () => {
               </TabPane>
             )}
 
-            {config.siteUseTankBatch && (
+            {config?.siteUseTankBatch && (
               <TabPane key="9" tab={t('tabColumns.tankBatches')}>
                 <TankBatches
                   terminal={selected?.tank_terminal}
@@ -209,7 +209,7 @@ const Tanks = () => {
               </TabPane>
             )}
 
-            {config.siteUseProdOwnership && (
+            {config?.siteUseProdOwnership && config?.siteProdOwnershipLevel === 'TANK' && (
               <TabPane key="10" tab={t('tabColumns.tankOwners')}>
                 <TankOwners
                   terminal={selected?.tank_terminal}

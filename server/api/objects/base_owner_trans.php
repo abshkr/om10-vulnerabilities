@@ -3,6 +3,7 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once __DIR__ . '/../service/enum_service.php';
 include_once 'common_class.php';
 
 class BaseOwnerTrans extends CommonClass
@@ -24,6 +25,12 @@ class BaseOwnerTrans extends CommonClass
     public $BOOLEAN_FIELDS = array(
     );
     
+
+    public function amount_types()
+    {
+        $enum_service = new EnumService($this->conn);
+        return $enum_service->amount_types();
+    }
     
     public function check_ownership_by_base()
     {
@@ -109,13 +116,16 @@ class BaseOwnerTrans extends CommonClass
                         , tra.OWNSHIP_TRSA_NO
                         , tra.QTY
                         , tra.REASON
+                        , typ.MOVITEM_TYPE_NAME     REASON_TEXT
                         , tra.TRSA_TIME
                     from 
                         BASE_PROD_OWNSHIP           bro
                         , PRODOWNSHIP_TRANSACT      tra
+                        , MOVITEM_TYPES             typ
                     where
                         bro.BASE_PROD_CODE = tra.BASE_PROD_CODE(+)
                         and bro.SUPP_CMPY = tra.SUPP_CMPY(+)
+                        and tra.REASON = typ.MOVITEM_TYPE_ID(+)
                 )   bot
                 , BASE_PRODS        bpd
                 , GUI_COMPANYS      cmp
@@ -141,6 +151,7 @@ class BaseOwnerTrans extends CommonClass
                 and bpd.BASE_CAT = bpc.BCLASS_NO(+)
                 and bot.SUPP_CMPY = cmp.CMPY_CODE(+)
                 and bot.OWNSHIP_UNIT = unt.UNIT_ID(+)
+                and bot.OWNSHIP_TRSA_NO is not NULL
         ";
 
         $query .= "
@@ -225,6 +236,7 @@ class BaseOwnerTrans extends CommonClass
                     and bpd.BASE_CAT = bpc.BCLASS_NO(+)
                     and bot.SUPP_CMPY = cmp.CMPY_CODE(+)
                     and bot.OWNSHIP_UNIT = unt.UNIT_ID(+)
+                    and bot.OWNSHIP_TRSA_NO is not NULL
             )
             WHERE 
                 1 = 1

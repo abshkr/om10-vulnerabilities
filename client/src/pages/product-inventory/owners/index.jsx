@@ -1,2 +1,2 @@
-import ProductOwners from './owners';
-export default ProductOwners;
+import TankProductOwners from './owners';
+export default TankProductOwners;
