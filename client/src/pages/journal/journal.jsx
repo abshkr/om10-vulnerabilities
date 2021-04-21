@@ -123,7 +123,7 @@ const Journal = () => {
         style={{ marginLeft: 5 }}
         value={selected}
         buttonStyle="solid"
-        onChange={(val) => setSelected(val.target.value)}
+        onChange={(val) => {setSearch(null); setSelected(val.target.value)}}
       >
         <Radio.Button value="0"> {t('tabColumns.overview')}</Radio.Button>
         <Radio.Button value="1"> {t('tabColumns.liveJournal')}</Radio.Button>
