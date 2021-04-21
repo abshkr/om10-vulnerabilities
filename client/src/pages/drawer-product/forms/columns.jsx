@@ -1,3 +1,5 @@
+import { BASE_PRODUCTS } from 'constants/routes';
+
 const columns = (t, config) => [
   {
     headerName: t('fields.pitemProdCode'),
@@ -5,9 +7,15 @@ const columns = (t, config) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 140,
-    pinned: "left",
+    pinned: 'left',
+    cellRenderer: 'LinkRenderer',
+    cellRendererParams: {
+      endpoint: BASE_PRODUCTS,
+      field: 'product',
+      index: 'prod_code',
+    },
   },
   {
     headerName: t('fields.pitemProdName'),
@@ -15,9 +23,9 @@ const columns = (t, config) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 180,
-    pinned: "left",
+    pinned: 'left',
   },
   {
     headerName: t('fields.pitemRatioValue'),
@@ -25,7 +33,7 @@ const columns = (t, config) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 80,
   },
   {
@@ -34,7 +42,7 @@ const columns = (t, config) => [
     filter: 'BooleanFilter',
     sortable: true,
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     cellRenderer: 'BooleanRenderer',
     width: 180,
   },
@@ -44,7 +52,7 @@ const columns = (t, config) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 130,
   },
   {
@@ -53,10 +61,10 @@ const columns = (t, config) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 130,
   },
-  
+
   {
     headerName: t('fields.pitemHotMain'),
     field: 'pitem_hot_main',
@@ -64,7 +72,7 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     cellRenderer: 'BooleanRenderer',
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     hide: !config.manageHotProduct,
     width: 150,
   },
@@ -75,7 +83,7 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     cellRenderer: 'BooleanRenderer',
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 150,
   },
 
@@ -149,7 +157,6 @@ const columns = (t, config) => [
     width: 100,
     hide: true,
   },
-  
 
   {
     headerName: t('fields.pitemBaseClass'),
@@ -157,7 +164,7 @@ const columns = (t, config) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 100,
   },
   {
@@ -166,7 +173,7 @@ const columns = (t, config) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 130,
   },
   {
@@ -176,7 +183,7 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     cellRenderer: 'BooleanRenderer',
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     hide: !config.manageHotProduct,
     width: 150,
   },
@@ -218,7 +225,7 @@ const columns = (t, config) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 130,
   },
   {
@@ -227,7 +234,7 @@ const columns = (t, config) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 130,
   },
   {
@@ -236,7 +243,7 @@ const columns = (t, config) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 130,
     hide: true,
   },
@@ -246,7 +253,7 @@ const columns = (t, config) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 130,
   },
   {
@@ -255,7 +262,7 @@ const columns = (t, config) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    suppressSizeToFit: true, 
+    suppressSizeToFit: true,
     width: 130,
   },
 ];

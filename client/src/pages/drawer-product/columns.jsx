@@ -1,5 +1,3 @@
-import { BASE_PRODUCTS } from 'constants/routes';
-
 const columns = (t, config) => [
   {
     headerName: t('fields.prodCmpycode'),
@@ -30,12 +28,6 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
     width: 140,
     pinned: 'left',
-    cellRenderer: 'LinkRenderer',
-    cellRendererParams: {
-      endpoint: BASE_PRODUCTS,
-      field: 'product',
-      index: 'prod_code',
-    },
   },
   {
     headerName: t('fields.prodName'),
