@@ -31,6 +31,10 @@ class Tanker extends CommonClass
         "CMPT_COUNT"
     );
 
+    public $AMPERSAND_FIELDS = array(
+        "TNKR_CODE",
+    );
+
     // protected $table_view_map = array(
     //     "STATS" => "TNKR_STATS",
     // );

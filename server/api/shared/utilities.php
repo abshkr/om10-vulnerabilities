@@ -51,15 +51,10 @@ class Utilities
                 continue;
             }
 
-            // do not strip tags if the data type is in $this->TAG_FIELDS
-            // if (isset($obj->TAG_FIELDS) &&
-            //     (array_key_exists(strtoupper($key), $obj->TAG_FIELDS) ||
-            //     in_array(strtoupper($key), $obj->TAG_FIELDS, true))) {
-            //     $obj->{$key} = htmlspecialchars(($value));
-            // } else {
-            //     $obj->{$key} = htmlspecialchars(strip_tags($value));
-            // }
             $obj->{$key} = htmlspecialchars($value);
+            if (isset($obj->AMPERSAND_FIELDS) && in_array(strtoupper($key), $obj->AMPERSAND_FIELDS)) {
+                $obj->{$key} = str_replace("&amp;", "&", $obj->{$key});
+            }
         }
     }
 

@@ -70,6 +70,15 @@ class CommonClass
     // );
     public $NUMBER_FIELDS = null;
 
+    /**
+     * Some fields should be allowed to use &, for example, tanker code BHD_K&S_46
+     * If do an escape and save to db, then host message include tanker code BHD_K&amp;S_46
+     * which causes trouble.
+     * For the fileds that allow & , put them in this array. For example, tanker.php
+     * 
+     */
+    public $AMPERSAND_FIELDS = null;
+
     /*
     Table fields that should not be exampt from mandatory fields. For example,
     TANK_TERMINAL in TANKS table. This is because React JS does not want to keep
