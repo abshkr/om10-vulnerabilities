@@ -38,6 +38,9 @@ const { TabPane } = Tabs;
 const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, access, config }) => {
   const [base, setBase] = useState(baseCode || value?.base_prod_code);
   const [supplier, setSupplier] = useState(suppCode || value?.supp_cmpy);
+  const [transactionCreated, setTransactionCreated] = useState(0);
+  const [ownershipCreated, setOwnershipCreated] = useState(0);
+  const [ownershipUpdated, setOwnershipUpdated] = useState(0);
 
   const url = `${BASE_OWNER_TRANSACTIONS.READ}?base_code=${base || '-1'}&cmpy_code=${supplier || '-1'}`;
 
@@ -70,15 +73,10 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
 
   const fields = columns(t, reasons);
 
-  // Find if the owner has the ownership in the current tank
-  // and the existing owner will be disabled in owner list when adding new ownership
-  const isOwnerFound = (list, item) => {
-    const ownership = _.find(list, (o) => o.supp_cmpy === item.cmpy_code);
-    if (!ownership) {
-      return false;
-    } else {
-      return true;
-    }
+  const getOwnership = async (prod, supp) => {
+    const results = await api.get(`${BASE_OWNERS.READ}?base_code=${prod}&cmpy_code=${supp}`);
+
+    return results?.data?.records;
   };
 
   const handleFormState = (visibility, value) => {
@@ -99,7 +97,167 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
     mutate(url);
   };
 
+  const updateBaseOwnership = async (vobj) => {
+    const values = {};
+
+    values.ownship_no = vobj?.ownship_no;
+    values.base_prod_code = vobj?.base_prod_code;
+    values.supp_cmpy = vobj?.supp_cmpy;
+    values.ownship_qty = _.toNumber(vobj?.ownship_qty) + _.toNumber(vobj?.reason) * _.toNumber(vobj?.qty);
+    values.ownship_unit = vobj?.ownship_unit;
+
+    await api
+      .post(BASE_OWNERS.UPDATE, values)
+      .then(() => {
+        // onComplete();
+
+        let notes = t('descriptions.updateSuccessOwnership');
+        notes = notes.replace('[[BASE]]', '"' + vobj?.base_prod_code + '"');
+        notes = notes.replace('[[SUPPLIER]]', '"' + vobj?.supp_cmpy + '"');
+
+        notification.success({
+          message: t('messages.updateSuccess'),
+          description: notes,
+        });
+
+        setOwnershipUpdated(1);
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
+        });
+
+        setOwnershipUpdated(-1);
+      });
+  };
+
+  const createBaseOwnership = async (vobj) => {
+    const values = {};
+
+    values.ownship_no = -888888;
+    values.base_prod_code = vobj?.base_prod_code;
+    values.supp_cmpy = vobj?.supp_cmpy;
+    values.ownship_qty = _.toNumber(vobj?.qty);
+    values.ownship_unit = 11; // vobj?.ownship_unit;
+
+    await api
+      .post(BASE_OWNERS.CREATE, values)
+      .then(() => {
+        // onComplete();
+
+        let notes = t('descriptions.createSuccessBaseOwnership');
+        notes = notes.replace('[[BASE]]', '"' + vobj?.base_prod_code + '"');
+        notes = notes.replace('[[SUPPLIER]]', '"' + vobj?.supp_cmpy + '"');
+
+        notification.success({
+          message: t('messages.createSuccess'),
+          description: notes,
+        });
+
+        setOwnershipCreated(1);
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
+        });
+
+        setOwnershipCreated(-1);
+      });
+  };
+
+  const createOwnershipTransaction = async (vobj) => {
+    const values = vobj;
+
+    await api
+      .post(BASE_OWNER_TRANSACTIONS.CREATE, values)
+      .then(() => {
+        // onComplete();
+
+        let notes = t('descriptions.createSuccessOwnershipTransaction');
+        notes = notes.replace('[[BASE]]', '"' + vobj?.base_prod_code + '"');
+        notes = notes.replace('[[SUPPLIER]]', '"' + vobj?.supp_cmpy + '"');
+
+        notification.success({
+          message: t('messages.createSuccess'),
+          description: notes,
+        });
+
+        setTransactionCreated(1);
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
+        });
+
+        setTransactionCreated(-1);
+      });
+  };
+
   const onFinish = async () => {
+    const values = await form.validateFields();
+
+    if (IS_CREATING) {
+      values.ownship_trsa_no = -888888;
+    }
+
+    const owners = await getOwnership(values.base_prod_code, values.supp_cmpy);
+
+    Modal.confirm({
+      title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
+      okText: IS_CREATING ? t('operations.create') : t('operations.update'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        if (IS_CREATING) {
+          await createOwnershipTransaction(values);
+          if (owners.length > 0) {
+            values.ownship_no = owners?.[0]?.ownship_no;
+            values.ownship_qty = owners?.[0]?.ownship_qty;
+            values.ownship_unit = owners?.[0]?.ownship_unit;
+            await updateBaseOwnership(values);
+            // need this to trigger onComplete
+            setOwnershipCreated(2);
+          } else {
+            await createBaseOwnership(values);
+            // need this to trigger onComplete
+            setOwnershipUpdated(2);
+          }
+        } else {
+          await api
+            .post(BASE_OWNER_TRANSACTIONS.UPDATE, values)
+            .then(() => {
+              onComplete();
+
+              notification.success({
+                message: t('messages.updateSuccess'),
+                description: t('messages.updateSuccess'),
+              });
+            })
+            .catch((errors) => {
+              _.forEach(errors.response.data.errors, (error) => {
+                notification.error({
+                  message: error.type,
+                  description: error.message,
+                });
+              });
+            });
+        }
+      },
+    });
+  };
+
+  const onFinishEdit = async () => {
     const values = await form.validateFields();
 
     if (IS_CREATING) {
@@ -206,89 +364,6 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
     return Promise.resolve();
   };
 
-  const getQtyPercentage = (cmpy, proportion) => {
-    // get Total Qty of the tank excluding the current company
-    const totalQty = _.sumBy(data?.records, (o) => {
-      if (o.base_prod_code === base && o.tklink_tankdepo === supplier && o.supp_cmpy !== cmpy) {
-        return o.qty;
-      } else {
-        return 0;
-      }
-    });
-    // get Qty Percentage
-    const sumQty = totalQty + proportion;
-    // console.log('.............getQtyPercent', cmpy, proportion, totalQty, sumQty);
-    const percentage = (proportion / sumQty) * 100;
-
-    return percentage;
-  };
-
-  const handleQtyProportionFieldChange = (v) => {
-    const values = getFieldsValue(['supp_cmpy', 'tko_percentage', 'qty', 'tko_std_ltr', 'tko_kg']);
-
-    // get Qty Proportion
-    const proportion =
-      v?.target?.value === '' || v?.target?.value === undefined ? 0 : _.toNumber(v?.target?.value);
-    // const proportion = values?.qty === '' || values?.qty === undefined ? 0 : values?.qty;
-    // get Standard Volume
-    const stdVol = proportion;
-    // get Mass Qty
-    const massQty = value?.tank_density * (stdVol / 1000);
-    // get Qty Percentage
-    const percentage = getQtyPercentage(values?.supp_cmpy, proportion);
-    // const isAdtv = value?.tank_base_class === '6' || value?.tank_base_class === '11';
-    // const precision = isAdtv ? config?.precisionAdditive : config?.precisionVolume;
-    const precision = config?.precisionVolume;
-    // setFieldsValue({ qty: _.round(proportion, precision) });
-    setFieldsValue({ tko_std_ltr: _.round(stdVol, precision) });
-    setFieldsValue({ tko_kg: _.round(massQty, precision) });
-    setFieldsValue({ tko_percentage: _.round(percentage, percentPrecision) });
-  };
-
-  const handleStdVolFieldChange = async (v) => {
-    const values = getFieldsValue(['supp_cmpy', 'tko_percentage', 'qty', 'tko_std_ltr', 'tko_kg']);
-
-    // get Standard Volume
-    const stdVol =
-      v?.target?.value === '' || v?.target?.value === undefined ? 0 : _.toNumber(v?.target?.value);
-    // const stdVol = values?.tko_std_ltr === '' || values?.tko_std_ltr === undefined ? 0 : values?.tko_std_ltr;
-    // get Qty Proportion
-    const proportion = stdVol;
-    // get Mass Qty
-    const massQty = value?.tank_density * (stdVol / 1000);
-    // get Qty Percentage
-    const percentage = getQtyPercentage(values?.supp_cmpy, proportion);
-    // const isAdtv = value?.tank_base_class === '6' || value?.tank_base_class === '11';
-    // const precision = isAdtv ? config?.precisionAdditive : config?.precisionVolume;
-    const precision = config?.precisionVolume;
-    setFieldsValue({ qty: _.round(proportion, precision) });
-    // setFieldsValue({ tko_std_ltr: _.round(stdVol, precision) });
-    setFieldsValue({ tko_kg: _.round(massQty, precision) });
-    setFieldsValue({ tko_percentage: _.round(percentage, percentPrecision) });
-  };
-
-  const handleMassQtyFieldChange = async (v) => {
-    const values = getFieldsValue(['supp_cmpy', 'tko_percentage', 'qty', 'tko_std_ltr', 'tko_kg']);
-
-    // get Mass Qty
-    const massQty =
-      v?.target?.value === '' || v?.target?.value === undefined ? 0 : _.toNumber(v?.target?.value);
-    // const massQty = values?.tko_kg === '' || values?.tko_kg === undefined ? 0 : values?.tko_kg;
-    // get Standard Volume
-    const stdVol = (massQty / value?.tank_density) * 1000;
-    // get Qty Proportion
-    const proportion = stdVol;
-    // get Qty Percentage
-    const percentage = getQtyPercentage(values?.supp_cmpy, proportion);
-    // const isAdtv = value?.tank_base_class === '6' || value?.tank_base_class === '11';
-    // const precision = isAdtv ? config?.precisionAdditive : config?.precisionVolume;
-    const precision = config?.precisionVolume;
-    setFieldsValue({ qty: _.round(proportion, precision) });
-    setFieldsValue({ tko_std_ltr: _.round(stdVol, precision) });
-    // setFieldsValue({ tko_kg: _.round(massQty, precision) });
-    setFieldsValue({ tko_percentage: _.round(percentage, percentPrecision) });
-  };
-
   const modifiers = (
     <>
       <Button
@@ -318,15 +393,30 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
   }, [value, baseCode, suppCode]);
 
   useEffect(() => {
-    if (base && supplier && !selected) {
+    if (!selected) {
       resetFields();
 
-      setFieldsValue({
-        base_prod_code: base,
-        supp_cmpy: supplier,
-      });
+      if (base) {
+        setFieldsValue({
+          base_prod_code: base,
+        });
+      }
+      if (supplier) {
+        setFieldsValue({
+          supp_cmpy: supplier,
+        });
+      }
     }
   }, [resetFields, setFieldsValue, base, supplier, selected]);
+
+  useEffect(() => {
+    if (transactionCreated !== 0 && ownershipCreated !== 0 && ownershipUpdated !== 0) {
+      onComplete();
+      setTransactionCreated(0);
+      setOwnershipCreated(0);
+      setOwnershipUpdated(0);
+    }
+  }, [transactionCreated, ownershipCreated, ownershipUpdated]);
 
   useEffect(() => {
     if (selected) {
@@ -566,7 +656,7 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
                     required: true,
                     validator: validateInput,
                     label: t('fields.baseOwnerTransQuantity'),
-                    minValue: -999999999,
+                    minValue: 0,
                     maxValue: 999999999,
                     maxLen: 20,
                   },
@@ -576,7 +666,7 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
                   type="number"
                   // disabled={!IS_CREATING}
                   style={{ width: '100%' }}
-                  min={-999999999}
+                  min={0}
                   max={999999999}
                   precision={config?.precisionVolume}
                   addonAfter={!value ? t('units.lcor') : value?.description}

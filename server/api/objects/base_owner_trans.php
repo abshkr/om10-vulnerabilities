@@ -158,7 +158,7 @@ class BaseOwnerTrans extends CommonClass
                 and ('-1' = :base OR bot.BASE_PROD_CODE = :base)
                 and ('-1' = :cmpy OR bot.SUPP_CMPY = :cmpy)
                 and (-1 = :catg OR bpd.BASE_CAT = :catg)
-            ORDER BY bot.BASE_PROD_CODE, bot.SUPP_CMPY
+            ORDER BY bot.OWNSHIP_TRSA_NO, bot.BASE_PROD_CODE, bot.SUPP_CMPY
         ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':base', $this->base_code);

@@ -64,6 +64,11 @@ const BaseProductOwners = ({ value, access, config, unit, units }) => {
 
   const fields = columns(t, true);
 
+  const onFormClose = () => {
+    setShowMakeTransactions(false);
+    mutate(url);
+  };
+
   const onRowSelected = (value) => {
     setSelected(value);
   };
@@ -199,7 +204,7 @@ const BaseProductOwners = ({ value, access, config, unit, units }) => {
           title={t('tabColumns.baseOwnerTransactions')}
           placement="right"
           bodyStyle={{ paddingTop: 5 }}
-          onClose={() => setShowMakeTransactions(false)}
+          onClose={() => onFormClose()}
           visible={showMakeTransactions}
           width="80vw"
           destroyOnClose={true}
