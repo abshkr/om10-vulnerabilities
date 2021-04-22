@@ -20,8 +20,10 @@ const Compartments = ({ form, value, equipment }) => {
 
   const fetch = useCallback((id) => {
     setIsLoading(true);
-
-    api.get(`${TANKER_LIST.COMPOSITION}?tnkr_code=${id}`).then((response) => {
+    const value = {
+      tnkr_code: id,
+    }
+    api.post(TANKER_LIST.COMPOSITION, value).then((response) => {
       setdata(response.data.records);
       setIsLoading(false);
     });
