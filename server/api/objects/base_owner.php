@@ -17,6 +17,7 @@ class BaseOwner extends CommonClass
     public $NUMBER_FIELDS = array(
         "OWNSHIP_NO",
         "OWNSHIP_QTY",
+        "OWNSHIP_DENSITY",
         "OWNSHIP_UNIT",
         "BASE_CAT",
     );
@@ -158,6 +159,7 @@ class BaseOwner extends CommonClass
                 BASE_CODE           AS BASE_PROD_CODE
                 , BASE_NAME
                 , SUM(OWNSHIP_QTY)  AS OWNSHIP_QTY
+                , SUM(OWNSHIP_QTY*OWNSHIP_DENSITY)  AS OWNSHIP_MASS
             FROM (
                 select bro.*, bpd.*, bpc.*, cmp.*, unt.*
                 from

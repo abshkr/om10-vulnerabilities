@@ -29,8 +29,8 @@ import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
 
-import { DataTable } from '../../../components';
-import api, { BASE_OWNERS, BASE_OWNER_TRANSACTIONS } from '../../../api';
+import { DataTable, Download } from '../../../components';
+import api, { BASE_OWNERS, BASE_OWNER_TRANSACTIONS, ORDER_LISTINGS } from '../../../api';
 import columns from './columns';
 
 const { TabPane } = Tabs;
@@ -44,8 +44,11 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
 
   const url = `${BASE_OWNER_TRANSACTIONS.READ}?base_code=${base || '-1'}&cmpy_code=${supplier || '-1'}`;
 
-  const { data } = useSWR(url);
+  const { data, isValidating } = useSWR(url);
 
+  const isLoading = isValidating || !data;
+
+  const { data: units } = useSWR(ORDER_LISTINGS.UNIT_TYPES);
   // const { data: types } = useSWR(BASE_OWNER_TRANSACTIONS.REASONS);
 
   const { t } = useTranslation();
@@ -79,6 +82,28 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
     return results?.data?.records;
   };
 
+  const handleOwnership = async () => {
+    const payload = getFieldsValue(['base_prod_code', 'supp_cmpy']);
+
+    if (payload?.base_prod_code && payload?.supp_cmpy) {
+      const owners = await getOwnership(payload?.base_prod_code, payload?.supp_cmpy);
+      if (owners.length > 0) {
+        setFieldsValue({
+          trsa_qty_owned: owners?.[0]?.ownship_qty,
+          trsa_density_owned: owners?.[0]?.ownship_density,
+          trsa_density: owners?.[0]?.ownship_density,
+          trsa_unit: owners?.[0]?.ownship_unit,
+        });
+      } else {
+        setFieldsValue({
+          trsa_qty_owned: 0,
+          trsa_density_owned: 0,
+          trsa_unit: 11,
+        });
+      }
+    }
+  };
+
   const handleFormState = (visibility, value) => {
     if (!visibility) {
       setFieldsValue({
@@ -103,7 +128,17 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
     values.ownship_no = vobj?.ownship_no;
     values.base_prod_code = vobj?.base_prod_code;
     values.supp_cmpy = vobj?.supp_cmpy;
-    values.ownship_qty = _.toNumber(vobj?.ownship_qty) + _.toNumber(vobj?.reason) * _.toNumber(vobj?.qty);
+    // adjust the quantity
+    const volume = _.toNumber(vobj?.ownship_qty) + _.toNumber(vobj?.reason) * _.toNumber(vobj?.qty);
+    const mass =
+      _.toNumber(vobj?.ownship_qty) * _.toNumber(vobj?.ownship_density) +
+      _.toNumber(vobj?.reason) * _.toNumber(vobj?.qty) * _.toNumber(vobj?.trsa_density);
+    values.ownship_qty = volume;
+    values.ownship_density = 0;
+    if (volume > 0) {
+      values.ownship_density = mass / volume;
+    }
+    // adjust the density
     values.ownship_unit = vobj?.ownship_unit;
 
     await api
@@ -111,7 +146,7 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
       .then(() => {
         // onComplete();
 
-        let notes = t('descriptions.updateSuccessOwnership');
+        let notes = t('descriptions.updateSuccessBaseOwnership');
         notes = notes.replace('[[BASE]]', '"' + vobj?.base_prod_code + '"');
         notes = notes.replace('[[SUPPLIER]]', '"' + vobj?.supp_cmpy + '"');
 
@@ -141,7 +176,8 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
     values.base_prod_code = vobj?.base_prod_code;
     values.supp_cmpy = vobj?.supp_cmpy;
     values.ownship_qty = _.toNumber(vobj?.qty);
-    values.ownship_unit = 11; // vobj?.ownship_unit;
+    values.ownship_density = _.toNumber(vobj?.trsa_density);
+    values.ownship_unit = vobj?.trsa_unit;
 
     await api
       .post(BASE_OWNERS.CREATE, values)
@@ -224,7 +260,9 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
           if (owners.length > 0) {
             values.ownship_no = owners?.[0]?.ownship_no;
             values.ownship_qty = owners?.[0]?.ownship_qty;
+            values.ownship_density = owners?.[0]?.ownship_density;
             values.ownship_unit = owners?.[0]?.ownship_unit;
+
             await updateBaseOwnership(values);
             // need this to trigger onComplete
             setOwnershipCreated(2);
@@ -332,7 +370,7 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
     console.log('.............rule', rule);
 
     if (rule?.required) {
-      if (input === '' || !input) {
+      if (input === '' || (input !== 0 && !input)) {
         return Promise.reject(`${t('validate.set')} ─ ${rule?.label}`);
       }
     }
@@ -366,9 +404,16 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
 
   const modifiers = (
     <>
+      <Download
+        data={data?.records}
+        // data={payload}
+        isLoading={isLoading}
+        columns={fields}
+      />
+
       <Button
         type="primary"
-        style={{ float: 'right' }}
+        style={{ marginLeft: 5 }}
         disabled={!access.canCreate}
         onClick={() => handleFormState(true, null)}
       >
@@ -406,6 +451,9 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
           supp_cmpy: supplier,
         });
       }
+      if (base || supplier) {
+        handleOwnership();
+      }
     }
   }, [resetFields, setFieldsValue, base, supplier, selected]);
 
@@ -427,6 +475,9 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
         reason: selected?.reason,
         qty: selected?.qty,
         ownship_trsa_no: selected?.ownship_trsa_no,
+        trsa_density: selected?.trsa_density,
+        trsa_qty_owned: selected?.trsa_qty_owned,
+        trsa_density_owned: selected?.trsa_density_owned,
       });
     } else {
     }
@@ -492,7 +543,7 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
 
         <Row gutter={[12, 12]}>
           <Col span={24}>
-            <div>{modifiers}</div>
+            <div style={{ float: 'right' }}>{modifiers}</div>
           </Col>
         </Row>
 
@@ -503,8 +554,8 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
               columns={fields}
               data={data?.records}
               parentHeight={'calc(100vh - 360px)'}
-              onClick={(payload) => handleFormState(true, payload)}
-              handleSelect={(payload) => handleFormState(true, payload[0])}
+              // onClick={(payload) => handleFormState(true, payload)}
+              // handleSelect={(payload) => handleFormState(true, payload[0])}
             />
           </Col>
         </Row>
@@ -577,7 +628,7 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
                   style={{ width: '100%' }}
                   defaultValue={base}
                   // value={base}
-                  // onChange={setBase}
+                  onChange={handleOwnership}
                   showSearch
                   optionFilterProp="children"
                   placeholder={t('placeholder.selectBaseProduct')}
@@ -606,7 +657,7 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
                   style={{ width: '100%' }}
                   defaultValue={supplier}
                   // value={supplier}
-                  // onChange={setSupplier}
+                  onChange={handleOwnership}
                   showSearch
                   optionFilterProp="children"
                   placeholder={t('placeholder.selectSupplier')}
@@ -622,6 +673,58 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
                     );
                   })}
                 </Select>
+              </Form.Item>
+
+              <Form.Item
+                name="trsa_qty_owned"
+                label={t('fields.baseOwnerQuantity')}
+                rules={[
+                  {
+                    required: true,
+                    validator: validateInput,
+                    label: t('fields.baseOwnerQuantity'),
+                    minValue: 0,
+                    maxValue: 999999999,
+                    maxLen: 20,
+                  },
+                ]}
+              >
+                <Input
+                  type="number"
+                  disabled={true}
+                  style={{ width: '100%' }}
+                  min={0}
+                  max={999999999}
+                  precision={config?.precisionVolume}
+                  // addonAfter={!value ? t('units.lcor') : value?.description}
+                  // onChange={handleQtyProportionFieldChange}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="trsa_density_owned"
+                label={t('fields.baseOwnerDensity')}
+                rules={[
+                  {
+                    required: true,
+                    validator: validateInput,
+                    label: t('fields.baseOwnerDensity'),
+                    minValue: 0,
+                    maxValue: 999999999,
+                    maxLen: 20,
+                  },
+                ]}
+              >
+                <Input
+                  type="number"
+                  disabled={true}
+                  style={{ width: '100%' }}
+                  min={0}
+                  max={999999999}
+                  precision={config?.precisionDensity}
+                  addonAfter={t('units.kg/m3')}
+                  // onChange={handleQtyProportionFieldChange}
+                />
               </Form.Item>
 
               <Form.Item
@@ -669,7 +772,57 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
                   min={0}
                   max={999999999}
                   precision={config?.precisionVolume}
-                  addonAfter={!value ? t('units.lcor') : value?.description}
+                  // addonAfter={!value ? t('units.lcor') : value?.description}
+                  // onChange={handleQtyProportionFieldChange}
+                />
+              </Form.Item>
+
+              <Form.Item
+                name="trsa_unit"
+                label={t('fields.baseOwnerTransUnit')}
+                rules={[{ required: true, validator: validateList, label: t('fields.baseOwnerTransUnit') }]}
+              >
+                <Select
+                  dropdownMatchSelectWidth={false}
+                  showSearch
+                  disabled={true}
+                  // onChange={handleChange}
+                  optionFilterProp="children"
+                  placeholder={t('placeholder.selectUnit')}
+                  filterOption={(input, option) =>
+                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  }
+                >
+                  {units?.records?.map((item, index) => (
+                    <Select.Option key={index} value={_.toNumber(item.unit_id)}>
+                      {item.description}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                name="trsa_density"
+                label={t('fields.baseOwnerTransDensity')}
+                rules={[
+                  {
+                    required: true,
+                    validator: validateInput,
+                    label: t('fields.baseOwnerTransDensity'),
+                    minValue: 0,
+                    maxValue: 999999999,
+                    maxLen: 20,
+                  },
+                ]}
+              >
+                <Input
+                  type="number"
+                  // disabled={!IS_CREATING}
+                  style={{ width: '100%' }}
+                  min={0}
+                  max={999999999}
+                  precision={config?.precisionDensity}
+                  addonAfter={t('units.kg/m3')}
                   // onChange={handleQtyProportionFieldChange}
                 />
               </Form.Item>

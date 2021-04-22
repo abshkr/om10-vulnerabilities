@@ -19,6 +19,13 @@ class BaseOwnerTrans extends CommonClass
         "OWNSHIP_TRSA_NO",
         "QTY",
         "REASON",
+        "TRSA_DENSITY",
+        "TRSA_UNIT",
+        "TRSA_QTY_OWNED",
+        "TRSA_DENSITY_OWNED",
+        "OWNSHIP_QTY",
+        "OWNSHIP_DENSITY",
+        "OWNSHIP_UNIT",
     );
 
     //All the fields that should be treated as BOOLEAN in JSON
@@ -112,12 +119,20 @@ class BaseOwnerTrans extends CommonClass
                         , bro.BASE_PROD_CODE
                         , bro.SUPP_CMPY
                         , bro.OWNSHIP_QTY
+                        , bro.OWNSHIP_DENSITY
                         , bro.OWNSHIP_UNIT
                         , tra.OWNSHIP_TRSA_NO
                         , tra.QTY
+                        , tra.TRSA_DENSITY
+                        , tra.TRSA_UNIT
+                        , tra.TRSA_QTY_OWNED
+                        , tra.TRSA_DENSITY_OWNED
                         , tra.REASON
                         , typ.MOVITEM_TYPE_NAME     REASON_TEXT
                         , tra.TRSA_TIME
+                        , (tra.TRSA_QTY_OWNED + tra.QTY * tra.REASON)  as TRSA_QTY_AFTER
+                        , (tra.TRSA_QTY_OWNED * tra.TRSA_DENSITY_OWNED + tra.QTY * tra.REASON * tra.TRSA_DENSITY) 
+                        / (tra.TRSA_QTY_OWNED + tra.QTY * tra.REASON) as TRSA_DENSITY_AFTER
                     from 
                         BASE_PROD_OWNSHIP           bro
                         , PRODOWNSHIP_TRANSACT      tra
@@ -150,7 +165,7 @@ class BaseOwnerTrans extends CommonClass
                 bot.BASE_PROD_CODE = bpd.BASE_CODE(+)
                 and bpd.BASE_CAT = bpc.BCLASS_NO(+)
                 and bot.SUPP_CMPY = cmp.CMPY_CODE(+)
-                and bot.OWNSHIP_UNIT = unt.UNIT_ID(+)
+                and bot.TRSA_UNIT = unt.UNIT_ID(+)
                 and bot.OWNSHIP_TRSA_NO is not NULL
         ";
 
@@ -200,9 +215,14 @@ class BaseOwnerTrans extends CommonClass
                             , bro.BASE_PROD_CODE
                             , bro.SUPP_CMPY
                             , bro.OWNSHIP_QTY
+                            , bro.OWNSHIP_DENSITY
                             , bro.OWNSHIP_UNIT
                             , tra.OWNSHIP_TRSA_NO
                             , tra.QTY
+                            , tra.TRSA_DENSITY
+                            , tra.TRSA_UNIT
+                            , tra.TRSA_QTY_OWNED
+                            , tra.TRSA_DENSITY_OWNED
                             , tra.REASON
                             , tra.TRSA_TIME
                         from 
@@ -235,7 +255,7 @@ class BaseOwnerTrans extends CommonClass
                     bot.BASE_PROD_CODE = bpd.BASE_CODE(+)
                     and bpd.BASE_CAT = bpc.BCLASS_NO(+)
                     and bot.SUPP_CMPY = cmp.CMPY_CODE(+)
-                    and bot.OWNSHIP_UNIT = unt.UNIT_ID(+)
+                    and bot.TRSA_UNIT = unt.UNIT_ID(+)
                     and bot.OWNSHIP_TRSA_NO is not NULL
             )
             WHERE 
