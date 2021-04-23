@@ -248,6 +248,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
     setFieldsValue({ tank_amb_vol: vol });
     setFieldsValue({ tank_total_vol: totalVol });
     handleAmbVolFieldChange(vol);
+    handleSafeCapacityFieldChange();
   };
 
   const handleTotalVolFieldChange = (v) => {
@@ -258,6 +259,23 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
     const vol = totalVol - waterVol - ifcVol;
     setFieldsValue({ tank_amb_vol: vol });
     handleAmbVolFieldChange(vol);
+    handleSafeCapacityFieldChange();
+  };
+
+  const handleSafeCapacityFieldChange = () => {
+    if (!config?.siteUllageCalcAuto) {
+      return;
+    }
+    const values = getFieldsValue(['tank_total_vol', 'tank_safe_capacity', 'tank_ullage']);
+    const safeCapacity =
+      values?.tank_safe_capacity === '' || values?.tank_safe_capacity === undefined
+        ? 0
+        : values?.tank_safe_capacity;
+    // const safeCapacity = v;
+    const totalVol =
+      values?.tank_total_vol === '' || values?.tank_total_vol === undefined ? 0 : values?.tank_total_vol;
+    const vol = safeCapacity - totalVol;
+    setFieldsValue({ tank_ullage: vol });
   };
 
   const handleRoofWeightFieldChange = async (v) => {
@@ -633,20 +651,54 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
         )}
       </Row>
 
-      <OmegaInputNumber
-        form={form}
-        value={
-          value?.tank_prod_c_of_e === '0' || value?.tank_prod_c_of_e === 0 ? '' : value?.tank_prod_c_of_e
-        }
-        name="tank_prod_c_of_e"
-        label={`${t('fields.expCoeff')} (0.000414 - 0.001674)`}
-        min={0.000414}
-        max={0.001674}
-        style={{ width: '100%' }}
-      />
-      {/* <Form.Item name="tank_prod_c_of_e" label={`${t('fields.expCoeff')} (0.000414 - 0.001674)`}>
-        <InputNumber min={0.000414} step={0.0001} max={0.001674} style={{ width: '100%' }} />
-      </Form.Item> */}
+      <Row gutter={[8, 8]}>
+        <Col span={config?.siteUllageCalcAuto ? 12 : 24}>
+          <OmegaInputNumber
+            form={form}
+            value={
+              value?.tank_prod_c_of_e === '0' || value?.tank_prod_c_of_e === 0 ? '' : value?.tank_prod_c_of_e
+            }
+            name="tank_prod_c_of_e"
+            label={`${t('fields.expCoeff')} (0.000414 - 0.001674)`}
+            min={0.000414}
+            max={0.001674}
+            style={{ width: '100%' }}
+          />
+          {/* <Form.Item name="tank_prod_c_of_e" label={`${t('fields.expCoeff')} (0.000414 - 0.001674)`}>
+            <InputNumber min={0.000414} step={0.0001} max={0.001674} style={{ width: '100%' }} />
+          </Form.Item> */}
+        </Col>
+        {config?.siteUllageCalcAuto && (
+          <Col span={6}>
+            <OmegaInputNumber
+              form={form}
+              value={value?.tank_safe_capacity}
+              name="tank_safe_capacity"
+              label={`${t('fields.tankSafeCapacity')} (${t('units.litres')})`}
+              min={0}
+              max={999999999}
+              style={{ width: '100%' }}
+              precision={config.precisionVolume}
+              onChange={handleSafeCapacityFieldChange}
+            />
+          </Col>
+        )}
+        {config?.siteUllageCalcAuto && (
+          <Col span={6}>
+            <OmegaInputNumber
+              form={form}
+              value={value?.tank_ullage}
+              name="tank_ullage"
+              label={`${t('fields.ullage')} (${t('units.litres')})`}
+              min={0}
+              max={999999999}
+              style={{ width: '100%' }}
+              precision={config.precisionVolume}
+              required={true}
+            />
+          </Col>
+        )}
+      </Row>
 
       <Form.Item
         name="tank_temp"

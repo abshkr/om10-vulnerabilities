@@ -103,6 +103,7 @@ const useConfig = () => {
     siteLabelUser: '',
     useWaterStrapping: false,
     siteStockCalcEnhanced: false,
+    siteUllageCalcAuto: false,
     siteMassFieldMode: 1,
     siteMassInVacuum: true,
     siteMassInAir: false,
@@ -297,6 +298,7 @@ const useConfig = () => {
           : configurationObject?.SITE_LABEL_USER + '.',
         useWaterStrapping: configurationObject?.SITE_USE_WATER_STRAPPING || false,
         siteStockCalcEnhanced: configurationObject?.SITE_STOCK_CALC_ENHANCED || false,
+        siteUllageCalcAuto: configurationObject?.SITE_ULLAGE_AUTO_CALC || false,
         siteMassFieldMode: _.toNumber(configurationObject?.SITE_MASS_FIELD_MODE || '1'),
         siteMassInVacuum:
           (_.toNumber(configurationObject?.SITE_MASS_FIELD_MODE || '1') & 1) === 1 ? true : false,
