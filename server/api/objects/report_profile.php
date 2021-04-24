@@ -322,20 +322,18 @@ class ReportProfile extends CommonClass
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
-        // write_log(json_encode($old), __FILE__, __LINE__);
-        // write_log(json_encode($new), __FILE__, __LINE__);
-
+        
         $module = "report closeout jobs";
         foreach ($old as $item_key => $item_array) {
             
             if (isset($new[$item_key])) {
                 foreach ($item_array as $field => $value) {
-                    if ($field == 'GATE_DDMY') {
+                    if ($field == 'JOB_MODIFIED') {
                         continue;
                     }
 
                     if ($new[$item_key][$field] != $value) {
-                        $record = sprintf("area:%s, gate:%s", $this->area_k, $item_key);
+                        $record = sprintf("report:%s, job id:%s", $this->rpt_file, $item_key);
                         $journal->valueChange($module, $record, $field, $value, $new[$item_key][$field]);
                     }
                 }
