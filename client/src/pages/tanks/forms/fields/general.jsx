@@ -223,23 +223,25 @@ const General = ({ form, value, config, densRange }) => {
       </Row>
 
       <Row gutter={[8, 8]}>
-        <Col span={8}>
-          <Form.Item
-            name="tank_ullage"
-            label={t('fields.ullage')}
-            rules={[{ required: true, validator: validate, label: t('fields.ullage') }]}
-          >
-            <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
-          </Form.Item>
-        </Col>
+        {!config?.siteUllageCalcAuto && (
+          <Col span={8}>
+            <Form.Item
+              name="tank_ullage"
+              label={t('fields.ullage')}
+              rules={[{ required: true, validator: validate, label: t('fields.ullage') }]}
+            >
+              <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
+            </Form.Item>
+          </Col>
+        )}
 
-        <Col span={8}>
+        <Col span={config?.siteUllageCalcAuto ? 12 : 8}>
           <Form.Item name="tank_sulphur" label={`${t('fields.sulphur')} (${t('units.sulphur')})`}>
             <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
           </Form.Item>
         </Col>
 
-        <Col span={8}>
+        <Col span={config?.siteUllageCalcAuto ? 12 : 8}>
           <Form.Item
             name="tank_flashpoint"
             label={`${t('fields.flashPoint')} (${t(`units.${config?.temperatureUnit}`)})`}

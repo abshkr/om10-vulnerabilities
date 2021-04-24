@@ -36,6 +36,7 @@ commit;
         SITE_USE_WATER_STRAPPING: Calculate water volume from level by strapping data, Y/N
         SITE_STOCK_CALC_ENHANCED: Apply enhanced site stock calculation with more fields, Y/N
         SITE_MASS_FIELD_MODE: The mode of mass fields - 1: Mass in Vacuum; 2: Mass in Air; 3: Both.
+        SITE_ULLAGE_AUTO_CALC: Calculate the ullage automatically by the safe working capacity and totoal volume, Y/N
 
         SITE_USE_TANK_BATCH: Use the tank batch number in stock management and transactions, Y/N
         SITE_TANK_BATCH_STRICT_MODE: Tank batch number is mandatory in transactions, Y/N
@@ -96,6 +97,22 @@ commit;
 
 insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIRED_BY_GUI) 
 values ('SITE_MASS_FIELD_MODE', '3', 'The mode of mass fields - 1: Mass in Vacuum; 2: Mass in Air; 3: Both.', NULL );
+
+commit;
+
+
+
+/*
+    define the SITE_ULLAGE_AUTO_CALC to control whether to calculate the ullage automatically by the safe working capacity and totoal volume
+    Y: Calculate the ullage automatically by the safe working capacity and totoal volume
+    N: Enter the ullage manually
+*/
+delete from SITE_CONFIG where CONFIG_KEY='SITE_ULLAGE_AUTO_CALC';
+
+commit;
+
+insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIRED_BY_GUI) 
+values ('SITE_ULLAGE_AUTO_CALC', 'Y', 'Calculate the ullage automatically by the safe working capacity and totoal volume', NULL );
 
 commit;
 
@@ -291,6 +308,8 @@ alter table TANKS add TANK_AIR_KG FLOAT;
 alter table TANKS add TANK_VCF FLOAT;
 -- add new column TANK_DENS_MODE to store the mode of density, 1: theoretical density; 0: standard density
 alter table TANKS add TANK_DENS_MODE NUMBER(1) DEFAULT 0;
+-- add new column TANK_SAFE_CAPACITY to store the safe working capacity for ullage calculation
+alter table TANKS add TANK_SAFE_CAPACITY FLOAT;
 
 -- add new column to GUI_TANKS
 CREATE OR REPLACE FORCE VIEW GUI_TANKS AS 
@@ -358,7 +377,7 @@ select
     , tnk.TANK_LIQUID_KG
     , tnk.TANK_WATER
     , tnk.TANK_WATER_LVL
-    , tnk.TANK_ULLAGE
+--     , tnk.TANK_ULLAGE
     , tnk.TANK_API
     , tnk.TANK_PROD_C_OF_E
     , tnk.TANK_60_86_VCF
@@ -454,6 +473,12 @@ select
     , NVL(tnk.TANK_AIR_KG, (NVL(tnk.TANK_LIQUID_KG,0) - NVL(tnk.TANK_COR_VOL,0)*0.0011)) as TANK_AIR_KG
     , NVL(tnk.TANK_VCF, DECODE(tnk.TANK_AMB_VOL, NULL, 0, 0, 0, (NVL(tnk.TANK_COR_VOL,0)/tnk.TANK_AMB_VOL))) as TANK_VCF
     , tnk.TANK_DENS_MODE
+    , NVL(tnk.TANK_SAFE_CAPACITY, 0)  as TANK_SAFE_CAPACITY
+    , DECODE(
+        NVL(TANK_ULLAGE,0), 0, 
+        NVL(tnk.TANK_SAFE_CAPACITY,0) 
+            - NVL(tnk.TANK_TOTAL_VOL, (NVL(tnk.TANK_AMB_VOL,0) + NVL(tnk.TANK_WATER,0) + NVL(tnk.TANK_IFC,0))), 
+        NVL(TANK_ULLAGE,0))   as TANK_ULLAGE
 from
     TANKS                                  tnk
     , TERMINAL                             trm
