@@ -110,4 +110,10 @@ class SiteService
     {
         return $this->site_config_value('SITE_2FA_TIMEOUT', '300');
     }
+
+    public function reports_closeout_job()
+    {
+        $config_value = $this->site_config_boolean('REPORTS_CLOSEOUT_JOB', 'N');
+        return ($config_value === 'Y' || $config_value === 'y');
+    }
 }

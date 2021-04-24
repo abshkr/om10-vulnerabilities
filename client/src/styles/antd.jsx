@@ -52,7 +52,7 @@ const AntdStyleProvider = createGlobalStyle`
   }
 
   .ant-tab-window {
-    height: calc(85vh - 200px);
+    height: calc(105vh - 210px);
     overflow-y: auto;
     padding-right: 10px;
     margin-bottom: 10px;

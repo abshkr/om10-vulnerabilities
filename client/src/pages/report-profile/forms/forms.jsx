@@ -15,18 +15,117 @@ import _ from 'lodash';
 
 import { Source, Type, Name, Description, CloseOutReportBy, Flags } from './fields';
 import api, { REPORT_PROFILE } from '../../../api';
+import { useConfig } from 'hooks';
+import { DataTable, FormModal } from 'components';
+import columns from './columns';
+import CloseoutJobForm from '../closeout-job/forms';
+import useSWR from 'swr';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
+const ProfileForm = ({ value, visible, handleFormState, access, setFilterValue }) => {
   const { t } = useTranslation();
+  const { reports_closeout_job } = useConfig();
   const [form] = Form.useForm();
+  const { setFieldsValue } = form;
+
+  const { data: payload, isValidating, revalidate } = useSWR(reports_closeout_job && value ? 
+    `${REPORT_PROFILE.CLOSEOUT_JOBS}?rpt_file=${value?.report_file}` : 
+    null);
 
   const { resetFields } = form;
 
   const [source, setSource] = useState(undefined);
+  const [selected, setSelected] = useState(null);
+  const [jobs, setJobs] = useState(payload?.records);
+
+  const fields = columns(t, form);
 
   const IS_CREATING = !value;
+
+  const handleSpecialJob = (v) => {
+    // FormModal({
+    //   width: '50vh',
+    //   value: v,
+    //   form: <RuleForm value={v} handleCallBack={handleCallBack} deleteRule={deleteRule} />,
+    //   id: v?.rule_id,
+    //   name: '',
+    //   t,
+    // });
+    // console.log(v)
+    FormModal({
+      value: v,
+      width: '40vw',
+      form: <CloseoutJobForm value={v} rpt_file={value?.report_file} update={onJobUpdate}/>,
+      id: v?.job_id,
+      name: v?.job_name,
+      t
+    });
+  };
+
+  const onJobUpdate = (values) => {
+    if (values.to_create) {
+      // let prmssn_k;
+      // if (!value) {
+      //   prmssn_k = next_id;
+      // } else {
+      //   prmssn_k = value.prmssn_k;
+      // }
+
+      // const payload = {
+      //   rule_id: rules.length == 0 ? prmssn_k : prmssn_k * 1000 + rules.length + 1,
+      //   rule_case: values.rule_case,
+      //   rule_casename: values.rule_casename,
+      //   rule_etyp: values.rule_etyp,
+      //   rule_etypname: values.rule_etypname,
+      //   rule_auth: values.rule_auth,
+      //   rule_authname: values.rule_authname,
+      //   rule_first: rules.length === 0,
+      //   rule_parent: prmssn_k,
+      //   rule_expiry_check: values.rule_expiry_check,
+      //   is_new: true,
+      // };
+
+      setJobs([...jobs, values]);
+      setFieldsValue({
+        jobs: [...jobs, values],
+      });
+    } else {
+      const filtered = _.filter(jobs, (item) => {
+        return item.job_name !== values.job_name;
+      });
+      // const payload = {
+      //   rule_id: values.rule_id,
+      //   rule_case: values.rule_case,
+      //   rule_casename: values.rule_casename,
+      //   rule_etyp: values.rule_etyp,
+      //   rule_etypname: values.rule_etypname,
+      //   rule_auth: values.rule_auth,
+      //   rule_authname: values.rule_authname,
+      //   rule_first: rules.length === 1,
+      //   rule_parent: value ? value.prmssn_k : next_id,
+      //   rule_expiry_check: values.rule_expiry_check,
+      //   is_new: true,
+      // };
+
+      setJobs([...filtered, values]);
+      setFieldsValue({
+        jobs: [...filtered, values],
+      });;
+    }
+  };
+
+  const deleteJob = () => {
+    let payload = _.filter(jobs, (item) => {
+      return item.job_name !== selected.job_name;
+    });
+    setFieldsValue({
+      jobs: payload,
+    });
+
+    setJobs(payload);
+    setSelected(null);
+  };
 
   const onComplete = (report_name) => {
     handleFormState(false, null);
@@ -40,6 +139,8 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
 
   const onFinish = async () => {
     const values = await form.validateFields();
+
+    console.log(values)
 
     if (!IS_CREATING) {
       values.report_file = value.report_file;
@@ -110,8 +211,18 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   useEffect(() => {
     if (!value && !visible) {
       resetFields();
+      setSelected(null);
     }
   }, [value, visible]);
+
+  useEffect(() => {
+    if (payload && visible) {
+      setJobs(payload.records);
+      setFieldsValue({
+        jobs: payload.records,
+      });
+    }
+  }, [payload?.records]);
 
   return (
     <Drawer
@@ -170,6 +281,49 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             <Description form={form} value={value} />
             <Divider>{t('divider.flags')}</Divider>
             <Flags form={form} value={value} />
+            {
+              reports_closeout_job && 
+              <div>
+                <Divider>{t('divider.reportJobs')}</Divider>
+                <Form.Item name="jobs" noStyle>
+                  <DataTable 
+                    data={jobs} 
+                    columns={fields} 
+                    parentHeight="23vh" 
+                    handleSelect={(value) => setSelected(value[0])}
+                    minimal
+                  />
+                </Form.Item>
+
+                <Button
+                  type="primary"
+                  // loading={baseLoading && !IS_CREATING}
+                  onClick={() => handleSpecialJob(null)}
+                  style={{ float: 'right', marginRight: 5, marginTop: 10 }}
+                >
+                  {t('operations.addJob')}
+                </Button>
+
+                <Button
+                  type="primary"
+                  onClick={() => handleSpecialJob(selected)}
+                  style={{ float: 'right', marginRight: 5, marginTop: 10 }}
+                  disabled={!selected}
+                >
+                  {t('operations.editJob')}
+                </Button>
+
+                <Button
+                  type="primary"
+                  onClick={deleteJob}
+                  disabled={!selected}
+                  style={{ float: 'right', marginRight: 5, marginTop: 10 }}
+                >
+                  {t('operations.deleteJob')}
+                </Button>
+              </div>
+            } 
+            
           </TabPane>
         </Tabs>
       </Form>
@@ -177,4 +331,4 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   );
 };
 
-export default FormModal;
+export default ProfileForm;

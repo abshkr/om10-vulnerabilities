@@ -270,7 +270,8 @@
     "ddbTitle": "配送细节发油账单模板",
     "flags": "标记组合",
     "meters": "流量计",
-    "variances": "可变范围"
+    "variances": "可变范围",
+	"reportJobs": "已经创建的任务"
   },
   "features": {
     "BASE_PROD__DENS_RANGE": "基础油品：密度范围",
@@ -1838,7 +1839,11 @@
     "journalEventsByWeek": "最近7天日志",
     "journalHeatmap": "警报热点图",
     "journalAlarmsToday": "当日警报",
-    "journalAlarmsYsd": "昨天警报"
+    "journalAlarmsYsd": "昨天警报",
+	"jobID": "任务编号",
+	"jobName": "任务名称",
+	"subject": "邮件标题",
+	"lastRun": "上次运行时间"
   },
   "generic": {
     "about": "关于(EULA)",
@@ -2102,7 +2107,10 @@
     "viewTransaction": "查看油品交易",
     "viewTripSeals": "查看提单封签",
     "yes": "是",
-    "scrollUp": "向上滚动"
+    "scrollUp": "向上滚动",
+	"addJob": "增加任务",
+    "editJob": "修改任务",
+	"deleteJob": "删除任务"
   },
   "pageMenu": {
     "accessControl": "油库安全管理",
