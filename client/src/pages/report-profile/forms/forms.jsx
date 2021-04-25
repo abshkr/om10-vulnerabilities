@@ -44,15 +44,6 @@ const ProfileForm = ({ value, visible, handleFormState, access, setFilterValue }
   const IS_CREATING = !value;
 
   const handleSpecialJob = (v) => {
-    // FormModal({
-    //   width: '50vh',
-    //   value: v,
-    //   form: <RuleForm value={v} handleCallBack={handleCallBack} deleteRule={deleteRule} />,
-    //   id: v?.rule_id,
-    //   name: '',
-    //   t,
-    // });
-    // console.log(v)
     FormModal({
       value: v,
       width: '40vw',
@@ -65,27 +56,6 @@ const ProfileForm = ({ value, visible, handleFormState, access, setFilterValue }
 
   const onJobUpdate = (values) => {
     if (values.to_create) {
-      // let prmssn_k;
-      // if (!value) {
-      //   prmssn_k = next_id;
-      // } else {
-      //   prmssn_k = value.prmssn_k;
-      // }
-
-      // const payload = {
-      //   rule_id: rules.length == 0 ? prmssn_k : prmssn_k * 1000 + rules.length + 1,
-      //   rule_case: values.rule_case,
-      //   rule_casename: values.rule_casename,
-      //   rule_etyp: values.rule_etyp,
-      //   rule_etypname: values.rule_etypname,
-      //   rule_auth: values.rule_auth,
-      //   rule_authname: values.rule_authname,
-      //   rule_first: rules.length === 0,
-      //   rule_parent: prmssn_k,
-      //   rule_expiry_check: values.rule_expiry_check,
-      //   is_new: true,
-      // };
-
       setJobs([...jobs, values]);
       setFieldsValue({
         jobs: [...jobs, values],
@@ -94,19 +64,6 @@ const ProfileForm = ({ value, visible, handleFormState, access, setFilterValue }
       const filtered = _.filter(jobs, (item) => {
         return item.job_name !== values.job_name;
       });
-      // const payload = {
-      //   rule_id: values.rule_id,
-      //   rule_case: values.rule_case,
-      //   rule_casename: values.rule_casename,
-      //   rule_etyp: values.rule_etyp,
-      //   rule_etypname: values.rule_etypname,
-      //   rule_auth: values.rule_auth,
-      //   rule_authname: values.rule_authname,
-      //   rule_first: rules.length === 1,
-      //   rule_parent: value ? value.prmssn_k : next_id,
-      //   rule_expiry_check: values.rule_expiry_check,
-      //   is_new: true,
-      // };
 
       setJobs([...filtered, values]);
       setFieldsValue({

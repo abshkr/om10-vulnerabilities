@@ -104,12 +104,30 @@ class ReportProfile extends CommonClass
             $jasper_files[] = $name;
         }
 
+        $serv = new SiteService($this->conn);
+        $reports_closeout_job = $serv->reports_closeout_job();
+
         foreach ($result_array as $key => $value) {
             // write_log($value['report_file'], __FILE__, __LINE__);
             if (in_array($value['report_jasper_file'], $jasper_files)) {
                 $result_array[$key]['source_exists'] = true;
             } else {
                 $result_array[$key]['source_exists'] = false;
+            }
+
+            if ($reports_closeout_job) {
+                $query = "SELECT COUNT(*) CN
+                    FROM REPORT_CLOSEOUT_JOB WHERE RPT_FILE = :rpt_file";
+                $stmt = oci_parse($this->conn, $query);
+                // oci_bind_by_name($stmt, ':default', $default);
+                oci_bind_by_name($stmt, ':rpt_file', $value['report_file']);
+                if (!oci_execute($stmt, $this->commit_mode)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                }
+
+                $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+                $result_array[$key]['closeout_jobs'] = intval($row['CN']) > 0;
             }
         }
     }
@@ -187,116 +205,6 @@ class ReportProfile extends CommonClass
         return $company_service->suppliers($plus_any = true);
     }
 
-    // protected function delete_children()
-    // {
-    //     write_log(sprintf("%s::%s() START, report_file:%s", __CLASS__, __FUNCTION__, $this->report_file),
-    //         __FILE__, __LINE__);
-
-    //     $serv = new SiteService($this->conn);
-    //     if (!$serv->reports_closeout_job()) {
-    //         write_log("Do not continue because REPORTS_CLOSEOUT_JOB flag is off", __FILE__, __LINE__);
-    //         return true;
-    //     }
-
-    //     $query = "
-    //         DELETE FROM REPORT_CLOSEOUT_JOB
-    //         WHERE RPT_FILE = :rpt_file";
-    //     $stmt = oci_parse($this->conn, $query);
-    //     oci_bind_by_name($stmt, ':rpt_file', $this->report_file);
-    //     if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-    //         $e = oci_error($stmt);
-    //         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-    //         oci_rollback($this->conn);
-
-    //         throw new DatabaseException($e['message']);
-    //         return false;
-    //     }
-
-    //     return true;
-    // }
-
-    // protected function insert_children()
-    // {
-    //     write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-    //         __FILE__, __LINE__);
-
-    //     $serv = new SiteService($this->conn);
-    //     if (!$serv->reports_closeout_job()) {
-    //         write_log("Do not continue because REPORTS_CLOSEOUT_JOB flag is off", __FILE__, __LINE__);
-    //         return true;
-    //     }
-
-    //     $owner = Utilities::getCurrPsn();
-    //     if (isset($this->jobs)) {
-    //         foreach ($this->jobs as $value) {
-    //             $query = "INSERT INTO REPORT_CLOSEOUT_JOB (
-    //                 RPT_FILE,
-    //                 JOB_NAME,
-    //                 JOB_ENABLED,
-    //                 JOB_OWNER,
-    //                 JOB_CREATED,
-    //                 JOB_MODIFIED,
-    //                 RECURRENCE,
-    //                 OUTPUT_FORMAT,
-    //                 EMAIL_RECEIVERS,
-    //                 EMAIL_SUBJECT,
-    //                 JOB_LASTRUN,
-    //                 PARAM1,
-    //                 PARAM2, 
-    //                 PARAM3,
-    //                 PARAM4,
-    //                 PARAM5,
-    //                 PARAM6
-    //                 )
-    //             VALUES (
-    //                 :rpt_file,
-    //                 :job_name,
-    //                 :job_enabled,
-    //                 :job_owner,
-    //                 :job_created,
-    //                 SYSDATE,
-    //                 :recurrence,
-    //                 :output_format,
-    //                 :email_receivers,
-    //                 :email_subject,
-    //                 :job_lastrun,
-    //                 :param1,
-    //                 :param2,
-    //                 :param3,
-    //                 :param4,
-    //                 :param5,
-    //                 :param6
-    //             )";
-    //             $stmt = oci_parse($this->conn, $query);
-    //             oci_bind_by_name($stmt, ':rpt_file', $this->report_file);
-    //             oci_bind_by_name($stmt, ':job_name', $value->job_name);
-    //             oci_bind_by_name($stmt, ':job_enabled', $value->job_enabled);
-    //             oci_bind_by_name($stmt, ':job_owner', $owner);
-    //             oci_bind_by_name($stmt, ':job_created', $value->job_created);
-    //             oci_bind_by_name($stmt, ':job_lastrun', $value->job_lastrun);
-    //             oci_bind_by_name($stmt, ':recurrence', $value->recurrence);
-    //             oci_bind_by_name($stmt, ':output_format', $value->output_format);
-    //             oci_bind_by_name($stmt, ':email_receivers', $value->email_receivers);
-    //             oci_bind_by_name($stmt, ':email_subject', $value->email_subject);
-    //             oci_bind_by_name($stmt, ':param1', $value->param1);
-    //             oci_bind_by_name($stmt, ':param2', $value->param2);
-    //             oci_bind_by_name($stmt, ':param3', $value->param3);
-    //             oci_bind_by_name($stmt, ':param4', $value->param4);
-    //             oci_bind_by_name($stmt, ':param5', $value->param5);
-    //             oci_bind_by_name($stmt, ':param6', $value->param6);
-
-    //             if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-    //                 $e = oci_error($stmt);
-    //                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-    //                 throw new DatabaseException($e['message']);
-    //                 return false;
-    //             }
-    //         }
-    //     }
-
-    //     return true;
-    // }
-
     protected function retrieve_children_data()
     {
         $query = "SELECT * FROM REPORT_CLOSEOUT_JOB WHERE RPT_FILE = :rpt_file";
@@ -314,14 +222,15 @@ class ReportProfile extends CommonClass
             $gates_data[$row['JOB_ID']] = $row;
         }
 
-        // write_log(json_encode($tank_max_flows), __FILE__, __LINE__);
         return $gates_data;
     }
 
     protected function journal_children_change($journal, $old, $new)
     {
-        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-            __FILE__, __LINE__);
+        $serv = new SiteService($this->conn);
+        if (!$serv->reports_closeout_job()) {
+            return true;
+        }
         
         $module = "report closeout jobs";
         foreach ($old as $item_key => $item_array) {
@@ -378,6 +287,12 @@ class ReportProfile extends CommonClass
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
+
+        $serv = new SiteService($this->conn);
+        if (!$serv->reports_closeout_job()) {
+            write_log("Do not continue because REPORTS_CLOSEOUT_JOB flag is off", __FILE__, __LINE__);
+            return true;
+        }
         
         foreach ($old_children as $job_id => $item_array) {
             $still_exist = false;
@@ -504,5 +419,4 @@ class ReportProfile extends CommonClass
 
         return true;
     }
-
 }

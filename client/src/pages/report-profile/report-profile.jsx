@@ -11,10 +11,11 @@ import transfrom from './transform';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
-import { useAuth } from 'hooks';
+import { useConfig, useAuth } from 'hooks';
 
 const ReportProfile = () => {
   const { t } = useTranslation();
+  const { reports_closeout_job } = useConfig();
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [filterValue, setFilterValue] = useState('');
@@ -23,7 +24,7 @@ const ReportProfile = () => {
 
   const { data: payload, isValidating, revalidate } = useSWR(REPORT_PROFILE.READ);
 
-  const fields = columns(t);
+  const fields = columns(t, reports_closeout_job);
   const data = transfrom(payload?.records, t);
 
   const handleFormState = (visibility, value) => {

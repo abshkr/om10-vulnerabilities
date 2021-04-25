@@ -1,9 +1,20 @@
-const columns = t => [
+const columns = (t, reports_closeout_job) => [
+  {
+    headerName: t('divider.reportJobs'),
+    field: 'closeout_jobs',
+    sortable: true,
+    resizable: true,
+    filter: 'BooleanFilter',
+    hide: !reports_closeout_job,
+    width: 140,
+    cellRenderer: 'BooleanRenderer',
+  },
   {
     headerName: t('fields.reportJasperFileExist'),
     field: 'source_exists',
     sortable: true,
     resizable: true,
+    width: 120,
     filter: 'BooleanFilter',
     cellRenderer: 'BooleanRenderer',
   },
@@ -12,6 +23,7 @@ const columns = t => [
     field: 'report_jasper_file',
     sortable: true,
     resizable: true,
+    // width: 110,
     filter: 'FuzzyFilter',
   },
   {
@@ -19,6 +31,7 @@ const columns = t => [
     field: 'report_type_name',
     sortable: true,
     resizable: true,
+    width: 80,
     filter: 'MultiFilter',
   },
   {
@@ -40,6 +53,7 @@ const columns = t => [
     field: 'report_ondemand_flag',
     sortable: true,
     resizable: true,
+    width: 140,
     filter: 'BooleanFilter',
     cellRenderer: 'BooleanRenderer',
   },
@@ -48,6 +62,7 @@ const columns = t => [
     field: 'report_closeout_flag',
     sortable: true,
     resizable: true,
+    width: 130,
     filter: 'BooleanFilter',
     cellRenderer: 'BooleanRenderer',
   },
