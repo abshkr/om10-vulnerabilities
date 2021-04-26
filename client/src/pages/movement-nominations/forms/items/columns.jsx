@@ -12,7 +12,7 @@ const groupTo = [2, 0];
 //const from = ['Transfer', 'Disposal'];
 //const to = ['Transfer', 'Receipt'];
 
-const useColumns = (value, selected) => {
+const useColumns = (value, selected, config) => {
   //console.log('i am here', value, selected);
 
   //const [type, setType] = useState('Receipt');
@@ -464,11 +464,11 @@ const useColumns = (value, selected) => {
                 item.prod_code === selected?.[0]?.mvitm_prodcode_from
             ),
             (item) => {
-              return { 
-                code: item.tank_code, 
-                // name: item.tank_code, 
+              return {
+                code: item.tank_code,
+                // name: item.tank_code,
                 // name: item.tank_code + ' - ' + item.tank_name + ' [' + item.base_code + ' - ' + item.base_name + ']'
-                name: item.tank_code + ' - ' + item.tank_name
+                name: item.tank_code + ' - ' + item.tank_name,
               };
             }
           )
@@ -659,11 +659,11 @@ const useColumns = (value, selected) => {
                 item.prod_code === selected?.[0]?.mvitm_prodcode_to
             ),
             (item) => {
-              return { 
-                code: item.tank_code, 
-                // name: item.tank_code 
+              return {
+                code: item.tank_code,
+                // name: item.tank_code
                 // name: item.tank_code + ' - ' + item.tank_name + ' [' + item.base_code + ' - ' + item.base_name + ']'
-                name: item.tank_code + ' - ' + item.tank_name
+                name: item.tank_code + ' - ' + item.tank_name,
               };
             }
           )
@@ -709,7 +709,7 @@ const useColumns = (value, selected) => {
       field: 'mvitm_qty_schd',
       sortable: true,
       resizable: true,
-      width: 100,
+      width: 180,
       suppressSizeToFit: true,
     },
     {
@@ -717,7 +717,7 @@ const useColumns = (value, selected) => {
       field: 'mvitm_qty_move',
       sortable: true,
       resizable: true,
-      width: 100,
+      width: 160,
       suppressSizeToFit: true,
       cellRenderer: 'QuantityRenderer',
       cellRendererParams: {
@@ -741,7 +741,7 @@ const useColumns = (value, selected) => {
       field: 'mvitm_qty_delv',
       sortable: true,
       resizable: true,
-      width: 100,
+      width: 160,
       suppressSizeToFit: true,
       cellRenderer: 'QuantityRenderer',
       cellRendererParams: {
@@ -759,6 +759,46 @@ const useColumns = (value, selected) => {
       //   },
       //   t,
       // },
+    },
+    {
+      headerName: t('fields.nomQtyReceiptExpected'),
+      field: 'mvitm_receipt_expected',
+      filter: 'FuzzyFilter',
+      sortable: true,
+      resizable: true,
+      width: 240,
+      suppressSizeToFit: true,
+      hide: !config?.siteUseIntoTransitGainLoss,
+      cellRenderer: 'QuantityRenderer',
+      cellRendererParams: {
+        digits: '0',
+        min: '100',
+      },
+      editable: true, //selected?.[0]?.editable,
+      cellClass: 'editable-ag-grid-cell', //selected?.[0]?.editable || !value,
+      cellEditor: 'SoleNumericEditor',
+      cellEditorParams: {
+        ranges: {
+          max: 999999999,
+          min: 0,
+        },
+        t,
+      },
+    },
+    {
+      headerName: t('fields.nomIntoTransitGL'),
+      field: 'mvitm_into_transit_gl',
+      sortable: true,
+      resizable: true,
+      width: 180,
+      hide: !config?.siteUseIntoTransitGainLoss,
+      suppressSizeToFit: true,
+      // cellRenderer: 'QuantityRenderer',
+      // cellRendererParams: {
+      //   digits: '0',
+      //   min: '100',
+      // },
+      editable: false,
     },
   ];
 };

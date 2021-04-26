@@ -45,7 +45,7 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
   //const canModifyFurther = selected[0]?.mvitm_status_name === 'NEW' || disabled;
   const canModifyFurther = selected?.[0]?.mvitm_status === 0 || disabled;
   const removeItemDisabled = disabled || selected?.[0]?.mvitm_status !== 0;
-  const fields = useColumns(value, selected);
+  const fields = useColumns(value, selected, config);
 
   const handleButtonState = (state) => {
     /** 
@@ -345,6 +345,15 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
     let nomitem = value.data;
 
     console.log('onEditingFinished', value, value.colDef);
+
+    // calculate the into-transit gain/loss
+    if (value.colDef.field === 'mvitm_receipt_expected') {
+      if (nomitem?.mvitm_status === 0) {
+        nomitem.mvitm_into_transit_gl = 0;
+      } else {
+        nomitem.mvitm_into_transit_gl = nomitem?.mvitm_qty_move - nomitem?.mvitm_receipt_expected;
+      }
+    }
 
     // set the product name by product code
     if (value.colDef.field === 'mvitm_prodcode_from') {

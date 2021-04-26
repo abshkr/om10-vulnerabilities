@@ -2488,6 +2488,8 @@
       "MV_TRANSFER_TYP": "Mv Transfer Typ",
       "MV_PRINT_PRICE": "Mv Print Price",
       "MV_PAY_DESC": "Mv Pay Desc",
+      "MV_RECEIPT_EXPECTED": "Quantity Expected To Receive",
+      "MV_INTO_TRANSIT_GL": "Into Transit Gain/Loss",
       "MV_SOURCE": "Mv Source"
     },
     "MOVEMENT_ITEMS": {
@@ -2534,6 +2536,8 @@
       "MVITM_UNIT_MOVE": "Mvitm Unit Move",
       "MVITM_QTY_DELV": "Mvitm Qty Delv",
       "MVITM_UNIT_DELV": "Mvitm Unit Delv",
+      "MVITM_RECEIPT_EXPECTED": "Quantity Expected To Receive",
+      "MVITM_INTO_TRANSIT_GL": "Into Transit Gain/Loss",
       "MVITM_COMMENTS": "Mvitm Comments",
       "MVITM_TERMINAL": "Mvitm Terminal",
       "MVITM_NUMBER": "Mvitm Number",
@@ -7392,6 +7396,8 @@
       "MV_TRANSFER_TYP": "油品转移原因",
       "MV_PRINT_PRICE": "打印价格标记",
       "MV_PAY_DESC": "付款说明",
+      "MV_RECEIPT_EXPECTED": "预计进油货量",
+      "MV_INTO_TRANSIT_GL": "油品运输损耗",
       "MV_SOURCE": "订单来源"
     },
     "MOVEMENT_ITEMS": {
@@ -7438,6 +7444,8 @@
       "MVITM_UNIT_MOVE": "交易单位",
       "MVITM_QTY_DELV": "配送数量",
       "MVITM_UNIT_DELV": "配送单位",
+      "MVITM_RECEIPT_EXPECTED": "预计进油货量",
+      "MVITM_INTO_TRANSIT_GL": "油品运输损耗",
       "MVITM_COMMENTS": "备注",
       "MVITM_TERMINAL": "油库",
       "MVITM_NUMBER": "大宗货单单号",

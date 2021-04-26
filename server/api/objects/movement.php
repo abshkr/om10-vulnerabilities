@@ -41,9 +41,13 @@ class Movement extends CommonClass
         "MVITM_UNIT_MOVE",
         "MVITM_UNIT_DELV",
         "MVITM_STATUS",
+        "MVITM_RECEIPT_EXPECTED",
+        "MVITM_INTO_TRANSIT_GL",
         "MVITM_PACK_SIZE",
         "MVITM_PRICE_TYPE",
         "MVITM_PRICE",
+        "MV_RECEIPT_EXPECTED",
+        "MV_INTO_TRANSIT_GL",
         "MV_ID"
     );
 
@@ -379,6 +383,8 @@ class Movement extends CommonClass
                 MVITM_QTY_DELV,
                 MVITM_UNIT_DELV,
                 U4.DESCRIPTION MVITM_UNIT_DELV_STR,
+                MVITM_RECEIPT_EXPECTED,
+                DECODE(MVITM_STATUS, 0, MVITM_INTO_TRANSIT_GL, (MVITM_QTY_MOVE-MVITM_RECEIPT_EXPECTED)) as MVITM_INTO_TRANSIT_GL,
                 MVITM_COMMENTS,
                 MVITM_TERMINAL,
                 MVITM_NUMBER,
@@ -542,6 +548,8 @@ class Movement extends CommonClass
                 MV_TRANSFER_TYP,
                 MV_PRINT_PRICE,
                 MV_PAY_DESC,
+                MV_RECEIPT_EXPECTED,
+                MV_INTO_TRANSIT_GL,
                 MV_SOURCE
             FROM 
                 MOVEMENTS, 
@@ -690,6 +698,8 @@ class Movement extends CommonClass
                 MV_TRANSFER_TYP,
                 MV_PRINT_PRICE,
                 MV_PAY_DESC,
+                MV_RECEIPT_EXPECTED,
+                MV_INTO_TRANSIT_GL,
                 MV_SOURCE
             FROM 
                 MOVEMENTS, 
@@ -817,6 +827,8 @@ class Movement extends CommonClass
                     MV_TRANSFER_TYP,
                     MV_PRINT_PRICE,
                     MV_PAY_DESC,
+                    MV_RECEIPT_EXPECTED,
+                    MV_INTO_TRANSIT_GL,
                     MV_SOURCE
                 FROM MOVEMENTS, MOVSTATUS_TYPES, MOVSOURCE_TYPES
                 WHERE MV_STATUS = MOVSTATUS_TYPES.MOVSTATUS_TYPE_ID(+)
@@ -890,6 +902,8 @@ class Movement extends CommonClass
                     MV_TRANSFER_TYP,
                     MV_PRINT_PRICE,
                     MV_PAY_DESC,
+                    MV_RECEIPT_EXPECTED,
+                    MV_INTO_TRANSIT_GL,
                     MV_SOURCE
                 FROM MOVEMENTS, MOVSTATUS_TYPES, MOVSOURCE_TYPES
                 WHERE MV_STATUS = MOVSTATUS_TYPES.MOVSTATUS_TYPE_ID(+)
@@ -1088,6 +1102,8 @@ class Movement extends CommonClass
             MVITM_QTY_DELV,
             MVITM_UNIT_DELV,
             U4.DESCRIPTION MVITM_UNIT_DELV_STR,
+            MVITM_RECEIPT_EXPECTED,
+            DECODE(MVITM_STATUS, 0, MVITM_INTO_TRANSIT_GL, (MVITM_QTY_MOVE-MVITM_RECEIPT_EXPECTED)) as MVITM_INTO_TRANSIT_GL,
             MVITM_COMMENTS,
             MVITM_TERMINAL,
             MVITM_NUMBER,
@@ -1189,6 +1205,8 @@ class Movement extends CommonClass
             MVITM_UNIT_MOVE,
             MVITM_QTY_DELV,
             MVITM_UNIT_DELV,
+            MVITM_RECEIPT_EXPECTED,
+            DECODE(MVITM_STATUS, 0, MVITM_INTO_TRANSIT_GL, (MVITM_QTY_MOVE-MVITM_RECEIPT_EXPECTED)) as MVITM_INTO_TRANSIT_GL,
             MVITM_COMMENTS,
             MVITM_TERMINAL,
             MVITM_NUMBER,
@@ -1564,6 +1582,8 @@ class Movement extends CommonClass
                     MVITM_UNIT_MOVE,
                     MVITM_QTY_DELV,
                     MVITM_UNIT_DELV,
+                    MVITM_RECEIPT_EXPECTED,
+                    MVITM_INTO_TRANSIT_GL,
                     MVITM_COMMENTS,
                     MVITM_TERMINAL,
                     MVITM_NUMBER,
@@ -1625,6 +1645,8 @@ class Movement extends CommonClass
                     :mvitm_unit_move,
                     :mvitm_qty_delv,
                     :mvitm_unit_delv,
+                    :mvitm_receipt_expected,
+                    :mvitm_into_transit_gl,
                     :mvitm_comments,
                     :mvitm_terminal,
                     :mvitm_number,
@@ -1688,6 +1710,8 @@ class Movement extends CommonClass
                 oci_bind_by_name($stmt, ':mvitm_unit_move', $value->mvitm_unit_move);
                 oci_bind_by_name($stmt, ':mvitm_qty_delv', $value->mvitm_qty_delv);
                 oci_bind_by_name($stmt, ':mvitm_unit_delv', $value->mvitm_unit_delv);
+                oci_bind_by_name($stmt, ':mvitm_receipt_expected', $value->mvitm_receipt_expected);
+                oci_bind_by_name($stmt, ':mvitm_into_transit_gl', $value->mvitm_into_transit_gl);
                 oci_bind_by_name($stmt, ':mvitm_comments', $value->mvitm_comments);
                 oci_bind_by_name($stmt, ':mvitm_terminal', $value->mvitm_terminal);
                 oci_bind_by_name($stmt, ':mvitm_number', $value->mvitm_number);
@@ -1879,6 +1903,8 @@ class Movement extends CommonClass
                 MVITM_UNIT_MOVE,
                 MVITM_QTY_DELV,
                 MVITM_UNIT_DELV,
+                MVITM_RECEIPT_EXPECTED,
+                MVITM_INTO_TRANSIT_GL,
                 MVITM_COMMENTS,
                 MVITM_TERMINAL,
                 MVITM_NUMBER,
@@ -1940,6 +1966,8 @@ class Movement extends CommonClass
                 :mvitm_unit_move,
                 :mvitm_qty_delv,
                 :mvitm_unit_delv,
+                :mvitm_receipt_expected,
+                :mvitm_into_transit_gl,
                 :mvitm_comments,
                 :mvitm_terminal,
                 :mvitm_number,
@@ -2002,6 +2030,8 @@ class Movement extends CommonClass
             oci_bind_by_name($stmt, ':mvitm_unit_move', $item->mvitm_unit_move);
             oci_bind_by_name($stmt, ':mvitm_qty_delv', $item->mvitm_qty_delv);
             oci_bind_by_name($stmt, ':mvitm_unit_delv', $item->mvitm_unit_delv);
+            oci_bind_by_name($stmt, ':mvitm_receipt_expected', $item->mvitm_receipt_expected);
+            oci_bind_by_name($stmt, ':mvitm_into_transit_gl', $item->mvitm_into_transit_gl);
             oci_bind_by_name($stmt, ':mvitm_comments', $item->mvitm_comments);
             oci_bind_by_name($stmt, ':mvitm_terminal', $item->mvitm_terminal);
             oci_bind_by_name($stmt, ':mvitm_number', $item->mvitm_number);
@@ -2039,14 +2069,16 @@ class Movement extends CommonClass
             
         // write_log(json_encode($old), __FILE__, __LINE__);
         // write_log(json_encode($new), __FILE__, __LINE__);
-        $module = "movement item";
+        // $module = "movement item";
+        $module = "MOVEMENT_ITEMS";
         foreach ($old as $item_key => $item_array) {
             // write_log($item_key, __FILE__, __LINE__);
             // write_log($value, __FILE__, __LINE__);
             if (isset($new[$item_key])) {
                 foreach ($item_array as $field => $value) {
                     if ($new[$item_key][$field] != $value) {
-                        $record = sprintf("mv_id:%s, item key:%s", $this->mv_id, $item_key);
+                        // $record = sprintf("mv_id:%s, item key:%s", $this->mv_id, $item_key);
+                        $record = sprintf("MVITM_MOVE_ID:%s, MVITM_LINE_ID:%s", $this->mv_id, $item_key);
                         $journal->valueChange($module, $record, $field, $value, $new[$item_key][$field]);
                     }
                 }
@@ -2055,7 +2087,8 @@ class Movement extends CommonClass
             if (!isset($new[$item_key])) {
                 $jnl_data[0] = Utilities::getCurrPsn();
                 $jnl_data[1] = $module;
-                $jnl_data[2] = sprintf("mv_id:%s, item key:%s", $this->mv_id, $item_key);
+                // $jnl_data[2] = sprintf("mv_id:%s, item key:%s", $this->mv_id, $item_key);
+                $jnl_data[2] = sprintf("MVITM_MOVE_ID:%s, MVITM_LINE_ID:%s", $this->mv_id, $item_key);
                 if (!$journal->jnlLogEvent(
                     Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
                     $e = oci_error($stmt);
@@ -2072,7 +2105,8 @@ class Movement extends CommonClass
             if (!isset($old[$item_key])) {
                 $jnl_data[0] = Utilities::getCurrPsn();
                 $jnl_data[1] = $module;
-                $jnl_data[2] = sprintf("mv_id:%s, item key:%s", $this->mv_id, $item_key);
+                // $jnl_data[2] = sprintf("mv_id:%s, item key:%s", $this->mv_id, $item_key);
+                $jnl_data[2] = sprintf("MVITM_MOVE_ID:%s, MVITM_LINE_ID:%s", $this->mv_id, $item_key);
 
                 if (!$journal->jnlLogEvent(
                     Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {

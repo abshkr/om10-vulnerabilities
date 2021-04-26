@@ -271,7 +271,7 @@
     "flags": "标记组合",
     "meters": "流量计",
     "variances": "可变范围",
-	"reportJobs": "已经创建的任务"
+    "reportJobs": "已经创建的任务"
   },
   "features": {
     "BASE_PROD__DENS_RANGE": "基础油品：密度范围",
@@ -1115,6 +1115,8 @@
     "nextSeal": "下一个封签号",
     "nextWeeklyDate": "下次周报表日期",
     "node": "节点",
+    "nomIntoTransitGL": "油品运输损耗",
+    "nomQtyReceiptExpected": "预计进油货量",
     "nominationItem": "大宗货单明细条目",
     "nominationKey": "大宗货单主键",
     "nominationNumber": "大宗货单单号",
@@ -1842,10 +1844,10 @@
     "journalHeatmap": "警报热点图",
     "journalAlarmsToday": "当日警报",
     "journalAlarmsYsd": "昨天警报",
-	"jobID": "任务编号",
-	"jobName": "任务名称",
-	"subject": "邮件标题",
-	"lastRun": "上次运行时间"
+    "jobID": "任务编号",
+    "jobName": "任务名称",
+    "subject": "邮件标题",
+    "lastRun": "上次运行时间"
   },
   "generic": {
     "about": "关于(EULA)",
@@ -2110,9 +2112,9 @@
     "viewTripSeals": "查看提单封签",
     "yes": "是",
     "scrollUp": "向上滚动",
-	"addJob": "增加任务",
+    "addJob": "增加任务",
     "editJob": "修改任务",
-	"deleteJob": "删除任务"
+    "deleteJob": "删除任务"
   },
   "pageMenu": {
     "accessControl": "油库安全管理",

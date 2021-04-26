@@ -37,6 +37,7 @@ import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
 
 import {
   NumericEditor,
+  SoleNumericEditor,
   SelectEditor,
   BooleanEditor,
   ListEditor,
@@ -77,6 +78,7 @@ const defaultComponents = {
   TagRenderer,
   NullRenderer,
   NumericEditor,
+  SoleNumericEditor,
   SelectEditor,
   BooleanEditor,
   ListEditor,

@@ -271,7 +271,7 @@
     "flags": "Flags",
     "meters": "Meters",
     "variances": "Variances",
-	"reportJobs": "Scheduled Jobs"
+    "reportJobs": "Scheduled Jobs"
   },
   "features": {
     "BASE_PROD__DENS_RANGE": "Base Product: Density Range",
@@ -1115,6 +1115,8 @@
     "nextSeal": "Next Seal Number",
     "nextWeeklyDate": "Next Weekly Report Date",
     "node": "Node",
+    "nomIntoTransitGL": "Into Transit Gain/Loss",
+    "nomQtyReceiptExpected": "Quantity Expected To Receive",
     "nominationItem": "Nomination Item",
     "nominationKey": "Nomination Key",
     "nominationNumber": "Nomination Number",
@@ -1842,10 +1844,10 @@
     "journalHeatmap": "Alarm Heatmap",
     "journalAlarmsToday": "Alarms Today",
     "journalAlarmsYsd": "Alarm Yesterday",
-	"jobID": "Job ID",
-	"jobName": "Job Name",
-	"subject": "Subject",
-	"lastRun": "Last Run"
+    "jobID": "Job ID",
+    "jobName": "Job Name",
+    "subject": "Subject",
+    "lastRun": "Last Run"
   },
   "generic": {
     "about": "About (EULA)",
@@ -2110,9 +2112,9 @@
     "viewTripSeals": "View Schedule Seals",
     "yes": "Yes",
     "scrollUp": "Scroll Up",
-	"addJob": "Add Job",
+    "addJob": "Add Job",
     "editJob": "Edit Job",
-	"deleteJob": "Delete Job"
+    "deleteJob": "Delete Job"
   },
   "pageMenu": {
     "accessControl": "Access Control",

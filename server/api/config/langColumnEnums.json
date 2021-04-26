@@ -2510,6 +2510,8 @@
     "MV_APPR_NO": "NA",
     "MV_TRANSFER_TYP": "NA",
     "MV_PRINT_PRICE": "NA",
+    "MV_RECEIPT_EXPECTED": "NA",
+    "MV_INTO_TRANSIT_GL": "NA",
     "MV_PAY_DESC": "NA",
     "MV_SOURCE": "NA"
   },
@@ -2557,6 +2559,8 @@
     "MVITM_UNIT_MOVE": "NA",
     "MVITM_QTY_DELV": "NA",
     "MVITM_UNIT_DELV": "NA",
+    "MVITM_RECEIPT_EXPECTED": "NA",
+    "MVITM_INTO_TRANSIT_GL": "NA",
     "MVITM_COMMENTS": "NA",
     "MVITM_TERMINAL": "NA",
     "MVITM_NUMBER": "NA",

@@ -35,6 +35,8 @@ class MovementItem extends CommonClass
         "MVITM_UNIT_MOVE",
         "MVITM_UNIT_DELV",
         "MVITM_STATUS",
+        "MVITM_RECEIPT_EXPECTED",
+        "MVITM_INTO_TRANSIT_GL",
         "MVITM_PACK_SIZE",
         "MVITM_PRICE_TYPE",
         "MVITM_PRICE"
