@@ -103,8 +103,8 @@ commit;
 
 
 /*
-    define the SITE_ULLAGE_AUTO_CALC to control whether to calculate the ullage automatically by the safe working capacity and totoal volume
-    Y: Calculate the ullage automatically by the safe working capacity and totoal volume
+    define the SITE_ULLAGE_AUTO_CALC to control whether to calculate the ullage automatically by the safe working capacity and total volume
+    Y: Calculate the ullage automatically by the safe working capacity and total volume
     N: Enter the ullage manually
 */
 delete from SITE_CONFIG where CONFIG_KEY='SITE_ULLAGE_AUTO_CALC';
@@ -112,7 +112,7 @@ delete from SITE_CONFIG where CONFIG_KEY='SITE_ULLAGE_AUTO_CALC';
 commit;
 
 insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIRED_BY_GUI) 
-values ('SITE_ULLAGE_AUTO_CALC', 'Y', 'Calculate the ullage automatically by the safe working capacity and totoal volume', NULL );
+values ('SITE_ULLAGE_AUTO_CALC', 'Y', 'Calculate the ullage automatically by the safe working capacity and total volume', NULL );
 
 commit;
 
@@ -942,3 +942,17 @@ insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIR
 values ('SITE_USE_INTO_TRANSIT_GL', 'N', 'Manage the into-transit gain/loss in Nomination', NULL );
 
 commit;
+
+
+
+-- Into transit G/L is the difference between the ship figure (expected qty to be received) and the qty received into the tanks.
+-- add new column MV_RECEIPT_EXPECTED to store the expected quantity to be received from a ship at nomination level
+alter table MOVEMENTS add MV_RECEIPT_EXPECTED FLOAT;
+-- add new column MV_INTO_TRANSIT_GL to store the Into transit G/L at nomination level
+alter table MOVEMENTS add MV_INTO_TRANSIT_GL FLOAT;
+
+-- add new column MVITM_RECEIPT_EXPECTED to store the expected quantity to be received from a ship at nomination item level
+alter table MOVEMENT_ITEMS add MVITM_RECEIPT_EXPECTED FLOAT;
+-- add new column MVITM_INTO_TRANSIT_GL to store the Into transit G/L at nomination item level
+alter table MOVEMENT_ITEMS add MVITM_INTO_TRANSIT_GL FLOAT;
+
