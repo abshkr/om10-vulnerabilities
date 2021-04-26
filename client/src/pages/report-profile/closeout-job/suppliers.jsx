@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { REPORT_PROFILE } from 'api';
 
 const Supplier = ({ form, param }) => {
-  console.log("[Supplier]", param)
   const { data: options, isValidating } = useSWR(REPORT_PROFILE.SUPPLIERS);
 
   const { t } = useTranslation();

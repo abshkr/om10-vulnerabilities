@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { ON_DEMAND_REPORTS } from 'api';
 
 const Carrier = ({ form, param }) => {
-  console.log("[Supplier]", param)
   const { data: options, isValidating } = useSWR(ON_DEMAND_REPORTS.CARRIERS);
 
   const { t } = useTranslation();

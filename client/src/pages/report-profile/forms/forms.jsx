@@ -97,8 +97,6 @@ const ProfileForm = ({ value, visible, handleFormState, access, setFilterValue }
   const onFinish = async () => {
     const values = await form.validateFields();
 
-    console.log(values)
-
     if (!IS_CREATING) {
       values.report_file = value.report_file;
     }

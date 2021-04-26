@@ -10,7 +10,6 @@ import Supplier from './suppliers';
 import Customer from './customer';
 
 const CloseoutJobForm = ({value, rpt_file, update}) => {
-  console.log(value)
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { setFieldsValue } = form;
@@ -23,7 +22,6 @@ const CloseoutJobForm = ({value, rpt_file, update}) => {
 
   let param_seq = 0;
   const carrier = payload?.records? payload?.records.map((item, seq) => {
-    console.log(item, seq)
     if (item.includes("START") || item.includes("END")) {
       return <div key={item}></div>;
     } else if (item === "CMPY_CODE" || item.includes("SUPP") || item.includes("DRAWER")) {
@@ -48,7 +46,6 @@ const CloseoutJobForm = ({value, rpt_file, update}) => {
   }) : null;
   
   const onFinish = values => {
-    console.log(values)
     values.to_create = IS_CREATING
     values.output_format = 0
     if (values.format_array.includes("pdf")) {
@@ -66,7 +63,6 @@ const CloseoutJobForm = ({value, rpt_file, update}) => {
     if (values.format_array.includes("html")) {
       values.output_format |= 16;
     }
-    console.log(values)
     values.job_lastrun = values.job_lastrun ? values.job_lastrun : "";
     update(values)
     Modal.destroyAll();
