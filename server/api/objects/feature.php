@@ -87,7 +87,9 @@ class Feature extends CommonClass
         foreach( $this->data as $item )
         {
             $funcName = $item->feature_func;
-            $this->$funcName( $item->feature_flag );
+			if (method_exists($this, $funcName)) {
+				$this->$funcName( $item->feature_flag );
+			}
         }
 
         $error = new EchoSchema(200, response("__SAVE_SUCCEEDED__"));
@@ -108,7 +110,9 @@ class Feature extends CommonClass
         foreach( $feature_array as $item )
         {
             $funcName = $item->feature_func;
-            $this->$funcName( $item->feature_flag );
+			if (method_exists($this, $funcName)) {
+	            $this->$funcName( $item->feature_flag );
+			}
         }
 
         $error = new EchoSchema(200, response("__SAVE_SUCCEEDED__"));
@@ -535,6 +539,63 @@ class Feature extends CommonClass
 		// $this->replaceFormField( 'viewDeliveryDetails', $value );
 	}
 	
+	public function ManageOryxSites($flag)
+	{
+		/*
+			The following site settings are added in SITE_CONFIG for Oryx customers
+				SITE_USE_WATER_STRAPPING: Calculate water volume from level by strapping data, Y/N
+				SITE_STOCK_CALC_ENHANCED: Apply enhanced site stock calculation with more fields, Y/N
+				SITE_MASS_FIELD_MODE: The mode of mass fields - 1: Mass in Vacuum; 2: Mass in Air; 3: Both.
+				SITE_ULLAGE_AUTO_CALC: Calculate the ullage automatically by the safe working capacity and totoal volume, Y/N
+
+				SITE_USE_TANK_BATCH: Use the tank batch number in stock management and transactions, Y/N
+				SITE_TANK_BATCH_STRICT_MODE: Tank batch number is mandatory in transactions, Y/N
+
+				SITE_LABEL_USER: The user which requires special labels, oryx or blank or other customer name
+				SITE_STD_LITRE_UNIT: The sitewide unit of standard volume, STD/COR
+
+				SITE_USE_PROD_OWNERSHIP: Manage the product ownership in Omega system, Y/N
+				SITE_PROD_OWNERSHIP_LEVEL: The level of product ownership management, TANK/SITE
+
+				SITE_USE_NOM_TPP: Show TPP fields in Nomination screen, Y/N
+				SITE_USE_INTO_TRANSIT_GL: Manage the into-transit gain/loss in Nomination, Y/N
+
+		*/
+		if ( $flag == 'Y' || $flag == true )
+		{
+			$this->updateSiteConfig( 'Y', 'SITE_USE_WATER_STRAPPING' );
+			$this->updateSiteConfig( 'Y', 'SITE_STOCK_CALC_ENHANCED' );
+			$this->updateSiteConfig( '3', 'SITE_MASS_FIELD_MODE' );
+			$this->updateSiteConfig( 'Y', 'SITE_ULLAGE_AUTO_CALC' );
+			$this->updateSiteConfig( 'Y', 'SITE_USE_TANK_BATCH' );
+			$this->updateSiteConfig( 'Y', 'SITE_TANK_BATCH_STRICT_MODE' );
+			$this->updateSiteConfig( 'oryx', 'SITE_LABEL_USER' );
+			$this->updateSiteConfig( 'STD', 'SITE_STD_LITRE_UNIT' );
+			$this->updateSiteConfig( 'Y', 'SITE_USE_PROD_OWNERSHIP' );
+			$this->updateSiteConfig( 'SITE', 'SITE_PROD_OWNERSHIP_LEVEL' );
+			$this->updateSiteConfig( 'N', 'SITE_USE_NOM_TPP' );
+			$this->updateSiteConfig( 'Y', 'SITE_USE_INTO_TRANSIT_GL' );
+		}
+		else
+		{
+			$this->updateSiteConfig( 'N', 'SITE_USE_WATER_STRAPPING' );
+			$this->updateSiteConfig( 'N', 'SITE_STOCK_CALC_ENHANCED' );
+			$this->updateSiteConfig( '1', 'SITE_MASS_FIELD_MODE' );
+			$this->updateSiteConfig( 'N', 'SITE_ULLAGE_AUTO_CALC' );
+			$this->updateSiteConfig( 'N', 'SITE_USE_TANK_BATCH' );
+			$this->updateSiteConfig( 'N', 'SITE_TANK_BATCH_STRICT_MODE' );
+			$this->updateSiteConfig( '', 'SITE_LABEL_USER' );
+			$this->updateSiteConfig( 'COR', 'SITE_STD_LITRE_UNIT' );
+			$this->updateSiteConfig( 'N', 'SITE_USE_PROD_OWNERSHIP' );
+			$this->updateSiteConfig( 'TANK', 'SITE_PROD_OWNERSHIP_LEVEL' );
+			$this->updateSiteConfig( 'Y', 'SITE_USE_NOM_TPP' );
+			$this->updateSiteConfig( 'N', 'SITE_USE_INTO_TRANSIT_GL' );
+		}
+
+		// update the unit message for std volume
+		$this->updateStdVolMessage();
+	}
+	
 	
 	
     public function updateSiteConfig($config_value, $config_key) 
@@ -589,6 +650,35 @@ class Feature extends CommonClass
                 oci_rollback($this->conn);
                 return false;
             }
+        }
+
+        oci_commit($this->conn);
+        return true;
+    }
+	
+    public function updateStdVolMessage() 
+    {
+        $this->commit_mode = OCI_NO_AUTO_COMMIT;
+
+        $query = "
+            UPDATE MSG_LOOKUP 
+            SET MESSAGE = DECODE(
+                NVL((select NVL(config_value, 'COR') from site_config where config_key='SITE_STD_LITRE_UNIT'), 'COR'),
+                'COR', 'l (cor)', 'l (std)'
+            )
+            WHERE MSG_ID = 1793 and LANG_ID='ENG'
+        ";
+        // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+        
+        $stmt = oci_parse($this->conn, $query);
+        
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            
+            $error = new EchoSchema(500, response("__UPDATE_FAILED__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return false;
         }
 
         oci_commit($this->conn);

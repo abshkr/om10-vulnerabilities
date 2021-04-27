@@ -289,7 +289,8 @@
     "TANK_LEVEL_ALARMS": "Tank Level Alarms",
     "DOR": "Additional Host Data",
     "MAKE_MANUAL_TRANSACTION": "Make Manual Transaction",
-    "VIEW_DELIVERY_DETAILS": "View Delivery Details"
+    "VIEW_DELIVERY_DETAILS": "View Delivery Details",
+    "ORYX_SITES": "Features for Oryx Sites"
   },
   "fields": {
     "accessCloseFreezeFolio": "Close/Freeze Folio",

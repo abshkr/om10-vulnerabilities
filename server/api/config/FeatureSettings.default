@@ -110,5 +110,12 @@
     "feature_flag": "N",
     "feature_func": "ManageViewDeliveryDetails",
     "feature_name": "View Delivery Details"
+  },
+  {
+    "feature_gui": "Y",
+    "feature_code": "ORYX_SITES",
+    "feature_flag": "N",
+    "feature_func": "ManageOryxSites",
+    "feature_name": "Features for Oryx Sites"
   }
 ]
