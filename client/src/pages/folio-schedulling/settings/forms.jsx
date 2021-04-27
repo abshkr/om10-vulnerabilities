@@ -29,7 +29,7 @@ import { useConfig } from '../../../hooks';
 import api, { FOLIO_SCHEDULING } from '../../../api';
 
 const Settings = ({ value, access }) => {
-  const { data: payload } = useSWR(FOLIO_SCHEDULING.SETTINGS);
+  const { data: payload, revalidate: revalidate2 } = useSWR(FOLIO_SCHEDULING.SETTINGS);
   const { data: manualDates, revalidate } = useSWR(FOLIO_SCHEDULING.SETTINGS_EX);
 
   const { t } = useTranslation();
@@ -59,6 +59,7 @@ const Settings = ({ value, access }) => {
           .post(FOLIO_SCHEDULING.UPDATE_SETTINGS, newSettings)
           .then(() => {
             onComplete();
+            revalidate2();
             setRunAndOverRide(false);
 
             notification.success({

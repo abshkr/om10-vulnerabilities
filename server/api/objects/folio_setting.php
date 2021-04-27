@@ -94,6 +94,35 @@ class FolioSetting extends CommonClass
         }
     }
 
+    public function pre_update()
+    {
+        if ($this->param_key == "NEXT_REPORT_TIME") {
+            $query = "SELECT NVL(PARAM_VALUE, SYSDATE) NEXT_DATE FROM CLOSEOUT_DATE_SETTINGS
+                WHERE PARAM_KEY = 'NEXT_DAILY_REPORT_DATE'";
+            $stmt = oci_parse($this->conn, $query);
+            if (oci_execute($stmt, $this->commit_mode)) {
+                $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+                $this->old_next_date = $row['NEXT_DATE'];
+            } else {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+
+            $query = "SELECT NVL(PARAM_VALUE, SYSDATE) NEXT_DATE FROM CLOSEOUT_DATE_SETTINGS
+                WHERE PARAM_KEY = 'NEXT_REPORT_TIME'";
+            $stmt = oci_parse($this->conn, $query);
+            if (oci_execute($stmt, $this->commit_mode)) {
+                $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+                $this->old_report_time = $row['NEXT_DATE'];
+            } else {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+        }
+    }
+
     protected function post_update()
     {
         $query = "UPDATE CLOSEOUT_DATE_SETTINGS
@@ -109,6 +138,36 @@ class FolioSetting extends CommonClass
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
+        }
+
+        /**
+         * If new time > current time, then change next date to today. For example, if old
+         * run time is 00:05, and today is 27/Apr, and next closeout date is 28/Apr, if
+         * change run time to 23:00, if next closeout date remains 28/Apr, then on 27/Apr ,
+         * there won't be any closeout.
+        */
+        if ($this->param_key == "NEXT_REPORT_TIME") {
+            //param_value sample: "2021-04-27 23:56:00"
+            if (substr($this->param_value, -8) > date('H:i:s') && 
+                substr($this->old_next_date, 0, 10) > date('Y-m-d')) {
+
+                //Use SYSDATE because NEXT_DAILY_REPORT_DATE only use DATE part
+                $query = "UPDATE CLOSEOUT_DATE_SETTINGS
+                    SET PARAM_VALUE = SYSDATE
+                    WHERE PARAM_KEY = 'NEXT_DAILY_REPORT_DATE'";
+                $stmt = oci_parse($this->conn, $query);
+                if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    return false;
+                }
+
+                write_log(
+                    sprintf("Update next date from %s to %s due to report time change from %s to %s.", 
+                    substr($this->old_next_date, 0, 10), date('Y-m-d'), 
+                    substr($this->old_report_time, -8), substr($this->param_value, -8)),
+                    __FILE__, __LINE__, LogLevel::INFO);
+            }
         }
 
         return true;
