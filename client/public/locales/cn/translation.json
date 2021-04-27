@@ -42,6 +42,7 @@
     "changeUserLanguage": "修改用户语言",
     "changeYourPassword": "修改您的密码",
     "characterMustStart": "首字符必须是",
+    "childRecordFound": "该地址已被其它记录使用（可能是公司、客户、配送地点、油库、或者合作伙伴）。",
     "clearAllTransfer": "所有油仓中的温度以及三个油量数值将被清除。",
     "clearLineTransfer": "所选油仓中的温度以及三个油量数值将被清除。",
     "clearTransferSuccess": "您已成功清除油品转移数据",
