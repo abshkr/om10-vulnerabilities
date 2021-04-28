@@ -769,7 +769,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
               min={0}
               max={999999999}
               style={{ width: '100%' }}
-              precision={4}
+              precision={5}
               disabled={true}
               // onChange={handleCorVolFieldChange}
             />

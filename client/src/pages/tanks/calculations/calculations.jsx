@@ -368,7 +368,7 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
                   response?.data?.REAL_KG,
                   isAdtv ? config.precisionAdditive : config.precisionMass
                 ),
-                tank_vcf: _.round(response?.data?.REAL_VCF, 4),
+                tank_vcf: _.round(response?.data?.REAL_VCF, 5),
                 tank_air_kg: _.round(WIA, isAdtv ? config.precisionAdditive : config.precisionMass),
               });
               notification.success({
@@ -526,7 +526,7 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
                   response?.data?.REAL_KG,
                   isAdtv ? config.precisionAdditive : config.precisionMass
                 ),
-                tank_vcf: _.round(response?.data?.REAL_VCF, 4),
+                tank_vcf: _.round(response?.data?.REAL_VCF, 5),
                 tank_air_kg: _.round(WIA, isAdtv ? config.precisionAdditive : config.precisionMass),
               });
               // selected.tank_amb_vol = _.round(response?.data?.REAL_LITRE, isAdtv ? config.precisionAdditive : config.precisionVolume);
@@ -712,7 +712,7 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
                   response?.data?.REAL_KG,
                   isAdtv ? config.precisionAdditive : config.precisionMass
                 ),
-                tank_vcf: _.round(response?.data?.REAL_VCF, 4),
+                tank_vcf: _.round(response?.data?.REAL_VCF, 5),
                 tank_air_kg: _.round(WIA, isAdtv ? config.precisionAdditive : config.precisionMass),
               });
               // selected.tank_amb_vol = _.round(response?.data?.REAL_LITRE, isAdtv ? config.precisionAdditive : config.precisionVolume);
