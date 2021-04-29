@@ -33,7 +33,7 @@ import { DataTable, Download } from '../../../components';
 import api, { BASE_OWNERS, BASE_PRODUCTS, ORDER_LISTINGS } from '../../../api';
 import columns from './columns';
 import transform from './transform';
-// import BaseOwnerTransactions from '../base_owner-trans';
+// import BaseOwnerTransactions from '../base-owner-trans-io';
 import BaseOwnerTransactions from '../base-owner-trans';
 
 const { TabPane } = Tabs;
