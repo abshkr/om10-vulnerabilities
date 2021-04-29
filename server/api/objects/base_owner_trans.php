@@ -23,6 +23,8 @@ class BaseOwnerTrans extends CommonClass
         "TRSA_UNIT",
         "TRSA_QTY_OWNED",
         "TRSA_DENSITY_OWNED",
+        "TRSA_QTY_OWNED_TO",
+        "TRSA_DENSITY_OWNED_TO",
         "OWNSHIP_QTY",
         "OWNSHIP_DENSITY",
         "OWNSHIP_UNIT",
@@ -99,6 +101,96 @@ class BaseOwnerTrans extends CommonClass
     }
 
     public function read()
+    {
+        if (!isset($this->base_code)) {
+            $this->base_code = "-1";
+        }
+        if (!isset($this->cmpy_code)) {
+            $this->cmpy_code = "-1";
+        }
+        if (!isset($this->base_class)) {
+            $this->base_class = -1;
+        }
+
+        $query = "
+            select
+                tra.OWNSHIP_TRSA_NO
+                , tra.BASE_PROD_CODE
+                , bpd.BASE_NAME
+                , bpd.BASE_CAT
+                , bpc.*
+                , tra.SUPP_CMPY
+                , cmp.CMPY_NAME
+                , tra.QTY
+                , tra.REASON
+                , typ.MOVITEM_TYPE_NAME     REASON_TEXT
+                , tra.TRSA_TIME
+                , tra.TRSA_DENSITY
+                , tra.TRSA_UNIT
+                , unt.*
+                , tra.TRSA_QTY_OWNED
+                , tra.TRSA_DENSITY_OWNED
+                , tra.SUPP_CMPY_TO
+                , cmp2.CMPY_NAME            CMPY_NAME_2
+                , tra.TRSA_QTY_OWNED_TO
+                , tra.TRSA_DENSITY_OWNED_TO
+                , (NVL(tra.TRSA_QTY_OWNED,0) - NVL(tra.QTY,0))  as TRSA_QTY_AFTER
+                , (NVL(tra.TRSA_QTY_OWNED_TO,0) + NVL(tra.QTY,0))  as TRSA_QTY_AFTER_TO
+                , tra.TRSA_DENSITY as TRSA_DENSITY_AFTER
+                , tra.TRSA_DENSITY as TRSA_DENSITY_AFTER_TO
+            from 
+                PRODOWNSHIP_TRANSACT        tra
+                , MOVITEM_TYPES             typ
+                , BASE_PRODS                bpd
+                , (
+                    select
+                        bcls.BCLASS_NO
+                        , NVL(bctyp.BCLASS_NAME, bcls.BCLASS_DESC)			as BCLASS_DESC
+                        , bcls.BCLASS_DENS_LO
+                        , bcls.BCLASS_DENS_HI
+                        , bcls.BCLASS_VCF_ALG
+                        , bcls.BCLASS_TEMP_LO
+                        , bcls.BCLASS_TEMP_HI
+                    from
+                        BASECLASS 			bcls
+                        , BCLASS_TYP		bctyp
+                    where
+                        1=1
+                        and bcls.BCLASS_NO = bctyp.BCLASS_ID(+)
+                ) 					        bpc
+                , UNIT_SCALE_VW             unt
+                , GUI_COMPANYS              cmp
+                , GUI_COMPANYS              cmp2
+            where
+                tra.REASON = typ.MOVITEM_TYPE_ID(+)
+                and tra.BASE_PROD_CODE = bpd.BASE_CODE(+)
+                and bpd.BASE_CAT = bpc.BCLASS_NO(+)
+                and tra.TRSA_UNIT = unt.UNIT_ID(+)
+                and tra.SUPP_CMPY = cmp.CMPY_CODE(+)
+                and tra.SUPP_CMPY_TO = cmp2.CMPY_CODE(+)
+        ";
+
+        $query .= "
+                and ('-1' = :base OR tra.BASE_PROD_CODE = :base)
+                and ('-1' = :cmpy OR tra.SUPP_CMPY = :cmpy OR tra.SUPP_CMPY_TO = :cmpy)
+                and (-1 = :catg OR bpd.BASE_CAT = :catg)
+            ORDER BY tra.OWNSHIP_TRSA_NO, tra.BASE_PROD_CODE, tra.SUPP_CMPY, tra.SUPP_CMPY_TO
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':base', $this->base_code);
+        oci_bind_by_name($stmt, ':cmpy', $this->cmpy_code);
+        oci_bind_by_name($stmt, ':catg', $this->base_class);
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function read2()
     {
         if (!isset($this->base_code)) {
             $this->base_code = "-1";
@@ -268,6 +360,37 @@ class BaseOwnerTrans extends CommonClass
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':base', $this->base_code);
         oci_bind_by_name($stmt, ':cmpy', $this->cmpy_code);
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function get_base_summary()
+    {
+        if (!isset($this->base_code)) {
+            $this->base_code = "-1";
+        }
+
+        $query = "
+            SELECT 
+                TANK_BASE,
+                SUM(TANK_COR_VOL) AS TANK_COR_VOL,
+                SUM(TANK_LIQUID_KG) AS TANK_LIQUID_KG2,
+                SUM(TANK_COR_VOL*TANK_DENSITY/1000.0) AS TANK_LIQUID_KG,
+                NVL(SUM(TANK_COR_VOL*TANK_15_DENSITY/1000.0), 0) AS TANK_LIQUID_KG15
+            FROM TANKS
+            WHERE 
+                1 = 1
+                AND ('-1' = :base OR TANK_BASE = :base)
+            GROUP BY TANK_BASE
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':base', $this->base_code);
 
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
