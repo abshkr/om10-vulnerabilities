@@ -26,6 +26,11 @@ const columns = (t) => [
     field: 'qty_loaded',
     resizable: true,
     width: 200,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: '0',
+      min: '1',
+    },
   },
 
   {

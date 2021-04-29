@@ -47,6 +47,11 @@ const columns = (t, form, products, soldTo, shipTo, units) => [
     resizable: true,
     width: 90,
     suppressSizeToFit: true,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: '0',
+      min: '1',
+    },
   },
 
   {
