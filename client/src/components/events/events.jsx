@@ -79,7 +79,7 @@ const Events = () => {
   }, [events]);
 
   const menu = (
-    <Menu style={{ minWidth: 500 }}>
+    <Menu style={{ minWidth: 200 }}>
       <div style={{ paddingLeft: 5, paddingRight: 5, display: 'flex' }}>
         <Button type="primary" block onClick={() => setMuted(!muted)} style={{ marginRight: 2.5 }}>
           {muted ? 'Unmute' : 'Mute'}
