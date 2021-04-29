@@ -668,6 +668,10 @@ const ManualTransactions = ({ popup, params }) => {
         setSourceType(null);
         resetFormData();
         // resetFormGrids();
+        // if (params && popup && !dataLoaded) {
+        if (params && popup) {
+          setDataLoaded(params);
+        }
       },
     });
   };
