@@ -4,7 +4,7 @@ import { WalletOutlined, CopyOutlined, CheckOutlined } from '@ant-design/icons';
 import { Input, Button, Modal, notification, Form } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-
+import hash from 'utils/hash';
 import api, { PERSONNEL } from '../../api';
 import generatePassword from 'utils/generate-password';
 
@@ -22,12 +22,12 @@ const PasswordReset = ({ value, setHide }) => {
   const handleSubmit = () => {
     if (value) {
       const user = value.per_code;
-
+      const payload = hash("", user, password)
       api
         .post(PERSONNEL.RESET_PASSWORD,
           {
             per_code: user,
-            password: password
+            password: payload.psw
           })
         .then((response) => {
           Modal.destroyAll();

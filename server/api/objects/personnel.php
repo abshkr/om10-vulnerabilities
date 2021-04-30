@@ -596,8 +596,8 @@ class Personnel extends CommonClass
         }
 
         $query_string = "usr=" . rawurlencode(strip_tags($this->per_code)) . 
-            "&old_pwd=" . rawurlencode(strip_tags($this->old_password)) . 
-            "&new_pwd=" . rawurlencode(strip_tags($this->password));
+            "&old_pwd=" . rawurlencode($this->old_password) . 
+            "&new_pwd=" . rawurlencode($this->password);
         $cgi_response = Utilities::http_cgi_invoke("cgi-bin/en/atm/resetpassword.cgi", $query_string);
         // write_log($cgi_response, __FILE__, __LINE__);
         if ($cgi_response === false) {
