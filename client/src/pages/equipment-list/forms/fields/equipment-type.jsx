@@ -38,6 +38,7 @@ const EquipmentType = ({ form, value, onChange }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        dropdownStyle={{ maxWidth: '30vw' }}
         loading={isValidating}
         disabled={!!value}
         showSearch
@@ -50,11 +51,11 @@ const EquipmentType = ({ form, value, onChange }) => {
       >
         {options?.records.map((item, index) => (
           <Select.Option key={index} value={item.etyp_id}>
-            {`${item.etyp_id}[${item.etyp_title}]: [Compartments:${
-              item.compartments.length
-            }]${item?.compartments?.map(
-              (item2, index) => `[${item2.cmpt_units}:(${item2.cmpt_no})${item2.safefill},${item2.sfl}]`
-            )}`}
+            {`${item.etyp_id}[${item.etyp_title}]: [${t('fields.compartments')}:${
+              item?.compartments?.length
+            }]${
+              item?.compartments?.length === 0 ? '' : '[' + item?.compartments?.[0]?.cmpt_units + ']'
+            }${item?.compartments?.map((item2, index) => `[${item2.safefill}]`)}`}
           </Select.Option>
         ))}
       </Select>
