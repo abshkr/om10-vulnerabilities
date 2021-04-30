@@ -62,7 +62,7 @@ class Schedule extends CommonClass
     public function carriers()
     {
         $serv = new SiteService($this->conn);
-        if ($serv->site_customer_carrier()) {
+        if (isset($this->customer) && $serv->site_customer_carrier()) {
             $query = "SELECT CARRIER.CMPY_CODE,
                         CARRIER.CMPY_NAME,
                         CARRIER.CMPY_CODE||' - '||CARRIER.CMPY_NAME AS CMPY_DESC,
