@@ -29,6 +29,12 @@ const EquipmentType = ({ form, value, onChange }) => {
     }
   }, [value, setFieldsValue]);
 
+  /* useEffect(() => {
+    if (options) {
+      console.log('..............', options);
+    }
+  }, [options]); */
+
   return (
     <Form.Item
       name="tnkr_etp"
@@ -50,8 +56,9 @@ const EquipmentType = ({ form, value, onChange }) => {
           <Select.Option key={index} value={item.etyp_id}>
             {/* {`${item.etyp_id} - ${item.etyp_title} `} */}
             {`${item.etyp_id}[${item.etyp_title}]: [${t('fields.compartments')}:${
-              item?.compartments?.length
-            }]${
+              //item?.compartments?.length
+              item?.cmptnu
+            }]${item?.etyp_class === '0' ? '' : '[' + t('fields.comboType') + ']'}${
               item?.compartments?.length === 0 ? '' : '[' + item?.compartments?.[0]?.cmpt_units + ']'
             }${item?.compartments?.map((item2, index) => `[${item2.safefill}]`)}`}
           </Select.Option>
