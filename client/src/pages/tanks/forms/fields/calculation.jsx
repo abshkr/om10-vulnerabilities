@@ -440,6 +440,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
         style={{ width: '100%' }}
         precision={config.precisionDensity}
         onChange={handleStdDensFieldChange} // D15C
+        required={config?.siteMandatoryTankCalcFields}
       />
       {/* <Form.Item
         name="tank_density"
@@ -473,6 +474,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
             style={{ width: '100%' }}
             precision={config.precisionDensity}
             onChange={handleCorDensFieldChange} // D30C
+            required={config?.siteMandatoryTankCalcFields}
           />
           /* <Form.Item
           name="tank_15_density"
@@ -534,6 +536,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
               style={{ width: '100%' }}
               precision={config.precisionAPI}
               onChange={handleApiDensFieldChange}
+              required={config?.siteMandatoryTankCalcFields}
             />
             {/* <Form.Item
               name="tank_api"
@@ -629,6 +632,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
             precision={config.precisionLevel}
             style={{ width: '100%' }}
             onChange={handleProdLvlFieldChange}
+            required={config?.siteMandatoryTankCalcFields}
           />
           {/* <Form.Item name="tank_prod_lvl" label={`${t('fields.productLevel')} (${t('units.mm')})`}>
             <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
@@ -705,7 +709,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
         label={`${t('fields.observedTemperature')} (${tempBounds.min}${tempBounds.type} - ${tempBounds.max}${
           tempBounds.type
         })`}
-        rules={[{ validator: validateTemperature }]}
+        rules={[{ required: config?.siteMandatoryTankCalcFields, validator: validateTemperature }]}
       >
         <Input
           style={{ width: '100%' }}
@@ -725,6 +729,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
         style={{ width: '100%' }}
         precision={value?.tank_base_class === '6' ? config.precisionAdditive : config.precisionVolume}
         onChange={handleAmbVolFieldChange}
+        required={config?.siteMandatoryTankCalcFields}
       />
       {/* <Form.Item name="tank_amb_vol" label={`${t('fields.ambientVolume')} (${t('units.litres')})`}>
         <InputNumber
@@ -748,6 +753,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
             style={{ width: '100%' }}
             precision={value?.tank_base_class === '6' ? config.precisionAdditive : config.precisionVolume}
             onChange={handleCorVolFieldChange}
+            required={config?.siteMandatoryTankCalcFields}
           />
           {/* <Form.Item name="tank_cor_vol" label={`${t('fields.standardVolume')} (${t('units.litres')})`}>
             <InputNumber
@@ -790,6 +796,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
               style={{ width: '100%' }}
               precision={value?.tank_base_class === '6' ? config.precisionAdditive : config.precisionMass}
               onChange={handleMassQtyFieldChange}
+              required={config?.siteMandatoryTankCalcFields}
             />
           </Col>
         )}

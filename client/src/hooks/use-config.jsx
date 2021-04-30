@@ -104,6 +104,7 @@ const useConfig = () => {
     useWaterStrapping: false,
     siteStockCalcEnhanced: false,
     siteUllageCalcAuto: false,
+    siteMandatoryTankCalcFields: false,
     siteMassFieldMode: 1,
     siteMassInVacuum: true,
     siteMassInAir: false,
@@ -300,6 +301,7 @@ const useConfig = () => {
         useWaterStrapping: configurationObject?.SITE_USE_WATER_STRAPPING || false,
         siteStockCalcEnhanced: configurationObject?.SITE_STOCK_CALC_ENHANCED || false,
         siteUllageCalcAuto: configurationObject?.SITE_ULLAGE_AUTO_CALC || false,
+        siteMandatoryTankCalcFields: configurationObject?.SITE_TANK_STATUS_FIELDS_MANDATORY || false,
         siteMassFieldMode: _.toNumber(configurationObject?.SITE_MASS_FIELD_MODE || '1'),
         siteMassInVacuum:
           (_.toNumber(configurationObject?.SITE_MASS_FIELD_MODE || '1') & 1) === 1 ? true : false,

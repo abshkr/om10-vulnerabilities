@@ -30,6 +30,23 @@ commit;
 
 
 
+/*
+    This one is not for Oryx but a general setting for a fix about Mandatory Fields in Calculations tab on Tank Status screen
+    define the SITE_TANK_STATUS_FIELDS_MANDATORY for the mandatory mode of certain fields in Calculations tab on Tank Status screen
+    Y: fields are mandatory.
+    N: fields are optional.
+*/
+delete from SITE_CONFIG where CONFIG_KEY='SITE_TANK_STATUS_FIELDS_MANDATORY';
+
+commit;
+
+insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIRED_BY_GUI) 
+values ('SITE_TANK_STATUS_FIELDS_MANDATORY', 'N', 'Mandatory fields in Tank Status Calculations', NULL );
+
+commit;
+
+
+
 
 /*
     The following site settings are added in SITE_CONFIG for Oryx customers
