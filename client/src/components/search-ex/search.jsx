@@ -6,7 +6,7 @@ import { DatePicker } from 'antd';
 
 // import { Calendar } from '../../components';
 
-import { Form, Button, Modal } from 'antd';
+import { Form, Button, Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import {
   DateRange,
@@ -46,6 +46,21 @@ const SearchForm = ({ onSearch, fields, modal }) => {
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
+    let searchable = false;
+    for (const property in values) {
+      if (property != "use_date_range" && property != "start_date" && property != "end_date") {
+        if (values[property] != undefined) {
+          searchable = true;
+        }
+      }
+    }
+    if (!searchable) {
+      notification.error({
+        // message: t('messages.validationFailed'),
+        description: t('descriptions.searchRequired'),
+      });
+      return;
+    }
     modal.destroy();
     onSearch(values);
   };
