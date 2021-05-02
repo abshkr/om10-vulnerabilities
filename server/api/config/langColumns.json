@@ -3298,7 +3298,10 @@
       "TRSA_DENSITY_OWNED_TO": "To Ownership Density",
       "TRSA_COMMENTS": "Comments",
       "TRSA_APPROVED": "Approved Flag",
-      "TRSA_REVERSED": "Reversed Flag"
+      "TRSA_REVERSED": "Reversed Flag",
+      "TRSA_TIME_UPDATED": "Time Updated",
+      "TRSA_TIME_APPROVED": "Time Approved",
+      "TRSA_TIME_REVERSED": "Time Reversed"
     },
     "PRODUCTS": {
       "PROD_CODE": "Prod Code",
@@ -8216,7 +8219,10 @@
       "TRSA_DENSITY_OWNED_TO": "目标所有权油品密度",
       "TRSA_COMMENTS": "备注",
       "TRSA_APPROVED": "所有权交易批准标记",
-      "TRSA_REVERSED": "所有权交易逆转标记"
+      "TRSA_REVERSED": "所有权交易逆转标记",
+      "TRSA_TIME_UPDATED": "所有权交易修改时间",
+      "TRSA_TIME_APPROVED": "所有权交易批准时间",
+      "TRSA_TIME_REVERSED": "所有权交易逆转时间"
     },
     "PRODUCTS": {
       "PROD_CODE": "油品代码",

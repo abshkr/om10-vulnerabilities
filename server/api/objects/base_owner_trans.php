@@ -140,9 +140,12 @@ class BaseOwnerTrans extends CommonClass
                 , (NVL(tra.TRSA_QTY_OWNED_TO,0) + NVL(tra.QTY,0))  as TRSA_QTY_AFTER_TO
                 , tra.TRSA_DENSITY as TRSA_DENSITY_AFTER
                 , tra.TRSA_DENSITY as TRSA_DENSITY_AFTER_TO
-                , TRSA_COMMENTS
-                , TRSA_APPROVED
-                , TRSA_REVERSED
+                , tra.TRSA_COMMENTS
+                , tra.TRSA_APPROVED
+                , tra.TRSA_REVERSED
+                , tra.TRSA_TIME_UPDATED
+                , tra.TRSA_TIME_APPROVED
+                , tra.TRSA_TIME_REVERSED
             from 
                 PRODOWNSHIP_TRANSACT        tra
                 , MOVITEM_TYPES             typ

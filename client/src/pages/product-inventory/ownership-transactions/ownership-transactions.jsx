@@ -29,9 +29,12 @@ import {
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
+import moment from 'moment';
 
 import { DataTable, Download } from '../../../components';
 import api, { BASE_OWNERS, BASE_OWNER_TRANSACTIONS, ORDER_LISTINGS, SPECIAL_MOVEMENTS } from '../../../api';
+import { SETTINGS } from '../../../constants';
+import { getCurrentTime } from '../../../utils';
 import columns from './columns';
 import { TYPES } from 'api/company-bay-movement';
 import CheckboxContainer from './style';
@@ -360,22 +363,185 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
       });
   };
 
+  const checkOwnership = (ownersFrom, ownersTo, reason, action, qty, suppFrom, baseFrom, suppTo, baseTo) => {
+    // 0: Receipt; 1: Disposal; 2: Transfer
+    // CREATE, UPDATE, APPROVE, REVERSE
+    /*
+      Action    Reason        From Ownership          To Ownership
+      CREATE    0:Receipt     qty>=0, dens>=0(N/A)    qty>=0, dens>0   
+      CREATE    1:Disposal    qty>0, dens>0           qty>=0, dens>=0(N/A)
+      CREATE    2:Transfer    qty>0, dens>0           qty>=0, dens>0
+      UPDATE    0:Receipt     qty>=0, dens>=0(N/A)    qty>=0, dens>0
+      UPDATE    1:Disposal    qty>0, dens>0           qty>=0, dens>=0(N/A)
+      UPDATE    2:Transfer    qty>0, dens>0           qty>=0, dens>0
+      APPROVE   0:Receipt     qty>=0, dens>=0(N/A)    qty>=0, dens>0
+      APPROVE   1:Disposal    qty>0, dens>0           qty>=0, dens>=0(N/A)
+      APPROVE   2:Transfer    qty>0, dens>0           qty>=0, dens>0
+      REVERSE   0:Receipt     qty>=0, dens>=0(N/A)    qty>0, dens>0
+      REVERSE   1:Disposal    qty>=0, dens>0          qty>=0, dens>=0(N/A)
+      REVERSE   2:Transfer    qty>=0, dens>0          qty>0, dens>0
+    */
+    let errors = '';
+
+    if (action === 'CREATE' || action === 'UPDATE' || action === 'APPROVE') {
+      // CREATE    0:Receipt     qty>=0, dens>=0(N/A)    qty>=0, dens>0
+      // UPDATE    0:Receipt     qty>=0, dens>=0(N/A)    qty>=0, dens>0
+      // APPROVE   0:Receipt     qty>=0, dens>=0(N/A)    qty>=0, dens>0
+      if (reason === 0) {
+      }
+      // CREATE    1:Disposal    qty>0, dens>0           qty>=0, dens>=0(N/A)
+      // UPDATE    1:Disposal    qty>0, dens>0           qty>=0, dens>=0(N/A)
+      // APPROVE   1:Disposal    qty>0, dens>0           qty>=0, dens>=0(N/A)
+      if (reason === 1) {
+        if (ownersFrom.length === 0) {
+          // From ownership does not exist
+          errors = t('descriptions.ownershipCannotBeZeroForTrans');
+          errors = errors.replace('[[BASE]]', '"' + baseFrom + '"');
+          errors = errors.replace('[[SUPPLIER]]', '"' + suppFrom + '"');
+        } else {
+          if (ownersFrom?.[0]?.ownship_qty <= 0) {
+            // From ownership exists but the qty is ZERO
+            errors = t('descriptions.ownershipCannotBeZeroForTrans');
+            errors = errors.replace('[[BASE]]', '"' + ownersFrom?.[0]?.base_prod_code + '"');
+            errors = errors.replace('[[SUPPLIER]]', '"' + ownersFrom?.[0]?.supp_cmpy + '"');
+          } else {
+            if (ownersFrom?.[0]?.ownship_qty < qty) {
+              // From ownership exists but the qty is not enough
+              errors = t('descriptions.ownershipNotEnoughForTrans');
+              errors = errors.replace('[[BASE]]', '"' + ownersFrom?.[0]?.base_prod_code + '"');
+              errors = errors.replace('[[SUPPLIER]]', '"' + ownersFrom?.[0]?.supp_cmpy + '"');
+            }
+          }
+        }
+      }
+      // CREATE    2:Transfer    qty>0, dens>0           qty>=0, dens>0
+      // UPDATE    2:Transfer    qty>0, dens>0           qty>=0, dens>0
+      // APPROVE   2:Transfer    qty>0, dens>0           qty>=0, dens>0
+      if (reason === 2) {
+        if (ownersFrom.length === 0) {
+          // From ownership does not exist
+          errors = t('descriptions.ownershipCannotBeZeroForTrans');
+          errors = errors.replace('[[BASE]]', '"' + baseFrom + '"');
+          errors = errors.replace('[[SUPPLIER]]', '"' + suppFrom + '"');
+        } else {
+          if (ownersFrom?.[0]?.ownship_qty <= 0) {
+            // From ownership exists but the qty is ZERO
+            errors = t('descriptions.ownershipCannotBeZeroForTrans');
+            errors = errors.replace('[[BASE]]', '"' + ownersFrom?.[0]?.base_prod_code + '"');
+            errors = errors.replace('[[SUPPLIER]]', '"' + ownersFrom?.[0]?.supp_cmpy + '"');
+          } else {
+            if (ownersFrom?.[0]?.ownship_qty < qty) {
+              // From ownership exists but the qty is not enough
+              errors = t('descriptions.ownershipNotEnoughForTrans');
+              errors = errors.replace('[[BASE]]', '"' + ownersFrom?.[0]?.base_prod_code + '"');
+              errors = errors.replace('[[SUPPLIER]]', '"' + ownersFrom?.[0]?.supp_cmpy + '"');
+            }
+          }
+        }
+      }
+    }
+    if (action === 'REVERSE') {
+      // REVERSE   0:Receipt     qty>=0, dens>=0(N/A)    qty>0, dens>0
+      if (reason === 0) {
+        if (ownersTo.length === 0) {
+          // To ownership does not exist
+          errors = t('descriptions.ownershipCannotBeZeroForReverse');
+          errors = errors.replace('[[BASE]]', '"' + baseTo + '"');
+          errors = errors.replace('[[SUPPLIER]]', '"' + suppTo + '"');
+        } else {
+          if (ownersTo?.[0]?.ownship_qty <= 0) {
+            // To ownership exists but the qty is ZERO
+            errors = t('descriptions.ownershipCannotBeZeroForReverse');
+            errors = errors.replace('[[BASE]]', '"' + ownersTo?.[0]?.base_prod_code + '"');
+            errors = errors.replace('[[SUPPLIER]]', '"' + ownersTo?.[0]?.supp_cmpy + '"');
+          } else {
+            if (ownersTo?.[0]?.ownship_qty < qty) {
+              // To ownership exists but the qty is not enough
+              errors = t('descriptions.ownershipNotEnoughForReverse');
+              errors = errors.replace('[[BASE]]', '"' + ownersTo?.[0]?.base_prod_code + '"');
+              errors = errors.replace('[[SUPPLIER]]', '"' + ownersTo?.[0]?.supp_cmpy + '"');
+            }
+          }
+        }
+      }
+      // REVERSE   1:Disposal    qty>=0, dens>0          qty>=0, dens>=0(N/A)
+      if (reason === 1) {
+      }
+      // REVERSE   2:Transfer    qty>=0, dens>0          qty>0, dens>0
+      if (reason === 2) {
+        if (ownersTo.length === 0) {
+          // To ownership does not exist
+          errors = t('descriptions.ownershipCannotBeZeroForReverse');
+          errors = errors.replace('[[BASE]]', '"' + baseTo + '"');
+          errors = errors.replace('[[SUPPLIER]]', '"' + suppTo + '"');
+        } else {
+          if (ownersTo?.[0]?.ownship_qty <= 0) {
+            // To ownership exists but the qty is ZERO
+            errors = t('descriptions.ownershipCannotBeZeroForReverse');
+            errors = errors.replace('[[BASE]]', '"' + ownersTo?.[0]?.base_prod_code + '"');
+            errors = errors.replace('[[SUPPLIER]]', '"' + ownersTo?.[0]?.supp_cmpy + '"');
+          } else {
+            if (ownersTo?.[0]?.ownship_qty < qty) {
+              // To ownership exists but the qty is not enough
+              errors = t('descriptions.ownershipNotEnoughForReverse');
+              errors = errors.replace('[[BASE]]', '"' + ownersTo?.[0]?.base_prod_code + '"');
+              errors = errors.replace('[[SUPPLIER]]', '"' + ownersTo?.[0]?.supp_cmpy + '"');
+            }
+          }
+        }
+      }
+    }
+
+    return errors;
+  };
+
   const onApprove = async () => {
     const values = await form.validateFields();
 
     const owners = await getOwnership(values.base_prod_code, values.supp_cmpy);
     const owners2 = await getOwnership(values.base_prod_code, values.supp_cmpy_to);
 
+    const errors = checkOwnership(
+      owners,
+      owners2,
+      values?.reason,
+      'APPROVE',
+      values?.qty,
+      values?.supp_cmpy,
+      values?.base_prod_code,
+      values?.supp_cmpy_to,
+      values?.base_prod_code
+    );
+
     Modal.confirm({
-      title: t('prompts.approveOwnershipTransaction'),
+      title: errors?.length > 0 ? errors : t('prompts.approveOwnershipTransaction'),
       okText: t('operations.approve'),
       okType: 'primary',
       icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
+      okButtonProps: {
+        hidden: errors?.length > 0,
+      },
       onOk: async () => {
         if (!IS_CREATING) {
+          // set the time approved with server time
+          // const currTime = config?.serverTime;
+          const currTime = await getCurrentTime();
+          const serverCurrent = moment(currTime, SETTINGS.DATE_TIME_FORMAT);
+          values.trsa_time_approved = serverCurrent.format(SETTINGS.DATE_TIME_FORMAT);
+
           values.trsa_approved = true;
+          // need update the from/to ownership data to the latest
+          // "trsa_time": "na",
+          if (owners.length > 0) {
+            values.trsa_qty_owned = owners?.[0]?.ownship_qty;
+            values.trsa_density_owned = owners?.[0]?.ownship_density;
+          }
+          if (owners2.length > 0) {
+            values.trsa_qty_owned_to = owners2?.[0]?.ownship_qty;
+            values.trsa_density_owned_to = owners2?.[0]?.ownship_density;
+          }
           await updateOwnershipTransaction(values, 'APPROVE');
           const trsa_qty = values?.qty;
           if (owners.length > 0) {
@@ -434,15 +600,36 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
     const owners = await getOwnership(values.base_prod_code, values.supp_cmpy);
     const owners2 = await getOwnership(values.base_prod_code, values.supp_cmpy_to);
 
+    const errors = checkOwnership(
+      owners,
+      owners2,
+      values?.reason,
+      'REVERSE',
+      values?.qty,
+      values?.supp_cmpy,
+      values?.base_prod_code,
+      values?.supp_cmpy_to,
+      values?.base_prod_code
+    );
+
     Modal.confirm({
-      title: t('prompts.reverseOwnershipTransaction'),
+      title: errors?.length > 0 ? errors : t('prompts.reverseOwnershipTransaction'),
       okText: t('operations.reverse'),
       okType: 'primary',
       icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
+      okButtonProps: {
+        hidden: errors?.length > 0,
+      },
       onOk: async () => {
         if (!IS_CREATING) {
+          // set the time reversed with server time
+          // const currTime = config?.serverTime;
+          const currTime = await getCurrentTime();
+          const serverCurrent = moment(currTime, SETTINGS.DATE_TIME_FORMAT);
+          values.trsa_time_reversed = serverCurrent.format(SETTINGS.DATE_TIME_FORMAT);
+
           values.trsa_reversed = true;
           await updateOwnershipTransaction(values, 'REVERSE');
           const trsa_qty = values?.qty;
@@ -499,18 +686,52 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
   const onFinish = async () => {
     const values = await form.validateFields();
 
+    const owners = await getOwnership(values.base_prod_code, values.supp_cmpy);
+    const owners2 = await getOwnership(values.base_prod_code, values.supp_cmpy_to);
+
+    const errors = checkOwnership(
+      owners,
+      owners2,
+      values?.reason,
+      IS_CREATING ? 'CREATE' : 'UPDATE',
+      values?.qty,
+      values?.supp_cmpy,
+      values?.base_prod_code,
+      values?.supp_cmpy_to,
+      values?.base_prod_code
+    );
+
     if (IS_CREATING) {
       values.ownship_trsa_no = -888888;
+    } else {
+      if (owners.length > 0) {
+        values.trsa_qty_owned = owners?.[0]?.ownship_qty;
+        values.trsa_density_owned = owners?.[0]?.ownship_density;
+      }
+      if (owners2.length > 0) {
+        values.trsa_qty_owned_to = owners2?.[0]?.ownship_qty;
+        values.trsa_density_owned_to = owners2?.[0]?.ownship_density;
+      }
     }
 
     Modal.confirm({
-      title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
+      title: errors?.length > 0 ? errors : IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
       okType: 'primary',
       icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
+      okButtonProps: {
+        hidden: errors?.length > 0,
+      },
       onOk: async () => {
+        if (!IS_CREATING) {
+          // set the time updated with server time
+          // const currTime = config?.serverTime;
+          const currTime = await getCurrentTime();
+          const serverCurrent = moment(currTime, SETTINGS.DATE_TIME_FORMAT);
+          values.trsa_time_updated = serverCurrent.format(SETTINGS.DATE_TIME_FORMAT);
+        }
         await api
           .post(IS_CREATING ? BASE_OWNER_TRANSACTIONS.CREATE : BASE_OWNER_TRANSACTIONS.UPDATE, values)
           .then(() => {
@@ -869,7 +1090,7 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
                       dropdownMatchSelectWidth={false}
                       showSearch
                       defaultValue={2}
-                      disabled={false}
+                      disabled={selected?.trsa_approved}
                       // onChange={handleChange}
                       optionFilterProp="children"
                       placeholder={t('placeholder.selectOwnershipTransReason')}
@@ -900,6 +1121,7 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
                   >
                     <Select
                       dropdownMatchSelectWidth={false}
+                      disabled={selected?.trsa_approved}
                       allowClear
                       style={{ width: '100%' }}
                       defaultValue={base}
@@ -939,7 +1161,7 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
                   >
                     <Input
                       type="number"
-                      // disabled={!IS_CREATING}
+                      disabled={selected?.trsa_approved}
                       style={{ width: '100%' }}
                       min={0}
                       max={999999999}
@@ -963,6 +1185,7 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
                         >
                           <Select
                             dropdownMatchSelectWidth={false}
+                            disabled={selected?.trsa_approved}
                             allowClear
                             style={{ width: '100%' }}
                             defaultValue={supplier}
@@ -1060,6 +1283,7 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
                         >
                           <Select
                             dropdownMatchSelectWidth={false}
+                            disabled={selected?.trsa_approved}
                             allowClear
                             style={{ width: '100%' }}
                             // defaultValue={supplier}
@@ -1165,7 +1389,7 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
                   >
                     <Input
                       type="number"
-                      // disabled={!IS_CREATING}
+                      disabled={selected?.trsa_approved}
                       style={{ width: '100%' }}
                       min={-999999999}
                       max={999999999}
@@ -1207,7 +1431,7 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
               <Row gutter={[8, 1]}>
                 <Col span={18}>
                   <Form.Item name="trsa_comments" label={t('fields.baseOwnerTransComments')}>
-                    <Input.TextArea disabled={false}></Input.TextArea>
+                    <Input.TextArea disabled={selected?.trsa_approved}></Input.TextArea>
                   </Form.Item>
                 </Col>
                 <Col span={6}>
