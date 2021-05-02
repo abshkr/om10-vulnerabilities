@@ -3288,7 +3288,17 @@
       "SUPP_CMPY": "Supplier Code",
       "QTY": "Quantity",
       "REASON": "Reason",
-      "TRSA_TIME": "Transaction Time"
+      "TRSA_TIME": "Transaction Time",
+      "TRSA_DENSITY": "Density",
+      "TRSA_UNIT": "Unit",
+      "TRSA_QTY_OWNED": "From Ownership Qty",
+      "TRSA_DENSITY_OWNED": "From Ownership Density",
+      "SUPP_CMPY_TO": "To Supplier",
+      "TRSA_QTY_OWNED_TO": "To Ownership Qty",
+      "TRSA_DENSITY_OWNED_TO": "To Ownership Density",
+      "TRSA_COMMENTS": "Comments",
+      "TRSA_APPROVED": "Approved Flag",
+      "TRSA_REVERSED": "Reversed Flag"
     },
     "PRODUCTS": {
       "PROD_CODE": "Prod Code",
@@ -8196,7 +8206,17 @@
       "SUPP_CMPY": "所有权交易供应商",
       "QTY": "所有权交易油品数量",
       "REASON": "所有权交易原因",
-      "TRSA_TIME": "所有权交易时间"
+      "TRSA_TIME": "所有权交易时间",
+      "TRSA_DENSITY": "所有权交易油品密度",
+      "TRSA_UNIT": "所有权交易油品计量单位",
+      "TRSA_QTY_OWNED": "源所有权油品数量",
+      "TRSA_DENSITY_OWNED": "源所有权油品密度",
+      "SUPP_CMPY_TO": "所有权交易目标供应商",
+      "TRSA_QTY_OWNED_TO": "目标所有权油品数量",
+      "TRSA_DENSITY_OWNED_TO": "目标所有权油品密度",
+      "TRSA_COMMENTS": "备注",
+      "TRSA_APPROVED": "所有权交易批准标记",
+      "TRSA_REVERSED": "所有权交易逆转标记"
     },
     "PRODUCTS": {
       "PROD_CODE": "油品代码",

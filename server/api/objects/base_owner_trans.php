@@ -32,6 +32,8 @@ class BaseOwnerTrans extends CommonClass
 
     //All the fields that should be treated as BOOLEAN in JSON
     public $BOOLEAN_FIELDS = array(
+        "TRSA_APPROVED" => 1,
+        "TRSA_REVERSED" => 1,
     );
     
 
@@ -138,6 +140,9 @@ class BaseOwnerTrans extends CommonClass
                 , (NVL(tra.TRSA_QTY_OWNED_TO,0) + NVL(tra.QTY,0))  as TRSA_QTY_AFTER_TO
                 , tra.TRSA_DENSITY as TRSA_DENSITY_AFTER
                 , tra.TRSA_DENSITY as TRSA_DENSITY_AFTER_TO
+                , TRSA_COMMENTS
+                , TRSA_APPROVED
+                , TRSA_REVERSED
             from 
                 PRODOWNSHIP_TRANSACT        tra
                 , MOVITEM_TYPES             typ
