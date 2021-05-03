@@ -862,6 +862,7 @@
     "equipmentName": "Equipment Name",
     "equipmentType": "Equipment Type",
     "equipmentTypeCode": "Equipment Type Code",
+    "equipmentTypeId": "Eqpt Type ID",
     "errorCount": "Error Count",
     "event": "Event",
     "exception": "Exception",

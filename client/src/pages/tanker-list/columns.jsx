@@ -106,19 +106,19 @@ const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit, carrcod
     },
 
     {
-      headerName: t('fields.equipmentId'),
+      headerName: t('fields.equipmentTypeId'),
       field: 'tnkr_etp',
       sortable: true,
       resizable: true,
       filter: 'MultiFilter',
       suppressSizeToFit: true,
-      width: 160,
-      cellRenderer: 'LinkRenderer',
+      width: 120,
+      /* cellRenderer: 'LinkRenderer',
       cellRendererParams: {
-        endpoint: EQUIPMENT_LIST,
+        endpoint: EQUIPMENT_TYPES,
         field: 'equipment',
         index: 'tnkr_etp',
-      },
+      }, */
     },
 
     {

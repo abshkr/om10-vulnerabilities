@@ -862,6 +862,7 @@
     "equipmentName": "运输设备名称",
     "equipmentType": "运输设备类型",
     "equipmentTypeCode": "运输设备类型代码",
+    "equipmentTypeId": "运输设备类型ID",
     "errorCount": "错误次数",
     "event": "事件",
     "exception": "盘点例外规则定义",
