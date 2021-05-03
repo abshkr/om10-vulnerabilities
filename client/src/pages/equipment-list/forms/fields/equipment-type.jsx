@@ -50,7 +50,7 @@ const EquipmentType = ({ form, value, onChange }) => {
         }
       >
         {options?.records.map((item, index) => (
-          <Select.Option key={index} value={item.etyp_id}>
+          <Select.Option key={index} value={_.toNumber(item.etyp_id)}>
             {`${item.etyp_id}[${item.etyp_title}]: [${t('fields.compartments')}:${
               item?.compartments?.length
             }]${
