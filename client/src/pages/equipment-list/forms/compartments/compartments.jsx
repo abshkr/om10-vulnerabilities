@@ -86,7 +86,9 @@ const Compartments = ({ form, value, equipment, onChange, config }) => {
     // so etp will be a String in EDIT mode, a Number in CREATE mode.
     // But etyp_id in eqpt types is a Number, so we must force etp to Number.
     const etp = value?.eqpt_etp || equipment;
-    const type = _.find(types?.records, ['etyp_id', _.toNumber(etp)]);
+    // change the filter condition to make both sides number
+    // const type = _.find(types?.records, ['etyp_id', _.toNumber(etp)]);
+    const type = _.find(types?.records, (item) => _.toNumber(item?.etyp_id) === _.toNumber(etp));
     const image = type?.image?.toLowerCase() || null;
     console.log('compartments - image', equipment, value?.eqpt_etp, etp, type, type?.image, image);
 
