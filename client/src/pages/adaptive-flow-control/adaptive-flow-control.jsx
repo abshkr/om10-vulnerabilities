@@ -59,12 +59,37 @@ const AdaptiveFlowControl = () => {
     }
   }, [isLoading, flow, current, products]);
 
-  if (config?.siteUseAFC) {
+  useEffect(() => {
+    console.log('...........', comms);
+    if (!comms) {
+      setConnected(false);
+    } else {
+      // setConnected(comms?.records?.[0]?.is_afc_running);
+      setConnected(comms?.is_afc_running);
+      // setConnected(true);
+    }
+  }, [comms]);
+
+  // NOTE: it should be !config?.siteUseAFC
+  if (!config?.siteUseAFC) {
     return <CannotAccess target={t('pageNames.adaptiveFlowControl')} />;
   } else {
     return (
       <Page page={t('pageMenu.modules')} name={t('pageNames.adaptiveFlow')} access={access}>
         <AdaptiveFlowContainer>
+          {!connected && (
+            <div
+              style={{
+                backgroundColor: 'orange',
+                textAlign: 'center',
+                padding: '10px',
+                fontWeight: 'bold',
+                fontSize: '16px',
+              }}
+            >
+              {t('descriptions.afcProcNotConnected')}
+            </div>
+          )}
           <Table
             dataSource={data}
             rowKey="baseCode"
