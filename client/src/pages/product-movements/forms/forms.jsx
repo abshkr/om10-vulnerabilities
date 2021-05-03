@@ -353,6 +353,18 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
 
           {!IS_CREATING && value.pmv_status === '0' /* New */ && (
             <Button
+              type="danger"
+              icon={<DeleteOutlined />}
+              onClick={onDelete}
+              style={{ float: 'right', marginRight: 5 }}
+              disabled={!access?.canDelete}
+            >
+              {t('operations.delete')}
+            </Button>
+          )}
+
+          {!IS_CREATING && value.pmv_status === '0' /* New */ && (
+            <Button
               type="primary"
               icon={<RedoOutlined />}
               onClick={onStart}
