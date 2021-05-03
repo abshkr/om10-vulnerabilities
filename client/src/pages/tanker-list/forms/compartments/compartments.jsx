@@ -22,7 +22,7 @@ const Compartments = ({ form, value, equipment }) => {
     setIsLoading(true);
     const value = {
       tnkr_code: id,
-    }
+    };
     api.post(TANKER_LIST.COMPOSITION, value).then((response) => {
       setdata(response.data.records);
       setIsLoading(false);
@@ -190,12 +190,11 @@ const Compartments = ({ form, value, equipment }) => {
                 {!isLoading &&
                   item.eqpt_list.map((item, index) => (
                     <Select.Option key={index} value={item.eqpt_id}>
-                      {`${item.eqpt_name}: [Compartments:${
-                        item.compartments.length
-                      }]${item?.compartments?.map(
-                        (item2, index) =>
-                          `[${item2.cmpt_units}:(${item2.cmpt_no})${item2.safefill},${item2.sfl}]`
-                      )}`}
+                      {`${item.eqpt_name}: [${t('fields.compartments')}:${item?.compartments?.length}]${
+                        item?.compartments?.length === 0
+                          ? ''
+                          : '[' + item?.compartments?.[0]?.cmpt_units + ']'
+                      }${item?.compartments?.map((item2, index) => `[${item2.safefill}]`)}`}
                     </Select.Option>
                   ))}
               </Select>

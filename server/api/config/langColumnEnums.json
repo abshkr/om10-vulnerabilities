@@ -3311,7 +3311,20 @@
     "SUPP_CMPY": "NA",
     "QTY": "NA",
     "REASON": "NA",
-    "TRSA_TIME": "NA"
+    "TRSA_TIME": "NA",
+    "TRSA_DENSITY": "NA",
+    "TRSA_UNIT": "NA",
+    "TRSA_QTY_OWNED": "NA",
+    "TRSA_DENSITY_OWNED": "NA",
+    "SUPP_CMPY_TO": "NA",
+    "TRSA_QTY_OWNED_TO": "NA",
+    "TRSA_DENSITY_OWNED_TO": "NA",
+    "TRSA_COMMENTS": "NA",
+    "TRSA_APPROVED": "NA",
+    "TRSA_REVERSED": "NA",
+    "TRSA_TIME_UPDATED": "NA",
+    "TRSA_TIME_APPROVED": "NA",
+    "TRSA_TIME_REVERSED": "NA"
   },
   "PRODUCTS": {
     "PROD_CODE": "NA",

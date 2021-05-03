@@ -147,6 +147,7 @@ class EquipmentType extends CommonClass
             SELECT EQUIP_TYPES_VW.ETYP_ID,
                 EQUIP_TYPES_VW.ETYP_TITLE,
                 EQUIP_TYPES_VW.ETYP_ISRIGID,
+                EQUIP_TYPES_VW.ETYP_CLASS,
                 EQUIP_TYPES_VW.CMPTNU
             FROM EQUIP_TYPES_VW
 	    ORDER BY EQUIP_TYPES_VW.ETYP_TITLE";

@@ -92,17 +92,19 @@ const TankerList = () => {
         autoColWidth
         filterValue={filterValue}
       />
-      <Forms
-        value={selected}
-        visible={visible}
-        handleFormState={handleFormState}
-        access={access}
-        setFilterValue={setFilterValue}
-        expiryDateMode={expiryDateMode}
-        expiryTypes={expiryTypes}
-        config={config}
-        tankers={data}
-      />
+      {visible && (
+        <Forms
+          value={selected}
+          visible={visible}
+          handleFormState={handleFormState}
+          access={access}
+          setFilterValue={setFilterValue}
+          expiryDateMode={expiryDateMode}
+          expiryTypes={expiryTypes}
+          config={config}
+          tankers={data}
+        />
+      )}
     </Page>
   );
 };
