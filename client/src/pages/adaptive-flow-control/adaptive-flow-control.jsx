@@ -28,9 +28,11 @@ const AdaptiveFlowControl = () => {
   const { data: products } = useSWR(BASE_PRODUCTS.READ, { refreshInterval: 1000 });
   const { data: flow } = useSWR(ADAPTIVE_FLOW_CONTROL.READ, { refreshInterval: 1000 });
   const { data: current } = useSWR(ADAPTIVE_FLOW_CONTROL.CURRENT_FLOW, { refreshInterval: 1000 });
+  const { data: comms } = useSWR(ADAPTIVE_FLOW_CONTROL.COMMS, { refreshInterval: 1000 });
 
   const [data, setData] = useState([]);
   const [total, setTotal] = useState(0);
+  const [connected, setConnected] = useState(false);
 
   const isLoading = !products || !flow || !current;
 
