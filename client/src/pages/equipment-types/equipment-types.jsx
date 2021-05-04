@@ -19,18 +19,23 @@ const EquipmentTypes = () => {
 
   const config = useConfig();
 
-  const equipment = query.get('equipment') || '';
+  let equipment = query.get('equipment') || '';
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [isCombination, setCombination] = useState(false);
   const [filterValue, setFilterValue] = useState(equipment);
+  const [parentEqpt, setParentEqpt] = useState(equipment);
 
   const { t } = useTranslation();
 
   const access = useAuth('M_EQUIPMENT');
 
-  const { data: payload, isValidating, revalidate } = useSWR(EQUIPMENT_TYPES.READ);
+  const url =
+    parentEqpt && parentEqpt?.length > 0
+      ? `${EQUIPMENT_TYPES.READ}?etyp_id=${parentEqpt}`
+      : `${EQUIPMENT_TYPES.READ}`;
+  const { data: payload, isValidating, revalidate } = useSWR(url);
 
   const handleFormState = (visibility, value) => {
     if (visibility && !value) {
@@ -68,9 +73,14 @@ const EquipmentTypes = () => {
   const page = t('pageMenu.operations');
   const name = t('pageNames.equipmentTypes');
 
+  const onRefresh = () => {
+    setParentEqpt('');
+    revalidate();
+  };
+
   const modifiers = (
     <>
-      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
+      <Button icon={<SyncOutlined />} onClick={() => onRefresh()} loading={isLoading}>
         {t('operations.refresh')}
       </Button>
 

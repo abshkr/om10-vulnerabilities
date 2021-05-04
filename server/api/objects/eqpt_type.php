@@ -503,11 +503,18 @@ class EquipmentType extends CommonClass
             $query = $query . " AND CMPTNU = :cmptnu ";
         }
 
+        if (isset($this->etyp_id)) {
+            $query = $query . " AND EQUIP_TYPES_VW.ETYP_ID = :etyp_id ";
+        }
+
         $query = $query . " ORDER BY UPPER(ETYP_TITLE) ASC";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':etyp_title', $this->etyp_title);
         if (isset($this->cmptnu)) {
             oci_bind_by_name($stmt, ':cmptnu', $this->cmptnu);
+        }
+        if (isset($this->etyp_id)) {
+            oci_bind_by_name($stmt, ':etyp_id', $this->etyp_id);
         }
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
