@@ -8,7 +8,7 @@ const { Panel } = Collapse;
 
 const data = [
   {
-    title: `Release Notes (10.1.16-rc.7a) - 03/05/2021`,
+    title: `Release Notes (10.1.16-rc.7b) - 03/05/2021`,
     content: (
       <>
         <>
