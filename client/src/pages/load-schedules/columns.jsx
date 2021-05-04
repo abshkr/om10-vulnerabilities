@@ -1,3 +1,5 @@
+import { TANKER_LIST } from 'constants/routes';
+
 const columns = (IS_NOMINATION, t, config) => [
   {
     headerName: t('fields.terminal'),
@@ -97,6 +99,12 @@ const columns = (IS_NOMINATION, t, config) => [
     hide: IS_NOMINATION,
     width: 130,
     suppressSizeToFit: true,
+    cellRenderer: 'LinkRenderer',
+    cellRendererParams: {
+      endpoint: TANKER_LIST,
+      field: 'tanker',
+      index: 'tnkr_code',
+    },
   },
   {
     headerName: t('fields.tankerName'),
