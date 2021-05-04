@@ -48,6 +48,8 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
   const [ownershipChanged, setOwnershipChanged] = useState(0);
   const [ownership2Changed, setOwnership2Changed] = useState(0);
 
+  const ownershipDensityVisible = false;
+
   const url = `${BASE_OWNER_TRANSACTIONS.READ}?base_code=${base || '-1'}&cmpy_code=${supplier || '-1'}`;
 
   const { data, isValidating } = useSWR(url);
@@ -81,7 +83,7 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
     },
   ];
 
-  const fields = columns(t, reasons);
+  const fields = columns(t, reasons, ownershipDensityVisible);
 
   const getBaseSummary = async (prod) => {
     const results = await api.get(`${BASE_OWNER_TRANSACTIONS.BASE_SUMMARY}?base_code=${prod}`);
@@ -620,7 +622,7 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
       cancelText: t('operations.no'),
       centered: true,
       okButtonProps: {
-        hidden: errors?.length > 0,
+        hidden: false, //errors?.length > 0,
       },
       onOk: async () => {
         if (!IS_CREATING) {
@@ -1240,35 +1242,37 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
                       </Col>
                     </Row>
 
-                    <Row gutter={[8, 1]}>
-                      <Col span={24}>
-                        <Form.Item
-                          name="trsa_density_owned"
-                          label={t('fields.baseOwnerDensity')}
-                          rules={[
-                            {
-                              required: true,
-                              validator: validateInput,
-                              label: t('fields.baseOwnerDensity'),
-                              minValue: 0,
-                              maxValue: 999999999,
-                              maxLen: 20,
-                            },
-                          ]}
-                        >
-                          <Input
-                            type="number"
-                            disabled={true}
-                            style={{ width: '100%' }}
-                            min={0}
-                            max={999999999}
-                            precision={config?.precisionDensity}
-                            addonAfter={t('units.kg/m3')}
-                            // onChange={handleQtyProportionFieldChange}
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
+                    {ownershipDensityVisible && (
+                      <Row gutter={[8, 1]}>
+                        <Col span={24}>
+                          <Form.Item
+                            name="trsa_density_owned"
+                            label={t('fields.baseOwnerDensity')}
+                            rules={[
+                              {
+                                required: false,
+                                validator: validateInput,
+                                label: t('fields.baseOwnerDensity'),
+                                minValue: 0,
+                                maxValue: 999999999,
+                                maxLen: 20,
+                              },
+                            ]}
+                          >
+                            <Input
+                              type="number"
+                              disabled={true}
+                              style={{ width: '100%' }}
+                              min={0}
+                              max={999999999}
+                              precision={config?.precisionDensity}
+                              addonAfter={t('units.kg/m3')}
+                              // onChange={handleQtyProportionFieldChange}
+                            />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    )}
                   </Card>
                 </Col>
 
@@ -1338,35 +1342,37 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
                       </Col>
                     </Row>
 
-                    <Row gutter={[8, 1]}>
-                      <Col span={24}>
-                        <Form.Item
-                          name="trsa_density_owned_to"
-                          label={t('fields.baseOwnerDensity')}
-                          rules={[
-                            {
-                              required: true,
-                              validator: validateInput,
-                              label: t('fields.baseOwnerDensity'),
-                              minValue: 0,
-                              maxValue: 999999999,
-                              maxLen: 20,
-                            },
-                          ]}
-                        >
-                          <Input
-                            type="number"
-                            disabled={true}
-                            style={{ width: '100%' }}
-                            min={0}
-                            max={999999999}
-                            precision={config?.precisionDensity}
-                            addonAfter={t('units.kg/m3')}
-                            // onChange={handleQtyProportionFieldChange}
-                          />
-                        </Form.Item>
-                      </Col>
-                    </Row>
+                    {ownershipDensityVisible && (
+                      <Row gutter={[8, 1]}>
+                        <Col span={24}>
+                          <Form.Item
+                            name="trsa_density_owned_to"
+                            label={t('fields.baseOwnerDensity')}
+                            rules={[
+                              {
+                                required: false,
+                                validator: validateInput,
+                                label: t('fields.baseOwnerDensity'),
+                                minValue: 0,
+                                maxValue: 999999999,
+                                maxLen: 20,
+                              },
+                            ]}
+                          >
+                            <Input
+                              type="number"
+                              disabled={true}
+                              style={{ width: '100%' }}
+                              min={0}
+                              max={999999999}
+                              precision={config?.precisionDensity}
+                              addonAfter={t('units.kg/m3')}
+                              // onChange={handleQtyProportionFieldChange}
+                            />
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                    )}
                   </Card>
                 </Col>
               </Row>

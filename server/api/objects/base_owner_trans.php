@@ -133,7 +133,7 @@ class BaseOwnerTrans extends CommonClass
                 , tra.TRSA_QTY_OWNED
                 , tra.TRSA_DENSITY_OWNED
                 , tra.SUPP_CMPY_TO
-                , cmp2.CMPY_NAME            CMPY_NAME_2
+                , cmp2.CMPY_NAME            CMPY_NAME_TO
                 , tra.TRSA_QTY_OWNED_TO
                 , tra.TRSA_DENSITY_OWNED_TO
                 , (NVL(tra.TRSA_QTY_OWNED,0) - NVL(tra.QTY,0))  as TRSA_QTY_AFTER

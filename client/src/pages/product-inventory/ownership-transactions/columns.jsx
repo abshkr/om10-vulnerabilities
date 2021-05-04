@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-const columns = (t, reasons) => [
+const columns = (t, reasons, ownershipDensityVisible) => [
   {
     headerName: t('fields.baseOwnerTransNo'),
     field: 'ownship_trsa_no',
@@ -221,6 +221,7 @@ const columns = (t, reasons) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    hide: !ownershipDensityVisible,
     width: 340,
     suppressSizeToFit: true,
     cellRenderer: 'DensityRenderer',
@@ -313,6 +314,7 @@ const columns = (t, reasons) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
+    hide: !ownershipDensityVisible,
     width: 320,
     suppressSizeToFit: true,
     cellRenderer: 'DensityRenderer',
