@@ -2404,6 +2404,8 @@
     "selectVehicle": "请选择车辆",
     "setComments": "请输入备注",
     "setDestinationUnit": "请选择目的单元",
+    "setNomIntoTransitGL": "请输入油品运输损耗",
+    "setNomQtyReceiptExpected": "请输入预计进油货量",
     "setPeriod": "请选择重置周期",
     "setSourceUnit": "请选择来源单元",
     "setTPPCode": "请输入TPP编码",

@@ -2404,6 +2404,8 @@
     "selectVehicle": "Select Vehicle",
     "setComments": "Set Comments",
     "setDestinationUnit": "Select Destination Unit",
+    "setNomIntoTransitGL": "Set Into Transit Gain/Loss",
+    "setNomQtyReceiptExpected": "Set Quantity Expected To Receive",
     "setPeriod": "Set Period",
     "setSourceUnit": "Select Source Unit",
     "setTPPCode": "Set TPP Code",

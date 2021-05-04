@@ -9,6 +9,7 @@ import Supplier from './supplier';
 import Carrier from './carrier';
 import Vehicle from './vehicle';
 import TPP from './tpp';
+import IntoTransitFields from './into-transit';
 import Comments from './comments';
 import EffectiveFrom from './effective-from';
 import ExpiredAfter from './expired-after';
@@ -23,9 +24,10 @@ export {
   Carrier,
   Vehicle,
   TPP,
+  IntoTransitFields,
   TransportMode,
   TransportSystem,
   Comments,
   EffectiveFrom,
-  ExpiredAfter
+  ExpiredAfter,
 };

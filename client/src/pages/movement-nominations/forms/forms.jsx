@@ -22,6 +22,7 @@ import {
   Carrier,
   Vehicle,
   TPP,
+  IntoTransitFields,
   TransportMode,
   TransportSystem,
   Comments,
@@ -382,6 +383,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
             </Row>
 
             {config?.siteUseNomTpp && <TPP form={form} value={value} />}
+
+            {config?.siteUseIntoTransitGainLoss && <IntoTransitFields form={form} value={value} />}
 
             <TransportMode form={form} value={value} />
 

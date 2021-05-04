@@ -1387,7 +1387,7 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
                         required: true,
                         validator: validateInput,
                         label: t('fields.baseOwnerTransQuantity'),
-                        minValue: -999999999,
+                        minValue: 0,
                         maxValue: 999999999,
                         maxLen: 20,
                       },
@@ -1397,7 +1397,7 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
                       type="number"
                       disabled={selected?.trsa_approved}
                       style={{ width: '100%' }}
-                      min={-999999999}
+                      min={0}
                       max={999999999}
                       precision={config?.precisionVolume}
                       // addonAfter={!value ? t('units.lcor') : value?.description}

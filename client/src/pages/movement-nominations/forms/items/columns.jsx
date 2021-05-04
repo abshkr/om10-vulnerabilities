@@ -768,7 +768,7 @@ const useColumns = (value, selected, config) => {
       resizable: true,
       width: 240,
       suppressSizeToFit: true,
-      hide: !config?.siteUseIntoTransitGainLoss,
+      hide: true, // !config?.siteUseIntoTransitGainLoss,
       cellRenderer: 'QuantityRenderer',
       cellRendererParams: {
         digits: '0',
@@ -791,7 +791,7 @@ const useColumns = (value, selected, config) => {
       sortable: true,
       resizable: true,
       width: 180,
-      hide: !config?.siteUseIntoTransitGainLoss,
+      hide: true, // !config?.siteUseIntoTransitGainLoss,
       suppressSizeToFit: true,
       // cellRenderer: 'QuantityRenderer',
       // cellRendererParams: {
