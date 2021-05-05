@@ -96,7 +96,8 @@ const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit) => {
       cellRendererParams: {
         endpoint: EQUIPMENT_TYPES,
         field: 'equipment',
-        index: 'eqpt_etp_title',
+        // index: 'eqpt_etp_title',
+        index: 'eqpt_etp',
       },
     },
     ...expiryColumns,
