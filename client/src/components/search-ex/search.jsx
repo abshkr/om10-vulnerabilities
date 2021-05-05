@@ -56,13 +56,16 @@ const SearchForm = ({ onSearch, fields, modal }) => {
     }
     if (!searchable) {
       notification.error({
-        // message: t('messages.validationFailed'),
         description: t('descriptions.searchRequired'),
       });
       return;
     }
+
+    const converted = { ... values};
+    converted.start_date = values.start_date.substr(0, 10) + " 00:00:00";
+    converted.end_date = values.end_date.substr(0, 10) + " 23:59:59";
     modal.destroy();
-    onSearch(values);
+    onSearch(converted);
   };
 
   return (
