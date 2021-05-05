@@ -347,7 +347,7 @@ class Schedule extends CommonClass
         }
 
         if (isset($this->start_date) && isset($this->end_date)) {
-            $query = $query . " AND SHLS_CALDATE > :start_date AND SHLS_CALDATE < :end_date";
+            $query = $query . " AND SHLS_CALDATE >= :start_date AND SHLS_CALDATE <= :end_date";
         }
 
         $query = $query . " ORDER BY SHLS_TRIP_NO";
@@ -985,12 +985,12 @@ class Schedule extends CommonClass
         ";
         if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1') {
             $query .= "
-                AND SHLS_CALDATE > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')
+                AND SHLS_CALDATE >= TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')
             ";
         }
         if (isset($this->end_date) && $this->end_date != -1 && $this->end_date != '-1') {
             $query .= "
-                AND SHLS_CALDATE < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS')
+                AND SHLS_CALDATE <= TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS')
             ";
         };
         
@@ -1042,12 +1042,12 @@ class Schedule extends CommonClass
         ";
         if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1') {
             $query .= "
-                AND SHLS_CALDATE > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')
+                AND SHLS_CALDATE >= TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')
             ";
         }
         if (isset($this->end_date) && $this->end_date != -1 && $this->end_date != '-1') {
             $query .= "
-                AND SHLS_CALDATE < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS')
+                AND SHLS_CALDATE <= TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS')
             ";
         }
         $query .= "
@@ -1099,7 +1099,7 @@ class Schedule extends CommonClass
                     'Unknown'
                 ) SHLS_SRCTYPE_DESC2 
             FROM " . $this->VIEW_NAME . ", SHL_SOURCE_TYPES
-            WHERE SHLS_CALDATE > TO_CHAR(SYSDATE - 7, 'YYYY-MM-DD HH24:MI:SS')
+            WHERE SHLS_CALDATE >= TO_CHAR(SYSDATE - 7, 'YYYY-MM-DD HH24:MI:SS')
                 AND SHLS_SRCTYPE = SHL_SOURCE_TYPES.SOURCE_TYPE_ID
             ORDER BY SHLS_CALDATE DESC";
             $stmt = oci_parse($this->conn, $query);
@@ -1129,7 +1129,7 @@ class Schedule extends CommonClass
                     'Unknown'
                 ) SHLS_SRCTYPE_DESC2 
                 FROM " . $this->VIEW_NAME . ", SHL_SOURCE_TYPES 
-                WHERE SHLS_CALDATE > :start_date AND SHLS_CALDATE < :end_date
+                WHERE SHLS_CALDATE >= :start_date AND SHLS_CALDATE <= :end_date
                     AND SHLS_SRCTYPE = SHL_SOURCE_TYPES.SOURCE_TYPE_ID
                 ORDER BY SHLS_CALDATE DESC";
             $stmt = oci_parse($this->conn, $query);
