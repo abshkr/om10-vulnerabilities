@@ -23,7 +23,7 @@ const Journal = () => {
 
   const access = useAuth('M_JOURNALREPORT');
 
-  const [selected, setSelected] = useState('0');
+  const [selected, setSelected] = useState('1');
   const [fields, setFields] = useState([]);
   const [data, setData] = useState([]);
   const [search, setSearch] = useState(null);
