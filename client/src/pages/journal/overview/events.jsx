@@ -14,6 +14,7 @@ const Events = ({ data }) => {
         show: false,
       },
     },
+    colors: ['#d9d9d9', '#52c41a', '#ff4d4f', '#fdae61', '#a50026', '#2db7f5', '#E91E63', '#722ed1'],
     plotOptions: {
       bar: {
         horizontal: true,
@@ -29,16 +30,7 @@ const Events = ({ data }) => {
       const payload = [];
 
       const grouped = groupBy(data, 'category');
-      const types = [
-        'DEBUG',
-        'EVENT',
-        'ERROR',
-        'CRITICAL',
-        'MAJOR',
-        'MINOR',
-        'WARNING',
-        'INCIDENT',
-      ];
+      const types = ['DEBUG', 'EVENT', 'ERROR', 'CRITICAL', 'MAJOR', 'MINOR', 'WARNING', 'INCIDENT'];
 
       for (let index = 0; index < types.length; index++) {
         const values = [];
