@@ -46,7 +46,7 @@ const Page = ({ name, page, children, modifiers, minimal, transparent, access, a
   const onCancel = async () => {
     setViewable(false);
     setAuthenticated(true);
-  }
+  };
 
   const onFinish = async () => {
     const values = await form.validateFields();
@@ -147,12 +147,18 @@ const Page = ({ name, page, children, modifiers, minimal, transparent, access, a
             <PageHeaderContainer>
               <PageHeader title={name || page} style={{ width: '30vw' }} breadcrumb={{ routes: filtered }} />
 
-              <PageHeaderExtras>{modifiers}</PageHeaderExtras>
+              <PageHeaderExtras style={{ width: '75vw' }}>
+                <div style={{ float: 'right' }}>{modifiers}</div>
+              </PageHeaderExtras>
             </PageHeaderContainer>
           )}
 
           <Helmet>
-            <title>{name ? `${name} ─ ${page} ─ ${t('descriptions.applicationName')}` : `${page} ─ ${t('descriptions.applicationName')}`}</title>
+            <title>
+              {name
+                ? `${name} ─ ${page} ─ ${t('descriptions.applicationName')}`
+                : `${page} ─ ${t('descriptions.applicationName')}`}
+            </title>
           </Helmet>
 
           <PageInjector minimal={minimal} transparent={transparent}>

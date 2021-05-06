@@ -157,6 +157,7 @@ const General = ({ form, value, config, densRange }) => {
             max={densRange?.max}
             style={{ width: '100%' }}
             precision={config.precisionDensity}
+            required={config?.siteMandatoryTankCalcFields}
           />
           {/* <Form.Item
             name="tank_density"

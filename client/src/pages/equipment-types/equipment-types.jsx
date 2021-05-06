@@ -4,6 +4,7 @@ import useSWR from 'swr';
 import { Button, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import _ from 'lodash';
 
 import { Page, DataTable, Download } from '../../components';
 import { EQUIPMENT_TYPES } from '../../api';
@@ -32,7 +33,7 @@ const EquipmentTypes = () => {
   const access = useAuth('M_EQUIPMENT');
 
   const url =
-    parentEqpt && parentEqpt?.length > 0
+    parentEqpt && parentEqpt?.length > 0 && !_.isNaN(_.toNumber(parentEqpt))
       ? `${EQUIPMENT_TYPES.READ}?etyp_id=${parentEqpt}`
       : `${EQUIPMENT_TYPES.READ}`;
   const { data: payload, isValidating, revalidate } = useSWR(url);
