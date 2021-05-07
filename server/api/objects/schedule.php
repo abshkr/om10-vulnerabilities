@@ -685,6 +685,14 @@ class Schedule extends CommonClass
 
         if (isset($this->compartments)) {
             foreach ($this->compartments as $compartment) {
+                if (!isset($compartment->order_cust_ordno)) {
+                    $compartment->order_cust_ordno = "";
+                }
+
+                if (!isset($compartment->qty_scheduled)) {
+                    $compartment->qty_scheduled = 0;
+                }
+
                 if ($cmd == "MOD") {
                     $query = "SELECT SCHD_COMP_ID, SCHDPROD_PRODCODE
                         FROM SPECDETS
@@ -889,7 +897,7 @@ class Schedule extends CommonClass
         if (!isset($this->shls_cust)) {
             return true;
         }
-        
+
         $query = "
             UPDATE SCHEDULE 
             SET SHLS_CUST = :shls_cust
