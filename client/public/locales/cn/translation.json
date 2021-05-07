@@ -152,6 +152,8 @@
     "onceOffDate": "一次性",
     "oneCompartmentRequired": "如果运输设备既非车头亦非平板，则至少需要配置一个油仓",
     "or": " 或 ",
+    "orderNotExist": "客户订单[[ORDER]]不存在。",
+    "orderProdNotExist": "客户订单[[ORDER]]中不存在油品[[PRODUCT]]。",
     "overrideRules": "盘点例外否决规则(决定何时例外无效，运行盘点):",
     "ownershipCannotBeZeroForTrans": "供应商[[SUPPLIER]]没有基础油品[[BASE]]的所有权，无法进行交易。",
     "ownershipCannotBeZeroForReverse": "供应商[[SUPPLIER]]没有基础油品[[BASE]]的所有权，无法逆转交易。",
