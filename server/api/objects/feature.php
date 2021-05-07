@@ -586,7 +586,7 @@ class Feature extends CommonClass
 			$this->updateSiteConfig( 'N', 'SITE_TANK_BATCH_STRICT_MODE' );
 			$this->updateSiteConfig( '', 'SITE_LABEL_USER' );
 			$this->updateSiteConfig( 'COR', 'SITE_STD_LITRE_UNIT' );
-			$this->updateSiteConfig( 'Y', 'SITE_USE_PROD_OWNERSHIP' );
+			$this->updateSiteConfig( 'N', 'SITE_USE_PROD_OWNERSHIP' );   // default should be off for non-oryx customers
 			$this->updateSiteConfig( 'TANK', 'SITE_PROD_OWNERSHIP_LEVEL' );
 			$this->updateSiteConfig( 'Y', 'SITE_USE_NOM_TPP' );
 			$this->updateSiteConfig( 'N', 'SITE_USE_INTO_TRANSIT_GL' );
