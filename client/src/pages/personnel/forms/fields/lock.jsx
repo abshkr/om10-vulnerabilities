@@ -14,13 +14,13 @@ const Lock = ({ form, value }) => {
   const { setFieldsValue } = form;
   const [lockout, setLockout] = useState(value?.per_lock);
 
-  const handleAreaConversion = useCallback(values => {
+  const handleAreaConversion = useCallback((values) => {
     const payload = [];
 
-    _.forEach(values, object => {
+    _.forEach(values, (object) => {
       payload.push({
         label: object.area_name,
-        value: object.area_k
+        value: object.area_k,
       });
     });
 
@@ -29,7 +29,7 @@ const Lock = ({ form, value }) => {
 
   const onChange = (e) => {
     setLockout(e.target.checked);
-  }
+  };
 
   useEffect(() => {
     if (value) {
@@ -40,7 +40,7 @@ const Lock = ({ form, value }) => {
       });
     } else {
       setFieldsValue({
-        per_lock: false
+        per_lock: false,
       });
     }
   }, [value, setFieldsValue]);
@@ -50,21 +50,21 @@ const Lock = ({ form, value }) => {
   return (
     <div className="personnel-lock">
       <Row gutter={[8, 2]}>
-        <Col span={4}>
-          <Form.Item 
-            name="per_lock" 
-            label={t("fields.areaAccessControl")} 
+        <Col span={6}>
+          <Form.Item
+            name="per_lock"
+            label={t('fields.areaAccessControl')}
             valuePropName="checked"
             onChange={onChange}
           >
             <Checkbox>{t('fields.lockOut')}</Checkbox>
           </Form.Item>
         </Col>
-        <Col span={20}>
-          <Form.Item name="area_accesses" label={t("fields.areaAccess")}>
-            <Checkbox.Group 
-              style={{ display: 'flex', flexDirection: 'row' }} 
-              options={options} 
+        <Col span={18}>
+          <Form.Item name="area_accesses" label={t('fields.areaAccess')}>
+            <Checkbox.Group
+              style={{ display: 'flex', flexDirection: 'row' }}
+              options={options}
               disabled={lockout}
             />
           </Form.Item>

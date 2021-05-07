@@ -303,7 +303,7 @@ const FormModal = ({
               width="36vw"
             >
               <Form layout="vertical">
-                <PasswordReset value={value} setHide={() => setPasswordResetVisible(false)}/>
+                <PasswordReset value={value} setHide={() => setPasswordResetVisible(false)} />
               </Form>
             </Drawer>
           )}
@@ -317,7 +317,7 @@ const FormModal = ({
               visible={areaVisible}
               width="36vw"
             >
-              <ChangeArea value={value} setHide={() => setAreaVisible(false)}/>
+              <ChangeArea value={value} setHide={() => setAreaVisible(false)} />
             </Drawer>
           )}
         </>
@@ -363,10 +363,10 @@ const FormModal = ({
             </Row>
 
             <Row gutter={[8, 2]}>
-              <Col span={4}>
+              <Col span={6}>
                 <Status form={form} value={value} />
               </Col>
-              <Col span={20}>
+              <Col span={18}>
                 <Comment form={form} value={value} />
               </Col>
             </Row>
