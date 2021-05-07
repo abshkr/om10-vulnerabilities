@@ -883,9 +883,13 @@ class Schedule extends CommonClass
 
     protected function set_cust()
     {
-        write_log(sprintf("%s::%s() START. cust:%s", __CLASS__, __FUNCTION__, $this->shls_cust),
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
+        if (!isset($this->shls_cust)) {
+            return true;
+        }
+        
         $query = "
             UPDATE SCHEDULE 
             SET SHLS_CUST = :shls_cust
@@ -919,7 +923,7 @@ class Schedule extends CommonClass
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
-        // if (isset($this->shls_spec_ins)) {
+        if (isset($this->shls_spec_ins)) {
             $items = explode("\n", $this->shls_spec_ins);  
             $lineno = 1;
             foreach ($items as $value) {
@@ -952,7 +956,7 @@ class Schedule extends CommonClass
 
                 $lineno += 1;
             }
-        // }
+        }
 
         return true;
     }
