@@ -38,7 +38,7 @@ const Personnel = () => {
     if (expiryTypes) {
       setFields(columns(expiryTypes?.records, t, expiryDateMode));
     }
-  }, [expiryTypes]);
+  }, [expiryTypes, expiryDateMode]);
 
   const modifiers = (
     <>
