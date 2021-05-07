@@ -985,11 +985,13 @@ class Utilities
             // write_log(json_encode($data), __FILE__, __LINE__);
             foreach ($data as $key => $value) {
                 // write_log(sprintf("%s => %s", $key, $value), __FILE__, __LINE__);
-                if (is_array($value)) {
+                if (is_array($value) || is_object($value)) {
                     foreach ($value as $sub_object) {
-                        foreach ($sub_object as $sub_key => $sub_value) {
-                            // write_log(sprintf("%s => %s", $sub_key, $sub_value), __FILE__, __LINE__);
-                            self::handleBoolean($object, $sub_object, $sub_key, $sub_value);
+                        if (is_array($sub_object) || is_object($sub_object)) {
+                            foreach ($sub_object as $sub_key => $sub_value) {
+                                // write_log(sprintf("%s => %s", $sub_key, $sub_value), __FILE__, __LINE__);
+                                self::handleBoolean($object, $sub_object, $sub_key, $sub_value);
+                            }
                         }
                     }
                 }

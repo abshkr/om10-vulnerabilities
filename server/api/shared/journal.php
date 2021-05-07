@@ -1074,7 +1074,7 @@ class Journal
         if (isset($this->tvmaps[$data[1]])) {
             $curr_table = $this->tvmaps[$data[1]];
         }
-        $curr_column = strtoupper($data[3]);
+        
         $msg_data = array();
         // $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
@@ -1123,6 +1123,7 @@ class Journal
                     }
 
                     if ($template == Lookup::RECORD_CHANGED) {
+                        $curr_column = strtoupper($data[3]);
                         // 0: user, 1: table/view, 2: record key, 3: column, 4: orig value, 5: new value
                         if ($hit === 3) {
                             if (isset($this->keys[$lang][$data[1]][$curr_column])) {
