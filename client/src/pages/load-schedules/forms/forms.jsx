@@ -16,6 +16,7 @@ import {
 import {
   Form,
   Button,
+  Card,
   Tabs,
   Modal,
   notification,
@@ -54,7 +55,7 @@ import {
 
 import { SelectInput, PartnershipManager } from '../../../components';
 import { SETTINGS } from '../../../constants';
-import { LOAD_SCHEDULES, SITE_CONFIGURATION, TANKER_LIST } from '../../../api';
+import { LOAD_SCHEDULES, SITE_CONFIGURATION, TANKER_LIST, ORDER_LISTINGS } from '../../../api';
 
 import { useConfig } from '../../../hooks';
 
@@ -229,6 +230,101 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     });
   };
 
+  const isOrderValid = async (order, supp) => {
+    const results = await api.get(`${ORDER_LISTINGS.VALIDATE_ORDER}?order_cust_no=${order}&supplier=${supp}`);
+    console.log('.....................isOrderValid', results);
+
+    const valid = _.toNumber(results?.data?.records?.[0]?.cnt) > 0;
+
+    return valid;
+  };
+
+  const isOrderProductValid = async (order, supp, prodCode, prodCmpy) => {
+    const results = await api.get(
+      `${ORDER_LISTINGS.VALIDATE_ORDER_PROD}?order_cust_no=${order}&supplier=${supp}&prod_code=${prodCode}&prod_cmpy=${prodCmpy}`
+    );
+
+    const valid = _.toNumber(results?.data?.records?.[0]?.cnt) > 0;
+
+    return valid;
+  };
+
+  const checkCompartmentOrders = async (compartments, supplier, drawer) => {
+    const errors = [];
+    let i = undefined;
+    for (i = 0; i < compartments?.length; i++) {
+      const cmpt = compartments[i];
+      if (
+        cmpt?.order_cust_ordno === undefined ||
+        cmpt?.order_cust_ordno === null ||
+        _.trim(cmpt?.order_cust_ordno) === ''
+      ) {
+        continue;
+      }
+      if (cmpt?.prod_code === undefined || cmpt?.prod_code === null || _.trim(cmpt?.prod_code) === '') {
+        continue;
+      }
+      const orderValid = await isOrderValid(cmpt?.order_cust_ordno, supplier);
+      if (orderValid) {
+        const orderProdValid = await isOrderProductValid(
+          cmpt?.order_cust_ordno,
+          supplier,
+          cmpt?.prod_code,
+          drawer
+        );
+        if (!orderProdValid) {
+          let title = t('descriptions.orderProdNotExist');
+          title = title.replace('[[ORDER]]', '"' + cmpt?.order_cust_ordno + '"');
+          title = title.replace('[[PRODUCT]]', '"' + cmpt?.prod_code + ' - ' + cmpt?.prod_name + '"');
+
+          errors.push({
+            field: `${t('fields.product')} (${t('fields.compartment')} ${cmpt?.compartment})`,
+            message: title,
+            key: `${'compartment'}${cmpt?.compartment}`,
+            line: cmpt?.compartment,
+          });
+        }
+      } else {
+        let title = t('descriptions.orderNotExist');
+        title = title.replace('[[ORDER]]', '"' + cmpt?.order_cust_ordno + '"');
+
+        errors.push({
+          field: `${t('fields.orderNo')} (${t('fields.compartment')} ${cmpt?.compartment})`,
+          message: title,
+          key: `${'compartment'}${cmpt?.compartment}`,
+          line: cmpt?.compartment,
+        });
+      }
+    }
+
+    if (errors.length > 0) {
+      const lines = (
+        <>
+          {errors?.map((error, index) => (
+            <Card size="small" title={error.field}>
+              {error.message}
+            </Card>
+          ))}
+        </>
+      );
+
+      notification.error({
+        // message: t('validate.lineItemValidation'),
+        message: t('messages.validationFailed'),
+        description: lines,
+        // duration: 0,
+        style: {
+          height: 'calc(100vh - 400px)',
+          overflowY: 'scroll',
+        },
+      });
+
+      return false;
+    } else {
+      return true;
+    }
+  };
+
   const onFinish = async () => {
     const record = await form.validateFields();
     if (record?.shls_ld_type === '3' /* Preorder*/) {
@@ -268,6 +364,14 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
         return;
       }
     } else if (record?.shls_ld_type === '2' /* PreSchedule*/) {
+      const orderFlag = await checkCompartmentOrders(
+        record?.compartments,
+        record?.supplier_code,
+        record?.drawer_code
+      );
+      if (!orderFlag) {
+        return orderFlag;
+      }
       let findResult = _.find(record.compartments, (item) => {
         return item.prod_code !== '';
       });

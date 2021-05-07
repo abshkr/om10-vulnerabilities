@@ -152,6 +152,8 @@
     "onceOffDate": "Once off Date",
     "oneCompartmentRequired": "At least one compartment required if the equipment is neither Prime Mover nor Flatbed",
     "or": " or ",
+    "orderNotExist": "The order [[ORDER]] does not exist.",
+    "orderProdNotExist": "The order [[ORDER]] does not have the product [[PRODUCT]].",
     "overrideRules": "Exception Override Rules (List of events whereby Closeout will run regardless of Exception)",
     "ownershipCannotBeZeroForTrans": "The supplier [[SUPPLIER]] does not have the ownership of [[BASE]] to make transaction.",
     "ownershipCannotBeZeroForReverse": "The supplier [[SUPPLIER]] does not have the ownership of [[BASE]] to reverse transaction.",

@@ -379,6 +379,59 @@ class OpenOrder extends CommonClass
             return null;
         }
     }
+    
+    public function is_order_valid()
+    {
+        $query = "
+            SELECT 
+                COUNT(*) as CNT 
+            FROM GUI_ORDERS
+            WHERE ORDER_STAT_ID NOT IN (2, 3, 5, 6)
+                AND ORDER_SUPP_CODE = :supplier
+                AND ORDER_CUST_NO = :order_cust_no
+        ";
+//                AND ORDER_APPROVED = 'Y'
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        oci_bind_by_name($stmt, ':order_cust_no', $this->order_cust_no);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function is_order_product_valid()
+    {
+        $query = "
+            SELECT 
+                count(*) AS CNT 
+            FROM 
+                GUI_ORDERS  ord, 
+                OPRODMTD    itm
+            WHERE ord.ORDER_STAT_ID NOT IN (2, 3, 5, 6)
+                AND ord.ORDER_SUPP_CODE = :supplier
+                AND ord.ORDER_CUST_NO = :order_cust_no
+                AND ord.ORDER_SYS_NO = itm.ORDER_PROD_KEY
+                AND itm.OSPROD_PRODCODE = :prod_code
+                AND itm.OSPROD_PRODCMPY = :prod_cmpy
+        ";
+//                AND ord.ORDER_APPROVED = 'Y'
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        oci_bind_by_name($stmt, ':order_cust_no', $this->order_cust_no);
+        oci_bind_by_name($stmt, ':prod_code', $this->prod_code);
+        oci_bind_by_name($stmt, ':prod_cmpy', $this->prod_cmpy);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
 
     public function check_cust_order()
     {
