@@ -121,33 +121,34 @@ const FormModal = ({
     });
 
     if (errors.length > 0) {
-      /* const lines = (
-        <Scrollbars
-          style={{
-            height: '300px',
-            width: '25vw',
-            marginTop: 15,
-            padding: 5,
-            marginBottom: 15,
-          }}
-        >
-          <>
-            {errors?.map((error, index) => (
-              <Card size="small" title={error.field}>
-                {error.message}
-              </Card>
-            ))}
-          </>
-        </Scrollbars>
+      const lines = (
+        <>
+          {errors?.map((error, index) => (
+            <Card size="small" title={error.message}>
+              {error.field}
+            </Card>
+          ))}
+        </>
       );
-      message.error(lines); */
-      _.forEach(errors, (item) => {
+
+      notification.error({
+        // message: t('validate.lineItemValidation'),
+        message: t('messages.validationFailed'),
+        description: lines,
+        // duration: 0,
+        style: {
+          width: '33vw',
+          height: 'calc(100vh - 400px)',
+          overflowY: 'scroll',
+        },
+      });
+      /* _.forEach(errors, (item) => {
         notification.error({
           message: item.message,
           description: item.field,
           width: '30vw',
         });
-      });
+      }); */
     }
 
     return errors;
