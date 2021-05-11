@@ -121,6 +121,11 @@ const columns = (t) => [
     resizable: true,
     width: 200,
     suppressSizeToFit: true,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: '0',
+      min: '0',
+    },
   },
 
   {
@@ -131,6 +136,11 @@ const columns = (t) => [
     resizable: true,
     width: 200,
     suppressSizeToFit: true,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: '0',
+      min: '0',
+    },
   },
   {
     headerName: t('fields.tkoAmbLtr') + ' (' + t('units.ltr') + ')',
@@ -141,6 +151,11 @@ const columns = (t) => [
     width: 200,
     suppressSizeToFit: true,
     hide: true,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: '0',
+      min: '0',
+    },
   },
   {
     headerName: t('fields.tkoKg') + ' (' + t('units.kg') + ')',
@@ -150,6 +165,11 @@ const columns = (t) => [
     resizable: true,
     width: 200,
     suppressSizeToFit: true,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: '0',
+      min: '0',
+    },
   },
 
   {

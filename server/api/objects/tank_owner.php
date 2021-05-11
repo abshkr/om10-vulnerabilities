@@ -190,25 +190,48 @@ class TankOwner extends CommonClass
         }
 
         $query = "
-            SELECT 
-                TANK_BASE
-                , TANK_BASE_NAME
-                , CMPY_CODE
-                , CMPY_NAME
-                , SUM(TKO_PERCENTAGE)  AS TKO_PERCENTAGE2
-                , DECODE(SUM(TKOWNER_QTY), 0, 100, TRUNC(SUM(TKOWNER_QTY)/SUM(TKOWNER_QTY/(TKO_PERCENTAGE/100.0))*100,4) )   AS TKO_PERCENTAGE
-                , SUM(TKOWNER_QTY/(TKO_PERCENTAGE/100.0))  AS TKOWNER_TOTAL
-                , SUM(TKOWNER_QTY)     AS TKOWNER_QTY
-                , SUM(TKO_STD_LTR)     AS TKO_STD_LTR
-                , SUM(TKO_AMB_LTR)     AS TKO_AMB_LTR
-                , SUM(TKO_KG)          AS TKO_KG
-            FROM " . $this->VIEW_NAME . "
-            WHERE 
-                1 = 1
-                AND ('-1' = :code OR TKCMPY_LINK LIKE '%'||:code||'%')
-                AND ('-1' = :base OR TANK_BASE = :base)
-            GROUP BY TANK_BASE, TANK_BASE_NAME, CMPY_CODE, CMPY_NAME
-            ORDER BY TANK_BASE, TANK_BASE_NAME, CMPY_CODE, CMPY_NAME
+			SELECT 
+                tov1.TANK_BASE
+                , tov1.TANK_BASE_NAME
+                , tov1.CMPY_CODE
+                , tov1.CMPY_NAME
+                , tov1.TKO_PERCENTAGE2
+                , DECODE(tov2.TKOWNER_TOTAL, 0, 100, TRUNC(tov1.TKOWNER_QTY/tov2.TKOWNER_TOTAL*100,4) )   AS TKO_PERCENTAGE
+                , tov2.TKOWNER_TOTAL
+                , tov1.TKOWNER_QTY
+                , tov1.TKO_STD_LTR
+                , tov1.TKO_AMB_LTR
+                , tov1.TKO_KG
+			FROM (
+                SELECT 
+                    TANK_BASE
+                    , TANK_BASE_NAME
+                    , CMPY_CODE
+                    , CMPY_NAME
+                    , SUM(TKO_PERCENTAGE)  AS TKO_PERCENTAGE2
+                    , SUM(TKOWNER_QTY)     AS TKOWNER_QTY
+                    , SUM(TKO_STD_LTR)     AS TKO_STD_LTR
+                    , SUM(TKO_AMB_LTR)     AS TKO_AMB_LTR
+                    , SUM(TKO_KG)          AS TKO_KG
+                FROM TANK_OWNERS_VW
+                WHERE 
+                    1 = 1
+                    AND ('-1' = :code OR TKCMPY_LINK LIKE '%'||:code||'%')
+                    AND ('-1' = :base OR TANK_BASE = :base)
+                GROUP BY TANK_BASE, TANK_BASE_NAME, CMPY_CODE, CMPY_NAME
+			) tov1, (
+                SELECT 
+                    TANK_BASE
+                    , SUM(TKOWNER_QTY)     AS TKOWNER_TOTAL
+                FROM TANK_OWNERS_VW
+                WHERE 
+                    1 = 1
+                    AND ('-1' = :code OR TKCMPY_LINK LIKE '%'||:code||'%')
+                    AND ('-1' = :base OR TANK_BASE = :base)
+                GROUP BY TANK_BASE
+			) tov2
+			WHERE tov1.TANK_BASE = tov2.TANK_BASE
+			ORDER BY TANK_BASE, TANK_BASE_NAME, CMPY_CODE, CMPY_NAME
         ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':code', $this->cmpy_code);

@@ -1,0 +1,113 @@
+
+The following new object is added in FeatureSettings.default to control functionality designed for Oryx sites
+  {
+    "feature_gui": "Y",
+    "feature_code": "ORYX_SITES",
+    "feature_flag": "N",
+    "feature_func": "ManageOryxSites",
+    "feature_name": "Features for Oryx Sites"
+  }
+
+It manages the following set settings in the table SITE_CONFIG:
+    SITE_USE_WATER_STRAPPING: Calculate water volume from level by strapping data, Y/N
+    SITE_STOCK_CALC_ENHANCED: Apply enhanced site stock calculation with more fields, Y/N
+    SITE_MASS_FIELD_MODE: The mode of mass fields - 1: Mass in Vacuum; 2: Mass in Air; 3: Both.
+    SITE_ULLAGE_AUTO_CALC: Calculate the ullage automatically by the safe working capacity and totoal volume, Y/N
+
+    SITE_USE_TANK_BATCH: Use the tank batch number in stock management and transactions, Y/N
+    SITE_TANK_BATCH_STRICT_MODE: Tank batch number is mandatory in transactions, Y/N
+
+    SITE_LABEL_USER: The user which requires special labels, oryx or blank or other customer name
+    SITE_STD_LITRE_UNIT: The sitewide unit of standard volume, STD/COR
+
+    SITE_USE_PROD_OWNERSHIP: Manage the product ownership in Omega system, Y/N
+    SITE_PROD_OWNERSHIP_LEVEL: The level of product ownership management, TANK/SITE
+
+    SITE_USE_NOM_TPP: Show TPP fields in Nomination screen, Y/N
+    SITE_USE_INTO_TRANSIT_GL: Manage the into-transit gain/loss in Nomination, Y/N
+
+
+The site settings are related to following screen functionality:
+    SITE_USE_WATER_STRAPPING:       Folio Summary => Tanks => column of Water Level and IFC
+                                    Tank Inventory => column of Water Level and IFC
+                                    Tank View => Form => field of Water Level, Water Volume and IFC
+                                    Tank Status => List tables => column of Water Level and IFC
+                                    Tank Status => AFC tab => field of Water Level and Base Class
+                                    Tank Status => Calculations tab => button "Calculate Quantity By Level" => 'Y': need calculate and substract water volume
+                                    Tank Status => Calculations tab => fields of Theoretical Density Mode, Water Level&volume, TOV, Roof Weight&IFC, VCF
+    SITE_STOCK_CALC_ENHANCED:       not uesd yet so no effects so far (may replace SITE_USE_WATER_STRAPPING in some screens in the future)
+    SITE_MASS_FIELD_MODE:           All the screens which have mass columns
+                                    All the forms which have mass fields (Calculations in Tank Status, Special Movements, Nomination Transactions, ...)
+                                  
+    SITE_ULLAGE_AUTO_CALC:          Tank Status => Calculations tab
+
+    SITE_USE_TANK_BATCH:            Tank Status => Tank Batch History tab
+                                    The Batch column in base product details in :
+                                        Transaction List
+                                        Load Schedule => Transactions tab
+                                        Movement Nominations => Schedules => Transactions
+                                        Movement Nominations => Items => Schedules => Transactions
+                                        Movement Nominations => Items => Transactions
+    SITE_TANK_BATCH_STRICT_MODE:    not used by front-end, can be used by back-end to reject loading if tank has no batch number
+
+    SITE_LABEL_USER:                Special labels on the following screens:
+                                        Manual Transactions (std volume unit in columns)
+                                        Product Movements (batch-related field/column)
+                                        Movement Nominations => Nomination Transactions (mass related field/column)
+                                        Special Movements (mass related field)
+                                        Tank Inventory (std volume unit in columns)
+                                        Tank Status (quantity related fields/columns, mainly in Calculations tab)
+    SITE_STD_LITRE_UNIT:            All the screens using the Units list will be affected: l (std) for Oryx, l (cor) for others
+                                    The value of Standard Volume in MSG_LOOKUP will be updated according to this setting
+                                        UPDATE MSG_LOOKUP 
+                                        SET MESSAGE = DECODE(
+                                            NVL((select NVL(config_value, 'COR') from site_config where config_key='SITE_STD_LITRE_UNIT'), 'COR'),
+                                            'COR', 'l (cor)', 'l (std)'
+                                        )
+                                        WHERE MSG_ID = 1793 and LANG_ID='ENG'
+
+    SITE_USE_PROD_OWNERSHIP:        Tank Status and Product Inventory, the type of ownership is decided by SITE_PROD_OWNERSHIP_LEVEL
+    SITE_PROD_OWNERSHIP_LEVEL:      TANK: Tank Status => Tank Product Ownership (tab), Product Inventory => Tank Product Ownership Summary (tab in form)
+                                    SITE: Product Inventory => Base Product Ownership (tab in form) => Base Product Ownership Transaction
+        
+    SITE_USE_NOM_TPP:               Movement Nominations => Form => two TPP-related fields 
+    SITE_USE_INTO_TRANSIT_GL:       Movement Nominations => Form => The fields: "Quantity Expected To Receive" and "Into Transit Gain/Loss"
+
+
+When "Features for Oryx Sites" is on, the values of the settings will be:
+    SITE_USE_WATER_STRAPPING:               Y
+    SITE_STOCK_CALC_ENHANCED:               Y
+    SITE_MASS_FIELD_MODE:                   3
+    SITE_ULLAGE_AUTO_CALC:                  Y
+
+    SITE_USE_TANK_BATCH:                    Y
+    SITE_TANK_BATCH_STRICT_MODE:            Y
+
+    SITE_LABEL_USER:                        oryx
+    SITE_STD_LITRE_UNIT:                    STD
+
+    SITE_USE_PROD_OWNERSHIP:                Y
+    SITE_PROD_OWNERSHIP_LEVEL:              SITE
+
+    SITE_USE_NOM_TPP:                       N
+    SITE_USE_INTO_TRANSIT_GL:               Y
+
+When "Features for Oryx Sites" is off, the values of the settings will be:
+    SITE_USE_WATER_STRAPPING:               N
+    SITE_STOCK_CALC_ENHANCED:               N
+    SITE_MASS_FIELD_MODE:                   1
+    SITE_ULLAGE_AUTO_CALC:                  N
+
+    SITE_USE_TANK_BATCH:                    N
+    SITE_TANK_BATCH_STRICT_MODE:            N
+
+    SITE_LABEL_USER:                        ''
+    SITE_STD_LITRE_UNIT:                    COR
+
+    SITE_USE_PROD_OWNERSHIP:                N
+    SITE_PROD_OWNERSHIP_LEVEL:              TANK
+
+    SITE_USE_NOM_TPP:                       Y
+    SITE_USE_INTO_TRANSIT_GL:               N
+
+

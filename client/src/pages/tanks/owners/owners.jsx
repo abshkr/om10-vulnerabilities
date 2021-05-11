@@ -303,9 +303,9 @@ const TankOwners = ({ terminal, code, value, access, tanks, config }) => {
         tklink_tankdepo: selected?.tklink_tankdepo,
         tkcmpy_link: selected?.tkcmpy_link,
         tko_percentage: selected?.tko_percentage,
-        tkowner_qty: selected?.tkowner_qty,
-        tko_std_ltr: selected?.tko_std_ltr,
-        tko_kg: selected?.tko_kg,
+        tkowner_qty: _.round(selected?.tkowner_qty, config?.precisionVolume),
+        tko_std_ltr: _.round(selected?.tko_std_ltr, config?.precisionVolume),
+        tko_kg: _.round(selected?.tko_kg, config?.precisionVolume),
       });
     } else {
     }
