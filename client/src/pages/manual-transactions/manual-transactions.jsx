@@ -637,7 +637,7 @@ const ManualTransactions = ({ popup, params }) => {
             .catch((errors) => {
               _.forEach(errors?.response?.data?.errors, (error) => {
                 notification.error({
-                  message: error.type,
+                  message: error.code === 500 ? t('messages.submitFailed') : error.type,
                   description: error.message,
                 });
               });
