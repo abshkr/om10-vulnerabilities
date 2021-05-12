@@ -19,10 +19,30 @@ const TheoreticalDensity = ({ value, onClose }) => {
 
     const values = getFieldsValue(['obs_vol_init', 'obs_vol_final', 'std_dens_init', 'std_dens_source']);
 
-    const iGovReady = values?.obs_vol_init === '' || values?.obs_vol_init === undefined ? false : true;
-    const fGovReady = values?.obs_vol_final === '' || values?.obs_vol_final === undefined ? false : true;
-    const iDensReady = values?.std_dens_init === '' || values?.std_dens_init === undefined ? false : true;
-    const sDensReady = values?.std_dens_source === '' || values?.std_dens_source === undefined ? false : true;
+    const iGovReady =
+      values?.obs_vol_init === '' ||
+      values?.obs_vol_init === undefined ||
+      _.isNaN(_.toNumber(values?.obs_vol_init))
+        ? false
+        : true;
+    const fGovReady =
+      values?.obs_vol_final === '' ||
+      values?.obs_vol_final === undefined ||
+      _.isNaN(_.toNumber(values?.obs_vol_final))
+        ? false
+        : true;
+    const iDensReady =
+      values?.std_dens_init === '' ||
+      values?.std_dens_init === undefined ||
+      _.isNaN(_.toNumber(values?.std_dens_init))
+        ? false
+        : true;
+    const sDensReady =
+      values?.std_dens_source === '' ||
+      values?.std_dens_source === undefined ||
+      _.isNaN(_.toNumber(values?.std_dens_source))
+        ? false
+        : true;
 
     const iGov = values?.obs_vol_init;
     const fGov = values?.obs_vol_final;
