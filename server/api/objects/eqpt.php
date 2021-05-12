@@ -331,10 +331,21 @@ class Equipment extends CommonClass
                 ) RES
             )
             WHERE RN >= :start_num
-                AND RN <= :end_num";
+                AND RN <= :end_num
+        ";
+
+        if (isset($this->eqpt_id)) {
+            $query = $query . " AND EQPT_ID in (" . $this->eqpt_id . ") ";
+        }
+
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':start_num', $this->start_num);
         oci_bind_by_name($stmt, ':end_num', $this->end_num);
+
+        // if (isset($this->eqpt_id)) {
+        //     oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
+        // }
+
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {

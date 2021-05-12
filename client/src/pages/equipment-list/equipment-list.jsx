@@ -18,15 +18,20 @@ const EquipmentList = () => {
   const config = useConfig();
   const { expiryDateMode, siteUseAxleWeightLimit } = useConfig();
 
-  const equipment = query.get('equipment') || '';
+  let equipment = query.get('equipment') || '';
 
   const { t } = useTranslation();
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [parentEqpt, setParentEqpt] = useState(equipment);
 
   const access = useAuth('M_EQUIPMENTLIST');
 
-  const { data: payload, isValidating, revalidate } = useSWR(EQUIPMENT_LIST.READ);
+  const url =
+    parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
+      ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}`
+      : `${EQUIPMENT_LIST.READ}`;
+  const { data: payload, isValidating, revalidate } = useSWR(url);
   const { data: expiryTypes } = useSWR(EQUIPMENT_LIST.EXPIRY);
 
   const [fields, setFields] = useState(
@@ -43,15 +48,31 @@ const EquipmentList = () => {
   const page = t('pageMenu.operations');
   const name = t('pageNames.equipmentList');
 
+  const onRefresh = () => {
+    // setFilterValue(' ');
+    setParentEqpt('');
+    revalidate();
+  };
+
+  useEffect(() => {
+    if (payload && parentEqpt && parentEqpt?.length > 0) {
+      if (parentEqpt?.indexOf(',') >= 0) setFilterValue(' ');
+    }
+  }, [payload, parentEqpt]);
+
   useEffect(() => {
     if (expiryTypes) {
       setFields(columns(expiryTypes?.records, t, expiryDateMode, siteUseAxleWeightLimit));
     }
   }, [expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit]);
 
+  /* useEffect(() => {
+    console.log('...................... filter', filterValue);
+  }, [filterValue]); */
+
   const modifiers = (
     <>
-      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
+      <Button icon={<SyncOutlined />} onClick={() => onRefresh()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />

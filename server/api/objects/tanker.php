@@ -111,6 +111,87 @@ class Tanker extends CommonClass
                 (
                     SELECT 
                         GUI_TANKERS.*,
+                        TNKR_EQPTS.TNKR_EQPT_IDS,
+                        TNKR_EQPTS.TNKR_EQPT_CODES,
+                        TNKR_AXLES_LIST.TNKR_AXLE_GROUP_COUNT,
+                        TNKR_AXLES_LIST.TNKR_AXLE_LIMIT_TYPE,
+                        TNKR_AXLES_LIST.TNKR_AXLE_DETAILS,
+                        TNKR_AXLES_LIST.TNKR_AXLE_GROUPS,
+                        TNKR_AXLES_LIST.TNKR_AXLE_WEIGHTS,
+                        TNKR_AXLES_LIST.TNKR_AXLE_BRIEFS
+                    FROM 
+                        GUI_TANKERS
+                        , (
+                            SELECT 
+                                TC_TANKER
+                                , LISTAGG(TC_EQPT, ',') WITHIN GROUP (ORDER BY TC_SEQNO) AS TNKR_EQPT_IDS
+                                , LISTAGG(EQPT_CODE, ',') WITHIN GROUP (ORDER BY TC_SEQNO) AS TNKR_EQPT_CODES
+                            FROM (
+                                SELECT 
+                                    TNKR_EQUIP.*
+                                    , TRANSP_EQUIP.EQPT_CODE
+                                FROM 
+                                    TNKR_EQUIP,
+                                    TRANSP_EQUIP
+                                WHERE
+                                    TNKR_EQUIP.TC_EQPT = TRANSP_EQUIP.EQPT_ID
+                            )
+                            GROUP BY TC_TANKER
+                        ) TNKR_EQPTS
+                        , (
+                            SELECT 
+                                TNKR_CODE
+                                , COUNT(TNKR_AXLE_ID)  AS TNKR_AXLE_GROUP_COUNT
+                                , MIN(LIMIT_TYPE_ID)  AS TNKR_AXLE_LIMIT_TYPE
+                                , LISTAGG(TNKR_AXLE_ID||':'||LIMIT_TYPE_ID||':'||AXLE_GROUP||':'||USER_WEIGHT_LIMIT||':'||AXLE_WEIGHT_LIMIT, ',') 
+                                WITHIN GROUP (ORDER BY TNKR_AXLE_ID) AS TNKR_AXLE_DETAILS
+                                , LISTAGG(AXLE_GROUP_NAME, ', ') 
+                                WITHIN GROUP (ORDER BY TNKR_AXLE_ID) AS TNKR_AXLE_GROUPS
+                                , LISTAGG(USER_WEIGHT_LIMIT, ', ') 
+                                WITHIN GROUP (ORDER BY TNKR_AXLE_ID) AS TNKR_AXLE_WEIGHTS
+                                , LISTAGG(USER_WEIGHT_LIMIT||'['||AXLE_GROUP_NAME||']', ', ') 
+                                WITHIN GROUP (ORDER BY TNKR_AXLE_ID) AS TNKR_AXLE_BRIEFS
+                            FROM
+                                TNKR_AXLES_VW
+                            GROUP BY
+                                TNKR_CODE
+                        ) TNKR_AXLES_LIST
+                    WHERE 
+                        GUI_TANKERS.TNKR_CODE = TNKR_AXLES_LIST.TNKR_CODE(+)
+                        and GUI_TANKERS.TNKR_CODE = TNKR_EQPTS.TC_TANKER
+                    ORDER BY GUI_TANKERS.TNKR_CODE
+                ) RES
+            )
+            WHERE RN >= :start_num
+                AND RN <= :end_num";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':start_num', $this->start_num);
+        oci_bind_by_name($stmt, ':end_num', $this->end_num);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function read_without_eqptlinks()
+    {
+        if (!isset($this->end_num)) {
+            $this->start_num = 1;
+            $this->end_num = $this->count();
+        }
+
+        $query = "
+            SELECT *
+            FROM
+            (
+                SELECT RES.*, ROWNUM RN
+                FROM
+                (
+                    SELECT 
+                        GUI_TANKERS.*,
                         TNKR_AXLES_LIST.TNKR_AXLE_GROUP_COUNT,
                         TNKR_AXLES_LIST.TNKR_AXLE_LIMIT_TYPE,
                         TNKR_AXLES_LIST.TNKR_AXLE_DETAILS,
@@ -213,6 +294,7 @@ class Tanker extends CommonClass
         }
     }
 
+    // not used by front-end yet. need add APA axles part in the future if this function is used
     public function search()
     {
         $this->tnkr_code = isset($this->tnkr_code) ? '%' . $this->tnkr_code . '%' : '%';

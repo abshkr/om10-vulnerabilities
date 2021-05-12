@@ -137,6 +137,33 @@ const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit, carrcod
         index: 'tnkr_etp',
       },
     },
+
+    {
+      headerName: t('fields.equipment'),
+      field: 'tnkr_eqpt_ids',
+      sortable: true,
+      resizable: true,
+      filter: 'MultiFilter',
+      suppressSizeToFit: true,
+      hide: true,
+      width: 160,
+    },
+    {
+      headerName: t('fields.equipment'),
+      field: 'tnkr_eqpt_codes',
+      sortable: true,
+      resizable: true,
+      filter: 'MultiFilter',
+      suppressSizeToFit: true,
+      width: 160,
+      cellRenderer: 'LinkRenderer',
+      cellRendererParams: {
+        endpoint: EQUIPMENT_LIST,
+        field: 'equipment',
+        index: 'tnkr_eqpt_ids',
+      },
+    },
+
     {
       headerName: t('fields.baseDepot'),
       field: 'tnkr_base_site_name',
