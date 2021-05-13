@@ -190,21 +190,14 @@ class Database
             session_start();
         }
 
-        //TODO: should use token data here. 
-        if (!array_key_exists('LANGUAGE', $_SESSION) ||
-            !array_key_exists('MANAGER', $_SESSION) ||
-            !array_key_exists('PERCODE', $_SESSION) ) {
-            // write_log("Failed to get session data", __FILE__, __LINE__, LogLevel::WARNING);
-            return;
-        }
-
-        $lang = $_SESSION['LANGUAGE'];
+        $lang = Utilities::getCurrLang();
         $ismanager = ($_SESSION['MANAGER'] === 'T') ? 'Y' : 'N';
         $cmpycode = $_SESSION['COMPANY'];
-        $percode = $_SESSION['PERCODE'];
+        $percode = Utilities::getCurrPsn();
         $clientip = $_SERVER['REMOTE_ADDR'];
 
-        // write_log(json_encode($_SESSION), __FILE__, __LINE__);
+        // write_log(sprintf("%s, %s, %s, %s, %s", $lang, $ismanager, $cmpycode, $percode, $clientip), 
+        //     __FILE__, __LINE__);
 
         $query = "BEGIN ADT.SET_LANG(:lang); END;";
         $stmt = oci_parse($this->conn, $query);
