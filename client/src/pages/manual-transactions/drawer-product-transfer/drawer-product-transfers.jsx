@@ -1051,10 +1051,11 @@ const DrawerProductTransfers = ({
       }
 
       if (!dataLoaded || !dataLoaded?.transfers || dataLoaded?.transfers?.length === 0) {
+        // console.log('*********************MT 1 - DrawProductTransfers: new data are loaded!');
         setPayload(transformed);
       } else {
         setPayload(dataLoaded?.transfers);
-        // console.log('MT 2 - DrawProductTransfers: data are loaded!');
+        // console.log('*********************MT 2 - DrawProductTransfers: existing data are loaded!');
         setSelected(dataLoaded?.transfers?.[0]);
         // const loaded = _.clone(dataLoaded);
         // loaded.transfers = [];

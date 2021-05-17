@@ -41,6 +41,7 @@ const Forms = ({
   selectedTanker,
   setSelectedTanker,
   params,
+  setDataLoaded,
   popup,
   setOrderSeals,
   setProductArms,
@@ -179,7 +180,7 @@ const Forms = ({
 
     setTankers(tankerResults);
     setSelectedTrip(trip);
-    setSelectedCustomer(value?.shls_cust)
+    setSelectedCustomer(value?.shls_cust);
     setSelectedTanker(value?.tnkr_code);
     setProductArms(undefined);
 
@@ -302,6 +303,15 @@ const Forms = ({
   const handleTankerSelect = (tanker) => {
     // get tanker equipment and compartments
     setSelectedTanker(tanker);
+
+    // need to clear the transaction data of prev tanker
+    const loaded = params;
+    loaded.transfers = [];
+    loaded.base_transfers = [];
+    loaded.meter_transfers = [];
+    loaded.base_totals = [];
+    loaded.meter_totals = [];
+    setDataLoaded(loaded);
   };
 
   const handleCarrierSelect = async (carrier) => {
@@ -636,7 +646,7 @@ const Forms = ({
         <Col span={8}>
           <Carrier
             form={form}
-            customer= {sourceType === 'SCHEDULE' && config?.site_customer_carrier ? selectedCustomer : ""}
+            customer={sourceType === 'SCHEDULE' && config?.site_customer_carrier ? selectedCustomer : ''}
             onChange={handleCarrierSelect}
             disabled={sourceType === 'SCHEDULE' && (loadType === 'BY_COMPARTMENT' || activeFlag === true)}
             config={config}
@@ -736,8 +746,12 @@ const Forms = ({
               dropdownMatchSelectWidth={false}
               allowClear
               showSearch
-              disabled={ (sourceType !== 'OPENORDER' && !(config?.site_customer_carrier && loadType == "BY_PRODUCT")) 
-                || !selectedSupplier || popup }
+              disabled={
+                (sourceType !== 'OPENORDER' &&
+                  !(config?.site_customer_carrier && loadType == 'BY_PRODUCT')) ||
+                !selectedSupplier ||
+                popup
+              }
               loading={customersLoading}
               optionFilterProp="children"
               placeholder={t('placeholder.selectCustomer')}

@@ -879,6 +879,7 @@ const ManualTransactions = ({ popup, params }) => {
             selectedTanker={selectedTanker}
             setSelectedTanker={setSelectedTanker}
             params={dataLoaded}
+            setDataLoaded={setDataLoaded}
             popup={popup}
             setOrderSeals={setOrderSeals}
             setProductArms={setProductArms}
