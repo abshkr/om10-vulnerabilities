@@ -31,7 +31,7 @@ const InputNumber = ({
 
     const decimals = _.toString(number).split('.')[1]?.length || 0;
 
-    if ((required && input === '') || (required && !input)) {
+    if ((required && input === '') || (required && input !== 0 && !input)) {
       return Promise.reject(`${t('validate.set')} ─ ${label}`);
     }
 
