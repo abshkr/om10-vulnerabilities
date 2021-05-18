@@ -684,6 +684,25 @@ class Feature extends CommonClass
         oci_commit($this->conn);
         return true;
     }
+	
+    public function get_version()
+    {
+        $file = null;
+		$version = '';
+        if (file_exists("/var/www/htdocs/version.txt")) {
+            $file = "/var/www/htdocs/version.txt";
+        	$version = file_get_contents($file);
+        } else {
+			$version = 'NA';
+        }
+
+        $result = array();
+		$result["records"] = $version;
+
+        http_response_code(200);
+        echo json_encode($result, JSON_PRETTY_PRINT);
+        return $result;
+    }
 
 
 }
