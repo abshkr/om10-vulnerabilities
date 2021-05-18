@@ -1,6 +1,6 @@
 const columns = (t) => [
   {
-    headerName: t('fields.time'),
+    headerName: t('fields.dateTime'),
     field: 'gen_date',
     sortable: true,
     resizable: true,
