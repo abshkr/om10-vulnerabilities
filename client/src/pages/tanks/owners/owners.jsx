@@ -156,7 +156,7 @@ const TankOwners = ({ terminal, code, value, access, tanks, config }) => {
     });
   };
 
-  const validate = (rule, input) => {
+  const validate2 = (rule, input) => {
     const min = 1;
     const limit = rule?.max || 256;
     console.log('.............rule', rule);
@@ -173,6 +173,45 @@ const TankOwners = ({ terminal, code, value, access, tanks, config }) => {
       return Promise.reject(
         `${t('placeholder.maxCharacters')}: ${limit} ─ ${t('descriptions.maxCharacters')}`
       );
+    }
+
+    return Promise.resolve();
+  };
+
+  const validate = (rule, input) => {
+    const min = rule?.minValue || 0;
+    const max = rule?.maxValue || 999999999;
+    const limit = rule?.maxLen || 256;
+    console.log('.............rule', rule);
+
+    if (rule?.required) {
+      if (input === '' || (input !== 0 && !input)) {
+        return Promise.reject(`${t('validate.set')} ─ ${rule?.label}`);
+      }
+    }
+
+    if (input && _.toNumber(input) < min) {
+      return Promise.reject(`${t('placeholder.minNumber')}: ${min} ─ ${t('descriptions.minNumber')}`);
+    }
+
+    if (input && _.toNumber(input) > max) {
+      return Promise.reject(`${t('placeholder.maxNumber')}: ${max} ─ ${t('descriptions.maxNumber')}`);
+    }
+
+    if (input && input.length > limit) {
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${limit} ─ ${t('descriptions.maxCharacters')}`
+      );
+    }
+
+    return Promise.resolve();
+  };
+
+  const validateList = (rule, input) => {
+    if (rule?.required) {
+      if (input === '' || (input !== 0 && !input)) {
+        return Promise.reject(`${t('validate.set')} ─ ${rule?.label}`);
+      }
     }
 
     return Promise.resolve();
@@ -471,7 +510,7 @@ const TankOwners = ({ terminal, code, value, access, tanks, config }) => {
               <Form.Item
                 name="tkcmpy_link"
                 label={t('fields.tkcmpyLink')}
-                rules={[{ required: true, validator: validate, label: t('fields.tkcmpyLink') }]}
+                rules={[{ required: true, validator: validateList, label: t('fields.tkcmpyLink') }]}
               >
                 <Select
                   dropdownMatchSelectWidth={false}
