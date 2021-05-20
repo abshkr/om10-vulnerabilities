@@ -527,16 +527,27 @@ class Folio extends CommonClass
                 BA_METERS.BAM_QTY_TYPE,
                 QTY_TYP.QTY_NAME  as BAM_QTY_TYPE_STR,
                 DECODE(BAM_QTY_TYPE, 1, 'KG', 'VOL') BAM_QTY_TYPE_STR2,
-                GUI_PIPENODE.STREAM_BASECODE,
-                GUI_PIPENODE.STREAM_BASENAME,
-                GUI_PIPENODE.STREAM_TANKCODE,
-                GUI_PIPENODE.STREAM_TANKTEMP,
-                GUI_PIPENODE.STREAM_TANKDEN
-            FROM CLOSEOUT_METER, BA_METERS, GUI_PIPENODE, QTY_TYP
+                STREAM_BASECODE,
+                STREAM_BASENAME,
+                STREAM_TANKCODE,
+                STREAM_TANKTEMP,
+                STREAM_TANKDEN
+            FROM CLOSEOUT_METER, BA_METERS, 
+                (
+                    SELECT GUI_PIPENODE.STREAM_BASECODE,
+                        GUI_PIPENODE.STREAM_BASENAME,
+                        GUI_PIPENODE.STREAM_TANKCODE,
+                        GUI_PIPENODE.STREAM_TANKTEMP,
+                        GUI_PIPENODE.STREAM_TANKDEN, 
+                        GUI_PIPENODE.STREAM_MTRCODE 
+                    FROM GUI_PIPENODE, BAY_AREA 
+                    WHERE GUI_PIPENODE.STREAM_BAYCODE = BAY_AREA.BA_CODE AND NVL(BA_LOCK, 'N') != 'Y'
+                ) VALID_PIPENODE, 
+                QTY_TYP, BAY_AREA
             WHERE CLOSEOUT_METER.METER_CODE = BA_METERS.BAM_CODE
                 AND BA_METERS.BAM_QTY_TYPE = QTY_TYP.QTY_ID
-                AND CLOSEOUT_METER.METER_CODE = GUI_PIPENODE.STREAM_MTRCODE
-                AND BA_METERS.BAM_CODE = GUI_PIPENODE.STREAM_MTRCODE
+                AND CLOSEOUT_METER.METER_CODE = BA_METERS.BAM_CODE
+                AND BA_METERS.BAM_CODE = VALID_PIPENODE.STREAM_MTRCODE(+)
                 AND CLOSEOUT_METER.CLOSEOUT_NR = :closeout_nr
             ORDER BY CLOSEOUT_NR, METER_CODE";
         $stmt = oci_parse($this->conn, $query);
