@@ -1,13 +1,13 @@
 const columns = (t) => [
   {
-    headerName: `${t('fields.tankLevel')} (${t('units.mm')})`,
+    headerName: `${t('fields.level')} (${t('units.mm')})`,
     field: 'strap_height',
     filter: 'FuzzyFilter',
     sortable: false,
     resizable: true,
     editable: true,
     cellClass: 'editable-ag-grid-cell',
-    width: 100,
+    width: 120,
     cellEditor: 'NumericEditor',
     cellEditorParams: {
       ranges: {
@@ -25,7 +25,7 @@ const columns = (t) => [
     resizable: true,
     editable: true,
     cellClass: 'editable-ag-grid-cell',
-    width: 120,
+    width: 220,
     cellEditor: 'NumericEditor',
     cellEditorParams: {
       ranges: {

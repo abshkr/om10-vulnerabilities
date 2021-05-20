@@ -837,7 +837,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="50vw"
+      width="70vw"
       visible={visible}
       footer={
         <>
