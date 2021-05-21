@@ -530,7 +530,7 @@ const FormModal = ({
             </Button>
           )}
 
-          {!IS_CREATING && popupMT && tabKey === '1' && (
+          {!IS_CREATING && CAN_MAKE_TRANSACTIONS && popupMT && tabKey === '1' && (
             <Button
               type="primary"
               icon={<EditOutlined />}
