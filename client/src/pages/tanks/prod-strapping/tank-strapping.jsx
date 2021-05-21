@@ -133,6 +133,7 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
 
   const loadStraps = async (value) => {
     console.log('Forms: loadStraps', value);
+    revalidate();
   };
 
   const handleImport = () => {
