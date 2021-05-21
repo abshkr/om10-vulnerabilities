@@ -46,8 +46,38 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, 
     handleRevalidate();
   };
 
+  const checkLevels = (obj, prodLevel) => {
+    const maxLevel = obj?.tank_max_level;
+    const userLow = obj?.tank_ul_level;
+    const userHigh = obj?.tank_uh_level;
+
+    console.log('................. values', obj);
+
+    const errors = [];
+    // give warning but allow to update if Tank Max Level < Product Level
+    if (maxLevel && prodLevel && _.toNumber(maxLevel) < _.toNumber(prodLevel)) {
+      errors.push(t('descriptions.tankMaxLevelLessThanProductLevel'));
+    }
+    // give warning but allow to update if User L Level > User H Level
+    if (userLow && userHigh && _.toNumber(userLow) > _.toNumber(userHigh)) {
+      errors.push(t('descriptions.tankUserLowLevelMoreThanUserHighLevel'));
+    }
+    // give warning but allow to update if User L Level > Tank Max Level
+    if (userLow && maxLevel && _.toNumber(userLow) > _.toNumber(maxLevel)) {
+      errors.push(t('descriptions.tankUserLowLevelMoreThanMaxLevel'));
+    }
+    // give warning but allow to update if User H Level > Tank Max Level
+    if (userHigh && maxLevel && _.toNumber(userHigh) > _.toNumber(maxLevel)) {
+      errors.push(t('descriptions.tankUserHighLevelMoreThanMaxLevel'));
+    }
+
+    return errors;
+  };
+
   const onFinish = async () => {
     const values = await form.validateFields();
+
+    const errors = IS_CREATING ? [] : checkLevels(values, value?.tank_prod_lvl);
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
@@ -56,6 +86,19 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, 
       icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
+      width: '30vw',
+      content:
+        errors.length <= 0 ? (
+          ''
+        ) : (
+          <ul>
+            <>
+              {errors?.map((error, index) => (
+                <li style={{ color: 'red' }}>{error}</li>
+              ))}
+            </>
+          </ul>
+        ),
       onOk: async () => {
         await api
           .post(IS_CREATING ? TANKS.CREATE : TANKS.UPDATE, values)
