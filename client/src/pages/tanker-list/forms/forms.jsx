@@ -204,7 +204,7 @@ const FormModal = ({
         <Scrollbars
           style={{
             height: '300px',
-            width: '25vw',
+            width: !eqpt_selected ? '36vw' : '26vw',
             marginTop: 15,
             padding: 5,
             marginBottom: 15,
