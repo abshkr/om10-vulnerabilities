@@ -6,7 +6,7 @@ const columns = (t) => [
     resizable: true,
     filter: 'FuzzyFilter',
     pinned: 'left',
-    width: 80,
+    width: 120,
   },
   {
     headerName: `${t('fields.observedVolume')} (${t('units.litres')})`,
@@ -14,6 +14,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     filter: 'FuzzyFilter',
+    width: 220,
   },
 
   {
@@ -22,14 +23,32 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     filter: 'MultiFilter',
+    width: 180,
   },
 
+  {
+    headerName: t('fields.tank'),
+    field: 'strap_tankcode',
+    filter: 'FuzzyFilter',
+    sortable: false,
+    resizable: true,
+    width: 120,
+  },
+  {
+    headerName: t('fields.terminal'),
+    field: 'strap_sitecode',
+    filter: 'FuzzyFilter',
+    sortable: false,
+    resizable: true,
+    width: 120,
+  },
   {
     headerName: t('fields.baseProductCode'),
     field: 'strap_basecode',
     sortable: true,
     resizable: true,
     filter: 'MultiFilter',
+    width: 180,
   },
 
   {
@@ -38,6 +57,7 @@ const columns = (t) => [
     sortable: true,
     resizable: true,
     filter: 'MultiFilter',
+    width: 200,
   },
 ];
 

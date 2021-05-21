@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileSearchOutlined} from '@ant-design/icons';
+import { FileSearchOutlined } from '@ant-design/icons';
 import { SWRConfig } from 'swr';
 import { fetcher } from 'utils';
 
@@ -8,38 +8,30 @@ import { useTranslation } from 'react-i18next';
 
 import StrapImport from './strap-import';
 
-const StrapImportManager = (
-    title, 
-    value,
-    onClose, 
-    width,
-    height,
-  ) => {
+const StrapImportManager = (title, value, onClose, width, height) => {
   Modal.info({
     className: 'form-container',
-    title: title? title: 'Seals',
+    title: title ? title : 'Import Strapping',
     centered: true,
     closable: true,
     width: width,
     icon: <FileSearchOutlined />,
     content: (
-    <SWRConfig
+      <SWRConfig
         value={{
-        refreshInterval: 0,
-        fetcher,
+          refreshInterval: 0,
+          fetcher,
         }}
-    >
-      <StrapImport value={value} onClose={onClose} />
-    </SWRConfig>
+      >
+        <StrapImport value={value} onClose={onClose} />
+      </SWRConfig>
     ),
     okButtonProps: {
-    style: { display: 'none' },
+      style: { display: 'none' },
     },
   });
 
   return null;
 };
 
-
 export default StrapImportManager;
-  

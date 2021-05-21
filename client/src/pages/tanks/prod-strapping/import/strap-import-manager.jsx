@@ -11,7 +11,7 @@ import StrapImport from './strap-import';
 const StrapImportManager = (title, value, onClose, width, height) => {
   Modal.info({
     className: 'form-container',
-    title: title ? title : 'Seals',
+    title: title ? title : 'Import Strapping',
     centered: true,
     closable: true,
     width: width,

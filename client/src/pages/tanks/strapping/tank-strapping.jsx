@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import { Card, Button, Drawer, Modal, Form, Tabs, Input, Select, notification } from 'antd';
+import { Card, Button, Drawer, Modal, Form, Tabs, Input, Select, notification, Row, Col } from 'antd';
 
 import {
   EditOutlined,
@@ -8,23 +8,26 @@ import {
   PlusOutlined,
   QuestionCircleOutlined,
   DeleteOutlined,
+  SyncOutlined,
 } from '@ant-design/icons';
 
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
 
-import { DataTable } from '../../../components';
+import { DataTable, Download } from '../../../components';
 import api, { TANK_STRAPPING } from '../../../api';
 import columns from './columns';
 import StrapImportManager from './import';
 
 const { TabPane } = Tabs;
 
-const TankStrapping = ({ terminal, code, isLoading, access, tanks }) => {
+const TankStrapping = ({ terminal, code, tanks, access }) => {
   const url = code ? `${TANK_STRAPPING.READ}?strap_tankcode=${code}` : null;
 
-  const { data } = useSWR(url);
+  const { data, isValidating, revalidate } = useSWR(url);
+
+  const isLoading = isValidating || !data;
   const { data: types } = useSWR(TANK_STRAPPING.TYPES);
   const { t } = useTranslation();
 
@@ -168,6 +171,7 @@ const TankStrapping = ({ terminal, code, isLoading, access, tanks }) => {
 
   const loadStraps = async (value) => {
     console.log('Forms: loadStraps', value);
+    revalidate();
   };
 
   const handleImport = () => {
@@ -183,8 +187,19 @@ const TankStrapping = ({ terminal, code, isLoading, access, tanks }) => {
 
   const modifiers = (
     <>
+      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
+        {t('operations.refresh')}
+      </Button>
+
+      <Download
+        data={data?.records}
+        // data={payload}
+        isLoading={isLoading}
+        columns={fields}
+      />
+
       <Button
-        style={{ marginRight: 10 }}
+        style={{ marginRight: 1 }}
         type="primary"
         loading={isLoading}
         disabled={!access.canCreate}
@@ -229,10 +244,17 @@ const TankStrapping = ({ terminal, code, isLoading, access, tanks }) => {
 
   return (
     <>
-      <Card hoverable loading={isLoading}>
+      <Card hoverable>
+        {/* <Row gutter={[12, 12]}>
+          <Col span={24}>
+            <div style={{ float: 'right' }}>{modifiers}</div>
+          </Col>
+        </Row> */}
+
         <DataTable
           columns={fields}
           data={data?.records}
+          isLoading={isValidating}
           height="305px"
           extra={modifiers}
           onClick={(payload) => handleFormState(true, payload)}

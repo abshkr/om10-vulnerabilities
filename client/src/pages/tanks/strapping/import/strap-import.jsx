@@ -305,6 +305,7 @@ const StrapImport = ({ value, onClose }) => {
               message: t('messages.uploadSuccess'),
               description: t('descriptions.uploadStrapSuccess'),
             });
+            onFinish();
           })
 
           .catch((error) => {
@@ -390,14 +391,14 @@ const StrapImport = ({ value, onClose }) => {
           {t('operations.cancel')}
         </Button>
 
-        <Button
+        {/* <Button
           type="primary"
           htmlType="submit"
           icon={<SyncOutlined />}
           style={{ float: 'right', marginRight: 5 }}
         >
           {t('operations.ok')}
-        </Button>
+        </Button> */}
       </div>
     </Form>
   );
