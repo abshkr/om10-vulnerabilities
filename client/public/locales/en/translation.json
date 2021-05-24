@@ -143,7 +143,7 @@
     "nominationItemChanged": "Please restore or save the changes before making the transaction",
     "noRowsToShow": "No Rows To Show",
     "noTransferDetails": "Transfer details are not complete. The values of density, temperature and quantities are required in at least one compartment.",
-    "noTransferDetailsSpec": "Transfer details are not complete. The values of density, temperature and quantities are required.",
+    "noTransferDetailsSpec": "Transfer details are not complete. The values of density, temperature and quantities (volumes and weight(s)) are required.",
     "notInteger": " is not an integer",
     "notNumber": " is not a number",
     "of": " of ",
