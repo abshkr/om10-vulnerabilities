@@ -10,7 +10,7 @@ import _ from 'lodash';
 import GaugingForm from '../forms/fields/gauging';
 import api, { TANKS } from '../../../api';
 
-const Gauging = ({ selected, access, isLoading, setSelected }) => {
+const Gauging = ({ selected, access, isLoading, setSelected, config }) => {
   const { t } = useTranslation();
 
   const [form] = Form.useForm();
@@ -74,7 +74,7 @@ const Gauging = ({ selected, access, isLoading, setSelected }) => {
         ]}
       >
         {/* <Form.Item name="tank_code" noStyle /> */}
-        <GaugingForm form={form} value={selected} />
+        <GaugingForm form={form} value={selected} config={config} />
       </Card>
     </Form>
   );

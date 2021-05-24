@@ -168,8 +168,8 @@ const Tanks = () => {
               </TabPane>
             )}
 
-            <TabPane key="6" tab={t('tabColumns.gauge')} disabled={isLoading}>
-              <Gauging selected={selected} access={access} setSelected={setSelected} />
+            <TabPane key="6" tab={t('tabColumns.gauging')} disabled={isLoading}>
+              <Gauging selected={selected} access={access} setSelected={setSelected} config={config} />
             </TabPane>
 
             {config?.manageTankStrapping && (

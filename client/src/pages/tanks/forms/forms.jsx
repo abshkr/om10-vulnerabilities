@@ -933,7 +933,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
           </TabPane>
 
           <TabPane tab={t('tabColumns.gauging')} key="3">
-            <Gauging form={form} value={value} />
+            <Gauging form={form} value={value} config={config} />
           </TabPane>
 
           {config?.manageTankLevelAlarms && (
