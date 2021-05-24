@@ -61,13 +61,13 @@ const General = ({ form, value, config, densRange }) => {
   return (
     <>
       <Row gutter={[8, 8]}>
-        <Col span={12}>
+        <Col span={10}>
           <Form.Item name="tank_code" label={t('fields.tankCode')}>
             <Input disabled style={{ width: '100%' }} />
           </Form.Item>
         </Col>
 
-        <Col span={12}>
+        <Col span={14}>
           <Form.Item
             name="tank_name"
             label={t('fields.tankName')}
@@ -79,7 +79,7 @@ const General = ({ form, value, config, densRange }) => {
       </Row>
 
       <Row gutter={[8, 8]}>
-        <Col span={12}>
+        <Col span={10}>
           <Form.Item name="tank_terminal" label={t('fields.terminal')}>
             <Select
               dropdownMatchSelectWidth={false}
@@ -100,7 +100,7 @@ const General = ({ form, value, config, densRange }) => {
           </Form.Item>
         </Col>
 
-        <Col span={12}>
+        <Col span={14}>
           <Form.Item name="tank_status" label={t('fields.tankStatus')}>
             <Select
               dropdownMatchSelectWidth={false}
@@ -122,7 +122,7 @@ const General = ({ form, value, config, densRange }) => {
       </Row>
 
       <Row gutter={[8, 8]}>
-        <Col span={12}>
+        <Col span={10}>
           <Form.Item name="tank_base" label={t('fields.baseProduct')}>
             <Select
               dropdownMatchSelectWidth={false}
@@ -143,7 +143,7 @@ const General = ({ form, value, config, densRange }) => {
           </Form.Item>
         </Col>
 
-        <Col span={12}>
+        <Col span={14}>
           <OmegaInputNumber
             form={form}
             value={value?.tank_density}
@@ -178,7 +178,7 @@ const General = ({ form, value, config, densRange }) => {
       </Row>
 
       <Row gutter={[8, 8]}>
-        <Col span={12}>
+        <Col span={10}>
           <Form.Item
             name="tank_gaugingmthd"
             label={t('fields.gaugingMethod')}
@@ -202,7 +202,7 @@ const General = ({ form, value, config, densRange }) => {
           </Form.Item>
         </Col>
 
-        <Col span={12}>
+        <Col span={14}>
           <Form.Item name="tank_location" label={t('fields.area')}>
             <Select
               dropdownMatchSelectWidth={false}
@@ -236,13 +236,13 @@ const General = ({ form, value, config, densRange }) => {
           </Col>
         )}
 
-        <Col span={config?.siteUllageCalcAuto ? 12 : 8}>
+        <Col span={config?.siteUllageCalcAuto ? 10 : 8}>
           <Form.Item name="tank_sulphur" label={`${t('fields.sulphur')} (${t('units.sulphur')})`}>
             <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
           </Form.Item>
         </Col>
 
-        <Col span={config?.siteUllageCalcAuto ? 12 : 8}>
+        <Col span={config?.siteUllageCalcAuto ? 14 : 8}>
           <Form.Item
             name="tank_flashpoint"
             label={`${t('fields.flashPoint')} (${t(`units.${config?.temperatureUnit}`)})`}
@@ -253,13 +253,13 @@ const General = ({ form, value, config, densRange }) => {
       </Row>
 
       <Row gutter={[8, 8]}>
-        <Col span={12}>
+        <Col span={10}>
           <Form.Item name="tank_dtol_percent" label={`${t('fields.dailyVarianceLimit')} (%)`}>
             <InputNumber style={{ width: '100%' }} />
           </Form.Item>
         </Col>
 
-        <Col span={12}>
+        <Col span={14}>
           <Form.Item
             name="tank_dtol_volume"
             label={`${t('fields.dailyVarianceLimit')} (${t('units.volume')})`}
@@ -270,13 +270,13 @@ const General = ({ form, value, config, densRange }) => {
       </Row>
 
       <Row gutter={[8, 8]}>
-        <Col span={12}>
+        <Col span={10}>
           <Form.Item name="tank_mtol_percent" label={`${t('fields.monthlyVarianceLimit')} (%)`}>
             <InputNumber style={{ width: '100%' }} />
           </Form.Item>
         </Col>
 
-        <Col span={12}>
+        <Col span={14}>
           <Form.Item
             name="tank_mtol_volume"
             label={`${t('fields.monthlyVarianceLimit')} (${t('units.volume')})`}
