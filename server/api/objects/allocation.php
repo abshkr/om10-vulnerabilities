@@ -26,9 +26,9 @@ class Allocation extends CommonClass
     );
 
     public $NUMBER_FIELDS = array(
-        "AITEM_QTYLIMIT",
-        "AITEM_QTYUSED",
-        "AITEM_QTYLEFT",
+        "AITEM_QTYLIMIT" => 0,
+        "AITEM_QTYUSED" => 0,
+        "AITEM_QTYLEFT" => 0,
         "AITEM_PRODUNIT",
         "ALLOC_LOCK",
     );
