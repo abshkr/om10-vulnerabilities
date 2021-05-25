@@ -19,3 +19,5 @@ export const CHILD_CMPY_ROLES = '/api/pages/company/child_cmpy_roles.php';
 export const PARENT_CMPY_ROLES = '/api/pages/company/parent_cmpy_roles.php';
 export const CHILD_CMPYS = '/api/pages/company/companys_by_role.php';
 export const UPDATE_RELATIONS = '/api/pages/company/update_relations.php';
+
+export const CHECK_CHILDREN = '/api/pages/company/check_children.php';
