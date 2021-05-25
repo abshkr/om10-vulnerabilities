@@ -68,10 +68,11 @@ const FormModal = ({
   const [employer, setEmployer] = useState(value?.employer);
   const [host, setHost] = useState(value?.host);
   const [plantRequired, setPlantRquired] = useState(value?.cmpy_plant);
+  const [childCounts, setChildCounts] = useState([]);
 
   const IS_CREATING = !value;
 
-  /* const children = `ACCESS_KEYS	KYA_ALLOC_CMPY	Supplier, Carrier, Customer, Drawer	
+  /* const ctables = `ACCESS_KEYS	KYA_ALLOC_CMPY	Supplier, Carrier, Customer, Drawer	
   ACCESS_KEYS	KYA_SP_SUPPLIER	Supplier	FK_KYA_SP_SUPPLIER
   ACCESS_KEYS	KYA_KEY_ISSUER	Issuer	FK_KYA_KEY_ISSUER
   ACCESS_KEYS	KYA_DRAWER	Drawer	FK_KYA_DRAWER
@@ -270,19 +271,20 @@ const FormModal = ({
   `;
 
   const getJsonChildren = () => {
-    const lines = children.split('\n');
+    const lines = ctables.split('\n');
     const json = {};
     json.CHILDREN = [];
     for (let i=0; i<lines.length; i++) {
-      const columns = lines[i].split('\t');
+      const columns = lines[i].trim().split('\t');
       const item = {};
       item.TABLE_NAME = columns[0];
       item.CKEYS = [];
+      item.TYPE = columns[2];
       const column = {};
       column.COLUMN_NAME = columns[1];
       column.DATA_TYPE = 'VARCHAR(16)';
       column.COLUMN_ID = 1;
-      column.TYPE = columns[2];
+      // column.TYPE = columns[2];
       item.CKEYS.push(column);
       json.CHILDREN.push(item);
     }
@@ -409,6 +411,7 @@ const FormModal = ({
     // getJsonChildren();
     if (children) {
       console.log('..................children', children);
+      setChildCounts(children?.records);
     }
   }, [children]);
 

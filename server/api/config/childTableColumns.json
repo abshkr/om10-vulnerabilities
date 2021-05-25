@@ -14,2155 +14,2136 @@
           {
             "COLUMN_NAME": "KYA_ALLOC_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Carrier, Customer, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Carrier, Customer, Drawer"
       },
       {
-        "TABLE_NAME": "  ACCESS_KEYS",
+        "TABLE_NAME": "ACCESS_KEYS",
         "CKEYS": [
           {
             "COLUMN_NAME": "KYA_SP_SUPPLIER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  ACCESS_KEYS",
+        "TABLE_NAME": "ACCESS_KEYS",
         "CKEYS": [
           {
             "COLUMN_NAME": "KYA_KEY_ISSUER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Issuer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Issuer"
       },
       {
-        "TABLE_NAME": "  ACCESS_KEYS",
+        "TABLE_NAME": "ACCESS_KEYS",
         "CKEYS": [
           {
             "COLUMN_NAME": "KYA_DRAWER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Drawer"
       },
       {
-        "TABLE_NAME": "  ACCESS_KEYS_HISTORY",
+        "TABLE_NAME": "ACCESS_KEYS_HISTORY",
         "CKEYS": [
           {
             "COLUMN_NAME": "KYA_SP_SUPPLIER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  ACCESS_KEYS_HISTORY",
+        "TABLE_NAME": "ACCESS_KEYS_HISTORY",
         "CKEYS": [
           {
             "COLUMN_NAME": "KYA_DRAWER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Drawer"
       },
       {
-        "TABLE_NAME": "  ACCESS_KEYS_HISTORY",
+        "TABLE_NAME": "ACCESS_KEYS_HISTORY",
         "CKEYS": [
           {
             "COLUMN_NAME": "KYA_KEY_ISSUER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Issuer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Issuer"
       },
       {
-        "TABLE_NAME": "  ACCESS_MOVEMENT",
+        "TABLE_NAME": "ACCESS_MOVEMENT",
         "CKEYS": [
           {
             "COLUMN_NAME": "ACM_TRIP_SUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  ACCESS_MOVEMENT",
+        "TABLE_NAME": "ACCESS_MOVEMENT",
         "CKEYS": [
           {
             "COLUMN_NAME": "ACM_KEY_ISSUER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Issuer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Issuer"
       },
       {
-        "TABLE_NAME": "  ACTIONS_FOR_AUDIT_01",
+        "TABLE_NAME": "ACTIONS_FOR_AUDIT_01",
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Employer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Employer"
       },
       {
-        "TABLE_NAME": "  ACTIONS_FOR_AUDIT_02",
+        "TABLE_NAME": "ACTIONS_FOR_AUDIT_02",
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Employer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Employer"
       },
       {
-        "TABLE_NAME": "  ACTIONS_FOR_AUDIT_03",
+        "TABLE_NAME": "ACTIONS_FOR_AUDIT_03",
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Employer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Employer"
       },
       {
-        "TABLE_NAME": "  ACTIONS_FOR_AUDIT_04",
+        "TABLE_NAME": "ACTIONS_FOR_AUDIT_04",
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Employer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Employer"
       },
       {
-        "TABLE_NAME": "  ACTIONS_FOR_AUDIT_05",
+        "TABLE_NAME": "ACTIONS_FOR_AUDIT_05",
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Employer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Employer"
       },
       {
-        "TABLE_NAME": "  ACTIONS_FOR_AUDIT_06",
+        "TABLE_NAME": "ACTIONS_FOR_AUDIT_06",
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Employer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Employer"
       },
       {
-        "TABLE_NAME": "  ACTIONS_FOR_AUDIT_07",
+        "TABLE_NAME": "ACTIONS_FOR_AUDIT_07",
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Employer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Employer"
       },
       {
-        "TABLE_NAME": "  ACTIONS_FOR_AUDIT_08",
+        "TABLE_NAME": "ACTIONS_FOR_AUDIT_08",
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Employer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Employer"
       },
       {
-        "TABLE_NAME": "  ACTIONS_FOR_AUDIT_09",
+        "TABLE_NAME": "ACTIONS_FOR_AUDIT_09",
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Employer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Employer"
       },
       {
-        "TABLE_NAME": "  ACTIONS_FOR_AUDIT_10",
+        "TABLE_NAME": "ACTIONS_FOR_AUDIT_10",
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Employer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Employer"
       },
       {
-        "TABLE_NAME": "  ACTIONS_FOR_AUDIT_11",
+        "TABLE_NAME": "ACTIONS_FOR_AUDIT_11",
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Employer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Employer"
       },
       {
-        "TABLE_NAME": "  ACTIONS_FOR_AUDIT_12",
+        "TABLE_NAME": "ACTIONS_FOR_AUDIT_12",
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Employer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Employer"
       },
       {
-        "TABLE_NAME": "  ADJUSTS",
+        "TABLE_NAME": "ADJUSTS",
         "CKEYS": [
           {
             "COLUMN_NAME": "ADJALL_ALL_ATKY_AT_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Carrier, Customer, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Carrier, Customer, Drawer"
       },
       {
-        "TABLE_NAME": "  ADJUSTS",
+        "TABLE_NAME": "ADJUSTS",
         "CKEYS": [
           {
             "COLUMN_NAME": "ADJALL_ALL_PROD_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  ALL_CHILD",
+        "TABLE_NAME": "ALL_CHILD",
         "CKEYS": [
           {
             "COLUMN_NAME": "ALCH_ALP_ALL_PROD_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  ALL_CHILD",
+        "TABLE_NAME": "ALL_CHILD",
         "CKEYS": [
           {
             "COLUMN_NAME": "ALCH_ALP_ALL_ATKY_AT_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Carrier, Customer, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Carrier, Customer, Drawer"
       },
       {
-        "TABLE_NAME": "  ALLOC_AUTH",
+        "TABLE_NAME": "ALLOC_AUTH",
         "CKEYS": [
           {
             "COLUMN_NAME": "PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  ALLOC_DETAILS",
+        "TABLE_NAME": "ALLOC_DETAILS",
         "CKEYS": [
           {
             "COLUMN_NAME": "ALL_PROD_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  ALLOC_DETAILS",
+        "TABLE_NAME": "ALLOC_DETAILS",
         "CKEYS": [
           {
             "COLUMN_NAME": "ALL_ATKY_AT_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Carrier, Customer, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Carrier, Customer, Drawer"
       },
       {
-        "TABLE_NAME": "  ALLOC_DISTB_RLT",
+        "TABLE_NAME": "ALLOC_DISTB_RLT",
         "CKEYS": [
           {
             "COLUMN_NAME": "ALLOC_KEY_ISSUER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Issuer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Issuer"
       },
       {
-        "TABLE_NAME": "  ALLOC_DISTB_RLT",
+        "TABLE_NAME": "ALLOC_DISTB_RLT",
         "CKEYS": [
           {
             "COLUMN_NAME": "DISTB_KEY_ISSUER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Issuer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Issuer"
       },
       {
-        "TABLE_NAME": "  ALLOC_DISTB_RLT_HIST",
+        "TABLE_NAME": "ALLOC_DISTB_RLT_HIST",
         "CKEYS": [
           {
             "COLUMN_NAME": "ALLOC_KEY_ISSUER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Issuer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Issuer"
       },
       {
-        "TABLE_NAME": "  ALLOC_DISTB_RLT_HIST",
+        "TABLE_NAME": "ALLOC_DISTB_RLT_HIST",
         "CKEYS": [
           {
             "COLUMN_NAME": "DISTB_KEY_ISSUER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Issuer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Issuer"
       },
       {
-        "TABLE_NAME": "  ALLOC_GLBT",
+        "TABLE_NAME": "ALLOC_GLBT",
         "CKEYS": [
           {
             "COLUMN_NAME": "ALLOCTER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Carrier, Customer, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Carrier, Customer, Drawer"
       },
       {
-        "TABLE_NAME": "  ALLOC_GLBT",
+        "TABLE_NAME": "ALLOC_GLBT",
         "CKEYS": [
           {
             "COLUMN_NAME": "ALLOCTEE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Carrier, Customer, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Carrier, Customer, Drawer"
       },
       {
-        "TABLE_NAME": "  ALLOC_TYPE",
+        "TABLE_NAME": "ALLOC_TYPE",
         "CKEYS": [
           {
             "COLUMN_NAME": "AT_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Carrier, Customer, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Carrier, Customer, Drawer"
       },
       {
-        "TABLE_NAME": "  ALLOCS",
+        "TABLE_NAME": "ALLOCS",
         "CKEYS": [
           {
             "COLUMN_NAME": "ALL_PROD_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  ALLOCS",
+        "TABLE_NAME": "ALLOCS",
         "CKEYS": [
           {
             "COLUMN_NAME": "ALL_ATKY_AT_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Carrier, Customer, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Carrier, Customer, Drawer"
       },
       {
-        "TABLE_NAME": "  ARM_LOADING_QUEUE",
+        "TABLE_NAME": "ARM_LOADING_QUEUE",
         "CKEYS": [
           {
             "COLUMN_NAME": "AQ_SUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  BA_CMPY_LNK",
+        "TABLE_NAME": "BA_CMPY_LNK",
         "CKEYS": [
           {
             "COLUMN_NAME": "BACL_CMPY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  BARMPROD",
+        "TABLE_NAME": "BARMPROD",
         "CKEYS": [
           {
             "COLUMN_NAME": "BARMPLNK_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  BARMPROD",
+        "TABLE_NAME": "BARMPROD",
         "CKEYS": [
           {
             "COLUMN_NAME": "BARM_SUPPLIERLNK",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  BASE_PROD_OWNSHIP",
+        "TABLE_NAME": "BASE_PROD_OWNSHIP",
         "CKEYS": [
           {
             "COLUMN_NAME": "SUPP_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  BASE_TRANSLATE",
+        "TABLE_NAME": "BASE_TRANSLATE",
         "CKEYS": [
           {
             "COLUMN_NAME": "BASE_TRANS_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier?"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier?"
       },
       {
-        "TABLE_NAME": "  BL_HISTORY",
+        "TABLE_NAME": "BL_HISTORY",
         "CKEYS": [
           {
             "COLUMN_NAME": "BL_BORROWER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier?"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier?"
       },
       {
-        "TABLE_NAME": "  BL_HISTORY",
+        "TABLE_NAME": "BL_HISTORY",
         "CKEYS": [
           {
             "COLUMN_NAME": "BL_LOANER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier?"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier?"
       },
       {
-        "TABLE_NAME": "  CLOSEOUT_PRODOWNSHIP",
+        "TABLE_NAME": "CLOSEOUT_PRODOWNSHIP",
         "CKEYS": [
           {
             "COLUMN_NAME": "CMPY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": ""
+            "COLUMN_ID": 1
           }
         ]
       },
       {
-        "TABLE_NAME": "  CLOSEOUT_TK_OWNER",
+        "TABLE_NAME": "CLOSEOUT_TK_OWNER",
         "CKEYS": [
           {
             "COLUMN_NAME": "TKCMPY_LINK",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": ""
+            "COLUMN_ID": 1
           }
         ]
       },
       {
-        "TABLE_NAME": "  CMPY_CUST_PRTNR",
+        "TABLE_NAME": "CMPY_CUST_PRTNR",
         "CKEYS": [
           {
             "COLUMN_NAME": "CCP_CMPY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  CMPY_ROLE_MSG",
+        "TABLE_NAME": "CMPY_ROLE_MSG",
         "CKEYS": [
           {
             "COLUMN_NAME": "CRM_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Employer?"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Employer?"
       },
       {
-        "TABLE_NAME": "  COMPANY_RELATION",
+        "TABLE_NAME": "COMPANY_RELATION",
         "CKEYS": [
           {
             "COLUMN_NAME": "CHILD_CMPY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": ""
+            "COLUMN_ID": 1
           }
         ]
       },
       {
-        "TABLE_NAME": "  COMPANY_RELATION",
+        "TABLE_NAME": "COMPANY_RELATION",
         "CKEYS": [
           {
             "COLUMN_NAME": "PARENT_CMPY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": ""
+            "COLUMN_ID": 1
           }
         ]
       },
       {
-        "TABLE_NAME": "  COMPANYS",
+        "TABLE_NAME": "COMPANYS",
         "CKEYS": [
           {
             "COLUMN_NAME": "CMPY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": ""
+            "COLUMN_ID": 1
           }
         ]
       },
       {
-        "TABLE_NAME": "  CREATE_OPEN_ORDER_HOST_IN",
+        "TABLE_NAME": "CREATE_OPEN_ORDER_HOST_IN",
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_CUST_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": ""
+            "COLUMN_ID": 1
           }
         ]
       },
       {
-        "TABLE_NAME": "  CREATE_OPEN_ORDER_HOST_IN",
+        "TABLE_NAME": "CREATE_OPEN_ORDER_HOST_IN",
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_CARR_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": ""
+            "COLUMN_ID": 1
           }
         ]
       },
       {
-        "TABLE_NAME": "  CREATE_OPEN_ORDER_HOST_IN",
+        "TABLE_NAME": "CREATE_OPEN_ORDER_HOST_IN",
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_SUPP_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  CREATE_OPEN_ORDER_HOST_IN_BAK",
+        "TABLE_NAME": "CREATE_OPEN_ORDER_HOST_IN_BAK",
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_CUST_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": ""
+            "COLUMN_ID": 1
           }
         ]
       },
       {
-        "TABLE_NAME": "  CREATE_OPEN_ORDER_HOST_IN_BAK",
+        "TABLE_NAME": "CREATE_OPEN_ORDER_HOST_IN_BAK",
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_CARR_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": ""
+            "COLUMN_ID": 1
           }
         ]
       },
       {
-        "TABLE_NAME": "  CREATE_OPEN_ORDER_HOST_IN_BAK",
+        "TABLE_NAME": "CREATE_OPEN_ORDER_HOST_IN_BAK",
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_SUPP_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  CUST_ORDER",
+        "TABLE_NAME": "CUST_ORDER",
         "CKEYS": [
           {
             "COLUMN_NAME": "ORDER_CARRIER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Carrier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Carrier"
       },
       {
-        "TABLE_NAME": "  CUST_ORDER",
+        "TABLE_NAME": "CUST_ORDER",
         "CKEYS": [
           {
             "COLUMN_NAME": "ORDER_DRAWER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Drawer"
       },
       {
-        "TABLE_NAME": "  CUSTOMER",
+        "TABLE_NAME": "CUSTOMER",
         "CKEYS": [
           {
             "COLUMN_NAME": "CUST_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Customer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Customer"
       },
       {
-        "TABLE_NAME": "  CUSTOMER",
+        "TABLE_NAME": "CUSTOMER",
         "CKEYS": [
           {
             "COLUMN_NAME": "CUST_SUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  CUSTOMER_CARRIER",
+        "TABLE_NAME": "CUSTOMER_CARRIER",
         "CKEYS": [
           {
             "COLUMN_NAME": "CMPY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Carrier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Carrier"
       },
       {
-        "TABLE_NAME": "  CUSTOMER_PRODUCT",
+        "TABLE_NAME": "CUSTOMER_PRODUCT",
         "CKEYS": [
           {
             "COLUMN_NAME": "PROD_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  DEL_LOAD_DETAILS",
+        "TABLE_NAME": "DEL_LOAD_DETAILS",
         "CKEYS": [
           {
             "COLUMN_NAME": "CARR_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": ""
+            "COLUMN_ID": 1
           }
         ]
       },
       {
-        "TABLE_NAME": "  DEL_LOAD_DETAILS",
+        "TABLE_NAME": "DEL_LOAD_DETAILS",
         "CKEYS": [
           {
             "COLUMN_NAME": "SUPP_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  DELV_BOL",
+        "TABLE_NAME": "DELV_BOL",
         "CKEYS": [
           {
             "COLUMN_NAME": "DB_SUPP_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  DELV_COMPT",
+        "TABLE_NAME": "DELV_COMPT",
         "CKEYS": [
           {
             "COLUMN_NAME": "DC_DELV_DOC_SHL_SHLSSUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  DELV_DETAILS",
+        "TABLE_NAME": "DELV_DETAILS",
         "CKEYS": [
           {
             "COLUMN_NAME": "DD_SUPP_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  DELV_DETAILS",
+        "TABLE_NAME": "DELV_DETAILS",
         "CKEYS": [
           {
             "COLUMN_NAME": "DD_SELL_CMPY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": ""
+            "COLUMN_ID": 1
           }
         ]
       },
       {
-        "TABLE_NAME": "  DELV_DETAILS_DN",
+        "TABLE_NAME": "DELV_DETAILS_DN",
         "CKEYS": [
           {
             "COLUMN_NAME": "DDD_DD_SUPP_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  DELV_DETAILS_DN_ADDL_INFO",
+        "TABLE_NAME": "DELV_DETAILS_DN_ADDL_INFO",
         "CKEYS": [
           {
             "COLUMN_NAME": "DDD_DD_SUPP_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  DELV_DETAILS_ITEM",
+        "TABLE_NAME": "DELV_DETAILS_ITEM",
         "CKEYS": [
           {
             "COLUMN_NAME": "DDI_CMPY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": ""
+            "COLUMN_ID": 1
           }
         ]
       },
       {
-        "TABLE_NAME": "  DELV_DETAILS_ITEM",
+        "TABLE_NAME": "DELV_DETAILS_ITEM",
         "CKEYS": [
           {
             "COLUMN_NAME": "DDI_DD_SUPP_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  DELV_DETAILS_ITEM_ADDL_INFO",
+        "TABLE_NAME": "DELV_DETAILS_ITEM_ADDL_INFO",
         "CKEYS": [
           {
             "COLUMN_NAME": "DDI_DD_SUPP_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  DG_LINK",
+        "TABLE_NAME": "DG_LINK",
         "CKEYS": [
           {
             "COLUMN_NAME": "DGLNK_SP_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  DLOC_TANKS",
+        "TABLE_NAME": "DLOC_TANKS",
         "CKEYS": [
           {
             "COLUMN_NAME": "DLTPRDCT_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  DOC_INSTRUCT",
+        "TABLE_NAME": "DOC_INSTRUCT",
         "CKEYS": [
           {
             "COLUMN_NAME": "DOC_LINK_DOC_SHL_SHLSSUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  DOC_PROD",
+        "TABLE_NAME": "DOC_PROD",
         "CKEYS": [
           {
             "COLUMN_NAME": "DP_PROD_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  DOC_PROD",
+        "TABLE_NAME": "DOC_PROD",
         "CKEYS": [
           {
             "COLUMN_NAME": "DP_DOC_DOC_SHL_SHLSSUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  DOCKET",
+        "TABLE_NAME": "DOCKET",
         "CKEYS": [
           {
             "COLUMN_NAME": "DOC_CUST",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": ""
+            "COLUMN_ID": 1
           }
         ]
       },
       {
-        "TABLE_NAME": "  DOCKET",
+        "TABLE_NAME": "DOCKET",
         "CKEYS": [
           {
             "COLUMN_NAME": "DOC_SHL_SHLSSUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  DOR_HISTORY",
+        "TABLE_NAME": "DOR_HISTORY",
         "CKEYS": [
           {
             "COLUMN_NAME": "DH_SHLSSUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  EPC_DATA",
+        "TABLE_NAME": "EPC_DATA",
         "CKEYS": [
           {
             "COLUMN_NAME": "EPCFPROD_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  EXPIRY_DATE_DETAILS",
+        "TABLE_NAME": "EXPIRY_DATE_DETAILS",
         "CKEYS": [
           {
             "COLUMN_NAME": "ED_CMPY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": ""
+            "COLUMN_ID": 1
           }
         ]
       },
       {
-        "TABLE_NAME": "  HOST_OUT_HIST",
+        "TABLE_NAME": "HOST_OUT_HIST",
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_CUST_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": ""
+            "COLUMN_ID": 1
           }
         ]
       },
       {
-        "TABLE_NAME": "  HOST_OUT_HIST",
+        "TABLE_NAME": "HOST_OUT_HIST",
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_CARR_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": ""
+            "COLUMN_ID": 1
           }
         ]
       },
       {
-        "TABLE_NAME": "  HOST_OUT_HIST",
+        "TABLE_NAME": "HOST_OUT_HIST",
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_SUPP_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  HOST_OUT_INTF",
+        "TABLE_NAME": "HOST_OUT_INTF",
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_CUST_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": ""
+            "COLUMN_ID": 1
           }
         ]
       },
       {
-        "TABLE_NAME": "  HOST_OUT_INTF",
+        "TABLE_NAME": "HOST_OUT_INTF",
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_CARR_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": ""
+            "COLUMN_ID": 1
           }
         ]
       },
       {
-        "TABLE_NAME": "  HOST_OUT_INTF",
+        "TABLE_NAME": "HOST_OUT_INTF",
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_SUPP_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  HOSTTMM",
+        "TABLE_NAME": "HOSTTMM",
         "CKEYS": [
           {
             "COLUMN_NAME": "HOSTTMMCO",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Host?"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Host?"
       },
       {
-        "TABLE_NAME": "  HST_OUT_MSGS",
+        "TABLE_NAME": "HST_OUT_MSGS",
         "CKEYS": [
           {
             "COLUMN_NAME": "HST_COMP_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": ""
+            "COLUMN_ID": 1
           }
         ]
       },
       {
-        "TABLE_NAME": "  HZ_LINK",
+        "TABLE_NAME": "HZ_LINK",
         "CKEYS": [
           {
             "COLUMN_NAME": "HZLNK_SP_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  INTERLOCK_REPORT",
+        "TABLE_NAME": "INTERLOCK_REPORT",
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Carrier?"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Carrier?"
       },
       {
-        "TABLE_NAME": "  INV_PRODUCT",
+        "TABLE_NAME": "INV_PRODUCT",
         "CKEYS": [
           {
             "COLUMN_NAME": "IP_PRKEY_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  INVPROD_BASE",
+        "TABLE_NAME": "INVPROD_BASE",
         "CKEYS": [
           {
             "COLUMN_NAME": "IPB_DAD_IP_PRKEY_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  LINKED_SCHEDULES",
+        "TABLE_NAME": "LINKED_SCHEDULES",
         "CKEYS": [
           {
             "COLUMN_NAME": "LS_LINKED_SUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  LINKED_SCHEDULES",
+        "TABLE_NAME": "LINKED_SCHEDULES",
         "CKEYS": [
           {
             "COLUMN_NAME": "LS_SUPP_SUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  LOAD_WEIGTHS",
+        "TABLE_NAME": "LOAD_WEIGTHS",
         "CKEYS": [
           {
             "COLUMN_NAME": "LDW_PROD_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  LOADED_COMPT",
+        "TABLE_NAME": "LOADED_COMPT",
         "CKEYS": [
           {
             "COLUMN_NAME": "LDCPPROD_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  LOADS",
+        "TABLE_NAME": "LOADS",
         "CKEYS": [
           {
             "COLUMN_NAME": "LOAD_CARRIER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Carrier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Carrier"
       },
       {
-        "TABLE_NAME": "  LOCKAL",
+        "TABLE_NAME": "LOCKAL",
         "CKEYS": [
           {
             "COLUMN_NAME": "LOCKAL_SUPL",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  LOCKAL",
+        "TABLE_NAME": "LOCKAL",
         "CKEYS": [
           {
             "COLUMN_NAME": "LOCKATYP_AT_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Carrier, Customer, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Carrier, Customer, Drawer"
       },
       {
-        "TABLE_NAME": "  MOV_LOAD_ITEMS",
+        "TABLE_NAME": "MOV_LOAD_ITEMS",
         "CKEYS": [
           {
             "COLUMN_NAME": "MLITM_COMPANY_TO",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier?"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier?"
       },
       {
-        "TABLE_NAME": "  MOV_LOAD_ITEMS",
+        "TABLE_NAME": "MOV_LOAD_ITEMS",
         "CKEYS": [
           {
             "COLUMN_NAME": "MLITM_COMPANY_FROM",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier?"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier?"
       },
       {
-        "TABLE_NAME": "  MOV_LOAD_ITEMS",
+        "TABLE_NAME": "MOV_LOAD_ITEMS",
         "CKEYS": [
           {
             "COLUMN_NAME": "MLITM_SUPPLIER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  MOV_LOAD_ITEMS",
+        "TABLE_NAME": "MOV_LOAD_ITEMS",
         "CKEYS": [
           {
             "COLUMN_NAME": "MLITM_PRODCMPY_TO",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  MOV_LOAD_ITEMS",
+        "TABLE_NAME": "MOV_LOAD_ITEMS",
         "CKEYS": [
           {
             "COLUMN_NAME": "MLITM_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  MOV_SCHD_ITEMS",
+        "TABLE_NAME": "MOV_SCHD_ITEMS",
         "CKEYS": [
           {
             "COLUMN_NAME": "MSITM_SHLSSUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  MOV_SCHD_ITEMS",
+        "TABLE_NAME": "MOV_SCHD_ITEMS",
         "CKEYS": [
           {
             "COLUMN_NAME": "MSITM_CUSTOMER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Customer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Customer"
       },
       {
-        "TABLE_NAME": "  MOV_SCHD_ITEMS",
+        "TABLE_NAME": "MOV_SCHD_ITEMS",
         "CKEYS": [
           {
             "COLUMN_NAME": "MSITM_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  MOV_SCHEDULES",
+        "TABLE_NAME": "MOV_SCHEDULES",
         "CKEYS": [
           {
             "COLUMN_NAME": "MS_PAIRSUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  MOV_SCHEDULES",
+        "TABLE_NAME": "MOV_SCHEDULES",
         "CKEYS": [
           {
             "COLUMN_NAME": "MS_SHLSSUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  MOV_TRSF_ITEMS",
+        "TABLE_NAME": "MOV_TRSF_ITEMS",
         "CKEYS": [
           {
             "COLUMN_NAME": "MTITM_COMPANY_TO",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier?"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier?"
       },
       {
-        "TABLE_NAME": "  MOV_TRSF_ITEMS",
+        "TABLE_NAME": "MOV_TRSF_ITEMS",
         "CKEYS": [
           {
             "COLUMN_NAME": "MTITM_COMPANY_FROM",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier?"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier?"
       },
       {
-        "TABLE_NAME": "  MOV_TRSF_ITEMS",
+        "TABLE_NAME": "MOV_TRSF_ITEMS",
         "CKEYS": [
           {
             "COLUMN_NAME": "MTITM_SUPPLIER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  MOV_TRSF_ITEMS",
+        "TABLE_NAME": "MOV_TRSF_ITEMS",
         "CKEYS": [
           {
             "COLUMN_NAME": "MTITM_PRODCMPY_TO",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  MOV_TRSF_ITEMS",
+        "TABLE_NAME": "MOV_TRSF_ITEMS",
         "CKEYS": [
           {
             "COLUMN_NAME": "MTITM_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  MOVEMENT_ITEMS",
+        "TABLE_NAME": "MOVEMENT_ITEMS",
         "CKEYS": [
           {
             "COLUMN_NAME": "MVITM_PRODCMPY_TO",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  MOVEMENT_ITEMS",
+        "TABLE_NAME": "MOVEMENT_ITEMS",
         "CKEYS": [
           {
             "COLUMN_NAME": "MVITM_PRODCMPY_FROM",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  MOVEMENTS",
+        "TABLE_NAME": "MOVEMENTS",
         "CKEYS": [
           {
             "COLUMN_NAME": "MV_SUPPLIER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  MOVEMENTS",
+        "TABLE_NAME": "MOVEMENTS",
         "CKEYS": [
           {
             "COLUMN_NAME": "MV_DRAWER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Drawer"
       },
       {
-        "TABLE_NAME": "  MOVEMENTS",
+        "TABLE_NAME": "MOVEMENTS",
         "CKEYS": [
           {
             "COLUMN_NAME": "MV_SHIPPER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Carrier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Carrier"
       },
       {
-        "TABLE_NAME": "  MOVEMENTS",
+        "TABLE_NAME": "MOVEMENTS",
         "CKEYS": [
           {
             "COLUMN_NAME": "MV_CARRIER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Carrier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Carrier"
       },
       {
-        "TABLE_NAME": "  MSG",
+        "TABLE_NAME": "MSG",
         "CKEYS": [
           {
             "COLUMN_NAME": "CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Employer?"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Employer?"
       },
       {
-        "TABLE_NAME": "  O_CLOSEOUT",
+        "TABLE_NAME": "O_CLOSEOUT",
         "CKEYS": [
           {
             "COLUMN_NAME": "OC_SUPPLIER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  OPROD_CHILD",
+        "TABLE_NAME": "OPROD_CHILD",
         "CKEYS": [
           {
             "COLUMN_NAME": "OPB_DAD_OSPROD_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  OPRODMTD",
+        "TABLE_NAME": "OPRODMTD",
         "CKEYS": [
           {
             "COLUMN_NAME": "OSPROD_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  ORD_SCHEDULE",
+        "TABLE_NAME": "ORD_SCHEDULE",
         "CKEYS": [
           {
             "COLUMN_NAME": "OS_SHL_SHLSSUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  ORDER_DISTB_RLT",
+        "TABLE_NAME": "ORDER_DISTB_RLT",
         "CKEYS": [
           {
             "COLUMN_NAME": "DISTB_KEY_ISSUER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Issuer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Issuer"
       },
       {
-        "TABLE_NAME": "  OVERFILL_EVENTS",
+        "TABLE_NAME": "OVERFILL_EVENTS",
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier?"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier?"
       },
       {
-        "TABLE_NAME": "  PARTNER",
+        "TABLE_NAME": "PARTNER",
         "CKEYS": [
           {
             "COLUMN_NAME": "PRTNR_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  PERSONNEL",
+        "TABLE_NAME": "PERSONNEL",
         "CKEYS": [
           {
             "COLUMN_NAME": "PER_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Employer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Employer"
       },
       {
-        "TABLE_NAME": "  PRDCT_MV_OWNERS",
+        "TABLE_NAME": "PRDCT_MV_OWNERS",
         "CKEYS": [
           {
             "COLUMN_NAME": "PMO_CMPNY_LNK",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier?"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier?"
       },
       {
-        "TABLE_NAME": "  PRFCMPT",
+        "TABLE_NAME": "PRFCMPT",
         "CKEYS": [
           {
             "COLUMN_NAME": "PRFC_PRD_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  PRICE_OFFSET",
+        "TABLE_NAME": "PRICE_OFFSET",
         "CKEYS": [
           {
             "COLUMN_NAME": "PO_SUPPLIER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  PRICE_OFFSET",
+        "TABLE_NAME": "PRICE_OFFSET",
         "CKEYS": [
           {
             "COLUMN_NAME": "PO_PROD_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  PRNT_VIRT_PRINT",
+        "TABLE_NAME": "PRNT_VIRT_PRINT",
         "CKEYS": [
           {
             "COLUMN_NAME": "PRNF_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Carrier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Carrier"
       },
       {
-        "TABLE_NAME": "  PRNTR_CMPY_USAGE",
+        "TABLE_NAME": "PRNTR_CMPY_USAGE",
         "CKEYS": [
           {
             "COLUMN_NAME": "CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  PRODOWNSHIP_TRANSACT",
+        "TABLE_NAME": "PRODOWNSHIP_TRANSACT",
         "CKEYS": [
           {
             "COLUMN_NAME": "SUPP_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  PRODOWNSHIP_TRANSACT",
+        "TABLE_NAME": "PRODOWNSHIP_TRANSACT",
         "CKEYS": [
           {
             "COLUMN_NAME": "SUPP_CMPY_TO",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  PRODUCT_MVMNTS",
+        "TABLE_NAME": "PRODUCT_MVMNTS",
         "CKEYS": [
           {
             "COLUMN_NAME": "PMVDRPR_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  PRODUCT_MVMNTS",
+        "TABLE_NAME": "PRODUCT_MVMNTS",
         "CKEYS": [
           {
             "COLUMN_NAME": "PMV_SRC_COMPANY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier?"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier?"
       },
       {
-        "TABLE_NAME": "  PRODUCT_MVMNTS",
+        "TABLE_NAME": "PRODUCT_MVMNTS",
         "CKEYS": [
           {
             "COLUMN_NAME": "PMV_DST_COMPANY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier?"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier?"
       },
       {
-        "TABLE_NAME": "  PRODUCT_MVMNTS",
+        "TABLE_NAME": "PRODUCT_MVMNTS",
         "CKEYS": [
           {
             "COLUMN_NAME": "PMV_TRIP_SUPPLIE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  PRODUCT_SWAP",
+        "TABLE_NAME": "PRODUCT_SWAP",
         "CKEYS": [
           {
             "COLUMN_NAME": "PRDS_TO_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier?"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier?"
       },
       {
-        "TABLE_NAME": "  PRODUCT_SWAP",
+        "TABLE_NAME": "PRODUCT_SWAP",
         "CKEYS": [
           {
             "COLUMN_NAME": "PRDS_FROMCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier?"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier?"
       },
       {
-        "TABLE_NAME": "  PRODUCTS",
+        "TABLE_NAME": "PRODUCTS",
         "CKEYS": [
           {
             "COLUMN_NAME": "PROD_CMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Drawer"
       },
       {
-        "TABLE_NAME": "  PRODUCTS",
+        "TABLE_NAME": "PRODUCTS",
         "CKEYS": [
           {
             "COLUMN_NAME": "PROD_2ND_DRAWER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Drawer"
       },
       {
-        "TABLE_NAME": "  PROFILE",
+        "TABLE_NAME": "PROFILE",
         "CKEYS": [
           {
             "COLUMN_NAME": "PRF_SUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  RATIOS",
+        "TABLE_NAME": "RATIOS",
         "CKEYS": [
           {
             "COLUMN_NAME": "RAT_PROD_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  RECIPES",
+        "TABLE_NAME": "RECIPES",
         "CKEYS": [
           {
             "COLUMN_NAME": "RCPINGR_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  RECIPES",
+        "TABLE_NAME": "RECIPES",
         "CKEYS": [
           {
             "COLUMN_NAME": "RCP_RCP_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  RTN_EQP_CPT",
+        "TABLE_NAME": "RTN_EQP_CPT",
         "CKEYS": [
           {
             "COLUMN_NAME": "RTNCPTTY_RTNT_SHL_SHLSSUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  RTN_EQP_CPT",
+        "TABLE_NAME": "RTN_EQP_CPT",
         "CKEYS": [
           {
             "COLUMN_NAME": "RTN_PROD_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  RTN_EQP_CPT",
+        "TABLE_NAME": "RTN_EQP_CPT",
         "CKEYS": [
           {
             "COLUMN_NAME": "RTN_SHL_SHLSSUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  RTNTYPE",
+        "TABLE_NAME": "RTNTYPE",
         "CKEYS": [
           {
             "COLUMN_NAME": "RTNT_SHL_SHLSSUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  SCHEDULE",
+        "TABLE_NAME": "SCHEDULE",
         "CKEYS": [
           {
             "COLUMN_NAME": "SHLS_CUST",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Customer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Customer"
       },
       {
-        "TABLE_NAME": "  SCHEDULE",
+        "TABLE_NAME": "SCHEDULE",
         "CKEYS": [
           {
             "COLUMN_NAME": "SHLS_DRAWER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Drawer"
       },
       {
-        "TABLE_NAME": "  SCHEDULE",
+        "TABLE_NAME": "SCHEDULE",
         "CKEYS": [
           {
             "COLUMN_NAME": "SHLS_SUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  SCHEDULE",
+        "TABLE_NAME": "SCHEDULE",
         "CKEYS": [
           {
             "COLUMN_NAME": "SHLS_SUPP_ORG",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  SEAL",
+        "TABLE_NAME": "SEAL",
         "CKEYS": [
           {
             "COLUMN_NAME": "SEALSPEC_SHLSSUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  SITE",
+        "TABLE_NAME": "SITE",
         "CKEYS": [
           {
             "COLUMN_NAME": "SITE_MNGR",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Site Manager, Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Site Manager, Supplier"
       },
       {
-        "TABLE_NAME": "  SITE_JOURNAL_01",
+        "TABLE_NAME": "SITE_JOURNAL_01",
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Site Manager, Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Site Manager, Supplier"
       },
       {
-        "TABLE_NAME": "  SITE_JOURNAL_02",
+        "TABLE_NAME": "SITE_JOURNAL_02",
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Site Manager, Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Site Manager, Supplier"
       },
       {
-        "TABLE_NAME": "  SITE_JOURNAL_03",
+        "TABLE_NAME": "SITE_JOURNAL_03",
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Site Manager, Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Site Manager, Supplier"
       },
       {
-        "TABLE_NAME": "  SITE_JOURNAL_04",
+        "TABLE_NAME": "SITE_JOURNAL_04",
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Site Manager, Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Site Manager, Supplier"
       },
       {
-        "TABLE_NAME": "  SITE_JOURNAL_05",
+        "TABLE_NAME": "SITE_JOURNAL_05",
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Site Manager, Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Site Manager, Supplier"
       },
       {
-        "TABLE_NAME": "  SITE_JOURNAL_06",
+        "TABLE_NAME": "SITE_JOURNAL_06",
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Site Manager, Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Site Manager, Supplier"
       },
       {
-        "TABLE_NAME": "  SITE_JOURNAL_07",
+        "TABLE_NAME": "SITE_JOURNAL_07",
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Site Manager, Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Site Manager, Supplier"
       },
       {
-        "TABLE_NAME": "  SITE_JOURNAL_08",
+        "TABLE_NAME": "SITE_JOURNAL_08",
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Site Manager, Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Site Manager, Supplier"
       },
       {
-        "TABLE_NAME": "  SITE_JOURNAL_09",
+        "TABLE_NAME": "SITE_JOURNAL_09",
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Site Manager, Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Site Manager, Supplier"
       },
       {
-        "TABLE_NAME": "  SITE_JOURNAL_10",
+        "TABLE_NAME": "SITE_JOURNAL_10",
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Site Manager, Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Site Manager, Supplier"
       },
       {
-        "TABLE_NAME": "  SITE_JOURNAL_11",
+        "TABLE_NAME": "SITE_JOURNAL_11",
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Site Manager, Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Site Manager, Supplier"
       },
       {
-        "TABLE_NAME": "  SITE_JOURNAL_12",
+        "TABLE_NAME": "SITE_JOURNAL_12",
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Site Manager, Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Site Manager, Supplier"
       },
       {
-        "TABLE_NAME": "  SPEC_ORDERS",
+        "TABLE_NAME": "SPEC_ORDERS",
         "CKEYS": [
           {
             "COLUMN_NAME": "SCHO_DAD_SCHDSPEC_SHLSSUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  SPECAXLES",
+        "TABLE_NAME": "SPECAXLES",
         "CKEYS": [
           {
             "COLUMN_NAME": "SUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  SPECDETS",
+        "TABLE_NAME": "SPECDETS",
         "CKEYS": [
           {
             "COLUMN_NAME": "SCHDPROD_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  SPECDETS",
+        "TABLE_NAME": "SPECDETS",
         "CKEYS": [
           {
             "COLUMN_NAME": "SCHDSPEC_SHLSSUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  SPECDPPROD",
+        "TABLE_NAME": "SPECDPPROD",
         "CKEYS": [
           {
             "COLUMN_NAME": "SPECDPPP_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  SPECDPPROD",
+        "TABLE_NAME": "SPECDPPROD",
         "CKEYS": [
           {
             "COLUMN_NAME": "SPECDPPS_SHLSSUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  SPECPROD",
+        "TABLE_NAME": "SPECPROD",
         "CKEYS": [
           {
             "COLUMN_NAME": "SCHPPROD_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  SPECPROD",
+        "TABLE_NAME": "SPECPROD",
         "CKEYS": [
           {
             "COLUMN_NAME": "SCHPSPID_SHLSSUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  SPECVARS",
+        "TABLE_NAME": "SPECVARS",
         "CKEYS": [
           {
             "COLUMN_NAME": "SCHVSPID_SHLSSUPP",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  SUPP_LNKD_CMPY",
+        "TABLE_NAME": "SUPP_LNKD_CMPY",
         "CKEYS": [
           {
             "COLUMN_NAME": "CMPY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier?"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier?"
       },
       {
-        "TABLE_NAME": "  SUPP_LNKD_CMPY",
+        "TABLE_NAME": "SUPP_LNKD_CMPY",
         "CKEYS": [
           {
             "COLUMN_NAME": "SUPP_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  TANKERS",
+        "TABLE_NAME": "TANKERS",
         "CKEYS": [
           {
             "COLUMN_NAME": "TNKR_OWNER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Carrier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Carrier"
       },
       {
-        "TABLE_NAME": "  TANKERS",
+        "TABLE_NAME": "TANKERS",
         "CKEYS": [
           {
             "COLUMN_NAME": "TNKR_CARRIER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Carrier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Carrier"
       },
       {
-        "TABLE_NAME": "  TEMPLATE_N_CMPY",
+        "TABLE_NAME": "TEMPLATE_N_CMPY",
         "CKEYS": [
           {
             "COLUMN_NAME": "CMPY_CODE",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  TK_CLOSEOUT",
+        "TABLE_NAME": "TK_CLOSEOUT",
         "CKEYS": [
           {
             "COLUMN_NAME": "TKCL_CO",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  TK_OWNERS",
+        "TABLE_NAME": "TK_OWNERS",
         "CKEYS": [
           {
             "COLUMN_NAME": "TKCMPY_LINK",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  TMM_FLAGS",
+        "TABLE_NAME": "TMM_FLAGS",
         "CKEYS": [
           {
             "COLUMN_NAME": "TMMF_COMPANY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier?"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier?"
       },
       {
-        "TABLE_NAME": "  TRANSFERS",
+        "TABLE_NAME": "TRANSFERS",
         "CKEYS": [
           {
             "COLUMN_NAME": "TRSFPROD_PRODCMPY",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier, Drawer"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier, Drawer"
       },
       {
-        "TABLE_NAME": "  TRANSFERS",
+        "TABLE_NAME": "TRANSFERS",
         "CKEYS": [
           {
             "COLUMN_NAME": "TRSF_SUPPLIER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Supplier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
-        "TABLE_NAME": "  TRANSP_EQUIP",
+        "TABLE_NAME": "TRANSP_EQUIP",
         "CKEYS": [
           {
             "COLUMN_NAME": "EQPT_OWNER",
             "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1,
-            "TYPE": "Carrier"
+            "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Carrier"
       }
     ]
   }

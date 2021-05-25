@@ -694,6 +694,11 @@ class Company extends CommonClass
     {
         $lang = Utilities::getCurrLang();
 		
+        $langClnFile = dirname(__FILE__) . "/../config/langColumns.json";
+		$jsonColumns = file_get_contents($langClnFile);
+		// convert json to an associated array
+		$langColumns = json_decode( $jsonColumns, true );
+		
 		$langMsgFile = dirname(__FILE__) . "/../config/langMessages.json";
 		$jsonMessages = file_get_contents($langMsgFile);
 		// convert json to an associated array
@@ -737,6 +742,20 @@ class Company extends CommonClass
                 $item["table"] = $child_table;
                 $item["title"] = $child_title;
                 $item["child"] = $cnt;
+                $item["type"] = $child["TYPE"];
+                $item["language"] = $lang;
+                $column_names = array();
+                $column_titles = array();
+                foreach ($ckeys as $cid => $ckey) {
+                    $column_names[] = $ckey["COLUMN_NAME"];
+                    $column_title = $ckey["COLUMN_NAME"];
+                    if (isset($langColumns[$lang][$child_table][$ckey["COLUMN_NAME"]])) {
+                        $column_title = $langColumns[$lang][$child_table][$ckey["COLUMN_NAME"]];
+                    }
+                    $column_titles[] = $column_title;
+                }
+                $item["column_names"] = $column_names;
+                $item["column_titles"] = $column_titles;
                 $counts[] = $item;
             }
         }
