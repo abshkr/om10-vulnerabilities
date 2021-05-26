@@ -99,24 +99,24 @@ const FormModal = ({
 
     if (children?.length > 0) {
       const lines = (
-        <>
-          <Scrollbars
-            style={{
-              height: 'calc(100vh - 360px)',
-              width: '26vw',
-              marginTop: 5,
-              marginRight: 5,
-              padding: 5,
-            }}
-          >
+        <Scrollbars
+          style={{
+            height: 'calc(100vh - 360px)',
+            width: '26vw',
+            marginTop: 5,
+            marginRight: 5,
+            padding: 5,
+          }}
+        >
+          <div style={{ padding: 10 }}>
             {children?.map((item, index) => (
               <Card size="small" title={item?.title + ': ' + _.toString(item?.column_titles)}>
                 {t('descriptions.childRecordCounts') + ': '}
                 <b style={{ color: 'red' }}>{item?.child}</b>
               </Card>
             ))}
-          </Scrollbars>
-        </>
+          </div>
+        </Scrollbars>
       );
 
       notification.error({
