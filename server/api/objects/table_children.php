@@ -38,7 +38,7 @@ class TableChildren extends CommonClass
 
     }
 
-    public function check_one_child($child_table, $ckeys, $pkeys)
+    public function check_one_child($child_table, $ckeys, $pkeys, $type_condition="" )
     {
         // write_log("JSON child: " . $child_table, __FILE__, __LINE__, LogLevel::INFO);
         // write_log("JSON child: " . print_r($ckeys, true), __FILE__, __LINE__, LogLevel::INFO);
@@ -48,6 +48,10 @@ class TableChildren extends CommonClass
             FROM $child_table
             WHERE 1=1 
         ";
+
+        if (isset($type_condition) && strlen(trim($type_condition)) > 0) {
+            $query .= "    AND " . $type_condition . "\n";
+        }
 
         /*
             "PKEYS": [
@@ -83,6 +87,16 @@ class TableChildren extends CommonClass
         $stmt = oci_parse($this->conn, $query);
 
         // oci_bind_by_name($stmt, ':code', $this->tank_batch_no);
+        if (isset($type_condition) && strlen(trim($type_condition)) > 0) {
+            $pairs = explode('=:', $type_condition);
+            if (count($pairs) >= 2) {
+                $cln = $pairs[1];
+            } else {
+                $cln = "cmpy_type";
+            }
+            oci_bind_by_name($stmt, ':' . $cln, $this->$cln);
+        }
+
         foreach ($pkeys as $pid => $pkey) {
             // write_log("Query children param: " . $this[strtolower($pkey["COLUMN_NAME"])], __FILE__, __LINE__, LogLevel::INFO);
             //oci_bind_by_name($stmt, ':' . strtolower($pkey["COLUMN_NAME"]), $this[strtolower($pkey["COLUMN_NAME"])]);
@@ -143,12 +157,17 @@ class TableChildren extends CommonClass
                             "COLUMN_ID": 1
                         }
                     ],
+                    "TYPE_COLUMN": "DECODE(KYA_ALLOC_TYPE, 1, 'Supplier', 2, 'Carrier', 3, 'Customer', 4, 'Drawer', '-1' )=:cmpy_type",
                     "TYPE": "Supplier, Carrier, Customer, Drawer"
                 },
             */
             $child_table = $child["TABLE_NAME"];
             $ckeys = $child["CKEYS"];
-            $cnt = $this->check_one_child($child_table, $ckeys, $pkeys);
+            $type_condition = "";
+            if (isset($child["TYPE_COLUMN"])) {
+                $type_condition = $child["TYPE_COLUMN"];
+            }
+            $cnt = $this->check_one_child($child_table, $ckeys, $pkeys, $type_condition);
             if ($cnt > 0) {
                 $child_title = $child_table;
                 if (isset($langMessages[$lang]["SCREENS"][$child_table])) {

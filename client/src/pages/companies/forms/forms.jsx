@@ -28,6 +28,7 @@ import {
 // import 'antd/dist/antd.css';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import api, { COMPANIES, ROLE_ACCESS_MANAGEMENT } from '../../../api';
 import { InputNumber, NumericInput } from '../../../components';
@@ -70,11 +71,15 @@ const FormModal = ({
 
   const removeWhiteSpaceFrontBack = (s) => s.trim().split(/ +/).join(' ');
 
-  const getTableChildren = async () => {
+  const getTableChildren = async (type) => {
     const values = {
       parent: 'COMPANYS',
       cmpy_code: value?.cmpy_code,
     };
+
+    if (type?.length > 0) {
+      values.cmpy_type = type;
+    }
 
     const results = await api.post(ROLE_ACCESS_MANAGEMENT.CHECK_CHILDREN, values);
     console.log('............getTableChildren', results);
@@ -88,18 +93,29 @@ const FormModal = ({
 
   const checkChildren = async (type) => {
     // getChildrenFromTxt();
-    const allChildren = await getTableChildren();
+    const allChildren = await getTableChildren(type);
 
     const children = _.filter(allChildren, (o) => type?.length === 0 || o?.type?.indexOf(type) >= 0);
 
     if (children?.length > 0) {
       const lines = (
         <>
-          {children?.map((item, index) => (
-            <Card size="small" title={item?.title + ': ' + _.toString(item?.column_titles)}>
-              {t('descriptions.childRecordCounts') + ': ' + item?.child}
-            </Card>
-          ))}
+          <Scrollbars
+            style={{
+              height: 'calc(100vh - 360px)',
+              width: '26vw',
+              marginTop: 5,
+              marginRight: 5,
+              padding: 5,
+            }}
+          >
+            {children?.map((item, index) => (
+              <Card size="small" title={item?.title + ': ' + _.toString(item?.column_titles)}>
+                {t('descriptions.childRecordCounts') + ': '}
+                <b style={{ color: 'red' }}>{item?.child}</b>
+              </Card>
+            ))}
+          </Scrollbars>
         </>
       );
 
@@ -109,11 +125,11 @@ const FormModal = ({
             ? t('validate.childTypeRecordsFoundCompany')
             : t('validate.childTableRecordsFoundCompany'),
         description: lines,
-        duration: 0,
+        // duration: 0,
         style: {
-          height: '500px',
-          width: '30vw',
-          overflowY: 'scroll',
+          height: 'calc(100vh - 260px)',
+          width: '32vw',
+          // overflowY: 'scroll',
         },
       });
     }
