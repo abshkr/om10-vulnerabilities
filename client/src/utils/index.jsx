@@ -33,6 +33,7 @@ import generatePaths from './generate-paths';
 import hash from './hash';
 import * as VCFManager from './vcf-manager';
 import generatePassword from './generate-password';
+import getChildrenFromTxt from './get-children-from-txt';
 export {
   search,
   generateOptions,
@@ -71,4 +72,5 @@ export {
   pwdComplexity,
   complexityDesc,
   generatePassword,
+  getChildrenFromTxt,
 };

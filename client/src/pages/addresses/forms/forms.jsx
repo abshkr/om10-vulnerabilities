@@ -207,7 +207,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               if (error.message.indexOf('child record found') >= 0) {
                 notification.error({
                   message: t('descriptions.deleteFailed'),
-                  description: t('descriptions.childRecordFound'),
+                  description: t('descriptions.childRecordFoundAddress'),
                 });
               } else {
                 notification.error({

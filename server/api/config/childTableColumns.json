@@ -511,7 +511,8 @@
             "DATA_TYPE": "VARCHAR(16)",
             "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
         "TABLE_NAME": "CLOSEOUT_TK_OWNER",
@@ -521,7 +522,8 @@
             "DATA_TYPE": "VARCHAR(16)",
             "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
         "TABLE_NAME": "CMPY_CUST_PRTNR",
@@ -553,7 +555,8 @@
             "DATA_TYPE": "VARCHAR(16)",
             "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Carrier, Employer"
       },
       {
         "TABLE_NAME": "COMPANY_RELATION",
@@ -563,17 +566,8 @@
             "DATA_TYPE": "VARCHAR(16)",
             "COLUMN_ID": 1
           }
-        ]
-      },
-      {
-        "TABLE_NAME": "COMPANYS",
-        "CKEYS": [
-          {
-            "COLUMN_NAME": "CMPY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
-            "COLUMN_ID": 1
-          }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
         "TABLE_NAME": "CREATE_OPEN_ORDER_HOST_IN",
@@ -583,7 +577,8 @@
             "DATA_TYPE": "VARCHAR(16)",
             "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Customer"
       },
       {
         "TABLE_NAME": "CREATE_OPEN_ORDER_HOST_IN",
@@ -593,7 +588,8 @@
             "DATA_TYPE": "VARCHAR(16)",
             "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Carrier"
       },
       {
         "TABLE_NAME": "CREATE_OPEN_ORDER_HOST_IN",
@@ -614,7 +610,8 @@
             "DATA_TYPE": "VARCHAR(16)",
             "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Customer"
       },
       {
         "TABLE_NAME": "CREATE_OPEN_ORDER_HOST_IN_BAK",
@@ -624,7 +621,8 @@
             "DATA_TYPE": "VARCHAR(16)",
             "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Carrier"
       },
       {
         "TABLE_NAME": "CREATE_OPEN_ORDER_HOST_IN_BAK",
@@ -711,7 +709,8 @@
             "DATA_TYPE": "VARCHAR(16)",
             "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Carrier"
       },
       {
         "TABLE_NAME": "DEL_LOAD_DETAILS",
@@ -765,7 +764,8 @@
             "DATA_TYPE": "VARCHAR(16)",
             "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Supplier"
       },
       {
         "TABLE_NAME": "DELV_DETAILS_DN",
@@ -797,7 +797,8 @@
             "DATA_TYPE": "VARCHAR(16)",
             "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Suplier"
       },
       {
         "TABLE_NAME": "DELV_DETAILS_ITEM",
@@ -884,7 +885,8 @@
             "DATA_TYPE": "VARCHAR(16)",
             "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Customer"
       },
       {
         "TABLE_NAME": "DOCKET",
@@ -927,7 +929,8 @@
             "DATA_TYPE": "VARCHAR(16)",
             "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Carrier, Employer"
       },
       {
         "TABLE_NAME": "HOST_OUT_HIST",
@@ -937,7 +940,8 @@
             "DATA_TYPE": "VARCHAR(16)",
             "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Customer"
       },
       {
         "TABLE_NAME": "HOST_OUT_HIST",
@@ -947,7 +951,8 @@
             "DATA_TYPE": "VARCHAR(16)",
             "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Carrier"
       },
       {
         "TABLE_NAME": "HOST_OUT_HIST",
@@ -968,7 +973,8 @@
             "DATA_TYPE": "VARCHAR(16)",
             "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Customer"
       },
       {
         "TABLE_NAME": "HOST_OUT_INTF",
@@ -978,7 +984,8 @@
             "DATA_TYPE": "VARCHAR(16)",
             "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Carrier"
       },
       {
         "TABLE_NAME": "HOST_OUT_INTF",
@@ -1010,7 +1017,8 @@
             "DATA_TYPE": "VARCHAR(16)",
             "COLUMN_ID": 1
           }
-        ]
+        ],
+        "TYPE": "Host?"
       },
       {
         "TABLE_NAME": "HZ_LINK",
