@@ -8,6 +8,36 @@ include_once 'common_class.php';
 class TableChildren extends CommonClass
 {
 
+    public function get_json_from_txt($filename)
+    {
+        $childFile = dirname(__FILE__) . "/../config/" . $filename . ".txt";
+		$ctables = file_get_contents($childFile);
+		
+        $lines = explode("\n", $ctables);
+        $json = array();
+        $json["CHILDREN"] = array();
+
+        foreach ($lines as $index => $line) {
+            $columns = explode("\t", trim($line));
+            $item = array();
+            $item["TABLE_NAME"] = $columns[0];
+            $item["CKEYS"] = array();
+            $item["TYPE"] = $columns[2];
+            $column = array();
+            $column["COLUMN_NAME"] = $columns[1];
+            $column["DATA_TYPE"] = "VARCHAR(16)";
+            $column["COLUMN_ID"] = 1;
+            $item["CKEYS"][] = $column;
+            $json["CHILDREN"][] = $item;
+        }
+
+        $jsonFile = dirname(__FILE__) . "/../config/" . $filename . ".json";
+        $fp = fopen($jsonFile, 'w');
+        fwrite($fp, json_encode($json, JSON_PRETTY_PRINT));
+        fclose($fp);
+
+    }
+
     public function check_one_child($child_table, $ckeys, $pkeys)
     {
         // write_log("JSON child: " . $child_table, __FILE__, __LINE__, LogLevel::INFO);
@@ -77,6 +107,7 @@ class TableChildren extends CommonClass
 
     public function check_children()
     {
+        // $this->get_json_from_txt("companyChildren");
         $lang = Utilities::getCurrLang();
 		
         $langClnFile = dirname(__FILE__) . "/../config/langColumns.json";

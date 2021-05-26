@@ -36,7 +36,7 @@ import useSWR from 'swr';
 import _, { trim } from 'lodash';
 import { useConfig } from 'hooks';
 
-import { getChildrenFromTxt } from '../../../utils';
+// import { getChildrenFromTxt } from '../../../utils';
 
 const TabPane = Tabs.TabPane;
 
