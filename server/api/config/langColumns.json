@@ -1167,23 +1167,34 @@
       "CATEG_DESCRIPT": "Category Name"
     },
     "CUSTOMER": {
-      "CUST_VARIABLE_PR": "Cust Variable Pr",
-      "CUST_DELIV_POINT": "Cust Deliv Point",
-      "CUST_CONTACT": "Cust Contact",
-      "CUST_ORD_DAYS": "Cust Ord Days",
-      "CUST_PHONE_NO": "Cust Phone No",
-      "CUST_SUPP": "Cust Supp",
-      "CUST_CODE": "Cust Code",
-      "CUST_ACCT": "Cust Acct",
-      "CUST_ADDR": "Cust Addr",
-      "CUST_CRD_LIM": "Cust Crd Lim",
-      "CUST_CRD_TERMS": "Cust Crd Terms",
-      "CUST_CRD_DAYS": "Cust Crd Days",
-      "CUST_BALANCE": "Cust Balance",
-      "CUST_CATEGORY": "Cust Category",
-      "CUST_SALE_TYPE": "Cust Sale Type",
-      "CUST_INV_TYPE": "Cust Inv Type",
-      "CUST_APPR_TOTAL": "Cust Appr Total"
+      "CUST_VARIABLE_PR": "Customer Variable Pr",
+      "CUST_DELIV_POINT": "Customer Delivery Point",
+      "CUST_CONTACT": "Customer Contact",
+      "CUST_ORD_DAYS": "Customer Order Days",
+      "CUST_PHONE_NO": "Customer Phone No",
+      "CUST_SUPP": "Customer Supplier",
+      "CUST_CODE": "Customer Company Code",
+      "CUST_ACCT": "Customer Account",
+      "CUST_ADDR": "Customer Address",
+      "CUST_CRD_LIM": "Customer Credit Limit",
+      "CUST_CRD_TERMS": "Customer Credit Terms",
+      "CUST_CRD_DAYS": "Customer Credit Days",
+      "CUST_BALANCE": "Customer Balance",
+      "CUST_CATEGORY": "Customer Category",
+      "CUST_SALE_TYPE": "Customer Sale Type",
+      "CUST_INV_TYPE": "Customer Invoice Type",
+      "CUST_APPR_TOTAL": "Customer Approved Total"
+    },
+    "CUSTOMER_CARRIER": {
+      "CUST_ACCT": "Customer Account",
+      "CMPY_CODE": "Carrier Company",
+      "COMMENT": "Comment"
+    },
+    "CUSTOMER_PRODUCT": {
+      "CUST_ACCT": "Customer Account",
+      "PROD_CODE": "Product Code",
+      "PROD_CMPY": "Product Company",
+      "COMMENT": "Comment"
     },
     "CUST_ORDER": {
       "ORDER_NO": "Order No",
@@ -6105,6 +6116,17 @@
       "CUST_SALE_TYPE": "客户销售类型",
       "CUST_INV_TYPE": "客户发票类型",
       "CUST_APPR_TOTAL": "批准订单总额"
+    },
+    "CUSTOMER_CARRIER": {
+      "CUST_ACCT": "客户账号",
+      "CMPY_CODE": "客户承运商",
+      "COMMENT": "备注"
+    },
+    "CUSTOMER_PRODUCT": {
+      "CUST_ACCT": "客户账号",
+      "PROD_CODE": "调配油品代码",
+      "PROD_CMPY": "调配油品公司",
+      "COMMENT": "备注"
     },
     "CUST_ORDER": {
       "ORDER_NO": "系统订单号",

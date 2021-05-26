@@ -1193,6 +1193,17 @@
     "CUST_INV_TYPE": "NA",
     "CUST_APPR_TOTAL": "NA"
   },
+  "CUSTOMER_CARRIER": {
+    "CUST_ACCT": "NA",
+    "CMPY_CODE": "NA",
+    "COMMENT": "NA"
+  },
+  "CUSTOMER_PRODUCT": {
+    "CUST_ACCT": "NA",
+    "PROD_CODE": "NA",
+    "PROD_CMPY": "NA",
+    "COMMENT": "NA"
+  },
   "CUST_ORDER": {
     "ORDER_NO": "NA",
     "ORDER_CUST": "NA",

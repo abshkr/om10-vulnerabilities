@@ -29,7 +29,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 
-import api, { COMPANIES } from '../../../api';
+import api, { COMPANIES, ROLE_ACCESS_MANAGEMENT } from '../../../api';
 import { InputNumber, NumericInput } from '../../../components';
 import { REGEX } from '../../../constants';
 import useSWR from 'swr';
@@ -53,11 +53,6 @@ const FormModal = ({
   const { siteCompanyRelationAllowed, maxLengthCmpyCode, carrcode_tankernum_tag } = useConfig();
   const { data: addresses, isValidating } = useSWR(COMPANIES.ADDRESSES);
 
-  // const childurl = !value?.cmpy_code
-  //   ? null
-  //   : `${COMPANIES.CHECK_CHILDREN}?parent=${'COMPANYS'}&cmpy_code=${value?.cmpy_code}`;
-  // const { data: children } = useSWR(childurl);
-
   const [form] = Form.useForm();
   const { resetFields, setFieldsValue } = form;
 
@@ -70,7 +65,6 @@ const FormModal = ({
   const [employer, setEmployer] = useState(value?.employer);
   const [host, setHost] = useState(value?.host);
   const [plantRequired, setPlantRquired] = useState(value?.cmpy_plant);
-  // const [childCounts, setChildCounts] = useState([]);
 
   const IS_CREATING = !value;
 
@@ -82,7 +76,7 @@ const FormModal = ({
       cmpy_code: value?.cmpy_code,
     };
 
-    const results = await api.post(COMPANIES.CHECK_CHILDREN, values);
+    const results = await api.post(ROLE_ACCESS_MANAGEMENT.CHECK_CHILDREN, values);
     console.log('............getTableChildren', results);
 
     if (results?.data) {
@@ -296,14 +290,6 @@ const FormModal = ({
       setHost(null);
     }
   }, [value, setFieldsValue, resetFields]);
-
-  // useEffect(() => {
-  //   getChildrenFromTxt();
-  //   if (children) {
-  //     console.log('..................children', children);
-  //     setChildCounts(children?.records);
-  //   }
-  // }, [children]);
 
   const onFinish = async () => {
     const values = await form.validateFields();
