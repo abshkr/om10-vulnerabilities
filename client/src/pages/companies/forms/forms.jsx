@@ -71,6 +71,21 @@ const FormModal = ({
 
   const removeWhiteSpaceFrontBack = (s) => s.trim().split(/ +/).join(' ');
 
+  const checkCompany = async (code) => {
+    const values = {
+      cmpy_code: code,
+    };
+
+    const results = await api.post(COMPANIES.CHECK_COMPANY, values);
+    // console.log('............checkCompany', results);
+
+    if (results?.data) {
+      return _.toNumber(results?.data?.records[0]?.cnt);
+    } else {
+      return 0;
+    }
+  };
+
   const getTableChildren = async (type) => {
     const values = {
       parent: 'COMPANYS',
@@ -314,6 +329,20 @@ const FormModal = ({
     //   values.cmpy_name = removeWhiteSpaceFrontBack(values.cmpy_name);
     // };
 
+    // check if the company code is unique in CREATE mode
+    if (IS_CREATING) {
+      const counter = await checkCompany(values?.cmpy_code?.trim());
+      if (counter > 0) {
+        let notes = t('descriptions.alreadyExistsRecord');
+        notes = notes.replace('[[PKEY]]', '"' + values?.cmpy_code + ' - ' + values?.cmpy_name + '"');
+        notification.error({
+          message: t('messages.validationFailed'),
+          description: notes,
+        });
+        return;
+      }
+    }
+
     if (
       !values.carrier &&
       !values.customer &&
@@ -399,7 +428,15 @@ const FormModal = ({
     });
   };
 
-  const validateCode = (rule, input) => {
+  const validateCode = async (rule, input) => {
+    // check if the company code is unique in CREATE mode
+    if (IS_CREATING) {
+      const counter = await checkCompany(input.trim());
+      if (counter > 0) {
+        return Promise.reject(t('descriptions.alreadyExists'));
+      }
+    }
+
     if (rule.required) {
       if (input === '' || !input) {
         return Promise.reject(`${t('validate.set')} ─ ${t('fields.companyCode')}`);

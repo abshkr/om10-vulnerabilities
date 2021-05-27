@@ -670,4 +670,24 @@ class Allocation extends CommonClass
             return null;
         }
     }
+
+    public function check_allocation()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT 
+            FROM LOCKAL 
+            WHERE LOCKATYP_AT_TYPE=:at_type AND LOCKATYP_AT_CMPY=:at_cmpy AND LOCKAL_SUPL=:supplier
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':at_type', $this->at_type);
+        oci_bind_by_name($stmt, ':at_cmpy', $this->at_cmpy);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
 }

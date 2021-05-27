@@ -1,4 +1,5 @@
 export const READ = '/api/pages/allocs/read.php';
+export const CHECK_ALLOC = '/api/pages/allocs/check_allocation.php';
 export const TYPES = '/api/pages/allocs/types.php';
 export const LOCKS = '/api/pages/allocs/lock_types.php';
 export const PERIOD = '/api/pages/allocs/period_types.php';

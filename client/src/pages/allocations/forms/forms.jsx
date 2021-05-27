@@ -43,6 +43,23 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal 
   const IS_CREATING = !value;
   const CAN_ALLOCATE_PERIOD = selected && value && lockType === '4';
 
+  const checkAllocation = async (type, cmpy, supp) => {
+    const values = {
+      at_type: type,
+      at_cmpy: cmpy,
+      supplier: supp,
+    };
+
+    const results = await api.post(ALLOCATIONS.CHECK_ALLOC, values);
+    // console.log('............checkAllocation', results);
+
+    if (results?.data) {
+      return _.toNumber(results?.data?.records[0]?.cnt);
+    } else {
+      return 0;
+    }
+  };
+
   const onComplete = (value) => {
     handleFormState(false, null);
     if (value) {
@@ -71,6 +88,24 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal 
 
   const onFinish = async () => {
     const values = await form.validateFields();
+
+    // check if the company code is unique in CREATE mode
+    if (IS_CREATING) {
+      const counter = await checkAllocation(values?.alloc_type, values?.alloc_cmpycode, values?.alloc_suppcode);
+      if (counter > 0) {
+        let notes = t('descriptions.alreadyExistsRecord');
+        notes = notes.replace('[[PKEY]]', '"' 
+          + t('fields.type') + ':' + values?.alloc_type + ', ' 
+          + t('fields.company') + ':' + values?.alloc_cmpycode + ', ' 
+          + t('fields.supplier') + ':' + values?.alloc_suppcode + '"');
+        notification.error({
+          message: t('messages.validationFailed'),
+          description: notes,
+        });
+        return;
+      }
+    }
+
     const allocs = [];
 
     console.log(values);

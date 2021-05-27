@@ -21,3 +21,4 @@ export const CHILD_CMPYS = '/api/pages/company/companys_by_role.php';
 export const UPDATE_RELATIONS = '/api/pages/company/update_relations.php';
 
 export const CHECK_CHILDREN = '/api/pages/company/check_children.php';
+export const CHECK_COMPANY = '/api/pages/company/check_company_code.php';

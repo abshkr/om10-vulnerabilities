@@ -623,6 +623,22 @@ class Company extends CommonClass
         return true;
     }
 
+    public function check_company_code()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM COMPANYS WHERE CMPY_CODE=:code
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':code', $this->cmpy_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function check_one_child($child_table, $ckeys, $pkeys)
     {
         // write_log("JSON child: " . $child_table, __FILE__, __LINE__, LogLevel::INFO);

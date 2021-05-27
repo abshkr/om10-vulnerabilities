@@ -14,6 +14,7 @@
     "PDSSuccessful": "成功生成PDS文件",
     "actualTankFlowRate": "油罐实际流量",
     "alreadyExists": "该字段数据已经存在",
+    "alreadyExistsRecord": "该记录[[PKEY]]已经存在。",
     "applicationName": "OMEGA 5000",
     "batchCodeTankActive": "油罐仍然活跃使用中，不可以修改油罐批次编号。但是勾选后可以允许修改。",
     "batchCodeNotReady": "油罐还没有批次编号，不可以激活使用。",
