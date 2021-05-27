@@ -91,13 +91,29 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal 
 
     // check if the company code is unique in CREATE mode
     if (IS_CREATING) {
-      const counter = await checkAllocation(values?.alloc_type, values?.alloc_cmpycode, values?.alloc_suppcode);
+      const counter = await checkAllocation(
+        values?.alloc_type,
+        values?.alloc_cmpycode,
+        values?.alloc_suppcode
+      );
       if (counter > 0) {
         let notes = t('descriptions.alreadyExistsRecord');
-        notes = notes.replace('[[PKEY]]', '"' 
-          + t('fields.type') + ':' + values?.alloc_type + ', ' 
-          + t('fields.company') + ':' + values?.alloc_cmpycode + ', ' 
-          + t('fields.supplier') + ':' + values?.alloc_suppcode + '"');
+        notes = notes.replace(
+          '[[PKEY]]',
+          '"' +
+            t('fields.type') +
+            ': ' +
+            values?.alloc_type +
+            ', ' +
+            t('fields.company') +
+            ': ' +
+            values?.alloc_cmpycode +
+            ', ' +
+            t('fields.supplier') +
+            ': ' +
+            values?.alloc_suppcode +
+            '"'
+        );
         notification.error({
           message: t('messages.validationFailed'),
           description: notes,
@@ -334,10 +350,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal 
           </TabPane>
         </Tabs>
       </Form>
-      <Period 
-        visible={showPeriod && CAN_ALLOCATE_PERIOD} 
-        setVisibility={setShowPeriod} 
-        selected={selected} 
+      <Period
+        visible={showPeriod && CAN_ALLOCATE_PERIOD}
+        setVisibility={setShowPeriod}
+        selected={selected}
         onChange={getAllocations} //Because period update may change allocation quantity
       />
     </Drawer>

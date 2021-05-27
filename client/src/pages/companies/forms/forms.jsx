@@ -334,7 +334,7 @@ const FormModal = ({
       const counter = await checkCompany(values?.cmpy_code?.trim());
       if (counter > 0) {
         let notes = t('descriptions.alreadyExistsRecord');
-        notes = notes.replace('[[PKEY]]', '"' + values?.cmpy_code + ' - ' + values?.cmpy_name + '"');
+        notes = notes.replace('[[PKEY]]', '"' + t('fields.companyCode') + ': ' + values?.cmpy_code + '"');
         notification.error({
           message: t('messages.validationFailed'),
           description: notes,
@@ -428,14 +428,15 @@ const FormModal = ({
     });
   };
 
-  const validateCode = async (rule, input) => {
+  // const validateCode = async (rule, input) => {
+  const validateCode = (rule, input) => {
     // check if the company code is unique in CREATE mode
-    if (IS_CREATING) {
-      const counter = await checkCompany(input.trim());
-      if (counter > 0) {
-        return Promise.reject(t('descriptions.alreadyExists'));
-      }
-    }
+    // if (IS_CREATING) {
+    //   const counter = await checkCompany(input.trim());
+    //   if (counter > 0) {
+    //     return Promise.reject(t('descriptions.alreadyExists'));
+    //   }
+    // }
 
     if (rule.required) {
       if (input === '' || !input) {
