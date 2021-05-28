@@ -11,12 +11,13 @@ import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Card } from '
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import { AddressCode } from './fields';
 
 import Items from './items';
 
-import api, { ADDRESSES } from '../../../api';
+import api, { ADDRESSES, ROLE_ACCESS_MANAGEMENT } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
@@ -47,6 +48,63 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       setLines(data?.records);
     },
   });
+
+  const getTableChildren = async () => {
+    const values = {
+      parent: 'DB_ADDRESS',
+      db_address_key: value?.db_address_key,
+    };
+
+    const results = await api.post(ROLE_ACCESS_MANAGEMENT.CHECK_CHILDREN, values);
+    console.log('............getTableChildren', results);
+
+    if (results?.data) {
+      return results?.data?.records;
+    } else {
+      return [];
+    }
+  };
+
+  const checkChildren = async () => {
+    // getChildrenFromTxt();
+    const children = await getTableChildren();
+
+    if (children?.length > 0) {
+      const lines = (
+        <Scrollbars
+          style={{
+            height: 'calc(100vh - 360px)',
+            width: '26vw',
+            marginTop: 5,
+            marginRight: 5,
+            padding: 5,
+          }}
+        >
+          <div style={{ padding: 10 }}>
+            {children?.map((item, index) => (
+              <Card size="small" title={item?.title + ': ' + _.toString(item?.column_titles)}>
+                {t('descriptions.childRecordCounts') + ': '}
+                <b style={{ color: 'red' }}>{item?.child}</b>
+              </Card>
+            ))}
+          </div>
+        </Scrollbars>
+      );
+
+      notification.error({
+        message: t('validate.childTableRecordsFound'),
+        description: lines,
+        // duration: 0,
+        style: {
+          height: 'calc(100vh - 260px)',
+          width: '32vw',
+          // overflowY: 'scroll',
+        },
+      });
+    }
+
+    return children;
+  };
 
   const onFormClosed = () => {
     resetFields();
@@ -183,7 +241,12 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     }
   };
 
-  const onDelete = () => {
+  const onDelete = async () => {
+    const children = await checkChildren();
+    if (children?.length > 0) {
+      return;
+    }
+
     Modal.confirm({
       title: t('prompts.delete'),
       okText: t('operations.yes'),

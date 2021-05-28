@@ -1,9 +1,86 @@
 {
+  "DB_ADDRESS": {
+    "PKEYS": [
+      {
+        "COLUMN_NAME": "DB_ADDRESS_KEY",
+        "DATA_TYPE": "VARCHAR2(50)",
+        "COLUMN_ID": 1
+      }
+    ],
+    "CHILDREN": [
+      {
+        "TABLE_NAME": "DELV_LOCATION",
+        "CKEYS": [
+          {
+            "COLUMN_NAME": "DLV_ADDR",
+            "DATA_TYPE": "VARCHAR2(40)",
+            "COLUMN_ID": 1
+          }
+        ],
+        "TYPE": "Location"
+      },
+      {
+        "TABLE_NAME": "SITE",
+        "CKEYS": [
+          {
+            "COLUMN_NAME": "SITE_ADDR",
+            "DATA_TYPE": "VARCHAR2(40)",
+            "COLUMN_ID": 1
+          }
+        ],
+        "TYPE": "Site"
+      },
+      {
+        "TABLE_NAME": "COMPANYS",
+        "CKEYS": [
+          {
+            "COLUMN_NAME": "CMPY_ADDR",
+            "DATA_TYPE": "VARCHAR2(40)",
+            "COLUMN_ID": 1
+          }
+        ],
+        "TYPE": "Company"
+      },
+      {
+        "TABLE_NAME": "CUSTOMER",
+        "CKEYS": [
+          {
+            "COLUMN_NAME": "CUST_ADDR",
+            "DATA_TYPE": "VARCHAR2(40)",
+            "COLUMN_ID": 1
+          }
+        ],
+        "TYPE": "Customer"
+      },
+      {
+        "TABLE_NAME": "PARTNER",
+        "CKEYS": [
+          {
+            "COLUMN_NAME": "PRTNR_ADDR",
+            "DATA_TYPE": "VARCHAR2(40)",
+            "COLUMN_ID": 1
+          }
+        ],
+        "TYPE": "Partner"
+      },
+      {
+        "TABLE_NAME": "TERMINAL",
+        "CKEYS": [
+          {
+            "COLUMN_NAME": "TERM_ADDR",
+            "DATA_TYPE": "VARCHAR2(40)",
+            "COLUMN_ID": 1
+          }
+        ],
+        "TYPE": "Terminal"
+      }
+    ]
+  },
   "COMPANYS": {
     "PKEYS": [
       {
         "COLUMN_NAME": "CMPY_CODE",
-        "DATA_TYPE": "VARCHAR(16)",
+        "DATA_TYPE": "VARCHAR2(16)",
         "COLUMN_ID": 1
       }
     ],
@@ -13,7 +90,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "KYA_ALLOC_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -25,7 +102,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "KYA_SP_SUPPLIER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -36,7 +113,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "KYA_KEY_ISSUER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -47,7 +124,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "KYA_DRAWER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -58,7 +135,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "KYA_SP_SUPPLIER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -69,7 +146,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "KYA_DRAWER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -80,7 +157,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "KYA_KEY_ISSUER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -91,7 +168,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "ACM_TRIP_SUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -102,7 +179,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "ACM_KEY_ISSUER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -113,7 +190,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -124,7 +201,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -135,7 +212,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -146,7 +223,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -157,7 +234,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -168,7 +245,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -179,7 +256,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -190,7 +267,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -201,7 +278,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -212,7 +289,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -223,7 +300,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -234,7 +311,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "AU_PER_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -245,7 +322,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "ADJALL_ALL_ATKY_AT_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -257,7 +334,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "ADJALL_ALL_PROD_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -268,7 +345,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "ALCH_ALP_ALL_PROD_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -279,7 +356,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "ALCH_ALP_ALL_ATKY_AT_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -291,7 +368,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -302,7 +379,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "ALL_PROD_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -313,7 +390,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "ALL_ATKY_AT_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -325,7 +402,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "ALLOC_KEY_ISSUER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -336,7 +413,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "DISTB_KEY_ISSUER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -347,7 +424,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "ALLOC_KEY_ISSUER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -358,7 +435,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "DISTB_KEY_ISSUER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -369,7 +446,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "ALLOCTER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -381,7 +458,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "ALLOCTEE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -393,7 +470,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "AT_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -405,7 +482,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "ALL_PROD_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -416,7 +493,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "ALL_ATKY_AT_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -428,7 +505,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "AQ_SUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -439,7 +516,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "BACL_CMPY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -450,7 +527,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "BARMPLNK_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -461,7 +538,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "BARM_SUPPLIERLNK",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -472,7 +549,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "SUPP_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -483,7 +560,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "BASE_TRANS_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -494,7 +571,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "BL_BORROWER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -505,7 +582,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "BL_LOANER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -516,7 +593,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "CMPY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -527,7 +604,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "TKCMPY_LINK",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -538,7 +615,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "CCP_CMPY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -549,7 +626,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "CRM_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -560,7 +637,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "CHILD_CMPY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -572,7 +649,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "PARENT_CMPY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -584,7 +661,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_CUST_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -595,7 +672,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_CARR_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -606,7 +683,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_SUPP_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -617,7 +694,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_CUST_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -628,7 +705,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_CARR_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -639,7 +716,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_SUPP_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -650,7 +727,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "ORDER_CARRIER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -661,7 +738,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "ORDER_DRAWER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -672,7 +749,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "CUST_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -683,7 +760,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "CUST_SUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -694,7 +771,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "CMPY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -705,7 +782,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "PROD_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -716,7 +793,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "CARR_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -727,7 +804,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "SUPP_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -738,7 +815,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "DB_SUPP_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -749,7 +826,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "DC_DELV_DOC_SHL_SHLSSUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -760,7 +837,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "DD_SUPP_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -771,7 +848,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "DD_SELL_CMPY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -782,7 +859,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "DDD_DD_SUPP_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -793,7 +870,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "DDD_DD_SUPP_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -804,7 +881,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "DDI_CMPY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -815,7 +892,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "DDI_DD_SUPP_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -826,7 +903,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "DDI_DD_SUPP_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -837,7 +914,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "DGLNK_SP_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -848,7 +925,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "DLTPRDCT_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -859,7 +936,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "DOC_LINK_DOC_SHL_SHLSSUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -870,7 +947,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "DP_PROD_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -881,7 +958,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "DP_DOC_DOC_SHL_SHLSSUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -892,7 +969,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "DOC_CUST",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -903,7 +980,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "DOC_SHL_SHLSSUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -914,7 +991,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "DH_SHLSSUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -925,7 +1002,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "EPCFPROD_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -936,7 +1013,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "ED_CMPY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -948,7 +1025,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_CUST_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -959,7 +1036,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_CARR_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -970,7 +1047,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_SUPP_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -981,7 +1058,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_CUST_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -992,7 +1069,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_CARR_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1003,7 +1080,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "OO_SUPP_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1014,7 +1091,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "HOSTTMMCO",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1025,7 +1102,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "HST_COMP_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1036,7 +1113,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "HZLNK_SP_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1047,7 +1124,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1058,7 +1135,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "IP_PRKEY_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1069,7 +1146,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "IPB_DAD_IP_PRKEY_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1080,7 +1157,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "LS_LINKED_SUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1091,7 +1168,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "LS_SUPP_SUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1102,7 +1179,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "LDW_PROD_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1113,7 +1190,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "LDCPPROD_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1124,7 +1201,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "LOAD_CARRIER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1135,7 +1212,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "LOCKAL_SUPL",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1146,7 +1223,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "LOCKATYP_AT_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1158,7 +1235,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "MLITM_COMPANY_TO",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1169,7 +1246,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "MLITM_COMPANY_FROM",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1180,7 +1257,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "MLITM_SUPPLIER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1191,7 +1268,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "MLITM_PRODCMPY_TO",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1202,7 +1279,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "MLITM_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1213,7 +1290,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "MSITM_SHLSSUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1224,7 +1301,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "MSITM_CUSTOMER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1235,7 +1312,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "MSITM_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1246,7 +1323,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "MS_PAIRSUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1257,7 +1334,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "MS_SHLSSUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1268,7 +1345,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "MTITM_COMPANY_TO",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1279,7 +1356,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "MTITM_COMPANY_FROM",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1290,7 +1367,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "MTITM_SUPPLIER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1301,7 +1378,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "MTITM_PRODCMPY_TO",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1312,7 +1389,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "MTITM_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1323,7 +1400,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "MVITM_PRODCMPY_TO",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1334,7 +1411,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "MVITM_PRODCMPY_FROM",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1345,7 +1422,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "MV_SUPPLIER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1356,7 +1433,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "MV_DRAWER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1367,7 +1444,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "MV_SHIPPER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1378,7 +1455,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "MV_CARRIER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1389,7 +1466,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1400,7 +1477,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "OC_SUPPLIER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1411,7 +1488,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "OPB_DAD_OSPROD_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1422,7 +1499,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "OSPROD_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1433,7 +1510,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "OS_SHL_SHLSSUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1444,7 +1521,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "DISTB_KEY_ISSUER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1455,7 +1532,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1466,7 +1543,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "PRTNR_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1477,7 +1554,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "PER_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1488,7 +1565,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "PMO_CMPNY_LNK",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1499,7 +1576,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "PRFC_PRD_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1510,7 +1587,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "PO_SUPPLIER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1521,7 +1598,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "PO_PROD_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1532,7 +1609,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "PRNF_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1543,7 +1620,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1554,7 +1631,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "SUPP_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1565,7 +1642,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "SUPP_CMPY_TO",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1576,7 +1653,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "PMVDRPR_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1587,7 +1664,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "PMV_SRC_COMPANY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1598,7 +1675,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "PMV_DST_COMPANY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1609,7 +1686,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "PMV_TRIP_SUPPLIE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1620,7 +1697,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "PRDS_TO_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1631,7 +1708,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "PRDS_FROMCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1642,7 +1719,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "PROD_CMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1653,7 +1730,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "PROD_2ND_DRAWER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1664,7 +1741,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "PRF_SUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1675,7 +1752,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "RAT_PROD_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1686,7 +1763,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "RCPINGR_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1697,7 +1774,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "RCP_RCP_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1708,7 +1785,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "RTNCPTTY_RTNT_SHL_SHLSSUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1719,7 +1796,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "RTN_PROD_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1730,7 +1807,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "RTN_SHL_SHLSSUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1741,7 +1818,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "RTNT_SHL_SHLSSUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1752,7 +1829,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "SHLS_CUST",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1763,7 +1840,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "SHLS_DRAWER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1774,7 +1851,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "SHLS_SUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1785,7 +1862,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "SHLS_SUPP_ORG",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1796,7 +1873,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "SEALSPEC_SHLSSUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1807,7 +1884,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "SITE_MNGR",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1818,7 +1895,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1829,7 +1906,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1840,7 +1917,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1851,7 +1928,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1862,7 +1939,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1873,7 +1950,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1884,7 +1961,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1895,7 +1972,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1906,7 +1983,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1917,7 +1994,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1928,7 +2005,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1939,7 +2016,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "COMPANY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1950,7 +2027,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "SCHO_DAD_SCHDSPEC_SHLSSUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1961,7 +2038,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "SUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1972,7 +2049,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "SCHDPROD_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1983,7 +2060,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "SCHDSPEC_SHLSSUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -1994,7 +2071,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "SPECDPPP_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -2005,7 +2082,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "SPECDPPS_SHLSSUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -2016,7 +2093,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "SCHPPROD_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -2027,7 +2104,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "SCHPSPID_SHLSSUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -2038,7 +2115,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "SCHVSPID_SHLSSUPP",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -2049,7 +2126,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "CMPY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -2060,7 +2137,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "SUPP_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -2071,7 +2148,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "TNKR_OWNER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -2082,7 +2159,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "TNKR_CARRIER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -2093,7 +2170,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "CMPY_CODE",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -2104,7 +2181,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "TKCL_CO",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -2115,7 +2192,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "TKCMPY_LINK",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -2126,7 +2203,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "TMMF_COMPANY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -2137,7 +2214,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "TRSFPROD_PRODCMPY",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -2148,7 +2225,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "TRSF_SUPPLIER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
@@ -2159,7 +2236,7 @@
         "CKEYS": [
           {
             "COLUMN_NAME": "EQPT_OWNER",
-            "DATA_TYPE": "VARCHAR(16)",
+            "DATA_TYPE": "VARCHAR2(16)",
             "COLUMN_ID": 1
           }
         ],
