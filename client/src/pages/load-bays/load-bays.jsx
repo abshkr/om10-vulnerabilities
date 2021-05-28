@@ -36,7 +36,7 @@ const LoadBays = () => {
       <Page page={page} name={name} access={access}>
         <div style={{ height: 'calc(100vh - 200px)' }}>
           <Iframe
-            url={`https://${window.location.hostname}:${window.location.port}/phpwrapper/load_bays.php`}
+            url={`https://${window.location.hostname}:${window.location.port}/api/legacy/load_bays.php`}
             id="myId"
             className="myClassname"
             display="initial"
