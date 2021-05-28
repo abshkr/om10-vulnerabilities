@@ -18,6 +18,12 @@ export default function usePagination(initial = 500) {
       pageSizeOptions={[150, 250, 500, 1000]}
       total={count}
       disabled={count === 0}
+      showTotal={(total, range) => {
+        if (total > 0) {
+          return `${range[0]}-${range[1]} / ${total}`;
+        }
+        return ``;
+      }}
     />
   );
 
