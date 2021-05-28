@@ -2719,6 +2719,10 @@
       "observedMass": "Weight in Vacuum (WiV)",
       "nomtranMass": "Weight in Vacuum (WiV)"
     },
+    "pageNames": {
+      "equipmentList": "Transport Equipment List",
+      "equipmentTypes": "Transport Equipment Types"
+    },
     "units": {
       "lamb": "L(amb)",
       "lcor": "L(std)",

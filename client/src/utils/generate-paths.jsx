@@ -1,15 +1,15 @@
 import { ROUTES } from '../constants';
 
-const generatePaths = (t) => [
+const generatePaths = (t, config) => [
   {
     page: t('pageMenu.operations'),
-    name: t('pageNames.equipmentList'),
+    name: t(config?.siteLabelUser + 'pageNames.equipmentList'),
     path: ROUTES.EQUIPMENT_LIST,
   },
 
   {
     page: t('pageMenu.operations'),
-    name: t('pageNames.equipmentTypes'),
+    name: t(config?.siteLabelUser + 'pageNames.equipmentTypes'),
     path: ROUTES.EQUIPMENT_TYPES,
   },
 

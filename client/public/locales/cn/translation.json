@@ -2717,6 +2717,10 @@
       "observedMass": "真空中重量(WiV)",
       "nomtranMass": "真空中重量(WiV)"
     },
+    "pageNames": {
+      "equipmentList": "运输设备管理",
+      "equipmentTypes": "运输设备类型管理"
+    },
     "units": {
       "lamb": "升(视量)",
       "lcor": "升(标量)",
