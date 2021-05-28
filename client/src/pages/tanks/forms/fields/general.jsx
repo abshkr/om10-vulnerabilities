@@ -231,7 +231,7 @@ const General = ({ form, value, config, densRange }) => {
               label={t('fields.ullage')}
               rules={[{ required: true, validator: validate, label: t('fields.ullage') }]}
             >
-              <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
+              <InputNumber min={-999999999} max={999999999} style={{ width: '100%' }} />
             </Form.Item>
           </Col>
         )}
