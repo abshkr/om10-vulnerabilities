@@ -50,7 +50,15 @@ class TableChildren extends CommonClass
         ";
 
         if (isset($type_condition) && strlen(trim($type_condition)) > 0) {
-            $query .= "    AND " . $type_condition . "\n";
+            $pairs = explode('=:', $type_condition);
+            if (count($pairs) >= 2) {
+                $cln = $pairs[1];
+            } else {
+                $cln = "cmpy_type";
+            }
+            if (isset($this->$cln)) {
+                $query .= "    AND " . $type_condition . "\n";
+            }
         }
 
         /*
@@ -94,7 +102,9 @@ class TableChildren extends CommonClass
             } else {
                 $cln = "cmpy_type";
             }
-            oci_bind_by_name($stmt, ':' . $cln, $this->$cln);
+            if (isset($this->$cln)) {
+                oci_bind_by_name($stmt, ':' . $cln, $this->$cln);
+            }
         }
 
         foreach ($pkeys as $pid => $pkey) {
@@ -197,6 +207,7 @@ class TableChildren extends CommonClass
 
         $result = array();
 		$result["records"] = $counts;
+        $result["total"] = count($counts);
 
         http_response_code(200);
         echo json_encode($result, JSON_PRETTY_PRINT);

@@ -108,8 +108,8 @@ const FormModal = ({
 
   const checkChildren = async (type) => {
     // getChildrenFromTxt();
+    // const children = await getTableChildren(type);
     const allChildren = await getTableChildren(type);
-
     const children = _.filter(allChildren, (o) => type?.length === 0 || o?.type?.indexOf(type) >= 0);
 
     if (children?.length > 0) {
