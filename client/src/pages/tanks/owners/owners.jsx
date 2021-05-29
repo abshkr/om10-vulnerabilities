@@ -305,7 +305,7 @@ const TankOwners = ({ terminal, code, value, access, tanks, config }) => {
       <Button
         type="primary"
         style={{ float: 'right' }}
-        disabled={!access.canCreate}
+        disabled={!(code && terminal) || !access.canCreate}
         onClick={() => handleFormState(true, null)}
       >
         {t('operations.addOwnership')}
@@ -389,20 +389,20 @@ const TankOwners = ({ terminal, code, value, access, tanks, config }) => {
           <Col span={10}>
             <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }}>
               <Descriptions.Item label={t('fields.tank')} span={24}>
-                {value?.tank_code + ' - ' + value?.tank_name}
+                {code && terminal && value?.tank_code + ' - ' + value?.tank_name}
               </Descriptions.Item>
               <Descriptions.Item label={t('fields.terminal')} span={24}>
-                {value?.tank_terminal + ' - ' + value?.tank_sitename}
+                {code && terminal && value?.tank_terminal + ' - ' + value?.tank_sitename}
               </Descriptions.Item>
             </Descriptions>
           </Col>
           <Col span={14}>
             <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }}>
               <Descriptions.Item label={t('fields.baseProduct')} span={24}>
-                {value?.tank_base + ' - ' + value?.tank_base_name}
+                {code && terminal && value?.tank_base + ' - ' + value?.tank_base_name}
               </Descriptions.Item>
               <Descriptions.Item label={t('fields.baseProdClassDesc')} span={24}>
-                {value?.tank_base_class + ' - ' + value?.tank_bclass_name}
+                {code && terminal && value?.tank_base_class + ' - ' + value?.tank_bclass_name}
               </Descriptions.Item>
             </Descriptions>
           </Col>
@@ -419,7 +419,7 @@ const TankOwners = ({ terminal, code, value, access, tanks, config }) => {
             <DataTable
               minimal={true}
               columns={fields}
-              data={data?.records}
+              data={!(code && terminal) ? [] : data?.records}
               parentHeight="272px"
               onClick={(payload) => handleFormState(true, payload)}
               handleSelect={(payload) => handleFormState(true, payload[0])}

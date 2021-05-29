@@ -149,22 +149,27 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
 
   const modifiers = (
     <>
-      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
+      <Button
+        icon={<SyncOutlined />}
+        onClick={() => revalidate()}
+        loading={code && isValidating}
+        disabled={!code || isValidating}
+      >
         {t('operations.refresh')}
       </Button>
 
       <Download
         data={data?.records}
         // data={payload}
-        isLoading={isLoading}
+        isLoading={code && isLoading}
         columns={fields}
       />
 
       <Button
         style={{ marginRight: 1 }}
         type="primary"
-        loading={isLoading}
-        disabled={!access.canCreate}
+        loading={code && isLoading}
+        disabled={!code || !access.canCreate}
         onClick={handleImport}
       >
         {t('operations.importStrapping')}
@@ -172,8 +177,8 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
 
       <Button
         type="primary"
-        loading={isLoading}
-        disabled={!access.canCreate}
+        loading={code && isLoading}
+        disabled={!code || !access.canCreate}
         onClick={() => handleFormState(true, null)}
       >
         {t('operations.addStrapping')}
@@ -213,8 +218,8 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
 
         <DataTable
           columns={fields}
-          data={data?.records}
-          isLoading={isValidating}
+          data={!code ? [] : data?.records}
+          isLoading={code && isValidating}
           height="305px"
           extra={modifiers}
           onClick={(payload) => handleFormState(true, payload)}

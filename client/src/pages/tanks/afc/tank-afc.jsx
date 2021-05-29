@@ -187,7 +187,7 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks, config 
       <Button
         type="primary"
         style={{ float: 'right' }}
-        disabled={!access.canCreate || data?.records?.length >= 4}
+        disabled={!code || !access.canCreate || data?.records?.length >= 4}
         onClick={() => handleFormState(true, null)}
       >
         {t('operations.addFlowRate')}
@@ -290,7 +290,7 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks, config 
             <DataTable
               minimal={true}
               columns={fields}
-              data={data?.records}
+              data={!code ? [] : data?.records}
               parentHeight="272px"
               onClick={(payload) => handleFormState(true, payload)}
               handleSelect={(payload) => handleFormState(true, payload[0])}
