@@ -41,6 +41,7 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
   const { resetFields, setFieldsValue } = form;
 
   const fields = columns(t);
+  // console.log('......................isLoading', isLoading, code, isValidating, !data);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -206,8 +207,8 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
       <Button
         style={{ marginRight: 1 }}
         type="primary"
-        loading={code && isLoading}
-        disabled={!code || !access.canCreate}
+        // loading={code && isLoading}
+        disabled={!code || isLoading || !access.canCreate}
         onClick={handleImport}
       >
         {t('operations.importStrapping')}
@@ -215,8 +216,8 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
 
       <Button
         type="primary"
-        loading={code && isLoading}
-        disabled={!code || !access.canCreate}
+        // loading={code && isLoading}
+        disabled={!code || isLoading || !access.canCreate}
         onClick={() => handleFormState(true, null)}
       >
         {t('operations.addStrapping')}
