@@ -25,8 +25,8 @@ const FSCStatus = () => {
   const modifiers = (
     <>
       <Badge
-        count={`Current Mode: ${which?.isMaster ? 'Master' : 'Slave'}`}
-        style={{ backgroundColor: which?.isMaster ? '#52c41a' : '#fbb120', marginTop: -3 }}
+        count={`Current Mode: ${which?.is_master ? 'Master' : 'Slave'}`}
+        style={{ backgroundColor: which?.is_master ? '#52c41a' : '#fbb120', marginTop: -3 }}
       />
     </>
   );
