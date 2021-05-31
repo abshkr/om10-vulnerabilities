@@ -624,11 +624,27 @@ class Tank extends CommonClass
         }
 
         oci_commit($this->conn);
+
+        // add default tank ownership to the new tank(s) in TK_OWNERS
+        $this->create_tank_owners();
+
         return true;
     }
 
     public function delete()
     {
+        // need delete the child records in TK_OWNERS
+        $query = "DELETE FROM TK_OWNERS WHERE TKLINK_TANKCODE = :tank_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+
+            throw new DatabaseException($e['message']);
+        }
+
         // need delete the child records in TANK_MAX_FLOW first
         $query = "DELETE FROM TANK_MAX_FLOW WHERE TANK_CODE = :tank_code";
         $stmt = oci_parse($this->conn, $query);
@@ -708,6 +724,82 @@ class Tank extends CommonClass
             oci_rollback($this->conn);
             return false;
         }
+
+        return true;
+    }
+
+    protected function create_tank_owners()
+    {
+        // initialize the TK_OWNERS with the site manager company if the tank does not have an owner yet.
+        // We don't put any current tank code into WHERE condition so it can create TK_OWNERS records for new tanks added before this fix.
+        $query = "
+            insert into TK_OWNERS (
+                TKCMPY_LINK
+                , TKLINK_TANKCODE
+                , TKLINK_TANKDEPO
+                , TKOWNER_QTY
+                , TKO_STD_LTR
+                , TKO_AMB_LTR
+                , TKO_KG
+                , TKO_PERCENTAGE
+                , TKO_IN
+                , TKO_IN_KG
+                , TKO_IN_TOTAL
+                , TKO_OUT
+                , TKO_OUT_KG
+                , TKO_OUT_TOTAL
+                , TKO_OUT_PRMV
+                , TKO_OUT_LD
+                , TKO_ADJ_STD
+                , TKO_ADJ_AMB
+                , TKO_ADJ_KG
+            )
+            select 
+                cmp.CMPY_CODE            AS TKCMPY_LINK
+                , tnk.TANK_CODE          AS TKLINK_TANKCODE
+                , tnk.TANK_TERMINAL      AS TKLINK_TANKDEPO
+                , tnk.TANK_COR_VOL       AS TKOWNER_QTY
+                , tnk.TANK_COR_VOL       AS TKO_STD_LTR
+                , tnk.TANK_AMB_VOL       AS TKO_AMB_LTR
+                , tnk.TANK_LIQUID_KG     AS TKO_KG
+                , 100                    AS TKO_PERCENTAGE
+                , tnk.TANK_RCPT_VOL      AS TKO_IN
+                , tnk.TANK_RCPT_KG       AS TKO_IN_KG
+                , NULL                   AS TKO_IN_TOTAL
+                , tnk.TANK_TRF_VOL       AS TKO_OUT
+                , tnk.TANK_TRF_KG        AS TKO_OUT_KG
+                , NULL                   AS TKO_OUT_TOTAL
+                , NULL                   AS TKO_OUT_PRMV
+                , NULL                   AS TKO_OUT_LD
+                , NULL                   AS TKO_ADJ_STD
+                , NULL                   AS TKO_ADJ_AMB
+                , NULL                   AS TKO_ADJ_KG
+            from 
+                (
+                    select 
+                        TKLINK_TANKCODE
+                        , TKLINK_TANKDEPO
+                        , count(*) as TKO_COUNT 
+                    from TK_OWNERS 
+                    group by TKLINK_TANKCODE, TKLINK_TANKDEPO
+                )          tko
+                , GUI_COMPANYS     cmp
+                , GUI_TANKS        tnk
+            where 
+                cmp.SITE_MANAGER='Y'
+                and tnk.TANK_CODE = tko.TKLINK_TANKCODE(+)
+                and tnk.TANK_TERMINAL = tko.TKLINK_TANKDEPO(+)
+                and NVL(tko.TKO_COUNT, 0)=0
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        oci_commit($this->conn);
 
         return true;
     }
