@@ -59,6 +59,20 @@ const columns = (t, visible) => [
   },
 
   {
+    headerName: t('fields.tkoPercentage'),
+    field: 'bpo_percentage',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    width: 180,
+    suppressSizeToFit: true,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: '4',
+      min: '0',
+    },
+  },
+  {
     headerName: t('fields.baseOwnerQuantity'), //+ ' (' + t('units.ltr') + ')',
     field: 'ownship_qty',
     filter: 'FuzzyFilter',

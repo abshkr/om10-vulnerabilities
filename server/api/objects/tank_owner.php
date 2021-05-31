@@ -196,7 +196,7 @@ class TankOwner extends CommonClass
                 , tov1.CMPY_CODE
                 , tov1.CMPY_NAME
                 , tov1.TKO_PERCENTAGE2
-                , DECODE(tov2.TKOWNER_TOTAL, 0, 100, TRUNC(tov1.TKOWNER_QTY/tov2.TKOWNER_TOTAL*100,4) )   AS TKO_PERCENTAGE
+                , DECODE(tov2.TKOWNER_TOTAL, 0, 100, ROUND(tov1.TKOWNER_QTY/tov2.TKOWNER_TOTAL*100,4) )   AS TKO_PERCENTAGE
                 , tov2.TKOWNER_TOTAL
                 , tov1.TKOWNER_QTY
                 , tov1.TKO_STD_LTR
@@ -303,7 +303,7 @@ class TankOwner extends CommonClass
 
         $query = "
             update TK_OWNERS A 
-            set A.TKO_PERCENTAGE = TRUNC(100 * A.TKOWNER_QTY / (
+            set A.TKO_PERCENTAGE = ROUND(100 * A.TKOWNER_QTY / (
                 select sum(B.TKOWNER_QTY) 
                 from TK_OWNERS B 
                 where B.TKLINK_TANKDEPO=:term and B.TKLINK_TANKCODE=:code

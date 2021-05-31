@@ -100,8 +100,20 @@ class BaseOwner extends CommonClass
 
         $query = "
             select bro.*, bpd.*, bpc.*, cmp.*, unt.*
+                , bso.TOTAL_QTY
+                , DECODE(bso.TOTAL_QTY, 0, 100, ROUND(bro.OWNSHIP_QTY/bso.TOTAL_QTY*100, 4))   AS BPO_PERCENTAGE
             from
                 BASE_PROD_OWNSHIP   bro
+                , (
+                    select 
+                        BASE_PROD_CODE
+                        , SUM(OWNSHIP_QTY) as TOTAL_QTY
+                    from 
+                        BASE_PROD_OWNSHIP
+                    where 
+                        1=1
+                    group by BASE_PROD_CODE
+                )                   bso
                 , BASE_PRODS        bpd
                 , GUI_COMPANYS      cmp
                 , (
@@ -122,7 +134,8 @@ class BaseOwner extends CommonClass
                 ) 					bpc
                 , UNIT_SCALE_VW     unt
             where
-                bro.BASE_PROD_CODE = bpd.BASE_CODE(+)
+                bso.BASE_PROD_CODE = bro.BASE_PROD_CODE
+                and bro.BASE_PROD_CODE = bpd.BASE_CODE(+)
                 and bpd.BASE_CAT = bpc.BCLASS_NO(+)
                 and bro.SUPP_CMPY = cmp.CMPY_CODE(+)
                 and bro.OWNSHIP_UNIT = unt.UNIT_ID(+)
@@ -286,7 +299,7 @@ class BaseOwner extends CommonClass
 
         $query = "
             update BASE_PROD_OWNSHIP A 
-            set A.TKO_PERCENTAGE = TRUNC(100 * A.TKOWNER_QTY / (
+            set A.TKO_PERCENTAGE = ROUND(100 * A.TKOWNER_QTY / (
                 select sum(B.TKOWNER_QTY) 
                 from BASE_PROD_OWNSHIP B 
                 where B.TKLINK_TANKDEPO=:term and B.TKLINK_TANKCODE=:code
