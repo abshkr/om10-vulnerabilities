@@ -46,7 +46,7 @@ const EquipmentList = () => {
   const [filterValue, setFilterValue] = useState(equipment);
 
   const page = t('pageMenu.operations');
-  const name = t('pageNames.equipmentList');
+  const name = t(config?.siteLabelUser + 'pageNames.equipmentList');
 
   const onRefresh = () => {
     // setFilterValue(' ');

@@ -7,13 +7,15 @@ const generator = (target, t, config) => {
     return [];
   }
 
-  const data = generatePaths(t);
+  const data = generatePaths(t, config);
   const paths = [];
   // auditing, partner, and partnership pages may be turned off by features
   _.forEach(data, (o) => {
-    if (o.name !== t('pageNames.auditingData') && 
-    o.name !== t('pageNames.partners') && 
-    o.name !== t('pageNames.partnership')) {
+    if (
+      o.name !== t('pageNames.auditingData') &&
+      o.name !== t('pageNames.partners') &&
+      o.name !== t('pageNames.partnership')
+    ) {
       paths.push(o);
     } else {
       if (o.name === t('pageNames.auditingData') && config.manageAuditing) {

@@ -16,6 +16,7 @@ import _ from 'lodash';
 import useSWR from 'swr';
 import { setter, generator } from './generator';
 
+import { useConfig } from '../../../hooks';
 import api, { ROLE_ACCESS_MANAGEMENT } from '../../../api';
 import { ALPHANUMERIC_MULTILINGUAL } from 'constants/regex';
 import CopyTo from './copy-to';
@@ -23,6 +24,7 @@ import CopyTo from './copy-to';
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, data, setFilterValue }) => {
+  const config = useConfig();
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const [modules, setmodules] = useState([]);
@@ -545,7 +547,7 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
             <Form.Item
               name="M_EQUIPMENT"
               style={{ display: modules?.M_EQUIPMENT ? '' : 'none' }}
-              label={t('pageNames.equipmentTypes')}
+              label={t(config?.siteLabelUser + 'pageNames.equipmentTypes')}
             >
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>
@@ -553,7 +555,7 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
             <Form.Item
               name="M_EQUIPMENTLIST"
               style={{ display: modules?.M_EQUIPMENTLIST ? '' : 'none' }}
-              label={t('pageNames.equipmentList')}
+              label={t(config?.siteLabelUser + 'pageNames.equipmentList')}
             >
               <Checkbox.Group options={options} style={{ flexDirection: 'row', marginBottom: '.7rem' }} />
             </Form.Item>

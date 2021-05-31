@@ -19,7 +19,7 @@ const Favourites = () => {
   const { data, revalidate } = useSWR(
     `${AUTH.SETUP}?audit=${config.manageAuditing}&partner=${config.managePartnersAndPartnership}`
   );
-  
+
   const { t } = useTranslation();
   const history = useHistory();
 
@@ -49,14 +49,12 @@ const Favourites = () => {
 
   const onFavourite = () => {
     try {
-      // const paths = generatePaths(t);
-      const pathData = generatePaths(t);
+      // const paths = generatePaths(t, config);
+      const pathData = generatePaths(t, config);
       const paths = [];
       // auditing, partner, and partnership pages may be turned off by features
       _.forEach(pathData, (o) => {
-        if (o.path !== ROUTES.AUDITING_DATA && 
-        o.path !== ROUTES.PARTNERS && 
-        o.path !== ROUTES.PARTNERSHIP) {
+        if (o.path !== ROUTES.AUDITING_DATA && o.path !== ROUTES.PARTNERS && o.path !== ROUTES.PARTNERSHIP) {
           paths.push(o);
         } else {
           if (o.path === ROUTES.AUDITING_DATA && config.manageAuditing) {
@@ -70,7 +68,7 @@ const Favourites = () => {
           }
         }
       });
-    
+
       const payload = [...data?.records];
 
       const entry = _.find(paths, ['path', current]);
@@ -109,7 +107,7 @@ const Favourites = () => {
   useEffect(() => {
     if (data?.records) {
       const payload = [];
-      const pathData = generatePaths(t);
+      const pathData = generatePaths(t, config);
 
       _.forEach(data?.records, (item) => {
         // get the name in current language for menu item
@@ -117,11 +115,13 @@ const Favourites = () => {
         if (entry) {
           item.config_value = entry?.name;
         }
-        
+
         // auditing, partner, and partnership pages may be turned off by features
-        if (item.config_key !== ROUTES.AUDITING_DATA &&
-        item.config_key !== ROUTES.PARTNERS && 
-        item.config_key !== ROUTES.PARTNERSHIP) {
+        if (
+          item.config_key !== ROUTES.AUDITING_DATA &&
+          item.config_key !== ROUTES.PARTNERS &&
+          item.config_key !== ROUTES.PARTNERSHIP
+        ) {
           payload.push(<Menu.Item key={item.config_key}>{item.config_value}</Menu.Item>);
         } else {
           if (item.config_key === ROUTES.AUDITING_DATA && config.manageAuditing) {
@@ -155,7 +155,7 @@ const Favourites = () => {
 
   return (
     <Dropdown overlay={menu} trigger={['click']}>
-      <Tooltip placement="topLeft" title={t("messages.favourites")} >
+      <Tooltip placement="topLeft" title={t('messages.favourites')}>
         <Button type="primary" size="large" shape="circle" style={{ marginRight: 7 }}>
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <StarOutlined style={{ transform: 'scale(1.5)' }} />

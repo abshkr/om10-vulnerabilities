@@ -72,7 +72,7 @@ const EquipmentTypes = () => {
   const isLoading = isValidating || !data;
 
   const page = t('pageMenu.operations');
-  const name = t('pageNames.equipmentTypes');
+  const name = t(config?.siteLabelUser + 'pageNames.equipmentTypes');
 
   const onRefresh = () => {
     setParentEqpt('');
