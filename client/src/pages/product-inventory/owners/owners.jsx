@@ -39,7 +39,8 @@ const { TabPane } = Tabs;
 const TankProductOwners = ({ value, access, config, unit, units }) => {
   const [volUnit, setVolUnit] = useState(unit);
 
-  const url = value ? `${TANK_OWNERS.SUMMARY}?tank_base=${value?.base_code}` : null;
+  // const url = value ? `${TANK_OWNERS.SUMMARY}?tank_base=${value?.base_code}` : null;
+  const url = value ? `${TANK_OWNERS.SUMMARY}?tank_base=${value?.base_code}` : `${TANK_OWNERS.SUMMARY}`;
 
   const { data, isValidating } = useSWR(url);
 
@@ -54,7 +55,7 @@ const TankProductOwners = ({ value, access, config, unit, units }) => {
 
   const { resetFields, setFieldsValue, getFieldsValue } = form;
 
-  const fields = columns(t);
+  const fields = columns(t, !value);
 
   const modifiers = (
     <>
@@ -73,9 +74,11 @@ const TankProductOwners = ({ value, access, config, unit, units }) => {
         <Row gutter={[2, 12]}>
           <Col span={24}>
             <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }}>
-              <Descriptions.Item label={t('fields.baseProduct')} span={24}>
-                {value?.base_code + ' - ' + value?.base_name}
-              </Descriptions.Item>
+              {value && (
+                <Descriptions.Item label={t('fields.baseProduct')} span={24}>
+                  {!value ? '' : value?.base_code + ' - ' + value?.base_name}
+                </Descriptions.Item>
+              )}
               <Descriptions.Item label={t('fields.volumeUnit')} span={24}>
                 <Select
                   dropdownMatchSelectWidth={false}

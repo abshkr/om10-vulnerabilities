@@ -114,7 +114,7 @@ const ProductInventory = () => {
         destroyOnClose={true}
         mask={false}
         placement="right"
-        width={config?.siteUseProdOwnership && config?.siteProdOwnershipLevel === 'TANK' ? '50vw' : '80vw'}
+        width={config?.siteUseProdOwnership && config?.siteProdOwnershipLevel === 'TANK' ? '55vw' : '80vw'}
         visible={visible}
         footer={
           <>

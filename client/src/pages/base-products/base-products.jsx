@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 
 import useSWR from 'swr';
-import { Button } from 'antd';
+import { Button, Drawer, Tabs } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
+import { SyncOutlined, PlusOutlined, EyeOutlined, CloseOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download } from '../../components';
 import { BASE_PRODUCTS } from '../../api';
@@ -12,6 +12,10 @@ import columns from './columns';
 import auth from '../../auth';
 
 import Forms from './forms';
+import TankProductOwners from '../product-inventory/owners';
+import BaseProductOwners from '../product-inventory/base-owners';
+
+const { TabPane } = Tabs;
 
 const BaseProducts = () => {
   const query = useQuery();
@@ -28,6 +32,16 @@ const BaseProducts = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [filterValue, setFilterValue] = useState(product);
+  const [ownershipOpen, setOwnershipOpen] = useState(false);
+
+  const units = [
+    { code: 'Litres', title: t('units.litres') },
+    { code: 'Cubic Metre', title: t('units.cubicMetre') },
+    { code: 'Imperial Gallon', title: t('units.imperialGallon') },
+    { code: 'U.S Gallon', title: t('units.usGallon') },
+    { code: 'Imperial Barrel', title: t('units.imperialBarrel') },
+    { code: 'U.S Barrel', title: t('units.usBarrel') },
+  ];
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -44,6 +58,14 @@ const BaseProducts = () => {
 
   const modifiers = (
     <>
+      {config?.siteUseProdOwnership && (
+        <Button type="primary" icon={<EyeOutlined />} disabled={false} onClick={() => setOwnershipOpen(true)}>
+          {config?.siteProdOwnershipLevel === 'TANK'
+            ? t('tabColumns.tankOwnersSummary')
+            : t('tabColumns.baseOwners')}
+        </Button>
+      )}
+
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
         {t('operations.refresh')}
       </Button>
@@ -63,27 +85,83 @@ const BaseProducts = () => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access} avatar="baseProducts">
-      <DataTable
-        data={data}
-        columns={fields}
-        isLoading={isLoading}
-        selectionMode="single"
-        onClick={(payload) => handleFormState(true, payload)}
-        handleSelect={(payload) => handleFormState(true, payload[0])}
-        autoColWidth
-        filterValue={filterValue}
-      />
+    <>
+      {ownershipOpen && (
+        <Drawer
+          bodyStyle={{ paddingTop: 5 }}
+          onClose={() => setOwnershipOpen(false)}
+          maskClosable={false}
+          destroyOnClose={true}
+          mask={false}
+          placement="right"
+          width={config?.siteUseProdOwnership && config?.siteProdOwnershipLevel === 'TANK' ? '70vw' : '80vw'}
+          visible={ownershipOpen}
+          footer={
+            <>
+              <Button
+                htmlType="button"
+                icon={<CloseOutlined />}
+                style={{ float: 'right' }}
+                onClick={() => setOwnershipOpen(false)}
+              >
+                {t('operations.cancel')}
+              </Button>
+            </>
+          }
+        >
+          <Tabs defaultActiveKey="1">
+            <TabPane
+              tab={
+                config?.siteProdOwnershipLevel === 'TANK'
+                  ? t('tabColumns.tankOwnersSummary')
+                  : t('tabColumns.baseOwners')
+              }
+              key="1"
+            >
+              {config?.siteUseProdOwnership && config?.siteProdOwnershipLevel === 'TANK' && (
+                <TankProductOwners
+                  access={access}
+                  value={undefined}
+                  config={config}
+                  unit={'Litres'}
+                  units={units}
+                />
+              )}
+              {config?.siteUseProdOwnership && config?.siteProdOwnershipLevel !== 'TANK' && (
+                <BaseProductOwners
+                  access={access}
+                  value={undefined}
+                  config={config}
+                  unit={'Litres'}
+                  units={units}
+                />
+              )}
+            </TabPane>
+          </Tabs>
+        </Drawer>
+      )}
+      <Page page={page} name={name} modifiers={modifiers} access={access} avatar="baseProducts">
+        <DataTable
+          data={data}
+          columns={fields}
+          isLoading={isLoading}
+          selectionMode="single"
+          onClick={(payload) => handleFormState(true, payload)}
+          handleSelect={(payload) => handleFormState(true, payload[0])}
+          autoColWidth
+          filterValue={filterValue}
+        />
 
-      <Forms
-        value={selected}
-        visible={visible}
-        handleFormState={handleFormState}
-        access={access}
-        config={config}
-        setFilterValue={setFilterValue}
-      />
-    </Page>
+        <Forms
+          value={selected}
+          visible={visible}
+          handleFormState={handleFormState}
+          access={access}
+          config={config}
+          setFilterValue={setFilterValue}
+        />
+      </Page>
+    </>
   );
 };
 

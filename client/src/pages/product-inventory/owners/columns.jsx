@@ -1,4 +1,4 @@
-const columns = (t) => [
+const columns = (t, visible) => [
   {
     headerName: t('fields.tkownerCode'),
     field: 'cmpy_code',
@@ -26,7 +26,7 @@ const columns = (t) => [
     resizable: true,
     width: 140,
     suppressSizeToFit: true,
-    hide: true,
+    hide: !visible,
   },
   {
     headerName: t('fields.productName'),
@@ -34,9 +34,9 @@ const columns = (t) => [
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
-    width: 160,
+    width: 240,
     suppressSizeToFit: true,
-    hide: true,
+    hide: !visible,
   },
 
   {
