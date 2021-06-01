@@ -104,6 +104,8 @@ const useConfig = () => {
     siteUseProdOwnership: false,
     siteLabelUser: '',
     useWaterStrapping: false,
+    siteOwnershipVolumeMode: 'GSV',
+    siteOwnershipMassMode: 'WiV',
     siteStockCalcEnhanced: false,
     siteUllageCalcAuto: false,
     siteMandatoryTankCalcFields: false,
@@ -304,6 +306,8 @@ const useConfig = () => {
           ? ''
           : configurationObject?.SITE_LABEL_USER + '.',
         useWaterStrapping: configurationObject?.SITE_USE_WATER_STRAPPING || false,
+        siteOwnershipVolumeMode: configurationObject?.SITE_OWNERSHIP_VOLUME_MODE || 'GSV',
+        siteOwnershipMassMode: configurationObject?.SITE_OWNERSHIP_MASS_MODE || 'WiV',
         siteStockCalcEnhanced: configurationObject?.SITE_STOCK_CALC_ENHANCED || false,
         siteUllageCalcAuto: configurationObject?.SITE_ULLAGE_AUTO_CALC || false,
         siteMandatoryTankCalcFields: configurationObject?.SITE_TANK_STATUS_FIELDS_MANDATORY || false,
