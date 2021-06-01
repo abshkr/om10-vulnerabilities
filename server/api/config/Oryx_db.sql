@@ -984,3 +984,47 @@ alter table MOVEMENT_ITEMS add MVITM_RECEIPT_EXPECTED FLOAT;
 -- add new column MVITM_INTO_TRANSIT_GL to store the Into transit G/L at nomination item level
 alter table MOVEMENT_ITEMS add MVITM_INTO_TRANSIT_GL FLOAT;
 
+
+
+
+
+
+/*
+    define the SITE_VCF_CALC_PRECISION to control whether to round the VCF value during the VCF/QTY calculations
+    Number: the number of digits VCF should be rounded before doing the further calculation with it. For Oryx it is 5
+    '': use old logic in calcvcf.cgi
+*/
+delete from SITE_CONFIG where CONFIG_KEY='SITE_VCF_CALC_PRECISION';
+
+commit;
+
+insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIRED_BY_GUI) 
+values ('SITE_VCF_CALC_PRECISION', '5', 'the number of digits VCF should be rounded before doing the further calculation with it', NULL );
+
+commit;
+
+/*
+    define the SITE_VCF_SHOW_PRECISION to control the number of digits after decimal point for VCF showed in front-end
+*/
+delete from SITE_CONFIG where CONFIG_KEY='SITE_VCF_SHOW_PRECISION';
+
+commit;
+
+insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIRED_BY_GUI) 
+values ('SITE_VCF_SHOW_PRECISION', '5', 'VCF precision', NULL );
+
+commit;
+
+/*
+    define the SITE_VCF_FIELD_VISIBLE to show or hide the VCF fields and columns in front end
+    Y: show the VCF fields and columns in front end
+    N: hide the VCF fields and columns in front end
+*/
+delete from SITE_CONFIG where CONFIG_KEY='SITE_VCF_FIELD_VISIBLE';
+
+commit;
+
+insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIRED_BY_GUI) 
+values ('SITE_VCF_FIELD_VISIBLE', 'Y', 'Show or hide the VCF fields and columns in front end', NULL );
+
+commit;
