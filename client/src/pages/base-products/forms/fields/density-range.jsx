@@ -29,33 +29,41 @@ const DensityRange = ({ form, value, classification, config }) => {
     }
   }, [value, classification, config, setFieldsValue]);
 
-  const low = classification ? _.round(_.toNumber(classification?.bclass_dens_lo), config.precisionDensity) : '';
-  const high = classification ? _.round(_.toNumber(classification?.bclass_dens_hi), config.precisionDensity) : '';
+  const low = classification
+    ? _.round(_.toNumber(classification?.bclass_dens_lo), config.precisionDensity)
+    : '';
+  const high = classification
+    ? _.round(_.toNumber(classification?.bclass_dens_hi), config.precisionDensity)
+    : '';
 
   return (
     <>
-      <Row gutter={[12, 12]}>
+      <Row gutter={[12, 4]}>
         <Col span={12}>
           <Form.Item
             name="base_dens_lo"
-            label={`${t('fields.baseProdDensLo')} ${classification ? `(${low} - ${high})${t(`units.${config.densityUnit}`)}` : ''}`}
-            rules={[{ 
-              required: false,
-              title: t('fields.baseProdDensLo'), 
-              dataType: 'NUMBER',
-              // maxLength: 256, 
-              precision: 3,
-              min: low || config.minDensity, 
-              max: high || config.maxDensity,
-              prompts: t,
-              // returnType: 'notice',
-              validator: validateField 
-            }]}
+            label={`${t('fields.baseProdDensLo')} ${
+              classification ? `(${low} - ${high})${t(`units.${config.densityUnit}`)}` : ''
+            }`}
+            rules={[
+              {
+                required: false,
+                title: t('fields.baseProdDensLo'),
+                dataType: 'NUMBER',
+                // maxLength: 256,
+                precision: 3,
+                min: low || config.minDensity,
+                max: high || config.maxDensity,
+                prompts: t,
+                // returnType: 'notice',
+                validator: validateField,
+              },
+            ]}
           >
-            <InputNumber 
-              // min={low} 
-              // max={high} 
-              style={{ width: '100%' }} 
+            <InputNumber
+              // min={low}
+              // max={high}
+              style={{ width: '100%' }}
             />
           </Form.Item>
         </Col>
@@ -63,24 +71,28 @@ const DensityRange = ({ form, value, classification, config }) => {
         <Col span={12}>
           <Form.Item
             name="base_dens_hi"
-            label={`${t('fields.baseProdDensHi')} ${classification ? `(${low} - ${high})${t(`units.${config.densityUnit}`)}` : ''}`}
-            rules={[{ 
-              required: false,
-              title: t('fields.baseProdDensHi'), 
-              dataType: 'NUMBER',
-              // maxLength: 256, 
-              precision: 3,
-              min: low || config.minDensity, 
-              max: high || config.maxDensity,
-              prompts: t,
-              // returnType: 'notice',
-              validator: validateField 
-            }]}
+            label={`${t('fields.baseProdDensHi')} ${
+              classification ? `(${low} - ${high})${t(`units.${config.densityUnit}`)}` : ''
+            }`}
+            rules={[
+              {
+                required: false,
+                title: t('fields.baseProdDensHi'),
+                dataType: 'NUMBER',
+                // maxLength: 256,
+                precision: 3,
+                min: low || config.minDensity,
+                max: high || config.maxDensity,
+                prompts: t,
+                // returnType: 'notice',
+                validator: validateField,
+              },
+            ]}
           >
-            <InputNumber 
-              // min={low} 
-              // max={high} 
-              style={{ width: '100%' }} 
+            <InputNumber
+              // min={low}
+              // max={high}
+              style={{ width: '100%' }}
             />
           </Form.Item>
         </Col>

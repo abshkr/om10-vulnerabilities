@@ -3,7 +3,7 @@ import { Button, Form, Tooltip } from 'antd';
 import { CompactPicker } from 'react-color';
 import { useTranslation } from 'react-i18next';
 
-import {getRealColor} from '../../../../utils';
+import { getRealColor } from '../../../../utils';
 
 const BaseProductColor = ({ form, value }) => {
   const [visible, setVisible] = useState(false);
@@ -14,11 +14,11 @@ const BaseProductColor = ({ form, value }) => {
 
   const { setFieldsValue } = form;
 
-  const handleColorChange = value => {
+  const handleColorChange = (value) => {
     setVisible(false);
 
     setFieldsValue({
-      base_color: value?.hex
+      base_color: value?.hex,
     });
 
     setColor(value?.hex);
@@ -33,7 +33,7 @@ const BaseProductColor = ({ form, value }) => {
       const color = value.base_color; // === '' ? '#ffffff' : value.base_color;
 
       setFieldsValue({
-        base_color: color
+        base_color: color,
       });
 
       setColor(color);
@@ -43,12 +43,14 @@ const BaseProductColor = ({ form, value }) => {
   return (
     <div>
       <Form.Item name="base_color" label={t('fields.baseProdColor')}>
-        <Tooltip 
-          placement="top" 
-          title={`${!color? t('fields.baseColorCurrentBlank') : t('fields.baseColorCurrentSet')} ${color}`}
+        <Tooltip
+          placement="top"
+          title={`${!color ? t('fields.baseColorCurrentBlank') : t('fields.baseColorCurrentSet')} ${color} (${
+            !visible ? t('prompts.clickColorButtonToOpen') : t('prompts.clickColorButtonToClose')
+          })`}
         >
           <Button color={color} onClick={handleVisiblity} style={{ background: getRealColor(color) }} block>
-            {!color? t('fields.baseColorCurrentBlank') : t('fields.baseColorCurrentSet')} {color}
+            {!color ? t('fields.baseColorCurrentBlank') : t('fields.baseColorCurrentSet')} {color}
           </Button>
         </Tooltip>
       </Form.Item>
@@ -56,7 +58,7 @@ const BaseProductColor = ({ form, value }) => {
       <div
         style={{
           position: 'relative',
-          zIndex: '2'
+          zIndex: '2',
         }}
       >
         {visible && <CompactPicker color={getRealColor(color)} onChangeComplete={handleColorChange} />}

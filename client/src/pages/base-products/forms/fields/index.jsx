@@ -7,6 +7,7 @@ import Classification from './classification';
 // import AdaptiveArmPriority from './adaptive-arm-priority';
 import DensityRange from './density-range';
 import CorrectionMethod from './correction-method';
+import StockUnit from './stock-unit';
 import RefSpecTemp from './ref-temp-spec';
 import HotTempFlag from './hot-temp-flag';
 import AdaptiveFlowControlFlag from './afc-flag';
@@ -22,6 +23,7 @@ export {
   // AdaptiveArmPriority,
   DensityRange,
   CorrectionMethod,
+  StockUnit,
   RefSpecTemp,
   HotTempFlag,
   AdaptiveFlowControlFlag,

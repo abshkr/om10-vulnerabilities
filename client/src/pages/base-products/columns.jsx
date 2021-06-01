@@ -203,6 +203,26 @@ const columns = (t, config) => [
     width: 200,
     suppressSizeToFit: true,
   },
+  {
+    headerName: t('fields.baseProdStockUnitId'),
+    field: 'base_stock_unit',
+    sortable: true,
+    filter: 'MultiFilter',
+    resizable: true,
+    hide: true, //!config.siteUseProdOwnership,
+    width: 240,
+    suppressSizeToFit: true,
+  },
+  {
+    headerName: t('fields.baseProdStockUnitMode'),
+    field: 'base_stock_unit_name',
+    sortable: true,
+    filter: 'MultiFilter',
+    resizable: true,
+    hide: !config.siteUseProdOwnership,
+    width: 240,
+    suppressSizeToFit: true,
+  },
 ];
 
 export default columns;

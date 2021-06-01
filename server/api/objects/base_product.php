@@ -53,6 +53,12 @@ class BaseProduct extends CommonClass
         return $serv->corr_mthds();
     }
 
+    public function stock_units()
+    {
+        $serv = new EnumService($this->conn);
+        return $serv->stock_units();
+    }
+
     //Because base cannot be too many, do not do limit
     //Old sample from amf BaseProductService.php::getPaged():
     // "base_code":"TEST","base_name":"TESTNAME","base_prod_group":"COMPLIES","base_group_name":"Subject to Fuel Standard with Compliance","base_cat":"1","base_class_desc":"Jet Fuels\/Kerosines","base_rpt_tunt":null,"base_rpt_temp":null,"base_dens_lo":"789.5195","base_dens_hi":"811.3127","base_color":"#40FE76","base_adtv":"0","base_text":"TEST - TESTNAME","base_desc":"TEST - TESTNAME (Jet Fuels\/Kerosines) ","base_class_dens_lo":"787.5195","base_class_dens_hi":"838.3127","base_class_vcf_alg":"2","base_class_temp_lo":"-50","base_class_temp_hi":"150","base_tank_count":null,"base_tank_list":null,"base_ref_temp":"15","base_ref_tunt":"0","base_limit_preset_ht":"0","base_corr_mthd":"0","base_ref_temp_spec":"1","base_ref_tunt_name":"C","base_corr_mthd_name":"UNSPECIFIED","base_ref_temp_spec_name":"COMPENSTN_PT","rn":"32"
@@ -93,6 +99,9 @@ class BaseProduct extends CommonClass
                 BP.BASE_REF_TEMP_SPEC,
                 BP.AFC_ENABLED,
                 BP.AFC_PRIORITY,
+                BP.BASE_STOCK_UNIT,
+                SUV.STOCK_UNIT_CODE AS BASE_STOCK_UNIT_CODE,
+                SUV.STOCK_UNIT_NAME AS BASE_STOCK_UNIT_NAME,
                 UV.DESCRIPTION AS BASE_REF_TUNT_NAME,
                 CM.COMPENSATION_NAME AS BASE_CORR_MTHD_NAME,
                 RTS.REF_TEMP_SPEC_NAME AS BASE_REF_TEMP_SPEC_NAME
@@ -120,6 +129,7 @@ class BaseProduct extends CommonClass
                 FROM TANKS
                 GROUP BY TANKS.TANK_BASE
                 ) BT,
+                STOCK_UNIT_VW SUV,
                 UNIT_SCALE_VW UV,
                 COMPENSATION_MTHD CM,
                 REF_TEMP_SPEC RTS
@@ -131,6 +141,7 @@ class BaseProduct extends CommonClass
                 AND BP.BASE_CAT = BC.BCLASS_NO(+)
                 AND BP.BASE_PROD_GROUP = BG.PGR_CODE(+)
                 AND BP.BASE_CODE = BT.TANK_BASE(+)
+                AND BP.BASE_STOCK_UNIT = SUV.STOCK_UNIT_ID(+)
                 AND BP.BASE_REF_TUNT = UV.UNIT_ID(+)
                 AND BP.BASE_CORR_MTHD = CM.COMPENSATION_ID(+)
                 AND BP.BASE_REF_TEMP_SPEC = RTS.REF_TEMP_SPEC_ID(+)";
@@ -161,6 +172,7 @@ class BaseProduct extends CommonClass
                 BASE_REF_TEMP_SPEC,
                 AFC_ENABLED,
                 AFC_PRIORITY,
+                BASE_STOCK_UNIT,
                 BASE_CODE
             )
             VALUES (
@@ -177,6 +189,7 @@ class BaseProduct extends CommonClass
                 :base_ref_temp_spec,
                 :afc_enabled,
                 :afc_priority,
+                :base_stock_unit,
                 :base_code
             )";
         $stmt = oci_parse($this->conn, $query);
@@ -193,6 +206,7 @@ class BaseProduct extends CommonClass
         oci_bind_by_name($stmt, ':base_ref_temp_spec', $this->base_ref_temp_spec);
         oci_bind_by_name($stmt, ':afc_enabled', $this->afc_enabled);
         oci_bind_by_name($stmt, ':afc_priority', $this->afc_priority);
+        oci_bind_by_name($stmt, ':base_stock_unit', $this->base_stock_unit);
         oci_bind_by_name($stmt, ':base_code', $this->base_code);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {

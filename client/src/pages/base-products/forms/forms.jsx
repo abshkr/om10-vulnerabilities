@@ -36,6 +36,7 @@ import {
   DensityRange,
   RefSpecTemp,
   CorrectionMethod,
+  StockUnit,
   HotTempFlag,
   AdaptiveFlowControlFlag,
   AdaptiveFlowControlPriority,
@@ -46,7 +47,7 @@ import api, { BASE_PRODUCTS, ADAPTIVE_FLOW_CONTROL } from '../../../api';
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, config, setFilterValue }) => {
-  const { manageHotProduct, manageBaseProductDensityRange, siteUseAFC } = config;
+  const { manageHotProduct, manageBaseProductDensityRange, siteUseAFC, siteUseProdOwnership } = config;
   const [classification, setClassification] = useState(undefined);
   const [afcEnabled, setAfcEnabled] = useState(value?.afc_enabled);
 
@@ -290,15 +291,27 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
               onChange={setClassification}
               classification={classification}
             />
+
             {manageBaseProductDensityRange && (
               <DensityRange form={form} value={value} classification={classification} config={config} />
             )}
-            <Group form={form} value={value} />
-            <Color form={form} value={value} />
 
-            <Divider />
+            <Row gutter={[12, 4]}>
+              <Col span={12}>
+                <Group form={form} value={value} />
+              </Col>
+              <Col span={12}>
+                <Color form={form} value={value} />
+              </Col>
+            </Row>
+
+            {siteUseProdOwnership && <StockUnit form={form} value={value} />}
+
+            {/* <Divider style={{padding: 0, margin: 0}} /> */}
+
             {manageHotProduct && <HotTempFlag form={form} value={value} />}
-            <Row gutter={[12, 12]}>
+
+            <Row gutter={[12, 4]}>
               <Col span={12}>
                 <RefSpecTemp form={form} value={value} />
               </Col>
@@ -306,10 +319,11 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
                 <CorrectionMethod form={form} value={value} />
               </Col>
             </Row>
+
             {siteUseAFC && (
               <>
-                <Divider />
-                <Row gutter={[12, 12]}>
+                {/* <Divider style={{padding: 0, margin: 0}} /> */}
+                <Row gutter={[12, 4]}>
                   <Col span={12}>
                     <AdaptiveFlowControlFlag
                       form={form}

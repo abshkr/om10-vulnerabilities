@@ -619,7 +619,8 @@
       "BASE_DENS_HI": "Base Dens Hi",
       "BASE_COLOR": "Base Color",
       "AFC_ENABLED": "AFC Enabled",
-      "AFC_PRIORITY": "AFC Arm Priority"
+      "AFC_PRIORITY": "AFC Arm Priority",
+      "BASE_STOCK_UNIT": "Base Ownership Unit Mode"
     },
     "BASE_PROD_OWNSHIP": {
       "OWNSHIP_NO": "Ownership No",
@@ -5551,7 +5552,8 @@
       "BASE_DENS_HI": "基础油品密度上限",
       "BASE_COLOR": "基础油品颜色",
       "AFC_ENABLED": "适应性油品流动控制",
-      "AFC_PRIORITY": "适应性鹤管优先级"
+      "AFC_PRIORITY": "适应性鹤管优先级",
+      "BASE_STOCK_UNIT": "基础油品所有权计量方式"
     },
     "BASE_PROD_OWNSHIP": {
       "OWNSHIP_NO": "所有权编号",
