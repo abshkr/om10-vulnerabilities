@@ -1011,7 +1011,7 @@ delete from SITE_CONFIG where CONFIG_KEY='SITE_VCF_SHOW_PRECISION';
 commit;
 
 insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIRED_BY_GUI) 
-values ('SITE_VCF_SHOW_PRECISION', '5', 'VCF precision', NULL );
+values ('SITE_VCF_SHOW_PRECISION', '5', 'VCF precision in front-end', NULL );
 
 commit;
 
@@ -1028,3 +1028,77 @@ insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIR
 values ('SITE_VCF_FIELD_VISIBLE', 'Y', 'Show or hide the VCF fields and columns in front end', NULL );
 
 commit;
+
+
+/*
+    The ENUM for ownership unit
+*/
+delete from ENUMITEM where ENUMTYPENAME='STOCK_UNIT';
+
+-- Enumitem for STOCK_UNIT
+insert into ENUMITEM (ENUMTYPENAME, ENUM_NO, ENUM_TMM, ENUM_CODE) values('STOCK_UNIT', 0, 3240, 'V');
+insert into ENUMITEM (ENUMTYPENAME, ENUM_NO, ENUM_TMM, ENUM_CODE) values('STOCK_UNIT', 1, 3241, 'M');
+
+delete from MSG_LOOKUP where MSG_ID in(3240,3241);
+
+-- Message lookup for STOCK_UNIT
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3240, 'CHN', '体积计量单位');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3240, 'ENG', 'Volume Unit');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3241, 'CHN', '质量计量单位');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3241, 'ENG', 'Mass Unit');
+
+-- The view for STOCK_UNIT
+CREATE OR REPLACE VIEW STOCK_UNIT_VW
+AS
+SELECT
+    EI.ENUM_NO STOCK_UNIT_ID, 
+    EI.ENUM_CODE STOCK_UNIT_CODE, 
+    ML.MESSAGE STOCK_UNIT_NAME
+FROM
+    ENUMITEM EI,
+    MSG_GLBL ML
+WHERE
+    EI.ENUMTYPENAME='STOCK_UNIT'
+    AND ML.MSG_ID=EI.ENUM_TMM
+/
+
+commit;
+
+
+/*
+    Add new column BASE_STOCK_UNIT in table BASE_PRODS to store the unit mode for ownership stock management
+    0: Volume Unit
+    1: Mass Unit
+*/
+alter table BASE_PRODS add BASE_STOCK_UNIT NUMBER(2) DEFAULT 0;
+
+
+/*
+    define the SITE_OWNERSHIP_VOLUME_MODE to decide the volume mode used for site-level ownership stock management
+    GOV: Gross Observed Volume (Ambient Volume)
+    GSV: Gross Standard Volume (Corrected Volume)
+*/
+delete from SITE_CONFIG where CONFIG_KEY='SITE_OWNERSHIP_VOLUME_MODE';
+
+commit;
+
+insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIRED_BY_GUI) 
+values ('SITE_OWNERSHIP_VOLUME_MODE', 'GSV', 'The volume mode used for site-level ownership stock management. GOV: Gross Observed Volume, GSV: Gross Standard Volume', NULL );
+
+commit;
+
+
+/*
+    define the SITE_OWNERSHIP_MASS_MODE to decide the mass mode used for site-level ownership stock management
+    WiV: Weight in Vacuum
+    WiA: Weight in Air
+*/
+delete from SITE_CONFIG where CONFIG_KEY='SITE_OWNERSHIP_MASS_MODE';
+
+commit;
+
+insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIRED_BY_GUI) 
+values ('SITE_OWNERSHIP_MASS_MODE', 'WiV', 'The mass mode used for site-level ownership stock management. WiV: Weight in Vacuum, WiA: Weight in Air', NULL );
+
+commit;
+
