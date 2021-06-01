@@ -42,7 +42,7 @@ import {
   AdaptiveFlowControlPriority,
 } from './fields';
 
-import api, { BASE_PRODUCTS, ADAPTIVE_FLOW_CONTROL } from '../../../api';
+import api, { BASE_PRODUCTS, ADAPTIVE_FLOW_CONTROL, BASE_OWNERS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
@@ -55,12 +55,16 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
   const [ratioCount, setRatioCount] = useState(0);
   const [tankCount, setTankCount] = useState(0);
   const [transCount, setTransCount] = useState(0);
+  const [owners, setOwners] = useState([]);
 
   const url =
     value && value?.base_code
       ? `${ADAPTIVE_FLOW_CONTROL.MAX_FLOW_DETAILS}?base_code=${value?.base_code}`
       : null;
   const { data: payload } = useSWR(url);
+
+  const url2 = value && value?.base_code ? `${BASE_OWNERS.READ}?base_code=${value?.base_code}` : null;
+  const { data: payload2 } = useSWR(url2);
 
   const { data: ratios } = useSWR(`${BASE_PRODUCTS.CHECK_BASE_RATIOS}?base_code=${value?.base_code}`, {
     refreshInterval: 0,
@@ -197,6 +201,14 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
   }, [value, payload]);
 
   useEffect(() => {
+    if (value && payload2) {
+      setOwners(payload2.records);
+    } else {
+      setOwners([]);
+    }
+  }, [value, payload2]);
+
+  useEffect(() => {
     if (ratios) {
       setRatioCount(ratios?.records?.[0]?.cnt);
     }
@@ -305,7 +317,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
               </Col>
             </Row>
 
-            {siteUseProdOwnership && <StockUnit form={form} value={value} />}
+            {siteUseProdOwnership && <StockUnit form={form} value={value} owners={owners} />}
 
             {/* <Divider style={{padding: 0, margin: 0}} /> */}
 

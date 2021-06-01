@@ -6,7 +6,7 @@ import useSWR from 'swr';
 
 import { BASE_PRODUCTS } from '../../../../api';
 
-const StockUnit = ({ form, value }) => {
+const StockUnit = ({ form, value, owners }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -34,13 +34,18 @@ const StockUnit = ({ form, value }) => {
   return (
     <Form.Item
       name="base_stock_unit"
-      label={t('fields.baseProdStockUnitMode')}
+      label={
+        t('fields.baseProdStockUnitMode') +
+        (!value ? '' : ' (' + t('fields.totalBaseOwnerships') + ': ' + String(owners?.length) + ')')
+      }
       rules={[{ required: true, validator: validate }]}
     >
       <Select
         dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
+        disabled={value && owners?.length > 0}
+        // onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectStockUnitMode') : null}
         filterOption={(input, option) =>

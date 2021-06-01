@@ -1796,6 +1796,7 @@
     "toTransferToOffsite": "出库量",
     "today": "今天",
     "totalAcc": "总库存量",
+    "totalBaseOwnerships": "该基础油品的所有权总数",
     "totalChildRecords": "子记录总数",
     "totalCount": "总数",
     "totalCustomerCategories": "客户类别总数",
