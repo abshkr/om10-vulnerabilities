@@ -1102,3 +1102,21 @@ values ('SITE_OWNERSHIP_MASS_MODE', 'WiV', 'The mass mode used for site-level ow
 
 commit;
 
+
+/*
+    Add the unit labels for Mass in Vaccuum and Mass in Air
+*/
+-- No deletion here because UNIT_SCALE has many other items
+-- Enumitem for extra kg items in UNIT_SCALE
+insert into ENUMITEM (ENUMTYPENAME, ENUM_NO, ENUM_TMM, ENUM_CODE) values('UNIT_SCALE', 35, 3242, 'VAC');
+insert into ENUMITEM (ENUMTYPENAME, ENUM_NO, ENUM_TMM, ENUM_CODE) values('UNIT_SCALE', 36, 3243, 'AIR');
+
+delete from MSG_LOOKUP where MSG_ID in(3242,3243);
+
+-- Message lookup for STOCK_UNIT
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3242, 'CHN', '公斤(真空)');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3242, 'ENG', 'kg (vac)');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3243, 'CHN', '公斤(空气)');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3243, 'ENG', 'kg (air)');
+
+commit;
