@@ -258,7 +258,7 @@ const Calculate = ({
   return (
     <>
       <Row gutter={[8, 8]}>
-        <Col span={12}>
+        <Col span={config?.siteUseVCF ? 8 : 12}>
           <Form.Item name="mlitm_qty_amb" label={t('fields.observedQuantity') + '(' + t('units.ltr') + ')'}>
             <InputNumber
               min={0}
@@ -270,7 +270,7 @@ const Calculate = ({
             />
           </Form.Item>
         </Col>
-        <Col span={12}>
+        <Col span={config?.siteUseVCF ? 8 : 12}>
           <Form.Item name="mlitm_qty_cor" label={t('fields.standardQuantity') + '(' + t('units.ltr') + ')'}>
             <InputNumber
               min={0}
@@ -282,6 +282,20 @@ const Calculate = ({
             />
           </Form.Item>
         </Col>
+        {config?.siteUseVCF && (
+          <Col span={8}>
+            <Form.Item name="mlitm_vcf" label={t('fields.vcf')}>
+              <InputNumber
+                min={0}
+                max={999999999}
+                precision={config.precisionVCF}
+                disabled={true}
+                style={{ width: '100%' }}
+                // onChange={handleCorVolFieldChange}
+              />
+            </Form.Item>
+          </Col>
+        )}
       </Row>
 
       <Row gutter={[8, 8]}>
