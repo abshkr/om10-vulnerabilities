@@ -113,10 +113,50 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
     }
   };
 
+  const handleOwnerUnit = () => {
+    const payload = getFieldsValue(['base_prod_code']);
+
+    if (payload?.base_prod_code) {
+      const baseProd = bases?.records?.find((o) => o.base_code === payload?.base_prod_code);
+      // console.log('..............base', baseProd);
+
+      if (!baseProd) {
+        setFieldsValue({
+          trsa_unit: 11,
+        });
+      } else {
+        let unitId = 11;
+        if (baseProd?.base_stock_unit === '0') {
+          // volume unit
+          if (config?.siteOwnershipVolumeMode === 'GOV') {
+            unitId = 5;
+          }
+          if (config?.siteOwnershipVolumeMode === 'GSV') {
+            unitId = 11;
+          }
+        }
+        if (baseProd?.base_stock_unit === '1') {
+          // volume unit
+          if (config?.siteOwnershipMassMode === 'WiV') {
+            unitId = 17; // 35;
+          }
+          if (config?.siteOwnershipMassMode === 'WiA') {
+            unitId = 17; // 36;
+          }
+        }
+        // console.log('..............unit', baseProd, unitId);
+        setFieldsValue({
+          trsa_unit: unitId,
+        });
+      }
+    }
+  };
+
   const onBaseChanged = async () => {
     handleBaseDensity();
     handleOwnership();
     handleOwnershipTo();
+    handleOwnerUnit();
   };
 
   const getOwnership = async (prod, supp) => {
