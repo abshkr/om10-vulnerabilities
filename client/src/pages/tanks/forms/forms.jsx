@@ -412,7 +412,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
                   response?.data?.REAL_KG,
                   isAdtv ? config.precisionAdditive : config.precisionMass
                 ),
-                tank_vcf: _.round(response?.data?.REAL_VCF, 5),
+                tank_vcf: _.round(response?.data?.REAL_VCF, config?.precisionVCF),
                 tank_air_kg: _.round(WIA, isAdtv ? config.precisionAdditive : config.precisionMass),
               });
               notification.success({
@@ -570,7 +570,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
                   response?.data?.REAL_KG,
                   isAdtv ? config.precisionAdditive : config.precisionMass
                 ),
-                tank_vcf: _.round(response?.data?.REAL_VCF, 5),
+                tank_vcf: _.round(response?.data?.REAL_VCF, config?.precisionVCF),
                 tank_air_kg: _.round(WIA, isAdtv ? config.precisionAdditive : config.precisionMass),
               });
               // value.tank_amb_vol = _.round(response?.data?.REAL_LITRE, isAdtv ? config.precisionAdditive : config.precisionVolume);
@@ -756,7 +756,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
                   response?.data?.REAL_KG,
                   isAdtv ? config.precisionAdditive : config.precisionMass
                 ),
-                tank_vcf: _.round(response?.data?.REAL_VCF, 5),
+                tank_vcf: _.round(response?.data?.REAL_VCF, config?.precisionVCF),
                 tank_air_kg: _.round(WIA, isAdtv ? config.precisionAdditive : config.precisionMass),
               });
               notification.success({

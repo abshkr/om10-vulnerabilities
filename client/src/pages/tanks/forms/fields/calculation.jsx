@@ -742,7 +742,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
       </Form.Item> */}
 
       <Row gutter={[8, 8]}>
-        <Col span={config?.useWaterStrapping ? 12 : 24}>
+        <Col span={config?.siteUseVCF ? 12 : 24}>
           <OmegaInputNumber
             form={form}
             value={value?.tank_cor_vol}
@@ -765,7 +765,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
             />
           </Form.Item> */}
         </Col>
-        {config?.useWaterStrapping && (
+        {config?.siteUseVCF && (
           <Col span={12}>
             <OmegaInputNumber
               form={form}
@@ -775,7 +775,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
               min={0}
               max={999999999}
               style={{ width: '100%' }}
-              precision={5}
+              precision={config?.precisionVCF}
               disabled={true}
               // onChange={handleCorVolFieldChange}
             />
