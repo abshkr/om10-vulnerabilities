@@ -560,6 +560,12 @@ class Feature extends CommonClass
 				SITE_USE_NOM_TPP: Show TPP fields in Nomination screen, Y/N
 				SITE_USE_INTO_TRANSIT_GL: Manage the into-transit gain/loss in Nomination, Y/N
 
+				SITE_VCF_CALC_PRECISION: The number of digits VCF should be rounded before doing the further calculation with it, NULL or a number
+				SITE_VCF_SHOW_PRECISION: VCF precision in front-end
+				SITE_VCF_FIELD_VISIBLE: Show or hide the VCF fields and columns in front end, Y/N
+
+				SITE_OWNERSHIP_VOLUME_MODE: The volume mode used for site-level ownership stock management. GOV: Gross Observed Volume, GSV: Gross Standard Volume
+				SITE_OWNERSHIP_MASS_MODE: The mass mode used for site-level ownership stock management. WiV: Weight in Vacuum, WiA: Weight in Air
 		*/
 		if ( $flag == 'Y' || $flag == true )
 		{
@@ -575,6 +581,11 @@ class Feature extends CommonClass
 			$this->updateSiteConfig( 'SITE', 'SITE_PROD_OWNERSHIP_LEVEL' );
 			$this->updateSiteConfig( 'N', 'SITE_USE_NOM_TPP' );
 			$this->updateSiteConfig( 'Y', 'SITE_USE_INTO_TRANSIT_GL' );
+			$this->updateSiteConfig( '5', 'SITE_VCF_CALC_PRECISION' );
+			$this->updateSiteConfig( '5', 'SITE_VCF_SHOW_PRECISION' );
+			$this->updateSiteConfig( 'Y', 'SITE_VCF_FIELD_VISIBLE' );
+			$this->updateSiteConfig( 'GSV', 'SITE_OWNERSHIP_VOLUME_MODE' );
+			$this->updateSiteConfig( 'WiV', 'SITE_OWNERSHIP_MASS_MODE' );
 		}
 		else
 		{
@@ -590,6 +601,11 @@ class Feature extends CommonClass
 			$this->updateSiteConfig( 'TANK', 'SITE_PROD_OWNERSHIP_LEVEL' );
 			$this->updateSiteConfig( 'Y', 'SITE_USE_NOM_TPP' );
 			$this->updateSiteConfig( 'N', 'SITE_USE_INTO_TRANSIT_GL' );
+			$this->updateSiteConfig( '', 'SITE_VCF_CALC_PRECISION' );
+			$this->updateSiteConfig( '5', 'SITE_VCF_SHOW_PRECISION' );
+			$this->updateSiteConfig( 'N', 'SITE_VCF_FIELD_VISIBLE' );
+			$this->updateSiteConfig( 'GSV', 'SITE_OWNERSHIP_VOLUME_MODE' ); // may need to change later
+			$this->updateSiteConfig( 'WiV', 'SITE_OWNERSHIP_MASS_MODE' ); // may need to change later
 		}
 
 		// update the unit message for std volume
