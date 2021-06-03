@@ -634,7 +634,8 @@ class Tank extends CommonClass
     public function delete()
     {
         // need delete the child records in TK_OWNERS
-        $query = "DELETE FROM TK_OWNERS WHERE TKLINK_TANKCODE = :tank_code";
+        // Note: only delete it when its ownership qty is zERO
+        $query = "DELETE FROM TK_OWNERS WHERE TKLINK_TANKCODE = :tank_code and TKOWNER_QTY<=0";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
