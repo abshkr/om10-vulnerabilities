@@ -756,19 +756,19 @@ class Tank extends CommonClass
                 , TKO_ADJ_KG
             )
             select 
-                cmp.CMPY_CODE            AS TKCMPY_LINK
-                , tnk.TANK_CODE          AS TKLINK_TANKCODE
-                , tnk.TANK_TERMINAL      AS TKLINK_TANKDEPO
-                , tnk.TANK_COR_VOL       AS TKOWNER_QTY
-                , tnk.TANK_COR_VOL       AS TKO_STD_LTR
-                , tnk.TANK_AMB_VOL       AS TKO_AMB_LTR
-                , tnk.TANK_LIQUID_KG     AS TKO_KG
-                , 100                    AS TKO_PERCENTAGE
-                , tnk.TANK_RCPT_VOL      AS TKO_IN
-                , tnk.TANK_RCPT_KG       AS TKO_IN_KG
+                ctk.CMPY_CODE            AS TKCMPY_LINK
+                , ctk.TANK_CODE          AS TKLINK_TANKCODE
+                , ctk.TANK_TERMINAL      AS TKLINK_TANKDEPO
+                , DECODE(ctk.SITE_MANAGER, 'Y', ctk.TANK_COR_VOL, 0)       AS TKOWNER_QTY
+                , DECODE(ctk.SITE_MANAGER, 'Y', ctk.TANK_COR_VOL, 0)       AS TKO_STD_LTR
+                , DECODE(ctk.SITE_MANAGER, 'Y', ctk.TANK_AMB_VOL, 0)       AS TKO_AMB_LTR
+                , DECODE(ctk.SITE_MANAGER, 'Y', ctk.TANK_LIQUID_KG, 0)     AS TKO_KG
+                , DECODE(ctk.SITE_MANAGER, 'Y', 100, 0)                    AS TKO_PERCENTAGE
+                , DECODE(ctk.SITE_MANAGER, 'Y', ctk.TANK_RCPT_VOL, 0)      AS TKO_IN
+                , DECODE(ctk.SITE_MANAGER, 'Y', ctk.TANK_RCPT_KG, 0)       AS TKO_IN_KG
                 , NULL                   AS TKO_IN_TOTAL
-                , tnk.TANK_TRF_VOL       AS TKO_OUT
-                , tnk.TANK_TRF_KG        AS TKO_OUT_KG
+                , DECODE(ctk.SITE_MANAGER, 'Y', ctk.TANK_TRF_VOL, 0)       AS TKO_OUT
+                , DECODE(ctk.SITE_MANAGER, 'Y', ctk.TANK_TRF_KG, 0)        AS TKO_OUT_KG
                 , NULL                   AS TKO_OUT_TOTAL
                 , NULL                   AS TKO_OUT_PRMV
                 , NULL                   AS TKO_OUT_LD
@@ -780,16 +780,35 @@ class Tank extends CommonClass
                     select 
                         TKLINK_TANKCODE
                         , TKLINK_TANKDEPO
+                        , TKCMPY_LINK
                         , count(*) as TKO_COUNT 
                     from TK_OWNERS 
-                    group by TKLINK_TANKCODE, TKLINK_TANKDEPO
+                    group by TKLINK_TANKCODE, TKLINK_TANKDEPO, TKCMPY_LINK
                 )          tko
-                , GUI_COMPANYS     cmp
-                , GUI_TANKS        tnk
+                , (
+                    select
+                        cmp.CMPY_CODE
+                        , cmp.SITE_MANAGER
+                        , cmp.SUPPLIER
+                        , tnk.TANK_CODE
+                        , tnk.TANK_TERMINAL
+                        , tnk.TANK_COR_VOL
+                        , tnk.TANK_AMB_VOL
+                        , tnk.TANK_LIQUID_KG
+                        , tnk.TANK_RCPT_VOL
+                        , tnk.TANK_RCPT_KG
+                        , tnk.TANK_TRF_VOL
+                        , tnk.TANK_TRF_KG
+                    from
+                        GUI_COMPANYS     cmp
+                        , GUI_TANKS        tnk
+                    where
+                        cmp.SITE_MANAGER='Y' OR cmp.SUPPLIER = 'Y'
+                )          ctk
             where 
-                cmp.SITE_MANAGER='Y'
-                and tnk.TANK_CODE = tko.TKLINK_TANKCODE(+)
-                and tnk.TANK_TERMINAL = tko.TKLINK_TANKDEPO(+)
+                ctk.TANK_CODE = tko.TKLINK_TANKCODE(+)
+                and ctk.TANK_TERMINAL = tko.TKLINK_TANKDEPO(+)
+                and ctk.CMPY_CODE = tko.TKCMPY_LINK(+)
                 and NVL(tko.TKO_COUNT, 0)=0
         ";
         $stmt = oci_parse($this->conn, $query);
