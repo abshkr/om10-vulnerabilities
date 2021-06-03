@@ -1,29 +1,32 @@
 import _ from 'lodash';
-import {calcBaseRatios} from '../../../utils'
+import { calcBaseRatios } from '../../../utils';
 
 const buildBaseTotal = (product, transfer, sum_ratios) => {
   let ratio_total = product?.ratio_total;
   if (_.toNumber(ratio_total) > sum_ratios) {
     ratio_total = String(sum_ratios);
   }
-  const trsf_base = _.find(transfer?.trsf_bases, (o) => (
-    o.base_code === product?.stream_basecode &&
-    o.base_tank === product?.stream_tankcode
-  ));
+  const trsf_base = _.find(
+    transfer?.trsf_bases,
+    (o) => o.base_code === product?.stream_basecode && o.base_tank === product?.stream_tankcode
+  );
   let amb = 0;
   let cor = 0;
   let mass = 0;
+  let base_vcf = 0;
   // console.log('...............buildBaseTransfer', transfer, transfer?.trsf_bases, trsf_base,)
   if (!trsf_base) {
     // no base calc result found, use ratios
     amb = calcBaseRatios(transfer?.trsf_qty_amb, product?.ratio_value, ratio_total);
     cor = calcBaseRatios(transfer?.trsf_qty_cor, product?.ratio_value, ratio_total);
     mass = calcBaseRatios(transfer?.trsf_load_kg, product?.ratio_value, ratio_total);
+    base_vcf = amb <= 0 ? 0 : cor / amb;
   } else {
     // base calc result found and use them directly
     amb = trsf_base?.qty_amb;
     cor = trsf_base?.qty_cor;
     mass = trsf_base?.load_kg;
+    base_vcf = trsf_base?.base_vcf;
   }
   const base = {
     trsf_bs_prodcd_tot: product?.stream_basecode,
@@ -37,6 +40,7 @@ const buildBaseTotal = (product, transfer, sum_ratios) => {
     trsf_bs_qty_amb_tot: amb, // calcBaseRatios(transfer?.trsf_qty_amb, product?.ratio_value, ratio_total),
     trsf_bs_qty_cor_tot: cor, // calcBaseRatios(transfer?.trsf_qty_cor, product?.ratio_value, ratio_total),
     trsf_bs_load_kg_tot: mass, // calcBaseRatios(transfer?.trsf_load_kg, product?.ratio_value, ratio_total),
+    trsf_bs_vcf_tot: base_vcf,
     trsf_bs_adtv_flag_tot: product?.adtv_flag,
     trsf_bs_ratio_value_tot: product?.ratio_value,
     trsf_bs_ratio_total_tot: ratio_total,
@@ -50,15 +54,19 @@ const buildBaseTotal = (product, transfer, sum_ratios) => {
 };
 
 const buildBaseTotalsByArm = (prodArms, transfer) => {
-  const arms = _.filter(prodArms, (o) => (
-    o.stream_armcode === transfer?.trsf_arm_cd && 
-    o.rat_prod_prodcmpy === transfer?.trsf_prod_cmpy && 
-    o.rat_prod_prodcode === transfer?.trsf_prod_code
-  ));
+  const arms = _.filter(
+    prodArms,
+    (o) =>
+      o.stream_armcode === transfer?.trsf_arm_cd &&
+      o.rat_prod_prodcmpy === transfer?.trsf_prod_cmpy &&
+      o.rat_prod_prodcode === transfer?.trsf_prod_code
+  );
 
   const bases = [];
   if (arms?.length > 0) {
-    const sum_ratios = _.sumBy(arms, (o)=>{return _.toNumber(o.ratio_value)});
+    const sum_ratios = _.sumBy(arms, (o) => {
+      return _.toNumber(o.ratio_value);
+    });
     _.forEach(arms, (product) => {
       /* let ratio_total = product?.ratio_total;
       if (_.toNumber(ratio_total) > sum_ratios) {
@@ -117,13 +125,22 @@ const adjustBaseTotals = (prodArms, transfers) => {
     itemExisted = false;
     for (let index = 0; index < totals.length; index++) {
       const total = totals[index];
-      if (total.trsf_bs_prodcd_tot === item.trsf_bs_prodcd_tot && total.trsf_bs_tk_cd_tot === item.trsf_bs_tk_cd_tot) {
-        total.trsf_bs_qty_amb_tot = _.toNumber(total.trsf_bs_qty_amb_tot) + _.toNumber(item.trsf_bs_qty_amb_tot);
-        total.trsf_bs_qty_cor_tot = _.toNumber(total.trsf_bs_qty_cor_tot) + _.toNumber(item.trsf_bs_qty_cor_tot);
-        total.trsf_bs_load_kg_tot = _.toNumber(total.trsf_bs_load_kg_tot) + _.toNumber(item.trsf_bs_load_kg_tot);
-        total.trsf_bs_temp_mass_tot = _.toNumber(total.trsf_bs_temp_mass_tot) + _.toNumber(item.trsf_bs_temp_mass_tot);
-        total.trsf_bs_temp_tot = _.toNumber(total.trsf_bs_load_kg_tot) > 0 
-        ? _.toNumber(total.trsf_bs_temp_mass_tot) / _.toNumber(total.trsf_bs_load_kg_tot) : null;
+      if (
+        total.trsf_bs_prodcd_tot === item.trsf_bs_prodcd_tot &&
+        total.trsf_bs_tk_cd_tot === item.trsf_bs_tk_cd_tot
+      ) {
+        total.trsf_bs_qty_amb_tot =
+          _.toNumber(total.trsf_bs_qty_amb_tot) + _.toNumber(item.trsf_bs_qty_amb_tot);
+        total.trsf_bs_qty_cor_tot =
+          _.toNumber(total.trsf_bs_qty_cor_tot) + _.toNumber(item.trsf_bs_qty_cor_tot);
+        total.trsf_bs_load_kg_tot =
+          _.toNumber(total.trsf_bs_load_kg_tot) + _.toNumber(item.trsf_bs_load_kg_tot);
+        total.trsf_bs_temp_mass_tot =
+          _.toNumber(total.trsf_bs_temp_mass_tot) + _.toNumber(item.trsf_bs_temp_mass_tot);
+        total.trsf_bs_temp_tot =
+          _.toNumber(total.trsf_bs_load_kg_tot) > 0
+            ? _.toNumber(total.trsf_bs_temp_mass_tot) / _.toNumber(total.trsf_bs_load_kg_tot)
+            : null;
         totals[index] = total;
         itemExisted = true;
       }
@@ -140,9 +157,4 @@ const adjustBaseTotals = (prodArms, transfers) => {
 };
 
 // export default buildBaseTotals;
-export {
-  buildBaseTotal,
-  buildBaseTotalsByArm,
-  buildBaseTotals,
-  adjustBaseTotals
-};
+export { buildBaseTotal, buildBaseTotalsByArm, buildBaseTotals, adjustBaseTotals };

@@ -122,6 +122,19 @@ const columns = (t, config) => [
     },
   },
   {
+    headerName: t('fields.vcf'),
+    field: 'trsf_bs_vcf_tot',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: true, // !config?.siteUseVCF,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: config?.precisionVCF,
+      min: '0',
+    },
+  },
+  {
     headerName: t('fields.pitemAdtvFlag'),
     field: 'trsf_bs_adtv_flag_tot',
     filter: 'FuzzyFilter',

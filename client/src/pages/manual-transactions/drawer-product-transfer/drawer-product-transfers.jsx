@@ -479,6 +479,7 @@ const DrawerProductTransfers = ({
       transfer.trsf_load_kg = response?.load_kg;
       transfer.trsf_air_kg = response?.load_kg - response?.qty_cor * config?.airBuoyancyFactor;
       transfer.trsf_bases = response?.bases;
+      transfer.trsf_vcf = response?.prod_vcf;
     }
     return transfer;
   };
@@ -704,6 +705,7 @@ const DrawerProductTransfers = ({
         item.trsf_load_kg = null;
         item.trsf_air_kg = null;
         item.trsf_temp = null;
+        item.trsf_vcf = null;
         // tableAPI.updateRowData({ update: [item] });
         updateTransferRow(item);
       } else {
@@ -713,6 +715,7 @@ const DrawerProductTransfers = ({
           item.trsf_load_kg = null;
           item.trsf_air_kg = null;
           item.trsf_temp = null;
+          item.trsf.vcf = null;
           // tableAPI.updateRowData({ update: [item] });
           updateTransferRow(item);
         }
