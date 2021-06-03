@@ -99,6 +99,7 @@ const Tanks = ({ id, enabled, saveToFolioTrigger, saveToTanksTrigger, calculateT
                 rowNode.data.close_mass_tot = filtered.close_mass_tot;
                 rowNode.data.close_mass_tot_air =
                   filtered.close_mass_tot - filtered.close_std_tot * config?.airBuoyancyFactor;
+                rowNode.data.close_vcf_tot = filtered.real_cvf;
                 rowNode.data.tank_prod_lvl = filtered.tank_prod_lvl;
                 rowNode.data.close_temp = filtered.close_temp;
                 rowNode.data.close_density = filtered.close_density;

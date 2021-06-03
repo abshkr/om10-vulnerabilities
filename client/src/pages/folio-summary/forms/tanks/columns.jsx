@@ -102,6 +102,19 @@ const columns = (t, enabled, config) => [
     },
   },
   {
+    headerName: t('fields.vcf'),
+    field: 'close_vcf_tot',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: !config?.siteUseVCF,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: config?.precisionVCF,
+      min: '0',
+    },
+  },
+  {
     headerName: `${t('fields.calculate')}`,
     field: 'tank_code',
     width: 80,
