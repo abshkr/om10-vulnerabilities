@@ -28,6 +28,8 @@ const calcBaseQuantity = async (base, type) => {
     base.message = response?.data?.msg_code + ': ' + response?.data?.msg_desc + ' [' + base?.base_code + ']';
   } else {
     base.result = true;
+    // add vcf to return object
+    base.base_vcf = _.toNumber(response?.data?.real_cvf);
     if (type === 'LT') {
       base.qty_cor = _.toNumber(response?.data?.real_litre15);
       base.load_kg = _.toNumber(response?.data?.real_kg);
@@ -44,6 +46,6 @@ const calcBaseQuantity = async (base, type) => {
   console.log('----------Utils: calcBaseQuantity', type, base);
 
   return base;
-}
-  
+};
+
 export default calcBaseQuantity;

@@ -3,7 +3,7 @@ import moment from 'moment';
 
 import { QuestionCircleOutlined, CloseOutlined, CalculatorOutlined, SaveOutlined } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, message, Divider, Row, Col, Card } from 'antd';
+import { Form, Button, Tabs, Modal, notification, message, Divider, Row, Col, Card, InputNumber } from 'antd';
 
 import { useTranslation } from 'react-i18next';
 
@@ -458,6 +458,7 @@ const FormModal = ({
               mlitm_qty_cor: response?.data?.real_litre15,
               mlitm_qty_kg: response?.data?.real_kg,
               mlitm_air_kg: WIA,
+              mlitm_vcf: _.round(response?.data?.real_cvf, config?.precisionVCF),
             });
             setAmbient(response?.data?.real_litre);
             setCorrected(response?.data?.real_litre15);
@@ -506,6 +507,7 @@ const FormModal = ({
           mlitm_qty_cor: response?.qty_cor,
           mlitm_qty_kg: response?.load_kg,
           mlitm_air_kg: WIA,
+          mlitm_vcf: response?.prod_vcf,
         });
         setAmbient(response?.qty_amb);
         setCorrected(response?.qty_cor);
@@ -865,7 +867,7 @@ const FormModal = ({
                 </Row>
 
                 <Row gutter={[8, 1]}>
-                  <Col span={12}>
+                  <Col span={config?.siteUseVCF ? 8 : 12}>
                     <ObsQty
                       form={form}
                       value={value}
@@ -876,7 +878,7 @@ const FormModal = ({
                     />
                   </Col>
 
-                  <Col span={12}>
+                  <Col span={config?.siteUseVCF ? 8 : 12}>
                     <StdQty
                       form={form}
                       value={value}
@@ -886,6 +888,20 @@ const FormModal = ({
                       config={config}
                     />
                   </Col>
+                  {config?.siteUseVCF && (
+                    <Col span={8}>
+                      <Form.Item name="mlitm_vcf" label={t('fields.vcf')}>
+                        <InputNumber
+                          min={0}
+                          max={999999999}
+                          precision={config.precisionVCF}
+                          disabled={true}
+                          style={{ width: '100%' }}
+                          // onChange={handleCorVolFieldChange}
+                        />
+                      </Form.Item>
+                    </Col>
+                  )}
                   {/* <Col span={12}>
                     {!disableCalculation && (
                       <Form.Item 

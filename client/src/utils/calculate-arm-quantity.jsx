@@ -4,7 +4,7 @@ import calcBaseQuantity from './calculate-base-quantity';
 
 const calcArmQuantity = async (armcode, arms, amount, type, temperature) => {
   let index = undefined;
-  const sum_ratios = _.sumBy(arms, (o)=>{
+  const sum_ratios = _.sumBy(arms, (o) => {
     if (o.stream_armcode === armcode) {
       return _.toNumber(o.ratio_value);
     }
@@ -39,6 +39,7 @@ const calcArmQuantity = async (armcode, arms, amount, type, temperature) => {
       base.load_kg = type === 'KG' ? base_qty : 0;
 
       const newbase = await calcBaseQuantity(base, type);
+      // there will be base_vcf in return object newbase
       bases.push(newbase);
     }
   }
@@ -61,8 +62,10 @@ const calcArmQuantity = async (armcode, arms, amount, type, temperature) => {
       break;
     }
   }
+  transfer.prod_vcf =
+    _.toNumber(transfer.qty_amb) <= 0 ? 0 : _.toNumber(transfer.qty_cor) / _.toNumber(transfer.qty_amb);
 
   return transfer;
 };
-  
+
 export default calcArmQuantity;
