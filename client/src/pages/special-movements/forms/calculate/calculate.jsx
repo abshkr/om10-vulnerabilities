@@ -136,6 +136,10 @@ const Calculate = ({
         mlitm_dens_cor: value?.mlitm_dens_cor,
         mlitm_qty_rpt: value?.mlitm_qty_rpt,
         mlitm_unit_rpt: value?.mlitm_unit_rpt,
+        mlitm_vcf:
+          !value?.mlitm_qty_amb || value?.mlitm_qty_amb <= 0
+            ? ''
+            : value?.mlitm_qty_cor / value?.mlitm_qty_amb,
         // mlitm_qty_amb: _.round(_.toNumber(value?.mlitm_qty_amb), config.precisionVolume),
         // mlitm_qty_cor: _.round(_.toNumber(value?.mlitm_qty_cor), config.precisionVolume),
         // mlitm_qty_kg: _.round(_.toNumber(value?.mlitm_qty_kg), config.precisionMass),
