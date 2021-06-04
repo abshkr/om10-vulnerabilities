@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Select, Tag, Tooltip } from 'antd';
 import _ from 'lodash';
 
 export default class MassInAirRenderer extends Component {
@@ -12,18 +13,36 @@ export default class MassInAirRenderer extends Component {
 
   render() {
     const { massInVacuum, standardVolume, digits, factor, data } = this.props;
-    const precision = _.toNumber(!digits ? 0 : digits);
+    // console.log('....................data', data);
+    let newDigits = _.toNumber(!digits ? 0 : digits);
+    if (
+      data?.trsf_bs_adtv_flag_tot === true ||
+      data?.trsf_bs_adtv_flag === true ||
+      data?.trsf_bs_adtv_flag_tot === '1' ||
+      data?.trsf_bs_adtv_flag === '1'
+    ) {
+      newDigits = 3;
+    }
+    const precision = newDigits;
+
     // WiA = WiV - GSV x 0.0011
     const WiV = data?.[massInVacuum];
     const GSV = data?.[standardVolume];
     const AIR = !factor ? 0.0011 : factor;
     let WiA = undefined;
+    let tipQty = undefined;
     if (!WiV || !GSV) {
       WiA = '';
+      tipQty = '';
     } else {
       WiA = _.round(_.toNumber(WiV) - _.toNumber(GSV) * AIR, precision);
+      tipQty = _.round(_.toNumber(WiV) - _.toNumber(GSV) * AIR, precision + 1);
     }
 
-    return <div style={{ display: 'flex' }}>{WiA}</div>;
+    return (
+      <Tooltip placement="topRight" title={tipQty}>
+        <div style={{ display: 'flex' }}>{WiA}</div>
+      </Tooltip>
+    );
   }
 }

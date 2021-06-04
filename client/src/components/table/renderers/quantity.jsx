@@ -14,7 +14,12 @@ export default class QuantityRenderer extends Component {
   render() {
     const { digits, min, data } = this.props;
     let newDigits = _.toNumber(!digits ? 0 : digits);
-    if (data?.trsf_bs_adtv_flag_tot === true || data?.trsf_bs_adtv_flag === true) {
+    if (
+      data?.trsf_bs_adtv_flag_tot === true ||
+      data?.trsf_bs_adtv_flag === true ||
+      data?.trsf_bs_adtv_flag_tot === '1' ||
+      data?.trsf_bs_adtv_flag === '1'
+    ) {
       newDigits = 3;
     } else {
       if (_.toNumber(this.state.value) < _.toNumber(min)) {

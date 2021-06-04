@@ -124,7 +124,7 @@ const columns = (t, config) => [
     hide: !config?.siteMassInAir,
     cellRenderer: 'MassInAirRenderer',
     cellRendererParams: {
-      digits: '3',
+      digits: String(config?.precisionVolume),
       massInVacuum: 'trsf_bs_load_kg',
       standardVolume: 'trsf_bs_qty_cor',
       factor: config?.airBuoyancyFactor,
