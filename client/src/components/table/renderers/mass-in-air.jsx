@@ -12,16 +12,11 @@ export default class MassInAirRenderer extends Component {
   }
 
   render() {
-    const { massInVacuum, standardVolume, digits, factor, data } = this.props;
+    const { massInVacuum, standardVolume, digits, factor, adtvFlag, adtvDigits, data } = this.props;
     // console.log('....................data', data);
     let newDigits = _.toNumber(!digits ? 0 : digits);
-    if (
-      data?.trsf_bs_adtv_flag_tot === true ||
-      data?.trsf_bs_adtv_flag === true ||
-      data?.trsf_bs_adtv_flag_tot === '1' ||
-      data?.trsf_bs_adtv_flag === '1'
-    ) {
-      newDigits = 3;
+    if (data?.[adtvFlag] === true || data?.[adtvFlag] === '1') {
+      newDigits = adtvDigits;
     }
     const precision = newDigits;
 

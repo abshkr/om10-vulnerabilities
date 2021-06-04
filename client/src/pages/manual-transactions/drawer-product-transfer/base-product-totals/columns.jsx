@@ -77,8 +77,10 @@ const columns = (t, config) => [
     // cellClass: 'editable-ag-grid-cell',
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
-      digits: '0',
+      digits: String(config?.precisionVolume),
       min: '100',
+      adtvFlag: 'trsf_bs_adtv_flag_tot',
+      adtvDigits: config?.precisionAdditive,
     },
   },
   {
@@ -89,12 +91,14 @@ const columns = (t, config) => [
     resizable: true,
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
-      digits: '0',
+      digits: String(config?.precisionVolume),
       min: '100',
+      adtvFlag: 'trsf_bs_adtv_flag_tot',
+      adtvDigits: config?.precisionAdditive,
     },
   },
   {
-    headerName: t('fields.massQuantity') + ' (' + t('units.kg') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.massQuantity') + ' (' + t('units.kg') + ')',
     field: 'trsf_bs_load_kg_tot',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -102,12 +106,14 @@ const columns = (t, config) => [
     hide: !config?.siteMassInVacuum,
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
-      digits: '0',
+      digits: String(config?.precisionMass),
       min: '100',
+      adtvFlag: 'trsf_bs_adtv_flag_tot',
+      adtvDigits: config?.precisionAdditive,
     },
   },
   {
-    headerName: t('fields.massInAir') + ' (' + t('units.kg') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.massInAir') + ' (' + t('units.kg') + ')',
     field: 'trsf_bs_air_kg_tot',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -115,10 +121,12 @@ const columns = (t, config) => [
     hide: !config?.siteMassInAir,
     cellRenderer: 'MassInAirRenderer',
     cellRendererParams: {
-      digits: String(config?.precisionVolume),
+      digits: String(config?.precisionMass),
       massInVacuum: 'trsf_bs_load_kg_tot',
       standardVolume: 'trsf_bs_qty_cor_tot',
       factor: config?.airBuoyancyFactor,
+      adtvFlag: 'trsf_bs_adtv_flag_tot',
+      adtvDigits: config?.precisionAdditive,
     },
   },
   {
@@ -130,7 +138,7 @@ const columns = (t, config) => [
     hide: true, // !config?.siteUseVCF,
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
-      digits: config?.precisionVCF,
+      digits: String(config?.precisionVCF),
       min: '0',
     },
   },

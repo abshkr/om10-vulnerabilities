@@ -311,7 +311,7 @@ const columns = (
     },
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
-      digits: '0',
+      digits: String(config?.precisionVolume),
       min: '100',
     },
   },
@@ -333,12 +333,12 @@ const columns = (
     },
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
-      digits: '0',
+      digits: String(config?.precisionVolume),
       min: '100',
     },
   },
   {
-    headerName: t('fields.massQuantity') + ' (' + t('units.kg') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.massQuantity') + ' (' + t('units.kg') + ')',
     field: 'trsf_load_kg',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -357,12 +357,12 @@ const columns = (
     },
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
-      digits: '0',
+      digits: String(config?.precisionMass),
       min: '100',
     },
   },
   {
-    headerName: t('fields.massInAir') + ' (' + t('units.kg') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.massInAir') + ' (' + t('units.kg') + ')',
     field: 'trsf_air_kg',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -371,7 +371,7 @@ const columns = (
     hide: !config?.siteMassInAir,
     cellRenderer: 'MassInAirRenderer',
     cellRendererParams: {
-      digits: String(config?.precisionVolume),
+      digits: String(config?.precisionMass),
       massInVacuum: 'trsf_load_kg',
       standardVolume: 'trsf_qty_cor',
       factor: config?.airBuoyancyFactor,
