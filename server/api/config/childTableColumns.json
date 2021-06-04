@@ -553,6 +553,7 @@
             "COLUMN_ID": 1
           }
         ],
+        "TYPE_COLUMN": "OWNSHIP_QTY > 0",
         "TYPE": "Supplier"
       },
       {

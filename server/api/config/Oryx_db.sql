@@ -1179,3 +1179,57 @@ insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3243, 'CHN', '公斤(�
 insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3243, 'ENG', 'kg (air)');
 
 commit;
+
+
+
+/*
+    create default base ownership for all suppliers
+*/
+insert into BASE_PROD_OWNSHIP (
+    OWNSHIP_NO
+    , BASE_PROD_CODE
+    , SUPP_CMPY
+    , OWNSHIP_QTY
+    , OWNSHIP_UNIT
+    , OWNSHIP_DENSITY
+)
+select 
+    BASE_PROD_OWNSHIP_SEQ.NEXTVAL as OWNSHIP_NO
+	, cbp.BASE_CODE               as BASE_PROD_CODE
+	, cbp.CMPY_CODE               as SUPP_CMPY
+    , 0                           as OWNSHIP_QTY
+    , DECODE(cbp.BASE_STOCK_UNIT, 
+	    0, DECODE(cbp.VOLUME_MODE, 'GSV', 11, 'GOV', 5, 11), 
+		1, DECODE(cbp.MASS_MODE, 'WiV', 17, 'WiA', 17, 17), 
+		11)                       as OWNSHIP_UNIT
+    , 0                           as OWNSHIP_DENSITY
+from 
+    (
+        select 
+            BASE_PROD_CODE
+            , SUPP_CMPY
+            , count(*) as BPO_COUNT 
+        from BASE_PROD_OWNSHIP 
+        group by BASE_PROD_CODE, SUPP_CMPY
+    )          bpo
+    , (
+        select
+            cmp.CMPY_CODE
+            , cmp.SUPPLIER
+            , bpd.BASE_CODE
+            , bpd.BASE_STOCK_UNIT
+			, NVL((select CONFIG_VALUE from SITE_CONFIG where CONFIG_KEY='SITE_OWNERSHIP_VOLUME_MODE'), 'GSV') as VOLUME_MODE
+			, NVL((select CONFIG_VALUE from SITE_CONFIG where CONFIG_KEY='SITE_OWNERSHIP_MASS_MODE'), 'WiV')   as MASS_MODE
+        from
+            GUI_COMPANYS     cmp
+            , BASE_PRODS     bpd
+        where
+            cmp.SUPPLIER = 'Y'
+    )          cbp
+where 
+    cbp.BASE_CODE = bpo.BASE_PROD_CODE(+)
+    and cbp.CMPY_CODE = bpo.SUPP_CMPY(+)
+    and NVL(bpo.BPO_COUNT, 0) = 0
+;
+
+commit;

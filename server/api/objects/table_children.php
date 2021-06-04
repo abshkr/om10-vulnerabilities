@@ -50,13 +50,18 @@ class TableChildren extends CommonClass
         ";
 
         if (isset($type_condition) && strlen(trim($type_condition)) > 0) {
-            $pairs = explode('=:', $type_condition);
-            if (count($pairs) >= 2) {
-                $cln = $pairs[1];
+            if (strpos($type_condition, "=:") !== FALSE) {
+                $pairs = explode('=:', $type_condition);
+                if (count($pairs) >= 2) {
+                    $cln = $pairs[1];
+                } else {
+                    $cln = "cmpy_type";
+                }
+                if (isset($this->$cln)) {
+                    $query .= "    AND " . $type_condition . "\n";
+                }
             } else {
-                $cln = "cmpy_type";
-            }
-            if (isset($this->$cln)) {
+                // we may have conditions with hard-coded values such as QTY <= 0
                 $query .= "    AND " . $type_condition . "\n";
             }
         }
@@ -96,14 +101,16 @@ class TableChildren extends CommonClass
 
         // oci_bind_by_name($stmt, ':code', $this->tank_batch_no);
         if (isset($type_condition) && strlen(trim($type_condition)) > 0) {
-            $pairs = explode('=:', $type_condition);
-            if (count($pairs) >= 2) {
-                $cln = $pairs[1];
-            } else {
-                $cln = "cmpy_type";
-            }
-            if (isset($this->$cln)) {
-                oci_bind_by_name($stmt, ':' . $cln, $this->$cln);
+            if (strpos($type_condition, "=:") !== FALSE) {
+                $pairs = explode('=:', $type_condition);
+                if (count($pairs) >= 2) {
+                    $cln = $pairs[1];
+                } else {
+                    $cln = "cmpy_type";
+                }
+                if (isset($this->$cln)) {
+                    oci_bind_by_name($stmt, ':' . $cln, $this->$cln);
+                }
             }
         }
 
@@ -188,6 +195,7 @@ class TableChildren extends CommonClass
                 $item["title"] = $child_title;
                 $item["child"] = $cnt;
                 $item["type"] = $child["TYPE"];
+                // $item["typeCln"] = $child["TYPE_COLUMN"];
                 $item["language"] = $lang;
                 $column_names = array();
                 $column_titles = array();

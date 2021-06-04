@@ -101,7 +101,7 @@ class BaseOwner extends CommonClass
         $query = "
             select bro.*, bpd.*, bpc.*, cmp.*, unt.*
                 , bso.TOTAL_QTY
-                , DECODE(bso.TOTAL_QTY, 0, 100, ROUND(bro.OWNSHIP_QTY/bso.TOTAL_QTY*100, 4))   AS BPO_PERCENTAGE
+                , DECODE(bso.TOTAL_QTY, 0, 0, ROUND(bro.OWNSHIP_QTY/bso.TOTAL_QTY*100, 4))   AS BPO_PERCENTAGE
             from
                 BASE_PROD_OWNSHIP   bro
                 , (

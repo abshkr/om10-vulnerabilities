@@ -634,7 +634,7 @@ class Tank extends CommonClass
     public function delete()
     {
         // need delete the child records in TK_OWNERS
-        // Note: only delete it when its ownership qty is zERO
+        // Note: only delete it when its ownership qty is ZERO
         $query = "DELETE FROM TK_OWNERS WHERE TKLINK_TANKCODE = :tank_code and TKOWNER_QTY<=0";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
@@ -731,7 +731,7 @@ class Tank extends CommonClass
 
     protected function create_tank_owners()
     {
-        // initialize the TK_OWNERS with the site manager company if the tank does not have an owner yet.
+        // initialize the TK_OWNERS with the site manager company and all suppliers if the tank does not have an owner yet.
         // We don't put any current tank code into WHERE condition so it can create TK_OWNERS records for new tanks added before this fix.
         $query = "
             insert into TK_OWNERS (

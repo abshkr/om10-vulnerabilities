@@ -124,6 +124,29 @@ class Company extends CommonClass
         }
     }
 
+    public function pre_delete()
+    {
+        // need delete the child records in BASE_PROD_OWNSHIP
+        // Note: only delete it when its ownership qty is ZERO
+        $query = "DELETE FROM BASE_PROD_OWNSHIP WHERE SUPP_CMPY = :cmpy_code and OWNSHIP_QTY<=0";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':cmpy_code', $this->cmpy_code);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function post_create()
+    {
+        // return true;
+        return $this->create_base_owners();
+    }
+
     protected function post_delete()
     {
         $query = "DELETE FROM COMPANY_CONFIG WHERE CMPY_CODE = :cmpy_code";
@@ -782,5 +805,69 @@ class Company extends CommonClass
         http_response_code(200);
         echo json_encode($result, JSON_PRETTY_PRINT);
         return $result;
+    }
+
+    protected function create_base_owners()
+    {
+        // initialize the BASE_PROD_OWNSHIP with all the base products if the supplier does not have an owner yet.
+        // We don't put any current supplier code into WHERE condition so it can create BASE_PROD_OWNSHIP records for new suppliers added before this fix.
+        $query = "
+            insert into BASE_PROD_OWNSHIP (
+                OWNSHIP_NO
+                , BASE_PROD_CODE
+                , SUPP_CMPY
+                , OWNSHIP_QTY
+                , OWNSHIP_UNIT
+                , OWNSHIP_DENSITY
+            )
+            select 
+                BASE_PROD_OWNSHIP_SEQ.NEXTVAL as OWNSHIP_NO
+                , cbp.BASE_CODE               as BASE_PROD_CODE
+                , cbp.CMPY_CODE               as SUPP_CMPY
+                , 0                           as OWNSHIP_QTY
+                , DECODE(cbp.BASE_STOCK_UNIT, 
+                    0, DECODE(cbp.VOLUME_MODE, 'GSV', 11, 'GOV', 5, 11), 
+                    1, DECODE(cbp.MASS_MODE, 'WiV', 17, 'WiA', 17, 17), 
+                    11)                       as OWNSHIP_UNIT
+                , 0                           as OWNSHIP_DENSITY
+            from 
+                (
+                    select 
+                        BASE_PROD_CODE
+                        , SUPP_CMPY
+                        , count(*) as BPO_COUNT 
+                    from BASE_PROD_OWNSHIP 
+                    group by BASE_PROD_CODE, SUPP_CMPY
+                )          bpo
+                , (
+                    select
+                        cmp.CMPY_CODE
+                        , cmp.SUPPLIER
+                        , bpd.BASE_CODE
+                        , bpd.BASE_STOCK_UNIT
+                        , NVL((select CONFIG_VALUE from SITE_CONFIG where CONFIG_KEY='SITE_OWNERSHIP_VOLUME_MODE'), 'GSV') as VOLUME_MODE
+                        , NVL((select CONFIG_VALUE from SITE_CONFIG where CONFIG_KEY='SITE_OWNERSHIP_MASS_MODE'), 'WiV')   as MASS_MODE
+                    from
+                        GUI_COMPANYS     cmp
+                        , BASE_PRODS     bpd
+                    where
+                        cmp.SUPPLIER = 'Y'
+                )          cbp
+            where 
+                cbp.BASE_CODE = bpo.BASE_PROD_CODE(+)
+                and cbp.CMPY_CODE = bpo.SUPP_CMPY(+)
+                and NVL(bpo.BPO_COUNT, 0) = 0
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        oci_commit($this->conn);
+
+        return true;
     }
 }
