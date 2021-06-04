@@ -186,7 +186,9 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
     const ifcVol = v;
     const vol = totalVol - waterVol - ifcVol;
     // setFieldsValue({ tank_roof_weight: '' });
-    setFieldsValue({ tank_amb_vol: vol });
+    const isAdtv = value?.tank_base_class === '6' || value?.tank_base_class === '11';
+    const precision = isAdtv ? config?.precisionAdditive : config?.precisionVolume;
+    setFieldsValue({ tank_amb_vol: _.round(vol, precision) });
     handleAmbVolFieldChange(vol);
   };
 
@@ -210,8 +212,10 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
     const waterVol = await getQtyByLevel(value?.tank_code, v);
     const ifcVol = values?.tank_ifc === '' || values?.tank_ifc === undefined ? 0 : values?.tank_ifc;
     const vol = totalVol - waterVol - ifcVol;
-    setFieldsValue({ tank_amb_vol: vol });
-    setFieldsValue({ tank_water: waterVol });
+    const isAdtv = value?.tank_base_class === '6' || value?.tank_base_class === '11';
+    const precision = isAdtv ? config?.precisionAdditive : config?.precisionVolume;
+    setFieldsValue({ tank_amb_vol: _.round(vol, precision) });
+    setFieldsValue({ tank_water: _.round(waterVol, precision) });
     handleAmbVolFieldChange(vol);
   };
 
@@ -222,7 +226,9 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
     const waterVol = v;
     const ifcVol = values?.tank_ifc === '' || values?.tank_ifc === undefined ? 0 : values?.tank_ifc;
     const vol = totalVol - waterVol - ifcVol;
-    setFieldsValue({ tank_amb_vol: vol });
+    const isAdtv = value?.tank_base_class === '6' || value?.tank_base_class === '11';
+    const precision = isAdtv ? config?.precisionAdditive : config?.precisionVolume;
+    setFieldsValue({ tank_amb_vol: _.round(vol, precision) });
     handleAmbVolFieldChange(vol);
   };
 
@@ -245,8 +251,10 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
     const waterVol = values?.tank_water === '' || values?.tank_water === undefined ? 0 : values?.tank_water;
     const ifcVol = values?.tank_ifc === '' || values?.tank_ifc === undefined ? 0 : values?.tank_ifc;
     const vol = totalVol - waterVol - ifcVol;
-    setFieldsValue({ tank_amb_vol: vol });
-    setFieldsValue({ tank_total_vol: totalVol });
+    const isAdtv = value?.tank_base_class === '6' || value?.tank_base_class === '11';
+    const precision = isAdtv ? config?.precisionAdditive : config?.precisionVolume;
+    setFieldsValue({ tank_amb_vol: _.round(vol, precision) });
+    setFieldsValue({ tank_total_vol: _.round(totalVol, precision) });
     handleAmbVolFieldChange(vol);
     handleSafeCapacityFieldChange();
   };
@@ -257,7 +265,9 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
     const waterVol = values?.tank_water === '' || values?.tank_water === undefined ? 0 : values?.tank_water;
     const ifcVol = values?.tank_ifc === '' || values?.tank_ifc === undefined ? 0 : values?.tank_ifc;
     const vol = totalVol - waterVol - ifcVol;
-    setFieldsValue({ tank_amb_vol: vol });
+    const isAdtv = value?.tank_base_class === '6' || value?.tank_base_class === '11';
+    const precision = isAdtv ? config?.precisionAdditive : config?.precisionVolume;
+    setFieldsValue({ tank_amb_vol: _.round(vol, precision) });
     handleAmbVolFieldChange(vol);
     handleSafeCapacityFieldChange();
   };
@@ -275,7 +285,9 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
     const totalVol =
       values?.tank_total_vol === '' || values?.tank_total_vol === undefined ? 0 : values?.tank_total_vol;
     const vol = safeCapacity - totalVol;
-    setFieldsValue({ tank_ullage: vol });
+    const isAdtv = value?.tank_base_class === '6' || value?.tank_base_class === '11';
+    const precision = isAdtv ? config?.precisionAdditive : config?.precisionVolume;
+    setFieldsValue({ tank_ullage: _.round(vol, precision) });
   };
 
   const handleRoofWeightFieldChange = async (v) => {
