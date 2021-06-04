@@ -103,8 +103,8 @@ export default class Mass extends Component {
 
   handleChange(value) {
     const { min, max, txt, data, colDef, form, rowIndex } = this.props;
-    
-    let capacity=max;
+
+    let capacity = max;
     // do not need to limit the quantity to compartment capacity in manual transactions
     // if (data?.trsf_cmpt_capacit !== undefined) {
     //   capacity = _.toNumber(data?.trsf_cmpt_capacit);
@@ -126,7 +126,8 @@ export default class Mass extends Component {
       notification.error({
         key: 'massqty',
         //message: 'Mass must be between ' + min + ' and ' + capacity + '',
-        message: colDef.headerName + ' ' + txt('validate.mustBeBetween') + ' (' + min + ' ~ ' + capacity + ')',
+        message:
+          colDef.headerName + ' ' + txt('validate.mustBeBetween') + ' (' + min + ' ~ ' + capacity + ')',
         //message: colDef.headerName + ' must be between (' + min + ' ~ ' + capacity + ')',
       });
     }
@@ -142,10 +143,14 @@ export default class Mass extends Component {
   }
 
   render() {
+    const { digits } = this.props;
+    const precision = !digits ? 0 : digits;
+
     return (
       <InputNumber
         ref="input"
-        value={this.state.value}
+        value={_.round(this.state.value, precision)}
+        // precision={precision}
         onChange={this.handleChange}
         style={{ width: '100%' }}
       />

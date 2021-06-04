@@ -307,6 +307,7 @@ const columns = (
       max: 99999999,
       txt: t,
       form,
+      digits: config?.precisionVolume,
     },
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
@@ -328,6 +329,7 @@ const columns = (
       max: 99999999,
       txt: t,
       form,
+      digits: config?.precisionVolume,
     },
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
@@ -351,6 +353,7 @@ const columns = (
       max: 99999999,
       txt: t,
       form,
+      digits: config?.precisionVolume,
     },
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
@@ -383,7 +386,7 @@ const columns = (
     hide: !config?.siteUseVCF,
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
-      digits: config?.precisionVCF,
+      digits: String(config?.precisionVCF),
       min: '0',
     },
   },
