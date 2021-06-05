@@ -149,9 +149,17 @@ const Calculate = ({
 
       // initialize the quantity source for calculation
       if (value?.mlitm_qty_amb) {
-        pinQuantity({ qty: value?.mlitm_qty_amb, type: 'LT', title: t('fields.observedQuantity') });
+        pinQuantity({
+          qty: value?.mlitm_qty_amb,
+          type: 'LT',
+          title: t(config?.siteLabelUser + 'fields.observedQuantity'),
+        });
       } else if (value?.mlitm_qty_cor) {
-        pinQuantity({ qty: value?.mlitm_qty_cor, type: 'L15', title: t('fields.standardQuantity') });
+        pinQuantity({
+          qty: value?.mlitm_qty_cor,
+          type: 'L15',
+          title: t(config?.siteLabelUser + 'fields.standardQuantity'),
+        });
       } else if (value?.mlitm_qty_kg) {
         pinQuantity({
           qty: value?.mlitm_qty_kg,
@@ -159,7 +167,7 @@ const Calculate = ({
           title: t(config?.siteLabelUser + 'fields.observedMass'),
         });
       } else {
-        pinQuantity({ qty: '', type: 'NA', title: t('fields.observedQuantity') });
+        pinQuantity({ qty: '', type: 'NA', title: t(config?.siteLabelUser + 'fields.observedQuantity') });
       }
 
       handleTemperatureChange(value?.mlitm_temp_amb);
@@ -206,13 +214,13 @@ const Calculate = ({
 
   const handleAmbVolFieldChange = (value) => {
     if (value !== undefined && value !== null && String(value).trim().length > 0) {
-      pinQuantity({ qty: value, type: 'LT', title: t('fields.observedQuantity') });
+      pinQuantity({ qty: value, type: 'LT', title: t(config?.siteLabelUser + 'fields.observedQuantity') });
     }
   };
 
   const handleCorVolFieldChange = (value) => {
     if (value !== undefined && value !== null && String(value).trim().length > 0) {
-      pinQuantity({ qty: value, type: 'L15', title: t('fields.standardQuantity') });
+      pinQuantity({ qty: value, type: 'L15', title: t(config?.siteLabelUser + 'fields.standardQuantity') });
     }
     setWiA();
   };
@@ -263,7 +271,10 @@ const Calculate = ({
     <>
       <Row gutter={[8, 8]}>
         <Col span={config?.siteUseVCF ? 8 : 12}>
-          <Form.Item name="mlitm_qty_amb" label={t('fields.observedQuantity') + '(' + t('units.ltr') + ')'}>
+          <Form.Item
+            name="mlitm_qty_amb"
+            label={t(config?.siteLabelUser + 'fields.observedQuantity') + '(' + t('units.ltr') + ')'}
+          >
             <InputNumber
               min={0}
               max={999999999}
@@ -275,7 +286,10 @@ const Calculate = ({
           </Form.Item>
         </Col>
         <Col span={config?.siteUseVCF ? 8 : 12}>
-          <Form.Item name="mlitm_qty_cor" label={t('fields.standardQuantity') + '(' + t('units.ltr') + ')'}>
+          <Form.Item
+            name="mlitm_qty_cor"
+            label={t(config?.siteLabelUser + 'fields.standardQuantity') + '(' + t('units.ltr') + ')'}
+          >
             <InputNumber
               min={0}
               max={999999999}

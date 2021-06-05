@@ -1866,8 +1866,8 @@
     "waterLevel": "水位",
     "waterVolume": "水容积",
     "wednesday": "星期三",
-    "weightInAir": "非真空重量",
-    "weightInVacuum": "真空重量",
+    "weightInAir": "空气中重量",
+    "weightInVacuum": "真空中重量",
     "weightTolerance": "车辆总载重允许误差范围(0-20%)",
     "window": "盘点例外规则类型",
     "totalCapacity": "总体容量",
@@ -2732,6 +2732,7 @@
       "closingMass": "盘点真空中重量(WiV)",
       "closingMassAir": "盘点空气中重量(WiA)",
       "weightInAir": "空气中重量(WiA)",
+      "weightInVacuum": "真空中重量(WiV)",
       "liquidMass": "真空中重量(WiV)",
       "observedMass": "真空中重量(WiV)",
       "nomtranMass": "真空中重量(WiV)"

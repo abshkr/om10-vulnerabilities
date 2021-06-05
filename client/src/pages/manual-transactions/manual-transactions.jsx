@@ -326,7 +326,7 @@ const ManualTransactions = ({ popup, params }) => {
       // The observed quantity must be filled and cannot be zero
       if (!item.trsf_qty_amb || String(item.trsf_qty_amb).trim() === '') {
         errors.push({
-          field: `${t('fields.observedQuantity')} (${t('units.ltr')})`,
+          field: `${t(config?.siteLabelUser + 'fields.observedQuantity')} (${t('units.ltr')})`,
           message: `${t('descriptions.requiredAndCannotBeZeroCmptField')}${item.trsf_cmpt_no}`,
           key: `${'trsf_qty_amb'}${item.trsf_cmpt_no}`,
           line: item.trsf_cmpt_no,
@@ -338,7 +338,7 @@ const ManualTransactions = ({ popup, params }) => {
             item,
             errors,
             'trsf_qty_amb',
-            'fields.observedQuantity',
+            config?.siteLabelUser + 'fields.observedQuantity',
             config?.siteLabelUser + 'units.lamb'
           );
         }
@@ -347,7 +347,7 @@ const ManualTransactions = ({ popup, params }) => {
             item,
             errors,
             'trsf_qty_amb',
-            'fields.observedQuantity',
+            config?.siteLabelUser + 'fields.observedQuantity',
             config?.siteLabelUser + 'units.lamb'
           );
         }
@@ -411,9 +411,9 @@ const ManualTransactions = ({ popup, params }) => {
             _.round(_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left) + qtyDiff, 0)
           ) {
             errors.push({
-              field: `${t('fields.observedQuantity')} (${t('units.ltr')})`,
+              field: `${t(config?.siteLabelUser + 'fields.observedQuantity')} (${t('units.ltr')})`,
               message: `${t('fields.compartment')} ${item.trsf_cmpt_no}: ${t(
-                'fields.observedQuantity'
+                config?.siteLabelUser + 'fields.observedQuantity'
               )} ${_.round(_.toNumber(item.trsf_qty_amb), 0)} > ${t('fields.scheduled')} ${_.round(
                 _.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left),
                 0
@@ -430,9 +430,9 @@ const ManualTransactions = ({ popup, params }) => {
             _.round(_.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left), 0)
           ) {
             errors.push({
-              field: `${t('fields.observedQuantity')} (${t('units.ltr')})`,
+              field: `${t(config?.siteLabelUser + 'fields.observedQuantity')} (${t('units.ltr')})`,
               message: `${t('fields.compartment')} ${item.trsf_cmpt_no}: ${t(
-                'fields.observedQuantity'
+                config?.siteLabelUser + 'fields.observedQuantity'
               )} ${_.round(_.toNumber(item.trsf_qty_amb), 0)} > ${t('fields.planned')} ${_.round(
                 _.toNumber(item.trsf_qty_plan) - _.toNumber(item.trsf_qty_left),
                 0
@@ -443,9 +443,9 @@ const ManualTransactions = ({ popup, params }) => {
           } else {
             if (_.round(_.toNumber(item.trsf_qty_amb), 0) > _.round(_.toNumber(item.trsf_cmpt_capacit), 0)) {
               errors.push({
-                field: `${t('fields.observedQuantity')} (${t('units.ltr')})`,
+                field: `${t(config?.siteLabelUser + 'fields.observedQuantity')} (${t('units.ltr')})`,
                 message: `${t('fields.compartment')} ${item.trsf_cmpt_no}: ${t(
-                  'fields.observedQuantity'
+                  config?.siteLabelUser + 'fields.observedQuantity'
                 )} ${_.round(_.toNumber(item.trsf_qty_amb), 0)} > ${t('fields.capacity')} ${_.round(
                   _.toNumber(item.trsf_cmpt_capacit),
                   0
@@ -461,7 +461,7 @@ const ManualTransactions = ({ popup, params }) => {
       // The standard quantity must be filled and cannot be zero
       if (!item.trsf_qty_cor || String(item.trsf_qty_cor).trim() === '') {
         errors.push({
-          field: `${t('fields.standardQuantity')} (${t('units.ltr')})`,
+          field: `${t(config?.siteLabelUser + 'fields.standardQuantity')} (${t('units.ltr')})`,
           message: `${t('descriptions.requiredAndCannotBeZeroCmptField')}${item.trsf_cmpt_no}`,
           key: `${'trsf_qty_cor'}${item.trsf_cmpt_no}`,
           line: item.trsf_cmpt_no,
@@ -473,7 +473,7 @@ const ManualTransactions = ({ popup, params }) => {
             item,
             errors,
             'trsf_qty_cor',
-            'fields.standardQuantity',
+            config?.siteLabelUser + 'fields.standardQuantity',
             config?.siteLabelUser + 'units.lcor'
           );
         }
@@ -482,7 +482,7 @@ const ManualTransactions = ({ popup, params }) => {
             item,
             errors,
             'trsf_qty_cor',
-            'fields.standardQuantity',
+            config?.siteLabelUser + 'fields.standardQuantity',
             config?.siteLabelUser + 'units.lcor'
           );
         }
@@ -491,7 +491,7 @@ const ManualTransactions = ({ popup, params }) => {
       // The mass quantity must be filled and cannot be zero
       if (!item.trsf_load_kg || String(item.trsf_load_kg).trim() === '') {
         errors.push({
-          field: `${t('fields.massQuantity')} (${t('units.kg')})`,
+          field: `${t(config?.siteLabelUser + 'fields.massQuantity')} (${t('units.kg')})`,
           message: `${t('descriptions.requiredAndCannotBeZeroCmptField')}${item.trsf_cmpt_no}`,
           key: `${'trsf_load_kg'}${item.trsf_cmpt_no}`,
           line: item.trsf_cmpt_no,
@@ -499,10 +499,22 @@ const ManualTransactions = ({ popup, params }) => {
       } else {
         // Compare the mass quantity with scheduled quantity or compartment capacity
         if (item.trsf_cmpt_unit === '17') {
-          compareLoadedWithScheduled(item, errors, 'trsf_load_kg', 'fields.massQuantity', 'units.kg');
+          compareLoadedWithScheduled(
+            item,
+            errors,
+            'trsf_load_kg',
+            config?.siteLabelUser + 'fields.massQuantity',
+            'units.kg'
+          );
         }
         if (item.trsf_tc_unit === '17') {
-          compareLoadedWithCapacity(item, errors, 'trsf_load_kg', 'fields.massQuantity', 'units.kg');
+          compareLoadedWithCapacity(
+            item,
+            errors,
+            'trsf_load_kg',
+            config?.siteLabelUser + 'fields.massQuantity',
+            'units.kg'
+          );
         }
       }
     }

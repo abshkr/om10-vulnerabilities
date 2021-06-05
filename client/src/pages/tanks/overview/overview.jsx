@@ -40,11 +40,11 @@ const Overview = ({ selected, isLoading, config }) => {
                 {selected?.tank_prod_lvl} {t('units.mm')}
               </Descriptions.Item>
 
-              <Descriptions.Item label={t('fields.observedVolume')} span={24}>
+              <Descriptions.Item label={t(config?.siteLabelUser + 'fields.observedVolume')} span={24}>
                 {selected?.tank_amb_vol} {t('units.litres')}
               </Descriptions.Item>
 
-              <Descriptions.Item label={t('fields.standardVolume')} span={24}>
+              <Descriptions.Item label={t(config?.siteLabelUser + 'fields.standardVolume')} span={24}>
                 {selected?.tank_cor_vol} {t('units.litres')}
               </Descriptions.Item>
 
@@ -58,7 +58,7 @@ const Overview = ({ selected, isLoading, config }) => {
               </Descriptions.Item>
 
               {config?.siteMassInVacuum && (
-                <Descriptions.Item label={t('fields.weightInVacuum')} span={24}>
+                <Descriptions.Item label={t(config?.siteLabelUser + 'fields.weightInVacuum')} span={24}>
                   {selected?.tank_liquid_kg} {t('units.kg')}
                 </Descriptions.Item>
               )}

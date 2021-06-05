@@ -2734,6 +2734,7 @@
       "closingMass": "Closing WiV",
       "closingMassAir": "Closing WiA",
       "weightInAir": "Weight in Air (WiA)",
+      "weightInVacuum": "Weight In Vacuum (WiV)",
       "liquidMass": "Weight in Vacuum (WiV)",
       "observedMass": "Weight in Vacuum (WiV)",
       "nomtranMass": "Weight in Vacuum (WiV)"

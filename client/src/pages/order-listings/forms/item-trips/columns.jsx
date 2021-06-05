@@ -1,4 +1,4 @@
-const columns = (t) => [
+const columns = (t, config) => [
   {
     headerName: t('fields.schdOrderId'),
     field: 'schd_order_id',
@@ -120,7 +120,7 @@ const columns = (t) => [
     width: 100,
   },
   {
-    headerName: t('fields.observedQuantity') + ' (' + t('units.ltr') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.observedQuantity') + ' (' + t('units.ltr') + ')',
     field: 'qty_amb',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -128,7 +128,7 @@ const columns = (t) => [
     hide: true,
   },
   {
-    headerName: t('fields.standardQuantity') + ' (' + t('units.ltr') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.standardQuantity') + ' (' + t('units.ltr') + ')',
     field: 'qty_std',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -136,7 +136,7 @@ const columns = (t) => [
     hide: true,
   },
   {
-    headerName: t('fields.massQuantity') + ' (' + t('units.kg') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.massQuantity') + ' (' + t('units.kg') + ')',
     field: 'qty_kg',
     filter: 'FuzzyFilter',
     sortable: true,

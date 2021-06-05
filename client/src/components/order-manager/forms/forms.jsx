@@ -379,7 +379,7 @@ const FormModal = ({
         </Form.Item>
 
         {/* <Divider>{t('tabColumns.orderItemTrips')}</Divider>
-        <OrderItemTrips value={value} orderItem={item} /> */}
+        <OrderItemTrips value={value} orderItem={item} config={config} /> */}
       </Form>
     </Drawer>
   );

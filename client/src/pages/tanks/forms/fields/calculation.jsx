@@ -743,7 +743,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
         onChange={handleAmbVolFieldChange}
         required={config?.siteMandatoryTankCalcFields}
       />
-      {/* <Form.Item name="tank_amb_vol" label={`${t('fields.ambientVolume')} (${t('units.litres')})`}>
+      {/* <Form.Item name="tank_amb_vol" label={`${t(config?.siteLabelUser + 'fields.ambientVolume')} (${t('units.litres')})`}>
         <InputNumber
           min={0}
           max={999999999}
@@ -767,7 +767,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
             onChange={handleCorVolFieldChange}
             required={config?.siteMandatoryTankCalcFields}
           />
-          {/* <Form.Item name="tank_cor_vol" label={`${t('fields.standardVolume')} (${t('units.litres')})`}>
+          {/* <Form.Item name="tank_cor_vol" label={`${t(config?.siteLabelUser + 'fields.standardVolume')} (${t('units.litres')})`}>
             <InputNumber
               min={0}
               max={999999999}

@@ -81,7 +81,7 @@ const TankView = () => {
 
   const isLoading = !data || loading;
 
-  const fields = columns(t);
+  const fields = columns(t, config);
   const sumfields = sumcolumns(t);
 
   const page = t('pageMenu.modules');

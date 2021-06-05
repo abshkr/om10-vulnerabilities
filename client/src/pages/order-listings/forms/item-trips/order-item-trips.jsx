@@ -17,7 +17,7 @@ import { ORDER_LISTINGS } from '../../../../api';
 
 import columns from './columns';
 
-const OrderItemTrips = ({ form, value, orderItem, items }) => {
+const OrderItemTrips = ({ form, value, config, orderItem, items }) => {
   const [selected, setSelected] = useState(null);
   const [productCode, setProductCode] = useState(orderItem?.oitem_prod_code);
   const [productCompany, setProductCompany] = useState(orderItem?.oitem_prod_cmpy);
@@ -26,7 +26,7 @@ const OrderItemTrips = ({ form, value, orderItem, items }) => {
   // console.log("values: ", value);
 
   const { t } = useTranslation();
-  const fields = columns(t);
+  const fields = columns(t, config);
 
   const { data: payload, isValidating } = useSWR(
     `${ORDER_LISTINGS.ORDER_ITEM_TRIPS}?oitem_order_id=${value?.order_sys_no}&oitem_prod_code=${productCode}&oitem_prod_cmpy=${productCompany}`

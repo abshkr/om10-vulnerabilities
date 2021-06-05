@@ -184,7 +184,6 @@ const columns = (t, config) => [
     hide: !config?.siteMassInVacuum,
   },
   {
-    // headerName: t('fields.oryxWeightInAir') + ' (' + t('units.kg') + ')',
     headerName: t(config?.siteLabelUser + 'fields.weightInAir') + ' (' + t('units.kg') + ')',
     field: 'tank_air_kg',
     filter: 'FuzzyFilter',

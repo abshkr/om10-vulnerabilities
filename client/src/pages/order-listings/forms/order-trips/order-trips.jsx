@@ -19,13 +19,13 @@ import Schedules from './schedules';
 
 import columns from './columns';
 
-const OrderTrips = ({ value, orderNo }) => {
+const OrderTrips = ({ value, orderNo, config }) => {
   const [selected, setSelected] = useState(null);
   const [scheduleVisible, setScheduleVisible] = useState(false);
   const [transactionVisible, setTransactionVisible] = useState(false);
 
-  console.log("I am here!!! ", orderNo);
-  console.log("values: ", value);
+  console.log('I am here!!! ', orderNo);
+  console.log('values: ', value);
 
   const { t } = useTranslation();
   const fields = columns(t);
@@ -68,7 +68,6 @@ const OrderTrips = ({ value, orderNo }) => {
 
   return (
     <>
-
       {transactionVisible && (
         <Drawer
           placement="right"
@@ -78,11 +77,12 @@ const OrderTrips = ({ value, orderNo }) => {
           width="100vw"
         >
           <Card size="small" title={t('tabColumns.transactions')}>
-            <Transactions 
+            <Transactions
               value={{
                 supplier_code: selected?.[0]?.schd_supp_code,
-                shls_trip_no: selected?.[0]?.schd_trip_no
+                shls_trip_no: selected?.[0]?.schd_trip_no,
               }}
+              config={config}
             />
           </Card>
         </Drawer>
@@ -101,7 +101,7 @@ const OrderTrips = ({ value, orderNo }) => {
               popup={true}
               params={{
                 supplier_code: selected?.[0]?.schd_supp_code,
-                shls_trip_no: selected?.[0]?.schd_trip_no
+                shls_trip_no: selected?.[0]?.schd_trip_no,
               }}
             />
           </Card>

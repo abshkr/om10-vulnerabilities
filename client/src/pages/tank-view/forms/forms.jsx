@@ -213,15 +213,15 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, 
                   </Descriptions.Item>
                 )}
 
-                <Descriptions.Item label={t('fields.observedQuantity')} span={24}>
+                <Descriptions.Item label={t(config?.siteLabelUser + 'fields.observedQuantity')} span={24}>
                   {value?.tank_amb_vol?.toLocaleString('en-AU')} {t('units.litres')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label={t('fields.standardQuantity')} span={24}>
+                <Descriptions.Item label={t(config?.siteLabelUser + 'fields.standardQuantity')} span={24}>
                   {value?.tank_cor_vol?.toLocaleString('en-AU')} {t('units.litres')}
                 </Descriptions.Item>
 
-                <Descriptions.Item label={t('fields.weightInAir')} span={24}>
+                <Descriptions.Item label={t(config?.siteLabelUser + 'fields.weightInAir')} span={24}>
                   {value?.tank_air_kg?.toLocaleString('en-AU')} {t('units.kg')}
                 </Descriptions.Item>
 
@@ -234,12 +234,12 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, 
                 </Descriptions.Item>
 
                 {config?.useWaterStrapping && (
-                  <Descriptions.Item label={t('fields.waterVolume')} span={24}>
+                  <Descriptions.Item label={t(config?.siteLabelUser + 'fields.waterVolume')} span={24}>
                     {value?.tank_water?.toLocaleString('en-AU')} {t('units.litres')}
                   </Descriptions.Item>
                 )}
 
-                <Descriptions.Item label={t('fields.weightInVacuum')} span={24}>
+                <Descriptions.Item label={t(config?.siteLabelUser + 'fields.weightInVacuum')} span={24}>
                   {value?.tank_liquid_kg?.toLocaleString('en-AU')} {t('units.kg')}
                 </Descriptions.Item>
               </Descriptions>

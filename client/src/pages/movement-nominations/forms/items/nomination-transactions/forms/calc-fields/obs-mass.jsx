@@ -11,7 +11,7 @@ const ObsMass = ({ form, value, onChange, setValue, pageState, config }) => {
   /* const validate = (rule, input) => {
     if (rule.required) {
       if (input === '' || !input) {
-        return Promise.reject(`${t('validate.set')} ─ ${t('fields.nomtranMass')}`);
+        return Promise.reject(`${t('validate.set')} ─ ${t(config?.siteLabelUser + 'fields.nomtranMass')}`);
       }
     }
 

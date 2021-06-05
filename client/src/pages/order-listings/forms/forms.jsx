@@ -758,12 +758,13 @@ const FormModal = ({
             </Form.Item>
           </TabPane>
           <TabPane tab={t('tabColumns.orderTrips')} disabled={IS_CREATING} key="2">
-            <OrderTrips value={value} orderNo={orderNo} />
+            <OrderTrips value={value} orderNo={orderNo} config={config} />
           </TabPane>
           <TabPane tab={t('tabColumns.orderItemTrips')} disabled={IS_CREATING} key="3">
             <OrderItemTrips
               form={form}
               value={value}
+              config={config}
               orderItem={selected}
               items={
                 value?.order_approved ? orderItems.filter((item) => item.oitem_prod_qty > 0) : orderItems

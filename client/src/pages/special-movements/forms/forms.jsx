@@ -262,11 +262,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       notification.error({
         message: t('validate.set'),
         description:
-          t('fields.observedQuantity') +
+          t(config?.siteLabelUser + 'fields.observedQuantity') +
           t('descriptions.or') +
-          t('fields.standardQuantity') +
+          t(config?.siteLabelUser + 'fields.standardQuantity') +
           t('descriptions.or') +
-          t('fields.observedMass'),
+          t(config?.siteLabelUser + 'fields.observedMass'),
       });
       return;
     }
@@ -275,11 +275,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       notification.error({
         message: t('validate.set'),
         description:
-          t('fields.observedQuantity') +
+          t(config?.siteLabelUser + 'fields.observedQuantity') +
           t('descriptions.or') +
-          t('fields.standardQuantity') +
+          t(config?.siteLabelUser + 'fields.standardQuantity') +
           t('descriptions.or') +
-          t('fields.observedMass'),
+          t(config?.siteLabelUser + 'fields.observedMass'),
       });
       return;
     }
@@ -292,11 +292,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       notification.error({
         message: t('validate.set'),
         description: !quantitySource
-          ? t('fields.observedQuantity') +
+          ? t(config?.siteLabelUser + 'fields.observedQuantity') +
             t('descriptions.or') +
-            t('fields.standardQuantity') +
+            t(config?.siteLabelUser + 'fields.standardQuantity') +
             t('descriptions.or') +
-            t('fields.observedMass')
+            t(config?.siteLabelUser + 'fields.observedMass')
           : quantitySource?.title,
       });
       return;

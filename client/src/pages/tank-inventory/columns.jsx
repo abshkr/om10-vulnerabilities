@@ -33,7 +33,7 @@ const columns = (t, config) => [
     hide: !config?.useWaterStrapping,
   },
   {
-    headerName: t('fields.waterVolume') + ' (' + t('units.ltr') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.waterVolume') + ' (' + t('units.ltr') + ')',
     field: 'tank_water',
     sortable: true,
     resizable: true,
@@ -59,13 +59,17 @@ const columns = (t, config) => [
     resizable: true,
   },
   {
-    headerName: `${t('fields.standardVolume')} (${t(config?.siteLabelUser + 'units.lcor')})`,
+    headerName: `${t(config?.siteLabelUser + 'fields.standardVolume')} (${t(
+      config?.siteLabelUser + 'units.lcor'
+    )})`,
     field: 'netvol',
     sortable: true,
     resizable: true,
   },
   {
-    headerName: `${t('fields.observedVolume')} (${t(config?.siteLabelUser + 'units.lobs')})`,
+    headerName: `${t(config?.siteLabelUser + 'fields.observedVolume')} (${t(
+      config?.siteLabelUser + 'units.lobs'
+    )})`,
     field: 'grossvol',
     sortable: true,
     resizable: true,

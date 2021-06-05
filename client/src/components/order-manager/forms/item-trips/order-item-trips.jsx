@@ -17,14 +17,14 @@ import { ORDER_LISTINGS } from '../../../../api';
 
 import columns from './columns';
 
-const OrderItemTrips = ({ value, orderItem }) => {
+const OrderItemTrips = ({ value, config, orderItem }) => {
   const [selected, setSelected] = useState(null);
 
-  console.log("I am here!!! ", orderItem);
-  console.log("values: ", value);
+  console.log('I am here!!! ', orderItem);
+  console.log('values: ', value);
 
   const { t } = useTranslation();
-  const fields = columns(t);
+  const fields = columns(t, config);
 
   const { data: payload, isValidating } = useSWR(
     `${ORDER_LISTINGS.ORDER_ITEM_TRIPS}?oitem_order_id=${orderItem?.oitem_order_id}&oitem_prod_code=${orderItem?.oitem_prod_code}&oitem_prod_cmpy=${orderItem?.oitem_prod_cmpy}`
@@ -40,7 +40,6 @@ const OrderItemTrips = ({ value, orderItem }) => {
 
   return (
     <>
-
       <Form.Item name="order_trips">
         <DataTable
           columns={fields}

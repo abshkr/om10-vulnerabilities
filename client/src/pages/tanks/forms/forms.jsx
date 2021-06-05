@@ -613,11 +613,11 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       notification.error({
         message: t('validate.set'),
         description:
-          t('fields.ambientVolume') +
+          t(config?.siteLabelUser + 'fields.ambientVolume') +
           t('descriptions.or') +
-          t('fields.standardVolume') +
+          t(config?.siteLabelUser + 'fields.standardVolume') +
           t('descriptions.or') +
-          t('fields.liquidMass'),
+          t(config?.siteLabelUser + 'fields.liquidMass'),
       });
       return;
     }
@@ -626,11 +626,11 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       notification.error({
         message: t('validate.set'),
         description: !quantitySource
-          ? t('fields.observedQuantity') +
+          ? t(config?.siteLabelUser + 'fields.observedQuantity') +
             t('descriptions.or') +
-            t('fields.standardQuantity') +
+            t(config?.siteLabelUser + 'fields.standardQuantity') +
             t('descriptions.or') +
-            t('fields.observedMass')
+            t(config?.siteLabelUser + 'fields.observedMass')
           : quantitySource?.title,
       });
       return;

@@ -220,6 +220,11 @@ const Table = ({
           //   t,
           // };
         } */
+        if (o?.headerTooltip === undefined) {
+          o.headerTooltip = o?.headerName;
+        }
+        // o.suppressSizeToFit = false;
+        // o.width = undefined;
       });
       setTableColumns(columns);
     }
