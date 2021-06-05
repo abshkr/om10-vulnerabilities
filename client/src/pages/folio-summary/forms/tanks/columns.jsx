@@ -33,7 +33,7 @@ const columns = (t, enabled, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: `${t('fields.closingAmbient')} (${t('units.ltr')})`,
+    headerName: `${t(config?.siteLabelUser + 'fields.closingAmbient')} (${t('units.ltr')})`,
     field: 'close_amb_tot',
     sortable: true,
     resizable: true,
@@ -51,7 +51,7 @@ const columns = (t, enabled, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: `${t('fields.closingCorrected')} (${t('units.ltr')})`,
+    headerName: `${t(config?.siteLabelUser + 'fields.closingCorrected')} (${t('units.ltr')})`,
     field: 'close_std_tot',
     sortable: true,
     resizable: true,
@@ -69,7 +69,7 @@ const columns = (t, enabled, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: `${t('fields.closingMass')} (${t('units.kg')})`,
+    headerName: `${t(config?.siteLabelUser + 'fields.closingMass')} (${t('units.kg')})`,
     field: 'close_mass_tot',
     sortable: true,
     resizable: true,
@@ -88,14 +88,14 @@ const columns = (t, enabled, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.massInAir') + ' (' + t('units.kg') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.closingMassAir') + ' (' + t('units.kg') + ')',
     field: 'close_mass_tot_air',
     sortable: true,
     resizable: true,
     hide: !config?.siteMassInAir,
     cellRenderer: 'MassInAirRenderer',
     cellRendererParams: {
-      digits: '3',
+      digits: String(config?.precisionMass),
       massInVacuum: 'close_mass_tot',
       standardVolume: 'close_std_tot',
       factor: config?.airBuoyancyFactor,
@@ -110,7 +110,7 @@ const columns = (t, enabled, config) => [
     hide: !config?.siteUseVCF,
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
-      digits: config?.precisionVCF,
+      digits: String(config?.precisionVCF),
       min: '0',
     },
   },

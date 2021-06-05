@@ -34,7 +34,7 @@ const columns = (t, pageState, form, arm, config) => [
     // cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
   },
   {
-    headerName: t('fields.observedQuantity') + ' (' + t('units.ltr') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.observedQuantity') + ' (' + t('units.ltr') + ')',
     field: 'trsf_qty_amb',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -42,7 +42,7 @@ const columns = (t, pageState, form, arm, config) => [
     editable: false,
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
-      digits: '0',
+      digits: String(config?.precisionVolume),
       min: '100',
     },
   },
@@ -65,7 +65,7 @@ const columns = (t, pageState, form, arm, config) => [
     // cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
   },
   {
-    headerName: t('fields.standardQuantity') + ' (' + t('units.ltr') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.standardQuantity') + ' (' + t('units.ltr') + ')',
     field: 'trsf_qty_cor',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -73,7 +73,7 @@ const columns = (t, pageState, form, arm, config) => [
     editable: false,
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
-      digits: '0',
+      digits: String(config?.precisionVolume),
       min: '100',
     },
   },
@@ -96,7 +96,7 @@ const columns = (t, pageState, form, arm, config) => [
     // cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
   },
   {
-    headerName: t('fields.massQuantity') + ' (' + t('units.kg') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.massQuantity') + ' (' + t('units.kg') + ')',
     field: 'trsf_load_kg',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -105,19 +105,19 @@ const columns = (t, pageState, form, arm, config) => [
     editable: false,
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
-      digits: '0',
+      digits: String(config?.precisionMass),
       min: '100',
     },
   },
   {
-    headerName: t('fields.massInAir') + ' (' + t('units.kg') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.massInAir') + ' (' + t('units.kg') + ')',
     field: 'trsf_air_kg',
     sortable: true,
     resizable: true,
     hide: !config?.siteMassInAir,
     cellRenderer: 'MassInAirRenderer',
     cellRendererParams: {
-      digits: '3',
+      digits: String(config?.precisionMass),
       massInVacuum: 'trsf_load_kg',
       standardVolume: 'trsf_qty_cor',
       factor: config?.airBuoyancyFactor,

@@ -71,29 +71,32 @@ const BaseDetails = ({ form, value, pageState, arm, temperature, amb, cor, mass,
           <Col span={config?.siteMassFieldMode === 3 ? 4 : 9}></Col>
           <Col span={5}>
             <strong>
-              {t('fields.nomtranObsTotal')} {_.round(_.sumBy(data, 'trsf_bs_qty_amb'), 3)}
+              {t('fields.nomtranObsTotal')}{' '}
+              {_.round(_.sumBy(data, 'trsf_bs_qty_amb'), config?.precisionVolume)}
             </strong>
           </Col>
           <Col span={5}>
             <strong>
-              {t('fields.nomtranStdTotal')} {_.round(_.sumBy(data, 'trsf_bs_qty_cor'), 3)}
+              {t('fields.nomtranStdTotal')}{' '}
+              {_.round(_.sumBy(data, 'trsf_bs_qty_cor'), config?.precisionVolume)}
             </strong>
           </Col>
           {config?.siteMassInVacuum && (
             <Col span={5}>
               <strong>
-                {t('fields.nomtranMassTotal')} {_.round(_.sumBy(data, 'trsf_bs_load_kg'), 3)}
+                {t('fields.nomtranMassTotal')}{' '}
+                {_.round(_.sumBy(data, 'trsf_bs_load_kg'), config?.precisionMass)}
               </strong>
             </Col>
           )}
           {config?.siteMassInAir && (
             <Col span={5}>
               <strong>
-                {t('fields.massInAir') + ': '}{' '}
+                {t(config?.siteLabelUser + 'fields.massInAir') + ': '}{' '}
                 {_.round(
                   _.sumBy(data, 'trsf_bs_load_kg') -
                     _.sumBy(data, 'trsf_bs_qty_cor') * config?.airBuoyancyFactor,
-                  3
+                  config?.precisionMass
                 )}
               </strong>
             </Col>

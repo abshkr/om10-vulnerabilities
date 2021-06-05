@@ -222,7 +222,7 @@ const columns = (IS_NOMINATION, t, config) => [
   },
 
   {
-    headerName: t('fields.ambient'),
+    headerName: t(config?.siteLabelUser + 'fields.ambient'),
     field: 'trsf_qty_amb',
     sortable: true,
     resizable: true,
@@ -232,7 +232,7 @@ const columns = (IS_NOMINATION, t, config) => [
   },
 
   {
-    headerName: t('fields.standard'),
+    headerName: t(config?.siteLabelUser + 'fields.standard'),
     field: 'trsf_qty_cor',
     sortable: true,
     resizable: true,
@@ -242,7 +242,7 @@ const columns = (IS_NOMINATION, t, config) => [
   },
 
   {
-    headerName: t('fields.mass'),
+    headerName: t(config?.siteLabelUser + 'fields.mass'),
     field: 'trsf_load_kg',
     sortable: true,
     resizable: true,
@@ -251,7 +251,7 @@ const columns = (IS_NOMINATION, t, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.massInAir'),
+    headerName: t(config?.siteLabelUser + 'fields.massInAir'),
     field: 'trsf_air_kg',
     sortable: true,
     resizable: true,
@@ -260,7 +260,7 @@ const columns = (IS_NOMINATION, t, config) => [
     suppressSizeToFit: true,
     cellRenderer: 'MassInAirRenderer',
     cellRendererParams: {
-      digits: '3',
+      digits: String(config?.precisionMass),
       massInVacuum: 'trsf_load_kg',
       standardVolume: 'trsf_qty_cor',
       factor: config?.airBuoyancyFactor,

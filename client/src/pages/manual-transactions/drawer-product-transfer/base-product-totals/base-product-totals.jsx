@@ -206,31 +206,34 @@ const BaseProductTotals = ({
         <Col span={5}>
           {/* <strong>{t('fields.nomtranObsTotal')} {_.round(obsTotal, 3)}</strong> */}
           <strong>
-            {t('fields.nomtranObsTotal')} {_.round(_.sumBy(data, 'trsf_bs_qty_amb_tot'), 3)}
+            {t('fields.nomtranObsTotal')}{' '}
+            {_.round(_.sumBy(data, 'trsf_bs_qty_amb_tot'), config?.precisionVolume)}
           </strong>
         </Col>
         <Col span={5}>
           {/* <strong>{t('fields.nomtranStdTotal')} {_.round(stdTotal, 3)}</strong> */}
           <strong>
-            {t('fields.nomtranStdTotal')} {_.round(_.sumBy(data, 'trsf_bs_qty_cor_tot'), 3)}
+            {t('fields.nomtranStdTotal')}{' '}
+            {_.round(_.sumBy(data, 'trsf_bs_qty_cor_tot'), config?.precisionVolume)}
           </strong>
         </Col>
         {config?.siteMassInVacuum && (
           <Col span={5}>
             {/* <strong>{t('fields.nomtranMassTotal')} {_.round(massTotal, 3)}</strong> */}
             <strong>
-              {t('fields.nomtranMassTotal')} {_.round(_.sumBy(data, 'trsf_bs_load_kg_tot'), 3)}
+              {t('fields.nomtranMassTotal')}{' '}
+              {_.round(_.sumBy(data, 'trsf_bs_load_kg_tot'), config?.precisionMass)}
             </strong>
           </Col>
         )}
         {config?.siteMassInAir && (
           <Col span={5}>
             <strong>
-              {t('fields.massInAir') + ': '}{' '}
+              {t(config?.siteLabelUser + 'fields.massInAir') + ': '}{' '}
               {_.round(
                 _.sumBy(data, 'trsf_bs_load_kg_tot') -
                   _.sumBy(data, 'trsf_bs_qty_cor_tot') * config?.airBuoyancyFactor,
-                3
+                config?.precisionMass
               )}
             </strong>
           </Col>

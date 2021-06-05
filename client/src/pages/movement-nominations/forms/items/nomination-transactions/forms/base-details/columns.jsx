@@ -155,7 +155,7 @@ const columns = (t, pageState, form, arm, config) => [
     },
   },
   {
-    headerName: t('fields.observedQuantity') + ' (' + t('units.ltr') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.observedQuantity') + ' (' + t('units.ltr') + ')',
     field: 'trsf_bs_qty_amb',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -164,12 +164,14 @@ const columns = (t, pageState, form, arm, config) => [
     // cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
-      digits: '0',
+      digits: String(config?.precisionVolume),
       min: '100',
+      adtvFlag: 'trsf_bs_adtv_flag',
+      adtvDigits: config?.precisionAdditive,
     },
   },
   {
-    headerName: t('fields.standardQuantity') + ' (' + t('units.ltr') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.standardQuantity') + ' (' + t('units.ltr') + ')',
     field: 'trsf_bs_qty_cor',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -178,12 +180,14 @@ const columns = (t, pageState, form, arm, config) => [
     // cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
-      digits: '0',
+      digits: String(config?.precisionVolume),
       min: '100',
+      adtvFlag: 'trsf_bs_adtv_flag',
+      adtvDigits: config?.precisionAdditive,
     },
   },
   {
-    headerName: t('fields.massQuantity') + ' (' + t('units.kg') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.massQuantity') + ' (' + t('units.kg') + ')',
     field: 'trsf_bs_load_kg',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -193,12 +197,14 @@ const columns = (t, pageState, form, arm, config) => [
     // cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
-      digits: '0',
+      digits: String(config?.precisionMass),
       min: '100',
+      adtvFlag: 'trsf_bs_adtv_flag',
+      adtvDigits: config?.precisionAdditive,
     },
   },
   {
-    headerName: t('fields.massInAir') + ' (' + t('units.kg') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.massInAir') + ' (' + t('units.kg') + ')',
     field: 'trsf_bs_air_kg',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -206,10 +212,12 @@ const columns = (t, pageState, form, arm, config) => [
     hide: !config?.siteMassInAir,
     cellRenderer: 'MassInAirRenderer',
     cellRendererParams: {
-      digits: '3',
+      digits: String(config?.precisionMass),
       massInVacuum: 'trsf_bs_load_kg',
       standardVolume: 'trsf_bs_qty_cor',
       factor: config?.airBuoyancyFactor,
+      adtvFlag: 'trsf_bs_adtv_flag',
+      adtvDigits: config?.precisionAdditive,
     },
   },
   {
@@ -221,7 +229,7 @@ const columns = (t, pageState, form, arm, config) => [
     hide: !config?.siteUseVCF,
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
-      digits: config?.precisionVCF,
+      digits: String(config?.precisionVCF),
       min: '0',
     },
   },

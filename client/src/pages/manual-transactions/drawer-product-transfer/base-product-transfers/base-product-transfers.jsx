@@ -197,25 +197,26 @@ const BaseProductTransfers = ({
           <Col span={config?.siteMassFieldMode === 3 ? 4 : 9}></Col>
           <Col span={5}>
             <strong>
-              {t('fields.nomtranObsTotal')} {_.round(obsTotal, 3)}
+              {t('fields.nomtranObsTotal')} {_.round(obsTotal, config?.precisionVolume)}
             </strong>
           </Col>
           <Col span={5}>
             <strong>
-              {t('fields.nomtranStdTotal')} {_.round(stdTotal, 3)}
+              {t('fields.nomtranStdTotal')} {_.round(stdTotal, config?.precisionVolume)}
             </strong>
           </Col>
           {config?.siteMassInVacuum && (
             <Col span={5}>
               <strong>
-                {t('fields.nomtranMassTotal')} {_.round(massTotal, 3)}
+                {t('fields.nomtranMassTotal')} {_.round(massTotal, config?.precisionMass)}
               </strong>
             </Col>
           )}
           {config?.siteMassInAir && (
             <Col span={5}>
               <strong>
-                {t('fields.massInAir') + ': '} {_.round(massTotal - stdTotal * config?.airBuoyancyFactor, 3)}
+                {t(config?.siteLabelUser + 'fields.massInAir') + ': '}{' '}
+                {_.round(massTotal - stdTotal * config?.airBuoyancyFactor, config?.precisionMass)}
               </strong>
             </Col>
           )}

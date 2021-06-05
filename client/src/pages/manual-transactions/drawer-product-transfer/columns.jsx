@@ -294,7 +294,7 @@ const columns = (
     },
   },
   {
-    headerName: t('fields.observedQuantity') + ' (' + t('units.ltr') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.observedQuantity') + ' (' + t('units.ltr') + ')',
     field: 'trsf_qty_amb',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -316,7 +316,7 @@ const columns = (
     },
   },
   {
-    headerName: t('fields.standardQuantity') + ' (' + t('units.ltr') + ')',
+    headerName: t(config?.siteLabelUser + 'fields.standardQuantity') + ' (' + t('units.ltr') + ')',
     field: 'trsf_qty_cor',
     filter: 'FuzzyFilter',
     sortable: true,
