@@ -220,9 +220,12 @@ const Table = ({
           //   t,
           // };
         } */
-        if (o?.headerTooltip === undefined) {
-          o.headerTooltip = o?.headerName;
-        }
+        // if (o?.tooltipField === undefined) {
+        //   o.tooltipField = o?.field;
+        // }
+        // if (o?.headerTooltip === undefined) {
+        //   o.headerTooltip = o?.headerName;
+        // }
         // o.suppressSizeToFit = false;
         // o.width = undefined;
       });
