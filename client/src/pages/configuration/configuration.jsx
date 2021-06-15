@@ -26,7 +26,7 @@ import { ConfigurationContainer } from './styles';
 import api, { SITE_CONFIGURATION, FOLIO_SCHEDULING } from '../../api';
 import { Page } from '../../components';
 import auth from '../../auth';
-import { complexityDesc } from 'utils';
+import { complexityDesc, decimalThousandSeparator } from 'utils';
 
 import { ReactComponent as SearchIcon } from '../../components/nav-bar/search_two.svg';
 
@@ -341,6 +341,29 @@ const FormSwitch = ({ config, onChange }) => {
           onChange={(event) => onChange(config, event.target.value)}
           value={config.config_value}
         />
+      );
+
+    case 'SITE_DEC_TH_SEPERATORS':
+      return (
+        <Select
+          dropdownMatchSelectWidth={false}
+          defaultValue={config.config_value}
+          style={{ width: 280 }}
+          onChange={(value) => onChange(config, value)}
+        >
+          <Option value="1">{decimalThousandSeparator('1', t)}</Option>
+          <Option value="2">{decimalThousandSeparator('2', t)}</Option>
+          <Option value="3">{decimalThousandSeparator('3', t)}</Option>
+          <Option value="4">{decimalThousandSeparator('4', t)}</Option>
+          <Option value="5">{decimalThousandSeparator('5', t)}</Option>
+          <Option value="6">{decimalThousandSeparator('6', t)}</Option>
+          <Option value="7">{decimalThousandSeparator('7', t)}</Option>
+          <Option value="8">{decimalThousandSeparator('8', t)}</Option>
+          <Option value="9">{decimalThousandSeparator('9', t)}</Option>
+          <Option value="10">{decimalThousandSeparator('10', t)}</Option>
+          <Option value="11">{decimalThousandSeparator('11', t)}</Option>
+          <Option value="12">{decimalThousandSeparator('12', t)}</Option>
+        </Select>
       );
 
     default:
