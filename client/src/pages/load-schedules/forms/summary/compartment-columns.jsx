@@ -60,6 +60,22 @@ const columns = (t, form, products, soldTo, shipTo, units) => [
     resizable: true,
     width: 90,
     suppressSizeToFit: true,
+    editable: true,
+    cellClass: 'editable-ag-grid-cell',
+    cellEditor: 'PreloadEditor',
+    cellEditorParams: {
+      min: 0,
+      max: 999999,
+      form: form,
+    },
+    /* cellEditor: 'NumericEditor',
+    cellEditorParams: {
+      ranges: {
+        max: 999999999,
+        min: 0,
+      },
+      t,
+    },*/
   },
 
   {

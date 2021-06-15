@@ -7,7 +7,7 @@ import { DataTable, PartnershipManager, OrderManager } from '../../../../compone
 
 import api, { LOAD_SCHEDULES } from '../../../../api';
 
-import { ProductEditor, UnitEditor, ScheduleEditor, DelvNoEditor } from './fields';
+import { ProductEditor, UnitEditor, ScheduleEditor, PreloadEditor, DelvNoEditor } from './fields';
 
 import useSWR from 'swr';
 
@@ -273,6 +273,30 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
     },
 
     {
+      headerName: t('fields.preloaded'),
+      field: 'qty_preload',
+      resizable: true,
+      width: 90,
+      suppressSizeToFit: true,
+      editable: true,
+      cellClass: 'editable-ag-grid-cell',
+      cellEditor: 'PreloadEditor',
+      cellEditorParams: {
+        min: 0,
+        max: 999999,
+        form: form,
+      },
+      /* cellEditor: 'NumericEditor',
+      cellEditorParams: {
+        ranges: {
+          max: 999999999,
+          min: 0,
+        },
+        t,
+      },*/
+    },
+
+    {
       headerName: t('fields.prevProduct'),
       field: 'prev_prod_name',
       resizable: true,
@@ -365,6 +389,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
     ProductEditor,
     UnitEditor,
     ScheduleEditor,
+    PreloadEditor,
     DelvNoEditor,
   };
 

@@ -1998,6 +1998,7 @@
     "sysCannotAccess": "禁止使用",
     "sysNotFound": "未发现",
     "unlockSuccess": "记录成功解锁",
+    "updateFailed": "记录修改失败",
     "updateSuccess": "记录成功修改",
     "uploadSuccess": "记录成功上传",
     "validationFailed": "验证失败"
@@ -2152,6 +2153,7 @@
     "unlockAll": "解锁全部油仓",
     "unlockItem": "解锁明细条目",
     "update": "修改",
+    "updatePreloads": "修改油仓预装油量",
     "upload": "上传",
     "uploadData": "上传数据",
     "uploadImg": "上传图像",

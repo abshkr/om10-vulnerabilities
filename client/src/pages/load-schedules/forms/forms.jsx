@@ -440,13 +440,46 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-              description: IS_CREATING ? t('descriptions.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
             });
           })
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
                 message: error.type,
+                description: error.message,
+              });
+            });
+          });
+      },
+    });
+  };
+
+  const onUpdatePreloads = async () => {
+    const values = await form.validateFields();
+
+    Modal.confirm({
+      title: t('prompts.update'),
+      okText: t('operations.update'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await api
+          .post(LOAD_SCHEDULES.UPDATE_PRELOADS, values)
+          .then(() => {
+            onComplete(values);
+
+            notification.success({
+              message: t('messages.updateSuccess'),
+              description: t('descriptions.updateSuccess'),
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.code === 500 ? t('messages.updateFailed') : error.type,
                 description: error.message,
               });
             });
@@ -804,6 +837,26 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
               {IS_CREATING ? t('operations.create') : t('operations.update')}
             </Button>
           )}
+
+          {!IS_CREATING &&
+            READ_ONLY &&
+            tab !== '6' &&
+            tab !== '7' &&
+            tab !== '8' &&
+            tab !== '9' &&
+            tab !== '10' && (
+              <>
+                <Button
+                  type="primary"
+                  icon={<EditOutlined />}
+                  style={{ float: 'right', marginRight: 5 }}
+                  disabled={!access?.canUpdate}
+                  onClick={onUpdatePreloads}
+                >
+                  {t('operations.updatePreloads')}
+                </Button>
+              </>
+            )}
 
           {!IS_CREATING &&
             !READ_ONLY &&
@@ -1165,7 +1218,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
               />
             )}
 
-            {READ_ONLY && <Summary value={value} />}
+            {READ_ONLY && <Summary form={form} value={value} />}
           </TabPane>
 
           <TabPane

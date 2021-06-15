@@ -1998,6 +1998,7 @@
     "sysCannotAccess": "Access Denied",
     "sysNotFound": "Not Found",
     "unlockSuccess": "Successfully unlocked",
+    "updateFailed": "Update failed",
     "updateSuccess": "Successfully updated",
     "uploadSuccess": "Successfully uploaded",
     "validationFailed": "Validation failed"
@@ -2152,6 +2153,7 @@
     "unlockAll": "Unlock All Compartments",
     "unlockItem": "Unlock Item",
     "update": "Update",
+    "updatePreloads": "Update Preloaded Quantities",
     "upload": "Upload",
     "uploadData": "Upload Data",
     "uploadImg": "Upload Image",

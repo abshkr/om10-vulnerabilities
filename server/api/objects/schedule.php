@@ -524,6 +524,29 @@ class Schedule extends CommonClass
         }
     }
 
+    private function update_cmpt_qtyinfo($compartment)
+    {
+        $query = "
+            UPDATE SPECDETS 
+            SET SCHD_PRLDQTY = :preload
+            WHERE SCHDSPEC_SHLSSUPP = :supp 
+                AND SCHDSPEC_SHLSTRIP = :trip 
+                AND SCHD_COMP_ID = :cmpt";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':preload', $compartment->qty_preload);
+        oci_bind_by_name($stmt, ':supp', $this->supplier_code);
+        oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+        oci_bind_by_name($stmt, ':cmpt', $compartment->compartment);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return true;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+    }
+
     //In old php, it is DorHistoryService.php::updateTripHostDOR
     private function update_host_data() 
     {
@@ -762,6 +785,8 @@ class Schedule extends CommonClass
                 }
     
                 $this->update_cmpt_delvinfo($compartment);
+                // update preloaded qty in compartment
+                $this->update_cmpt_qtyinfo($compartment);
             }
         }
         
@@ -856,6 +881,36 @@ class Schedule extends CommonClass
         $this->update_load_security_info();
 
         return true;
+    }
+
+    //update preloads
+    public function update_preloads()
+    {
+        Utilities::sanitize($this);
+
+        if (isset($this->compartments)) {
+            foreach ($this->compartments as $compartment) {
+                // update preloaded qty in compartment
+                $flag = $this->update_cmpt_qtyinfo($compartment);
+                if ($flag === false) {
+                    $result = new EchoSchema(500, response("__UPDATE_FAILED__",
+                        "Failed to update preloaded quantity, trip: " . $this->shls_trip_no . ", compartment: ". $compartment->compartment));
+                    echo json_encode($result, JSON_PRETTY_PRINT);
+                    return false;
+                }
+            }
+        }
+
+        $result = new EchoSchema(200, response("__UPDATE_SUCCEEDED__",
+            sprintf("Schedule %d updated with preloaded quantity", $this->shls_trip_no)));
+        echo json_encode($result, JSON_PRETTY_PRINT);
+
+        return true;
+        /* $result = new EchoSchema(500, response("__UPDATE_FAILED__",
+        "Failed to update preloaded quantity, trip: " .$this->shls_trip_no . ", compartment: ". $this->compartments[0]->compartment));
+        echo json_encode($result, JSON_PRETTY_PRINT);
+
+        return false; */
     }
 
     private function setSHLS_SRCTYPE()
