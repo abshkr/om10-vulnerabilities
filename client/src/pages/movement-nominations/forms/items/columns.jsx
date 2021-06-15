@@ -6,7 +6,7 @@ import _ from 'lodash';
 
 import { MOVEMENT_NOMIATIONS } from '../../../../api';
 
-const groupAll = [2];
+const groupAll = [2, 1]; // this setting is for mvitm_tank_from only
 const groupFrom = [2, 1];
 const groupTo = [2, 0];
 //const from = ['Transfer', 'Disposal'];
