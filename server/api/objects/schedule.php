@@ -547,6 +547,129 @@ class Schedule extends CommonClass
         }
     }
 
+    private function delete_cmpt_details()
+    {
+        $query = "
+            DELETE FROM SPECDETS 
+            WHERE SCHDSPEC_SHLSSUPP = :supp 
+                AND SCHDSPEC_SHLSTRIP = :trip 
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supp', $this->supplier_code);
+        oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return true;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+    }
+
+    private function create_cmpt_details($compartment)
+    {
+        $query = "
+            INSERT INTO SPECDETS (
+                SCHDSPEC_SHLSTRIP,
+                SCHDSPEC_SHLSSUPP,
+                SCHD_COMP_ID,
+                SCHDPROD_PRODCODE,
+                SCHDPROD_PRODCMPY,
+                SCHD_UNITS,
+                SCHD_SPECQTY,
+                SCHD_PRLDQTY,
+                SCHD_ORDER,
+                SCHD_TRAILER,
+                SCHD_TRAILERCOMP,
+                SCHD_PRESETQTY
+            ) VALUES (
+                :trip,
+                :supp,
+                :cmpt,
+                :prodcode,
+                :prodcmpy,
+                :unit,
+                :specqty,
+                :prldqty,
+                NULL,
+                :trailer,
+                :tcomp,
+                0
+            )
+        ";
+        $stmt = oci_parse($this->conn, $query);
+
+        oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+        oci_bind_by_name($stmt, ':supp', $this->supplier_code);
+        oci_bind_by_name($stmt, ':cmpt', $compartment->compartment);
+        oci_bind_by_name($stmt, ':prodcode', $compartment->prod_code);
+        oci_bind_by_name($stmt, ':prodcmpy', $this->supplier_code);
+        oci_bind_by_name($stmt, ':unit', $compartment->unit_code);
+        oci_bind_by_name($stmt, ':specqty', $compartment->qty_scheduled);
+        oci_bind_by_name($stmt, ':prldqty', $compartment->qty_preload);
+        oci_bind_by_name($stmt, ':trailer', $compartment->eqpt_id);
+        oci_bind_by_name($stmt, ':tcomp', $compartment->eqpt_cmpt);
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return true;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+    }
+
+    //update the schedule type and the tanker
+    private function update_schedule_to_convert() 
+    {
+        // only change the SHL_TANKER, and SHLS_ORIG_TKR remain unchanged
+        $query = "
+            UPDATE SCHEDULE 
+            SET SHL_TANKER = :tnkr_code, SHLS_LD_TYPE = :schd_type
+            WHERE SHLS_TRIP_NO = :trip and SHLS_SUPP = :supplier
+        ";
+        $stmt = oci_parse($this->conn, $query);
+
+        oci_bind_by_name($stmt, ':supplier', $this->supplier_code);
+        oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+        oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+        oci_bind_by_name($stmt, ':schd_type', $this->shls_ld_type);
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return true;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+    }
+
+    //update the schedule type
+    private function update_schedule_to_revert() 
+    {
+        $query = "
+            UPDATE SCHEDULE 
+            SET SHLS_LD_TYPE = 3
+            WHERE SHLS_TRIP_NO = :trip and SHLS_SUPP = :supplier
+        ";
+        $stmt = oci_parse($this->conn, $query);
+
+        oci_bind_by_name($stmt, ':supplier', $this->supplier_code);
+        oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return true;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+    }
+
     //In old php, it is DorHistoryService.php::updateTripHostDOR
     private function update_host_data() 
     {
@@ -911,6 +1034,73 @@ class Schedule extends CommonClass
         echo json_encode($result, JSON_PRETTY_PRINT);
 
         return false; */
+    }
+
+    //convert schedule from pre-order to pre-schedule type
+    public function convert_schedule()
+    {
+        Utilities::sanitize($this);
+
+        if (isset($this->compartments)) {
+            foreach ($this->compartments as $compartment) {
+                // create details in a compartment
+                $flag = $this->create_cmpt_details($compartment);
+                if ($flag === false) {
+                    $result = new EchoSchema(500, response("__CREATE_FAILED__",
+                        "Failed to create the details for schedule compartment, trip: " . $this->shls_trip_no . ", compartment: ". $compartment->compartment));
+                    echo json_encode($result, JSON_PRETTY_PRINT);
+                    return false;
+                }
+            }
+        }
+
+        // compartments have been created successfully
+        // let's update the schedule load type and the tanker
+        $flag2 = $this->update_schedule_to_convert();
+        if ($flag2 === false) {
+            $result = new EchoSchema(500, response("__UPDATE_FAILED__",
+                "Failed to convert the schedule, trip: " . $this->shls_trip_no . ", supplier: ". $this->supplier_code));
+            echo json_encode($result, JSON_PRETTY_PRINT);
+            return false;
+        }
+
+        $result = new EchoSchema(200, response("__UPDATE_SUCCEEDED__",
+            sprintf("Schedule %d converted to pre-schedule mode", $this->shls_trip_no)));
+        echo json_encode($result, JSON_PRETTY_PRINT);
+
+        return true;
+    }
+
+    //revert schedule from pre-schedule to pre-order type
+    public function revert_schedule()
+    {
+        Utilities::sanitize($this);
+
+        $flag = $this->delete_cmpt_details();
+        if ($flag === false) {
+            $result = new EchoSchema(500, response("__UPDATE_FAILED__",
+                "Failed to remove the schedule compartments, trip: " . $this->shls_trip_no . ", supplier: ". $this->supplier_code));
+            echo json_encode($result, JSON_PRETTY_PRINT);
+            return false;
+        }
+
+        // compartments have been removed successfully
+        // let's update the schedule load type to pre order
+        $flag2 = $this->update_schedule_to_revert();
+        if ($flag2 === false) {
+            $result = new EchoSchema(500, response("__UPDATE_FAILED__",
+                "Failed to revert the schedule, trip: " . $this->shls_trip_no . ", supplier: ". $this->supplier_code));
+            echo json_encode($result, JSON_PRETTY_PRINT);
+            return false;
+        }
+
+        oci_commit($this->conn);
+
+        $result = new EchoSchema(200, response("__UPDATE_SUCCEEDED__",
+            sprintf("Schedule %d reverted back to pre-order mode", $this->shls_trip_no)));
+        echo json_encode($result, JSON_PRETTY_PRINT);
+
+        return true;
     }
 
     private function setSHLS_SRCTYPE()
@@ -1347,6 +1537,7 @@ class Schedule extends CommonClass
                 FROM
                 (
                 SELECT EQPT_CODE, 
+                    EQPT_ID,
                     ROWNUM COMPARTMENT,
                     EQPT_CMPT, 
                     NULL PROD_CODE,
@@ -1369,8 +1560,8 @@ class Schedule extends CommonClass
                     0 QTY_KG
                 FROM
                 (
-                    SELECT TC_SEQNO, EQPT_CODE,
-                        EQPT_ID EQPT_ETP,
+                    SELECT TC_SEQNO, EQPT_CODE, EQPT_ID,
+                        ETYP_ID EQPT_ETP,
                         CMPT_NO EQPT_CMPT,
                         UNIT_ID UNIT_CODE,
                         UNIT_TITLE UNIT_NAME2,
@@ -1509,6 +1700,7 @@ class Schedule extends CommonClass
         // ";
         $query = "
         SELECT EQPT_CODE,
+            EQPT_ID,
             TANKER_INFO.COMPARTMENT,
             TANKER_INFO.CMPT_NO EQPT_CMPT,
             PROD_CODE, 
@@ -1535,8 +1727,8 @@ class Schedule extends CommonClass
         (
             SELECT TMP.*, ROWNUM COMPARTMENT FROM
             (
-                SELECT TC_SEQNO, EQPT_CODE,
-                    EQPT_ID EQPT_ETP,
+                SELECT TC_SEQNO, EQPT_CODE, EQPT_ID,
+                    ETYP_ID EQPT_ETP,
                     CMPT_NO,
                     DECODE(UNIT_ID, 11, 11, 17, 17, 5) CMPT_UNITS,
                     DECODE(UNIT_ID, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS_NAME2,

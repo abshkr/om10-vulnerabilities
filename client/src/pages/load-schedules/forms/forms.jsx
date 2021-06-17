@@ -70,6 +70,7 @@ import Summary from './summary';
 import Seals from './seals';
 import BOL from './bol';
 import Axles from './axles';
+import ScheduleConversion from './schedule-conversion';
 import { ManualTransactionsPopup } from '../../manual-transactions';
 
 const TabPane = Tabs.TabPane;
@@ -86,6 +87,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     site_customer_carrier,
     siteUseSpecIns,
     showLSI,
+    siteSchdTypeConvertible,
+    siteSchdPreloadEditable,
   } = config;
 
   const popupMT = config?.popupManualTransaction;
@@ -98,6 +101,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
   const [repostTranTabOn, setRepostTranTabOn] = useState(false);
   const [showCreateTransactions, setShowCreateTransactions] = useState(false);
   const [showRepostTransactions, setShowRepostTransactions] = useState(false);
+  const [showConvertSchedule, setShowConvertSchedule] = useState(false);
+  const [showRevertSchedule, setShowRevertSchedule] = useState(false);
   const [drawerWidth, setDrawerWidth] = useState('75vw');
 
   const [mode, setMode] = useState(default_shls_ld_type);
@@ -511,6 +516,36 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
                 message: error.type,
+                description: error.message,
+              });
+            });
+          });
+      },
+    });
+  };
+
+  const onRevertSchedule = () => {
+    Modal.confirm({
+      title: t('prompts.confirmRevertSchedule'),
+      okText: t('operations.revert'),
+      okType: 'primary',
+      icon: <RedoOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await api
+          .post(LOAD_SCHEDULES.REVERT_SCHEDULE, value)
+          .then(() => {
+            notification.success({
+              message: t('messages.revertSuccessSchedule'),
+              description: t('descriptions.revertSuccessSchedule'),
+            });
+            onComplete(value);
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.code === 500 ? t('messages.revertFailedSchedule') : error.type,
                 description: error.message,
               });
             });
@@ -1038,6 +1073,36 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
                     {t('fields.unload')}
                   </Checkbox>
                 </Form.Item>
+                {siteSchdTypeConvertible &&
+                  !IS_CREATING &&
+                  access.canUpdate &&
+                  value?.shls_ld_type === '3' &&
+                  value?.status === 'F' && (
+                    <Button
+                      type="primary"
+                      icon={<EditOutlined />}
+                      style={{ marginLeft: 5 }}
+                      disabled={!siteSchdTypeConvertible}
+                      onClick={() => setShowConvertSchedule(true)}
+                    >
+                      {t('operations.convertPreSchedule')}
+                    </Button>
+                  )}
+                {siteSchdTypeConvertible &&
+                  !IS_CREATING &&
+                  access.canUpdate &&
+                  value?.shls_ld_type === '2' &&
+                  value?.status === 'F' && (
+                    <Button
+                      type="primary"
+                      icon={<EditOutlined />}
+                      style={{ marginLeft: 5 }}
+                      disabled={!siteSchdTypeConvertible}
+                      onClick={onRevertSchedule}
+                    >
+                      {t('operations.revertPreOrder')}
+                    </Button>
+                  )}
               </Col>
 
               <Col span={12}>
@@ -1404,6 +1469,25 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
           />
         </Drawer>
       )}
+
+      {siteSchdTypeConvertible &&
+        !IS_CREATING &&
+        access.canUpdate &&
+        value?.shls_ld_type === '3' &&
+        value?.status === 'F' && (
+          <ScheduleConversion
+            value={value}
+            visible={showConvertSchedule}
+            // handleFormState={handleFormState}
+            handleFormState={setShowConvertSchedule}
+            access={access}
+            url={url}
+            locateTrip={locateTrip}
+            customer={customer}
+            config={config}
+            onCompleteParent={onComplete}
+          />
+        )}
     </Drawer>
   );
 };
