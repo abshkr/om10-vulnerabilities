@@ -17,7 +17,8 @@ const Compartments = ({ form, value, tanker, products, units }) => {
   const { t } = useTranslation();
 
   const { data: compartmentsPayload } = useSWR(
-    value ? `${LOAD_SCHEDULES.COMPARTMENTS_BY_TANKER}?tnkr_code=${tanker}` : null
+    tanker ? `${LOAD_SCHEDULES.COMPARTMENTS_BY_TANKER}?tnkr_code=${tanker}` : null,
+    { revalidateOnFocus: false }
   );
 
   const [compartments, setCompartments] = useState([]);
