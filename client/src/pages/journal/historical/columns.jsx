@@ -37,6 +37,7 @@ const columns = (t) => [
   {
     headerName: t('fields.details'),
     field: 'message',
+    tooltipField: 'message',
     sortable: true,
     resizable: true,
     comparator: (valueA, valueB, nodeA, nodeB, isInverted) => {

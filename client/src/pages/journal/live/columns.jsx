@@ -29,6 +29,7 @@ const columns = (t) => [
   {
     headerName: t('fields.details'),
     field: 'message',
+    tooltipField: 'message',
     sortable: true,
     filter: 'FuzzyFilter',
     resizable: true,

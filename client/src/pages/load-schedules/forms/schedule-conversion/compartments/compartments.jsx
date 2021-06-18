@@ -122,6 +122,7 @@ const Compartments = ({ form, value, tanker, products, units }) => {
         min: 0,
         max: 15000,
         form: form,
+        products: products,
       },
     },
 

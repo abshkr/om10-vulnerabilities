@@ -45,7 +45,11 @@ export default class Product extends Component {
       current[rowIndex].prod_code = record.key;
       current[rowIndex].prod_name = record.value;
       current[rowIndex].qty_scheduled =
-        current[rowIndex].qty_scheduled > 0 ? current[rowIndex].qty_scheduled : cmptQty;
+        current[rowIndex].qty_scheduled > 0
+          ? current[rowIndex].qty_scheduled > cmptQty
+            ? cmptQty
+            : current[rowIndex].qty_scheduled
+          : cmptQty;
 
       form.setFieldsValue({
         compartments: current,
@@ -61,7 +65,17 @@ export default class Product extends Component {
   };
 
   render() {
-    const { values } = this.props;
+    const { values, form } = this.props;
+    const current = form.getFieldValue('compartments');
+
+    _.forEach(values, (item) => {
+      const ordered = _.toNumber(item?.qty_scheduled);
+      const planned = _.sumBy(
+        current.filter((o) => o?.prod_code === item?.prod_code),
+        'qty_scheduled'
+      );
+      item.disabled = planned >= ordered;
+    });
 
     return (
       <div style={{ width: '100%', display: 'flex' }}>
@@ -75,7 +89,7 @@ export default class Product extends Component {
           allowClear={!!this.state.value}
         >
           {values?.map((item) => (
-            <Select.Option key={item.prod_code} value={item.prod_name} item={item}>
+            <Select.Option key={item.prod_code} value={item.prod_name} item={item} disabled={item.disabled}>
               {/* <Avatar 
                 size="small"
                 src={`api/assets/products/${item.prod_image}`} 

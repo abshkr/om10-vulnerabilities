@@ -3,6 +3,7 @@ import React, { useEffect, useState, Fragment } from 'react';
 import { EditOutlined, PlusOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
 
 import { Form, Button, Card, Tabs, Modal, notification, Drawer, Row, Col, InputNumber } from 'antd';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
@@ -24,8 +25,6 @@ const ScheduleConversion = ({
   visible,
   handleFormState,
   access,
-  url,
-  locateTrip,
   customer,
   config,
   onCompleteParent,
@@ -86,16 +85,58 @@ const ScheduleConversion = ({
 
   const onComplete = (value) => {
     handleFormState(false, null);
-    /* if (value) {
-      locateTrip(value);
-    } else {
-      mutate(url);
-    } */
     onCompleteParent(value);
   };
 
   const changeSupplier = (supplier) => {
     setSupplier(supplier);
+  };
+
+  const checkQuantities = (compartments, products) => {
+    const errors = [];
+
+    _.forEach(products, (product) => {
+      const ordered = product?.qty_scheduled;
+      const planned = _.sumBy(
+        compartments.filter((o) => o?.prod_code === product?.prod_code),
+        'qty_scheduled'
+      );
+
+      let customTitles = '';
+      if (planned < ordered) {
+        customTitles = t('validate.quantityCompartmentsLessThanProduct');
+        customTitles = customTitles.replace(
+          '[[PRODUCT]]',
+          '"' + product?.prod_code + ' - ' + product?.prod_name + '"'
+        );
+        errors.push({
+          field: `${product?.prod_code} - ${product?.prod_name}: ${t('fields.totalQtyCmpt')} ${planned} < ${t(
+            'fields.totalQtyProd'
+          )} ${ordered} ${product?.unit_name}`,
+          message: customTitles,
+          key: `${'quantity'}${product?.prod_code}`,
+          line: errors.length,
+        });
+      }
+
+      if (planned > ordered) {
+        customTitles = t('validate.quantityCompartmentsMoreThanProduct');
+        customTitles = customTitles.replace(
+          '[[PRODUCT]]',
+          '"' + product?.prod_code + ' - ' + product?.prod_name + '"'
+        );
+        errors.push({
+          field: `${product?.prod_code} - ${product?.prod_name}: ${t('fields.totalQtyCmpt')} ${planned} > ${t(
+            'fields.totalQtyProd'
+          )} ${ordered} ${product?.unit_name}`,
+          message: customTitles,
+          key: `${'quantity'}${product?.prod_code}`,
+          line: errors.length,
+        });
+      }
+    });
+
+    return errors;
   };
 
   const onConvertSchedule = async () => {
@@ -138,18 +179,52 @@ const ScheduleConversion = ({
     }
 
     record.shls_ld_type = 2;
-
     const values = {
       ...record,
+      shls_terminal: value?.shls_terminal,
+      drawer_code: value?.drawer_code,
     };
 
+    // check the quantities
+    let errors = [];
+    let lines = null;
+    errors = checkQuantities(record.compartments, products);
+    if (errors.length > 0) {
+      lines = (
+        <Scrollbars
+          style={{
+            height: '300px',
+            width: '40vw',
+            marginTop: 15,
+            padding: 5,
+            marginBottom: 15,
+          }}
+        >
+          <>
+            {errors?.map((error, index) => (
+              <Card size="small" title={error.field}>
+                {error.message}
+              </Card>
+            ))}
+          </>
+        </Scrollbars>
+      );
+    }
+
+    let submitPrompt = t('prompts.confirmConvertSchedule');
+    if (errors.length > 0) {
+      submitPrompt += ' (' + String(errors.length) + ' ' + t('validate.warnings') + ')';
+    }
+
     Modal.confirm({
-      title: t('prompts.confirmConvertSchedule'),
+      title: submitPrompt,
       okText: t('operations.convert'),
       okType: 'primary',
       icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
+      width: errors.length > 0 ? '45vw' : '30vw',
+      content: lines,
       onOk: async () => {
         await api
           .post(LOAD_SCHEDULES.CONVERT_SCHEDULE, values)

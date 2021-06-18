@@ -102,19 +102,45 @@ export default class Schedule extends Component {
   }
 
   handleChange(value) {
-    const { form, rowIndex, data } = this.props;
+    const { form, rowIndex, data, products } = this.props;
 
     const max = _.toNumber(data?.safefill);
     let current = form.getFieldValue('compartments');
 
-    current[rowIndex].qty_scheduled = value;
+    let cmptQty = value;
+    // find if product has been selected
+    if (!data?.prod_code) {
+      cmptQty = value <= max ? value : max;
+    } else {
+      // get the product from products list
+      const product = _.find(products, (o) => o?.prod_code === data?.prod_code);
+      const ordered = !product ? 0 : _.toNumber(product?.qty_scheduled);
+      const planned =
+        _.sumBy(
+          current.filter((o) => o?.prod_code === data?.prod_code),
+          'qty_scheduled'
+        ) - _.toNumber(current[rowIndex].qty_scheduled); // need take away the old value of current compartment
+      const availQty = parseInt(ordered - planned);
+      const safeQty = parseInt(current[rowIndex].safefill);
+      const maxQty = availQty >= safeQty ? safeQty : availQty < 0 ? 0 : availQty;
+      cmptQty = value <= maxQty ? value : maxQty;
+      console.log(
+        '...........ordered, planned, avail',
+        ordered,
+        planned,
+        availQty,
+        current[rowIndex].qty_scheduled
+      );
+    }
+
+    current[rowIndex].qty_scheduled = cmptQty;
 
     form.setFieldsValue({
       compartments: current,
     });
 
     this.setState({
-      value: value <= max ? value : max,
+      value: cmptQty,
     });
   }
 
