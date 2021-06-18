@@ -526,6 +526,25 @@ class Schedule extends CommonClass
 
     private function update_cmpt_qtyinfo($compartment)
     {
+        // get original record for journal
+        $query = "
+            SELECT *
+            FROM SPECDETS
+            WHERE SCHDSPEC_SHLSSUPP = :supp 
+                AND SCHDSPEC_SHLSTRIP = :trip 
+                AND SCHD_COMP_ID = :cmpt
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supp', $this->supplier_code);
+        oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+        oci_bind_by_name($stmt, ':cmpt', $compartment->compartment);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
         $query = "
             UPDATE SPECDETS 
             SET SCHD_PRLDQTY = :preload
@@ -538,6 +557,36 @@ class Schedule extends CommonClass
         oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
         oci_bind_by_name($stmt, ':cmpt', $compartment->compartment);
         if (oci_execute($stmt, $this->commit_mode)) {
+            // get new record for journal
+            $query = "
+                SELECT *
+                FROM SPECDETS
+                WHERE SCHDSPEC_SHLSSUPP = :supp 
+                    AND SCHDSPEC_SHLSTRIP = :trip 
+                    AND SCHD_COMP_ID = :cmpt
+            ";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':supp', $this->supplier_code);
+            oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+            oci_bind_by_name($stmt, ':cmpt', $compartment->compartment);
+            if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $row2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            } else {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            }
+
+            // journal the update details
+            $journal = new Journal($this->conn, false);
+            $curr_psn = Utilities::getCurrPsn();
+            $module = "SPECDETS";
+            $record = sprintf("schdspec_shlstrip:%d, schdspec_shlssupp:%s, schd_comp_id:%d", 
+                $this->shls_trip_no, $this->supplier_code, $compartment->compartment);
+            if (!$journal->updateChanges($row, $row2, $module, $record)) {
+                oci_rollback($this->conn);
+                return false;
+            }
+
             return true;
         } else {
             $e = oci_error($stmt);
