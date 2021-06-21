@@ -99,7 +99,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     if (!value && !visible) {
       resetFields();
     }
-  }, [value, visible]);
+  }, [value, visible, resetFields]);
 
   return (
     <Drawer

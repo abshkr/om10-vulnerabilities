@@ -97,10 +97,10 @@ const Name = ({ form, value }) => {
       }
     }
 
-    if (input != input.trimLeft()) {
+    if (input !== input.trimLeft()) {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
     }
-    if (input != input.trimRight()) {
+    if (input !== input.trimRight()) {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
     }
 

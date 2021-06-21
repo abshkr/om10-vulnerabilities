@@ -12,7 +12,7 @@ const columns = (t, form, units) => [
     field: 'prod_name',
     resizable: true,
     width: 400,
-    cellRenderer: 'ProductRender',
+    // cellRenderer: 'ProductRender',
   },
   {
     headerName: t('fields.schedule'),
