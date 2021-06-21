@@ -209,6 +209,8 @@
     "saveSuccess": "You have saved the values successfully",
     "saveToFolioWarning": "These changes will not be reflected in the Tanks. Click Save To Tanks if you want to apply the changes to Tanks.",
     "saveToTanksWarning": "These changes will not be reflected in the Folio. Click Save To Folio if you want to apply the changes to Folio.",
+    "schdCmptUnitNotMatchTnkrCmpt": "The unit of scheduled compartment [[SCHD_UNIT]] does not match with the unit of the tanker compartment [[TNKR_UNIT]].",
+    "schdProdUnitNotMatchTnkrCmpt": "The unit of scheduled product [[SCHD_UNIT]] does not match with the unit of any tanker compartment [[TNKR_UNIT]].",
     "schdOrderNote": "Note: You need to select an open order and one of its products for the schedule compartment.",
     "schdOrderReject": "Open order cannot be used.",
     "schdOrderRejectNotSelected": "Please select a line before clicking OK.",

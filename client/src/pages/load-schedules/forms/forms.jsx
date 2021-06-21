@@ -35,6 +35,7 @@ import moment from 'moment';
 import useSWR, { mutate } from 'swr';
 import api from 'api';
 import _ from 'lodash';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import {
   Supplier,
@@ -237,6 +238,24 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     });
   };
 
+  const getTankerCompartments = async (tanker) => {
+    const results = await api.get(`${LOAD_SCHEDULES.COMPARTMENTS_BY_TANKER}?tnkr_code=${tanker}`);
+
+    const cmpts = results?.data?.records;
+    const units = [];
+    if (cmpts) {
+      _.forEach(cmpts, (o) => {
+        const unit = {};
+        unit.compartment = o?.compartment;
+        unit.unit_code = o?.unit_code;
+        unit.unit_name = o?.unit_name;
+        units.push(unit);
+      });
+    }
+
+    return units;
+  };
+
   const isOrderValid = async (order, supp) => {
     const results = await api.get(`${ORDER_LISTINGS.VALIDATE_ORDER}?order_cust_no=${order}&supplier=${supp}`);
     console.log('.....................isOrderValid', results);
@@ -332,8 +351,70 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     }
   };
 
+  const checkCompartmentUnits = (compartments, cmptUnits) => {
+    const errors = [];
+
+    if (cmptUnits.length === 0) {
+      return errors;
+    }
+
+    _.forEach(compartments, (cmpt) => {
+      const cunit = _.find(cmptUnits, (o) => o?.compartment === cmpt?.compartment);
+
+      if (!cunit) {
+        // do nothing
+      } else {
+        if (String(cunit?.unit_code) !== String(cmpt?.unit_code)) {
+          let title = t('descriptions.schdCmptUnitNotMatchTnkrCmpt');
+          title = title.replace('[[SCHD_UNIT]]', '"' + cmpt?.unit_name + '"');
+          title = title.replace('[[TNKR_UNIT]]', '"' + cunit?.unit_name + '"');
+          errors.push({
+            field: `${t('fields.unit')} (${t('fields.compartment')} ${cmpt?.compartment})`,
+            message: title,
+            key: `${'compartment'}${cmpt?.compartment}`,
+            line: cmpt?.compartment,
+          });
+        }
+      }
+    });
+
+    return errors;
+  };
+
+  const checkProductUnits = (products, cmptUnits) => {
+    const errors = [];
+
+    if (cmptUnits.length === 0) {
+      return errors;
+    }
+
+    const tnkrUnits = _.join(
+      _.map(cmptUnits, (o) => o?.compartment + ': ' + o?.unit_name),
+      ', '
+    );
+
+    _.forEach(products, (product) => {
+      const cunit = _.find(cmptUnits, (o) => String(o?.unit_code) === String(product?.unit_code));
+
+      if (!cunit) {
+        let title = t('descriptions.schdProdUnitNotMatchTnkrCmpt');
+        title = title.replace('[[SCHD_UNIT]]', '"' + product?.unit_name + '"');
+        title = title.replace('[[TNKR_UNIT]]', '"' + tnkrUnits + '"');
+        errors.push({
+          field: `${t('fields.unit')} (${t('fields.product')} ${product?.prod_code} - ${product?.prod_name})`,
+          message: title,
+          key: `${'product'}${product?.prod_code}`,
+        });
+      }
+    });
+
+    return errors;
+  };
+
   const onFinish = async () => {
     const record = await form.validateFields();
+    const cmptUnits = await getTankerCompartments(record?.tnkr_code);
+    let errors = [];
     if (record?.shls_ld_type === '3' /* Preorder*/) {
       let findResult = _.find(record.products, (item) => {
         return item.qty_scheduled > 0;
@@ -370,6 +451,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
         });
         return;
       }
+
+      // check the product units
+      let productsSchd = _.filter(record.products, (item) => {
+        return item.qty_scheduled > 0;
+      });
+      // errors = checkProductUnits(record.products, cmptUnits);
+      errors = checkProductUnits(productsSchd, cmptUnits);
     } else if (record?.shls_ld_type === '2' /* PreSchedule*/) {
       const orderFlag = await checkCompartmentOrders(
         record?.compartments,
@@ -416,6 +504,9 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
         });
         return;
       }
+
+      // check the compartment units
+      errors = checkCompartmentUnits(record.compartments, cmptUnits);
     }
 
     if (record.unload) {
@@ -432,13 +523,43 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
       shls_exp2: !record?.shls_exp2 ? '' : record?.shls_exp2?.format(SETTINGS.DATE_TIME_FORMAT),
     };
 
+    let lines = null;
+    if (errors.length > 0) {
+      lines = (
+        <Scrollbars
+          style={{
+            height: '300px',
+            width: '40vw',
+            marginTop: 15,
+            padding: 5,
+            marginBottom: 15,
+          }}
+        >
+          <>
+            {errors?.map((error, index) => (
+              <Card key={index} size="small" title={error.field}>
+                {error.message}
+              </Card>
+            ))}
+          </>
+        </Scrollbars>
+      );
+    }
+
+    let submitPrompt = IS_CREATING ? t('prompts.create') : t('prompts.update');
+    if (errors.length > 0) {
+      submitPrompt += ' (' + String(errors.length) + ' ' + t('validate.warnings') + ')';
+    }
+
     Modal.confirm({
-      title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
+      title: submitPrompt, // IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
       okType: 'primary',
       icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
+      width: errors.length > 0 ? '45vw' : '30vw',
+      content: lines,
       onOk: async () => {
         await api
           .post(IS_CREATING ? LOAD_SCHEDULES.CREATE : LOAD_SCHEDULES.UPDATE, values)

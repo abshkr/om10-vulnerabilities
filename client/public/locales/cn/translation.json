@@ -209,6 +209,8 @@
     "saveSuccess": "您已成功保存了数据",
     "saveToFolioWarning": "所作修改将不会在油罐中生效，除非您点击“保存到油罐”将修改保存到油罐数据中。",
     "saveToTanksWarning": "所作修改将不会在预盘中生效，除非您点击“保存到预盘”将修改保存到预盘数据中。",
+    "schdCmptUnitNotMatchTnkrCmpt": "油仓提单的油品计量单位[[SCHD_UNIT]]与油槽车设定的相关油仓计量单位[[TNKR_UNIT]]不匹配。",
+    "schdProdUnitNotMatchTnkrCmpt": "油品提单的油品计量单位[[SCHD_UNIT]]与油槽车设定的任何油仓计量单位[[TNKR_UNIT]]都不匹配。",
     "schdOrderNote": "请注意：您需要选择一个客户订单并从中选择一个油品以指派给提单油仓。",
     "schdOrderReject": "客户订单无法使用",
     "schdOrderRejectNotSelected": "请先选择一个客户订单的油品再点击确认",

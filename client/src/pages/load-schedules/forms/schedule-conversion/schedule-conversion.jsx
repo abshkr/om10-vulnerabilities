@@ -92,6 +92,54 @@ const ScheduleConversion = ({
     setSupplier(supplier);
   };
 
+  const getTankerCompartments = async (tanker) => {
+    const results = await api.get(`${LOAD_SCHEDULES.COMPARTMENTS_BY_TANKER}?tnkr_code=${tanker}`);
+
+    const cmpts = results?.data?.records;
+    const units = [];
+    if (cmpts) {
+      _.forEach(cmpts, (o) => {
+        const unit = {};
+        unit.compartment = o?.compartment;
+        unit.unit_code = o?.unit_code;
+        unit.unit_name = o?.unit_name;
+        units.push(unit);
+      });
+    }
+
+    return units;
+  };
+
+  const checkCompartmentUnits = (compartments, cmptUnits) => {
+    const errors = [];
+
+    if (cmptUnits.length === 0) {
+      return errors;
+    }
+
+    _.forEach(compartments, (cmpt) => {
+      const cunit = _.find(cmptUnits, (o) => o?.compartment === cmpt?.compartment);
+
+      if (!cunit) {
+        // do nothing
+      } else {
+        if (String(cunit?.unit_code) !== String(cmpt?.unit_code)) {
+          let title = t('descriptions.schdCmptUnitNotMatchTnkrCmpt');
+          title = title.replace('[[SCHD_UNIT]]', '"' + cmpt?.unit_name + '"');
+          title = title.replace('[[TNKR_UNIT]]', '"' + cunit?.unit_name + '"');
+          errors.push({
+            field: `${t('fields.unit')} (${t('fields.compartment')} ${cmpt?.compartment})`,
+            message: title,
+            key: `${'compartment'}${cmpt?.compartment}`,
+            line: cmpt?.compartment,
+          });
+        }
+      }
+    });
+
+    return errors;
+  };
+
   const checkQuantities = (compartments, products) => {
     const errors = [];
 
@@ -185,10 +233,15 @@ const ScheduleConversion = ({
       drawer_code: value?.drawer_code,
     };
 
+    const cmptUnits = await getTankerCompartments(record?.tnkr_code);
+    // check the compartment units
+    const unitErrors = checkCompartmentUnits(record.compartments, cmptUnits);
+
     // check the quantities
     let errors = [];
     let lines = null;
     errors = checkQuantities(record.compartments, products);
+    errors = _.concat(errors, unitErrors);
     if (errors.length > 0) {
       lines = (
         <Scrollbars
@@ -202,7 +255,7 @@ const ScheduleConversion = ({
         >
           <>
             {errors?.map((error, index) => (
-              <Card size="small" title={error.field}>
+              <Card key={index} size="small" title={error.field}>
                 {error.message}
               </Card>
             ))}
