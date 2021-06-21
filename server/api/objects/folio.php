@@ -471,11 +471,13 @@ class Folio extends CommonClass
     {
         $query = "
         SELECT CLOSEOUT_TANK.*,
-            TANKS.TANK_BASE,
+            NVL(CLOSEOUT_TANK.TANK_BASECODE, TANKS.TANK_BASE)  TANK_BASE,
+            TANKS.TANK_BASE  CURR_BASECODE,
             TANK_LEVEL TANK_PROD_LVL,
             TANKS.TANK_GAUGINGMTHD,
             GAUGE_METHOD_NAME TANK_GAUGINGMTHD_DESC,
-            BASE_PRODS.BASE_NAME,
+            NVL(CLOSEOUT_TANK.TANK_BASENAME, BASE_PRODS.BASE_NAME)  BASE_NAME,
+            BASE_PRODS.BASE_NAME  CURR_BASENAME,
             BASECLASS.BCLASS_DESC,
             BASECLASS.BCLASS_NO,
             BASECLASS.BCLASS_DENS_LO,
@@ -501,11 +503,11 @@ class Folio extends CommonClass
             ) BASECLASS, 
             GAUGE_METHOD_TYP
         WHERE CLOSEOUT_TANK.TANK_CODE = TANKS.TANK_CODE
-            AND TANKS.TANK_BASE = BASE_PRODS.BASE_CODE
+            AND NVL(CLOSEOUT_TANK.TANK_BASECODE, TANKS.TANK_BASE) = BASE_PRODS.BASE_CODE
             AND BASE_PRODS.BASE_CAT = BASECLASS.BCLASS_NO
             AND TANK_GAUGINGMTHD = GAUGE_METHOD_ID(+)
             AND CLOSEOUT_TANK.CLOSEOUT_NR = :closeout_nr
-        ORDER BY BASECLASS.BCLASS_NO
+        ORDER BY BASECLASS.BCLASS_NO, CLOSEOUT_TANK.TANK_CODE
         ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':closeout_nr', $this->closeout_nr);
@@ -527,8 +529,10 @@ class Folio extends CommonClass
                 BA_METERS.BAM_QTY_TYPE,
                 QTY_TYP.QTY_NAME  as BAM_QTY_TYPE_STR,
                 DECODE(BAM_QTY_TYPE, 1, 'KG', 'VOL') BAM_QTY_TYPE_STR2,
-                STREAM_BASECODE,
-                STREAM_BASENAME,
+                NVL(CLOSEOUT_METER.METER_BASECODE, VALID_PIPENODE.STREAM_BASECODE)  STREAM_BASECODE,
+                NVL(CLOSEOUT_METER.METER_BASENAME, VALID_PIPENODE.STREAM_BASENAME)  STREAM_BASENAME,
+                STREAM_BASECODE  CURR_BASECODE,
+                STREAM_BASENAME  CURR_BASENAME,
                 STREAM_TANKCODE,
                 STREAM_TANKTEMP,
                 STREAM_TANKDEN

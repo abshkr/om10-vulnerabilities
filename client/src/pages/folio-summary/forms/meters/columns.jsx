@@ -25,18 +25,36 @@ const columns = (t, enabled) => [
     suppressSizeToFit: true,
   },
   {
+    headerName: t('fields.productCode'),
+    field: 'curr_basecode',
+    sortable: true,
+    resizable: true,
+    width: 100,
+    suppressSizeToFit: true,
+    hide: true,
+  },
+  {
+    headerName: t('fields.productName'),
+    field: 'curr_basename',
+    sortable: true,
+    resizable: true,
+    width: 100,
+    suppressSizeToFit: true,
+    hide: true,
+  },
+  {
     headerName: t('fields.closingAmbient'),
     field: 'close_amb_tot',
     sortable: true,
     resizable: true,
-    editable: function(params) {
+    editable: function (params) {
       return enabled && params.node.data.bam_qty_type === '0';
     },
-    cellClass: function(params) {
+    cellClass: function (params) {
       if (enabled && params.node.data.bam_qty_type === '0') {
         return 'editable-ag-grid-cell';
       }
-      
+
       return '';
     },
     width: 100,
@@ -55,14 +73,14 @@ const columns = (t, enabled) => [
     field: 'close_mass_tot',
     sortable: true,
     resizable: true,
-    editable: function(params) {
+    editable: function (params) {
       return enabled && params.node.data.bam_qty_type === '1';
     },
-    cellClass: function(params) {
+    cellClass: function (params) {
       if (enabled && params.node.data.bam_qty_type === '1') {
         return 'editable-ag-grid-cell';
       }
-      
+
       return '';
     },
     width: 100,
@@ -74,14 +92,14 @@ const columns = (t, enabled) => [
     field: 'adj_amb_tot',
     sortable: true,
     resizable: true,
-    editable: function(params) {
+    editable: function (params) {
       return enabled && params.node.data.bam_qty_type === '0';
     },
-    cellClass: function(params) {
+    cellClass: function (params) {
       if (enabled && params.node.data.bam_qty_type === '0') {
         return 'editable-ag-grid-cell';
       }
-      
+
       return '';
     },
     width: 100,
@@ -101,14 +119,14 @@ const columns = (t, enabled) => [
     field: 'adj_mass_tot',
     sortable: true,
     resizable: true,
-    editable: function(params) {
+    editable: function (params) {
       return enabled && params.node.data.bam_qty_type === '1';
     },
-    cellClass: function(params) {
+    cellClass: function (params) {
       if (enabled && params.node.data.bam_qty_type === '1') {
         return 'editable-ag-grid-cell';
       }
-      
+
       return '';
     },
     width: 100,

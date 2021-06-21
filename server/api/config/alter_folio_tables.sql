@@ -1,0 +1,10 @@
+-- alter table CLOSEOUT_TANK drop column TANK_BASE;
+-- alter table CLOSEOUT_TANK drop column TANK_BASENAME;
+-- alter table CLOSEOUT_METER drop column METER_BASE;
+-- alter table CLOSEOUT_METER drop column METER_BASENAME;
+
+alter table CLOSEOUT_TANK add TANK_BASECODE VARCHAR2(20);
+alter table CLOSEOUT_TANK add TANK_BASENAME VARCHAR2(40);
+
+alter table CLOSEOUT_METER add METER_BASECODE VARCHAR2(20);
+alter table CLOSEOUT_METER add METER_BASENAME VARCHAR2(40);
