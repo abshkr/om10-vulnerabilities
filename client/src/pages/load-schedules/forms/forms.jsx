@@ -121,6 +121,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
   const [soldTo, setSoldTo] = useState(value?.shls_sold_to_num);
   const [expHour, setExpHour] = useState(undefined); // SITE.SITE_SHLS_EXP_H
   const [activeTrips, setActiveTrips] = useState(0);
+  const [supermode, setSupermode] = useState(false);
+  const [dcsmode, setDcsmode] = useState(false);
 
   /*
     1	F	NEW SCHEDULE
@@ -669,8 +671,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
             params: {
               supplier: value.supplier_code,
               trip_no: value.shls_trip_no,
-              supermode: !!form.getFieldValue('supermode') ? 'on' : 'off',
-              dcsmode: !!form.getFieldValue('dcsmode') ? 'on' : 'off',
+              supermode: supermode ? 'on' : 'off',
+              dcsmode: dcsmode ? 'on' : 'off',
             },
           })
           .then(() => {
@@ -803,6 +805,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
         shls_trip_no: value?.shls_trip_no,
       });
       setMode(value.shls_ld_type === '6' ? '3' : value.shls_ld_type);
+      setSupermode(false);
+      setDcsmode(false);
     }
   }, [setFieldsValue, value]);
 
@@ -914,13 +918,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
             )}
 
           {tab === '3' && !IS_CREATING && (
-            <Checkbox onChange={(e) => setFieldsValue({ supermode: e.target.checked })}>
+            <Checkbox checked={supermode} onChange={(e) => setSupermode(e.target.checked)}>
               {t('descriptions.ignoreTolerance')}
             </Checkbox>
           )}
 
           {tab === '3' && !IS_CREATING && config?.externalBlendAllowed && (
-            <Checkbox onChange={(e) => setFieldsValue({ dcsmode: e.target.checked })}>
+            <Checkbox checked={dcsmode} onChange={(e) => setDcsmode(e.target.checked)}>
               {t('descriptions.ignoreDCSCheck')}
             </Checkbox>
           )}
@@ -1038,9 +1042,6 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
       >
         <Tabs defaultActiveKey="1" activeKey={tab} onChange={onTabChange} animated={false}>
           <TabPane tab={t('tabColumns.general')} key="0">
-            <Form.Item name="supermode" noStyle />
-            <Form.Item name="dcsmode" noStyle />
-
             <Row gutter={[8, 8]}>
               <Col span={12}>
                 <Form.Item name="shls_ld_type" style={{ display: 'inline-block' }}>
@@ -1302,8 +1303,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
             <BOL
               value={value}
               redo={redoBOL}
-              supermode={form.getFieldValue('supermode')}
-              dcsmode={form.getFieldValue('dcsmode')}
+              supermode={supermode}
+              dcsmode={dcsmode}
               locateTrip={locateTrip}
               setCurStatus={setCurStatus}
               exportPDF={exportBOL}

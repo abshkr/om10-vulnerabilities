@@ -62,7 +62,7 @@ const Summary = ({ form, value }) => {
             <DataTable data={products?.records} columns={productFields} parentHeight="300px" minimal />
           </div>
         )}
-        <div div style={{ width: hideProd ? '100%' : '50%' }}>
+        <div style={{ width: hideProd ? '100%' : '50%' }}>
           <Form.Item name="compartments">
             <DataTable
               data={compartments}
