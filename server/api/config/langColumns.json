@@ -620,6 +620,7 @@
       "BASE_COLOR": "Base Color",
       "AFC_ENABLED": "AFC Enabled",
       "AFC_PRIORITY": "AFC Arm Priority",
+      "BASE_GAINLOSS_UNIT": "Base Gain/Loss Unit Mode",
       "BASE_STOCK_UNIT": "Base Ownership Unit Mode"
     },
     "BASE_PROD_OWNSHIP": {
@@ -858,6 +859,8 @@
     "CLOSEOUT_METER": {
       "CLOSEOUT_NR": "Closeout Nr",
       "METER_CODE": "Meter Code",
+      "METER_BASECODE": "Meter Base Code",
+      "METER_BASENAME": "Meter Base Name",
       "OPEN_AMB_TOT": "Open Amb Tot",
       "OPEN_STD_TOT": "Open Std Tot",
       "OPEN_MASS_TOT": "Open Mass Tot",
@@ -887,6 +890,8 @@
       "CLOSEOUT_NR": "Closeout Nr",
       "TANK_TERMINAL": "Tank Terminal",
       "TANK_CODE": "Tank Code",
+      "TANK_BASECODE": "Tank Base Code",
+      "TANK_BASENAME": "Tank Base Name",
       "OPEN_STD_TOT": "Open Std Tot",
       "OPEN_MASS_TOT": "Open Mass Tot",
       "LAST_GAUGE_TIME": "Last Gauge Time",
@@ -5553,6 +5558,7 @@
       "BASE_COLOR": "基础油品颜色",
       "AFC_ENABLED": "适应性油品流动控制",
       "AFC_PRIORITY": "适应性鹤管优先级",
+      "BASE_GAINLOSS_UNIT": "基础油品损益计量方式",
       "BASE_STOCK_UNIT": "基础油品所有权计量方式"
     },
     "BASE_PROD_OWNSHIP": {
@@ -5791,6 +5797,8 @@
     "CLOSEOUT_METER": {
       "CLOSEOUT_NR": "盘点编号",
       "METER_CODE": "盘点流量计",
+      "METER_BASECODE": "流量计基础油品代码",
+      "METER_BASENAME": "流量计基础油品名称",
       "OPEN_AMB_TOT": "流量计开启视量总量",
       "OPEN_STD_TOT": "流量计开启标量总量",
       "OPEN_MASS_TOT": "流量计开启重量总量",
@@ -5820,6 +5828,8 @@
       "CLOSEOUT_NR": "盘点编号",
       "TANK_TERMINAL": "油罐油库",
       "TANK_CODE": "油罐代码",
+      "TANK_BASECODE": "油罐基础油品代码",
+      "TANK_BASENAME": "油罐基础油品名称",
       "OPEN_STD_TOT": "油罐开启标量总量",
       "OPEN_MASS_TOT": "油罐开启重量总量",
       "LAST_GAUGE_TIME": "油罐上次计量时间",

@@ -8,6 +8,7 @@ import Classification from './classification';
 import DensityRange from './density-range';
 import CorrectionMethod from './correction-method';
 import StockUnit from './stock-unit';
+import GainLossUnit from './gainloss-unit';
 import RefSpecTemp from './ref-temp-spec';
 import HotTempFlag from './hot-temp-flag';
 import AdaptiveFlowControlFlag from './afc-flag';
@@ -24,6 +25,7 @@ export {
   DensityRange,
   CorrectionMethod,
   StockUnit,
+  GainLossUnit,
   RefSpecTemp,
   HotTempFlag,
   AdaptiveFlowControlFlag,
