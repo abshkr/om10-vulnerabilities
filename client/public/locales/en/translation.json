@@ -294,6 +294,7 @@
     "validationFailed": "Make sure all the fields meet the requirements",
     "valueTooHigh": "Value too high",
     "valueTooLow": "Value too low",
+    "warningTankBaseChange": "The tank product will be changed!",
     "zeroCompartmentCount": "The compartment count cannot be zero",
     "periodOverlap": "Allocation period dates overlap with existing period"
   },
@@ -2734,6 +2735,7 @@
     "set": "This field is required",
     "tripExpiryDateEarlierThanScheduleDate": "The Expiry Date Time should be later than Schedule Date Time",
     "tripScheduleDateLaterThanExpiryDate": "The Schedule Date Time should be earlier than Expiry Date Time",
+    "warning": "Warning",
     "warnings": "warning(s)",
     "wrongType": "Incorrect type",
     "whiteSpaceInBeginning": "There is a whitespace at the beginning of the string.",

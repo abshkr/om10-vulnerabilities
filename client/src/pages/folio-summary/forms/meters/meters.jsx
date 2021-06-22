@@ -7,13 +7,14 @@ import _ from 'lodash';
 import api, { FOLIO_SUMMARY } from '../../../../api';
 import { DataTable } from '../../../../components';
 
+import generator from './generator';
 import columns from './columns';
 
 const Meters = ({ id, enabled, meterTrigger }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
-  
+
   const { data: payload, isValidating, revalidate } = useSWR(`${FOLIO_SUMMARY.METERS}?closeout_nr=${id}`, {
     revalidateOnFocus: false,
   });
@@ -32,7 +33,7 @@ const Meters = ({ id, enabled, meterTrigger }) => {
           .post(FOLIO_SUMMARY.UPDATE_METERS, data)
           .then((response) => {
             revalidate();
-            
+
             notification.success({
               message: t('messages.updateSuccess'),
               description: t('descriptions.updateSuccess'),
@@ -62,14 +63,20 @@ const Meters = ({ id, enabled, meterTrigger }) => {
     if (meterTrigger > 0) {
       update();
     }
-
   }, [meterTrigger]);
+
+  useEffect(() => {
+    if (payload) {
+      const values = generator(payload.records);
+      setData(values);
+    }
+  }, [payload]);
 
   return (
     <div>
       <DataTable
         columns={fields}
-        data={payload?.records}
+        data={data}
         isLoading={isValidating}
         height="25vh"
         onEditingFinished={onEditingFinished}

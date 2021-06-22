@@ -8,7 +8,7 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal, Divider, Drawer } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Divider, Drawer, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import _ from 'lodash';
@@ -51,6 +51,19 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
   const onFinish = async () => {
     const values = await form.validateFields();
 
+    let lines = null;
+    if (!IS_CREATING && values?.tank_base !== value?.tank_base) {
+      lines = (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.warningTankBaseChange')}
+        </Card>
+      );
+    }
+
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -58,6 +71,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
+      content: lines,
       onOk: async () => {
         await api
           .post(IS_CREATING ? TANKS.CREATE : TANKS.UPDATE, values)

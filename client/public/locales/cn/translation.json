@@ -294,6 +294,7 @@
     "validationFailed": "请确认所有的字段数据都符合要求",
     "valueTooHigh": "数值太高",
     "valueTooLow": "数值太低",
+    "warningTankBaseChange": "请注意：油罐的基础油品将被改变！",
     "zeroCompartmentCount": "油仓数目不能为零",
     "periodOverlap": "周期时间与已有周期重叠"
   },
@@ -2734,6 +2735,7 @@
     "set": "此为必填字段",
     "tripExpiryDateEarlierThanScheduleDate": "提单失效日期时间应该晚于提单下单日期时间",
     "tripScheduleDateLaterThanExpiryDate": "提单下单日期时间应该早于提单失效日期时间",
+    "warning": "警告",
     "warnings": "警告",
     "wrongType": "数据类型错误"
   },

@@ -10,7 +10,7 @@ const columns = (t, enabled, config) => [
   },
   {
     headerName: t('fields.productCode'),
-    field: 'tank_base',
+    field: 'tank_basecode',
     sortable: true,
     resizable: true,
     width: 100,
@@ -18,7 +18,7 @@ const columns = (t, enabled, config) => [
   },
   {
     headerName: t('fields.productName'),
-    field: 'base_name',
+    field: 'tank_basename',
     sortable: true,
     resizable: true,
     width: 100,
