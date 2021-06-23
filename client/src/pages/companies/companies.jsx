@@ -21,11 +21,12 @@ const Companies = () => {
   const [selected, setSelected] = useState(null);
   const [currentCmpy, setCurrentCmpy] = useState(null);
   const [filterValue, setFilterValue] = useState('');
-  const { siteCompanyRelationAllowed } = useConfig();
+  const config = useConfig();
+  const { siteCompanyRelationAllowed } = config;
 
   const { data: payload, isValidating, revalidate } = useSWR(COMPANIES.READ);
 
-  const fields = columns(t);
+  const fields = columns(t, config);
   const data = payload?.records;
 
   const handleFormState = (visibility, value) => {
@@ -40,7 +41,13 @@ const Companies = () => {
     FormModal({
       value: currentCmpy,
       width: '80vw',
-      form: <SpecialActionForm value={currentCmpy} handleFormState={handleFormState} setFilterValue={setFilterValue} />,
+      form: (
+        <SpecialActionForm
+          value={currentCmpy}
+          handleFormState={handleFormState}
+          setFilterValue={setFilterValue}
+        />
+      ),
       id: currentCmpy.cmpy_code,
       name: currentCmpy.cmpy_name,
       t,
@@ -74,7 +81,7 @@ const Companies = () => {
       >
         {t('operations.specialAction')}
       </Button>
-      {siteCompanyRelationAllowed ? 
+      {siteCompanyRelationAllowed ? (
         <Button
           type="primary"
           icon={<ApiOutlined />}
@@ -84,8 +91,8 @@ const Companies = () => {
           disabled={!currentCmpy || currentCmpy?.supplier !== true || !auth.canUpdate}
         >
           {t('operations.companyRelation')}
-        </Button> : null 
-      }
+        </Button>
+      ) : null}
       <Button
         type="primary"
         icon={<PlusOutlined />}
@@ -108,15 +115,18 @@ const Companies = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         filterValue={filterValue}
       />
-      <Forms
-        value={selected}
-        visible={visible}
-        handleFormState={handleFormState}
-        auth={auth}
-        specialActions={specialActions}
-        companyRelations={companyRelations}
-        setFilterValue={setFilterValue}
-      />
+      {visible && (
+        <Forms
+          value={selected}
+          visible={visible}
+          handleFormState={handleFormState}
+          auth={auth}
+          specialActions={specialActions}
+          companyRelations={companyRelations}
+          setFilterValue={setFilterValue}
+          config={config}
+        />
+      )}
     </Page>
   );
 };

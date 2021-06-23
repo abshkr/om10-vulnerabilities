@@ -12,7 +12,7 @@ const Personnel = ({ form, value, employer, role }) => {
   const { setFieldsValue } = form;
 
   const { data: options, isValidating, revalidate } = useSWR(
-    `${ID_ASSIGNMENT.PSN}/?employer=${employer}&role=${role}`
+    `${ID_ASSIGNMENT.PSN}?employer=${employer}&role=${role}`
   );
 
   const validate = (rule, input) => {
@@ -26,7 +26,7 @@ const Personnel = ({ form, value, employer, role }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        kya_personnel: value.kya_personnel
+        kya_personnel: value.kya_personnel,
       });
     }
   }, [value, setFieldsValue]);
@@ -34,11 +34,11 @@ const Personnel = ({ form, value, employer, role }) => {
   useEffect(() => {
     revalidate();
 
-    if (!value) {
-      setFieldsValue({
-        kya_personnel: undefined
-      });
-    }
+    //if (!value) {
+    setFieldsValue({
+      kya_personnel: undefined,
+    });
+    //}
   }, [employer, role, revalidate, setFieldsValue, value]);
 
   return (

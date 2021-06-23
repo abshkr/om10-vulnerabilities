@@ -2745,10 +2745,13 @@
     "tripScheduleDateLaterThanExpiryDate": "提单下单日期时间应该早于提单失效日期时间",
     "warning": "警告",
     "warnings": "警告",
-    "wrongType": "数据类型错误"
+    "wrongType": "数据类型错误",
+    "whiteSpaceInBeginning": "字符串首部发现空白字符",
+    "whiteSpaceInEnd": "字符串尾部发现空白字符"
   },
   "oryx": {
     "fields": {
+      "aoiNumber": "公司参考号",
       "batch": "油品移动源批号",
       "oryxTotalObservedVolume": "总油罐容积(TOV)",
       "oryxGrossObservedVolume": "视量容积(GOV)",
