@@ -1853,6 +1853,7 @@
     "unit": "Unit",
     "unitId": "Unit ID",
     "unitType": "Unit Type",
+    "unitVarianceLimit": "Variance Limit Unit",
     "unload": "Unload",
     "update": "Update",
     "upperLimit": "Upper Limit %",

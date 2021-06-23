@@ -1853,6 +1853,7 @@
     "unit": "计量单位",
     "unitId": "计量单位ID",
     "unitType": "计量单位类型",
+    "unitVarianceLimit": "可变范围计量单位",
     "unload": "卸载",
     "update": "修改",
     "upperLimit": "超标上限 %",

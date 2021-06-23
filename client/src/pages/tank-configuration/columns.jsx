@@ -66,7 +66,14 @@ const columns = (config, t) => [
     resizable: true,
   },
   {
-    headerName: `${t('fields.dailyVarianceLimit')} (${t('units.volume')})`,
+    headerName: `${t('fields.unitVarianceLimit')}`,
+    field: 'tank_tol_unit',
+    sortable: true,
+    resizable: true,
+  },
+  {
+    // headerName: `${t('fields.dailyVarianceLimit')} (${t('units.volume')})`,
+    headerName: `${t('fields.dailyVarianceLimit')}`,
     field: 'tank_dtol_volume',
     sortable: true,
     resizable: true,
@@ -78,7 +85,8 @@ const columns = (config, t) => [
     resizable: true,
   },
   {
-    headerName: `${t('fields.monthlyVarianceLimit')} (${t('units.volume')})`,
+    // headerName: `${t('fields.monthlyVarianceLimit')} (${t('units.volume')})`,
+    headerName: `${t('fields.monthlyVarianceLimit')}`,
     field: 'tank_mtol_volume',
     sortable: true,
     resizable: true,
