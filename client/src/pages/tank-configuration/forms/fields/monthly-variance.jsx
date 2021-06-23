@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Form, Input, InputNumber } from 'antd';
 import _ from 'lodash';
 
-const MontlhyVariance = ({ form, value }) => {
+const MontlhyVariance = ({ form, value, base }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -40,7 +40,7 @@ const MontlhyVariance = ({ form, value }) => {
     if (value) {
       setFieldsValue({
         tank_mtol_percent: value.tank_mtol_percent,
-        tank_mtol_volume: value.tank_mtol_volume
+        tank_mtol_volume: value.tank_mtol_volume,
       });
     }
   }, [value, setFieldsValue]);
@@ -53,8 +53,8 @@ const MontlhyVariance = ({ form, value }) => {
         style={{ flex: '1 1 auto', marginRight: 5, width: 300 }}
         rules={[
           {
-            validator: handlePercentageValidation
-          }
+            validator: handlePercentageValidation,
+          },
         ]}
       >
         <InputNumber style={{ width: '100%' }} />
@@ -62,15 +62,17 @@ const MontlhyVariance = ({ form, value }) => {
 
       <Form.Item
         name="tank_mtol_volume"
-        label={`${t('fields.monthlyVarianceLimit')} (${t('units.volume')})`}
+        label={`${t('fields.monthlyVarianceLimit')} (${
+          base?.base_gainloss_unit === '1' ? t('units.mass') : t('units.volume')
+        })`}
         style={{ flex: '1 1 auto', marginLeft: 5, width: 300 }}
         rules={[
           {
-            validator: handleVolumeValidation
-          }
+            validator: handleVolumeValidation,
+          },
         ]}
       >
-        <Input addonAfter={t('units.litres')} />
+        <Input addonAfter={`${base?.base_gainloss_unit === '1' ? t('units.kg') : t('units.litres')}`} />
       </Form.Item>
     </div>
   );

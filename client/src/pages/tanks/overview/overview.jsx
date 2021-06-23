@@ -23,6 +23,7 @@ const Overview = ({ selected, isLoading, config }) => {
               size="small"
               layout="horizontal"
               title={`${selected?.tank_code} - ${selected?.tank_name}`}
+              column={24}
             >
               <Descriptions.Item label={t('fields.tankCode')} span={24}>
                 {selected?.tank_code}

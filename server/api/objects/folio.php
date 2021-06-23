@@ -33,6 +33,10 @@ class FolioMeter extends CommonClass
         oci_bind_by_name($stmt, ':open_amb_tot', $this->close_amb_tot);
         oci_bind_by_name($stmt, ':closeout_nr', $next_folio);
         oci_bind_by_name($stmt, ':meter_code', $this->meter_code);
+        //         , METER_BASECODE = :base_code
+        //         , METER_BASENAME = :base_name
+        // oci_bind_by_name($stmt, ':base_code', $this->meter_basecode);
+        // oci_bind_by_name($stmt, ':base_name', $this->meter_basename);
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -95,6 +99,10 @@ class FolioTank extends CommonClass
         oci_bind_by_name($stmt, ':open_temp', $this->close_temp);
         oci_bind_by_name($stmt, ':closeout_nr', $next_folio);
         oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+        //         , TANK_BASECODE = :base_code
+        //         , TANK_BASENAME = :base_name
+        // oci_bind_by_name($stmt, ':base_code', $this->tank_basecode);
+        // oci_bind_by_name($stmt, ':base_name', $this->tank_basename);
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -470,12 +478,15 @@ class Folio extends CommonClass
     public function get_tanks()
     {
         $query = "
-        SELECT CLOSEOUT_TANK.*,
-            TANKS.TANK_BASE,
+        SELECT 
+            CLOSEOUT_TANK.*,
+            NVL(CLOSEOUT_TANK.TANK_BASECODE, TANKS.TANK_BASE)  TANK_BASECODE2,
+            NVL(CLOSEOUT_TANK.TANK_BASENAME, BASE_PRODS.BASE_NAME)  TANK_BASENAME2,
+            TANKS.TANK_BASE  CURR_BASECODE,
             TANK_LEVEL TANK_PROD_LVL,
             TANKS.TANK_GAUGINGMTHD,
             GAUGE_METHOD_NAME TANK_GAUGINGMTHD_DESC,
-            BASE_PRODS.BASE_NAME,
+            BASE_PRODS.BASE_NAME  CURR_BASENAME,
             BASECLASS.BCLASS_DESC,
             BASECLASS.BCLASS_NO,
             BASECLASS.BCLASS_DENS_LO,
@@ -501,11 +512,11 @@ class Folio extends CommonClass
             ) BASECLASS, 
             GAUGE_METHOD_TYP
         WHERE CLOSEOUT_TANK.TANK_CODE = TANKS.TANK_CODE
-            AND TANKS.TANK_BASE = BASE_PRODS.BASE_CODE
+            AND NVL(CLOSEOUT_TANK.TANK_BASECODE, TANKS.TANK_BASE) = BASE_PRODS.BASE_CODE
             AND BASE_PRODS.BASE_CAT = BASECLASS.BCLASS_NO
             AND TANK_GAUGINGMTHD = GAUGE_METHOD_ID(+)
             AND CLOSEOUT_TANK.CLOSEOUT_NR = :closeout_nr
-        ORDER BY BASECLASS.BCLASS_NO
+        ORDER BY BASECLASS.BCLASS_NO, CLOSEOUT_TANK.TANK_CODE
         ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':closeout_nr', $this->closeout_nr);
@@ -523,12 +534,15 @@ class Folio extends CommonClass
     public function get_meters()
     {
         $query = "
-            SELECT DISTINCT CLOSEOUT_METER.*,
+            SELECT DISTINCT 
+                CLOSEOUT_METER.*,
+                NVL(CLOSEOUT_METER.METER_BASECODE, VALID_PIPENODE.STREAM_BASECODE)  METER_BASECODE2,
+                NVL(CLOSEOUT_METER.METER_BASENAME, VALID_PIPENODE.STREAM_BASENAME)  METER_BASENAME2,
                 BA_METERS.BAM_QTY_TYPE,
                 QTY_TYP.QTY_NAME  as BAM_QTY_TYPE_STR,
                 DECODE(BAM_QTY_TYPE, 1, 'KG', 'VOL') BAM_QTY_TYPE_STR2,
-                STREAM_BASECODE,
-                STREAM_BASENAME,
+                STREAM_BASECODE  CURR_BASECODE,
+                STREAM_BASENAME  CURR_BASENAME,
                 STREAM_TANKCODE,
                 STREAM_TANKTEMP,
                 STREAM_TANKDEN

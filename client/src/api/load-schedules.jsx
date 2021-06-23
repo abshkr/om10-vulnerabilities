@@ -17,7 +17,10 @@ export const SEARCH = '/api/pages/schedule/search.php';
 
 export const CREATE = '/api/pages/schedule/create.php';
 export const UPDATE = '/api/pages/schedule/update.php ';
+export const UPDATE_PRELOADS = '/api/pages/schedule/update_preloads.php ';
 export const DELETE = '/api/pages/schedule/delete.php';
+export const CONVERT_SCHEDULE = '/api/pages/schedule/convert_schedule.php';
+export const REVERT_SCHEDULE = '/api/pages/schedule/revert_schedule.php';
 
 export const VIEW_BOL = '/api/pages/schedule/view_bol.php';
 export const PRINT_BOL = '/api/pages/schedule/print_bol.php';

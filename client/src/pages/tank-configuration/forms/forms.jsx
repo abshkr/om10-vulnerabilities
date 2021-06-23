@@ -8,13 +8,13 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal, Divider, Drawer } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Divider, Drawer, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { mutate } from 'swr';
+import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
 
 import { Name, Code, Terminal, Product, Density, Flags, DailyVariance, MontlhyVariance } from './fields';
-import api, { TANKS } from '../../../api';
+import api, { TANKS, BASE_PRODUCTS } from '../../../api';
 
 import TankAdaptiveFlowControl from '../../tanks/afc';
 
@@ -27,6 +27,8 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
 
   const [tab, setTab] = useState('1');
   const [product, setProduct] = useState(undefined);
+
+  const { data: baseItem } = useSWR(`${BASE_PRODUCTS.READ}?base_code=${product}`);
 
   const IS_CREATING = !value;
 
@@ -51,6 +53,19 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
   const onFinish = async () => {
     const values = await form.validateFields();
 
+    let lines = null;
+    if (!IS_CREATING && values?.tank_base !== value?.tank_base) {
+      lines = (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.warningTankBaseChange')}
+        </Card>
+      );
+    }
+
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -58,6 +73,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       icon: <QuestionCircleOutlined />,
       cancelText: t('operations.no'),
       centered: true,
+      content: lines,
       onOk: async () => {
         await api
           .post(IS_CREATING ? TANKS.CREATE : TANKS.UPDATE, values)
@@ -128,7 +144,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="40vw"
+      width="55vw"
       visible={visible}
       footer={
         <>
@@ -175,8 +191,8 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             <Product form={form} value={value} onChange={setProduct} />
             <Density form={form} value={value} product={product} config={config} />
             <Divider>{t('divider.variances')}</Divider>
-            <DailyVariance form={form} value={value} />
-            <MontlhyVariance form={form} value={value} />
+            <DailyVariance form={form} value={value} base={baseItem?.records?.[0]} />
+            <MontlhyVariance form={form} value={value} base={baseItem?.records?.[0]} />
             <Divider>{t('divider.flags')}</Divider>
             <Flags form={form} value={value} />
           </TabPane>

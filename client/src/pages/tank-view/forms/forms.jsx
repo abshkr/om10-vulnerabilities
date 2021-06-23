@@ -172,16 +172,16 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, 
                 <Levels form={form} value={value} />
               </div>
 
-              <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 10 }}>
-                <Descriptions.Item label={t('fields.product')} span={2}>
+              <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 10 }} column={24}>
+                <Descriptions.Item label={t('fields.product')} span={12}>
                   {value?.tank_base_name}
                 </Descriptions.Item>
 
-                <Descriptions.Item label={t('fields.productCode')} span={2}>
+                <Descriptions.Item label={t('fields.productCode')} span={12}>
                   {value?.tank_base}
                 </Descriptions.Item>
 
-                <Descriptions.Item label={t('fields.observedTemperature')} span={12}>
+                <Descriptions.Item label={t('fields.observedTemperature')} span={24}>
                   {value?.tank_temp} {t('units.degC')}
                 </Descriptions.Item>
 

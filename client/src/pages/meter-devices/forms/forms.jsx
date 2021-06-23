@@ -100,9 +100,9 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   useEffect(() => {
     if (!value && !visible) {
-      form.resetFields();
+      resetFields();
     }
-  }, [resetFields, value, visible]);
+  }, [value, visible, resetFields]);
 
   return (
     <Drawer

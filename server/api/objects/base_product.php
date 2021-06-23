@@ -102,6 +102,9 @@ class BaseProduct extends CommonClass
                 BP.BASE_STOCK_UNIT,
                 SUV.STOCK_UNIT_CODE AS BASE_STOCK_UNIT_CODE,
                 SUV.STOCK_UNIT_NAME AS BASE_STOCK_UNIT_NAME,
+                BP.BASE_GAINLOSS_UNIT,
+                GLUV.STOCK_UNIT_CODE AS BASE_GAINLOSS_UNIT_CODE,
+                GLUV.STOCK_UNIT_NAME AS BASE_GAINLOSS_UNIT_NAME,
                 UV.DESCRIPTION AS BASE_REF_TUNT_NAME,
                 CM.COMPENSATION_NAME AS BASE_CORR_MTHD_NAME,
                 RTS.REF_TEMP_SPEC_NAME AS BASE_REF_TEMP_SPEC_NAME
@@ -130,6 +133,7 @@ class BaseProduct extends CommonClass
                 GROUP BY TANKS.TANK_BASE
                 ) BT,
                 STOCK_UNIT_VW SUV,
+                STOCK_UNIT_VW GLUV,
                 UNIT_SCALE_VW UV,
                 COMPENSATION_MTHD CM,
                 REF_TEMP_SPEC RTS
@@ -142,10 +146,18 @@ class BaseProduct extends CommonClass
                 AND BP.BASE_PROD_GROUP = BG.PGR_CODE(+)
                 AND BP.BASE_CODE = BT.TANK_BASE(+)
                 AND BP.BASE_STOCK_UNIT = SUV.STOCK_UNIT_ID(+)
+                AND BP.BASE_GAINLOSS_UNIT = GLUV.STOCK_UNIT_ID(+)
                 AND BP.BASE_REF_TUNT = UV.UNIT_ID(+)
                 AND BP.BASE_CORR_MTHD = CM.COMPENSATION_ID(+)
-                AND BP.BASE_REF_TEMP_SPEC = RTS.REF_TEMP_SPEC_ID(+)";
+                AND BP.BASE_REF_TEMP_SPEC = RTS.REF_TEMP_SPEC_ID(+)
+        ";
+        if (isset($this->base_code)) {
+            $query .= "AND BP.BASE_CODE=:base_code";
+        }
         $stmt = oci_parse($this->conn, $query);
+        if (isset($this->base_code)) {
+            oci_bind_by_name($stmt, ':base_code', $this->base_code);
+        }
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
@@ -173,6 +185,7 @@ class BaseProduct extends CommonClass
                 AFC_ENABLED,
                 AFC_PRIORITY,
                 BASE_STOCK_UNIT,
+                BASE_GAINLOSS_UNIT,
                 BASE_CODE
             )
             VALUES (
@@ -190,6 +203,7 @@ class BaseProduct extends CommonClass
                 :afc_enabled,
                 :afc_priority,
                 :base_stock_unit,
+                :base_gainloss_unit,
                 :base_code
             )";
         $stmt = oci_parse($this->conn, $query);
@@ -207,6 +221,7 @@ class BaseProduct extends CommonClass
         oci_bind_by_name($stmt, ':afc_enabled', $this->afc_enabled);
         oci_bind_by_name($stmt, ':afc_priority', $this->afc_priority);
         oci_bind_by_name($stmt, ':base_stock_unit', $this->base_stock_unit);
+        oci_bind_by_name($stmt, ':base_gainloss_unit', $this->base_gainloss_unit);
         oci_bind_by_name($stmt, ':base_code', $this->base_code);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {

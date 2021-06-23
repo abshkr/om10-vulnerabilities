@@ -2,8 +2,9 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber, Input, Select, Row, Col } from 'antd';
 import useSWR from 'swr';
+import _ from 'lodash';
 
-import { ORDER_LISTINGS, TANK_STATUS, TANKS } from '../../../../api';
+import { ORDER_LISTINGS, TANK_STATUS, TANKS, BASE_PRODUCTS } from '../../../../api';
 import { VCFManager } from '../../../../utils';
 import { InputNumber as OmegaInputNumber } from '../../../../components';
 
@@ -15,6 +16,8 @@ const General = ({ form, value, config, densRange }) => {
   const { data: methods, isValidating: methodsLoading } = useSWR(TANK_STATUS.METHODS);
   const { data: products, isValidating: baseLoading } = useSWR(TANKS.BASE_LIST);
   const { data: terminals, isValidating: terminalLoading } = useSWR(ORDER_LISTINGS.TERMINAL);
+
+  const { data: baseItem } = useSWR(`${BASE_PRODUCTS.READ}?base_code=${value?.tank_base}`);
 
   const isLoading = areasLoading || statusLoading || methodsLoading || baseLoading || terminalLoading;
 
@@ -31,6 +34,30 @@ const General = ({ form, value, config, densRange }) => {
       return Promise.reject(
         `${t('placeholder.maxCharacters')}: ${limit} ─ ${t('descriptions.maxCharacters')}`
       );
+    }
+
+    return Promise.resolve();
+  };
+
+  const validatePercentage = (rule, input) => {
+    if (input && parseInt(input) < -100) {
+      return Promise.reject(`${t('placeholder.limit')}: ${-100} ─ ${t('descriptions.valueTooLow')}`);
+    }
+
+    if (input && parseInt(input) > 100) {
+      return Promise.reject(`${t('placeholder.limit')}: ${100} ─ ${t('descriptions.valueTooHigh')}`);
+    }
+
+    return Promise.resolve();
+  };
+
+  const validateQuantity = (rule, input) => {
+    if (input && !_.isInteger(parseInt(input))) {
+      return Promise.reject(`${t('placeholder.wrongType')}: ${t('types.integer')}`);
+    }
+
+    if (input && input.length > 126) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 126 ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();
@@ -254,7 +281,11 @@ const General = ({ form, value, config, densRange }) => {
 
       <Row gutter={[8, 8]}>
         <Col span={10}>
-          <Form.Item name="tank_dtol_percent" label={`${t('fields.dailyVarianceLimit')} (%)`}>
+          <Form.Item
+            name="tank_dtol_percent"
+            label={`${t('fields.dailyVarianceLimit')} (%)`}
+            rules={[{ validator: validatePercentage }]}
+          >
             <InputNumber style={{ width: '100%' }} />
           </Form.Item>
         </Col>
@@ -262,16 +293,28 @@ const General = ({ form, value, config, densRange }) => {
         <Col span={14}>
           <Form.Item
             name="tank_dtol_volume"
-            label={`${t('fields.dailyVarianceLimit')} (${t('units.volume')})`}
+            label={`${t('fields.dailyVarianceLimit')} (${
+              baseItem?.records?.[0]?.base_gainloss_unit === '1' ? t('units.mass') : t('units.volume')
+            })`}
+            rules={[{ validator: validateQuantity }]}
           >
-            <Input style={{ width: '100%' }} />
+            <Input
+              style={{ width: '100%' }}
+              addonAfter={`${
+                baseItem?.records?.[0]?.base_gainloss_unit === '1' ? t('units.kg') : t('units.litres')
+              }`}
+            />
           </Form.Item>
         </Col>
       </Row>
 
       <Row gutter={[8, 8]}>
         <Col span={10}>
-          <Form.Item name="tank_mtol_percent" label={`${t('fields.monthlyVarianceLimit')} (%)`}>
+          <Form.Item
+            name="tank_mtol_percent"
+            label={`${t('fields.monthlyVarianceLimit')} (%)`}
+            rules={[{ validator: validatePercentage }]}
+          >
             <InputNumber style={{ width: '100%' }} />
           </Form.Item>
         </Col>
@@ -279,9 +322,17 @@ const General = ({ form, value, config, densRange }) => {
         <Col span={14}>
           <Form.Item
             name="tank_mtol_volume"
-            label={`${t('fields.monthlyVarianceLimit')} (${t('units.volume')})`}
+            label={`${t('fields.monthlyVarianceLimit')} (${
+              baseItem?.records?.[0]?.base_gainloss_unit === '1' ? t('units.mass') : t('units.volume')
+            })`}
+            rules={[{ validator: validateQuantity }]}
           >
-            <InputNumber style={{ width: '100%' }} />
+            <Input
+              style={{ width: '100%' }}
+              addonAfter={`${
+                baseItem?.records?.[0]?.base_gainloss_unit === '1' ? t('units.kg') : t('units.litres')
+              }`}
+            />
           </Form.Item>
         </Col>
       </Row>

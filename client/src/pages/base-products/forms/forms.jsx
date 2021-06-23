@@ -37,6 +37,7 @@ import {
   RefSpecTemp,
   CorrectionMethod,
   StockUnit,
+  GainLossUnit,
   HotTempFlag,
   AdaptiveFlowControlFlag,
   AdaptiveFlowControlPriority,
@@ -317,6 +318,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
               </Col>
             </Row>
 
+            <GainLossUnit form={form} value={value} tankCount={tankCount} />
             {siteUseProdOwnership && <StockUnit form={form} value={value} owners={owners} />}
 
             {/* <Divider style={{padding: 0, margin: 0}} /> */}

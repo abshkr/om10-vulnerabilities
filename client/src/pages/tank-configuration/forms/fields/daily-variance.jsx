@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Form, Input, InputNumber } from 'antd';
 import _ from 'lodash';
 
-const DailyVariance = ({ form, value }) => {
+const DailyVariance = ({ form, value, base }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -40,7 +40,7 @@ const DailyVariance = ({ form, value }) => {
     if (value) {
       setFieldsValue({
         tank_dtol_percent: value.tank_dtol_percent,
-        tank_dtol_volume: value.tank_dtol_volume
+        tank_dtol_volume: value.tank_dtol_volume,
       });
     }
   }, [value, setFieldsValue]);
@@ -53,8 +53,8 @@ const DailyVariance = ({ form, value }) => {
         style={{ flex: '1 1 auto', marginRight: 5, width: 300 }}
         rules={[
           {
-            validator: handlePercentageValidation
-          }
+            validator: handlePercentageValidation,
+          },
         ]}
       >
         <InputNumber style={{ width: '100%' }} />
@@ -62,15 +62,17 @@ const DailyVariance = ({ form, value }) => {
 
       <Form.Item
         name="tank_dtol_volume"
-        label={`${t('fields.dailyVarianceLimit')} (${t('units.volume')})`}
+        label={`${t('fields.dailyVarianceLimit')} (${
+          base?.base_gainloss_unit === '1' ? t('units.mass') : t('units.volume')
+        })`}
         style={{ flex: '1 1 auto', marginLeft: 5, width: 300 }}
         rules={[
           {
-            validator: handleVolumeValidation
-          }
+            validator: handleVolumeValidation,
+          },
         ]}
       >
-        <Input addonAfter={t('units.litres')} />
+        <Input addonAfter={`${base?.base_gainloss_unit === '1' ? t('units.kg') : t('units.litres')}`} />
       </Form.Item>
     </div>
   );
