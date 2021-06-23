@@ -1921,7 +1921,10 @@
     "jobID": "Job ID",
     "jobName": "Job Name",
     "subject": "Subject",
-    "lastRun": "Last Run"
+    "lastRun": "Last Run",
+    "transferIn": "Transfer In",
+    "transferOut": "Transfer Out",
+    "disposalForOffsite": "Disposal For Offsite"
   },
   "generic": {
     "about": "About (EULA)",
