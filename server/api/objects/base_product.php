@@ -149,8 +149,15 @@ class BaseProduct extends CommonClass
                 AND BP.BASE_GAINLOSS_UNIT = GLUV.STOCK_UNIT_ID(+)
                 AND BP.BASE_REF_TUNT = UV.UNIT_ID(+)
                 AND BP.BASE_CORR_MTHD = CM.COMPENSATION_ID(+)
-                AND BP.BASE_REF_TEMP_SPEC = RTS.REF_TEMP_SPEC_ID(+)";
+                AND BP.BASE_REF_TEMP_SPEC = RTS.REF_TEMP_SPEC_ID(+)
+        ";
+        if (isset($this->base_code)) {
+            $query .= "AND BP.BASE_CODE=:base_code";
+        }
         $stmt = oci_parse($this->conn, $query);
+        if (isset($this->base_code)) {
+            oci_bind_by_name($stmt, ':base_code', $this->base_code);
+        }
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
