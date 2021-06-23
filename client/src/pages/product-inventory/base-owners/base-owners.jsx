@@ -110,8 +110,8 @@ const BaseProductOwners = ({ value, access, config, unit, units }) => {
       <Card hoverable>
         <Row gutter={[2, 12]}>
           <Col span={24}>
-            <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }}>
-              <Descriptions.Item label={t('fields.baseProduct')} span={24}>
+            <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }} column={1}>
+              <Descriptions.Item label={t('fields.baseProduct')} span={1}>
                 {/* value?.base_code + ' - ' + value?.base_name */}
                 <Select
                   dropdownMatchSelectWidth={false}
@@ -136,7 +136,7 @@ const BaseProductOwners = ({ value, access, config, unit, units }) => {
                   })}
                 </Select>
               </Descriptions.Item>
-              <Descriptions.Item label={t('fields.supplier')} span={24}>
+              <Descriptions.Item label={t('fields.supplier')} span={1}>
                 <Select
                   dropdownMatchSelectWidth={false}
                   allowClear
@@ -160,7 +160,7 @@ const BaseProductOwners = ({ value, access, config, unit, units }) => {
                   })}
                 </Select>
               </Descriptions.Item>
-              <Descriptions.Item label={t('fields.volumeUnit')} span={24}>
+              <Descriptions.Item label={t('fields.volumeUnit')} span={1}>
                 <Select
                   dropdownMatchSelectWidth={false}
                   key="1"

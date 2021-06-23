@@ -37,9 +37,9 @@ export default class FlowRateRenderer extends Component {
             placement="topRight"
             title=""
             content={
-              <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }}>
-                {value.map((item) => (
-                  <Descriptions.Item label={String(item.tank_level) + ' mm'} span={24}>
+              <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }} column={1}>
+                {value.map((item, index) => (
+                  <Descriptions.Item key={index} label={String(item.tank_level) + ' mm'} span={1}>
                     {String(item.flow_rate) + ' LPM'}
                   </Descriptions.Item>
                 ))}

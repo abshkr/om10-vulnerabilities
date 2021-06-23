@@ -605,8 +605,8 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
       <Card hoverable>
         <Row gutter={[2, 12]}>
           <Col span={24}>
-            <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }}>
-              <Descriptions.Item label={t('fields.baseProduct')} span={24}>
+            <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }} column={1}>
+              <Descriptions.Item label={t('fields.baseProduct')} span={1}>
                 <Select
                   dropdownMatchSelectWidth={false}
                   allowClear
@@ -630,7 +630,7 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
                   })}
                 </Select>
               </Descriptions.Item>
-              <Descriptions.Item label={t('fields.supplier')} span={24}>
+              <Descriptions.Item label={t('fields.supplier')} span={1}>
                 <Select
                   dropdownMatchSelectWidth={false}
                   allowClear

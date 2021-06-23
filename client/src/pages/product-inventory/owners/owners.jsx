@@ -73,13 +73,13 @@ const TankProductOwners = ({ value, access, config, unit, units }) => {
       <Card hoverable>
         <Row gutter={[2, 12]}>
           <Col span={24}>
-            <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }}>
+            <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }} column={1}>
               {value && (
-                <Descriptions.Item label={t('fields.baseProduct')} span={24}>
+                <Descriptions.Item label={t('fields.baseProduct')} span={1}>
                   {!value ? '' : value?.base_code + ' - ' + value?.base_name}
                 </Descriptions.Item>
               )}
-              <Descriptions.Item label={t('fields.volumeUnit')} span={24}>
+              <Descriptions.Item label={t('fields.volumeUnit')} span={1}>
                 <Select
                   dropdownMatchSelectWidth={false}
                   key="1"

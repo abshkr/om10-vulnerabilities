@@ -387,21 +387,21 @@ const TankOwners = ({ terminal, code, value, access, tanks, config }) => {
 
         <Row gutter={[2, 12]}>
           <Col span={10}>
-            <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }}>
-              <Descriptions.Item label={t('fields.tank')} span={24}>
+            <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }} column={1}>
+              <Descriptions.Item label={t('fields.tank')} span={1}>
                 {code && terminal && value?.tank_code + ' - ' + value?.tank_name}
               </Descriptions.Item>
-              <Descriptions.Item label={t('fields.terminal')} span={24}>
+              <Descriptions.Item label={t('fields.terminal')} span={1}>
                 {code && terminal && value?.tank_terminal + ' - ' + value?.tank_sitename}
               </Descriptions.Item>
             </Descriptions>
           </Col>
           <Col span={14}>
-            <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }}>
-              <Descriptions.Item label={t('fields.baseProduct')} span={24}>
+            <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }} column={1}>
+              <Descriptions.Item label={t('fields.baseProduct')} span={1}>
                 {code && terminal && value?.tank_base + ' - ' + value?.tank_base_name}
               </Descriptions.Item>
-              <Descriptions.Item label={t('fields.baseProdClassDesc')} span={24}>
+              <Descriptions.Item label={t('fields.baseProdClassDesc')} span={1}>
                 {code && terminal && value?.tank_base_class + ' - ' + value?.tank_bclass_name}
               </Descriptions.Item>
             </Descriptions>

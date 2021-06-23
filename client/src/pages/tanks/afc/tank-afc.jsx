@@ -232,47 +232,47 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks, config 
       <Card hoverable>
         <Row gutter={[2, 12]}>
           <Col span={10}>
-            <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }}>
-              <Descriptions.Item label={t('fields.tankCode')} span={24}>
+            <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }} column={1}>
+              <Descriptions.Item label={t('fields.tankCode')} span={1}>
                 {value?.tank_code}
               </Descriptions.Item>
-              <Descriptions.Item label={t('fields.tankName')} span={24}>
+              <Descriptions.Item label={t('fields.tankName')} span={1}>
                 {value?.tank_name}
               </Descriptions.Item>
               {config?.useWaterStrapping && (
-                <Descriptions.Item label={`${t('fields.waterLevel')} (${t('units.mm')})`} span={24}>
+                <Descriptions.Item label={`${t('fields.waterLevel')} (${t('units.mm')})`} span={1}>
                   {value?.tank_water_lvl}
                 </Descriptions.Item>
               )}
-              <Descriptions.Item label={`${t('fields.currentTankLevel')} (${t('units.mm')})`} span={24}>
+              <Descriptions.Item label={`${t('fields.currentTankLevel')} (${t('units.mm')})`} span={1}>
                 {currTankLevel}
               </Descriptions.Item>
-              <Descriptions.Item label={`${t('fields.currentMaxFlowRate')} (${t('units.lpm')})`} span={24}>
+              <Descriptions.Item label={`${t('fields.currentMaxFlowRate')} (${t('units.lpm')})`} span={1}>
                 {currFlowRate}
               </Descriptions.Item>
             </Descriptions>
           </Col>
           <Col span={14}>
-            <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }}>
-              <Descriptions.Item label={t('fields.baseProductCode')} span={24}>
+            <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }} column={1}>
+              <Descriptions.Item label={t('fields.baseProductCode')} span={1}>
                 {value?.tank_base}
               </Descriptions.Item>
-              <Descriptions.Item label={t('fields.baseProductName')} span={24}>
+              <Descriptions.Item label={t('fields.baseProductName')} span={1}>
                 {value?.tank_base_name}
               </Descriptions.Item>
               {config?.useWaterStrapping && (
-                <Descriptions.Item label={t('fields.baseProdClassDesc')} span={24}>
+                <Descriptions.Item label={t('fields.baseProdClassDesc')} span={1}>
                   {value?.tank_bclass_name}
                 </Descriptions.Item>
               )}
-              <Descriptions.Item label={t('fields.adaptiveFlowControl')} span={24}>
+              <Descriptions.Item label={t('fields.adaptiveFlowControl')} span={1}>
                 {value?.afc_enabled === 'Y' ? (
                   <CheckCircleOutlined style={{ fontSize: 16, color: '#52c41a' }} />
                 ) : (
                   <CloseCircleOutlined style={{ fontSize: 18, color: '#ec6e68' }} />
                 )}
               </Descriptions.Item>
-              <Descriptions.Item label={t('fields.adaptiveArmPriority')} span={24}>
+              <Descriptions.Item label={t('fields.adaptiveArmPriority')} span={1}>
                 {value?.afc_priority}
               </Descriptions.Item>
             </Descriptions>
