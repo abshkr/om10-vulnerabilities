@@ -19,8 +19,14 @@ function http_get_cgi($cgi)
     }
     //$url = substr($url, 0, -1);
     $url .= "sess_id=" . $_SESSION["SESSION"];
+    $arrContextOptions = array(
+                "ssl"=>array(
+                    "verify_peer"=>false,
+                    "verify_peer_name"=>false,
+                ),
+            );
     //echo file_get_contents($url);
-    return file_get_contents($url);
+    return file_get_contents($url, false, stream_context_create($arrContextOptions));
 }
  
 function http_post_cgi($cgi)
@@ -34,8 +40,14 @@ function http_post_cgi($cgi)
     }
     //$url = substr($url, 0, -1);
     $url .= "sess_id=" . $_SESSION["SESSION"];
+    $arrContextOptions = array(
+                "ssl"=>array(
+                    "verify_peer"=>false,
+                    "verify_peer_name"=>false,
+                ),
+            );
     //echo file_get_contents($url);
-    return file_get_contents($url);
+    return file_get_contents($url, false, stream_context_create($arrContextOptions));
 }
 
 function http_post($url)
