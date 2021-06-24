@@ -398,7 +398,7 @@
     "ambientQuantity": "Ambient Quantity",
     "ambientVolume": "Ambient Volume",
     "any": "ANY",
-    "aoiNumber": "AOI No",
+    "aoiNumber": "AOI No.",
     "api": "API@60°F",
     "approved": "Approved?",
     "archiveSchedules": "Archive schedules",
@@ -2768,6 +2768,7 @@
   },
   "oryx": {
     "fields": {
+      "aoiNumber": "Company Ref Number",
       "batch": "Source Batch Number",
       "oryxTotalObservedVolume": "Total Observed Volume (TOV)",
       "oryxGrossObservedVolume": "Gross Observed Volume (GOV)",

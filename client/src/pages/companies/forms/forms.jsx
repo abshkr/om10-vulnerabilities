@@ -34,8 +34,7 @@ import api, { COMPANIES, ROLE_ACCESS_MANAGEMENT } from '../../../api';
 import { InputNumber, NumericInput } from '../../../components';
 import { REGEX } from '../../../constants';
 import useSWR from 'swr';
-import _, { trim } from 'lodash';
-import { useConfig } from 'hooks';
+import _ from 'lodash';
 
 // import { getChildrenFromTxt } from '../../../utils';
 
@@ -49,9 +48,10 @@ const FormModal = ({
   specialActions,
   companyRelations,
   setFilterValue,
+  config,
 }) => {
   const { t } = useTranslation();
-  const { siteCompanyRelationAllowed, maxLengthCmpyCode, carrcode_tankernum_tag } = useConfig();
+  const { siteCompanyRelationAllowed, maxLengthCmpyCode, carrcode_tankernum_tag, siteLabelUser } = config;
   const { data: addresses, isValidating } = useSWR(COMPANIES.ADDRESSES);
 
   const [form] = Form.useForm();
@@ -496,11 +496,11 @@ const FormModal = ({
       }
     }
 
-    if (input != input.trimLeft()) {
+    if (input !== undefined && input !== input.trimLeft()) {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
     }
 
-    if (input != input.trimRight()) {
+    if (input !== undefined && input !== input.trimRight()) {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
     }
 
@@ -628,14 +628,14 @@ const FormModal = ({
             >
               <Input></Input>
             </Form.Item>
-            {/* <Form.Item name="cmpy_aoi" label={t('fields.aoiNumber')}>
+            {/* <Form.Item name="cmpy_aoi" label={t(siteLabelUser + 'fields.aoiNumber')}>
               <InputNumber maxLength={4} min={0} max={9999} precision={0} style={{ width: '100%' }}></InputNumber>
             </Form.Item> */}
             <InputNumber
               form={form}
               value={value?.cmpy_aoi}
               name="cmpy_aoi"
-              label={t('fields.aoiNumber')}
+              label={t(siteLabelUser + 'fields.aoiNumber')}
               maxLength={4}
               min={0}
               max={9999}

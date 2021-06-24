@@ -152,14 +152,16 @@ const BaseProducts = () => {
           filterValue={filterValue}
         />
 
-        <Forms
-          value={selected}
-          visible={visible}
-          handleFormState={handleFormState}
-          access={access}
-          config={config}
-          setFilterValue={setFilterValue}
-        />
+        {visible && (
+          <Forms
+            value={selected}
+            visible={visible}
+            handleFormState={handleFormState}
+            access={access}
+            config={config}
+            setFilterValue={setFilterValue}
+          />
+        )}
       </Page>
     </>
   );

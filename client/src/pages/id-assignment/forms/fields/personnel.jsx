@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
+import _ from 'lodash';
 
 import { ID_ASSIGNMENT } from '../../../../api';
 
@@ -11,9 +12,7 @@ const Personnel = ({ form, value, employer, role }) => {
 
   const { setFieldsValue } = form;
 
-  const { data: options, isValidating, revalidate } = useSWR(
-    `${ID_ASSIGNMENT.PSN}/?employer=${employer}&role=${role}`
-  );
+  const { data: options, isValidating } = useSWR(`${ID_ASSIGNMENT.PSN}?employer=${employer}&role=${role}`);
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
@@ -26,20 +25,31 @@ const Personnel = ({ form, value, employer, role }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        kya_personnel: value.kya_personnel
+        kya_personnel: value.kya_personnel,
       });
     }
   }, [value, setFieldsValue]);
 
   useEffect(() => {
-    revalidate();
-
     if (!value) {
       setFieldsValue({
-        kya_personnel: undefined
+        kya_personnel: undefined,
       });
+    } else {
+      if (employer && role && options) {
+        const found = _.find(options?.records, (o) => o?.per_code === value.kya_personnel);
+        if (!found) {
+          setFieldsValue({
+            kya_personnel: undefined,
+          });
+        } else {
+          setFieldsValue({
+            kya_personnel: value.kya_personnel,
+          });
+        }
+      }
     }
-  }, [employer, role, revalidate, setFieldsValue, value]);
+  }, [employer, role, options, setFieldsValue, value]);
 
   return (
     <Form.Item

@@ -1,4 +1,4 @@
-const columns = (t) => [
+const columns = (t, config) => [
   {
     headerName: t('fields.companyCode'),
     field: 'cmpy_code',
@@ -23,7 +23,7 @@ const columns = (t) => [
     resizable: true,
   },
   {
-    headerName: t('fields.aoiNumber'),
+    headerName: t(config?.siteLabelUser + 'fields.aoiNumber'),
     field: 'cmpy_aoi',
     filter: 'FuzzyFilter',
     sortable: true,
