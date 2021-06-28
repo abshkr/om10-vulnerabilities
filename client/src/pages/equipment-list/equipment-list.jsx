@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
-import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
+import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Button, Switch } from 'antd';
+import { Button, Switch, notification } from 'antd';
 import useSWR from 'swr';
+import _ from 'lodash';
 
-import { Page, DataTable, Download } from '../../components';
+import { Page, DataTable, Download, WindowSearch } from '../../components';
 import api, { EQUIPMENT_LIST, SITE_CONFIGURATION } from '../../api';
 
 import columns from './columns';
@@ -26,6 +27,7 @@ const EquipmentList = () => {
   const [selected, setSelected] = useState(null);
   const [parentEqpt, setParentEqpt] = useState(equipment);
   const [pagingFlag, setPagingFlag] = useState(false);
+  const [isSearching, setSearching] = useState(false);
   const { setCount, take, offset, paginator } = usePagination(500);
 
   const access = useAuth('M_EQUIPMENTLIST');
@@ -74,6 +76,41 @@ const EquipmentList = () => {
     revalidate();
   };
 
+  const setSearch = (values) => {
+    if (!values.eqpt_id && !values.eqpt_code && !values.eqpt_owner && !values.eqpt_etp) {
+      return;
+    }
+
+    setSearching(true);
+
+    api
+      .get(EQUIPMENT_LIST.READ, {
+        params: {
+          eqpt_id: values.eqpt_id,
+          eqpt_code: values.eqpt_code,
+          eqpt_owner: values.eqpt_owner,
+          eqpt_etyp: values.eqpt_etp,
+          pgflag: pagingFlag ? 'Y' : 'N',
+          start_num: take,
+          end_num: offset,
+        },
+      })
+      .then((res) => {
+        setData(res.data.records);
+        setCount(res.data.count || 0);
+        setSearching(false);
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
+        });
+        setSearching(false);
+      });
+  };
+
   useEffect(() => {
     if (payload && parentEqpt && parentEqpt?.length > 0) {
       if (parentEqpt?.indexOf(',') >= 0) setFilterValue(' ');
@@ -113,10 +150,33 @@ const EquipmentList = () => {
         unCheckedChildren={<span>{t('operations.paginationOff')}</span>}
         onChange={(value) => onChangePagination(value)}
       />
+
       <Button icon={<SyncOutlined />} onClick={() => onRefresh()} loading={isValidating}>
         {t('operations.refresh')}
       </Button>
-      <Download data={payload?.records} isLoading={isValidating} columns={fields} />
+
+      <Download data={data} isLoading={isValidating || isSearching} columns={fields} />
+
+      <Button
+        type="primary"
+        icon={<FileSearchOutlined />}
+        onClick={() =>
+          WindowSearch(
+            setSearch,
+            t('operations.search'),
+            {
+              eqpt_id: true,
+              eqpt_code: true,
+              eqpt_owner: true,
+              eqpt_etyp: true,
+            },
+            false
+          )
+        }
+      >
+        {t('operations.search')}
+      </Button>
+
       <Button
         type="primary"
         icon={<PlusOutlined />}
@@ -134,7 +194,7 @@ const EquipmentList = () => {
       <DataTable
         columns={fields}
         data={data}
-        isLoading={isValidating}
+        isLoading={isValidating || isSearching}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
         selectionMode="single"

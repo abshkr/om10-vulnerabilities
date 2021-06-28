@@ -25,15 +25,19 @@ import JournalSearch from './journal-msg';
 import JournalEvent from './journal_event';
 import JournalCategory from './journal_categories';
 import Terminal from './terminal';
+import EqptId from './eqpt-id';
+import EqptCode from './eqpt-code';
+import EqptOwner from './eqpt-owner';
+import EqptType from './eqpt-type';
 
-export { 
-  DateRange, 
-  LoadID, 
-  Supplier, 
+export {
+  DateRange,
+  LoadID,
+  Supplier,
   Carrier,
-  TripStatus, 
-  Tanker, 
-  Trip, 
+  TripStatus,
+  Tanker,
+  Trip,
   TrsaID,
   PlantSupplier,
   MovementID,
@@ -54,5 +58,8 @@ export {
   JournalEvent,
   JournalCategory,
   Terminal,
+  EqptId,
+  EqptCode,
+  EqptOwner,
+  EqptType,
 };
-
