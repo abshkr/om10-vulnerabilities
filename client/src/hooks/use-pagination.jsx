@@ -33,5 +33,6 @@ export default function usePagination(initial = 500) {
     offset,
     paginator,
     setPage,
+    count,
   };
 }
