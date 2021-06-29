@@ -463,7 +463,10 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       return;
     }
 
-    if (!payload?.tank_water_lvl || String(payload?.tank_water_lvl).trim().length === 0) {
+    if (
+      (!payload?.tank_water_lvl && _.toNumber(payload?.tank_water_lvl) !== 0) ||
+      String(payload?.tank_water_lvl).trim().length === 0
+    ) {
       notification.error({
         message: t('validate.set'),
         description: t('fields.waterLevel'),

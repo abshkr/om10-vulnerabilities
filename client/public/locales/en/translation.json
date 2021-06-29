@@ -2152,6 +2152,8 @@
     "ownershipTransactions": "Ownership Transactions",
     "ownershipTransactionsBase": "Base Ownership Transactions",
     "ownershipTransactionsTank": "Tank Ownership Transactions",
+    "paginationOn": "Pagination On",
+    "paginationOff": "Pagination Off",
     "preOrder": "Pre Order",
     "preSchedule": "Pre Schedule",
     "preview": "Preview",

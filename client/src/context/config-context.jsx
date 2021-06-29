@@ -127,6 +127,8 @@ const ConfigProvider = ({ children }) => {
     siteTransferTankSource: 'FROM',
     airBuoyancyFactor: 0.0011,
     popupManualTransaction: false,
+    siteEqptPaging: false,
+    siteTnkrPaging: false,
   });
 
   const { data: configuration, revalidate: revalidateConfiguration } = useSWR(SITE_CONFIGURATION.READ, {
@@ -324,6 +326,8 @@ const ConfigProvider = ({ children }) => {
         siteTransferTankSource: configurationObject?.SITE_TRANSFER_TANK_SOURCE || 'FROM',
         airBuoyancyFactor: configurationObject?.AIR_BUOYANCY_FACTOR || 0.0011,
         popupManualTransaction: configurationObject?.SITE_POPUP_MT || false,
+        siteEqptPaging: configurationObject?.SITE_PAGINATION_EQPT_LIST || false,
+        siteTnkrPaging: configurationObject?.SITE_PAGINATION_TNKR_LIST || false,
         revalidate: () => onRevalidate(),
       });
     }
