@@ -32,7 +32,7 @@ const EquipmentList = () => {
   const [eqptEtyp, setEqptEtyp] = useState('');
   const [pagingFlag, setPagingFlag] = useState(false);
   const [isSearching, setSearching] = useState(false);
-  const { setCount, take, offset, paginator, setPage } = usePagination(500);
+  const { setCount, take, offset, paginator, setPage, count } = usePagination(500);
 
   const access = useAuth('M_EQUIPMENTLIST');
 
@@ -219,19 +219,17 @@ const EquipmentList = () => {
         autoColWidth
         filterValue={filterValue}
       />
-      {pagingFlag && (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignContent: 'center',
-            alignItems: 'center',
-            marginTop: 10,
-          }}
-        >
-          {paginator}
-        </div>
-      )}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignContent: 'center',
+          alignItems: 'center',
+          marginTop: 10,
+        }}
+      >
+        {pagingFlag ? paginator : t('fields.totalCount') + ': ' + count}
+      </div>
       {visible && (
         <Forms
           value={selected}
