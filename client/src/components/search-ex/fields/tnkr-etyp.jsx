@@ -1,17 +1,16 @@
-import React, { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Form, Select } from 'antd';
+import React, { useEffect, useState, useCallback } from 'react';
+import { TANKER_LIST } from 'api';
 import useSWR from 'swr';
+import { Form, Select } from 'antd';
+import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
-import { EQUIPMENT_LIST } from 'api';
-
-const EqptType = ({ value, onChange }) => {
+const TnkrEtyp = ({ value, onChange }) => {
   const { t } = useTranslation();
-  const { data: options, isValidating } = useSWR(EQUIPMENT_LIST.TYPES);
+  const { data: options, isValidating } = useSWR(TANKER_LIST.TOTAL_COMPOSITION);
 
   return (
-    <Form.Item name="eqpt_etp" label={t('fields.equipmentType')}>
+    <Form.Item name="tnkr_etp" label={t('fields.equipmentType')}>
       <Select
         dropdownMatchSelectWidth={false}
         dropdownStyle={{ maxWidth: '40vw' }}
@@ -26,11 +25,13 @@ const EqptType = ({ value, onChange }) => {
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
-        {options?.records.map((item, index) => (
+        {options?.records?.map((item, index) => (
           <Select.Option key={index} value={_.toNumber(item.etyp_id)}>
+            {/* {`${item.etyp_id} - ${item.etyp_title} `} */}
             {`${item.etyp_id}[${item.etyp_title}]: [${t('fields.compartments')}:${
-              item?.compartments?.length
-            }]${
+              //item?.compartments?.length
+              item?.cmptnu
+            }]${item?.etyp_class === '0' ? '' : '[' + t('fields.comboType') + ']'}${
               item?.compartments?.length === 0 ? '' : '[' + item?.compartments?.[0]?.cmpt_units + ']'
             }${item?.compartments?.map((item2, index) => `[${item2.safefill}]`)}`}
           </Select.Option>
@@ -40,4 +41,4 @@ const EqptType = ({ value, onChange }) => {
   );
 };
 
-export default EqptType;
+export default TnkrEtyp;

@@ -6,13 +6,13 @@ import { Form, Select } from 'antd';
 
 import { LOAD_SCHEDULES } from 'api';
 
-const EqptOwner = ({ value, onChange }) => {
+const TnkrCarrier = ({ value, onChange }) => {
   const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(LOAD_SCHEDULES.CARRIERS);
 
   return (
-    <Form.Item name="eqpt_owner" label={t('fields.owner')}>
+    <Form.Item name="tnkr_carrier" label={t('fields.carrier')}>
       <Select
         loading={isValidating}
         showSearch
@@ -36,4 +36,4 @@ const EqptOwner = ({ value, onChange }) => {
   );
 };
 
-export default EqptOwner;
+export default TnkrCarrier;

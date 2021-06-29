@@ -40,6 +40,11 @@ import {
   EqptCode,
   EqptOwner,
   EqptType,
+  TnkrCode,
+  TnkrCarrier,
+  TnkrOwner,
+  TnkrEtyp,
+  TnkrFlags,
 } from './fields';
 
 const SearchForm = ({ onSearch, fields, modal, rangeRequired }) => {
@@ -106,6 +111,11 @@ const SearchForm = ({ onSearch, fields, modal, rangeRequired }) => {
       {fields?.eqpt_code && <EqptCode />}
       {fields?.eqpt_owner && <EqptOwner />}
       {fields?.eqpt_etyp && <EqptType />}
+      {fields?.tnkr_code_input && <TnkrCode />}
+      {fields?.tnkr_carrier && <TnkrCarrier />}
+      {fields?.tnkr_owner && <TnkrOwner />}
+      {fields?.tnkr_etyp && <TnkrEtyp />}
+      {fields?.tnkr_flags && <TnkrFlags />}
 
       {rangeRequired && (
         <DateRange form={form} timeOption={fields?.time_option} force={fields?.journal_msg} />

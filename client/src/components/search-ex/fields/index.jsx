@@ -29,6 +29,11 @@ import EqptId from './eqpt-id';
 import EqptCode from './eqpt-code';
 import EqptOwner from './eqpt-owner';
 import EqptType from './eqpt-type';
+import TnkrCode from './tnkr-code';
+import TnkrCarrier from './tnkr-carrier';
+import TnkrOwner from './tnkr-owner';
+import TnkrEtyp from './tnkr-etyp';
+import TnkrFlags from './tnkr-flags';
 
 export {
   DateRange,
@@ -62,4 +67,9 @@ export {
   EqptCode,
   EqptOwner,
   EqptType,
+  TnkrCode,
+  TnkrCarrier,
+  TnkrOwner,
+  TnkrEtyp,
+  TnkrFlags,
 };
