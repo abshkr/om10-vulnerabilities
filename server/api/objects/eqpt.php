@@ -253,31 +253,31 @@ class Equipment extends CommonClass
             FROM GUI_EQUIPMENT_LIST
             WHERE 1=1
         ";
-        if (isset($this->eqpt_id)) {
+        if (isset($this->eqpt_id) && $this->eqpt_id!='') {
             $query = $query . " AND (EQPT_ID in (" . $this->eqpt_id . ") OR (EQPT_ID LIKE '%'||:eqpt_id||'%')) ";
         }
-        if (isset($this->eqpt_code)) {
+        if (isset($this->eqpt_code) && $this->eqpt_code!='') {
             $query = $query . " AND UPPER(EQPT_CODE) LIKE '%'||UPPER(:eqpt_code)||'%' ";
         }
-        if (isset($this->eqpt_owner)) {
+        if (isset($this->eqpt_owner) && $this->eqpt_owner!='') {
             $query = $query . " AND EQPT_OWNER = :eqpt_owner ";
         }
-        if (isset($this->eqpt_etyp)) {
+        if (isset($this->eqpt_etyp) && $this->eqpt_etyp!='') {
             $query = $query . " AND EQPT_ETP = :eqpt_etyp ";
         }
         
         $stmt = oci_parse($this->conn, $query);
 
-        if (isset($this->eqpt_id)) {
+        if (isset($this->eqpt_id) && $this->eqpt_id!='') {
             oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
         }
-        if (isset($this->eqpt_code)) {
+        if (isset($this->eqpt_code) && $this->eqpt_code!='') {
             oci_bind_by_name($stmt, ':eqpt_code', $this->eqpt_code);
         }
-        if (isset($this->eqpt_owner)) {
+        if (isset($this->eqpt_owner) && $this->eqpt_owner!='') {
             oci_bind_by_name($stmt, ':eqpt_owner', $this->eqpt_owner);
         }
-        if (isset($this->eqpt_etyp)) {
+        if (isset($this->eqpt_etyp) && $this->eqpt_etyp!='') {
             oci_bind_by_name($stmt, ':eqpt_etyp', $this->eqpt_etyp);
         }
         
@@ -368,16 +368,16 @@ class Equipment extends CommonClass
             WHERE 1=1
         ";
 
-        if (isset($this->eqpt_id)) {
+        if (isset($this->eqpt_id) && $this->eqpt_id!='') {
             $query = $query . " AND (EQPT_ID in (" . $this->eqpt_id . ") OR (EQPT_ID LIKE '%'||:eqpt_id||'%')) ";
         }
-        if (isset($this->eqpt_code)) {
+        if (isset($this->eqpt_code) && $this->eqpt_code!='') {
             $query = $query . " AND UPPER(EQPT_CODE) LIKE '%'||UPPER(:eqpt_code)||'%' ";
         }
-        if (isset($this->eqpt_owner)) {
+        if (isset($this->eqpt_owner) && $this->eqpt_owner!='') {
             $query = $query . " AND EQPT_OWNER = :eqpt_owner ";
         }
-        if (isset($this->eqpt_etyp)) {
+        if (isset($this->eqpt_etyp) && $this->eqpt_etyp!='') {
             $query = $query . " AND EQPT_ETP = :eqpt_etyp ";
         }
 
@@ -387,16 +387,16 @@ class Equipment extends CommonClass
 
         $stmt = oci_parse($this->conn, $query);
 
-        if (isset($this->eqpt_id)) {
+        if (isset($this->eqpt_id) && $this->eqpt_id!='') {
             oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
         }
-        if (isset($this->eqpt_code)) {
+        if (isset($this->eqpt_code) && $this->eqpt_code!='') {
             oci_bind_by_name($stmt, ':eqpt_code', $this->eqpt_code);
         }
-        if (isset($this->eqpt_owner)) {
+        if (isset($this->eqpt_owner) && $this->eqpt_owner!='') {
             oci_bind_by_name($stmt, ':eqpt_owner', $this->eqpt_owner);
         }
-        if (isset($this->eqpt_etyp)) {
+        if (isset($this->eqpt_etyp) && $this->eqpt_etyp!='') {
             oci_bind_by_name($stmt, ':eqpt_etyp', $this->eqpt_etyp);
         }
         if (isset($this->pgflag) && $this->pgflag==='Y') {

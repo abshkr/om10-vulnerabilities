@@ -26,9 +26,13 @@ const EquipmentList = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [parentEqpt, setParentEqpt] = useState(equipment);
+  const [eqptId, setEqptId] = useState('');
+  const [eqptCode, setEqptCode] = useState('');
+  const [eqptOwner, setEqptOwner] = useState('');
+  const [eqptEtyp, setEqptEtyp] = useState('');
   const [pagingFlag, setPagingFlag] = useState(false);
   const [isSearching, setSearching] = useState(false);
-  const { setCount, take, offset, paginator } = usePagination(500);
+  const { setCount, take, offset, paginator, setPage } = usePagination(500);
 
   const access = useAuth('M_EQUIPMENTLIST');
 
@@ -37,7 +41,9 @@ const EquipmentList = () => {
       ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${
           pagingFlag ? 'Y' : 'N'
         }&start_num=${take}&end_num=${offset}`
-      : `${EQUIPMENT_LIST.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_num=${take}&end_num=${offset}`;
+      : `${EQUIPMENT_LIST.READ}?pgflag=${
+          pagingFlag ? 'Y' : 'N'
+        }&start_num=${take}&end_num=${offset}&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
   const { data: payload, isValidating, revalidate } = useSWR(url);
   const { data: expiryTypes } = useSWR(EQUIPMENT_LIST.EXPIRY);
 
@@ -73,6 +79,11 @@ const EquipmentList = () => {
   const onRefresh = () => {
     // setFilterValue(' ');
     setParentEqpt('');
+    setEqptId('');
+    setEqptCode('');
+    setEqptOwner('');
+    setEqptEtyp('');
+    setPage(1);
     revalidate();
   };
 
@@ -82,8 +93,15 @@ const EquipmentList = () => {
     }
 
     setSearching(true);
+    setEqptId(!values.eqpt_id ? '' : values.eqpt_id);
+    setEqptCode(!values.eqpt_code ? '' : values.eqpt_code);
+    setEqptOwner(!values.eqpt_owner ? '' : values.eqpt_owner);
+    setEqptEtyp(!values.eqpt_etp ? '' : values.eqpt_etp);
+    setPage(1);
+    revalidate();
+    setSearching(false);
 
-    api
+    /* api
       .get(EQUIPMENT_LIST.READ, {
         params: {
           eqpt_id: values.eqpt_id,
@@ -108,7 +126,7 @@ const EquipmentList = () => {
           });
         });
         setSearching(false);
-      });
+      }); */
   };
 
   useEffect(() => {
