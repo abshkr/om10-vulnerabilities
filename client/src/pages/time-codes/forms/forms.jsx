@@ -67,10 +67,10 @@ const TimecodeForm = ({ value, visible, handleFormState, setCode }) => {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 4 ─ ${t('descriptions.maxCharacters')}`);
     }
 
-    if (input != input.trimLeft()) {
+    if (input !== undefined && input !== input.trimLeft()) {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
     }
-    if (input != input.trimRight()) {
+    if (input !== undefined && input !== input.trimRight()) {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
     }
     return Promise.resolve();

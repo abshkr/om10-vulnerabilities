@@ -298,6 +298,20 @@
     "zeroCompartmentCount": "The compartment count cannot be zero",
     "periodOverlap": "Allocation period dates overlap with existing period"
   },
+  "separators": {
+    "canadianEnglishFrench": "Canadian (English and French)",
+    "danish": "Danish",
+    "finnish": "Finnish",
+    "french": "French",
+    "german": "German",
+    "italian": "Italian",
+    "norwegian": "Norwegian",
+    "spanish": "Spanish",
+    "swedish": "Swedish",
+    "gbEnglish": "GB-English ",
+    "usEnglish": "US-English",
+    "thai": "Thai"
+  },
   "divider": {
     "baseProducts": "Base Products",
     "calculation": "Calculation",
@@ -1927,7 +1941,10 @@
     "jobID": "Job ID",
     "jobName": "Job Name",
     "subject": "Subject",
-    "lastRun": "Last Run"
+    "lastRun": "Last Run",
+    "transferIn": "Transfer In",
+    "transferOut": "Transfer Out",
+    "disposalForOffsite": "Disposal For Offsite"
   },
   "generic": {
     "about": "About (EULA)",
@@ -2135,6 +2152,8 @@
     "ownershipTransactions": "Ownership Transactions",
     "ownershipTransactionsBase": "Base Ownership Transactions",
     "ownershipTransactionsTank": "Tank Ownership Transactions",
+    "paginationOn": "Pagination On",
+    "paginationOff": "Pagination Off",
     "preOrder": "Pre Order",
     "preSchedule": "Pre Schedule",
     "preview": "Preview",

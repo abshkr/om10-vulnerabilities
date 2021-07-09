@@ -10,3 +10,4 @@ export const UPDATE_TERMINAL = '/api/pages/site_config/update_terminal.php';
 export const DELETE_TERMINAL = '/api/pages/site_config/delete_terminal.php';
 export const TERMINAL_ADDRESSES = '/api/pages/site_config/addresses.php';
 export const GET_SITE = '/api/pages/site_config/get_site.php';
+export const GET_SITE_DEC_THOUSAND_SEPARATOR_TYPE = '/api/pages/site_config/decimal_thousand_separator.php';

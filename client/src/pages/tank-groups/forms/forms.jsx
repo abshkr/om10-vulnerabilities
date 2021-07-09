@@ -217,10 +217,10 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.groupName')}`);
     }
-    if (input != input.trimLeft()) {
+    if (input !== undefined && input !== input.trimLeft()) {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
     }
-    if (input != input.trimRight()) {
+    if (input !== undefined && input !== input.trimRight()) {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
     }
     const len = new TextEncoder().encode(input).length;

@@ -25,15 +25,24 @@ import JournalSearch from './journal-msg';
 import JournalEvent from './journal_event';
 import JournalCategory from './journal_categories';
 import Terminal from './terminal';
+import EqptId from './eqpt-id';
+import EqptCode from './eqpt-code';
+import EqptOwner from './eqpt-owner';
+import EqptType from './eqpt-type';
+import TnkrCode from './tnkr-code';
+import TnkrCarrier from './tnkr-carrier';
+import TnkrOwner from './tnkr-owner';
+import TnkrEtyp from './tnkr-etyp';
+import TnkrFlags from './tnkr-flags';
 
-export { 
-  DateRange, 
-  LoadID, 
-  Supplier, 
+export {
+  DateRange,
+  LoadID,
+  Supplier,
   Carrier,
-  TripStatus, 
-  Tanker, 
-  Trip, 
+  TripStatus,
+  Tanker,
+  Trip,
   TrsaID,
   PlantSupplier,
   MovementID,
@@ -54,5 +63,13 @@ export {
   JournalEvent,
   JournalCategory,
   Terminal,
+  EqptId,
+  EqptCode,
+  EqptOwner,
+  EqptType,
+  TnkrCode,
+  TnkrCarrier,
+  TnkrOwner,
+  TnkrEtyp,
+  TnkrFlags,
 };
-

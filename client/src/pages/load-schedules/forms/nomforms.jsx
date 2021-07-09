@@ -720,7 +720,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, c
               <Products form={form} value={value} drawer={drawer} access={access} />
             )}
 
-            {READ_ONLY && <Summary value={value} />}
+            {READ_ONLY && <Summary form={form} value={value} />}
           </TabPane>
 
           <TabPane

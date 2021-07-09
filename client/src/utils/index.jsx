@@ -34,6 +34,8 @@ import hash from './hash';
 import * as VCFManager from './vcf-manager';
 import generatePassword from './generate-password';
 import getChildrenFromTxt from './get-children-from-txt';
+import decimalThousandSeparator from './decimal-thousand-separator';
+
 export {
   search,
   generateOptions,
@@ -73,4 +75,5 @@ export {
   complexityDesc,
   generatePassword,
   getChildrenFromTxt,
+  decimalThousandSeparator,
 };

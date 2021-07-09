@@ -511,4 +511,17 @@ class SiteConfig extends CommonClass
 
         return true;
     }
+
+    public function decimalThousandOperator()
+    {
+        $query = "SELECT * FROM SITE_CONFIG WHERE CONFIG_KEY = 'SITE_DEC_TH_SEPERATORS'";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
 }
