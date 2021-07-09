@@ -8,6 +8,29 @@ const { Panel } = Collapse;
 
 const data = [
   {
+    title: `Release Notes (10.2.0-rc.4) - 09/07/2021`,
+    content: (
+      <>
+        <>
+          <p>OM5K-9314 - <a href="https://dev.diamondkey.com/browse/OM5K-9314">https://dev.diamondkey.com/browse/OM5K-9314</a></p>
+          <p>OM5K-9315 - <a href="https://dev.diamondkey.com/browse/OM5K-9315">https://dev.diamondkey.com/browse/OM5K-9315</a></p>
+          <p>OM5K-9346 - <a href="https://dev.diamondkey.com/browse/OM5K-9346">https://dev.diamondkey.com/browse/OM5K-9346</a></p>
+          <p>OM5K-9368 - <a href="https://dev.diamondkey.com/browse/OM5K-9368">https://dev.diamondkey.com/browse/OM5K-9368</a></p>
+          <p>OM5K-7831 - <a href="https://dev.diamondkey.com/browse/OM5K-7831">https://dev.diamondkey.com/browse/OM5K-7831</a></p>
+          <p>OM5K-8008 - <a href="https://dev.diamondkey.com/browse/OM5K-8008">https://dev.diamondkey.com/browse/OM5K-8008</a></p>
+          <p>OM5K-8753 - <a href="https://dev.diamondkey.com/browse/OM5K-8753">https://dev.diamondkey.com/browse/OM5K-8753</a></p>
+          <p>OM5K-8862 - <a href="https://dev.diamondkey.com/browse/OM5K-8862">https://dev.diamondkey.com/browse/OM5K-8862</a></p>
+          <p>OM5K-8947 - <a href="https://dev.diamondkey.com/browse/OM5K-8947">https://dev.diamondkey.com/browse/OM5K-8947</a></p>
+          <p>OM5K-9089 - <a href="https://dev.diamondkey.com/browse/OM5K-9089">https://dev.diamondkey.com/browse/OM5K-9089</a></p>
+          <p>OM5K-9299 - <a href="https://dev.diamondkey.com/browse/OM5K-9299">https://dev.diamondkey.com/browse/OM5K-9299</a></p>
+          <p>OM5K-8736 - <a href="https://dev.diamondkey.com/browse/OM5K-8736">https://dev.diamondkey.com/browse/OM5K-8736</a></p>
+          <p>OM5K-8946 - <a href="https://dev.diamondkey.com/browse/OM5K-8946">https://dev.diamondkey.com/browse/OM5K-8946</a></p>
+          <p>OM5K-9341 - <a href="https://dev.diamondkey.com/browse/OM5K-9341">https://dev.diamondkey.com/browse/OM5K-9341</a></p>
+        </>
+      </>
+    ),
+  },
+  {
     title: `Release Notes (10.2.0-rc.3) - 24/06/2021`,
     content: (
       <>
