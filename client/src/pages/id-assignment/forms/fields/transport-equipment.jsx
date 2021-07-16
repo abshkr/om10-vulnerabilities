@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
+import _ from 'lodash';
 
 import { ID_ASSIGNMENT } from '../../../../api';
 
@@ -12,8 +13,8 @@ const TransportEquipment = ({ form, value, type, carrier }) => {
   const { setFieldsValue } = form;
 
   const endpoints = {
-    '8': `${ID_ASSIGNMENT.SCHEDULABLE}?owner=${carrier}`,
-    '9': `${ID_ASSIGNMENT.NON_SCHEDULABLE}?owner=${carrier}`
+    8: `${ID_ASSIGNMENT.SCHEDULABLE}?owner=${carrier}`,
+    9: `${ID_ASSIGNMENT.NON_SCHEDULABLE}?owner=${carrier}`,
   };
 
   const { data: options, isValidating } = useSWR(endpoints[type]);
@@ -29,18 +30,31 @@ const TransportEquipment = ({ form, value, type, carrier }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        kya_equipment: value.kya_equipment
+        kya_equipment: value.kya_equipment,
       });
     }
   }, [value, setFieldsValue]);
 
   useEffect(() => {
-    if (carrier) {
+    if (!value) {
       setFieldsValue({
-        kya_equipment: null
+        kya_equipment: undefined,
       });
+    } else {
+      if (carrier && options) {
+        const found = _.find(options?.records, (o) => o?.eqpt_id === value.kya_equipment);
+        if (!found) {
+          setFieldsValue({
+            kya_equipment: undefined,
+          });
+        } else {
+          setFieldsValue({
+            kya_equipment: value.kya_equipment,
+          });
+        }
+      }
     }
-  }, [carrier, setFieldsValue]);
+  }, [carrier, options, setFieldsValue, value]);
 
   return (
     <Form.Item
