@@ -24,8 +24,10 @@ const EquipmentCarrier = ({ form, value, onChange }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        kya_eqpt_cmpy: value.kya_eqpt_cmpy
+        kya_eqpt_cmpy: value.kya_eqpt_cmpy,
       });
+
+      onChange(value.kya_eqpt_cmpy);
     }
   }, [value, setFieldsValue]);
 
@@ -48,7 +50,7 @@ const EquipmentCarrier = ({ form, value, onChange }) => {
       >
         {options?.records.map((item, index) => (
           <Select.Option key={index} value={item.cmpy_code}>
-            {item.cmpy_name}
+            {item.cmpy_desc}
           </Select.Option>
         ))}
       </Select>

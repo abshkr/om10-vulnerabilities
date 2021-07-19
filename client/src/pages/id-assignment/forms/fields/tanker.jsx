@@ -11,9 +11,7 @@ const Tanker = ({ form, value, carrier, setTnkrNumber }) => {
 
   const { setFieldsValue } = form;
 
-  const { data: options, isValidating, revalidate } = useSWR(
-    `${ID_ASSIGNMENT.TANKERS}?tnkr_owner=${carrier}`
-  );
+  const { data: options, isValidating } = useSWR(`${ID_ASSIGNMENT.TANKERS}?tnkr_owner=${carrier}`);
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
@@ -26,27 +24,38 @@ const Tanker = ({ form, value, carrier, setTnkrNumber }) => {
   const onChange = (value) => {
     const target = _.find(options?.records, (item) => {
       return item.tnkr_code === value;
-    })
+    });
     setTnkrNumber(target?.tnkr_carrier, target?.tnkr_number);
-  }
+  };
 
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        kya_tanker: value.kya_tanker
+        kya_tanker: value.kya_tanker,
       });
     }
   }, [value, setFieldsValue]);
 
   useEffect(() => {
-    revalidate();
-
     if (!value) {
       setFieldsValue({
-        kya_tanker: undefined
+        kya_tanker: undefined,
       });
+    } else {
+      if (carrier && options) {
+        const found = _.find(options?.records, (o) => o?.tnkr_code === value.kya_tanker);
+        if (!found) {
+          setFieldsValue({
+            kya_tanker: undefined,
+          });
+        } else {
+          setFieldsValue({
+            kya_tanker: value.kya_tanker,
+          });
+        }
+      }
     }
-  }, [carrier, revalidate, setFieldsValue, value]);
+  }, [carrier, options, setFieldsValue, value]);
 
   return (
     <Form.Item name="kya_tanker" label={t('fields.tanker')} rules={[{ required: true, validator: validate }]}>
