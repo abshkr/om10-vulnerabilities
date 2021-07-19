@@ -823,4 +823,25 @@ class Tank extends CommonClass
 
         return true;
     }
+
+    public function get_tank_batches()
+    {
+        $query = "
+            SELECT TANK_CODE, TANK_TERMINAL, TANK_BASE, TANK_BATCH_NO 
+            FROM TANKS
+            WHERE TANK_CODE=:code and TANK_TERMINAL=:term
+        ";
+        
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':code', $this->tank_code);
+        oci_bind_by_name($stmt, ':term', $this->tank_terminal);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
 }

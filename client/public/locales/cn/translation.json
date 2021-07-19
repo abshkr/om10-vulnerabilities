@@ -248,6 +248,7 @@
     "strapTypeWaterSection": "当前液位处于积水区域",
     "strapTypeWrongLine": "校正容积数据类型错误，行号：",
     "submitFailed": "提交失败",
+    "submitFailedTankBatchNull": "提交失败! 油罐[[TANK]]的批次编号为空。",
     "submitSuccess": "您已成功提交了记录",
     "tankDensityRestoreSuccess": "您已成功获取了油罐的密度",
     "tankLevelCannotNegative": "油罐液位不能为负数",

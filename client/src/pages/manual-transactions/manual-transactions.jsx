@@ -22,7 +22,7 @@ import DataManager from './data-manager';
 import DataColumns from './data-manager/columns';
 import DrawerProductTransfers from './drawer-product-transfer';
 import Forms from './forms';
-import api, { MANUAL_TRANSACTIONS, DRAWER_PRODUCTS } from '../../api';
+import api, { MANUAL_TRANSACTIONS, DRAWER_PRODUCTS, TANKS } from '../../api';
 import useAuth from 'hooks/use-auth';
 import useConfig from 'hooks/use-config';
 import { SETTINGS } from '../../constants';
@@ -43,6 +43,7 @@ const ManualTransactions = ({ popup, params }) => {
   const token = sessionStorage.getItem('token');
   const decoded = jwtDecode(token);
   const user_code = decoded?.per_code;
+  const site_code = decoded?.site_code;
 
   const [dataLoaded, setDataLoaded] = useState(null);
   const [dataSaved, setDataSaved] = useState(null);
@@ -546,7 +547,57 @@ const ManualTransactions = ({ popup, params }) => {
     return errors;
   };
 
-  const onSubmit = () => {
+  const isTankBatchExist = async (tank, terminal) => {
+    const values = {
+      tank_code: tank,
+      tank_terminal: terminal,
+    };
+
+    const results = await api.post(TANKS.TANK_BATCHES, values);
+
+    if (results?.data) {
+      const batch = results?.data?.records[0]?.tank_batch_no;
+      if (!batch) {
+        return false;
+      }
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const checkTankBatches = async (baseTotals) => {
+    if (config?.siteUseTankBatch && config?.siteTankBatchStrictMode) {
+      let errors = '';
+      let batchOK = true;
+      for (let i = 0; i < baseTotals?.length; i++) {
+        const tank_code = baseTotals?.[i]?.trsf_bs_tk_cd_tot;
+        const batch3 = await isTankBatchExist(tank_code, site_code);
+        if (batch3 === false) {
+          errors = t('descriptions.submitFailedTankBatchNull');
+          errors = errors.replace('[[TANK]]', '"' + tank_code + '"');
+          notification.warning({
+            message: t('messages.submitFailed'),
+            description: errors,
+          });
+          batchOK = false;
+        }
+      }
+      return batchOK;
+    } else {
+      // do not need to check the tank batch number
+      return true;
+    }
+  };
+
+  const onSubmit = async () => {
+    // check the tank batch numbers
+    const bpttl = form.getFieldValue('base_totals');
+    const tankBatchValid = await checkTankBatches(bpttl);
+    if (tankBatchValid === false) {
+      return;
+    }
+
     // check to see if all compartments have blank quantities
     const dptrsf = form.getFieldValue('transfers');
     // console.log('---------------onSubmit0', dptrsf);

@@ -248,6 +248,7 @@
     "strapTypeWaterSection": "Current level is within water section",
     "strapTypeWrongLine": "Wrong strapping type in line: ",
     "submitFailed": "Failed to submit",
+    "submitFailedTankBatchNull": "Failed to submit! The tank [[TANK]] has the NULL batch number.",
     "submitSuccess": "You have submitted the record",
     "tankDensityRestoreSuccess": "You have got the tank densities successfully",
     "tankLevelCannotNegative": "Tank level cannot be negative",
