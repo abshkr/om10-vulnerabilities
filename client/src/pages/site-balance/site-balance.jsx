@@ -19,28 +19,34 @@ const SiteBalance = () => {
   const access = useAuth('M_SITEBALANCE');
 
   const { t } = useTranslation();
-  const { data, revalidate, isValidating } = useSWR(STOCK_MANAGEMENT.SITE_BALANCE);
+  const { data: closeouts, revalidate: closeoutRevalidate, isValidating: closeoutValidationg } = useSWR(
+    STOCK_MANAGEMENT.CURR_CLOSEOUT
+  );
+
+  const closeout = closeouts?.records[0].closeout_nr;
+
+  const { data, revalidate, isValidating } = useSWR(`${STOCK_MANAGEMENT.SITE_BALANCE}?cls_out=${closeout}`);
 
   const fields = columns(t);
   const payload = transform(data?.records, unit);
 
   // const units = ['Litres', 'Cubic Metre', 'Imperial Gallon', 'U.S Gallon', 'Imperial Barrel', 'U.S Barrel'];
   const units = [
-    {code: 'Litres', title: t('units.litres')},
-    {code: 'Cubic Metre', title: t('units.cubicMetre')},
-    {code: 'Imperial Gallon', title: t('units.imperialGallon')},
-    {code: 'U.S Gallon', title: t('units.usGallon')},
-    {code: 'Imperial Barrel', title: t('units.imperialBarrel')},
-    {code: 'U.S Barrel', title: t('units.usBarrel')},
+    { code: 'Litres', title: t('units.litres') },
+    { code: 'Cubic Metre', title: t('units.cubicMetre') },
+    { code: 'Imperial Gallon', title: t('units.imperialGallon') },
+    { code: 'U.S Gallon', title: t('units.usGallon') },
+    { code: 'Imperial Barrel', title: t('units.imperialBarrel') },
+    { code: 'U.S Barrel', title: t('units.usBarrel') },
   ];
 
   const modifiers = (
     <>
-      <Select 
+      <Select
         dropdownMatchSelectWidth={false}
-        key="1" 
-        style={{ width: 200 }} 
-        defaultValue={unit} 
+        key="1"
+        style={{ width: 200 }}
+        defaultValue={unit}
         onChange={setUnit}
       >
         {units.map((item) => {

@@ -55,16 +55,18 @@ const Schedules = ({ selected, cbFunction, closeForm }) => {
         </Tabs.TabPane>
       </Tabs>
 
-      <Forms
-        value={picked}
-        visible={visible}
-        handleFormState={handleFormState}
-        access={access}
-        url={url}
-        locateTrip={locateTrip}
-        cbFunction={cbFunction}
-        closeForm={closeForm}
-      />
+      {visible && (
+        <Forms
+          value={picked}
+          visible={visible}
+          handleFormState={handleFormState}
+          access={access}
+          url={url}
+          locateTrip={locateTrip}
+          cbFunction={cbFunction}
+          closeForm={closeForm}
+        />
+      )}
     </>
   );
 };

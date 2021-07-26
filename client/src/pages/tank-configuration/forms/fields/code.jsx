@@ -48,10 +48,10 @@ const Code = ({ form, value, config }) => {
       );
     }
 
-    if (input != input.trimLeft()) {
+    if (input !== undefined && input !== input.trimLeft()) {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
     }
-    if (input != input.trimRight()) {
+    if (input !== undefined && input !== input.trimRight()) {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
     }
 

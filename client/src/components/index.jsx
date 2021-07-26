@@ -31,3 +31,4 @@ export { default as OrderManager } from './order-manager';
 export { default as SelectInput } from './select-input';
 export { default as Tank } from './tank';
 export { default as NumericInput } from './numeric-input';
+export { default as DecimalThousandSeparator } from './decimal-thousand-separator';

@@ -5,6 +5,7 @@ import _ from 'lodash';
 
 import { OverviewContainer, Container } from './style';
 import { Icons } from '../../../components';
+import { DecimalThousandSeparator } from 'components';
 
 const Overview = ({ selected, isLoading, config }) => {
   const { t } = useTranslation();
@@ -42,11 +43,11 @@ const Overview = ({ selected, isLoading, config }) => {
               </Descriptions.Item>
 
               <Descriptions.Item label={t(config?.siteLabelUser + 'fields.observedVolume')} span={24}>
-                {selected?.tank_amb_vol} {t('units.litres')}
+                <DecimalThousandSeparator text={selected?.tank_amb_vol} /> {t('units.litres')}
               </Descriptions.Item>
 
               <Descriptions.Item label={t(config?.siteLabelUser + 'fields.standardVolume')} span={24}>
-                {selected?.tank_cor_vol} {t('units.litres')}
+                <DecimalThousandSeparator text={selected?.tank_cor_vol} /> {t('units.litres')}
               </Descriptions.Item>
 
               <Descriptions.Item label={t('fields.temperature')} span={24}>
@@ -54,19 +55,19 @@ const Overview = ({ selected, isLoading, config }) => {
               </Descriptions.Item>
 
               <Descriptions.Item label={t('fields.standardDensity')} span={24}>
-                {selected?.tank_density} {t('units.kg/m3')}
+                <DecimalThousandSeparator text={selected?.tank_density} /> {t('units.kg/m3')}
                 {/* {selected?.tank_15_density} {t('units.kg/m3')} */}
               </Descriptions.Item>
 
               {config?.siteMassInVacuum && (
                 <Descriptions.Item label={t(config?.siteLabelUser + 'fields.weightInVacuum')} span={24}>
-                  {selected?.tank_liquid_kg} {t('units.kg')}
+                  <DecimalThousandSeparator text={selected?.tank_liquid_kg} /> {t('units.kg')}
                 </Descriptions.Item>
               )}
 
               {config?.siteMassInAir && (
                 <Descriptions.Item label={t(config?.siteLabelUser + 'fields.weightInAir')} span={24}>
-                  {selected?.tank_air_kg} {t('units.kg')}
+                  <DecimalThousandSeparator text={selected?.tank_air_kg} /> {t('units.kg')}
                 </Descriptions.Item>
               )}
 

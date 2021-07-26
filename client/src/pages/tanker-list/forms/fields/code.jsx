@@ -29,10 +29,10 @@ const Code = ({ form, value, tankers, config }) => {
       return Promise.reject(t('descriptions.alreadyExists'));
     }
 
-    if (input != input.trimLeft()) {
+    if (input !== undefined && input !== input.trimLeft()) {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
     }
-    if (input != input.trimRight()) {
+    if (input !== undefined && input !== input.trimRight()) {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
     }
     // const regex = new RegExp(REGEX.ALPHANUMERIC_SPECIAL_NOSQ);
