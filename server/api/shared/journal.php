@@ -1299,7 +1299,13 @@ class Journal
         } */
 
         $jnl_data[4] = $orig_value;
+        if (strlen($jnl_data[4]) > 200) {
+            $jnl_data[4] = substr($orig_value, 0, 200) . " ...";
+        }
         $jnl_data[5] = $new_value;
+        if (strlen($jnl_data[5]) > 200) {
+            $jnl_data[5] = substr($new_value, 0, 200) . " ...";
+        }
 
         if (!$this->jnlLogEvent(
             Lookup::RECORD_CHANGED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
