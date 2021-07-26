@@ -26,7 +26,7 @@ const General = ({ form, value, config, densRange }) => {
   const validate = (rule, input) => {
     const limit = rule?.max || 256;
 
-    if (input === '' || !input) {
+    if (input === '' || (input !== 0 && !input)) {
       return Promise.reject(`${t('validate.set')} ─ ${rule?.label}`);
     }
 

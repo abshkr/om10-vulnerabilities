@@ -566,6 +566,8 @@ class Feature extends CommonClass
 
 				SITE_OWNERSHIP_VOLUME_MODE: The volume mode used for site-level ownership stock management. GOV: Gross Observed Volume, GSV: Gross Standard Volume
 				SITE_OWNERSHIP_MASS_MODE: The mass mode used for site-level ownership stock management. WiV: Weight in Vacuum, WiA: Weight in Air
+
+				SITE_IGNORE_ADTV_DENSITY: Ignore the aditive when calculating product density, Y/N
 		*/
 		if ( $flag == 'Y' || $flag == true )
 		{
@@ -586,6 +588,7 @@ class Feature extends CommonClass
 			$this->updateSiteConfig( 'Y', 'SITE_VCF_FIELD_VISIBLE' );
 			$this->updateSiteConfig( 'GSV', 'SITE_OWNERSHIP_VOLUME_MODE' );
 			$this->updateSiteConfig( 'WiV', 'SITE_OWNERSHIP_MASS_MODE' );
+			$this->updateSiteConfig( 'Y', 'SITE_IGNORE_ADTV_DENSITY' );
 		}
 		else
 		{
@@ -606,6 +609,7 @@ class Feature extends CommonClass
 			$this->updateSiteConfig( 'N', 'SITE_VCF_FIELD_VISIBLE' );
 			$this->updateSiteConfig( 'GSV', 'SITE_OWNERSHIP_VOLUME_MODE' ); // may need to change later
 			$this->updateSiteConfig( 'WiV', 'SITE_OWNERSHIP_MASS_MODE' ); // may need to change later
+			$this->updateSiteConfig( 'N', 'SITE_IGNORE_ADTV_DENSITY' );
 		}
 
 		// update the unit message for std volume

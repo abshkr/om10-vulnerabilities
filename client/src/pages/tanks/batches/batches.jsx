@@ -34,6 +34,7 @@ import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
 import moment from 'moment';
+import jwtDecode from 'jwt-decode';
 
 import { DataTable, Download, DateTimeRangePicker } from '../../../components';
 import api, { TANK_BATCHES, TANKS } from '../../../api';
@@ -43,6 +44,9 @@ import columns from './columns';
 
 const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
   const rangeSetting = '365~~1';
+  const token = sessionStorage.getItem('token');
+  const decoded = jwtDecode(token);
+  const user_code = decoded?.per_code;
 
   const { t } = useTranslation();
 
@@ -55,6 +59,7 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
   const [end, setEnd] = useState(null);
   const [historyCreated, setHistoryCreated] = useState(0);
   const [historyUpdated, setHistoryUpdated] = useState(0);
+  const [historyDeleted, setHistoryDeleted] = useState(0);
   const [tankUpdated, setTankUpdated] = useState(0);
   const [currentBatch, setCurrentBatch] = useState(value?.tank_batch_no);
   const [batchEditable, setBatchEditable] = useState(false);
@@ -100,6 +105,18 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
     return results?.data?.records;
   };
 
+  const checkTransactions = async (code) => {
+    const results = await api.get(`${TANK_BATCHES.CHECK_BATCHES_IN_TRSA}?tank_batch_code=${code}`);
+
+    return results?.data?.records;
+  };
+
+  const getPrevBatch = async (code) => {
+    const results = await api.get(`${TANK_BATCHES.GET_PREV_BATCH}?tank_code=${code}`);
+
+    return results?.data?.records;
+  };
+
   const onComplete = () => {
     setData(null);
     setRefreshed(true);
@@ -122,9 +139,9 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
         notes = notes.replace('[[TANK]]', '"' + vobj?.tank_code + ' [' + vobj?.tank_terminal + ']"');
         notes = notes.replace('[[BATCH]]', '"' + vobj?.tank_batch_no + '"');
 
-        /* setFieldsValue({
+        setFieldsValue({
           tank_batch_no: values?.tank_batch_no,
-        }); */
+        });
         setCurrentBatch(values.tank_batch_no);
 
         notification.success({
@@ -213,6 +230,37 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
         });
 
         setHistoryCreated(-1);
+      });
+  };
+
+  const deleteTankBatchHistory = async (vobj) => {
+    const values = vobj;
+
+    await api
+      .post(TANK_BATCHES.DELETE, values)
+      .then(() => {
+        // onComplete();
+
+        let notes = t('descriptions.deleteSuccessTankBatchHistory');
+        notes = notes.replace('[[TANK]]', '"' + vobj?.tank_code + ' [' + vobj?.tank_terminal + ']"');
+        notes = notes.replace('[[BATCH]]', '"' + vobj?.tank_batch_prev + '"');
+
+        notification.success({
+          message: t('messages.deleteSuccess'),
+          description: notes,
+        });
+
+        setHistoryDeleted(1);
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
+        });
+
+        setHistoryDeleted(-1);
       });
   };
 
@@ -317,6 +365,84 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
     });
   };
 
+  const onRevert = async () => {
+    const valids = await form.validateFields();
+    const values = {};
+    values.tank_batch_no = valids?.tank_batch_no;
+    values.tank_batch_code = valids?.tank_batch_no;
+    values.tank_batch_prev = currentBatch; //value?.tank_batch_no;
+    values.tank_code = value?.tank_code;
+    values.tank_terminal = value?.tank_terminal;
+    values.tank_base = value?.tank_base;
+    values.tank_density = value?.tank_density;
+
+    let customTitles = t('prompts.revert');
+    let okEnabled = true;
+    // firstly, check if the current batch number exists
+    const batches = await getBatches(values.tank_batch_code);
+    if (batches?.length > 0) {
+      // batch code exists
+      // find if it has the end time.
+      if (batches?.[0]?.tank_batch_end === '') {
+        // it is not ended yet, so it may be reverted, but need to check if it has been used in transactions
+        const trsa = await checkTransactions(values.tank_batch_code);
+        const used = trsa?.[0]?.cnt > 0 ? true : false;
+        if (used) {
+          okEnabled = false;
+          customTitles = t('descriptions.batchCodeTrsaCanNotRevert');
+        } else {
+          okEnabled = true;
+          customTitles = t('descriptions.batchCodeNoTrsaCanRevert');
+        }
+      } else {
+        // it was ended already, so it can not be reverted.
+        okEnabled = false;
+        customTitles = t('descriptions.batchCodeEndCanNotRevert');
+      }
+    } else {
+      // batch code does not exist
+      // just revert the batch field to the previous value
+      if (value) {
+        setFieldsValue({
+          tank_batch_no: values?.tank_batch_prev,
+        });
+      }
+      return;
+    }
+
+    Modal.confirm({
+      title: customTitles,
+      okText: t('operations.revert'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      okButtonProps: {
+        hidden: !okEnabled,
+      },
+      onCancel: () => {},
+      onOk: async () => {
+        // when batch number is not blank, remove it from history
+        if (_.trim(values.tank_batch_code).length > 0) {
+          await deleteTankBatchHistory(values);
+        } else {
+          setHistoryDeleted(2);
+        }
+        // update tank record with previous batch
+        const prevBatch = await getPrevBatch(values.tank_code);
+        if (prevBatch?.length > 0) {
+          // found the prev batch
+          values.tank_batch_no = prevBatch?.[0]?.tank_batch_code;
+          await updateTankBatchNumber(values);
+        } else {
+          // no prev batch
+          values.tank_batch_no = '';
+          await updateTankBatchNumber(values);
+        }
+      },
+    });
+  };
+
   const validate = (rule, input) => {
     const limit = rule?.maxlen || 200;
 
@@ -393,6 +519,15 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
       setTankUpdated(0);
     }
   }, [historyCreated, historyUpdated, tankUpdated]);
+
+  useEffect(() => {
+    if (historyDeleted !== 0 && tankUpdated !== 0) {
+      mutate(TANKS.READ);
+      onComplete();
+      setHistoryDeleted(0);
+      setTankUpdated(0);
+    }
+  }, [historyDeleted, tankUpdated]);
 
   return (
     <>
@@ -491,9 +626,19 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
                   type="primary"
                   icon={<EditOutlined />}
                   htmlType="submit"
+                  onClick={onRevert}
+                  disabled={!access?.canDelete || !batchEditable}
+                  style={{ float: 'right', marginRight: 5 }}
+                >
+                  {t('operations.revert')}
+                </Button>
+                <Button
+                  type="primary"
+                  icon={<EditOutlined />}
+                  htmlType="submit"
                   onClick={onFinish}
                   disabled={!access?.canUpdate || !batchEditable}
-                  style={{ float: 'right' }}
+                  style={{ float: 'right', marginRight: 5 }}
                 >
                   {t('operations.update')}
                 </Button>

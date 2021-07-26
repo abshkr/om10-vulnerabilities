@@ -4,6 +4,7 @@ import _ from 'lodash';
 import useSWR from 'swr';
 
 import { AUTH, SITE_CONFIGURATION } from '../api';
+import { SETTINGS } from '../constants';
 
 const useConfig = () => {
   const [config, setConfig] = useState({
@@ -361,6 +362,9 @@ const useConfig = () => {
         reports_closeout_job: configurationObject?.REPORTS_CLOSEOUT_JOB || false,
         decimal_thousand_separator: configurationObject?.SITE_DEC_TH_SEPERATORS || '10',
       });
+
+      // utils function cannot use hooks, use global constants to by pass
+      SETTINGS.GLOBAL_SETTINGS.IGNORE_ADTV_DENS = configurationObject?.SITE_IGNORE_ADTV_DENSITY || false;
     }
     // eslint-disable-next-line
   }, [configuration, features, environment]);

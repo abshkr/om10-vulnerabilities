@@ -221,6 +221,50 @@ class TankBatch extends CommonClass
         }
     }
 
+    public function get_prev_batch()
+    {
+        $query = "
+            SELECT * FROM 
+            (
+                SELECT * 
+                FROM TANK_BATCHES_VW
+                WHERE TANK_CODE=:code 
+                AND TANK_BATCH_END IS NOT NULL
+                ORDER BY TANK_BATCH_END DESC
+            )
+            WHERE ROWNUM=1
+        ";
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':code', $this->tank_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function check_batches_in_transaction()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT 
+            FROM TRANBASE
+            WHERE TRSB_BATCH_NO=:code 
+        ";
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':code', $this->tank_batch_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     private function is_batch_num_existed()
     {
         $query = "

@@ -52,7 +52,7 @@ import {
 
 import { DataTable } from '../../../../../../components';
 import { SETTINGS } from '../../../../../../constants';
-import api, { NOMINATION_TRANSACTIONS, MOVEMENT_NOMIATIONS } from '../../../../../../api';
+import api, { NOMINATION_TRANSACTIONS, MOVEMENT_NOMIATIONS, TANKS } from '../../../../../../api';
 import BaseDetails from './base-details/base-details';
 import MeterDetails from './meter-details/meter-details';
 import { calcArmQuantity } from '../../../../../../utils';
@@ -120,6 +120,7 @@ const FormModal = ({
   const token = sessionStorage.getItem('token');
   const decoded = jwtDecode(token);
   const user_code = decoded?.per_code;
+  const site_code = decoded?.site_code;
 
   // This function does not work for unknown reason and needs further investigation
   const changeTankTo = (value) => {
@@ -230,6 +231,80 @@ const FormModal = ({
     return payload;
   };
 
+  const isTankBatchExist = async (tank, terminal) => {
+    const values = {
+      tank_code: tank,
+      tank_terminal: terminal,
+    };
+
+    const results = await api.post(TANKS.TANK_BATCHES, values);
+
+    if (results?.data) {
+      const batch = results?.data?.records[0]?.tank_batch_no;
+      if (!batch) {
+        return false;
+      }
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  const checkTankBatches = async (values) => {
+    if (config?.siteUseTankBatch && config?.siteTankBatchStrictMode) {
+      let errors = '';
+
+      if (!values?.mvitm_arm) {
+        let batch1 = true;
+        let batch2 = true;
+        // it is the tank-based transaction
+        if (!!values?.mvitm_tank_from) {
+          batch1 = await isTankBatchExist(values?.mvitm_tank_from, site_code);
+          if (batch1 === false) {
+            errors = t('descriptions.submitFailedTankBatchNull');
+            errors = errors.replace('[[TANK]]', '"' + values?.mvitm_tank_from + '"');
+            notification.warning({
+              message: t('messages.submitFailed'),
+              description: errors,
+            });
+          }
+        }
+        if (!!values?.mvitm_tank_to) {
+          batch2 = await isTankBatchExist(values?.mvitm_tank_to, site_code);
+          if (batch2 === false) {
+            errors = t('descriptions.submitFailedTankBatchNull');
+            errors = errors.replace('[[TANK]]', '"' + values?.mvitm_tank_to + '"');
+            notification.warning({
+              message: t('messages.submitFailed'),
+              description: errors,
+            });
+          }
+        }
+        return batch1 && batch2;
+      } else {
+        // it is the arm-based transaction
+        let batchOK = true;
+        for (let i = 0; i < values?.base_transfers?.length; i++) {
+          const tank_code = values?.base_transfers?.[i]?.trsf_bs_tk_cd;
+          const batch3 = await isTankBatchExist(tank_code, site_code);
+          if (batch3 === false) {
+            errors = t('descriptions.submitFailedTankBatchNull');
+            errors = errors.replace('[[TANK]]', '"' + tank_code + '"');
+            notification.warning({
+              message: t('messages.submitFailed'),
+              description: errors,
+            });
+            batchOK = false;
+          }
+        }
+        return batchOK;
+      }
+    } else {
+      // do not need to check the tank batch number
+      return true;
+    }
+  };
+
   const onSubmit = async () => {
     const values = await form.validateFields();
     console.log('..................onSubmit', values, arm);
@@ -251,6 +326,11 @@ const FormModal = ({
         message: t('messages.submitFailed'),
         description: t('descriptions.noTransferDetailsSpec'),
       });
+      return;
+    }
+
+    const tankBatchValid = await checkTankBatches(values);
+    if (tankBatchValid === false) {
       return;
     }
 
