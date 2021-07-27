@@ -14,15 +14,22 @@ export default class QuantityRenderer extends Component {
   render() {
     const { digits, min, adtvFlag, adtvDigits, data } = this.props;
     let newDigits = _.toNumber(!digits ? 0 : digits);
-    if (data?.[adtvFlag] === true || data?.[adtvFlag] === '1') {
+    let tipDigits = newDigits + 1;
+    const isFlag = adtvFlag?.indexOf('flag') >= 0;
+    const isAdditive = isFlag
+      ? data?.[adtvFlag] === true || data?.[adtvFlag] === '1'
+      : String(data?.[adtvFlag]) === '6' || String(data?.[adtvFlag]) === '11';
+    if (isAdditive) {
       newDigits = adtvDigits;
+      tipDigits = newDigits + 1;
     } else {
       if (_.toNumber(this.state.value) < _.toNumber(min)) {
-        newDigits = 3;
+        // newDigits = 3;
+        tipDigits = 3;
       }
     }
     const quantity = _.round(_.toNumber(this.state.value), newDigits);
-    const tipQty = _.round(_.toNumber(this.state.value), newDigits + 1);
+    const tipQty = _.round(_.toNumber(this.state.value), tipDigits);
 
     return (
       <Tooltip placement="topRight" title={tipQty}>

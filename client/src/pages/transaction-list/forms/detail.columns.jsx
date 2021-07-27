@@ -86,6 +86,13 @@ const detailColumns = (isFromNomination, t, config) => [
         sortable: true,
         resizable: true,
         hide: !isFromNomination,
+        cellRenderer: 'QuantityRenderer',
+        cellRendererParams: {
+          digits: String(config?.precisionVolume),
+          min: '100',
+          adtvFlag: 'base_cat',
+          adtvDigits: config?.precisionAdditive,
+        },
       },
       {
         headerName: t(config?.siteLabelUser + 'fields.standard') + ' (' + t('units.ltr') + ')',
@@ -93,6 +100,13 @@ const detailColumns = (isFromNomination, t, config) => [
         sortable: true,
         resizable: true,
         hide: !isFromNomination,
+        cellRenderer: 'QuantityRenderer',
+        cellRendererParams: {
+          digits: String(config?.precisionVolume),
+          min: '100',
+          adtvFlag: 'base_cat',
+          adtvDigits: config?.precisionAdditive,
+        },
       },
       {
         headerName: t(config?.siteLabelUser + 'fields.mass') + ' (' + t('units.kg') + ')',
@@ -100,6 +114,13 @@ const detailColumns = (isFromNomination, t, config) => [
         sortable: true,
         resizable: true,
         hide: !isFromNomination || !config?.siteMassInVacuum,
+        cellRenderer: 'QuantityRenderer',
+        cellRendererParams: {
+          digits: String(config?.precisionMass),
+          min: '100',
+          adtvFlag: 'base_cat',
+          adtvDigits: config?.precisionAdditive,
+        },
       },
       {
         headerName: t(config?.siteLabelUser + 'fields.massInAir') + ' (' + t('units.kg') + ')',
@@ -121,6 +142,10 @@ const detailColumns = (isFromNomination, t, config) => [
         sortable: true,
         resizable: true,
         hide: !isFromNomination,
+        cellRenderer: 'DensityRenderer',
+        cellRendererParams: {
+          digits: String(config?.precisionDensity),
+        },
       },
       {
         headerName: t('fields.temp') + ' (' + t('units.degC') + ')',

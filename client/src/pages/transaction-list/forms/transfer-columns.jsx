@@ -34,6 +34,11 @@ const transferColumns = (isFromNomination, t, config) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: String(config?.precisionVolume),
+      min: '100',
+    },
   },
   {
     headerName: t(config?.siteLabelUser + 'fields.standard') + ' (' + t('units.ltr') + ')',
@@ -41,6 +46,11 @@ const transferColumns = (isFromNomination, t, config) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: String(config?.precisionVolume),
+      min: '100',
+    },
   },
   {
     headerName: t(config?.siteLabelUser + 'fields.mass') + ' (' + t('units.kg') + ')',
@@ -48,6 +58,11 @@ const transferColumns = (isFromNomination, t, config) => [
     sortable: true,
     resizable: true,
     hide: !config?.siteMassInVacuum,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: String(config?.precisionMass),
+      min: '100',
+    },
   },
   {
     headerName: t(config?.siteLabelUser + 'fields.massInAir') + ' (' + t('units.kg') + ')',
@@ -68,6 +83,10 @@ const transferColumns = (isFromNomination, t, config) => [
     field: 'trsf_density',
     sortable: true,
     resizable: true,
+    cellRenderer: 'DensityRenderer',
+    cellRendererParams: {
+      digits: String(config?.precisionDensity),
+    },
   },
   {
     headerName: t('fields.temp') + ' (' + t('units.degC') + ')',
