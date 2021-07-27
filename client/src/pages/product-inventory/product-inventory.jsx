@@ -31,7 +31,7 @@ const ProductInventory = () => {
 
   const access = useAuth('M_PRODUCTINVENTORY');
 
-  const fields = columns(t);
+  const fields = columns(t, config);
   const payload = transform(data?.records, unit);
 
   // const units = ['Litres', 'Cubic Metre', 'Imperial Gallon', 'U.S Gallon', 'Imperial Barrel', 'U.S Barrel'];

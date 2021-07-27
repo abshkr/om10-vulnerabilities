@@ -2808,7 +2808,9 @@
       "weightInVacuum": "Weight In Vacuum (WiV)",
       "liquidMass": "Weight in Vacuum (WiV)",
       "observedMass": "Weight in Vacuum (WiV)",
-      "nomtranMass": "Weight in Vacuum (WiV)"
+      "nomtranMass": "Weight in Vacuum (WiV)",
+      "grossVolume": "Gross Observed Volume (GOV)",
+      "netVolume": "Gross Standard Volume (GSV)"
     },
     "pageNames": {
       "equipmentList": "Transport Equipment List",

@@ -1,4 +1,4 @@
-const columns = (t) => [
+const columns = (t, config) => [
   {
     headerName: t('fields.baseProductCode'),
     field: 'base_code',
@@ -20,16 +20,23 @@ const columns = (t) => [
     resizable: true,
   },
   {
-    headerName: t('fields.grossVolume'),
+    headerName: t(config?.siteLabelUser + 'fields.grossVolume'),
     field: 'grossvol',
     sortable: true,
     resizable: true,
   },
   {
-    headerName: t('fields.netVolume'),
+    headerName: t(config?.siteLabelUser + 'fields.netVolume'),
     field: 'netvol',
     sortable: true,
     resizable: true,
+  },
+  {
+    headerName: t('fields.ullage'),
+    field: 'ullage',
+    sortable: true,
+    resizable: true,
+    hide: !config?.siteUllageCalcAuto,
   },
   {
     headerName: t('fields.usableVolume'),

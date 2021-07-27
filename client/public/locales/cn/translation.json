@@ -2791,7 +2791,9 @@
       "weightInVacuum": "真空中重量(WiV)",
       "liquidMass": "真空中重量(WiV)",
       "observedMass": "真空中重量(WiV)",
-      "nomtranMass": "真空中重量(WiV)"
+      "nomtranMass": "真空中重量(WiV)",
+      "grossVolume": "视量容积(GOV)",
+      "netVolume": "标量容积(GSV)"
     },
     "pageNames": {
       "equipmentList": "运输设备管理",
