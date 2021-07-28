@@ -83,7 +83,7 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
     },
   ];
 
-  const fields = columns(t, reasons, ownershipDensityVisible);
+  const fields = columns(t, reasons, ownershipDensityVisible, config);
 
   const getBaseSummary = async (prod) => {
     const results = await api.get(`${BASE_OWNER_TRANSACTIONS.BASE_SUMMARY}?base_code=${prod}`);

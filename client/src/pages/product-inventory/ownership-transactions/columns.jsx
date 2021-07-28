@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-const columns = (t, reasons, ownershipDensityVisible) => [
+const columns = (t, reasons, ownershipDensityVisible, config) => [
   {
     headerName: t('fields.baseOwnerTransId'),
     field: 'ownship_trsa_no',
@@ -97,7 +97,7 @@ const columns = (t, reasons, ownershipDensityVisible) => [
     suppressSizeToFit: true,
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
   {
@@ -246,7 +246,7 @@ const columns = (t, reasons, ownershipDensityVisible) => [
     suppressSizeToFit: true,
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
 
@@ -271,7 +271,7 @@ const columns = (t, reasons, ownershipDensityVisible) => [
     hide: true,
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
 
@@ -296,7 +296,7 @@ const columns = (t, reasons, ownershipDensityVisible) => [
     hide: true,
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
 
@@ -339,7 +339,7 @@ const columns = (t, reasons, ownershipDensityVisible) => [
     suppressSizeToFit: true,
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
 
@@ -364,7 +364,7 @@ const columns = (t, reasons, ownershipDensityVisible) => [
     hide: true,
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
 
@@ -389,7 +389,7 @@ const columns = (t, reasons, ownershipDensityVisible) => [
     hide: true,
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
 ];

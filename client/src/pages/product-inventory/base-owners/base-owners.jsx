@@ -64,7 +64,7 @@ const BaseProductOwners = ({ value, access, config, unit, units }) => {
 
   const { resetFields, setFieldsValue, getFieldsValue } = form;
 
-  const fields = columns(t, true);
+  const fields = columns(t, true, config);
 
   const onFormClose = () => {
     setShowMakeTransactions(false);
