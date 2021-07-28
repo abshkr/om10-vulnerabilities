@@ -1212,7 +1212,10 @@
     "nextWeeklyDate": "Next Weekly Report Date",
     "node": "Node",
     "nomIntoTransitGL": "Into Transit Gain/Loss",
+    "nomIntoTransitGLPercent": "Into Transit Gain/Loss Percentage (%)",
     "nomQtyReceiptExpected": "Quantity Expected To Receive",
+    "nomQtyReceived": "Quantity Received",
+    "nomReceiptItems": " Receipt Items",
     "nominationItem": "Nomination Item",
     "nominationKey": "Nomination Key",
     "nominationNumber": "Nomination Number",
@@ -2687,6 +2690,7 @@
     "lcor": "L(cor)",
     "litre": "Litre",
     "litres": "Litres",
+    "litresGeneric": "Litres",
     "lobs": "L(obs)",
     "lpm": "LPM",
     "lstd": "L(std)",
@@ -2817,6 +2821,7 @@
       "equipmentTypes": "Transport Equipment Types"
     },
     "units": {
+      "litresGeneric": "Litres (std)",
       "lamb": "L(amb)",
       "lcor": "L(std)",
       "lobs": "L(obs)"

@@ -1198,7 +1198,10 @@
     "nextWeeklyDate": "下次周报表日期",
     "node": "节点",
     "nomIntoTransitGL": "油品运输损耗",
+    "nomIntoTransitGLPercent": "油品运输损耗百分比(%)",
     "nomQtyReceiptExpected": "预计进油货量",
+    "nomQtyReceived": "实际进油货量",
+    "nomReceiptItems": "单油品进库货单",
     "nominationItem": "大宗货单明细条目",
     "nominationKey": "大宗货单主键",
     "nominationNumber": "大宗货单单号",
@@ -2670,6 +2673,7 @@
     "lcor": "升(标量)",
     "litre": "升",
     "litres": "升",
+    "litresGeneric": "升",
     "lobs": "升(视量)",
     "lpm": "升/分钟",
     "lstd": "升(标量)",
@@ -2800,6 +2804,7 @@
       "equipmentTypes": "运输设备类型管理"
     },
     "units": {
+      "litresGeneric": "升(标量)",
       "lamb": "升(视量)",
       "lcor": "升(标量)",
       "lobs": "升(视量)"
