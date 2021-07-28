@@ -89,6 +89,22 @@ const detailColumns = (t, config) => [
     sortable: true,
     resizable: true,
   },
+
+  {
+    headerName: t('fields.vcf'),
+    field: 'trsb_vcf',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: !config?.siteUseVCF,
+    cellRenderer: 'VcfRenderer',
+    cellRendererParams: {
+      digits: String(config?.precisionVCF),
+      ambientVolume: 'trsb_avl',
+      standardVolume: 'trsb_cvl',
+    },
+  },
+
   {
     headerName: t('fields.api'),
     field: 'trsb_api',

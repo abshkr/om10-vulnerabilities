@@ -31,6 +31,7 @@ import {
   OffsetAlarmRenderer,
   LinkRenderer,
   MassInAirRenderer,
+  VcfRenderer,
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -87,6 +88,7 @@ const defaultComponents = {
   DraggableRenderer,
   LinkRenderer,
   MassInAirRenderer,
+  VcfRenderer,
 };
 
 const defaultColumnDef = {};
@@ -163,6 +165,7 @@ const Table = ({
   };
 
   const handleFirstDataRendered = (params) => {
+    // if (autoColWidth!==undefined && !autoColWidth) {
     if (!autoColWidth) {
       return;
     }
@@ -226,9 +229,11 @@ const Table = ({
         // if (o?.headerTooltip === undefined) {
         //   o.headerTooltip = o?.headerName;
         // }
+        // o.tooltipShowDelay = 100;
         // o.suppressSizeToFit = false;
         // o.width = undefined;
       });
+      // setTableColumns([]);
       setTableColumns(columns);
     }
   }, [t, columns, setTableColumns]);

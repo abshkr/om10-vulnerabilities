@@ -94,6 +94,22 @@ const transferColumns = (t, config) => [
     sortable: true,
     resizable: true,
   },
+
+  {
+    headerName: t('fields.vcf'),
+    field: 'trsf_vcf',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: !config?.siteUseVCF,
+    cellRenderer: 'VcfRenderer',
+    cellRendererParams: {
+      digits: String(config?.precisionVCF),
+      ambientVolume: 'trsf_qty_amb',
+      standardVolume: 'trsf_qty_cor',
+    },
+  },
+
   {
     headerName: t('fields.api'),
     field: 'trsf_api',
