@@ -3326,6 +3326,8 @@
   },
   "PRODOWNSHIP_TRANSACT": {
     "OWNSHIP_TRSA_NO": "NA",
+    "TRSA_KEY": "NA",
+    "TRSA_NUMBER": "NA",
     "BASE_PROD_CODE": "NA",
     "SUPP_CMPY": "NA",
     "QTY": "NA",
