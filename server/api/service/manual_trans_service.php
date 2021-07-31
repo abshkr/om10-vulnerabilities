@@ -1147,6 +1147,80 @@ class ManualTransactionService
         }
     }
     
+    public function calc_vcf() {
+        write_log(sprintf("%s::%s() START.", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        $query = "SELECT TRSF_VCF FROM TRANSFERS WHERE ROWNUM = 1";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . json_encode($e), __FILE__, __LINE__, LogLevel::WARNING);
+            if ($e["code"] == 904) {
+                $query = "ALTER TABLE TRANSFERS ADD TRSF_VCF FLOAT DEFAULT 1";
+                $stmt = oci_parse($this->conn, $query);
+                if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . json_encode($e), __FILE__, __LINE__, LogLevel::ERROR);
+                }
+            }
+        }
+
+        $query = "SELECT TRSB_VCF FROM TRANBASE WHERE ROWNUM = 1";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . json_encode($e), __FILE__, __LINE__, LogLevel::WARNING);
+            if ($e["code"] == 904) {
+                $query = "ALTER TABLE TRANBASE ADD TRSB_VCF FLOAT DEFAULT 1";
+                $stmt = oci_parse($this->conn, $query);
+                if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . json_encode($e), __FILE__, __LINE__, LogLevel::ERROR);
+                }
+            }
+        }
+
+        $query = "UPDATE TRANSFERS 
+                SET TRSF_VCF = TRSF_QTY_COR / TRSF_QTY_AMB
+                WHERE TRSF_QTY_AMB > 0 AND TRSFTRID_TRSA_ID IN (
+                SELECT TRSA_ID FROM TRANSACTIONS WHERE TRSALDID_LOAD_ID = (
+                        SELECT SHLSLOAD_LOAD_ID FROM SCHEDULE 
+                        WHERE SHLS_TRIP_NO = :trip AND SHLS_SUPP = :supplier
+                    )
+                )";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':trip', $this->trip_no);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return -1;
+        }
+
+        $query = "UPDATE TRANBASE 
+            SET TRSB_VCF = TRSB_CVL / TRSB_AVL
+            WHERE TRSB_AVL > 0 AND TRSB_ID_TRSF_ID IN (
+                SELECT TRSF_ID FROM TRANSFERS 
+                WHERE TRSFTRID_TRSA_ID IN (
+                    SELECT TRSA_ID FROM TRANSACTIONS WHERE TRSALDID_LOAD_ID = (
+                            SELECT SHLSLOAD_LOAD_ID FROM SCHEDULE 
+                            WHERE SHLS_TRIP_NO = :trip AND SHLS_SUPP = :supplier
+                    )
+                )
+            )";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':trip', $this->trip_no);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return -1;
+        }
+
+        return 0;
+    }
+
     /**
      * Create a manual transaction. 
      * return true or false
@@ -1261,6 +1335,8 @@ class ManualTransactionService
                 write_log("Manual Transaction failed: " . $response, __FILE__, __LINE__);
                 return false;
             }
+
+            $this->calc_vcf();
             return true;
         } else {    //Non-open order
             write_log(sprintf("Do non-open order branch."),
@@ -1348,6 +1424,7 @@ class ManualTransactionService
                 return false;
             }
 
+            $this->calc_vcf();
             write_log(sprintf("%s END", __FUNCTION__), __FILE__, __LINE__);
             return true;
         }

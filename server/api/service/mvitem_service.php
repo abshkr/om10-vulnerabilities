@@ -476,6 +476,7 @@ class MvitemService
             $this->finishup_schedule($serv->trsa_id);
         }
         
+        $serv->calc_vcf();
         return true;
     }
 }
