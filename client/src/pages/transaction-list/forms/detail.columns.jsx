@@ -86,6 +86,13 @@ const detailColumns = (isFromNomination, t, config) => [
         sortable: true,
         resizable: true,
         hide: !isFromNomination,
+        cellRenderer: 'QuantityRenderer',
+        cellRendererParams: {
+          digits: String(config?.precisionVolume),
+          min: '100',
+          adtvFlag: 'base_cat',
+          adtvDigits: config?.precisionAdditive,
+        },
       },
       {
         headerName: t(config?.siteLabelUser + 'fields.standard') + ' (' + t('units.ltr') + ')',
@@ -93,6 +100,13 @@ const detailColumns = (isFromNomination, t, config) => [
         sortable: true,
         resizable: true,
         hide: !isFromNomination,
+        cellRenderer: 'QuantityRenderer',
+        cellRendererParams: {
+          digits: String(config?.precisionVolume),
+          min: '100',
+          adtvFlag: 'base_cat',
+          adtvDigits: config?.precisionAdditive,
+        },
       },
       {
         headerName: t(config?.siteLabelUser + 'fields.mass') + ' (' + t('units.kg') + ')',
@@ -100,6 +114,13 @@ const detailColumns = (isFromNomination, t, config) => [
         sortable: true,
         resizable: true,
         hide: !isFromNomination || !config?.siteMassInVacuum,
+        cellRenderer: 'QuantityRenderer',
+        cellRendererParams: {
+          digits: String(config?.precisionMass),
+          min: '100',
+          adtvFlag: 'base_cat',
+          adtvDigits: config?.precisionAdditive,
+        },
       },
       {
         headerName: t(config?.siteLabelUser + 'fields.massInAir') + ' (' + t('units.kg') + ')',
@@ -121,6 +142,10 @@ const detailColumns = (isFromNomination, t, config) => [
         sortable: true,
         resizable: true,
         hide: !isFromNomination,
+        cellRenderer: 'DensityRenderer',
+        cellRendererParams: {
+          digits: String(config?.precisionDensity),
+        },
       },
       {
         headerName: t('fields.temp') + ' (' + t('units.degC') + ')',
@@ -129,6 +154,22 @@ const detailColumns = (isFromNomination, t, config) => [
         resizable: true,
         hide: !isFromNomination,
       },
+
+      {
+        headerName: t('fields.vcf'),
+        field: 'trsb_vcf',
+        filter: 'FuzzyFilter',
+        sortable: true,
+        resizable: true,
+        hide: !config?.siteUseVCF,
+        cellRenderer: 'VcfRenderer',
+        cellRendererParams: {
+          digits: String(config?.precisionVCF),
+          ambientVolume: 'trsb_avl',
+          standardVolume: 'trsb_cvl',
+        },
+      },
+
       {
         headerName: t('fields.api'),
         field: 'trsb_api',

@@ -1,13 +1,33 @@
 import _ from 'lodash';
 
-const columns = (t, reasons, ownershipDensityVisible) => [
+const columns = (t, reasons, ownershipDensityVisible, config) => [
   {
-    headerName: t('fields.baseOwnerTransNo'),
+    headerName: t('fields.baseOwnerTransId'),
     field: 'ownship_trsa_no',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     width: 150,
+    hide: true,
+    suppressSizeToFit: true,
+  },
+  {
+    headerName: t('fields.baseOwnerTransKey'),
+    field: 'trsa_key',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    width: 160,
+    hide: false,
+    suppressSizeToFit: true,
+  },
+  {
+    headerName: t('fields.baseOwnerTransNumber'),
+    field: 'trsa_number',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    width: 200,
     hide: false,
     suppressSizeToFit: true,
   },
@@ -77,7 +97,7 @@ const columns = (t, reasons, ownershipDensityVisible) => [
     suppressSizeToFit: true,
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
   {
@@ -226,7 +246,7 @@ const columns = (t, reasons, ownershipDensityVisible) => [
     suppressSizeToFit: true,
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
 
@@ -251,7 +271,7 @@ const columns = (t, reasons, ownershipDensityVisible) => [
     hide: true,
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
 
@@ -276,7 +296,7 @@ const columns = (t, reasons, ownershipDensityVisible) => [
     hide: true,
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
 
@@ -319,7 +339,7 @@ const columns = (t, reasons, ownershipDensityVisible) => [
     suppressSizeToFit: true,
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
 
@@ -344,7 +364,7 @@ const columns = (t, reasons, ownershipDensityVisible) => [
     hide: true,
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
 
@@ -369,7 +389,7 @@ const columns = (t, reasons, ownershipDensityVisible) => [
     hide: true,
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
 ];

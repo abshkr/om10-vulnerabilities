@@ -42,6 +42,9 @@ const TabPane = Tabs.TabPane;
 const FormModal = ({ value, visible, handleFormState, access, url, locateNomination, config }) => {
   const [tableAPI, setTableAPI] = useState(null);
   const [carrier, setCarrier] = useState(null);
+  const [receiptCount, setReceiptCount] = useState(0);
+  const [receiptTotal, setReceiptTotal] = useState(0.000001);
+
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { setFieldsValue, resetFields, validateFields } = form;
@@ -384,7 +387,14 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
 
             {config?.siteUseNomTpp && <TPP form={form} value={value} />}
 
-            {config?.siteUseIntoTransitGainLoss && <IntoTransitFields form={form} value={value} />}
+            {config?.siteUseIntoTransitGainLoss && (
+              <IntoTransitFields
+                form={form}
+                value={value}
+                receiptCount={receiptCount}
+                receiptTotal={receiptTotal}
+              />
+            )}
 
             <TransportMode form={form} value={value} />
 
@@ -398,7 +408,14 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
             </Row>
 
             <Divider style={{ marginTop: 3, marginBottom: 13 }} />
-            <Items setTableAPIContext={setTableAPI} value={value} config={config} cbFunction={onComplete} />
+            <Items
+              setTableAPIContext={setTableAPI}
+              value={value}
+              config={config}
+              cbFunction={onComplete}
+              setReceiptCount={setReceiptCount}
+              setReceiptTotal={setReceiptTotal}
+            />
           </TabPane>
           {/* <TabPane tab={t('tabColumns.items')} forceRender={true} key="2">
             <Items setTableAPIContext={setTableAPI} value={value} config={config} />

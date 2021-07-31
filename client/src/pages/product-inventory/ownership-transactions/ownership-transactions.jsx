@@ -83,12 +83,48 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
     },
   ];
 
-  const fields = columns(t, reasons, ownershipDensityVisible);
+  const fields = columns(t, reasons, ownershipDensityVisible, config);
 
   const getBaseSummary = async (prod) => {
     const results = await api.get(`${BASE_OWNER_TRANSACTIONS.BASE_SUMMARY}?base_code=${prod}`);
 
     return results?.data?.records;
+  };
+
+  const checkTransactionKey = async (code) => {
+    const results = await api.get(`${BASE_OWNER_TRANSACTIONS.CHECK_OWNERSHIP_BY_UKEY}?trsa_key=${code}`);
+
+    return results?.data?.records?.[0]?.cnt;
+  };
+
+  const validateKey = async (rule, input) => {
+    const count = await checkTransactionKey(input);
+    if (count > 0 && !selected) {
+      return Promise.reject(t('descriptions.alreadyExists'));
+    }
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.baseOwnerTransKey')}`);
+    }
+    if (input !== undefined && input !== input.trimLeft()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
+    }
+    if (input !== undefined && input !== input.trimRight()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
+    }
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 100) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 100 ─ ${t('descriptions.maxCharacters')}`);
+    }
+    return Promise.resolve();
+  };
+
+  const validateText = (rule, input) => {
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 100) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 100 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    return Promise.resolve();
   };
 
   const handleBaseDensity = async () => {
@@ -103,6 +139,11 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
           prorateDensity =
             (_.toNumber(basesum?.[0]?.tank_liquid_kg) / _.toNumber(basesum?.[0]?.tank_cor_vol)) * 1000.0;
         }
+        console.log('........................prorateDensity by volume: ', prorateDensity);
+        /* if (_.toNumber(basesum?.[0]?.tank_count) > 0) {
+          prorateDensity = (_.toNumber(basesum?.[0]?.tank_dens) / _.toNumber(basesum?.[0]?.tank_count));
+        }
+        console.log('........................prorateDensity by density: ', prorateDensity); */
       } else {
         prorateDensity = 0;
       }
@@ -212,6 +253,8 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
   const handleFormState = (visibility, value) => {
     if (!visibility) {
       setFieldsValue({
+        trsa_key: null,
+        trsa_number: null,
         supp_cmpy: null,
         base_prod_code: null,
         qty: null,
@@ -539,6 +582,8 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
 
   const onApprove = async () => {
     const values = await form.validateFields();
+    // Since the ownship_trsa_no field is not in the form, we need to get it from selected
+    values.ownship_trsa_no = selected?.ownship_trsa_no;
 
     const owners = await getOwnership(values.base_prod_code, values.supp_cmpy);
     const owners2 = await getOwnership(values.base_prod_code, values.supp_cmpy_to);
@@ -638,6 +683,8 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
 
   const onReverse = async () => {
     const values = await form.validateFields();
+    // Since the ownship_trsa_no field is not in the form, we need to get it from selected
+    values.ownship_trsa_no = selected?.ownship_trsa_no;
 
     const owners = await getOwnership(values.base_prod_code, values.supp_cmpy);
     const owners2 = await getOwnership(values.base_prod_code, values.supp_cmpy_to);
@@ -746,6 +793,8 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
     if (IS_CREATING) {
       values.ownship_trsa_no = -888888;
     } else {
+      // Since the ownship_trsa_no field is not in the form, we need to get it from selected
+      values.ownship_trsa_no = selected?.ownship_trsa_no;
       if (owners.length > 0) {
         values.trsa_qty_owned = owners?.[0]?.ownship_qty;
         values.trsa_density_owned = owners?.[0]?.ownship_density;
@@ -755,7 +804,7 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
         values.trsa_density_owned_to = owners2?.[0]?.ownship_density;
       }
     }
-
+    console.log('...........................', values);
     Modal.confirm({
       title: errors?.length > 0 ? errors : IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -940,6 +989,8 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
     if (selected) {
       resetFields();
       setFieldsValue({
+        trsa_key: selected?.trsa_key,
+        trsa_number: selected?.trsa_number,
         base_prod_code: selected?.base_prod_code,
         supp_cmpy: selected?.supp_cmpy,
         reason: selected?.reason,
@@ -957,6 +1008,9 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
         trsa_reversed: selected?.trsa_reversed,
       });
     } else {
+      setFieldsValue({
+        reason: 2,
+      });
     }
   }, [resetFields, selected]);
 
@@ -1111,16 +1165,34 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
           <Tabs defaultActiveKey="1">
             <TabPane tab={t('tabColumns.general')} key="1">
               <Row gutter={[8, 1]}>
-                <Col span={12}>
+                {/* <Col span={12}>
                   <Form.Item
                     name="ownship_trsa_no"
-                    label={t('fields.baseOwnerTransNo')}
+                    label={t('fields.baseOwnerTransId')}
                     rules={[{ required: false }]}
                   >
                     <Input disabled={true} style={{ width: '100%' }} />
                   </Form.Item>
+                </Col> */}
+                <Col span={9}>
+                  <Form.Item
+                    name="trsa_key"
+                    label={t('fields.baseOwnerTransKey')}
+                    rules={[{ required: true, validator: validateKey }]}
+                  >
+                    <Input disabled={selected?.trsa_approved} style={{ width: '100%' }} />
+                  </Form.Item>
                 </Col>
-                <Col span={12}>
+                <Col span={9}>
+                  <Form.Item
+                    name="trsa_number"
+                    label={t('fields.baseOwnerTransNumber')}
+                    rules={[{ required: false, validator: validateText }]}
+                  >
+                    <Input disabled={selected?.trsa_approved} style={{ width: '100%' }} />
+                  </Form.Item>
+                </Col>
+                <Col span={6}>
                   <Form.Item
                     name="reason"
                     label={t('fields.baseOwnerTransReason')}
@@ -1131,7 +1203,7 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
                     <Select
                       dropdownMatchSelectWidth={false}
                       showSearch
-                      defaultValue={2}
+                      // defaultValue={2}
                       disabled={selected?.trsa_approved}
                       // onChange={handleChange}
                       optionFilterProp="children"

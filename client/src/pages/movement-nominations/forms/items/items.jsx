@@ -15,7 +15,7 @@ import api, { MOVEMENT_NOMIATIONS } from '../../../../api';
 
 import useColumns from './columns';
 
-const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
+const Items = ({ setTableAPIContext, value, config, cbFunction, setReceiptCount, setReceiptTotal }) => {
   const { t } = useTranslation();
 
   const url = value ? `${MOVEMENT_NOMIATIONS.ITEMS}?mv_id=${value?.mv_id}` : null;
@@ -469,8 +469,21 @@ const Items = ({ setTableAPIContext, value, config, cbFunction }) => {
 
   useEffect(() => {
     if (payload?.records) {
-      console.log('..................I am here 1');
+      // console.log('..................I am here 1', payload?.records);
       setData(payload?.records);
+      // get the coumts of receipt items
+      // get the total receipt volumes
+      let receiptTotal = 0;
+      let receiptCount = 0;
+      _.forEach(payload?.records, (o) => {
+        if (o?.mvitm_type === 0) {
+          receiptCount += 1;
+          receiptTotal += !o?.mvitm_qty_move ? 0 : _.toNumber(o?.mvitm_qty_move);
+        }
+      });
+      // console.log('..................I am here 1a', receiptCount, receiptTotal);
+      setReceiptCount(receiptCount);
+      setReceiptTotal(receiptTotal);
     }
 
     setSize(payload?.records?.length || 0);

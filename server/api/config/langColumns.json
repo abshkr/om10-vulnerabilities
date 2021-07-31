@@ -3301,6 +3301,8 @@
     },
     "PRODOWNSHIP_TRANSACT": {
       "OWNSHIP_TRSA_NO": "Ownership Transaction No",
+      "TRSA_KEY": "Transaction Key",
+      "TRSA_NUMBER": "Transaction Number",
       "BASE_PROD_CODE": "Base Product Code",
       "SUPP_CMPY": "Supplier Code",
       "QTY": "Quantity",
@@ -8238,7 +8240,9 @@
       "PRBM_FLOWRATE": "Prbm Flowrate"
     },
     "PRODOWNSHIP_TRANSACT": {
-      "OWNSHIP_TRSA_NO": "所有权交易编号",
+      "OWNSHIP_TRSA_NO": "所有权交易ID",
+      "TRSA_KEY": "所有权交易主键",
+      "TRSA_NUMBER": "所有权交易编号",
       "BASE_PROD_CODE": "所有权交易基础油品",
       "SUPP_CMPY": "所有权交易供应商",
       "QTY": "所有权交易油品数量",

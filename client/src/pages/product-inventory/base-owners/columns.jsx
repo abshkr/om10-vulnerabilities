@@ -1,4 +1,4 @@
-const columns = (t, visible) => [
+const columns = (t, visible, config) => [
   {
     headerName: t('fields.baseOwnerNo'),
     field: 'ownship_no',
@@ -91,7 +91,7 @@ const columns = (t, visible) => [
     suppressSizeToFit: true,
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
   {

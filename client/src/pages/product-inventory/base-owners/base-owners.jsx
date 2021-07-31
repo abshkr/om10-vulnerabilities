@@ -61,10 +61,11 @@ const BaseProductOwners = ({ value, access, config, unit, units }) => {
 
   const [form] = Form.useForm();
   const percentPrecision = 4;
+  const hideUnits = false;
 
   const { resetFields, setFieldsValue, getFieldsValue } = form;
 
-  const fields = columns(t, true);
+  const fields = columns(t, true, config);
 
   const onFormClose = () => {
     setShowMakeTransactions(false);
@@ -160,23 +161,25 @@ const BaseProductOwners = ({ value, access, config, unit, units }) => {
                   })}
                 </Select>
               </Descriptions.Item>
-              <Descriptions.Item label={t('fields.volumeUnit')} span={1}>
-                <Select
-                  dropdownMatchSelectWidth={false}
-                  key="1"
-                  style={{ width: '100%' }}
-                  defaultValue={unit}
-                  onChange={setVolUnit}
-                >
-                  {units.map((item) => {
-                    return (
-                      <Select.Option key={item.code} value={item.code}>
-                        {item.title}
-                      </Select.Option>
-                    );
-                  })}
-                </Select>
-              </Descriptions.Item>
+              {hideUnits && (
+                <Descriptions.Item label={t('fields.volumeUnit')} span={1}>
+                  <Select
+                    dropdownMatchSelectWidth={false}
+                    key="1"
+                    style={{ width: '100%' }}
+                    defaultValue={unit}
+                    onChange={setVolUnit}
+                  >
+                    {units.map((item) => {
+                      return (
+                        <Select.Option key={item.code} value={item.code}>
+                          {item.title}
+                        </Select.Option>
+                      );
+                    })}
+                  </Select>
+                </Descriptions.Item>
+              )}
             </Descriptions>
           </Col>
         </Row>

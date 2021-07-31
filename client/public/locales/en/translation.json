@@ -499,6 +499,9 @@
     "baseOwnerProdCat": "Base Product Class ID",
     "baseOwnerProdClassDesc": "Base Product Classification",
     "baseOwnerTransNo": "Transaction No",
+    "baseOwnerTransId": "Transaction ID",
+    "baseOwnerTransKey": "Transaction Key",
+    "baseOwnerTransNumber": "Transaction Number",
     "baseOwnerTransProdCode": "Base Product Code",
     "baseOwnerTransProdName": "Base Product Name",
     "baseOwnerTransProduct": "Base Product",
@@ -1212,7 +1215,10 @@
     "nextWeeklyDate": "Next Weekly Report Date",
     "node": "Node",
     "nomIntoTransitGL": "Into Transit Gain/Loss",
+    "nomIntoTransitGLPercent": "Into Transit Gain/Loss Percentage (%)",
     "nomQtyReceiptExpected": "Quantity Expected To Receive",
+    "nomQtyReceived": "Quantity Received",
+    "nomReceiptItems": " Receipt Items",
     "nominationItem": "Nomination Item",
     "nominationKey": "Nomination Key",
     "nominationNumber": "Nomination Number",
@@ -2687,6 +2693,7 @@
     "lcor": "L(cor)",
     "litre": "Litre",
     "litres": "Litres",
+    "litresGeneric": "Litres",
     "lobs": "L(obs)",
     "lpm": "LPM",
     "lstd": "L(std)",
@@ -2808,13 +2815,16 @@
       "weightInVacuum": "Weight In Vacuum (WiV)",
       "liquidMass": "Weight in Vacuum (WiV)",
       "observedMass": "Weight in Vacuum (WiV)",
-      "nomtranMass": "Weight in Vacuum (WiV)"
+      "nomtranMass": "Weight in Vacuum (WiV)",
+      "grossVolume": "Gross Observed Volume (GOV)",
+      "netVolume": "Gross Standard Volume (GSV)"
     },
     "pageNames": {
       "equipmentList": "Transport Equipment List",
       "equipmentTypes": "Transport Equipment Types"
     },
     "units": {
+      "litresGeneric": "Litres (std)",
       "lamb": "L(amb)",
       "lcor": "L(std)",
       "lobs": "L(obs)"

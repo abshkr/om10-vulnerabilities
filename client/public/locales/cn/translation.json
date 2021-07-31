@@ -485,6 +485,9 @@
     "baseOwnerProdCat": "基础油品类别代码",
     "baseOwnerProdClassDesc": "基础油品类别",
     "baseOwnerTransNo": "所有权交易编号",
+    "baseOwnerTransId": "所有权交易ID",
+    "baseOwnerTransKey": "所有权交易主键",
+    "baseOwnerTransNumber": "所有权交易编号",
     "baseOwnerTransProdCode": "所有权交易基础油品代码",
     "baseOwnerTransProdName": "所有权交易基础油品名称",
     "baseOwnerTransProduct": "所有权交易基础油品",
@@ -1198,7 +1201,10 @@
     "nextWeeklyDate": "下次周报表日期",
     "node": "节点",
     "nomIntoTransitGL": "油品运输损耗",
+    "nomIntoTransitGLPercent": "油品运输损耗百分比(%)",
     "nomQtyReceiptExpected": "预计进油货量",
+    "nomQtyReceived": "实际进油货量",
+    "nomReceiptItems": "单油品进库货单",
     "nominationItem": "大宗货单明细条目",
     "nominationKey": "大宗货单主键",
     "nominationNumber": "大宗货单单号",
@@ -2670,6 +2676,7 @@
     "lcor": "升(标量)",
     "litre": "升",
     "litres": "升",
+    "litresGeneric": "升",
     "lobs": "升(视量)",
     "lpm": "升/分钟",
     "lstd": "升(标量)",
@@ -2791,13 +2798,16 @@
       "weightInVacuum": "真空中重量(WiV)",
       "liquidMass": "真空中重量(WiV)",
       "observedMass": "真空中重量(WiV)",
-      "nomtranMass": "真空中重量(WiV)"
+      "nomtranMass": "真空中重量(WiV)",
+      "grossVolume": "视量容积(GOV)",
+      "netVolume": "标量容积(GSV)"
     },
     "pageNames": {
       "equipmentList": "运输设备管理",
       "equipmentTypes": "运输设备类型管理"
     },
     "units": {
+      "litresGeneric": "升(标量)",
       "lamb": "升(视量)",
       "lcor": "升(标量)",
       "lobs": "升(视量)"

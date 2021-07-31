@@ -102,6 +102,25 @@ class BaseOwnerTrans extends CommonClass
         }
     }
 
+    public function check_ownership_by_ukey()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT 
+            FROM PRODOWNSHIP_TRANSACT
+            WHERE TRSA_KEY=:trsa_key
+        ";
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':trsa_key', $this->trsa_key);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function read()
     {
         if (!isset($this->base_code)) {
@@ -117,6 +136,8 @@ class BaseOwnerTrans extends CommonClass
         $query = "
             select
                 tra.OWNSHIP_TRSA_NO
+                , tra.TRSA_KEY
+                , tra.TRSA_NUMBER
                 , tra.BASE_PROD_CODE
                 , bpd.BASE_NAME
                 , bpd.BASE_CAT
@@ -222,6 +243,8 @@ class BaseOwnerTrans extends CommonClass
                         , bro.OWNSHIP_DENSITY
                         , bro.OWNSHIP_UNIT
                         , tra.OWNSHIP_TRSA_NO
+                        , tra.TRSA_KEY
+                        , tra.TRSA_NUMBER
                         , tra.QTY
                         , tra.TRSA_DENSITY
                         , tra.TRSA_UNIT
@@ -318,6 +341,8 @@ class BaseOwnerTrans extends CommonClass
                             , bro.OWNSHIP_DENSITY
                             , bro.OWNSHIP_UNIT
                             , tra.OWNSHIP_TRSA_NO
+                            , tra.TRSA_KEY
+                            , tra.TRSA_NUMBER
                             , tra.QTY
                             , tra.TRSA_DENSITY
                             , tra.TRSA_UNIT
@@ -390,6 +415,8 @@ class BaseOwnerTrans extends CommonClass
                 SUM(TANK_COR_VOL) AS TANK_COR_VOL,
                 SUM(TANK_LIQUID_KG) AS TANK_LIQUID_KG2,
                 SUM(TANK_COR_VOL*TANK_DENSITY/1000.0) AS TANK_LIQUID_KG,
+                SUM(TANK_DENSITY) AS TANK_DENS,
+                COUNT(TANK_CODE)  AS TANK_COUNT,
                 NVL(SUM(TANK_COR_VOL*TANK_15_DENSITY/1000.0), 0) AS TANK_LIQUID_KG15
             FROM TANKS
             WHERE 

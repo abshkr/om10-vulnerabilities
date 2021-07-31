@@ -31,12 +31,12 @@ const ProductInventory = () => {
 
   const access = useAuth('M_PRODUCTINVENTORY');
 
-  const fields = columns(t);
+  const fields = columns(t, config);
   const payload = transform(data?.records, unit);
 
   // const units = ['Litres', 'Cubic Metre', 'Imperial Gallon', 'U.S Gallon', 'Imperial Barrel', 'U.S Barrel'];
   const units = [
-    { code: 'Litres', title: t('units.litres') },
+    { code: 'Litres', title: t(config?.siteLabelUser + 'units.litresGeneric') },
     { code: 'Cubic Metre', title: t('units.cubicMetre') },
     { code: 'Imperial Gallon', title: t('units.imperialGallon') },
     { code: 'U.S Gallon', title: t('units.usGallon') },
