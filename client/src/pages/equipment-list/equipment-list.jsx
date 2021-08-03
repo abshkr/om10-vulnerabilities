@@ -44,7 +44,7 @@ const EquipmentList = () => {
       : `${EQUIPMENT_LIST.READ}?pgflag=${
           pagingFlag ? 'Y' : 'N'
         }&start_num=${take}&end_num=${offset}&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
-  const { data: payload, isValidating, revalidate } = useSWR(pagingFlag == undefined ? null : url);
+  const { data: payload, isValidating, revalidate } = useSWR(pagingFlag === undefined ? null : url);
   const { data: expiryTypes } = useSWR(EQUIPMENT_LIST.EXPIRY);
 
   const [data, setData] = useState(payload?.records);
