@@ -2340,6 +2340,7 @@ class Movement extends CommonClass
                 BASE_PRODS.BASE_CODE, 
                 BASE_PRODS.BASE_NAME, 
                 BASE_PRODS.BASE_CAT,
+                TRANBASE.TRSB_VCF,
                 TRANBASE.TRSB_BATCH_NO
             FROM TRANBASE, BASE_PRODS
             WHERE BASE_PRODS.BASE_CODE = TRANBASE.TRSB_BS AND 
