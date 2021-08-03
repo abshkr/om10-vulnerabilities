@@ -246,7 +246,173 @@ class Equipment extends CommonClass
         $hook_item['expiry_dates'] = $result;
     }
 
+    public function pagination_count()
+    {
+        $query = "
+            SELECT COUNT(*) CN
+            FROM GUI_EQUIPMENT_LIST
+            WHERE 1=1
+        ";
+        if (isset($this->eqpt_id) && $this->eqpt_id!='') {
+            $query = $query . " AND (EQPT_ID in (" . $this->eqpt_id . ") OR (EQPT_ID LIKE '%'||:eqpt_id||'%')) ";
+        }
+        if (isset($this->eqpt_code) && $this->eqpt_code!='') {
+            $query = $query . " AND UPPER(EQPT_CODE) LIKE '%'||UPPER(:eqpt_code)||'%' ";
+        }
+        if (isset($this->eqpt_owner) && $this->eqpt_owner!='') {
+            $query = $query . " AND EQPT_OWNER = :eqpt_owner ";
+        }
+        if (isset($this->eqpt_etyp) && $this->eqpt_etyp!='') {
+            $query = $query . " AND EQPT_ETP = :eqpt_etyp ";
+        }
+        
+        $stmt = oci_parse($this->conn, $query);
+
+        if (isset($this->eqpt_id) && $this->eqpt_id!='') {
+            oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
+        }
+        if (isset($this->eqpt_code) && $this->eqpt_code!='') {
+            oci_bind_by_name($stmt, ':eqpt_code', $this->eqpt_code);
+        }
+        if (isset($this->eqpt_owner) && $this->eqpt_owner!='') {
+            oci_bind_by_name($stmt, ':eqpt_owner', $this->eqpt_owner);
+        }
+        if (isset($this->eqpt_etyp) && $this->eqpt_etyp!='') {
+            oci_bind_by_name($stmt, ':eqpt_etyp', $this->eqpt_etyp);
+        }
+        
+        if (oci_execute($stmt, $this->commit_mode)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            return (int) $row['CN'];
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return 0;
+        }
+    }
+
     public function read()
+    {
+        $query = "
+            SELECT EQPT_ID,
+                EQPT_CODE,
+                EQPT_TITLE,
+                EQPT_TANKER,
+                EQPT_OWNER,
+                EQPT_OWNER_NAME,
+                EQPT_ETP,
+                EQPT_ETP_TITLE,
+                EQPT_EXP_D1_DMY,
+                EQPT_EXP_D2_DMY,
+                EQPT_EXP_D3_DMY,
+                EQPT_LOCK,
+                EQPT_EMPTY_KG,
+                EQP_MUST_TARE_IN,
+                EQPT_MAX_GROSS,
+                EQPT_COMMENTS,
+                EQPT_AREA,
+                EQPT_AREA_NAME,
+                EQPT_LOAD_TYPE,
+                EQPT_LOAD_TYPE_NAME,
+                ETYP_CATEGORY,
+                EQPT_LAST_MODIFIED,
+                EQPT_LAST_USED,
+                EQPT_AXLE_GROUP_COUNT,
+                EQPT_AXLE_LIMIT_TYPE,
+                EQPT_AXLE_DETAILS,
+                EQPT_AXLE_GROUPS,
+                EQPT_AXLE_WEIGHTS,
+                EQPT_AXLE_BRIEFS,
+                TNKR_COUNT
+            FROM
+            (
+                SELECT 
+                    GUI_EQUIPMENT_LIST.*,
+                    EQPT_AXLES_LIST.EQPT_AXLE_GROUP_COUNT,
+                    EQPT_AXLES_LIST.EQPT_AXLE_LIMIT_TYPE,
+                    EQPT_AXLES_LIST.EQPT_AXLE_DETAILS,
+                    EQPT_AXLES_LIST.EQPT_AXLE_GROUPS,
+                    EQPT_AXLES_LIST.EQPT_AXLE_WEIGHTS,
+                    EQPT_AXLES_LIST.EQPT_AXLE_BRIEFS,
+                    NVL(TNKR_COUNTS.TNKR_COUNT, 0)  TNKR_COUNT
+                FROM 
+                    GUI_EQUIPMENT_LIST,
+                    (
+                        SELECT 
+                            EQPT_ID
+                            , COUNT(AXLE_ID)  AS EQPT_AXLE_GROUP_COUNT
+                            , MIN(LIMIT_TYPE_ID)  AS EQPT_AXLE_LIMIT_TYPE
+                            , LISTAGG(AXLE_ID||':'||LIMIT_TYPE_ID||':'||AXLE_GROUP||':'||USER_WEIGHT_LIMIT||':'||AXLE_WEIGHT_LIMIT, ',') 
+                            WITHIN GROUP (ORDER BY AXLE_ID) AS EQPT_AXLE_DETAILS
+                            , LISTAGG(AXLE_GROUP_NAME, ', ') 
+                            WITHIN GROUP (ORDER BY AXLE_ID) AS EQPT_AXLE_GROUPS
+                            , LISTAGG(USER_WEIGHT_LIMIT, ', ') 
+                            WITHIN GROUP (ORDER BY AXLE_ID) AS EQPT_AXLE_WEIGHTS
+                            , LISTAGG(USER_WEIGHT_LIMIT||'['||AXLE_GROUP_NAME||']', ', ') 
+                            WITHIN GROUP (ORDER BY AXLE_ID) AS EQPT_AXLE_BRIEFS
+                        FROM
+                            EQPT_AXLES_VW
+                        GROUP BY
+                            EQPT_ID
+                    ) EQPT_AXLES_LIST,
+                    (
+                        SELECT TC_EQPT, COUNT(*) TNKR_COUNT
+                        FROM TNKR_EQUIP
+                        GROUP BY TC_EQPT
+                    ) TNKR_COUNTS
+                WHERE 
+                    GUI_EQUIPMENT_LIST.EQPT_ID = EQPT_AXLES_LIST.EQPT_ID(+)
+                    AND GUI_EQUIPMENT_LIST.EQPT_ID = TNKR_COUNTS.TC_EQPT(+)
+                ORDER BY GUI_EQUIPMENT_LIST.EQPT_ID
+            )
+            WHERE 1=1
+        ";
+
+        if (isset($this->eqpt_id) && $this->eqpt_id!='') {
+            $query = $query . " AND (EQPT_ID in (" . $this->eqpt_id . ") OR (EQPT_ID LIKE '%'||:eqpt_id||'%')) ";
+        }
+        if (isset($this->eqpt_code) && $this->eqpt_code!='') {
+            $query = $query . " AND UPPER(EQPT_CODE) LIKE '%'||UPPER(:eqpt_code)||'%' ";
+        }
+        if (isset($this->eqpt_owner) && $this->eqpt_owner!='') {
+            $query = $query . " AND EQPT_OWNER = :eqpt_owner ";
+        }
+        if (isset($this->eqpt_etyp) && $this->eqpt_etyp!='') {
+            $query = $query . " AND EQPT_ETP = :eqpt_etyp ";
+        }
+
+        if (isset($this->pgflag) && $this->pgflag==='Y') {
+            $query = $this->pagination_query($query);
+        }
+
+        $stmt = oci_parse($this->conn, $query);
+
+        if (isset($this->eqpt_id) && $this->eqpt_id!='') {
+            oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
+        }
+        if (isset($this->eqpt_code) && $this->eqpt_code!='') {
+            oci_bind_by_name($stmt, ':eqpt_code', $this->eqpt_code);
+        }
+        if (isset($this->eqpt_owner) && $this->eqpt_owner!='') {
+            oci_bind_by_name($stmt, ':eqpt_owner', $this->eqpt_owner);
+        }
+        if (isset($this->eqpt_etyp) && $this->eqpt_etyp!='') {
+            oci_bind_by_name($stmt, ':eqpt_etyp', $this->eqpt_etyp);
+        }
+        if (isset($this->pgflag) && $this->pgflag==='Y') {
+            $this->pagination_binds($stmt);
+        }
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function read_all()
     {
         if (!isset($this->end_num)) {
             $this->start_num = 1;
@@ -331,10 +497,21 @@ class Equipment extends CommonClass
                 ) RES
             )
             WHERE RN >= :start_num
-                AND RN <= :end_num";
+                AND RN <= :end_num
+        ";
+
+        if (isset($this->eqpt_id)) {
+            $query = $query . " AND EQPT_ID in (" . $this->eqpt_id . ") ";
+        }
+
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':start_num', $this->start_num);
         oci_bind_by_name($stmt, ':end_num', $this->end_num);
+
+        // if (isset($this->eqpt_id)) {
+        //     oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
+        // }
+
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {

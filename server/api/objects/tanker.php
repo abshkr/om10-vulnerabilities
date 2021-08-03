@@ -95,7 +95,264 @@ class Tanker extends CommonClass
         $hook_item['expiry_dates'] = $result;
     }
 
+    public function pagination_count()
+    {
+        $query = "
+            SELECT COUNT(*) CN
+            FROM GUI_TANKERS
+            WHERE 1=1
+        ";
+
+        if (isset($this->tnkr_code) && $this->tnkr_code!='') {
+            $query = $query . " AND UPPER(TNKR_CODE) LIKE '%'||UPPER(:tnkr_code)||'%' ";
+        }
+        if (isset($this->tnkr_carrier) && $this->tnkr_carrier!='') {
+            $query = $query . " AND TNKR_CARRIER = :tnkr_carrier ";
+        }
+        if (isset($this->tnkr_owner) && $this->tnkr_owner!='') {
+            $query = $query . " AND TNKR_OWNER = :tnkr_owner ";
+        }
+        if (isset($this->tnkr_etyp) && $this->tnkr_etyp!='') {
+            $query = $query . " AND TNKR_ETP = :tnkr_etyp ";
+        }
+        if (isset($this->tnkr_lock) && $this->tnkr_lock!='') {
+            $query = $query . " AND TNKR_LOCK = :tnkr_lock ";
+        }
+        if (isset($this->tnkr_active) && $this->tnkr_active!='') {
+            $query = $query . " AND TNKR_ACTIVE = :tnkr_active ";
+        }
+
+        $stmt = oci_parse($this->conn, $query);
+
+        if (isset($this->tnkr_code) && $this->tnkr_code!='') {
+            oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+        }
+        if (isset($this->tnkr_carrier) && $this->tnkr_carrier!='') {
+            oci_bind_by_name($stmt, ':tnkr_carrier', $this->tnkr_carrier);
+        }
+        if (isset($this->tnkr_owner) && $this->tnkr_owner!='') {
+            oci_bind_by_name($stmt, ':tnkr_owner', $this->tnkr_owner);
+        }
+        if (isset($this->tnkr_etyp) && $this->tnkr_etyp!='') {
+            oci_bind_by_name($stmt, ':tnkr_etyp', $this->tnkr_etyp);
+        }
+        if (isset($this->tnkr_lock) && $this->tnkr_lock!='') {
+            oci_bind_by_name($stmt, ':tnkr_lock', $this->tnkr_lock);
+        }
+        if (isset($this->tnkr_active) && $this->tnkr_active!='') {
+            oci_bind_by_name($stmt, ':tnkr_active', $this->tnkr_active);
+        }
+        
+        if (oci_execute($stmt, $this->commit_mode)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            return (int) $row['CN'];
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return 0;
+        }
+    }
+
     public function read()
+    {
+        $query = "
+            SELECT * 
+            FROM
+            (
+                SELECT 
+                    GUI_TANKERS.*,
+                    TNKR_EQPTS.TNKR_EQPT_IDS,
+                    TNKR_EQPTS.TNKR_EQPT_CODES,
+                    TNKR_AXLES_LIST.TNKR_AXLE_GROUP_COUNT,
+                    TNKR_AXLES_LIST.TNKR_AXLE_LIMIT_TYPE,
+                    TNKR_AXLES_LIST.TNKR_AXLE_DETAILS,
+                    TNKR_AXLES_LIST.TNKR_AXLE_GROUPS,
+                    TNKR_AXLES_LIST.TNKR_AXLE_WEIGHTS,
+                    TNKR_AXLES_LIST.TNKR_AXLE_BRIEFS
+                FROM 
+                    GUI_TANKERS
+                    , (
+                        SELECT 
+                            TC_TANKER
+                            , LISTAGG(TC_EQPT, ',') WITHIN GROUP (ORDER BY TC_SEQNO) AS TNKR_EQPT_IDS
+                            , LISTAGG(EQPT_CODE, ',') WITHIN GROUP (ORDER BY TC_SEQNO) AS TNKR_EQPT_CODES
+                        FROM (
+                            SELECT 
+                                TNKR_EQUIP.*
+                                , TRANSP_EQUIP.EQPT_CODE
+                            FROM 
+                                TNKR_EQUIP,
+                                TRANSP_EQUIP
+                            WHERE
+                                TNKR_EQUIP.TC_EQPT = TRANSP_EQUIP.EQPT_ID
+                        )
+                        GROUP BY TC_TANKER
+                    ) TNKR_EQPTS
+                    , (
+                        SELECT 
+                            TNKR_CODE
+                            , COUNT(TNKR_AXLE_ID)  AS TNKR_AXLE_GROUP_COUNT
+                            , MIN(LIMIT_TYPE_ID)  AS TNKR_AXLE_LIMIT_TYPE
+                            , LISTAGG(TNKR_AXLE_ID||':'||LIMIT_TYPE_ID||':'||AXLE_GROUP||':'||USER_WEIGHT_LIMIT||':'||AXLE_WEIGHT_LIMIT, ',') 
+                            WITHIN GROUP (ORDER BY TNKR_AXLE_ID) AS TNKR_AXLE_DETAILS
+                            , LISTAGG(AXLE_GROUP_NAME, ', ') 
+                            WITHIN GROUP (ORDER BY TNKR_AXLE_ID) AS TNKR_AXLE_GROUPS
+                            , LISTAGG(USER_WEIGHT_LIMIT, ', ') 
+                            WITHIN GROUP (ORDER BY TNKR_AXLE_ID) AS TNKR_AXLE_WEIGHTS
+                            , LISTAGG(USER_WEIGHT_LIMIT||'['||AXLE_GROUP_NAME||']', ', ') 
+                            WITHIN GROUP (ORDER BY TNKR_AXLE_ID) AS TNKR_AXLE_BRIEFS
+                        FROM
+                            TNKR_AXLES_VW
+                        GROUP BY
+                            TNKR_CODE
+                    ) TNKR_AXLES_LIST
+                WHERE 
+                    GUI_TANKERS.TNKR_CODE = TNKR_AXLES_LIST.TNKR_CODE(+)
+                    and GUI_TANKERS.TNKR_CODE = TNKR_EQPTS.TC_TANKER
+                ORDER BY GUI_TANKERS.TNKR_CODE
+            )
+            WHERE 1=1
+        ";
+
+        if (isset($this->tnkr_code) && $this->tnkr_code!='') {
+            $query = $query . " AND UPPER(TNKR_CODE) LIKE '%'||UPPER(:tnkr_code)||'%' ";
+        }
+        if (isset($this->tnkr_carrier) && $this->tnkr_carrier!='') {
+            $query = $query . " AND TNKR_CARRIER = :tnkr_carrier ";
+        }
+        if (isset($this->tnkr_owner) && $this->tnkr_owner!='') {
+            $query = $query . " AND TNKR_OWNER = :tnkr_owner ";
+        }
+        if (isset($this->tnkr_etyp) && $this->tnkr_etyp!='') {
+            $query = $query . " AND TNKR_ETP = :tnkr_etyp ";
+        }
+        if (isset($this->tnkr_lock) && $this->tnkr_lock!='') {
+            $query = $query . " AND TNKR_LOCK = :tnkr_lock ";
+        }
+        if (isset($this->tnkr_active) && $this->tnkr_active!='') {
+            $query = $query . " AND TNKR_ACTIVE = :tnkr_active ";
+        }
+
+        if (isset($this->pgflag) && $this->pgflag==='Y') {
+            $query = $this->pagination_query($query);
+        }
+
+        $stmt = oci_parse($this->conn, $query);
+
+        if (isset($this->tnkr_code) && $this->tnkr_code!='') {
+            oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+        }
+        if (isset($this->tnkr_carrier) && $this->tnkr_carrier!='') {
+            oci_bind_by_name($stmt, ':tnkr_carrier', $this->tnkr_carrier);
+        }
+        if (isset($this->tnkr_owner) && $this->tnkr_owner!='') {
+            oci_bind_by_name($stmt, ':tnkr_owner', $this->tnkr_owner);
+        }
+        if (isset($this->tnkr_etyp) && $this->tnkr_etyp!='') {
+            oci_bind_by_name($stmt, ':tnkr_etyp', $this->tnkr_etyp);
+        }
+        if (isset($this->tnkr_lock) && $this->tnkr_lock!='') {
+            oci_bind_by_name($stmt, ':tnkr_lock', $this->tnkr_lock);
+        }
+        if (isset($this->tnkr_active) && $this->tnkr_active!='') {
+            oci_bind_by_name($stmt, ':tnkr_active', $this->tnkr_active);
+        }
+
+        if (isset($this->pgflag) && $this->pgflag==='Y') {
+            $this->pagination_binds($stmt);
+        }
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function read_all()
+    {
+        if (!isset($this->end_num)) {
+            $this->start_num = 1;
+            $this->end_num = $this->count();
+        }
+
+        $query = "
+            SELECT *
+            FROM
+            (
+                SELECT RES.*, ROWNUM RN
+                FROM
+                (
+                    SELECT 
+                        GUI_TANKERS.*,
+                        TNKR_EQPTS.TNKR_EQPT_IDS,
+                        TNKR_EQPTS.TNKR_EQPT_CODES,
+                        TNKR_AXLES_LIST.TNKR_AXLE_GROUP_COUNT,
+                        TNKR_AXLES_LIST.TNKR_AXLE_LIMIT_TYPE,
+                        TNKR_AXLES_LIST.TNKR_AXLE_DETAILS,
+                        TNKR_AXLES_LIST.TNKR_AXLE_GROUPS,
+                        TNKR_AXLES_LIST.TNKR_AXLE_WEIGHTS,
+                        TNKR_AXLES_LIST.TNKR_AXLE_BRIEFS
+                    FROM 
+                        GUI_TANKERS
+                        , (
+                            SELECT 
+                                TC_TANKER
+                                , LISTAGG(TC_EQPT, ',') WITHIN GROUP (ORDER BY TC_SEQNO) AS TNKR_EQPT_IDS
+                                , LISTAGG(EQPT_CODE, ',') WITHIN GROUP (ORDER BY TC_SEQNO) AS TNKR_EQPT_CODES
+                            FROM (
+                                SELECT 
+                                    TNKR_EQUIP.*
+                                    , TRANSP_EQUIP.EQPT_CODE
+                                FROM 
+                                    TNKR_EQUIP,
+                                    TRANSP_EQUIP
+                                WHERE
+                                    TNKR_EQUIP.TC_EQPT = TRANSP_EQUIP.EQPT_ID
+                            )
+                            GROUP BY TC_TANKER
+                        ) TNKR_EQPTS
+                        , (
+                            SELECT 
+                                TNKR_CODE
+                                , COUNT(TNKR_AXLE_ID)  AS TNKR_AXLE_GROUP_COUNT
+                                , MIN(LIMIT_TYPE_ID)  AS TNKR_AXLE_LIMIT_TYPE
+                                , LISTAGG(TNKR_AXLE_ID||':'||LIMIT_TYPE_ID||':'||AXLE_GROUP||':'||USER_WEIGHT_LIMIT||':'||AXLE_WEIGHT_LIMIT, ',') 
+                                WITHIN GROUP (ORDER BY TNKR_AXLE_ID) AS TNKR_AXLE_DETAILS
+                                , LISTAGG(AXLE_GROUP_NAME, ', ') 
+                                WITHIN GROUP (ORDER BY TNKR_AXLE_ID) AS TNKR_AXLE_GROUPS
+                                , LISTAGG(USER_WEIGHT_LIMIT, ', ') 
+                                WITHIN GROUP (ORDER BY TNKR_AXLE_ID) AS TNKR_AXLE_WEIGHTS
+                                , LISTAGG(USER_WEIGHT_LIMIT||'['||AXLE_GROUP_NAME||']', ', ') 
+                                WITHIN GROUP (ORDER BY TNKR_AXLE_ID) AS TNKR_AXLE_BRIEFS
+                            FROM
+                                TNKR_AXLES_VW
+                            GROUP BY
+                                TNKR_CODE
+                        ) TNKR_AXLES_LIST
+                    WHERE 
+                        GUI_TANKERS.TNKR_CODE = TNKR_AXLES_LIST.TNKR_CODE(+)
+                        and GUI_TANKERS.TNKR_CODE = TNKR_EQPTS.TC_TANKER
+                    ORDER BY GUI_TANKERS.TNKR_CODE
+                ) RES
+            )
+            WHERE RN >= :start_num
+                AND RN <= :end_num";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':start_num', $this->start_num);
+        oci_bind_by_name($stmt, ':end_num', $this->end_num);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function read_without_eqptlinks()
     {
         if (!isset($this->end_num)) {
             $this->start_num = 1;
@@ -213,6 +470,8 @@ class Tanker extends CommonClass
         }
     }
 
+    // not used by front-end yet. need add APA axles part in the future if this function is used
+    // 29/06/2021: will use function read to do search's tasks
     public function search()
     {
         $this->tnkr_code = isset($this->tnkr_code) ? '%' . $this->tnkr_code . '%' : '%';

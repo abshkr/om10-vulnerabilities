@@ -2090,6 +2090,8 @@
     "ownershipTransactions": "油品所有权交易",
     "ownershipTransactionsBase": "基础油品所有权交易",
     "ownershipTransactionsTank": "油罐油品所有权交易",
+    "paginationOn": "分页模式开启",
+    "paginationOff": "分页模式关闭",
     "preOrder": "油品订单",
     "preSchedule": "油仓订单",
     "preview": "预览",

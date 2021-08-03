@@ -36,9 +36,18 @@ import {
   JournalSearch,
   JournalEvent,
   JournalCategory,
+  EqptId,
+  EqptCode,
+  EqptOwner,
+  EqptType,
+  TnkrCode,
+  TnkrCarrier,
+  TnkrOwner,
+  TnkrEtyp,
+  TnkrFlags,
 } from './fields';
 
-const SearchForm = ({ onSearch, fields, modal }) => {
+const SearchForm = ({ onSearch, fields, modal, rangeRequired }) => {
   const [orderSupplier, setOrderSupplier] = useState(null);
   const [specmvType, setSpecmvType] = useState(null);
   const [carrier, setCarrier] = useState(null);
@@ -48,7 +57,7 @@ const SearchForm = ({ onSearch, fields, modal }) => {
   const onFinish = (values) => {
     let searchable = false;
     for (const property in values) {
-      if (property != "use_date_range" && property != "start_date" && property != "end_date") {
+      if (property != 'use_date_range' && property != 'start_date' && property != 'end_date') {
         if (values[property] != undefined) {
           searchable = true;
         }
@@ -56,13 +65,18 @@ const SearchForm = ({ onSearch, fields, modal }) => {
     }
     if (!searchable) {
       notification.error({
-        // message: t('messages.validationFailed'),
         description: t('descriptions.searchRequired'),
       });
       return;
     }
+
+    const converted = { ...values };
+    if (rangeRequired) {
+      converted.start_date = values.start_date.substr(0, 10) + ' 00:00:00';
+      converted.end_date = values.end_date.substr(0, 10) + ' 23:59:59';
+    }
     modal.destroy();
-    onSearch(values);
+    onSearch(converted);
   };
 
   return (
@@ -93,8 +107,19 @@ const SearchForm = ({ onSearch, fields, modal }) => {
       {fields?.journal_msg && <JournalSearch />}
       {fields?.journal_event && <JournalEvent />}
       {fields?.journal_category && <JournalCategory />}
+      {fields?.eqpt_id && <EqptId />}
+      {fields?.eqpt_code && <EqptCode />}
+      {fields?.eqpt_owner && <EqptOwner />}
+      {fields?.eqpt_etyp && <EqptType />}
+      {fields?.tnkr_code_input && <TnkrCode />}
+      {fields?.tnkr_carrier && <TnkrCarrier />}
+      {fields?.tnkr_owner && <TnkrOwner />}
+      {fields?.tnkr_etyp && <TnkrEtyp />}
+      {fields?.tnkr_flags && <TnkrFlags />}
 
-      <DateRange form={form} timeOption={fields?.time_option} force={fields?.journal_msg} />
+      {rangeRequired && (
+        <DateRange form={form} timeOption={fields?.time_option} force={fields?.journal_msg} />
+      )}
 
       <div style={{ marginTop: '2rem' }}>
         <Button
@@ -119,7 +144,7 @@ const SearchForm = ({ onSearch, fields, modal }) => {
   );
 };
 
-const WindowSearch = (onSearch, title, fields) => {
+const WindowSearch = (onSearch, title, fields, rangeRequired = true) => {
   const modal = Modal.info();
   modal.update({
     className: 'form-container',
@@ -135,7 +160,7 @@ const WindowSearch = (onSearch, title, fields) => {
           fetcher,
         }}
       >
-        <SearchForm onSearch={onSearch} fields={fields} modal={modal} />
+        <SearchForm onSearch={onSearch} fields={fields} modal={modal} rangeRequired={rangeRequired} />
       </SWRConfig>
     ),
     okButtonProps: {

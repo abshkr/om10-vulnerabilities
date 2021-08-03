@@ -136,6 +136,8 @@ const useConfig = () => {
     heatmapExtremeTo: 99999,
     site_default_shls_ld_type: '2',
     popupManualTransaction: false,
+    siteEqptPaging: undefined,
+    siteTnkrPaging: undefined,
     reports_closeout_job: false,
   });
 
@@ -339,6 +341,8 @@ const useConfig = () => {
         heatmapExtremeTo: configurationObject?.HEATMAP_EXTREME_TO || 99999,
         site_default_shls_ld_type: configurationObject?.SITE_DEFAULT_SHLS_LD_TYPE || '2',
         popupManualTransaction: configurationObject?.SITE_POPUP_MT || false,
+        siteEqptPaging: configurationObject?.SITE_PAGINATION_EQPT_LIST || false,
+        siteTnkrPaging: configurationObject?.SITE_PAGINATION_TNKR_LIST || false,
         reports_closeout_job: configurationObject?.REPORTS_CLOSEOUT_JOB || false,
       });
     }
