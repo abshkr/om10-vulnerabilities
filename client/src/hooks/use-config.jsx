@@ -144,8 +144,8 @@ const useConfig = () => {
     heatmapExtremeTo: 99999,
     site_default_shls_ld_type: '2',
     popupManualTransaction: false,
-    siteEqptPaging: false,
-    siteTnkrPaging: false,
+    siteEqptPaging: undefined,
+    siteTnkrPaging: undefined,
     reports_closeout_job: false,
     decimal_thousand_separator: '10',
   });

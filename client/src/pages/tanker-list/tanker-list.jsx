@@ -33,7 +33,7 @@ const TankerList = () => {
   const [tnkrEtyp, setTnkrEtyp] = useState('');
   const [tnkrLock, setTnkrLock] = useState('');
   const [tnkrActive, setTnkrActive] = useState('');
-  const [pagingFlag, setPagingFlag] = useState(false);
+  const [pagingFlag, setPagingFlag] = useState(undefined);
   const [isSearching, setSearching] = useState(false);
   const { setCount, take, offset, paginator, setPage, count } = usePagination(500);
 
@@ -42,7 +42,7 @@ const TankerList = () => {
   const url = `${TANKER_LIST.READ}?pgflag=${
     pagingFlag ? 'Y' : 'N'
   }&start_num=${take}&end_num=${offset}&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`;
-  const { data: payload, isValidating, revalidate } = useSWR(url);
+  const { data: payload, isValidating, revalidate } = useSWR(pagingFlag == undefined ? null : url);
 
   const { data: expiryTypes } = useSWR(TANKER_LIST.EXPIRY);
 
