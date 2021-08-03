@@ -32,7 +32,7 @@ const EquipmentList = () => {
   const [eqptEtyp, setEqptEtyp] = useState('');
   const [pagingFlag, setPagingFlag] = useState(undefined);
   const [isSearching, setSearching] = useState(false);
-  const { setCount, take, offset, paginator, setPage, count } = usePagination(500);
+  const { setCount, take, offset, paginator, setPage, count } = usePagination(250);
 
   const access = useAuth('M_EQUIPMENTLIST');
 
