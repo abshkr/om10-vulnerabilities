@@ -13,12 +13,12 @@ const summary = (arms, tank, t) => {
         {tank.max.toFixed(2)} {t('units.lpm')}
       </p>
       <p>
-        <span>{t('descriptions.actualTankFlowRate')}: </span>
-        {_.sumBy(arms, 'current_flow_rate').toFixed(2)} {t('units.lpm')}
-      </p>
-      <p>
         <span>{t('descriptions.flowContribution')}: </span>
         {_.sumBy(arms, 'flow_contribution').toFixed(2)} {t('units.lpm')}
+      </p>
+      <p>
+        <span>{t('descriptions.actualTankFlowRate')}: </span>
+        {_.sumBy(arms, 'current_flow_rate').toFixed(2)} {t('units.lpm')}
       </p>
     </AdaptiveFlowSummary>
   );
