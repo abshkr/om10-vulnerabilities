@@ -1157,7 +1157,7 @@ class ManualTransactionService
             $e = oci_error($stmt);
             write_log("DB error:" . json_encode($e), __FILE__, __LINE__, LogLevel::WARNING);
             if ($e["code"] == 904) {
-                $query = "ALTER TABLE TRANSFERS ADD TRSF_VCF FLOAT DEFAULT 1";
+                $query = "ALTER TABLE TRANSFERS ADD TRSF_VCF FLOAT";
                 $stmt = oci_parse($this->conn, $query);
                 if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
                     $e = oci_error($stmt);
@@ -1172,7 +1172,7 @@ class ManualTransactionService
             $e = oci_error($stmt);
             write_log("DB error:" . json_encode($e), __FILE__, __LINE__, LogLevel::WARNING);
             if ($e["code"] == 904) {
-                $query = "ALTER TABLE TRANBASE ADD TRSB_VCF FLOAT DEFAULT 1";
+                $query = "ALTER TABLE TRANBASE ADD TRSB_VCF FLOAT";
                 $stmt = oci_parse($this->conn, $query);
                 if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
                     $e = oci_error($stmt);
