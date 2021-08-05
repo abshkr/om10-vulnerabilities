@@ -101,9 +101,10 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     try {
       const values = await form.validateFields();
 
-      if (values?.afc_priority === undefined) {
+      // added in OM5K-8358 and removed in OM5K-9497
+      /* if (values?.afc_priority === undefined) {
         values.afc_priority = '';
-      }
+      } */
 
       Modal.confirm({
         title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
