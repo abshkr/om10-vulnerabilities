@@ -15,7 +15,7 @@ const Events = () => {
   const [playing, toggle, muted, setMuted] = useAudio(COMMON.WARNING_SOUND);
   const { refreshAlarm } = useConfig();
 
-  const { data } = useSWR(AUTH.SESSION, { refreshInterval: refreshAlarm });
+  const { data } = useSWR(AUTH.SESSION, { refreshInterval: refreshAlarm, refreshWhenHidden: true });
 
   const [alarms, setAlarms] = useState([]);
   const [events, setEvents] = useState([]);
