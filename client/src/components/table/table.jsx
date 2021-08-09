@@ -32,6 +32,8 @@ import {
   LinkRenderer,
   MassInAirRenderer,
   VcfRenderer,
+  SeperatorRenderer,
+  QuantitySeperatorRenderer,
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -89,6 +91,8 @@ const defaultComponents = {
   LinkRenderer,
   MassInAirRenderer,
   VcfRenderer,
+  SeperatorRenderer,
+  QuantitySeperatorRenderer,
 };
 
 const defaultColumnDef = {};

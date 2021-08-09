@@ -1,4 +1,4 @@
-const columns = (t, form, products, soldTo, shipTo, units) => [
+const columns = (t, form, products, soldTo, shipTo, units, config) => [
   {
     headerName: t('fields.equipment'),
     field: 'eqpt_code',
@@ -39,6 +39,12 @@ const columns = (t, form, products, soldTo, shipTo, units) => [
     resizable: true,
     width: 90,
     suppressSizeToFit: true,
+    cellRenderer: 'QuantitySeperatorRenderer',
+    cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
+      digits: '0',
+      min: '1',
+    },
   },
 
   {
@@ -47,8 +53,9 @@ const columns = (t, form, products, soldTo, shipTo, units) => [
     resizable: true,
     width: 90,
     suppressSizeToFit: true,
-    cellRenderer: 'QuantityRenderer',
+    cellRenderer: 'QuantitySeperatorRenderer',
     cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
       digits: '0',
       min: '1',
     },
@@ -100,6 +107,12 @@ const columns = (t, form, products, soldTo, shipTo, units) => [
     resizable: true,
     width: 90,
     suppressSizeToFit: true,
+    cellRenderer: 'QuantitySeperatorRenderer',
+    cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
+      digits: '0',
+      min: '1',
+    },
   },
 
   // {

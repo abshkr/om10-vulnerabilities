@@ -95,6 +95,10 @@ const columns = (t, config) => [
     width: 180,
     suppressSizeToFit: true,
     hide: !config?.manageBaseProductDensityRange,
+    cellRenderer: 'SeperatorRenderer',
+    cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
+    },
   },
   {
     headerName: `${t('fields.baseProdDensHi')} [${t(`units.${config.densityUnit}`)}]`,
@@ -104,6 +108,10 @@ const columns = (t, config) => [
     width: 180,
     suppressSizeToFit: true,
     hide: !config?.manageBaseProductDensityRange,
+    cellRenderer: 'SeperatorRenderer',
+    cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
+    },
   },
   {
     headerName: t('fields.baseProdAdtv'),
@@ -146,6 +154,10 @@ const columns = (t, config) => [
     resizable: true,
     width: 180,
     suppressSizeToFit: true,
+    cellRenderer: 'SeperatorRenderer',
+    cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
+    },
   },
   {
     headerName: `${t('fields.baseClassMaxDensity')} [${t(`units.${config.densityUnit}`)}]`,
@@ -154,6 +166,10 @@ const columns = (t, config) => [
     resizable: true,
     width: 180,
     suppressSizeToFit: true,
+    cellRenderer: 'SeperatorRenderer',
+    cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
+    },
   },
   {
     headerName: `${t('fields.baseClassMinTemp')} [${t(`units.${config.temperatureUnit}`)}]`,

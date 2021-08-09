@@ -711,6 +711,10 @@ const useColumns = (value, selected, config) => {
       resizable: true,
       width: 180,
       suppressSizeToFit: true,
+      cellRenderer: 'SeperatorRenderer',
+      cellRendererParams: {
+        type: String(config?.decimal_thousand_separator),
+      },
     },
     {
       headerName: t('fields.quantityMoved'),
@@ -719,8 +723,9 @@ const useColumns = (value, selected, config) => {
       resizable: true,
       width: 160,
       suppressSizeToFit: true,
-      cellRenderer: 'QuantityRenderer',
+      cellRenderer: 'QuantitySeperatorRenderer',
       cellRendererParams: {
+        type: String(config?.decimal_thousand_separator),
         digits: '0',
         min: '100',
       },
@@ -743,8 +748,9 @@ const useColumns = (value, selected, config) => {
       resizable: true,
       width: 160,
       suppressSizeToFit: true,
-      cellRenderer: 'QuantityRenderer',
+      cellRenderer: 'QuantitySeperatorRenderer',
       cellRendererParams: {
+        type: String(config?.decimal_thousand_separator),
         digits: '0',
         min: '100',
       },

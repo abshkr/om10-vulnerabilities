@@ -18,18 +18,30 @@ const columns = (t, config) => [
     field: 'bookbalance',
     sortable: true,
     resizable: true,
+    cellRenderer: 'SeperatorRenderer',
+    cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
+    },
   },
   {
     headerName: t(config?.siteLabelUser + 'fields.grossVolume'),
     field: 'grossvol',
     sortable: true,
     resizable: true,
+    cellRenderer: 'SeperatorRenderer',
+    cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
+    },
   },
   {
     headerName: t(config?.siteLabelUser + 'fields.netVolume'),
     field: 'netvol',
     sortable: true,
     resizable: true,
+    cellRenderer: 'SeperatorRenderer',
+    cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
+    },
   },
   {
     headerName: t('fields.ullage'),
@@ -37,12 +49,20 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     hide: !config?.siteUllageCalcAuto,
+    cellRenderer: 'SeperatorRenderer',
+    cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
+    },
   },
   {
     headerName: t('fields.usableVolume'),
     field: 'usablevol',
     sortable: true,
     resizable: true,
+    cellRenderer: 'SeperatorRenderer',
+    cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
+    },
   },
 ];
 

@@ -33,7 +33,7 @@ const TransactionList = () => {
 
   // const data = transactions?.records;
   const isLoading = isValidating;
-  const fields = columns(t);
+  const fields = columns(t, config);
   const [data, setData] = useState(payload?.records);
 
   const setRange = (start, end) => {

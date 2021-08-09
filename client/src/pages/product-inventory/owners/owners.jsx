@@ -55,7 +55,7 @@ const TankProductOwners = ({ value, access, config, unit, units }) => {
 
   const { resetFields, setFieldsValue, getFieldsValue } = form;
 
-  const fields = columns(t, !value);
+  const fields = columns(t, !value, config);
 
   const modifiers = (
     <>

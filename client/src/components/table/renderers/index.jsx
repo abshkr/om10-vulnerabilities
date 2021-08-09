@@ -24,6 +24,8 @@ import OffsetAlarmRenderer from './offset-alarm';
 import LinkRenderer from './link';
 import MassInAirRenderer from './mass-in-air';
 import VcfRenderer from './vcf';
+import SeperatorRenderer from './seperator';
+import QuantitySeperatorRenderer from './quantitySeperator';
 
 export {
   BooleanRenderer,
@@ -52,4 +54,6 @@ export {
   LinkRenderer,
   MassInAirRenderer,
   VcfRenderer,
+  SeperatorRenderer,
+  QuantitySeperatorRenderer,
 };

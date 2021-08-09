@@ -80,6 +80,10 @@ const columns = (t, visible, config) => [
     resizable: true,
     width: 200,
     suppressSizeToFit: true,
+    cellRenderer: 'SeperatorRenderer',
+    cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
+    },
   },
   {
     headerName: t('fields.baseOwnerDensity') + ' (' + t('units.kg/m3') + ')',

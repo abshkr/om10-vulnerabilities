@@ -34,8 +34,9 @@ const transferColumns = (isFromNomination, t, config) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    cellRenderer: 'QuantityRenderer',
+    cellRenderer: 'QuantitySeperatorRenderer',
     cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
       digits: String(config?.precisionVolume),
       min: '100',
     },
@@ -46,8 +47,9 @@ const transferColumns = (isFromNomination, t, config) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
-    cellRenderer: 'QuantityRenderer',
+    cellRenderer: 'QuantitySeperatorRenderer',
     cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
       digits: String(config?.precisionVolume),
       min: '100',
     },
@@ -58,8 +60,9 @@ const transferColumns = (isFromNomination, t, config) => [
     sortable: true,
     resizable: true,
     hide: !config?.siteMassInVacuum,
-    cellRenderer: 'QuantityRenderer',
+    cellRenderer: 'QuantitySeperatorRenderer',
     cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
       digits: String(config?.precisionMass),
       min: '100',
     },

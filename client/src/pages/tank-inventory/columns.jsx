@@ -65,6 +65,10 @@ const columns = (t, config) => [
     field: 'netvol',
     sortable: true,
     resizable: true,
+    cellRenderer: 'SeperatorRenderer',
+    cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
+    },
   },
   {
     headerName: `${t(config?.siteLabelUser + 'fields.observedVolume')} (${t(
@@ -73,24 +77,40 @@ const columns = (t, config) => [
     field: 'grossvol',
     sortable: true,
     resizable: true,
+    cellRenderer: 'SeperatorRenderer',
+    cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
+    },
   },
   {
     headerName: `${t('fields.pumpableVolume')} (${t(config?.siteLabelUser + 'units.lobs')})`,
     field: 'pumpablevol',
     sortable: true,
     resizable: true,
+    cellRenderer: 'SeperatorRenderer',
+    cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
+    },
   },
   {
     headerName: `${t('fields.openingStock')} (${t(config?.siteLabelUser + 'units.lcor')})`,
     field: 'usablevol',
     sortable: true,
     resizable: true,
+    cellRenderer: 'SeperatorRenderer',
+    cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
+    },
   },
   {
     headerName: `${t('fields.bookBalance')} (${t(config?.siteLabelUser + 'units.lcor')})`,
     field: 'bookbalance',
     sortable: true,
     resizable: true,
+    cellRenderer: 'SeperatorRenderer',
+    cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
+    },
   },
 ];
 

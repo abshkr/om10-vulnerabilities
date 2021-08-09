@@ -71,7 +71,7 @@ const MovementNominations = () => {
 
   //const data = payload?.records;
   const isLoading = isValidating || !data;
-  const fields = columns(t);
+  const fields = columns(t, config);
 
   const page = t('pageMenu.operations');
   const name = t('pageNames.movementNominations');

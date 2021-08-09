@@ -9,6 +9,7 @@ import { LOAD_SCHEDULES } from '../../../../api';
 import compartmentColumns from './compartment-columns';
 import productColumns from './product-columns';
 import { PreloadEditor } from './fields';
+import { useConfig } from '../../../../hooks';
 
 const Summary = ({ form, value }) => {
   const { setFieldsValue } = form;
@@ -16,6 +17,7 @@ const Summary = ({ form, value }) => {
   const [hideProd, setHidProd] = useState(false);
   const [compartments, setCompartments] = useState([]);
   // const [tableAPI, setTableAPI] = useState(null);
+  const config = useConfig();
 
   const { data: products } = useSWR(
     value
@@ -31,8 +33,8 @@ const Summary = ({ form, value }) => {
 
   const { t } = useTranslation();
 
-  const compartmentFields = compartmentColumns(t, form);
-  const productFields = productColumns(t);
+  const compartmentFields = compartmentColumns(t, form, config);
+  const productFields = productColumns(t, config);
 
   const onChange = (v) => {
     setHidProd(v.target.checked);

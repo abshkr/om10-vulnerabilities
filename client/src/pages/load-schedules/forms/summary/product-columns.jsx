@@ -1,4 +1,4 @@
-const columns = (t) => [
+const columns = (t, config) => [
   {
     headerName: t('fields.code'),
     field: 'prod_code',
@@ -19,6 +19,10 @@ const columns = (t) => [
     field: 'qty_scheduled',
     resizable: true,
     width: 200,
+    cellRenderer: 'SeperatorRenderer',
+    cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
+    },
   },
 
   {
@@ -26,8 +30,9 @@ const columns = (t) => [
     field: 'qty_loaded',
     resizable: true,
     width: 200,
-    cellRenderer: 'QuantityRenderer',
+    cellRenderer: 'QuantitySeperatorRenderer',
     cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
       digits: '0',
       min: '1',
     },
@@ -38,6 +43,10 @@ const columns = (t) => [
     field: 'qty_preloaded',
     resizable: true,
     width: 200,
+    cellRenderer: 'SeperatorRenderer',
+    cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
+    },
   },
 
   {

@@ -2,169 +2,84 @@ import React from 'react';
 import { useConfig } from 'hooks';
 import NumberFormat from 'react-number-format';
 
-const DecimalThousandSeparator = ({ text }) => {
+const DecimalThousandSeparator = ({ text, type }) => {
   const config = useConfig();
-  const seperatorType = config.decimal_thousand_separator;
-
+  const seperatorType = config.decimal_thousand_separator || type;
+  const types = [
+    {
+      thousandSeparator: ' ',
+      decimalSeparator: ',',
+      decimalScale: '3',
+    },
+    {
+      thousandSeparator: ' ',
+      decimalSeparator: ',',
+      decimalScale: '3',
+    },
+    {
+      thousandSeparator: ' ',
+      decimalSeparator: ',',
+      decimalScale: '3',
+    },
+    {
+      thousandSeparator: ' ',
+      decimalSeparator: ',',
+      decimalScale: '3',
+    },
+    {
+      thousandSeparator: '.',
+      decimalSeparator: ',',
+      decimalScale: '3',
+    },
+    {
+      thousandSeparator: '.',
+      decimalSeparator: ',',
+      decimalScale: '3',
+    },
+    {
+      thousandSeparator: '.',
+      decimalSeparator: ',',
+      decimalScale: '3',
+    },
+    {
+      thousandSeparator: '.',
+      decimalSeparator: ',',
+      decimalScale: '3',
+    },
+    {
+      thousandSeparator: ' ',
+      decimalSeparator: ',',
+      decimalScale: '3',
+    },
+    {
+      thousandSeparator: ',',
+      decimalSeparator: '.',
+      decimalScale: '2',
+    },
+    {
+      thousandSeparator: ',',
+      decimalSeparator: '.',
+      decimalScale: '2',
+    },
+    {
+      thousandSeparator: ',',
+      decimalSeparator: '.',
+      decimalScale: '2',
+    },
+  ];
   if (seperatorType) {
-    switch (seperatorType) {
-      case '1':
-        return (
-          <NumberFormat
-            value={text}
-            displayType={'text'}
-            thousandSeparator={true}
-            thousandSeparator=" "
-            decimalSeparator=","
-            decimalScale="3"
-            fixedDecimalScale={true}
-            isNumericString={true}
-          />
-        );
-      case '2':
-        return (
-          <NumberFormat
-            value={text}
-            displayType={'text'}
-            thousandSeparator={true}
-            thousandSeparator=" "
-            decimalSeparator=","
-            decimalScale="3"
-            fixedDecimalScale={true}
-            isNumericString={true}
-          />
-        );
-      case '3':
-        return (
-          <NumberFormat
-            value={text}
-            displayType={'text'}
-            thousandSeparator={true}
-            thousandSeparator=" "
-            decimalSeparator=","
-            decimalScale="3"
-            fixedDecimalScale={true}
-            isNumericString={true}
-          />
-        );
-      case '4':
-        return (
-          <NumberFormat
-            value={text}
-            displayType={'text'}
-            thousandSeparator={true}
-            thousandSeparator=" "
-            decimalSeparator=","
-            decimalScale="3"
-            fixedDecimalScale={true}
-            isNumericString={true}
-          />
-        );
-      case '5':
-        return (
-          <NumberFormat
-            value={text}
-            displayType={'text'}
-            thousandSeparator={true}
-            thousandSeparator="."
-            decimalSeparator=","
-            decimalScale="3"
-            fixedDecimalScale={true}
-            isNumericString={true}
-          />
-        );
-      case '6':
-        return (
-          <NumberFormat
-            value={text}
-            displayType={'text'}
-            thousandSeparator={true}
-            thousandSeparator="."
-            decimalSeparator=","
-            decimalScale="3"
-            fixedDecimalScale={true}
-            isNumericString={true}
-          />
-        );
-      case '7':
-        return (
-          <NumberFormat
-            value={text}
-            displayType={'text'}
-            thousandSeparator={true}
-            thousandSeparator="."
-            decimalSeparator=","
-            decimalScale="3"
-            fixedDecimalScale={true}
-            isNumericString={true}
-          />
-        );
-      case '8':
-        return (
-          <NumberFormat
-            value={text}
-            displayType={'text'}
-            thousandSeparator={true}
-            thousandSeparator="."
-            decimalSeparator=","
-            decimalScale="3"
-            fixedDecimalScale={true}
-            isNumericString={true}
-          />
-        );
-      case '9':
-        return (
-          <NumberFormat
-            value={text}
-            displayType={'text'}
-            thousandSeparator={true}
-            thousandSeparator=" "
-            decimalSeparator=","
-            decimalScale="3"
-            fixedDecimalScale={true}
-            isNumericString={true}
-          />
-        );
-      case '10':
-        return (
-          <NumberFormat
-            value={text}
-            displayType={'text'}
-            thousandSeparator={true}
-            decimalSeparator="."
-            thousandSeparator=","
-            decimalScale="2"
-            fixedDecimalScale={true}
-            isNumericString={true}
-          />
-        );
-      case '11':
-        return (
-          <NumberFormat
-            value={text}
-            displayType={'text'}
-            thousandSeparator={true}
-            decimalSeparator="."
-            thousandSeparator=","
-            decimalScale="2"
-            fixedDecimalScale={true}
-            isNumericString={true}
-          />
-        );
-      case '12':
-        return (
-          <NumberFormat
-            value={text}
-            displayType={'text'}
-            thousandSeparator={true}
-            decimalSeparator="."
-            thousandSeparator=","
-            decimalScale="2"
-            fixedDecimalScale={true}
-            isNumericString={true}
-          />
-        );
-    }
+    return (
+      <NumberFormat
+        value={text}
+        displayType={'text'}
+        thousandSeparator={true}
+        thousandSeparator={types[seperatorType]?.thousandSeparator}
+        decimalSeparator={types[seperatorType]?.decimalSeparator}
+        decimalScale={types[seperatorType]?.decimalScale}
+        fixedDecimalScale={true}
+        isNumericString={true}
+      />
+    );
   } else {
     return <span>Error</span>;
   }

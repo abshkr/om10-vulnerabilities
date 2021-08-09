@@ -1,4 +1,4 @@
-const columns = (t, visible) => [
+const columns = (t, visible, config) => [
   {
     headerName: t('fields.tkownerCode'),
     field: 'cmpy_code',
@@ -61,6 +61,10 @@ const columns = (t, visible) => [
     resizable: true,
     width: 180,
     suppressSizeToFit: true,
+    cellRenderer: 'SeperatorRenderer',
+    cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
+    },
   },
 
   {
