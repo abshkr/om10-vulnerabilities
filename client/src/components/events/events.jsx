@@ -18,8 +18,8 @@ const Events = () => {
   const { data } = useSWR(AUTH.SESSION, { refreshInterval: refreshAlarm, refreshWhenHidden: true });
 
   const [alarms, setAlarms] = useState([]);
-  const [events, setEvents] = useState([]);
-
+  const [events, setEvents] = useState(JSON.parse(sessionStorage.getItem('alarms')) || []);
+  
   const [visible, setVisible] = useState(false);
   const [seen, setSeen] = useState([]);
 
@@ -49,6 +49,7 @@ const Events = () => {
     });
 
     setEvents(filtered);
+    sessionStorage.setItem('alarms', JSON.stringify(filtered));
     /* // testing 
     const mockups = [];
     for (let i=0; i<100; i++) {
