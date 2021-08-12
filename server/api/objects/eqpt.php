@@ -1191,6 +1191,10 @@ class Equipment extends CommonClass
             return false;
         }
 
+        if (!isset($this->eqpt_lock)) {
+            $this->eqpt_lock = 'N';
+        }
+
         $query = "
             INSERT INTO TRANSP_EQUIP (
                 EQPT_ID,
