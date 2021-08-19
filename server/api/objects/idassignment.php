@@ -212,7 +212,7 @@ class IDAssignment extends CommonClass
                 DECODE(TNKR_NAME, NULL, TNKR_CODE, TNKR_CODE||'['||TNKR_NAME||']') AS TNKR_DESC,
                 TNKR_NUMBER
             FROM GUI_TANKERS
-            WHERE TNKR_OWNER LIKE :tnkr_owner
+            WHERE (TNKR_OWNER LIKE :tnkr_owner OR TNKR_CARRIER LIKE :tnkr_owner)
             ORDER BY TNKR_CODE ASC";
 
         $stmt = oci_parse($this->conn, $query);
