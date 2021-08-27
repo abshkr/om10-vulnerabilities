@@ -26,6 +26,7 @@ import MassInAirRenderer from './mass-in-air';
 import VcfRenderer from './vcf';
 import SeperatorRenderer from './seperator';
 import QuantitySeperatorRenderer from './quantitySeperator';
+import LegacyExpDateRenderer from './legacy-exp-date';
 
 export {
   BooleanRenderer,
@@ -56,4 +57,5 @@ export {
   VcfRenderer,
   SeperatorRenderer,
   QuantitySeperatorRenderer,
+  LegacyExpDateRenderer
 };

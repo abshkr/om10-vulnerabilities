@@ -10,7 +10,7 @@ const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit, carrcod
       sortable: true,
       resizable: true,
       // filter: 'FuzzyFilter',
-      cellRenderer: 'DateRenderer',
+      cellRenderer: 'LegacyExpDateRenderer',
       suppressSizeToFit: true,
       width: 180,
     });
@@ -20,7 +20,7 @@ const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit, carrcod
       sortable: true,
       resizable: true,
       // filter: 'FuzzyFilter',
-      cellRenderer: 'DateRenderer',
+      cellRenderer: 'LegacyExpDateRenderer',
       suppressSizeToFit: true,
       width: 180,
     });
@@ -30,7 +30,7 @@ const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit, carrcod
       sortable: true,
       resizable: true,
       // filter: 'FuzzyFilter',
-      cellRenderer: 'DateRenderer',
+      cellRenderer: 'LegacyExpDateRenderer',
       suppressSizeToFit: true,
       width: 180,
     });
