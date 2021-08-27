@@ -31,6 +31,7 @@ import {
   OffsetAlarmRenderer,
   LinkRenderer,
   MassInAirRenderer,
+  LegacyExpDateRenderer
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -87,6 +88,7 @@ const defaultComponents = {
   DraggableRenderer,
   LinkRenderer,
   MassInAirRenderer,
+  LegacyExpDateRenderer
 };
 
 const defaultColumnDef = {};

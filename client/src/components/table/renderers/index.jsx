@@ -23,6 +23,7 @@ import FlowRateRenderer from './flow-rate';
 import OffsetAlarmRenderer from './offset-alarm';
 import LinkRenderer from './link';
 import MassInAirRenderer from './mass-in-air';
+import LegacyExpDateRenderer from './legacy-exp-date';
 
 export {
   BooleanRenderer,
@@ -50,4 +51,5 @@ export {
   OffsetAlarmRenderer,
   LinkRenderer,
   MassInAirRenderer,
+  LegacyExpDateRenderer
 };
