@@ -14,6 +14,9 @@ const transform = (data) => {
   if (data) {
     for (let index = 0; index < data.length; index++) {
       const element = data[index];
+      element.tank_ifc = element.tank_ifc === undefined ? 0 : element.tank_ifc;
+      element.tank_roof_weight = element.tank_roof_weight === undefined ? 0 : element.tank_roof_weight;
+      element.tank_sg = element.tank_sg === undefined ? '' : element.tank_sg;
 
       payload.push({
         ...element,
