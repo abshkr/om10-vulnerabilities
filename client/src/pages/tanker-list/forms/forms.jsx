@@ -69,16 +69,17 @@ const FormModal = ({
   const [tripCount, setTripCount] = useState(0);
   const [carrier, setCarrier] = useState(null);
 
-  const { data: payload } = useSWR(TANKER_LIST.READ, { refreshInterval: 0 });
+  const { data: payload } = useSWR(value?.tnkr_name ? `${TANKER_LIST.MATCHES_BY_NAME}?tnkr_name=${value?.tnkr_name}` : null);
+  
   const [equipment, setEquipment] = useState(undefined);
 
-  const { data: tags } = useSWR(`${TANKER_LIST.CHECK_TANKER_TAGS}?tanker=${value?.tnkr_code}`, {
+  const { data: tags } = useSWR(value?.tnkr_code ? `${TANKER_LIST.CHECK_TANKER_TAGS}?tanker=${value?.tnkr_code}` : null, {
     refreshInterval: 0,
   });
-  const { data: loads } = useSWR(`${TANKER_LIST.CHECK_TANKER_LOADS}?tanker=${value?.tnkr_code}`, {
+  const { data: loads } = useSWR(value?.tnkr_code? `${TANKER_LIST.CHECK_TANKER_LOADS}?tanker=${value?.tnkr_code}` : null, {
     refreshInterval: 0,
   });
-  const { data: trips } = useSWR(`${TANKER_LIST.CHECK_TANKER_TRIPS}?tanker=${value?.tnkr_code}`, {
+  const { data: trips } = useSWR(value?.tnkr_code? `${TANKER_LIST.CHECK_TANKER_TRIPS}?tanker=${value?.tnkr_code}` : null, {
     refreshInterval: 0,
   });
 
@@ -204,7 +205,7 @@ const FormModal = ({
         <Scrollbars
           style={{
             height: '300px',
-            width: '25vw',
+            width: !eqpt_selected ? '36vw' : '26vw',
             marginTop: 15,
             padding: 5,
             marginBottom: 15,

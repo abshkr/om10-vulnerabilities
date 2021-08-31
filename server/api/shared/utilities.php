@@ -450,6 +450,10 @@ class Utilities
         // initialize object
         try {
             $db = $database->getConnection($class, $method);
+        } catch (InvalidToeknException $e) {
+            $error = new EchoSchema(498, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
         } catch (UnauthException $e) {
             $error = new EchoSchema(401, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
             echo json_encode($error, JSON_PRETTY_PRINT);
@@ -499,7 +503,18 @@ class Utilities
     public static function count($class, $method = 'count', $filter = false)
     {
         $database = new Database();
-        $db = $database->getConnection($class, $method);
+        $db = null;
+        try {
+            $db = $database->getConnection($class, $method);
+        } catch (InvalidToeknException $e) {
+            $error = new EchoSchema(498, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        } catch (UnauthException $e) {
+            $error = new EchoSchema(401, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
 
         // initialize object
         $object = new $class($db);
@@ -545,7 +560,18 @@ class Utilities
     public static function simpliedRead($class, $method = 'read', $filter = false)
     {
         $database = new Database();
-        $db = $database->getConnection($class, $method);
+        $db = null;
+        try {
+            $db = $database->getConnection($class, $method);
+        } catch (InvalidToeknException $e) {
+            $error = new EchoSchema(498, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        } catch (UnauthException $e) {
+            $error = new EchoSchema(401, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
 
         // initialize object
         $object = new $class($db);
@@ -670,7 +696,18 @@ class Utilities
             __FILE__, __LINE__);
 
         $database = new Database();
-        $db = $database->getConnection($class, $method);
+        $db = null;
+        try {
+            $db = $database->getConnection($class, $method);
+        } catch (InvalidToeknException $e) {
+            $error = new EchoSchema(498, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        } catch (UnauthException $e) {
+            $error = new EchoSchema(401, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
 
         $access_check = new AccessCheck($db);
         if (!$access_check->check($class, $method, self::getCurrPsn())) {
@@ -821,7 +858,18 @@ class Utilities
     {
         if (method_exists($class, "pre_update_array")) {
             $database = new Database();
-            $db = $database->getConnection($class, "pre_update_array");
+            $db = null;
+            try {
+                $db = $database->getConnection($class, "pre_update_array");
+            } catch (InvalidToeknException $e) {
+                $error = new EchoSchema(498, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
+                echo json_encode($error, JSON_PRETTY_PRINT);
+                return;
+            } catch (UnauthException $e) {
+                $error = new EchoSchema(401, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
+                echo json_encode($error, JSON_PRETTY_PRINT);
+                return;
+            }
 
             $access_check = new AccessCheck($db);
             if (!$access_check->check($class, $method, self::getCurrPsn())) {
@@ -901,8 +949,13 @@ class Utilities
             __FILE__, __LINE__);
 
         $database = new Database();
+        $db = null;
         try {
             $db = $database->getConnection($class, $method);
+        } catch (InvalidToeknException $e) {
+            $error = new EchoSchema(498, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
         } catch (UnauthException $e) {
             $error = new EchoSchema(401, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
             echo json_encode($error, JSON_PRETTY_PRINT);
@@ -932,11 +985,13 @@ class Utilities
             // write_log(json_encode($data), __FILE__, __LINE__);
             foreach ($data as $key => $value) {
                 // write_log(sprintf("%s => %s", $key, $value), __FILE__, __LINE__);
-                if (is_array($value)) {
+                if (is_array($value) || is_object($value)) {
                     foreach ($value as $sub_object) {
-                        foreach ($sub_object as $sub_key => $sub_value) {
-                            // write_log(sprintf("%s => %s", $sub_key, $sub_value), __FILE__, __LINE__);
-                            self::handleBoolean($object, $sub_object, $sub_key, $sub_value);
+                        if (is_array($sub_object) || is_object($sub_object)) {
+                            foreach ($sub_object as $sub_key => $sub_value) {
+                                // write_log(sprintf("%s => %s", $sub_key, $sub_value), __FILE__, __LINE__);
+                                self::handleBoolean($object, $sub_object, $sub_key, $sub_value);
+                            }
                         }
                     }
                 }
@@ -977,12 +1032,16 @@ class Utilities
         // write_log(json_encode($object), __FILE__, __LINE__, LogLevel::DEBUG);
         if ($method === 'update' && method_exists($object, "check_existence")) {
             if (!$object->check_existence()) {
-                $record_str = strlen($object->primiary_key_str()) > 0 ? " (" . $object->primiary_key_str() . ") ": " ";
-                write_log(sprintf("record%sdoes not not exist", $record_str), __FILE__, __LINE__, LogLevel::ERROR);
-                // $error = new EchoSchema(400, sprintf("record%sdoes not not exist", $record_str));
-                $error = new EchoSchema(400, response("__NOT_EXIST__", sprintf("record%sdoes not not exist", $record_str)));
-                echo json_encode($error, JSON_PRETTY_PRINT);
-                return;
+                if ($object->create_in_update) {
+                    $method = "create";
+                } else {
+                    $record_str = strlen($object->primiary_key_str()) > 0 ? " (" . $object->primiary_key_str() . ") ": " ";
+                    write_log(sprintf("record%sdoes not not exist", $record_str), __FILE__, __LINE__, LogLevel::ERROR);
+                    // $error = new EchoSchema(400, sprintf("record%sdoes not not exist", $record_str));
+                    $error = new EchoSchema(400, response("__NOT_EXIST__", sprintf("record%sdoes not not exist", $record_str)));
+                    echo json_encode($error, JSON_PRETTY_PRINT);
+                    return;
+                }
             }
         }
 

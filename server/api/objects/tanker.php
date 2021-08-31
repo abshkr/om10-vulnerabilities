@@ -153,6 +153,25 @@ class Tanker extends CommonClass
         }
     }
 
+    public function matches_by_name()
+    {
+        $query = "SELECT GUI_TANKERS.* 
+            FROM GUI_TANKERS 
+            WHERE TNKR_NAME = :tnkr_name
+            ORDER BY TNKR_CODE";
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tnkr_name', $this->tnkr_name);
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function read()
     {
         $query = "
@@ -418,20 +437,6 @@ class Tanker extends CommonClass
     {
         $serv = new CompanyService($this->conn);
         return $serv->carriers();
-        // $query = "
-        //     SELECT CMPY_CODE, CMPY_NAME
-        //     FROM GUI_COMPANYS
-        //     WHERE BITAND(CMPY_TYPE, POWER(2, 2)) != 0
-        //     ORDER BY CMPY_NAME ASC";
-
-        // $stmt = oci_parse($this->conn, $query);
-        // if (oci_execute($stmt, $this->commit_mode)) {
-        //     return $stmt;
-        // } else {
-        //     $e = oci_error($stmt);
-        //     write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-        //     return null;
-        // }
     }
 
     public function searchCount()

@@ -202,40 +202,6 @@ class Equipment extends CommonClass
         // write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
         //     __FILE__, __LINE__);
 
-        $result = array();
-        $hook_item['compartments'] = $result;
-
-        $query = "
-            SELECT CMPT_NO,
-                CMPT_UNITS CMPT_UNIT_ID,
-                DECODE(CMPT_UNITS, 11, 'l (cor)', 17, 'kg', 'l (amb)') CMPT_UNITS2,
-                UNIT_SCALE_VW.DESCRIPTION CMPT_UNITS,
-                CMPT_CAPACIT,
-                CMPT_CAPACIT SAFEFILL,
-                CMPT_CAPACIT SFL,
-                COMPARTMENT.CMPT_ETYP ETYP_ID,
-                CMPT_N_SEALS
-            FROM COMPARTMENT, UNIT_SCALE_VW
-            WHERE COMPARTMENT.CMPT_ETYP = :eqpt_etp
-                and COMPARTMENT.CMPT_UNITS = UNIT_SCALE_VW.UNIT_ID
-            ORDER BY CMPT_NO";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':eqpt_etp', $hook_item['eqpt_etp']);
-        
-        if (!oci_execute($stmt, $this->commit_mode)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return;
-        }
-
-        Utilities::retrieve($result, $this, $stmt, $method = __FUNCTION__);
-        $hook_item['compartments'] = $result;
-
-
-	
-	// write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
-        //     __FILE__, __LINE__);
-
         $expiry_date = new ExpiryDate($this->conn);
         $expiry_date->ed_target_code = ExpiryTarget::TRANSP_EQUIP;
         $expiry_date->ed_object_id = $hook_item['eqpt_id'];
@@ -288,6 +254,77 @@ class Equipment extends CommonClass
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return 0;
+        }
+    }
+
+    public function matches_by_title()
+    {
+        $query = "SELECT GUI_EQUIPMENT_LIST.* 
+            FROM GUI_EQUIPMENT_LIST 
+            WHERE EQPT_TITLE = :eqpt_title
+            ORDER BY EQPT_CODE";
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':eqpt_title', $this->eqpt_title);
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function matches_by_type_hook(&$hook_item)
+    {
+        $result = array();
+        $hook_item['compartments'] = $result;
+
+        $query = "
+            SELECT EQPT_CODE,
+                EQPT_ID EQPT_ETP,
+                CMPT_NO,
+                UNIT_ID CMPT_UNIT_ID,
+                UNIT_TITLE CMPT_UNITS2,
+                UNIT_TITLE CMPT_UNITS,
+                CMPT_CAPACIT,
+                ADJ_SAFEFILL SAFEFILL,
+                ADJ_CAPACITY SFL,
+                NVL(ADJ_CMPT_LOCK, 0) ADJ_CMPT_LOCK,
+                ETYP_ID
+            FROM GUI_EQUIPLIST_CMPT_VW 
+            WHERE EQPT_ID = :eqpt_id
+                ORDER BY CMPT_NO";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':eqpt_id', $hook_item['eqpt_id']);
+        
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        Utilities::retrieve($result, $this, $stmt, $method = __FUNCTION__);
+        $hook_item['compartments'] = $result;
+    }
+
+    public function matches_by_type()
+    {
+        $query = "SELECT GUI_EQUIPMENT_LIST.* 
+            FROM GUI_EQUIPMENT_LIST 
+            WHERE EQPT_ETP = :eqpt_etp
+            ORDER BY EQPT_CODE";
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':eqpt_etp', $this->eqpt_etp);
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
         }
     }
 
@@ -1189,6 +1226,10 @@ class Equipment extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
+        }
+
+        if (!isset($this->eqpt_lock)) {
+            $this->eqpt_lock = 'N';
         }
 
         $query = "

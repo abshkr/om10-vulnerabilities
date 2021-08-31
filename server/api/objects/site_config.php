@@ -6,6 +6,7 @@ include_once 'common_class.php';
 
 class SiteConfig extends CommonClass
 {
+    public $create_in_update = true;
     protected $TABLE_NAME = 'SITE_CONFIG';
 
     private $CNH_DESC = array(
