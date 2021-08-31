@@ -1,4 +1,6 @@
 export const READ = '/api/pages/equipment/read.php';
+export const MATCHES_BY_TITLE = '/api/pages/equipment/matches_by_title.php';
+export const MATCHES_BY_TYPE = '/api/pages/equipment/matches_by_type.php';
 export const CHECK_EQPT_CODE = '/api/pages/equipment/check_eqpt_code.php';
 export const CREATE = '/api/pages/equipment/create.php';
 export const UPDATE = '/api/pages/equipment/update.php';

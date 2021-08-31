@@ -218,6 +218,7 @@ const EquipmentList = () => {
         selectionMode="single"
         autoColWidth
         filterValue={filterValue}
+        clearFilterPlus={onRefresh}
       />
       <div
         style={{
@@ -236,7 +237,7 @@ const EquipmentList = () => {
           visible={visible}
           handleFormState={handleFormState}
           access={access}
-          setFilterValue={setFilterValue}
+          setEqptCode={setEqptCode}
           expiryDateMode={expiryDateMode}
           expiryTypes={expiryTypes?.records}
           config={config}

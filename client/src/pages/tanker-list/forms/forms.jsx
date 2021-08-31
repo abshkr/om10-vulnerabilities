@@ -69,7 +69,8 @@ const FormModal = ({
   const [tripCount, setTripCount] = useState(0);
   const [carrier, setCarrier] = useState(null);
 
-  const { data: payload } = useSWR(TANKER_LIST.READ, { refreshInterval: 0 });
+  const { data: payload } = useSWR(value?.tnkr_name ? `${TANKER_LIST.MATCHES_BY_NAME}?tnkr_name=${value?.tnkr_name}` : null);
+  
   const [equipment, setEquipment] = useState(undefined);
 
   const { data: tags } = useSWR(`${TANKER_LIST.CHECK_TANKER_TAGS}?tanker=${value?.tnkr_code}`, {

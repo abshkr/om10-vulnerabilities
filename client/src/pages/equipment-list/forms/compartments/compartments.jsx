@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, Select, Form } from 'antd';
+import { Table, Select, Form, notification } from 'antd';
 
 import useSWR from 'swr';
 import _ from 'lodash';
@@ -10,7 +10,7 @@ import columns from './columns';
 import Cell from './cell';
 import Row from './row';
 
-const Compartments = ({ form, value, equipment, onChange, config }) => {
+const Compartments = ({ form, value, eqptType, onChange, config }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
@@ -20,7 +20,6 @@ const Compartments = ({ form, value, equipment, onChange, config }) => {
 
   const { setFieldsValue } = form;
 
-  const { data: payload } = useSWR(EQUIPMENT_LIST.READ);
   const { data: types } = useSWR(EQUIPMENT_LIST.TYPES);
 
   const fetchByCompartment = useCallback(
@@ -28,6 +27,7 @@ const Compartments = ({ form, value, equipment, onChange, config }) => {
       setLoading(true);
 
       api.get(`${EQUIPMENT_LIST.COMPARTMENTS}?eqpt_id=${id}`).then((response) => {
+        setData([]);    //Muse do this before next setData, otherwise frontend does not refresh to new data
         setData(response.data.records);
         setFieldsValue({ compartments: response.data.records });
         setLoading(false);
@@ -74,26 +74,43 @@ const Compartments = ({ form, value, equipment, onChange, config }) => {
   };
 
   useEffect(() => {
-    const predicate = value ? ['eqpt_etp_title', value.eqpt_etp_title] : ['eqpt_etp', String(equipment)];
-    const options = _.filter(payload?.records, predicate) || [];
-
-    setOptions(options);
-    setSelected(value ? value.eqpt_id : options[0]?.eqpt_id);
-  }, [value, payload, equipment]);
+    if (eqptType) {
+      api
+        .get(EQUIPMENT_LIST.MATCHES_BY_TYPE, {
+          params: {
+            eqpt_etp: eqptType,
+            pgflag: 'N',
+          },
+        })
+        .then((res) => {
+          setOptions(res.data.records);
+          setSelected(res.data.records[0]?.eqpt_id);
+          setSelected(value ? value.eqpt_id.toString() : res.data.records[0]?.eqpt_id);
+        })
+        .catch((errors) => {
+          _.forEach(errors.response.data.errors, (error) => {
+            notification.error({
+              message: error.type,
+              description: error.message,
+            });
+          });
+        });
+    }
+  }, [ eqptType ]);
 
   useEffect(() => {
-    // the eqpttype in value?.eqpt_etp is String and equipment is Number,
+    // the eqpttype in value?.eqpt_etp is String and eqptType is Number,
     // so etp will be a String in EDIT mode, a Number in CREATE mode.
     // But etyp_id in eqpt types is a Number, so we must force etp to Number.
-    const etp = value?.eqpt_etp || equipment;
+    const etp = value?.eqpt_etp || eqptType;
     // change the filter condition to make both sides number
     // const type = _.find(types?.records, ['etyp_id', _.toNumber(etp)]);
     const type = _.find(types?.records, (item) => _.toNumber(item?.etyp_id) === _.toNumber(etp));
     const image = type?.image?.toLowerCase() || null;
-    console.log('compartments - image', equipment, value?.eqpt_etp, etp, type, type?.image, image);
+    console.log('compartments - image', eqptType, value?.eqpt_etp, etp, type, type?.image, image);
 
     onChange(image);
-  }, [value, types, equipment, onChange]);
+  }, [value, types, eqptType, onChange]);
 
   useEffect(() => {
     if (value) {
@@ -101,11 +118,11 @@ const Compartments = ({ form, value, equipment, onChange, config }) => {
       fetchByCompartment(value.eqpt_id);
     }
 
-    if (!value && equipment) {
-      console.log('fetchByEquipment', equipment, value);
-      fetchByEquipment(equipment);
+    if (!value && eqptType) {
+      console.log('fetchByEquipment', eqptType, value);
+      fetchByEquipment(eqptType);
     }
-  }, [value, equipment, fetchByEquipment, fetchByCompartment]);
+  }, [value, eqptType, fetchByEquipment, fetchByCompartment]);
 
   const fields = columns(t, config).map((col) => {
     if (!col.editable) {
@@ -126,7 +143,7 @@ const Compartments = ({ form, value, equipment, onChange, config }) => {
     };
   });
 
-  if (equipment && data.length > 0) {
+  if (eqptType && data.length > 0) {
     return (
       <Form.Item name="compartments">
         <Select
