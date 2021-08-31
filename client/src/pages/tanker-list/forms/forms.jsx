@@ -73,13 +73,13 @@ const FormModal = ({
   
   const [equipment, setEquipment] = useState(undefined);
 
-  const { data: tags } = useSWR(`${TANKER_LIST.CHECK_TANKER_TAGS}?tanker=${value?.tnkr_code}`, {
+  const { data: tags } = useSWR(value?.tnkr_code ? `${TANKER_LIST.CHECK_TANKER_TAGS}?tanker=${value?.tnkr_code}` : null, {
     refreshInterval: 0,
   });
-  const { data: loads } = useSWR(`${TANKER_LIST.CHECK_TANKER_LOADS}?tanker=${value?.tnkr_code}`, {
+  const { data: loads } = useSWR(value?.tnkr_code? `${TANKER_LIST.CHECK_TANKER_LOADS}?tanker=${value?.tnkr_code}` : null, {
     refreshInterval: 0,
   });
-  const { data: trips } = useSWR(`${TANKER_LIST.CHECK_TANKER_TRIPS}?tanker=${value?.tnkr_code}`, {
+  const { data: trips } = useSWR(value?.tnkr_code? `${TANKER_LIST.CHECK_TANKER_TRIPS}?tanker=${value?.tnkr_code}` : null, {
     refreshInterval: 0,
   });
 

@@ -114,15 +114,15 @@ const Compartments = ({ form, value, eqptType, onChange, config }) => {
 
   useEffect(() => {
     if (value) {
-      console.log('fetchByCompartment', value.eqpt_id, value);
       fetchByCompartment(value.eqpt_id);
     }
+  }, [value]);
 
+  useEffect(() => {
     if (!value && eqptType) {
-      console.log('fetchByEquipment', eqptType, value);
       fetchByEquipment(eqptType);
     }
-  }, [value, eqptType, fetchByEquipment, fetchByCompartment]);
+  }, [eqptType]);
 
   const fields = columns(t, config).map((col) => {
     if (!col.editable) {
