@@ -34,6 +34,7 @@ import {
   VcfRenderer,
   SeperatorRenderer,
   QuantitySeperatorRenderer,
+  LegacyExpDateRenderer
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -93,6 +94,7 @@ const defaultComponents = {
   VcfRenderer,
   SeperatorRenderer,
   QuantitySeperatorRenderer,
+  LegacyExpDateRenderer
 };
 
 const defaultColumnDef = {};

@@ -97,6 +97,11 @@ class CommonClass
     public $check_exists = true;
 
     /**
+     * If this record does not exist when update, then do a create
+     */
+    public $create_in_update = false;
+
+    /**
      * Not every update call changes db. Once it changes, update() calls $journal->valueChange
      * to write a journal, and change this $record_updated to be true, so post_update()
      * can use this property. See objects\folio.php as a sample

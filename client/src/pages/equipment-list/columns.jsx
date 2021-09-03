@@ -12,7 +12,7 @@ const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit) => {
           sortable: true,
           resizable: true,
           // filter: 'FuzzyFilter',
-          cellRenderer: 'DateRenderer',
+          cellRenderer: 'LegacyExpDateRenderer',
           suppressSizeToFit: true,
           width: 180,
         });

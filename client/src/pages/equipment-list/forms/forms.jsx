@@ -9,13 +9,11 @@ import {
   UnlockOutlined,
 } from '@ant-design/icons';
 
-import { Scrollbars } from 'react-custom-scrollbars';
 import {
   Form,
   Button,
   Tabs,
   notification,
-  message,
   Modal,
   Drawer,
   Divider,
@@ -63,7 +61,7 @@ const FormModal = ({
   visible,
   handleFormState,
   access,
-  setFilterValue,
+  setEqptCode,
   expiryDateMode,
   expiryTypes,
   config,
@@ -72,8 +70,8 @@ const FormModal = ({
   const [form] = Form.useForm();
   const { resetFields } = form;
 
-  const { data: payload } = useSWR(EQUIPMENT_LIST.READ);
-  const [equipment, setEquipment] = useState(undefined);
+  const { data: payload } = useSWR(value?.eqpt_code ? `${EQUIPMENT_LIST.MATCHES_BY_TITLE}?eqpt_title=${value?.eqpt_title}` : null);
+  const [eqptType, setEqptType] = useState(undefined);
   const [image, setImage] = useState(null);
   const [massLimitType, setMassLimitType] = useState(1);
   const [axleGroupNumber, setAxleGroupNumber] = useState(0);
@@ -83,12 +81,8 @@ const FormModal = ({
 
   const onComplete = (eqpt_code) => {
     handleFormState(false, null);
-    // need read the data again no matter if it is created or updated, otherwise user could not see changes after updating.
-    mutate(EQUIPMENT_LIST.READ);
     if (eqpt_code) {
-      setFilterValue('' + eqpt_code);
-    } else {
-      setFilterValue(' ');
+      setEqptCode(eqpt_code);
     }
   };
 
@@ -96,18 +90,6 @@ const FormModal = ({
     const errors = [];
 
     _.forEach(cmpts, (item) => {
-      /*
-        data structure:
-        adj_cmpt_lock: false
-        ​​​cmpt_no: "1"
-        ​​​cmpt_units: "l (amb)"
-        ​​​cmpt_units2: "l (amb)"
-        ​​​cmpt_units_code: "5"
-        ​​​eqpt_code: "ZZZ999"
-        ​​​eqpt_etp: "963410319"
-        ​​​safefill: 9010
-        ​​​sfl: 9000
-      */
       if (item?.safefill > item?.sfl) {
         errors.push({
           field: `${t('fields.compartment')} ${item.cmpt_no}: ${t('fields.safeFill')} ${item.safefill} > ${t(
@@ -132,23 +114,14 @@ const FormModal = ({
       );
 
       notification.error({
-        // message: t('validate.lineItemValidation'),
         message: t('messages.validationFailed'),
         description: lines,
-        // duration: 0,
         style: {
           width: '33vw',
           height: 'calc(100vh - 400px)',
           overflowY: 'scroll',
         },
       });
-      /* _.forEach(errors, (item) => {
-        notification.error({
-          message: item.message,
-          description: item.field,
-          width: '30vw',
-        });
-      }); */
     }
 
     return errors;
@@ -157,7 +130,6 @@ const FormModal = ({
   const onFinish = async () => {
     const values = await form.validateFields();
 
-    // console.log('............', form.getFieldValue('axles'));
     console.log('............values in onFinish', values);
 
     const errors = checkCompartments(values?.compartments);
@@ -422,14 +394,14 @@ const FormModal = ({
                 <LoadType form={form} value={value} />
               </Col>
               <Col span={16}>
-                <EquipmentType form={form} value={value} onChange={setEquipment} />
+                <EquipmentType form={form} value={value} onChange={setEqptType} />
               </Col>
             </Row>
 
             <Compartments
               form={form}
               value={value}
-              equipment={equipment}
+              eqptType={eqptType}
               onChange={setImage}
               config={config}
             />

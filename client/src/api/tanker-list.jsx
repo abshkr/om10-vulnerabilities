@@ -1,5 +1,6 @@
 export const READ = '/api/pages/tanker/read.php';
 export const OWNERS = '/api/pages/tanker/owners.php';
+export const MATCHES_BY_NAME = '/api/pages/tanker/matches_by_name.php';
 export const CARRIERS = '/api/pages/tanker/carriers.php';
 export const EQUIPMENT_TYPES = '/api/pages/tanker/eqpt_types.php';
 export const TERMINAL = '/api/pages/tanker/terminals.php';

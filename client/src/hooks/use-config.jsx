@@ -9,6 +9,7 @@ import { SETTINGS } from '../constants';
 const useConfig = () => {
   const [config, setConfig] = useState({
     dateTimeFormat: 'DD/MM/YYYY HH:mm:ss',
+    showLegacyExpiryTime: false,
     dateFormat: 'DD/MM/YYYY',
     timeFormat: 'HH:mm:ss',
     dateTimeFormatHM: 'DD/MM/YYYY HH:mm',
@@ -273,6 +274,7 @@ const useConfig = () => {
         userAutoLock: configurationObject?.URBAC_USER_AUTO_LOCK,
         externalBlendAllowed: configurationObject?.SITE_EXTERNAL_BLENDING_ALLOWED,
         dateTimeFormat: configurationObject?.SITE_DATETIME_FORMAT || 'DD/MM/YYYY HH:mm:ss',
+        showLegacyExpiryTime: configurationObject?.SHOW_LEGACY_EXPIRY_TIME || false,
         dateFormat: String(configurationObject?.SITE_DATETIME_FORMAT)?.split(' ')?.[0] || 'DD/MM/YYYY',
         timeFormat: String(configurationObject?.SITE_DATETIME_FORMAT)?.split(' ')?.[1] || 'HH:mm:ss',
         dateTimeFormatHM:
