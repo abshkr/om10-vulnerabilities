@@ -403,7 +403,65 @@ class BaseOwnerTrans extends CommonClass
         }
     }
 
+    // get qunatities from tank closeout for the prorate density
     public function get_base_summary()
+    {
+        if (!isset($this->base_code)) {
+            $this->base_code = "-1";
+        }
+
+        $query = "
+            SELECT 
+                TANK_BASE,
+                SUM(TANK_COR_VOL)                                   AS TANK_COR_VOL,
+                SUM(TANK_LIQUID_KG)                                 AS TANK_LIQUID_KG2,
+                SUM(TANK_COR_VOL*TANK_DENSITY/1000.0)               AS TANK_LIQUID_KG,
+                SUM(TANK_DENSITY)                                   AS TANK_DENS,
+                COUNT(TANK_CODE)                                    AS TANK_COUNT,
+                NVL(SUM(TANK_COR_VOL*TANK_15_DENSITY/1000.0), 0)    AS TANK_LIQUID_KG15
+            FROM  (
+              select 
+                CS.CLOSEOUT_NR
+                , CT.TANK_CODE
+                , CT.TANK_TERMINAL
+                , TK.TANK_BASE
+                , CT.OPEN_STD_TOT    AS TANK_COR_VOL
+                , CT.OPEN_DENSITY    AS TANK_DENSITY
+            	, CT.OPEN_MASS_TOT   AS TANK_LIQUID_KG
+            	, CT.OPEN_AMB_TOT
+				, TK.TANK_15_DENSITY
+              from 
+                CLOSEOUT_TANK CT 
+                , (
+                  select * 
+              	from (select * from CLOSEOUTS where STATUS = 0 order by CLOSEOUT_NR desc) temp 
+              	where ROWNUM=1
+                )  CS
+                , TANKS TK
+              where
+                CT.CLOSEOUT_NR = CS.CLOSEOUT_NR
+                and CT.TANK_TERMINAL = TK.TANK_TERMINAL
+                and CT.TANK_CODE = TK.TANK_CODE
+            )  CTK
+            WHERE 
+                1 = 1
+                AND ('-1' = :base OR TANK_BASE = :base)
+            GROUP BY TANK_BASE
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':base', $this->base_code);
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    // get qunatities from tank for the prorate density
+    public function get_base_summary2()
     {
         if (!isset($this->base_code)) {
             $this->base_code = "-1";

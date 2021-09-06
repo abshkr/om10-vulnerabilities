@@ -92,6 +92,8 @@ class BaseProduct extends CommonClass
                 BC.BCLASS_TEMP_HI AS BASE_CLASS_TEMP_HI,
                 BT.BASE_TANK_COUNT AS BASE_TANK_COUNT,
                 BT.BASE_TANK_LIST AS BASE_TANK_LIST,
+                BP.BASE_PUB_DENS_STD,
+                BP.BASE_PRORATE_DENS,
                 BP.BASE_REF_TEMP,
                 BP.BASE_REF_TUNT,
                 BP.BASE_LIMIT_PRESET_HT,

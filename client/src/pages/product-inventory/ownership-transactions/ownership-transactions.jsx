@@ -131,21 +131,31 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
     const payload = getFieldsValue(['base_prod_code']);
 
     if (payload?.base_prod_code) {
-      const basesum = await getBaseSummary(payload?.base_prod_code);
-      let prorateDensity = 0;
+      // get the prorate density from base products first
+      const baseProd = bases?.records?.find((o) => o.base_code === payload?.base_prod_code);
 
-      if (basesum.length > 0) {
-        if (_.toNumber(basesum?.[0]?.tank_cor_vol) > 0) {
-          prorateDensity =
-            (_.toNumber(basesum?.[0]?.tank_liquid_kg) / _.toNumber(basesum?.[0]?.tank_cor_vol)) * 1000.0;
+      let prorateDensity = 0;
+      // if (!baseProd || !baseProd?.base_pub_dens_std) {
+      if (!baseProd || !baseProd?.base_prorate_dens) {
+        // prorate density not available in base products, get it from open folio tanks
+        const basesum = await getBaseSummary(payload?.base_prod_code);
+        if (basesum.length > 0) {
+          if (_.toNumber(basesum?.[0]?.tank_cor_vol) > 0) {
+            prorateDensity =
+              (_.toNumber(basesum?.[0]?.tank_liquid_kg) / _.toNumber(basesum?.[0]?.tank_cor_vol)) * 1000.0;
+          }
+          console.log('........................prorateDensity by volume: ', prorateDensity);
+          /* if (_.toNumber(basesum?.[0]?.tank_count) > 0) {
+            prorateDensity = (_.toNumber(basesum?.[0]?.tank_dens) / _.toNumber(basesum?.[0]?.tank_count));
+          }
+          console.log('........................prorateDensity by density: ', prorateDensity); */
+        } else {
+          prorateDensity = 0;
         }
-        console.log('........................prorateDensity by volume: ', prorateDensity);
-        /* if (_.toNumber(basesum?.[0]?.tank_count) > 0) {
-          prorateDensity = (_.toNumber(basesum?.[0]?.tank_dens) / _.toNumber(basesum?.[0]?.tank_count));
-        }
-        console.log('........................prorateDensity by density: ', prorateDensity); */
       } else {
-        prorateDensity = 0;
+        // prorate density available in base products
+        // prorateDensity = baseProd?.base_pub_dens_std;
+        prorateDensity = baseProd?.base_prorate_dens;
       }
 
       setFieldsValue({
