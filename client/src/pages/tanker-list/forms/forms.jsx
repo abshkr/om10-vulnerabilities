@@ -60,7 +60,7 @@ const FormModal = ({
   tankers,
 }) => {
   const { t } = useTranslation();
-  const { carrcode_tankernum_tag } = useConfig();
+  const { carrcode_tankernum_tag, tanker_slp_enabled } = useConfig();
   const [form] = Form.useForm();
   const { resetFields } = form;
 
@@ -499,7 +499,7 @@ const FormModal = ({
 
             <Row gutter={[8, 2]}>
               <Col span={8}>
-                <SLP form={form} value={value} />
+                { tanker_slp_enabled && <SLP form={form} value={value} />}
               </Col>
               <Col span={16}>
                 <Locks form={form} value={value} />

@@ -46,6 +46,8 @@ import {
   LegacyExpires,
   AxleGroupNumber,
   AxleLimitTypes,
+  SLP,
+  VIN
   // FrontWeightLimit,
   // RearWeightLimit,
   // FrontAxleGroups,
@@ -365,6 +367,19 @@ const FormModal = ({
               </Col>
             </Row>
 
+            { (config?.equip_slp_enabled || config?.vin_number_enabled) && 
+              <Row gutter={[8, 2]}>
+                {config?.equip_slp_enabled && 
+                <Col span={8}>
+                  <SLP form={form} value={value} />
+                </Col>}
+                {config?.vin_number_enabled && 
+                <Col span={8}>
+                  <VIN form={form} value={value} />
+                </Col>}
+              </Row>
+            }
+            
             <Row gutter={[8, 2]}>
               <Col span={8}>
                 <Locks form={form} value={value} />
@@ -373,6 +388,7 @@ const FormModal = ({
                 <Comments form={form} value={value} />
               </Col>
             </Row>
+
 
             {/* config?.siteUseAxleWeightLimit && (
               <Row gutter={[12, 12]}>

@@ -360,6 +360,9 @@ class Equipment extends CommonClass
                 EQPT_AXLE_GROUPS,
                 EQPT_AXLE_WEIGHTS,
                 EQPT_AXLE_BRIEFS,
+                SLP_ID,
+                SLP_EXPIRY,
+                VIN_NUMBER,
                 TNKR_COUNT
             FROM
             (
@@ -985,6 +988,8 @@ class Equipment extends CommonClass
                 EQPT_COMMENTS = :eqpt_comments,
                 EQPT_AREA = :eqpt_area,
                 EQPT_LOAD_TYPE = :eqpt_load_type,
+                SLP_ID = :slp_id,
+                VIN_NUMBER = :vin_number,
                 EQPT_LAST_MODIFIED = sysdate
             WHERE EQPT_ID = :eqpt_id";
         $stmt = oci_parse($this->conn, $query);
@@ -997,6 +1002,8 @@ class Equipment extends CommonClass
         oci_bind_by_name($stmt, ':eqpt_area', $this->eqpt_area);
         oci_bind_by_name($stmt, ':eqpt_load_type', $this->eqpt_load_type);
         oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
+        oci_bind_by_name($stmt, ':slp_id', $this->slp_id);
+        oci_bind_by_name($stmt, ':vin_number', $this->vin_number);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);

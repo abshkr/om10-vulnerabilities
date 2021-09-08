@@ -140,6 +140,10 @@ const useConfig = () => {
     siteEqptPaging: undefined,
     siteTnkrPaging: undefined,
     reports_closeout_job: false,
+    driver_slp_enabled: false,
+    equip_slp_enabled: false,
+    tanker_slp_enabled: false,
+    vin_number_enabled: false,
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -346,6 +350,10 @@ const useConfig = () => {
         siteEqptPaging: configurationObject?.SITE_PAGINATION_EQPT_LIST || false,
         siteTnkrPaging: configurationObject?.SITE_PAGINATION_TNKR_LIST || false,
         reports_closeout_job: configurationObject?.REPORTS_CLOSEOUT_JOB || false,
+        driver_slp_enabled: configurationObject?.DRIVER_SLP_ENABLED || false,
+        equip_slp_enabled: configurationObject?.EQUIP_SLP_ENABLED || false,
+        tanker_slp_enabled: configurationObject?.TANKER_SLP_ENABLED || false,
+        vin_number_enabled: configurationObject?.VIN_NUMBER_ENABLED || false,
       });
     }
     // eslint-disable-next-line
