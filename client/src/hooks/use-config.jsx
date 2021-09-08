@@ -149,6 +149,10 @@ const useConfig = () => {
     siteTnkrPaging: undefined,
     reports_closeout_job: false,
     decimal_thousand_separator: '10',
+    driver_slp_enabled: false,
+    equip_slp_enabled: false,
+    tanker_slp_enabled: false,
+    vin_number_enabled: false
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -363,6 +367,10 @@ const useConfig = () => {
         siteTnkrPaging: configurationObject?.SITE_PAGINATION_TNKR_LIST || false,
         reports_closeout_job: configurationObject?.REPORTS_CLOSEOUT_JOB || false,
         decimal_thousand_separator: configurationObject?.SITE_DEC_TH_SEPERATORS || '10',
+        driver_slp_enabled: configurationObject?.DRIVER_SLP_ENABLED || false,
+        equip_slp_enabled: configurationObject?.EQUIP_SLP_ENABLED || false,
+        tanker_slp_enabled: configurationObject?.TANKER_SLP_ENABLED || false,
+        vin_number_enabled: configurationObject?.VIN_NUMBER_ENABLED || false,
       });
 
       // utils function cannot use hooks, use global constants to by pass

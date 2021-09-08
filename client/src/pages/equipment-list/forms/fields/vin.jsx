@@ -11,7 +11,7 @@ const SLP = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        slp_id: value.slp_id
+        vin_number: value.vin_number
       });
     }
   }, [value, setFieldsValue]);
@@ -25,7 +25,7 @@ const SLP = ({ form, value }) => {
   };
 
   return (
-    <Form.Item name="slp_id" label={t('fields.slp')} rules={[{ required: false, validator: validate }]}>
+    <Form.Item name="vin_number" label={t('fields.vin')} rules={[{ required: false, validator: validate }]}>
       <Input />
     </Form.Item>
   );

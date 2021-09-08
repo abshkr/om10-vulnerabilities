@@ -357,9 +357,12 @@ const FormModal = ({
               <Col span={8}>
                 <DriverLicence form={form} value={value} />
               </Col>
-              <Col span={8}>
-                <SLP form={form} value={value} />
-              </Col>
+              { 
+                (config?.driver_slp_enabled && 
+                <Col span={8}>
+                  <SLP form={form} value={value} />
+                </Col>)
+              }
             </Row>
 
             <Row gutter={[8, 2]}>
