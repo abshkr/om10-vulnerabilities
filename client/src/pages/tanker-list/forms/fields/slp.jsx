@@ -26,7 +26,14 @@ const SLP = ({ form, value }) => {
 
   return (
     <Form.Item name="slp_id" label={t('fields.slp')} rules={[{ required: false, validator: validate }]}>
-      <Input />
+      <Input
+        disabled
+        addonAfter={
+          <Tooltip title={t('descriptions.funcNotAvailableAtThisStage')}>
+            <InfoCircleOutlined style={{ fontSize: 16 }} />
+          </Tooltip>
+        }
+      />
     </Form.Item>
   );
 };

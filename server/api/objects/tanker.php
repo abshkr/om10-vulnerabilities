@@ -1171,8 +1171,7 @@ class Tanker extends CommonClass
                 TNKR_ARCHIVE = :tnkr_archive,
                 REMARKS = :remarks,
                 TNKR_LAST_MODIFIED = SYSDATE,
-                TNKR_NUMBER = :tnkr_number,
-                SLP_ID = :slp_id
+                TNKR_NUMBER = :tnkr_number
             WHERE TNKR_CODE = :tnkr_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
@@ -1189,7 +1188,6 @@ class Tanker extends CommonClass
         oci_bind_by_name($stmt, ':tnkr_pin', $this->tnkr_pin);
         oci_bind_by_name($stmt, ':tnkr_archive', $this->tnkr_archive);
         oci_bind_by_name($stmt, ':remarks', $this->remarks);
-        oci_bind_by_name($stmt, ':slp_id', $this->slp_id);
         oci_bind_by_name($stmt, ':tnkr_number', $this->tnkr_number);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {

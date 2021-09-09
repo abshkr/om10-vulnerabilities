@@ -18,8 +18,6 @@ import FrontWeightLimit from './front-weight-limit';
 import RearWeightLimit from './rear-weight-limit';
 import FrontAxleGroups from './front-axle-groups';
 import RearAxleGroups from './rear-axle-groups';
-import SLP from './slp';
-import VIN from './vin';
 
 export {
   Owner,
@@ -40,6 +38,4 @@ export {
   RearWeightLimit,
   FrontAxleGroups,
   RearAxleGroups,
-  SLP,
-  VIN,
 };

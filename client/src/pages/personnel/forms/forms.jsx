@@ -303,7 +303,7 @@ const FormModal = ({
               width="36vw"
             >
               <Form layout="vertical">
-                <PasswordReset value={value} setHide={() => setPasswordResetVisible(false)} />
+                <PasswordReset value={value} setHide={() => setPasswordResetVisible(false)}/>
               </Form>
             </Drawer>
           )}
@@ -317,7 +317,7 @@ const FormModal = ({
               visible={areaVisible}
               width="36vw"
             >
-              <ChangeArea value={value} setHide={() => setAreaVisible(false)} />
+              <ChangeArea value={value} setHide={() => setAreaVisible(false)}/>
             </Drawer>
           )}
         </>
@@ -357,19 +357,16 @@ const FormModal = ({
               <Col span={8}>
                 <DriverLicence form={form} value={value} />
               </Col>
-              { 
-                (config?.driver_slp_enabled && 
-                <Col span={8}>
-                  <SLP form={form} value={value} />
-                </Col>)
-              }
+              <Col span={8}>
+                <SLP form={form} value={value} />
+              </Col>
             </Row>
 
             <Row gutter={[8, 2]}>
-              <Col span={6}>
+              <Col span={4}>
                 <Status form={form} value={value} />
               </Col>
-              <Col span={18}>
+              <Col span={20}>
                 <Comment form={form} value={value} />
               </Col>
             </Row>
