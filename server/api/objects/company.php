@@ -8,6 +8,8 @@ include_once __DIR__ . '/../service/company_service.php';
 
 class Company extends CommonClass
 {
+    private $image_path = "/../assets/companys/";
+
     protected $TABLE_NAME = 'COMPANYS';
     protected $VIEW_NAME = 'GUI_COMPANYS';
     public $NUMBER_FIELDS = array(
@@ -869,5 +871,58 @@ class Company extends CommonClass
         oci_commit($this->conn);
 
         return true;
+    }
+
+    public function upload($field = 'file')
+    {
+        write_log(sprintf("%s::%s() START.", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        if (!isset($_FILES) || count($_FILES) <= 0) {
+            write_log("Upload failed, _FILES not set or size <= 0", __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(200, response("__FILE_UPLOADED__",
+                "The file ". basename($_FILES[$field]["name"]). " has been uploaded."));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $target_dir = __DIR__ . $this->image_path;
+        $target_file = $target_dir . basename($_FILES[$field]["name"]);
+        write_log("Upload company logo file:" . $_FILES[$field]["name"], __FILE__, __LINE__);
+        
+        // Check if image file is a actual image or fake image
+        if (isset($_POST["submit"])) {
+            $check = getimagesize($_FILES[$field]["tmp_name"]);
+            if($check !== false) {
+                write_log("File is an image - " . $check["mime"], __FILE__, __LINE__);
+            } else {
+                write_log(sprintf("File %s is not an image", $_FILES[$field]["tmp_name"]), __FILE__, __LINE__);
+                $error = new EchoSchema(500, response("__NOT_IMAGE__"));
+                echo json_encode($error, JSON_PRETTY_PRINT);
+
+                return;
+            }
+        }
+
+        // Check file size
+        if ($_FILES[$field]["size"] > 500000) {
+            write_log("The file ". basename($_FILES[$field]["name"]). " is too large", __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(500, response("__FILE_TOO_LARGE__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+        
+        if (move_uploaded_file($_FILES[$field]["tmp_name"], $target_file)) {
+            write_log("The file ". basename($_FILES[$field]["name"]). " has been uploaded.", __FILE__, __LINE__);
+            $error = new EchoSchema(200, response("__FILE_UPLOADED__",
+                "The file ". basename($_FILES[$field]["name"]). " has been uploaded."));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        } else {
+            write_log("The file ". basename($_FILES[$field]["name"]). " upload failed", __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(500, response("__FILE_UPLOAD_FAILED__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
     }
 }

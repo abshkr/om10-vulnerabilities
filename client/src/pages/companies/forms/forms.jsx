@@ -33,6 +33,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import api, { COMPANIES, ROLE_ACCESS_MANAGEMENT } from '../../../api';
 import { InputNumber, NumericInput } from '../../../components';
 import { REGEX } from '../../../constants';
+import Logo from './logo';
 import useSWR from 'swr';
 import _ from 'lodash';
 
@@ -77,8 +78,7 @@ const FormModal = ({
     };
 
     const results = await api.post(COMPANIES.CHECK_COMPANY, values);
-    // console.log('............checkCompany', results);
-
+    
     if (results?.data) {
       return _.toNumber(results?.data?.records[0]?.cnt);
     } else {
@@ -97,8 +97,7 @@ const FormModal = ({
     }
 
     const results = await api.post(ROLE_ACCESS_MANAGEMENT.CHECK_CHILDREN, values);
-    console.log('............getTableChildren', results);
-
+    
     if (results?.data) {
       return results?.data?.records;
     } else {
@@ -154,10 +153,10 @@ const FormModal = ({
 
   const onComplete = (cmpy_code) => {
     handleFormState(false, null);
+    mutate(COMPANIES.READ);
     if (cmpy_code) {
       setFilterValue('' + cmpy_code);
     }
-    mutate(COMPANIES.READ);
   };
 
   const onManagerChange = async (v) => {
@@ -594,7 +593,7 @@ const FormModal = ({
     >
       <Form layout="vertical" form={form} scrollToFirstError>
         <Tabs defaultActiveKey="1">
-          <TabPane tab={t('tabColumns.general')} key="1" style={{ height: '60vh' }}>
+          <TabPane tab={t('tabColumns.general')} key="1" style={{ height: '80vh' }}>
             <Form.Item
               name="cmpy_code"
               label={t('fields.companyCode')}
@@ -728,6 +727,7 @@ const FormModal = ({
                 </Col>
               </Row>
             </Card>
+            <Logo value={value} form={form} />
           </TabPane>
         </Tabs>
       </Form>

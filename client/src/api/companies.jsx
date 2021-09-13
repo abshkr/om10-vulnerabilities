@@ -22,3 +22,5 @@ export const UPDATE_RELATIONS = '/api/pages/company/update_relations.php';
 
 export const CHECK_CHILDREN = '/api/pages/company/check_children.php';
 export const CHECK_COMPANY = '/api/pages/company/check_company_code.php';
+
+export const UPLOAD_LOGO = '/api/pages/company/upload.php';

@@ -65,10 +65,11 @@ const FormModal = ({}) => {
   const props = {
     name: 'file',
     action: DRAWER_PRODUCTS.UPLOAD_IMAGE,
-    // action: '/api/pages/product_asset/upload.php',
-    // headers: {
-    //   authorization: 'authorization-text',
-    // },
+    headers: {
+      // Accept: 'application/json',
+      // 'Content-Type': 'application/json',
+      'Authorization': sessionStorage.getItem('token')
+    },
     onChange(info) {
       console.log(info);
       if (info.file.status !== 'uploading') {

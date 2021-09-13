@@ -16,6 +16,17 @@ const columns = (t, config) => [
     width: 380,
   },
   {
+    headerName: t('fields.companyLogo'),
+    field: 'cmpy_logo',
+    cellRenderer: 'ImageRenderer',
+    sortable: true,
+    resizable: true,
+    width: 120,
+    cellRendererParams: {
+      assets_folder: 'companys',
+    },
+  },
+  {
     headerName: t('fields.plantCode'),
     field: 'cmpy_plant',
     filter: 'FuzzyFilter',
