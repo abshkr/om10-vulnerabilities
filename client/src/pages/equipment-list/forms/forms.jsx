@@ -62,6 +62,7 @@ const FormModal = ({
   handleFormState,
   access,
   setEqptCode,
+  revalidate,
   expiryDateMode,
   expiryTypes,
   config,
@@ -83,6 +84,7 @@ const FormModal = ({
     handleFormState(false, null);
     if (eqpt_code) {
       setEqptCode(eqpt_code);
+      revalidate();
     }
   };
 

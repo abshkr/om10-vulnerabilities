@@ -8,7 +8,7 @@ import { EQUIPMENT_LIST } from '../../../../api';
 
 const EquipmentType = ({ form, value, onChange }) => {
   const { t } = useTranslation();
-  const { data: options, isValidating } = useSWR(EQUIPMENT_LIST.TYPES);
+  const { data: options, isValidating } = useSWR(EQUIPMENT_LIST.TYPES, { revalidateOnFocus: false });
 
   const { setFieldsValue } = form;
 
