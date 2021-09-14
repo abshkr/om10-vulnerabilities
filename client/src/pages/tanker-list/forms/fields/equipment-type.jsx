@@ -11,7 +11,7 @@ const EquipmentType = ({ form, value, onChange }) => {
   const { setFieldsValue } = form;
 
   // const { data: options, isValidating } = useSWR(TANKER_LIST.EQUIPMENT_TYPES);
-  const { data: options, isValidating } = useSWR(TANKER_LIST.TOTAL_COMPOSITION);
+  const { data: options, isValidating } = useSWR(TANKER_LIST.TOTAL_COMPOSITION, { revalidateOnFocus: false });
 
   const validate = (rule, input) => {
     if (input === '' || !input) {

@@ -42,9 +42,9 @@ const TankerList = () => {
   const url = `${TANKER_LIST.READ}?pgflag=${
     pagingFlag ? 'Y' : 'N'
   }&start_num=${take}&end_num=${offset}&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`;
-  const { data: payload, isValidating, revalidate } = useSWR(pagingFlag === undefined ? null : url);
+  const { data: payload, isValidating, revalidate } = useSWR(pagingFlag === undefined ? null : url, { revalidateOnFocus: false });
 
-  const { data: expiryTypes } = useSWR(TANKER_LIST.EXPIRY);
+  const { data: expiryTypes } = useSWR(TANKER_LIST.EXPIRY, { revalidateOnFocus: false });
 
   const [data, setData] = useState(payload?.records);
   const [fields, setFields] = useState(
@@ -247,6 +247,7 @@ const TankerList = () => {
           handleFormState={handleFormState}
           access={access}
           setFilterValue={setFilterValue}
+          revalidate={revalidate}
           expiryDateMode={expiryDateMode}
           expiryTypes={expiryTypes}
           config={config}

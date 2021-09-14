@@ -201,16 +201,7 @@ class EquipmentType extends CommonClass
 
         Utilities::retrieve($result, $this, $stmt, $method = __FUNCTION__);
         $hook_item['compartments'] = $result;
-
-        $eqpt_types = new EquipmentType($this->conn);
-        $stmt = $eqpt_types->equipments($hook_item['etyp_id']);
-        $result = array();
-        Utilities::retrieve($result, $eqpt_types, $stmt, $method = 'equipments');
-        // write_log(json_encode($result), __FILE__, __LINE__);
-        $hook_item['eqpt_list'] = $result;
     }
-
-
 
     public function composition_hook(&$hook_item)
     {
