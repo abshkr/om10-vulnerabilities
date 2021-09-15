@@ -44,6 +44,33 @@ const FormSwitch = ({ config, onChange }) => {
     return null;
   }
 
+  const isNegativeNumber = (key, value) => {
+    const keys = [
+      'DRIVER_PIN_AUTO_EXPIRE',
+      'DRIVER_PIN_AUTO_LOCK',
+      'URBAC_PWD_AUTO_LOCK',
+      'URBAC_PWD_AUTO_EXPIRE',
+      'URBAC_PWD_UPD_INTERVAL',
+      'URBAC_PWD_REUSE',
+      'URBAC_AUTO_LOGOFF',
+      'URBAC_SESSION_PER_USER',
+      'URBAC_USER_AUTO_LOCK',
+      'URBAC_USER_AUTO_DELETE',
+      'URBAC_PWD_LEN_MIN',
+      'URBAC_PWD_LEN_MAX',
+    ];
+
+    if (keys.indexOf(key) < 0) {
+      return value;
+    } else {
+      if (value === -1 || value === '-1') {
+        return '';
+      } else {
+        return value;
+      }
+    }
+  };
+
   switch (config.config_key) {
     case 'URBAC_PWD_COMPLEXITY':
       return (
@@ -109,7 +136,7 @@ const FormSwitch = ({ config, onChange }) => {
           min={0}
           max={40}
           onChange={(value) => onChange(config, value)}
-          value={config.config_value}
+          value={isNegativeNumber(config.config_key, config.config_value)}
         />
       );
 
@@ -119,7 +146,7 @@ const FormSwitch = ({ config, onChange }) => {
           min={0}
           max={40}
           onChange={(value) => onChange(config, value)}
-          value={config.config_value}
+          value={isNegativeNumber(config.config_key, config.config_value)}
         />
       );
 
@@ -129,7 +156,7 @@ const FormSwitch = ({ config, onChange }) => {
           min={0}
           max={99}
           onChange={(value) => onChange(config, value)}
-          value={config.config_value}
+          value={isNegativeNumber(config.config_key, config.config_value)}
         />
       );
 
@@ -139,7 +166,7 @@ const FormSwitch = ({ config, onChange }) => {
           min={0}
           max={365}
           onChange={(value) => onChange(config, value)}
-          value={config.config_value}
+          value={isNegativeNumber(config.config_key, config.config_value)}
         />
       );
 
@@ -149,7 +176,7 @@ const FormSwitch = ({ config, onChange }) => {
           min={0}
           max={365}
           onChange={(value) => onChange(config, value)}
-          value={config.config_value}
+          value={isNegativeNumber(config.config_key, config.config_value)}
         />
       );
 
@@ -159,7 +186,7 @@ const FormSwitch = ({ config, onChange }) => {
           min={0}
           max={99}
           onChange={(value) => onChange(config, value)}
-          value={config.config_value}
+          value={isNegativeNumber(config.config_key, config.config_value)}
         />
       );
 
@@ -169,7 +196,7 @@ const FormSwitch = ({ config, onChange }) => {
           min={0}
           max={2000}
           onChange={(value) => onChange(config, value)}
-          value={config.config_value}
+          value={isNegativeNumber(config.config_key, config.config_value)}
         />
       );
 
@@ -179,7 +206,7 @@ const FormSwitch = ({ config, onChange }) => {
           min={0}
           max={99}
           onChange={(value) => onChange(config, value)}
-          value={config.config_value}
+          value={isNegativeNumber(config.config_key, config.config_value)}
         />
       );
 
@@ -189,7 +216,7 @@ const FormSwitch = ({ config, onChange }) => {
           min={0}
           max={365}
           onChange={(value) => onChange(config, value)}
-          value={config.config_value}
+          value={isNegativeNumber(config.config_key, config.config_value)}
         />
       );
 
@@ -199,7 +226,7 @@ const FormSwitch = ({ config, onChange }) => {
           min={0}
           max={365}
           onChange={(value) => onChange(config, value)}
-          value={config.config_value}
+          value={isNegativeNumber(config.config_key, config.config_value)}
         />
       );
 
@@ -269,7 +296,7 @@ const FormSwitch = ({ config, onChange }) => {
           min={0}
           max={365}
           onChange={(value) => onChange(config, value)}
-          value={config.config_value}
+          value={isNegativeNumber(config.config_key, config.config_value)}
         />
       );
 
@@ -279,7 +306,7 @@ const FormSwitch = ({ config, onChange }) => {
           min={0}
           max={99}
           onChange={(value) => onChange(config, value)}
-          value={config.config_value}
+          value={isNegativeNumber(config.config_key, config.config_value)}
         />
       );
 
@@ -502,6 +529,21 @@ const Configuration = ({ user, config }) => {
 
   const UPDATING_AXLES = tab === '9';
 
+  const NUMERIC_KEYS = [
+    'DRIVER_PIN_AUTO_EXPIRE',
+    'DRIVER_PIN_AUTO_LOCK',
+    'URBAC_PWD_AUTO_LOCK',
+    'URBAC_PWD_AUTO_EXPIRE',
+    'URBAC_PWD_UPD_INTERVAL',
+    'URBAC_PWD_REUSE',
+    'URBAC_AUTO_LOGOFF',
+    'URBAC_SESSION_PER_USER',
+    'URBAC_USER_AUTO_LOCK',
+    'URBAC_USER_AUTO_DELETE',
+    'URBAC_PWD_LEN_MIN',
+    'URBAC_PWD_LEN_MAX',
+  ];
+
   const [featureKey, setFeatureKey] = useState('');
 
   const onSearch = (e) => {
@@ -528,7 +570,11 @@ const Configuration = ({ user, config }) => {
 
     let payload = [...configuration];
 
-    object.config_value = value;
+    if (NUMERIC_KEYS.indexOf(object.config_key) < 0) {
+      object.config_value = value;
+    } else {
+      object.config_value = value === undefined || value === null || value === '' ? '-1' : value;
+    }
 
     const index = _.findIndex(payload, ['config_key', object.config_key]);
 
