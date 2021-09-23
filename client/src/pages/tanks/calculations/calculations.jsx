@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { QuestionCircleOutlined, EditOutlined, RedoOutlined } from '@ant-design/icons';
 import { Form, Modal, Button, Card, notification, Radio } from 'antd';
@@ -737,6 +737,14 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
       },
     });
   };
+
+  useEffect(() => {
+    if (selected) {
+      form.setFieldsValue({
+        ...selected,
+      });
+    }
+  }, [selected]);
 
   /* const getTankDensHi = (value, config) => {
     let density_hi = 2000;

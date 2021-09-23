@@ -391,9 +391,13 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
   };
 
   const handleSgDensFieldChange = (input) => {
+    // console.log('....................onchange: ', input);
+    // value.tank_sg = input;
     if (input !== undefined && input !== null && String(input).trim().length > 0) {
       const API = calcApiFromSg(input);
-      value.tank_api = API;
+      // value.tank_api = API;
+      const precision = config?.precisionAPI;
+      setFieldsValue({ tank_api: _.round(API, precision) });
       pinDensity({ dens: API, type: 'A60F', title: t('fields.api') });
     }
   };
@@ -671,9 +675,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
         <Col span={config?.siteUllageCalcAuto ? 12 : 24}>
           <OmegaInputNumber
             form={form}
-            value={
-              value?.tank_prod_c_of_e === '0' || value?.tank_prod_c_of_e === 0 ? '' : value?.tank_prod_c_of_e
-            }
+            value={value?.tank_prod_c_of_e}
             name="tank_prod_c_of_e"
             label={`${t('fields.expCoeff')} (0.000414 - 0.001674)`}
             min={0.000414}

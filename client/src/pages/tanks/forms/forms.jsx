@@ -785,6 +785,14 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     }
   }, [config]);
 
+  useEffect(() => {
+    if (value && visible) {
+      form.setFieldsValue({
+        ...value,
+      });
+    }
+  }, [value, visible]);
+
   /* const getTankDensHi = (value, config) => {
     let density_hi = 2000;
     if (!value?.tank_base_dens_hi) {

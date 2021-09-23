@@ -17,6 +17,12 @@ const transform = (data) => {
       element.tank_ifc = element.tank_ifc === undefined ? 0 : element.tank_ifc;
       element.tank_roof_weight = element.tank_roof_weight === undefined ? 0 : element.tank_roof_weight;
       element.tank_sg = element.tank_sg === undefined ? '' : element.tank_sg;
+      element.tank_prod_c_of_e =
+        element.tank_prod_c_of_e === '0' ||
+        element.tank_prod_c_of_e === 0 ||
+        element.tank_prod_c_of_e === undefined
+          ? ''
+          : element.tank_prod_c_of_e;
 
       payload.push({
         ...element,
