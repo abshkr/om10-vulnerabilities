@@ -40,12 +40,17 @@ class CurSession extends CommonClass
         }
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         $last_sequence = $row['LAST'];
-        if (isset($_SESSION["ALARM_LAST_SEQUENCE"])) {
-            $prev_sequence = $_SESSION["ALARM_LAST_SEQUENCE"];
+
+        if (isset($this->prev_sequence) && $this->prev_sequence > 0) {
+            $prev_sequence = $this->prev_sequence;
         } else {
-            $prev_sequence = $last_sequence;
+            if (isset($_SESSION["ALARM_LAST_SEQUENCE"])) {
+                $prev_sequence = $_SESSION["ALARM_LAST_SEQUENCE"];
+            } else {
+                $prev_sequence = $last_sequence;
+            }
+            $_SESSION["ALARM_LAST_SEQUENCE"] = $last_sequence;
         }
-        $_SESSION["ALARM_LAST_SEQUENCE"] = $last_sequence;
         
         if ($prev_sequence != $last_sequence) {
             $lang = Utilities::getCurrLang();
@@ -65,6 +70,7 @@ class CurSession extends CommonClass
         }
 
         $feature_array['alarms'] = $alarms;
+        $feature_array['last_sequence'] = $last_sequence;
         $result = array();
         $result["records"] = $feature_array;
         echo json_encode($result, JSON_PRETTY_PRINT);

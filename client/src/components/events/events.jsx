@@ -15,16 +15,18 @@ const Events = () => {
   const [playing, toggle, muted, setMuted] = useAudio(COMMON.WARNING_SOUND);
   const { refreshAlarm } = useConfig();
 
-  const { data } = useSWR(AUTH.SESSION, { refreshInterval: refreshAlarm, refreshWhenHidden: true });
-
-  const [alarms, setAlarms] = useState([]);
-  const [events, setEvents] = useState(JSON.parse(localStorage.getItem('alarms')) || []);
+  const [lastSequnce, setLastSequence] = useState(sessionStorage.getItem('lastSequence'))
+  const { data } = useSWR(lastSequnce && lastSequnce.length > 0 ? `${AUTH.SESSION}?prev_sequence=${lastSequnce}` : AUTH.SESSION , 
+    { refreshInterval: refreshAlarm, refreshWhenHidden: true });
+  
+  console.log("Events start, lastSequnce:", lastSequnce)
+  const [alarms, setAlarms] = useState(JSON.parse(sessionStorage.getItem('alarms')) || []);
   
   const [visible, setVisible] = useState(false);
   const [seen, setSeen] = useState([]);
 
   const onClearAll = () => {
-    const unique = [...new Set(events.map((item) => `${item?.gen_date}-${item?.message}`))];
+    const unique = [...new Set(alarms.map((item) => `${item?.gen_date}-${item?.message}`))];
 
     const payload = [...seen, ...unique];
 
@@ -48,37 +50,46 @@ const Events = () => {
       return !seen.includes(`${object?.gen_date}-${object?.message}`);
     });
 
-    setEvents(filtered);    
-    localStorage.setItem('alarms', JSON.stringify(filtered));
+    setAlarms(filtered);
+    sessionStorage.setItem('alarms', JSON.stringify(filtered));
 
-    /* // testing 
-    const mockups = [];
-    for (let i=0; i<100; i++) {
-      mockups.push({
-        gen_date: '2021-04-20 10:10:10',
-        message: 'alarm ' + i,
-      });
-    }
-    setEvents(mockups); */
-  }, [alarms, seen]);
+    //This is only to notify other tabs
+    localStorage.removeItem('notifying');
+    localStorage.setItem('notifying', JSON.stringify(filtered));
+  }, [seen]);
 
   useEffect(() => {
     const set = data?.records?.alarms || [];
+    console.log("Got data", set)
 
     if (set.length > 0 && !playing) {
       toggle();
     }
 
-    const payload = [...events, ...set];
+    const payload = [...alarms, ...set];
+    const unique = _.uniqBy(payload, 'seq');
+    const filtered = seen.length > 0 ? _.filter(unique, (object) => {
+      return !seen.includes(`${object?.gen_date}-${object?.message}`);
+    }) : unique;
 
-    setAlarms(payload);
+    setAlarms(filtered);
+    sessionStorage.setItem('alarms', JSON.stringify(filtered));
+    sessionStorage.setItem('lastSequence', data?.records?.last_sequence);
+    if (data?.records?.last_sequence) { 
+      //Need to wait 3 seconds, otherwise the 2nd useSWR runs too
+      //quick and React seems to combine the next setAlarms with the one
+      //above, which causes the new alarm goes away by itself
+      setTimeout(() => {
+        setLastSequence(data?.records?.last_sequence)
+      }, 3000);
+    }    
   }, [data]);
 
   useEffect(() => {
-    if (events.length === 0 && playing) {
+    if (alarms.length === 0 && playing) {
       toggle();
     }
-  }, [events]);
+  }, [alarms]);
 
   const storageSyncTabs = (event) => {
     if (!event) {
@@ -89,12 +100,10 @@ const Events = () => {
       return;          // do nothing if no value to work with
     }
 
-    if (event.key == 'alarms') {
-      if (event.newValue != JSON.stringify(events) && document.hidden) {
-        console.log("Other tab changes")
-        setEvents(JSON.parse(event.newValue));
-        localStorage.setItem('alarms', event.newValue);
-      }
+    //Current tab is not active, and other tabs changed alarms
+    if (event.key == 'notifying' && document.hidden) {
+      console.log("Other tab changes", event)
+      setAlarms(JSON.parse(event.newValue));
     }
   };
 
@@ -114,7 +123,7 @@ const Events = () => {
           block
           onClick={() => onClearAll()}
           style={{ marginLeft: 2.5 }}
-          disabled={events.length === 0}
+          disabled={alarms.length === 0}
         >
           Clear All
         </Button>
@@ -131,7 +140,7 @@ const Events = () => {
         <List
           style={{ width: '100%' }}
           itemLayout="horizontal"
-          dataSource={events}
+          dataSource={alarms}
           size="small"
           renderItem={(item) => (
             <List.Item
@@ -157,7 +166,7 @@ const Events = () => {
     <Dropdown visible={visible} overlay={menu} onVisibleChange={setVisible} trigger={['click']}>
       <Button type="primary" size="large" shape="circle" style={{ marginRight: 7 }}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <Badge count={events?.length} offset={[10, -5]}>
+          <Badge count={alarms?.length} offset={[10, -5]}>
             <StopOutlined
               style={{ transform: 'scale(1s)', position: 'absolute', display: muted ? '' : 'none' }}
             />
