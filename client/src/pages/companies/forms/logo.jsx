@@ -93,6 +93,9 @@ const Logo = ({form, value}) => {
             url: LOGOPATH + value?.cmpy_logo,
           },
         ])
+      } else {
+        setImageUrl(null)
+        setFileList([])
       }
     };
   }, [value]);

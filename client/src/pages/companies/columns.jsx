@@ -21,7 +21,7 @@ const columns = (t, config) => [
     cellRenderer: 'ImageRenderer',
     sortable: true,
     resizable: true,
-    width: 120,
+    width: 100,
     cellRendererParams: {
       assets_folder: 'companys',
     },
