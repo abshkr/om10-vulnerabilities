@@ -18,7 +18,7 @@ const Events = () => {
   const { data } = useSWR(AUTH.SESSION, { refreshInterval: refreshAlarm, refreshWhenHidden: true });
 
   const [alarms, setAlarms] = useState([]);
-  const [events, setEvents] = useState(JSON.parse(sessionStorage.getItem('alarms')) || []);
+  const [events, setEvents] = useState(JSON.parse(localStorage.getItem('alarms')) || []);
   
   const [visible, setVisible] = useState(false);
   const [seen, setSeen] = useState([]);
@@ -48,8 +48,9 @@ const Events = () => {
       return !seen.includes(`${object?.gen_date}-${object?.message}`);
     });
 
-    setEvents(filtered);
-    sessionStorage.setItem('alarms', JSON.stringify(filtered));
+    setEvents(filtered);    
+    localStorage.setItem('alarms', JSON.stringify(filtered));
+
     /* // testing 
     const mockups = [];
     for (let i=0; i<100; i++) {
@@ -78,6 +79,28 @@ const Events = () => {
       toggle();
     }
   }, [events]);
+
+  const storageSyncTabs = (event) => {
+    if (!event) {
+      event = window.event; 
+    }
+
+    if(!event.newValue) {
+      return;          // do nothing if no value to work with
+    }
+
+    if (event.key == 'alarms') {
+      if (event.newValue != JSON.stringify(events) && document.hidden) {
+        console.log("Other tab changes")
+        setEvents(JSON.parse(event.newValue));
+        localStorage.setItem('alarms', event.newValue);
+      }
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("storage", storageSyncTabs, false);
+  }, [])
 
   const menu = (
     <Menu style={{ minWidth: 200 }}>
