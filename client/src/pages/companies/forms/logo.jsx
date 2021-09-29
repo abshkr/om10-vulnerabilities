@@ -113,6 +113,7 @@ const Logo = ({form, value}) => {
       <div style={{marginTop: "1rem"}}>
         <Upload {...props} 
           listType="picture-card"
+          accept=".png,.jpg,.gif"
           className="avatar-uploader"
           fileList={fileList}
         >
