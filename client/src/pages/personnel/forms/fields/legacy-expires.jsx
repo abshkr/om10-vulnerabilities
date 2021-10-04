@@ -9,7 +9,6 @@ import { useConfig } from 'hooks';
 
 const Dates = ({ form, value, expiryTypes }) => {
   const { showLegacyExpiryTime, dateTimeFormatHM, dateFormat } = useConfig();
-
   const { setFieldsValue } = form;
 
   useEffect(() => {

@@ -844,7 +844,6 @@ class EquipmentType extends CommonClass
         $hook_item['compartments'] = $result;
     }
 
-
     public function search()
     {
         // if (!isset($this->end_num)) {

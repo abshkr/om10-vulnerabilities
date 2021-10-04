@@ -44,8 +44,8 @@ const EquipmentList = () => {
       : `${EQUIPMENT_LIST.READ}?pgflag=${
           pagingFlag ? 'Y' : 'N'
         }&start_num=${take}&end_num=${offset}&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
-  const { data: payload, isValidating, revalidate } = useSWR(pagingFlag === undefined ? null : url);
-  const { data: expiryTypes } = useSWR(EQUIPMENT_LIST.EXPIRY);
+  const { data: payload, isValidating, revalidate } = useSWR(pagingFlag === undefined ? null : url, { revalidateOnFocus: false });
+  const { data: expiryTypes } = useSWR(EQUIPMENT_LIST.EXPIRY, { revalidateOnFocus: false });
 
   const [data, setData] = useState(payload?.records);
   const [fields, setFields] = useState(
@@ -61,6 +61,79 @@ const EquipmentList = () => {
 
   const page = t('pageMenu.operations');
   const name = t(config?.siteLabelUser + 'pageNames.equipmentList');
+
+  const onChangePagination = async (v) => {
+    setPagingFlag(v);
+
+    // change the value in site_config
+    const values = [
+      {
+        config_key: 'SITE_PAGINATION_EQPT_LIST',
+        config_value: v ? 'Y' : 'N',
+      },
+    ];
+
+    await api.post(SITE_CONFIGURATION.UPDATE, values);
+  };
+
+  const onRefresh = () => {
+    // setFilterValue(' ');
+    setParentEqpt('');
+    setEqptId('');
+    setEqptCode('');
+    setEqptOwner('');
+    setEqptEtyp('');
+    setPage(1);
+    revalidate();
+  };
+
+  const setSearch = (values) => {
+    if (!values.eqpt_id && !values.eqpt_code && !values.eqpt_owner && !values.eqpt_etp) {
+      return;
+    }
+
+    setSearching(true);
+    setEqptId(!values.eqpt_id ? '' : values.eqpt_id);
+    setEqptCode(!values.eqpt_code ? '' : values.eqpt_code);
+    setEqptOwner(!values.eqpt_owner ? '' : values.eqpt_owner);
+    setEqptEtyp(!values.eqpt_etp ? '' : values.eqpt_etp);
+    setPage(1);
+    revalidate();
+    setSearching(false);
+
+    /* api
+      .get(EQUIPMENT_LIST.READ, {
+        params: {
+          eqpt_id: values.eqpt_id,
+          eqpt_code: values.eqpt_code,
+          eqpt_owner: values.eqpt_owner,
+          eqpt_etyp: values.eqpt_etp,
+          pgflag: pagingFlag ? 'Y' : 'N',
+          start_num: take,
+          end_num: offset,
+        },
+      })
+      .then((res) => {
+        setData(res.data.records);
+        setCount(res.data.count || 0);
+        setSearching(false);
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
+        });
+        setSearching(false);
+      }); */
+  };
+
+  useEffect(() => {
+    if (payload && parentEqpt && parentEqpt?.length > 0) {
+      if (parentEqpt?.indexOf(',') >= 0) setFilterValue(' ');
+    }
+  }, [payload, parentEqpt]);
 
   const onChangePagination = async (v) => {
     setPagingFlag(v);
@@ -238,6 +311,7 @@ const EquipmentList = () => {
           handleFormState={handleFormState}
           access={access}
           setEqptCode={setEqptCode}
+          revalidate={revalidate}
           expiryDateMode={expiryDateMode}
           expiryTypes={expiryTypes?.records}
           config={config}

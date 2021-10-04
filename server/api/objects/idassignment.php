@@ -20,6 +20,11 @@ class IDAssignment extends CommonClass
         "KYA_ADHOC" => "Y",
     );
 
+    public $AMPERSAND_FIELDS = array(
+        "KYA_TANKER",
+        "KYA_EQUIPMENT",
+    );
+
     public $NUMBER_FIELDS = array(
         
     );

@@ -12,7 +12,7 @@ import {
 import { Scrollbars } from 'react-custom-scrollbars';
 import { Form, Button, Tabs, notification, Modal, Drawer, Row, Col, Divider, Tag, Tooltip, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
-import useSWR, { mutate } from 'swr';
+import useSWR from 'swr';
 import moment from 'moment';
 
 import _ from 'lodash';
@@ -54,6 +54,7 @@ const FormModal = ({
   handleFormState,
   access,
   setFilterValue,
+  revalidate,
   expiryDateMode,
   expiryTypes,
   config,
@@ -89,9 +90,9 @@ const FormModal = ({
   const onComplete = (tnkr_code) => {
     resetFields();
     handleFormState(false, null);
-    mutate(TANKER_LIST.READ);
     if (tnkr_code) {
       setFilterValue('' + tnkr_code);
+      revalidate();
     } else {
       setFilterValue(' ');
     }

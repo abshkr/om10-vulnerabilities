@@ -20,7 +20,7 @@ const Compartments = ({ form, value, eqptType, onChange, config }) => {
 
   const { setFieldsValue } = form;
 
-  const { data: types } = useSWR(EQUIPMENT_LIST.TYPES);
+  const { data: types } = useSWR(EQUIPMENT_LIST.TYPES, { revalidateOnFocus: false });
 
   const fetchByCompartment = useCallback(
     (id) => {
