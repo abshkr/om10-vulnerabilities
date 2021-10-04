@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 
-import { Form, DatePicker } from 'antd';
+import { Form, DatePicker, Col } from 'antd';
 import moment from 'moment';
 import _ from 'lodash';
 
