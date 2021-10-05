@@ -154,10 +154,17 @@ class OMJournal extends CommonClass
             WHERE GEN_DATE >= SYSDATE - 30 / 1440
                 AND REGION_CODE = :lang
             ORDER BY GEN_DATE DESC";
-            $query = $this->pagination_query($query);
+            if (!(isset($this->pgflag) && $this->pgflag==='N')) {
+                //By default, use pagination, unless there is an explicit pgflag=N
+                $query = $this->pagination_query($query);
+            }
             $stmt = oci_parse($this->conn, $query);
+            
             oci_bind_by_name($stmt, ':lang', $this->lang);
-            $this->pagination_binds($stmt);
+            
+            if (!(isset($this->pgflag) && $this->pgflag==='N')) {
+                $this->pagination_binds($stmt);
+            }
         } else {
             $query = "
             SELECT GEN_DATE,
@@ -174,7 +181,9 @@ class OMJournal extends CommonClass
                 AND GEN_DATE >= TO_DATE(:start_date, 'yyyy-mm-dd hh24:mi:ss')
                 AND GEN_DATE <= TO_DATE(:end_date, 'yyyy-mm-dd hh24:mi:ss')
             ORDER BY GEN_DATE DESC";
-            $query = $this->pagination_query($query);
+            if (!(isset($this->pgflag) && $this->pgflag==='N')) {
+                $query = $this->pagination_query($query);
+            }
             // write_log(json_encode($query), __FILE__, __LINE__);
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':start_date', $this->start_date);
@@ -183,7 +192,9 @@ class OMJournal extends CommonClass
             if (isset($this->region_code)) {
                 oci_bind_by_name($stmt, ':region_code', $this->region_code);
             }
-            $this->pagination_binds($stmt);
+            if (!(isset($this->pgflag) && $this->pgflag==='N')) {
+                $this->pagination_binds($stmt);
+            }
         }
 
         if (oci_execute($stmt, $this->commit_mode)) {

@@ -8,17 +8,19 @@ import Live from './live';
 import auth from '../../auth';
 import Historical from './historical';
 import Overview from './overview';
+import api, { SITE_CONFIGURATION } from 'api';
 
 import { Page, Calendar, Download, WindowSearch } from '../../components';
 import { JournalContainer } from './style';
 import { SETTINGS } from '../../constants';
 import { useAuth, useConfig } from 'hooks';
 import { FileSearchOutlined, SyncOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
+import { Button, Switch } from 'antd';
 import { getDateRangeOffset, getCurrentTime } from 'utils';
 
 const Journal = () => {
-  const { journalDateRange, serverTime } = useConfig();
+  const { journalDateRange, serverTime, siteJnlPaging } = useConfig();
+  const [pagingFlag, setPagingFlag] = useState(undefined);
   const { t } = useTranslation();
 
   const access = useAuth('M_JOURNALREPORT');
@@ -66,6 +68,20 @@ const Journal = () => {
     revalidate();
   };
 
+  const onChangePagination = async (v) => {
+    setPagingFlag(v);
+
+    // change the value in site_config
+    const values = [
+      {
+        config_key: 'SITE_PAGINATION_JNL_LIST',
+        config_value: v ? 'Y' : 'N',
+      },
+    ];
+
+    await api.post(SITE_CONFIGURATION.UPDATE, values);
+  };
+
   useEffect(() => {
     if (journalDateRange !== false && serverTime) {
       const ranges = getDateRangeOffset(String(journalDateRange), '0.125');
@@ -88,10 +104,25 @@ const Journal = () => {
     }
   }, [journalDateRange, serverTime]);
 
+  useEffect(() => {
+    if (siteJnlPaging !== undefined) {
+      setPagingFlag(siteJnlPaging);
+    }
+  }, [siteJnlPaging]);
+
   const modifiers = (
     <>
       {selected !== '1' && selected !== '0' && (
+        <React.Fragment>
+        <Switch 
+          style={{marginRight: 5}}
+          checked={pagingFlag}
+          checkedChildren={<span>{t('operations.paginationOn')}</span>}
+          unCheckedChildren={<span>{t('operations.paginationOff')}</span>}
+          onChange={(value) => onChangePagination(value)}
+        />
         <Calendar handleChange={setRange} start={start} end={end} disabled={selected === '1'} />
+        </React.Fragment>
       )}
 
       {selected !== '0' && (
@@ -146,7 +177,15 @@ const Journal = () => {
         )}
         {selected === '1' && <Live t={t} setData={setData} setFields={setFields} />}
         {selected === '2' && (
-          <Historical t={t} start={start} end={end} setData={setData} setFields={setFields} search={search} />
+          <Historical 
+            t={t} 
+            start={start} 
+            end={end} 
+            setData={setData} 
+            setFields={setFields} 
+            search={search}
+            pagingFlag={pagingFlag}
+          />
         )}
       </JournalContainer>
     </Page>
