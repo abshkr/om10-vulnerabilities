@@ -43,6 +43,7 @@ export const login = (values, callback) => async (dispatch) => {
 export const signout = () => {
   api.post(AUTH.LOGOUT).then((reponse) => {
     sessionStorage.removeItem('token');
+    sessionStorage.removeItem('alarms');
   });
 
   return {

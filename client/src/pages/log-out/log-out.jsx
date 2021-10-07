@@ -14,8 +14,6 @@ const Logout = ({ signout, idle }) => {
   let history = useHistory();
 
   useEffect(() => {
-    sessionStorage.removeItem('alarms');
-    sessionStorage.removeItem('lastSequence');
     signout(idle);
     Modal.destroyAll();
 

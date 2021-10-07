@@ -4,27 +4,22 @@ import { Scrollbars } from 'react-custom-scrollbars';
 
 import { BellOutlined, CloseOutlined, StopOutlined } from '@ant-design/icons';
 
-import useSWR from 'swr';
 import { useAudio } from 'hooks';
 import _ from 'lodash';
 
-import { AUTH, COMMON } from '../../api';
+import api, { AUTH, COMMON } from '../../api';
 import { useConfig } from 'hooks';
 
 const Events = () => {
   const [playing, toggle, muted, setMuted] = useAudio(COMMON.WARNING_SOUND);
   const { refreshAlarm } = useConfig();
 
-  const [lastSequnce, setLastSequence] = useState(sessionStorage.getItem('lastSequence'))
-  const { data } = useSWR(lastSequnce && lastSequnce.length > 0 ? `${AUTH.SESSION}?prev_sequence=${lastSequnce}` : AUTH.SESSION , 
-    { refreshInterval: refreshAlarm, refreshWhenHidden: true });
-  
-  console.log("Events start, lastSequnce:", lastSequnce)
+  const [lastSequnce, setLastSequence] = useState(null)
   const [alarms, setAlarms] = useState(JSON.parse(sessionStorage.getItem('alarms')) || []);
   
   const [visible, setVisible] = useState(false);
   const [seen, setSeen] = useState([]);
-
+  
   const onClearAll = () => {
     const unique = [...new Set(alarms.map((item) => `${item?.gen_date}-${item?.message}`))];
 
@@ -39,7 +34,6 @@ const Events = () => {
 
   const onRemove = (message) => {
     let payload = [...seen, message];
-
     setSeen(payload);
   };
 
@@ -59,33 +53,6 @@ const Events = () => {
   }, [seen]);
 
   useEffect(() => {
-    const set = data?.records?.alarms || [];
-    console.log("Got data", set)
-
-    if (set.length > 0 && !playing) {
-      toggle();
-    }
-
-    const payload = [...alarms, ...set];
-    const unique = _.uniqBy(payload, 'seq');
-    const filtered = seen.length > 0 ? _.filter(unique, (object) => {
-      return !seen.includes(`${object?.gen_date}-${object?.message}`);
-    }) : unique;
-
-    setAlarms(filtered);
-    sessionStorage.setItem('alarms', JSON.stringify(filtered));
-    sessionStorage.setItem('lastSequence', data?.records?.last_sequence);
-    if (data?.records?.last_sequence) { 
-      //Need to wait 3 seconds, otherwise the 2nd useSWR runs too
-      //quick and React seems to combine the next setAlarms with the one
-      //above, which causes the new alarm goes away by itself
-      setTimeout(() => {
-        setLastSequence(data?.records?.last_sequence)
-      }, 3000);
-    }    
-  }, [data]);
-
-  useEffect(() => {
     if (alarms.length === 0 && playing) {
       toggle();
     }
@@ -101,8 +68,7 @@ const Events = () => {
     }
 
     //Current tab is not active, and other tabs changed alarms
-    if (event.key == 'notifying' && document.hidden) {
-      console.log("Other tab changes", event)
+    if (event.key == 'notifying') {
       setAlarms(JSON.parse(event.newValue));
     }
   };
@@ -110,6 +76,43 @@ const Events = () => {
   useEffect(() => {
     window.addEventListener("storage", storageSyncTabs, false);
   }, [])
+
+  const retrieveAlarms = () =>  {
+    api.get(AUTH.SESSION, {
+        params: {
+          prev_sequence: lastSequnce && lastSequnce.length > 0 ? lastSequnce : null,
+        },
+      })
+      .then((res) => {
+        const set = res.data?.records?.alarms || [];
+        
+        if (set.length > 0 && !playing) {
+          toggle();
+        }
+
+        const payload = [...alarms, ...set];
+        const unique = _.uniqBy(payload, 'seq');
+        const filtered = seen.length > 0 ? _.filter(unique, (object) => {
+          return !seen.includes(`${object?.gen_date}-${object?.message}`);
+        }) : unique;
+        
+        setAlarms(filtered);
+        sessionStorage.setItem('alarms', JSON.stringify(filtered));
+        if (set.length > 0 && 
+          (!lastSequnce || (res.data && parseInt(res.data.records.last_sequence) > parseInt(lastSequnce)))) {
+          setLastSequence(res.data?.records?.last_sequence)
+        }
+      })
+      .catch((errors) => {
+        console.log("Error, ", errors)
+      })
+    }
+
+  //
+  useEffect(() => {
+    const interval = setInterval(retrieveAlarms, refreshAlarm);
+    return () => clearInterval(interval);
+  }, [alarms, seen])
 
   const menu = (
     <Menu style={{ minWidth: 200 }}>

@@ -16,6 +16,10 @@ include_once './objects/personnel.php';
 include_once './config/setups.php';
 include_once './config/jwt.php';
 
+if (!isset($_SESSION)) {
+    session_start();
+}
+
 $payload = check_token(get_http_token());
 if (!$payload) {
     write_log("Authentication check failed, cannot continue", __FILE__, __LINE__);
