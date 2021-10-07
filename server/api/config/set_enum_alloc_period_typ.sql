@@ -1,0 +1,29 @@
+/*
+	add contents for Allocation Period Types: YEARLY, HALF-YEARLY, QUARTERLY 
+*/
+
+delete from MSG_LOOKUP where MSG_ID in (3301, 3302, 3303);
+
+commit;
+
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3301, 'ENG', 'QUARTERLY');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3301, 'CHN', '每季度');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3302, 'ENG', 'HALF-YEARLY');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3302, 'CHN', '每半年');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3303, 'ENG', 'YEARLY');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3303, 'CHN', '每年');
+
+commit;
+
+delete from ENUMITEM where ENUMTYPENAME='ALLOC_PERIOD';
+
+insert into ENUMITEM (ENUMTYPENAME,ENUM_NO,ENUM_CODE,ENUM_TMM)values('ALLOC_PERIOD', 0, 'B', 480);
+insert into ENUMITEM (ENUMTYPENAME,ENUM_NO,ENUM_CODE,ENUM_TMM)values('ALLOC_PERIOD', 1, 'D', 393);
+insert into ENUMITEM (ENUMTYPENAME,ENUM_NO,ENUM_CODE,ENUM_TMM)values('ALLOC_PERIOD', 2, 'W', 394);
+insert into ENUMITEM (ENUMTYPENAME,ENUM_NO,ENUM_CODE,ENUM_TMM)values('ALLOC_PERIOD', 3, 'F', 395);
+insert into ENUMITEM (ENUMTYPENAME,ENUM_NO,ENUM_CODE,ENUM_TMM)values('ALLOC_PERIOD', 4, 'M', 396);
+insert into ENUMITEM (ENUMTYPENAME,ENUM_NO,ENUM_CODE,ENUM_TMM)values('ALLOC_PERIOD', 5, 'Q', 3301);
+insert into ENUMITEM (ENUMTYPENAME,ENUM_NO,ENUM_CODE,ENUM_TMM)values('ALLOC_PERIOD', 6, 'H', 3302);
+insert into ENUMITEM (ENUMTYPENAME,ENUM_NO,ENUM_CODE,ENUM_TMM)values('ALLOC_PERIOD', 7, 'Y', 3303);
+
+commit;
