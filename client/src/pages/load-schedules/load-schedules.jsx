@@ -33,7 +33,7 @@ const LoadSchedules = () => {
   const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
-  const { setCount, take, offset, paginator } = usePagination(500);
+  const { setCount, take, offset, paginator } = usePagination();
   const url = `${LOAD_SCHEDULES.READ}?start_date=${start}&end_date=${end}&start_num=${take}&end_num=${offset}`;
 
   const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });

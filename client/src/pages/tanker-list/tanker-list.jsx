@@ -35,7 +35,7 @@ const TankerList = () => {
   const [tnkrActive, setTnkrActive] = useState('');
   const [pagingFlag, setPagingFlag] = useState(undefined);
   const [isSearching, setSearching] = useState(false);
-  const { setCount, take, offset, paginator, setPage, count } = usePagination(250);
+  const { setCount, take, offset, paginator, setPage, count } = usePagination();
 
   const access = useAuth('M_TANKERS');
 

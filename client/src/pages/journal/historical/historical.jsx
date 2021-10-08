@@ -12,7 +12,7 @@ const Historical = ({ t, start, end, setData, setFields, search, pagingFlag }) =
   const [localData, setLocalData] = useState([]);
   const [sortBy, setSortBy] = useState(null);
 
-  const { setCount, take, offset, paginator, setPage, count } = usePagination(500);
+  const { setCount, take, offset, paginator, setPage, count } = usePagination();
 
   const { data: payload, isValidating, revalidate } = useSWR(search || pagingFlag === undefined ? null :
       `${JOURNAL.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${start}&end_date=${end}&start_num=${take}&end_num=${offset}${

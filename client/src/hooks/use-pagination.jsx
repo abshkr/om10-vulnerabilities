@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Pagination } from 'antd';
 
-export default function usePagination(initial = 500) {
+export default function usePagination(initial = 1000) {
   const show_size = sessionStorage.getItem('pageShowSize');
   const [size, setSize] = useState(show_size ? show_size : initial);
   const [count, setCount] = useState(0);
