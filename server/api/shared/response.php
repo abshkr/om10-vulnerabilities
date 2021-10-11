@@ -332,7 +332,7 @@ function response($case_name, $default = null, $params = null)
             "CHN" => "密封号后缀已经设置"
         ),
         "__INTERNAL_ERROR__" => array(
-            "ENG" => "Internal server error",
+            "ENG" => "Internal server error, please check log file for details",
             "CHN" => "内部错误，请检查日志文件获取详情"
         ),
         "__SITE_NEXT_SEAL__" => array(

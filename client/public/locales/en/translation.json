@@ -248,7 +248,7 @@
     "shouldBe": "Should be ",
     "siteAxleLimitType": "Please note: the selection of dropdown list will change the type of axle mass limit on site instantly",
     "startFailed": "Failed to start the process",
-    "startSuccess": "You have started the record",
+    "startSuccess": "You have started the process",
     "strapDataNotFound": "Strapping data not found for tank",
     "strapTypeProductSection": "Current level is within product section",
     "strapTypeWaterSection": "Current level is within water section",
@@ -2242,7 +2242,8 @@
     "scrollUp": "Scroll Up",
     "addJob": "Add Job",
     "editJob": "Edit Job",
-    "deleteJob": "Delete Job"
+    "deleteJob": "Delete Job",
+	"sendtoFT": "Send To Fasttrack"
   },
   "pageMenu": {
     "accessControl": "Access Control",

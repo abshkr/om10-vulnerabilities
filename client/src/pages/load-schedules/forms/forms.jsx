@@ -1,4 +1,6 @@
 import React, { useEffect, useState, Fragment } from 'react';
+import { useSelector } from 'react-redux';
+import jwtDecode from 'jwt-decode';
 
 import {
   EditOutlined,
@@ -90,9 +92,14 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     showLSI,
     siteSchdTypeConvertible,
     siteSchdPreloadEditable,
+    fasttrackEnabled
   } = config;
-
+    
   const popupMT = config?.popupManualTransaction;
+
+  const { authenticated } = useSelector((state) => state.auth);
+  const decoded = jwtDecode(authenticated)
+  const FASTTRACK_ENABLED = decoded?.per_code === '9999' && fasttrackEnabled
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -904,6 +911,28 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     return false;
   };
 
+  const sendtoFasttrack = () => {
+    api
+    .post(LOAD_SCHEDULES.SENDTO_FT, {
+      trip_no: value?.shls_trip_no,
+      supplier: value?.supplier_code
+    })
+    .then(() => {
+      notification.success({
+        message: t('messages.startSuccess'),
+        description: t('descriptions.startSuccess'),
+      });
+    })
+    .catch((errors) => {
+      _.forEach(errors.response.data.errors, (error) => {
+        notification.error({
+          message: error.type,
+          description: error.message,
+        });
+      });
+    });
+  }
+
   useEffect(() => {
     if (!value) {
       setTab('0');
@@ -1118,8 +1147,18 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
               >
                 {t('operations.archive')}
               </Button>
+
+              
             </>
           )}
+
+          { FASTTRACK_ENABLED &&  <Button
+            type="primary"
+            onClick={sendtoFasttrack}
+            disabled={value?.status !== 'F'}
+          >
+            {t('operations.sendtoFT')}
+          </Button> }
 
           {!(
             IS_CREATING ||

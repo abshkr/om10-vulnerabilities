@@ -2225,7 +2225,8 @@
     "scrollUp": "向上滚动",
     "addJob": "增加任务",
     "editJob": "修改任务",
-    "deleteJob": "删除任务"
+    "deleteJob": "删除任务",
+	"sendtoFT": "发送至Fasttrack"
   },
   "pageMenu": {
     "accessControl": "油库安全管理",

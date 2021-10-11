@@ -51,3 +51,5 @@ export const DEALLOCATE = '/api/pages/schedule/deallocate_all.php';
 
 export const SET_PREFIX = '/api/pages/schedule/set_prefix.php';
 export const SET_SUFFIX = '/api/pages/schedule/set_suffix.php';
+
+export const SENDTO_FT = '/api/pages/fasttrack/sendto_ft.php';
