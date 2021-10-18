@@ -373,7 +373,7 @@ class Folio extends CommonClass
 
             $query_string = "frm_which_type=" . rawurlencode(strip_tags($value->frm_which_type)) 
                 . "&frm_real_amount=" . $amount 
-                . "&frm_baseCd=" . $value->tank_base 
+                . "&frm_baseCd=" . $value->tank_basecode 
                 . "&frm_real_temp=" . $value->close_temp 
                 . "&frm_real_dens=" . $value->close_density;
             $result = Utilities::http_cgi_invoke("cgi-bin/en/calcvcf.cgi", $query_string);
