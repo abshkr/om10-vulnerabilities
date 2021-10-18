@@ -154,7 +154,8 @@ const useConfig = () => {
     equip_slp_enabled: false,
     tanker_slp_enabled: false,
     vin_number_enabled: false,
-    fasttrackEnabled: false
+    fasttrackEnabled: false,
+    saveToMeter: false,
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -375,6 +376,7 @@ const useConfig = () => {
         tanker_slp_enabled: configurationObject?.TANKER_SLP_ENABLED || false,
         vin_number_enabled: configurationObject?.VIN_NUMBER_ENABLED || false,
         fasttrackEnabled: configurationObject?.FASTTRACK_ENABLED || false,
+        saveToMeter: configurationObject?.FOLIO_SAVE_TO_METERS || false,
       });
 
       // utils function cannot use hooks, use global constants to by pass

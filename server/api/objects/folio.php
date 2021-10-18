@@ -6,6 +6,7 @@ include_once __DIR__ . '/../shared/utilities.php';
 include_once __DIR__ . '/../service/strap_service.php';
 include_once 'common_class.php';
 include_once 'tank_status.php';
+include_once 'metering.php';
 
 class FolioMeter extends CommonClass
 {
@@ -760,6 +761,50 @@ class Folio extends CommonClass
         }
 
         return $reports;
+    }
+
+    public function save_to_meters()
+    {
+        // write_log(sprintf("%s::%s() START.", __CLASS__, __FUNCTION__),
+        //     __FILE__, __LINE__);
+        write_log(json_encode($this), __FILE__, __LINE__);
+
+        if (!isset($this->folio_meters)) {
+            $error = new EchoSchema(400, "parameter missing: folio_meters not provided");
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        foreach ($this->folio_meters as $value) {
+            $metering = new Metering($this->conn);
+            if (!isset($value->meter_code)) {
+                write_log(sprintf("meter_code not provide, skip."), __FILE__, __LINE__, LogLevel::WARNING);
+                write_log(json_encode($value), __FILE__, __LINE__, LogLevel::WARNING);
+                continue;
+            } else {
+                $metering->bam_code = $value->meter_code;
+            }
+            
+            if (!isset($value->close_amb_tot) && !isset($value->close_mass_tot)) {
+                continue;
+            }
+
+            if (isset($value->close_amb_tot)) {
+                $metering->bam_last_atotal = $value->close_amb_tot;
+            }
+
+            if (isset($value->close_mass_tot)) {
+                $metering->bam_last_mtotal = $value->close_mass_tot;
+            }
+
+            if (!$metering->update()) {
+                return false;
+            }
+        }
+
+        http_response_code(200);
+        $result = new EchoSchema(200, response("__SAVE_SUCCEEDED__", "Data saved to tanks."));
+        echo json_encode($result, JSON_PRETTY_PRINT);
     }
 
     public function save_to_tanks()

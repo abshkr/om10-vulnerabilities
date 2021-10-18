@@ -10,7 +10,7 @@ import { DataTable } from '../../../../components';
 import generator from './generator';
 import columns from './columns';
 
-const Meters = ({ id, enabled, meterTrigger }) => {
+const Meters = ({ id, enabled, meterTrigger, saveToMetersTrigger }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
@@ -21,13 +21,14 @@ const Meters = ({ id, enabled, meterTrigger }) => {
 
   const fields = columns(t, enabled);
 
-  const update = () => {
+  const saveToFolio = () => {
     Modal.confirm({
-      title: t('prompts.update'),
+      title: t('prompts.save'),
       okText: t('operations.yes'),
       okType: 'primary',
       cancelText: t('operations.no'),
       centered: true,
+      content: t('descriptions.saveToMtrFolioWarning'),
       onOk: async () => {
         await api
           .post(FOLIO_SUMMARY.UPDATE_METERS, data)
@@ -51,6 +52,38 @@ const Meters = ({ id, enabled, meterTrigger }) => {
     });
   };
 
+  const saveToMeters = () => {
+    Modal.confirm({
+      title: t('prompts.save'),
+      okText: t('operations.yes'),
+      okType: 'primary',
+      cancelText: t('operations.no'),
+      centered: true,
+      content: t('descriptions.saveToTanksWarning'),
+      onOk: async () => {
+        await api
+          .post(FOLIO_SUMMARY.SAVE_TO_METERS, {
+            folio_meters: data,
+          })
+          .then((response) => {
+            notification.success({
+              message: t('messages.saveSuccess'),
+              description: t('descriptions.saveSuccess'),
+            });
+          })
+
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
+            });
+          });
+      },
+    });
+  };
+
   const onEditingFinished = (values) => {
     const changed = [];
 
@@ -61,9 +94,15 @@ const Meters = ({ id, enabled, meterTrigger }) => {
 
   useEffect(() => {
     if (meterTrigger > 0) {
-      update();
+      saveToFolio();
     }
   }, [meterTrigger]);
+
+  useEffect(() => {
+    if (saveToMetersTrigger > 0) {
+      saveToMeters();
+    }
+  }, [saveToMetersTrigger]);
 
   useEffect(() => {
     if (payload) {

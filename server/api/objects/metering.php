@@ -8,6 +8,10 @@ include_once 'common_class.php';
 class Metering extends CommonClass
 {
     protected $TABLE_NAME = 'BA_METERS';
+
+    protected $primary_keys = array(
+        "bam_code"
+    );
     
     public $NUMBER_FIELDS = array(
         "OBSERVEDVOLUME",

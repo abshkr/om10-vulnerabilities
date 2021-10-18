@@ -10,10 +10,11 @@ import api, { FOLIO_SUMMARY } from 'api';
 
 const TabPane = Tabs.TabPane;
 
-const Forms = ({ value, visible, handleFormState, closeoutIsIdle, access }) => {
+const Forms = ({ value, visible, handleFormState, closeoutIsIdle, access, config }) => {
   const { t } = useTranslation();
   const [reportTrigger, setReportTrigger] = useState(0);
   const [meterTrigger, setMeterTrigger] = useState(0);
+  const [saveToMetersTrigger, setSaveToMetersTrigger] = useState(0);
   const [saveToFolioTrigger, setSaveToFolioTrigger] = useState(0);
   const [saveToTanksTrigger, setSaveToTanksTrigger] = useState(0);
   const [calculateTrigger, setCalculateTrigger] = useState(0);
@@ -77,6 +78,19 @@ const Forms = ({ value, visible, handleFormState, closeoutIsIdle, access }) => {
           )}
 
           {tab === '2' && (
+            <>
+            {config.saveToMeter &&
+              <Button
+                type="primary"
+                icon={<SaveOutlined />}
+                style={{ float: 'right', marginRight: 5 }}
+                onClick={() => setSaveToMetersTrigger(saveToMetersTrigger + 1)}
+                disabled={!enabled || !access.canUpdate}
+              >
+                {t('operations.saveToMeters')}
+              </Button>
+            }
+
             <Button
               type="primary"
               icon={<EditOutlined />}
@@ -84,8 +98,9 @@ const Forms = ({ value, visible, handleFormState, closeoutIsIdle, access }) => {
               onClick={() => setMeterTrigger(meterTrigger + 1)}
               disabled={!enabled || !access.canUpdate}
             >
-              {t('operations.update')}
+              {t('operations.saveToFolio')}
             </Button>
+            </>
           )}
 
           {tab === '3' && (
@@ -143,6 +158,7 @@ const Forms = ({ value, visible, handleFormState, closeoutIsIdle, access }) => {
             access={access}
             handleFormState={handleFormState}
             meterTrigger={meterTrigger}
+            saveToMetersTrigger={saveToMetersTrigger}
             setMeterTrigger={setMeterTrigger}
           />
         </TabPane>
