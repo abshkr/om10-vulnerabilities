@@ -71,7 +71,16 @@ const FolioSummary = () => {
     if (!closeoutIsIdle) {
       return t('descriptions.closeoutIsBusy');
     }
+
+    if (fronzenFolioCount() <= 0) {
+      return t('descriptions.noFronzenFolio');
+    }
   };
+
+  const fronzenFolioCount = () => {
+    const count = payload?.records.filter(item => item.status === 1).length;
+    return count;
+  }
 
   const closeFolio = async () => {
     Modal.confirm({
@@ -115,7 +124,7 @@ const FolioSummary = () => {
         icon={<SafetyCertificateOutlined />}
         onClick={() => closeFolio(null)}
         style={{ float: 'right', marginRight: 5 }}
-        disabled={!access?.extra || !closeoutIsIdle || config?.siteCloseoutAutoClose}
+        disabled={!access?.extra || !closeoutIsIdle || config?.siteCloseoutAutoClose || fronzenFolioCount() <= 0 }
       >
         {t('operations.closeFirstFolio')}
       </Button>

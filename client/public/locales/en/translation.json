@@ -59,6 +59,7 @@
     "closeFolioTriggered": "Successfully triggered close first frozen folio",
     "closeSuccess": "You have closed the transaction",
     "closeoutIsBusy": "Closeout is busy. Please try again later.",
+	"noFronzenFolio": "There is no fronzen folio.",
     "compartmentCopy": "Note: Select from above to copy its compartment settings",
     "complexityComplex": "Complex (Upper, Lower, Numeric and Symbol)",
     "complexityMedium": "Medium (Upper, Lower and Numeric)",

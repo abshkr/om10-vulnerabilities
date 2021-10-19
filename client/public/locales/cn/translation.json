@@ -59,6 +59,7 @@
     "closeFolioTriggered": "成功触发结束首个冻结预盘的操作",
     "closeSuccess": "您已经成功终止了油品交易",
     "closeoutIsBusy": "盘点忙碌中！请稍后再试。",
+    "noFronzenFolio": "无冻结预盘",
     "compartmentCopy": "注：可从上述的运输设备中选择一个以复制其油仓配置",
     "complexityComplex": "复杂(字符大小写、数字与特殊符号)",
     "complexityMedium": "中等(字符大小写与数字)",
