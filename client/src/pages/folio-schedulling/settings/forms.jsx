@@ -430,6 +430,10 @@ const Settings = ({ value, access }) => {
     return true;
   };
 
+  const fronzenFolioCount = () => {
+    return parseInt(manualDates?.records[0].frozen_folio) > 0;
+  }
+
   const closeoutIsBusy = () => {
     return (
       manualDates?.records[0].next_manual_close !== '' ||
@@ -441,6 +445,10 @@ const Settings = ({ value, access }) => {
   const showCloseoutStatus = () => {
     if (closeoutIsBusy()) {
       return t('descriptions.closeoutIsBusy');
+    }
+
+    if (fronzenFolioCount() <= 0) {
+      return t('descriptions.noFronzenFolio');
     }
   };
 
@@ -626,7 +634,7 @@ const Settings = ({ value, access }) => {
             icon={<SafetyCertificateOutlined />}
             style={{ float: 'right', marginRight: 5 }}
             onClick={closeCloseout}
-            disabled={!access?.extra || config?.siteCloseoutAutoClose || closeoutIsBusy()}
+            disabled={!access?.extra || config?.siteCloseoutAutoClose || closeoutIsBusy() || fronzenFolioCount() <= 0 }
           >
             {t('operations.closeCloseout')}
           </Button>
