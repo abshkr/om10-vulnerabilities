@@ -819,6 +819,21 @@ class Folio extends CommonClass
             return;
         }
 
+        //If SITE_USE_WATER_STRAPPING is N, do not update tank_roof_weight and tank_ifc
+        $query = "SELECT NVL(MAX(CONFIG_VALUE), 'N') CONFIG_VALUE FROM SITE_CONFIG WHERE CONFIG_KEY = 'SITE_USE_WATER_STRAPPING'";
+        $water_strapping = false;
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            if ($row["CONFIG_VALUE"] == 'Y') {
+                $water_strapping = true;
+            }
+            
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
         foreach ($this->folio_tanks as $value) {
             $tank_staus = new TankStatus($this->conn);
             if (!isset($value->tank_code)) {
@@ -861,12 +876,16 @@ class Folio extends CommonClass
             if (isset($value->tank_water)) {
                 $tank_staus->tank_water = $value->tank_water;
             }
-            if (isset($value->tank_roof_weight)) {
-                $tank_staus->tank_roof_weight = $value->tank_roof_weight;
+
+            if ($water_strapping) {
+                if (isset($value->tank_roof_weight)) {
+                    $tank_staus->tank_roof_weight = $value->tank_roof_weight;
+                }
+                if (isset($value->tank_ifc)) {
+                    $tank_staus->tank_ifc = $value->tank_ifc;
+                }
             }
-            if (isset($value->tank_ifc)) {
-                $tank_staus->tank_ifc = $value->tank_ifc;
-            }
+            
             if (!$tank_staus->update()) {
                 return false;
             }
