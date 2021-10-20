@@ -361,7 +361,6 @@ class Equipment extends CommonClass
                 EQPT_AXLE_WEIGHTS,
                 EQPT_AXLE_BRIEFS,
                 SLP_ID,
-                SLP_EXPIRY,
                 VIN_NUMBER,
                 TNKR_COUNT
             FROM
