@@ -172,7 +172,7 @@ const Calculate = ({
 
       handleTemperatureChange(value?.mlitm_temp_amb);
       handleDensityChange(value?.mlitm_dens_cor);
-      setWiA();
+      setWiA(true);
     }
   }, [value, setFieldsValue]);
 
@@ -195,10 +195,15 @@ const Calculate = ({
     }
   }, [getLimit, tank, value, tankSelected]);
 
-  const setWiA = () => {
+  const setWiA = (fromDatabase) => {
     // WiA = WiV - GSV x 0.0011
-    const WiV = getFieldValue('mlitm_qty_kg');
-    const GSV = getFieldValue('mlitm_qty_cor');
+    let WiV = getFieldValue('mlitm_qty_kg');
+    let GSV = getFieldValue('mlitm_qty_cor');
+    if (fromDatabase) {
+      WiV = value?.mlitm_qty_kg;
+      GSV = value?.mlitm_qty_cor;
+    }
+
     const AIR = config?.airBuoyancyFactor;
     let WiA = undefined;
     if (!WiV || !GSV) {
@@ -222,14 +227,14 @@ const Calculate = ({
     if (value !== undefined && value !== null && String(value).trim().length > 0) {
       pinQuantity({ qty: value, type: 'L15', title: t(config?.siteLabelUser + 'fields.standardQuantity') });
     }
-    setWiA();
+    setWiA(false);
   };
 
   const handleMassQtyFieldChange = (value) => {
     if (value !== undefined && value !== null && String(value).trim().length > 0) {
       pinQuantity({ qty: value, type: 'KG', title: t(config?.siteLabelUser + 'fields.observedMass') });
     }
-    setWiA();
+    setWiA(false);
   };
 
   const handleDensityChange = (value) => {
