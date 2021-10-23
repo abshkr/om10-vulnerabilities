@@ -35,6 +35,7 @@ const SupplierForm = ({ value, form }) => {
   const [auth_at_gate, setAuthAtGate] = useState(false);
   const [validate_schedule_availabitilty, setValidateSchd] = useState(false);
   const [cmpy_2nd_drawer_flag, setCmpy2ndDrawerFlag] = useState(false);
+  const [axle_needed, setAlxeNeeded] = useState(false);
   const [weightTolerance, setWeightTol] = useState(0);
   const [drawers, setDrawers] = useState([]);
 
@@ -158,6 +159,13 @@ const SupplierForm = ({ value, form }) => {
     });
   };
 
+  const onAxleChanged = (v) => {
+    setAlxeNeeded(v);
+    setFieldsValue({
+      axle_needed: v,
+    });
+  };
+
   const onLink2ndDrawer = (v) => {
     setCmpy2ndDrawerFlag(v);
     setFieldsValue({
@@ -230,6 +238,9 @@ const SupplierForm = ({ value, form }) => {
       const cmpy2ndDrawerConfig = _.find(payload?.records, (item) => {
         return item.config_key === 'CMPY_2ND_DRAWER_FLAG';
       });
+      const axleConfig = _.find(payload?.records, (item) => {
+        return item.config_key === 'AXLE_REQUIRED';
+      });
       const secondDrawerConfig = _.find(payload?.records, (item) => {
         return item.config_key === 'CMPY_2ND_DRAWER';
       });
@@ -244,6 +255,7 @@ const SupplierForm = ({ value, form }) => {
           validateSchdConfig && validateSchdConfig.config_value === 'Y' ? true : false,
         weightTolerance: weightTolConfig?.config_value,
         cmpy_2nd_drawer_flag: cmpy2ndDrawerConfig && cmpy2ndDrawerConfig.config_value === 'Y' ? true : false,
+        axle_needed: axleConfig && axleConfig.config_value === 'Y' ? true : false,
         cmpy_2nd_drawer: secondDrawerConfig?.config_value,
       });
       setAutoNonSchedule(autoNonSchduleConfig && autoNonSchduleConfig.config_value === 'Y' ? true : false);
@@ -255,6 +267,7 @@ const SupplierForm = ({ value, form }) => {
       setValidateSchd(validateSchdConfig && validateSchdConfig.config_value === 'Y' ? true : false);
       setWeightTol(weightTolConfig?.config_value);
       setCmpy2ndDrawerFlag(cmpy2ndDrawerConfig && cmpy2ndDrawerConfig.config_value === 'Y' ? true : false);
+      setAlxeNeeded(axleConfig && axleConfig.config_value === 'Y' ? true : false);
     }
   }, [value, setFieldsValue, payload, resetFields]);
 
@@ -577,11 +590,28 @@ const SupplierForm = ({ value, form }) => {
           </Form.Item>
         </Col>
         <Col span={12}>
+          <Form.Item
+            name="axle_needed"
+            label={t('fields.axleNeeded')}
+            {...rightItemLayout}
+          >
+            <Switch
+              checkedChildren={t('operations.yes')}
+              unCheckedChildren={t('operations.no')}
+              checked={axle_needed}
+              onChange={onAxleChanged}
+            />
+          </Form.Item>
+        </Col>
+      </Row>
+
+      <Row justify="center">
+      <Col span={12}>
           {externalBlendAllowed && (
             <Form.Item
               name="cmpy_2nd_drawer_flag"
               label={t('fields.linkToSecondDrawer')}
-              {...rightItemLayout}
+              {...leftItemLayout}
             >
               <Switch
                 checkedChildren={t('operations.yes')}
@@ -592,16 +622,13 @@ const SupplierForm = ({ value, form }) => {
             </Form.Item>
           )}
         </Col>
-      </Row>
-
-      <Row justify="center">
-        <Col span={24}>
+        <Col span={12}>
           {externalBlendAllowed && (
-            <Form.Item name="cmpy_2nd_drawer" label={t('fields.linkedDrawer')} {...singleLineLayout}>
+            <Form.Item name="cmpy_2nd_drawer" label={t('fields.linkedDrawer')} {...rightItemLayout}>
               <Select
                 dropdownMatchSelectWidth={false}
                 // loading={isValidating}
-                style={{ width: '14vh' }}
+                // style={{ width: '14vh' }}
                 showSearch
                 optionFilterProp="children"
                 disabled={!cmpy_2nd_drawer_flag}

@@ -76,6 +76,11 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
         config_key: 'CMPY_2ND_DRAWER',
         config_value: values.cmpy_2nd_drawer,
       },
+      {
+        cmpy_code: value.cmpy_code,
+        config_key: 'AXLE_REQUIRED',
+        config_value: values.axle_needed ? 'Y' : 'N',
+      },
     ];
 
     Modal.confirm({

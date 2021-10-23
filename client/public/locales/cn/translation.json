@@ -1087,6 +1087,7 @@
     "line": "行",
     "linkToSecondDrawer": "允许当前公司和第二个油品调配公司关联",
     "linkedDrawer": "关联油品调配公司",
+    "axleNeeded": "公司需要进行车轴称重",
     "liquidMass": "油品重量",
     "listOfTanks": "油罐列表",
     "litres": "升",
