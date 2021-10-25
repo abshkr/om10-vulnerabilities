@@ -16,6 +16,17 @@ class FolioMeter extends CommonClass
     protected $primary_keys = array("closeout_nr",
         "meter_code");
 
+    //Avoid updating METER_BASECODE/METER_BASENAME 
+    public function pre_update()
+    {
+        if (isset($this->meter_basecode)) {
+            unset($this->meter_basecode);
+        }
+        if (isset($this->meter_basename)) {
+            unset($this->meter_basename);
+        }
+    }
+
     public function post_update()
     {
         // write_log(sprintf("%s::%s() START.", __CLASS__, __FUNCTION__),
