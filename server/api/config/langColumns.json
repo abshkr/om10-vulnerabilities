@@ -1666,12 +1666,12 @@
       "EXPIRY_DATE_DESC": "Expiry Date Desc"
     },
     "EXPIRY_DATE_DETAILS": {
-      "ED_TARGET_CODE": "Ed Target Code",
-      "ED_CMPY_CODE": "Ed Company Code",
-      "ED_OBJECT_ID": "Ed Object Id",
-      "ED_TYPE_CODE": "Ed Type Code",
-      "ED_EXP_DATE": "Ed Exp Date",
-      "ED_STATUS": "Ed Status"
+      "ED_TARGET_CODE": "Target",
+      "ED_CMPY_CODE": "Company",
+      "ED_OBJECT_ID": "Object",
+      "ED_TYPE_CODE": "Expiry Type",
+      "ED_EXP_DATE": "Expiry Date",
+      "ED_STATUS": "Status"
     },
     "EXPIRY_DATE_TARGETS": {
       "EDTA_TARGET_CODE": "Edta Target Code",
