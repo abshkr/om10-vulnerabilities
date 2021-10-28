@@ -97,6 +97,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     
   const popupMT = config?.popupManualTransaction;
 
+  const send_to_ft_ready = value?.status === 'F' && value?.shls_ld_type === '2'
+
   const { authenticated } = useSelector((state) => state.auth);
   const decoded = jwtDecode(authenticated)
   const FASTTRACK_ENABLED = decoded?.per_code === '9999' && fasttrackEnabled
@@ -1155,7 +1157,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
           { FASTTRACK_ENABLED &&  <Button
             type="primary"
             onClick={sendtoFasttrack}
-            disabled={value?.status !== 'F'}
+            disabled={!send_to_ft_ready}
           >
             {t('operations.sendtoFT')}
           </Button> }

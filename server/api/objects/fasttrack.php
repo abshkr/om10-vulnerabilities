@@ -17,7 +17,7 @@ class FastTrack extends CommonClass
             $bin = "/usr/omega/bin";
         }
 
-        $sendtoLog = (isset($_SERVER['OMEGA_HOME']) ? $_SERVER['OMEGA_HOME'] : '/usr/omega') . '/logs/sendtoft.log';
+        // $sendtoLog = (isset($_SERVER['OMEGA_HOME']) ? $_SERVER['OMEGA_HOME'] : '/usr/omega') . '/logs/sendtoft.log';
         $sendtoCmd = $bin . "/sendto_ft.sh " . $this->supplier . " " . $this->trip_no . " debug 2>&1";
         
         write_log(sprintf("to run %s", $sendtoCmd), __FILE__, __LINE__, LogLevel::INFO);
