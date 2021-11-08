@@ -10,3 +10,5 @@ export const BASE_SUMMARY = '/api/pages/base_owner_trans/get_base_summary.php';
 export const CREATE = '/api/pages/base_owner_trans/create.php';
 export const UPDATE = '/api/pages/base_owner_trans/update.php';
 export const DELETE = '/api/pages/base_owner_trans/delete.php';
+
+export const DIRECT_REPORT = '/api/pages/base_owner_trans/direct_report.php';

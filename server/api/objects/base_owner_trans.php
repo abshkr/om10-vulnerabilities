@@ -121,6 +121,50 @@ class BaseOwnerTrans extends CommonClass
         }
     }
 
+    public function direct_report()
+    {
+        write_log(json_encode($this), __FILE__, __LINE__);
+
+        if (isset($_SERVER["BIN"])) {
+            $bin = $_SERVER["BIN"];
+        } else {
+            $bin = "/usr/omega/bin";
+        }
+
+        if (!isset($this->report)) {
+            $this->report = 'LHC_CPO';
+        }
+
+        //Sample: ./JReport.sh /usr/omega/bin/jasper/Carr_Loadings.jasper /var/www/htdocs/reports/1636338933ANYcarr_loadings_e.pdf pdf CARRIER_CODE:%START_DATE:2021-10-24 13:28:28END_DATE:2021-11-08 13:28:28
+        $jasper_file = $bin . "/jasper/" . $this->report . ".jasper";
+        if (!file_exists($jasper_file)) {
+            write_log(sprintf("jasper file %s does not exist", $jasper_file), __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(400, response("__JASPER_FILE_NOT_EXIST__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $output_file = $_SERVER['DOCUMENT_ROOT'] . "/reports/" . $this->report . ".pdf";
+        $jreport_cmd = $bin . "/JReport.sh " . $jasper_file . " " . $output_file . " pdf TRSA_ID:" . $this->tra_id;
+        
+        write_log(sprintf("to run %s", $jreport_cmd), __FILE__, __LINE__, LogLevel::INFO);
+        foreach ($_SERVER as $env_key => $env_value) {
+            putenv("$env_key=$env_value");
+        }
+        $output = shell_exec($jreport_cmd);
+        // write_log(sprintf("result %s", $output), __FILE__, __LINE__, LogLevel::INFO);
+        if (strpos($output, "Created file")) {
+            $jasper_result = array(
+                'result' => $array['result'],
+                'filepath' => 'reports/' . $this->report . '.pdf');
+            echo json_encode($jasper_result, JSON_PRETTY_PRINT);
+        } else {
+            write_log("Jasper report creation failed. output: " . $output, __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(400, response("__CGI_FAILED__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+        }
+    }
+
     public function read()
     {
         if (!isset($this->base_code)) {

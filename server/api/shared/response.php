@@ -415,6 +415,10 @@ function response($case_name, $default = null, $params = null)
             "ENG" => "2FA authentication: email not valid",
             "CHN" => "验证码失败：不正确的邮件地址"
         ),
+        "__JASPER_FILE_NOT_EXIST__" => array(
+            "ENG" => "Jasper file does not not exist",
+            "CHN" => "Jasper文件不存在"
+        ),
     );
 
     $lang = Utilities::getCurrLang();

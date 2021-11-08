@@ -22,7 +22,7 @@ import {
   PlusOutlined,
   QuestionCircleOutlined,
   DeleteOutlined,
-  CheckCircleOutlined,
+  FileOutlined,
   CloseCircleOutlined,
 } from '@ant-design/icons';
 
@@ -47,6 +47,7 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
   const [transactionChanged, setTransactionChanged] = useState(0);
   const [ownershipChanged, setOwnershipChanged] = useState(0);
   const [ownership2Changed, setOwnership2Changed] = useState(0);
+  const [reportCreating, setReportCreating] = useState(false);
 
   const ownershipDensityVisible = false;
 
@@ -886,12 +887,40 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
     });
   };
 
+  const onCreateReport = (values) => {
+    setReportCreating(true);
+
+    api
+      .post(BASE_OWNER_TRANSACTIONS.DIRECT_REPORT, {
+        report: "LHC_CPO"
+      })
+      .then((response) => {
+        setReportCreating(false);
+        const file = response?.data?.filepath;
+
+        window.open(file, '_blank');
+
+        notification.success({
+          message: t('messages.reportGenerationSuccessful'),
+          description: t('descriptions.reportGenerationSuccessful'),
+        });
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
+        });
+        setReportCreating(false);
+      });
+  };
+
   const validateInput = (rule, input) => {
     const min = rule?.minValue || 0;
     const max = rule?.maxValue || 999999999;
     const limit = rule?.maxLen || 256;
-    console.log('.............rule', rule);
-
+    
     if (rule?.required) {
       if (input === '' || (input !== 0 && !input)) {
         return Promise.reject(`${t('validate.set')} ─ ${rule?.label}`);
@@ -1158,15 +1187,25 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
             </Button>
 
             {!IS_CREATING && (
-              <Button
-                type="danger"
-                icon={<DeleteOutlined />}
-                onClick={onDelete}
-                style={{ float: 'right', marginRight: 5 }}
-                disabled={!access?.canDelete || selected?.trsa_approved}
-              >
-                {t('operations.delete')}
-              </Button>
+              <>
+                <Button
+                  type="danger"
+                  icon={<DeleteOutlined />}
+                  onClick={onDelete}
+                  style={{ float: 'right', marginRight: 5 }}
+                  disabled={!access?.canDelete || selected?.trsa_approved}
+                >
+                  {t('operations.delete')}
+                </Button>
+                <Button
+                  loading={reportCreating}
+                  icon={<FileOutlined />}
+                  onClick={onCreateReport}
+                  style={{ float: 'right', marginRight: 5 }}
+                >
+                  {t('operations.generateReport')}
+                </Button>
+              </>
             )}
           </>
         }
