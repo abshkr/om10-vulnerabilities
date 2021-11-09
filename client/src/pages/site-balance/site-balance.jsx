@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import useSWR from 'swr';
 import { Select, Button } from 'antd';
@@ -24,6 +24,7 @@ const SiteBalance = () => {
   const site_code = decoded?.site_code;
   // const [terminal, setTerminal] = useState(site_code);
   const [terminal, setTerminal] = useState('');
+  const [closeout, setCloseout] = useState(undefined);
 
   const access = useAuth('M_SITEBALANCE');
 
@@ -32,9 +33,8 @@ const SiteBalance = () => {
     STOCK_MANAGEMENT.CURR_CLOSEOUT
   );
 
-  const closeout = closeouts?.records[0].closeout_nr;
-
-  const { data, revalidate, isValidating } = useSWR(`${STOCK_MANAGEMENT.SITE_BALANCE}?cls_out=${closeout}&terminal=${terminal}`);
+  const url = !closeout ? null : `${STOCK_MANAGEMENT.SITE_BALANCE}?cls_out=${closeout}&terminal=${terminal}`;
+  const { data, revalidate, isValidating } = useSWR(url);
 
   const fields = columns(t, config);
   const payload = transform(data?.records, unit);
@@ -79,6 +79,12 @@ const SiteBalance = () => {
       <Download data={payload} isLoading={isValidating} columns={fields} />
     </>
   );
+
+  useEffect(() => {
+    if (closeouts && !closeoutValidationg) {
+      setCloseout(closeouts?.records[0].closeout_nr);
+    }
+  }, [closeouts, closeoutValidationg]);
 
   return (
     <Page

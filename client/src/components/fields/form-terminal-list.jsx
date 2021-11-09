@@ -77,15 +77,15 @@ const TerminalList = ({ form, value, listOptions, itemCode, itemTitle, itemRequi
   }, [value, site_code, setFieldsValue]);
 
   useEffect(() => {
-    if (!listOptions || listOptions?.length === 0) {
+    if ((!listOptions || listOptions?.length === 0) && !loading) {
       getTerminals();
     }
     else {
-      setLoading(true);
+      // setLoading(true);
       setOptions(listOptions);
-      setLoading(false);
+      // setLoading(false);
     }
-  }, [listOptions, getTerminals]);
+  }, [listOptions]);
 
   return (
     <Form.Item 
@@ -109,7 +109,7 @@ const TerminalList = ({ form, value, listOptions, itemCode, itemTitle, itemRequi
         filterOption={(input, option) => option?.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
       >
         {options?.map((item) => (
-          <Select.Option key={item?.term_id} value={item?.term_code}>
+          <Select.Option key={item?.term_code} value={item?.term_code}>
             {`${item?.term_code} - ${item?.term_name}`}
           </Select.Option>
         ))}
