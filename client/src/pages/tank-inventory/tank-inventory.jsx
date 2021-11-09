@@ -6,7 +6,7 @@ import { SyncOutlined } from '@ant-design/icons';
 import jwtDecode from 'jwt-decode';
 
 import { Page, DataTable, Download } from '../../components';
-import {TerminalList} from 'components/fields'
+import {TerminalList} from 'components/fields';
 import { STOCK_MANAGEMENT } from '../../api';
 import columns from './columns';
 import auth from '../../auth';

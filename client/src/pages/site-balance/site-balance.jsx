@@ -8,7 +8,7 @@ import jwtDecode from 'jwt-decode';
 
 import { useAuth, useConfig } from 'hooks';
 import { Page, DataTable, Download } from 'components';
-import {TerminalList} from 'components/fields'
+import {TerminalList} from 'components/fields';
 import { STOCK_MANAGEMENT } from 'api';
 import auth from 'auth';
 

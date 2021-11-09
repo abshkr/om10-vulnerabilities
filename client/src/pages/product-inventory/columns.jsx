@@ -1,10 +1,32 @@
 const columns = (t, config) => [
   {
+    headerName: t('fields.terminal'),
+    field: 'tank_site',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
+    hide: true,
+    suppressSizeToFit: true,
+    width: 120,
+  },
+  {
+    headerName: t('fields.terminal'),
+    field: 'tank_sitename',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
+    hide: !config?.siteUseMultiTerminals,
+    suppressSizeToFit: true,
+    width: 180,
+  },
+  {
     headerName: t('fields.baseProductCode'),
     field: 'base_code',
     sortable: true,
     resizable: true,
     filter: 'FuzzyFilter',
+    suppressSizeToFit: true,
+    width: 180,
   },
   {
     headerName: t('fields.baseProductName'),
@@ -12,6 +34,8 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     filter: 'FuzzyFilter',
+    suppressSizeToFit: true,
+    width: 180,
   },
   {
     headerName: t('fields.bookBalance'),
@@ -22,6 +46,8 @@ const columns = (t, config) => [
     cellRendererParams: {
       type: String(config?.decimal_thousand_separator),
     },
+    suppressSizeToFit: true,
+    width: 160,
   },
   {
     headerName: t(config?.siteLabelUser + 'fields.grossVolume'),
@@ -32,6 +58,8 @@ const columns = (t, config) => [
     cellRendererParams: {
       type: String(config?.decimal_thousand_separator),
     },
+    suppressSizeToFit: true,
+    width: 250,
   },
   {
     headerName: t(config?.siteLabelUser + 'fields.netVolume'),
@@ -42,6 +70,8 @@ const columns = (t, config) => [
     cellRendererParams: {
       type: String(config?.decimal_thousand_separator),
     },
+    suppressSizeToFit: true,
+    width: 240,
   },
   {
     headerName: t('fields.ullage'),
@@ -53,6 +83,8 @@ const columns = (t, config) => [
     cellRendererParams: {
       type: String(config?.decimal_thousand_separator),
     },
+    suppressSizeToFit: true,
+    width: 150,
   },
   {
     headerName: t('fields.usableVolume'),
@@ -63,6 +95,8 @@ const columns = (t, config) => [
     cellRendererParams: {
       type: String(config?.decimal_thousand_separator),
     },
+    suppressSizeToFit: true,
+    width: 170,
   },
 ];
 
