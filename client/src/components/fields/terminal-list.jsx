@@ -9,7 +9,10 @@ const TerminalList = ({ value, listOptions, itemCode, itemTitle, itemRequired, i
   const { t } = useTranslation();
 
   const [loading, setLoading] = useState(false);
-  const [options, setOptions] = useState([]);
+  const [options, setOptions] = useState(undefined);
+
+  // const url = (!listOptions || listOptions?.length === 0) ? ORDER_LISTINGS.TERMINAL : null
+  // const { data: payload, isValidating } = useSWR(url);
 
   const field = t('fields.' + itemTitle);
 
@@ -43,15 +46,24 @@ const TerminalList = ({ value, listOptions, itemCode, itemTitle, itemRequired, i
   }
 
   useEffect(() => {
-    if ((!listOptions || listOptions?.length === 0) && !loading) {
-      getTerminals();
+    if (!options) {
+      if ((!listOptions || listOptions?.length === 0) && !loading) {
+        getTerminals();
+      }
+      else {
+        // setLoading(true);
+        setOptions(listOptions);
+        // setLoading(false);
+      }
     }
-    else {
-      // setLoading(true);
-      setOptions(listOptions);
-      // setLoading(false);
+  }, [listOptions, options]);
+
+  /* useEffect(() => {
+    if (payload) {
+      setOptions(payload?.records);
+      setLoading(isValidating);
     }
-  }, [listOptions]);
+  }, [payload, isValidating]); */
 
   return (
     <Select 

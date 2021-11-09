@@ -10,9 +10,10 @@ const TerminalList = ({ form, value, listOptions, itemCode, itemTitle, itemRequi
   const { t } = useTranslation();
 
   const [loading, setLoading] = useState(false);
-  const [options, setOptions] = useState([]);
+  const [options, setOptions] = useState(undefined);
 
-  // const { data: options, isValidating } = useSWR(ORDER_LISTINGS.TERMINAL);
+  // const url = (!listOptions || listOptions?.length === 0) ? ORDER_LISTINGS.TERMINAL : null
+  // const { data: payload, isValidating } = useSWR(url);
 
   const { setFieldsValue } = form;
 
@@ -62,6 +63,26 @@ const TerminalList = ({ form, value, listOptions, itemCode, itemTitle, itemRequi
   };
 
   useEffect(() => {
+    if (!options) {
+      if ((!listOptions || listOptions?.length === 0) && !loading) {
+        getTerminals();
+      }
+      else {
+        // setLoading(true);
+        setOptions(listOptions);
+        // setLoading(false);
+      }
+    }
+  }, [listOptions, options]);
+
+  /* useEffect(() => {
+    if (payload) {
+      setOptions(payload?.records);
+      setLoading(isValidating);
+    }
+  }, [payload, isValidating]); */
+
+  useEffect(() => {
     if (value) {
       setFieldsValue({
         [itemCode]: value?.[itemCode]
@@ -75,17 +96,6 @@ const TerminalList = ({ form, value, listOptions, itemCode, itemTitle, itemRequi
       handleSelection(site_code);
     }
   }, [value, site_code, setFieldsValue]);
-
-  useEffect(() => {
-    if ((!listOptions || listOptions?.length === 0) && !loading) {
-      getTerminals();
-    }
-    else {
-      // setLoading(true);
-      setOptions(listOptions);
-      // setLoading(false);
-    }
-  }, [listOptions]);
 
   return (
     <Form.Item 
