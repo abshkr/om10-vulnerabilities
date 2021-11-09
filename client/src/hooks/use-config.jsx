@@ -156,6 +156,7 @@ const useConfig = () => {
     vin_number_enabled: false,
     fasttrackEnabled: false,
     saveToMeter: false,
+    siteUseMultiTerminals: false
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -377,6 +378,7 @@ const useConfig = () => {
         vin_number_enabled: configurationObject?.VIN_NUMBER_ENABLED || false,
         fasttrackEnabled: configurationObject?.FASTTRACK_ENABLED || false,
         saveToMeter: configurationObject?.FOLIO_SAVE_TO_METERS || false,
+        siteUseMultiTerminals: configurationObject?.SITE_ALLOW_MULTI_TERMINALS || false,
       });
 
       // utils function cannot use hooks, use global constants to by pass
