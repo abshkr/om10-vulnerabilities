@@ -2012,6 +2012,7 @@
     "createSuccess": "Successfully created",
     "csvGenerationSuccessful": "Generated successfully. You can open or save it now.",
     "cuztomizeLanding": "Customise Your Equipment",
+    "deleteFailed": "Failed to delete",
     "deleteSuccess": "Successfully deleted",
     "detailedReporting": "Detailed Reporting",
     "favouriteAddded": "Successfully favourited",
