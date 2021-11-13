@@ -67,7 +67,7 @@ const DecimalThousandSeparator = ({ text, type }) => {
       decimalScale: '2',
     },
   ];
-  if (seperatorType) {
+  if (seperatorType && seperatorType >= 0 && seperatorType < types?.length) {
     return (
       <NumberFormat
         value={text}
@@ -75,13 +75,13 @@ const DecimalThousandSeparator = ({ text, type }) => {
         thousandSeparator={true}
         thousandSeparator={types[seperatorType]?.thousandSeparator}
         decimalSeparator={types[seperatorType]?.decimalSeparator}
-        decimalScale={types[seperatorType]?.decimalScale}
+        // decimalScale={types[seperatorType]?.decimalScale}
         fixedDecimalScale={true}
         isNumericString={true}
       />
     );
   } else {
-    return <span>Error</span>;
+    return <span>{text}</span>;
   }
 };
 

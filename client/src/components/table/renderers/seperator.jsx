@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
-import NumberFormat from 'react-number-format';
+// import NumberFormat from 'react-number-format';
+import { DecimalThousandSeparator } from 'components';
 
 export default class SeperatorRenderer extends Component {
   render() {
     const { value, type } = this.props;
-
-    const types = [
+    // console.log('.................sep', type);
+/*     const types = [
       {
         thousandSeparator: ' ',
         decimalSeparator: ',',
@@ -67,8 +68,17 @@ export default class SeperatorRenderer extends Component {
         decimalScale: '2',
       },
     ];
+ */
+    return (
+      <div style={{ display: 'flex' }}>
+        <DecimalThousandSeparator
+          text={value}
+          type={type}
+        ></DecimalThousandSeparator>
+      </div>
+    );
 
-    if (type) {
+    /* if (type && type >= 0 && type < types?.length) {
       return (
         <NumberFormat
           value={value}
@@ -76,13 +86,13 @@ export default class SeperatorRenderer extends Component {
           thousandSeparator={true}
           thousandSeparator={types[type]?.thousandSeparator}
           decimalSeparator={types[type]?.decimalSeparator}
-          decimalScale={types[type]?.decimalScale}
+          // decimalScale={types[type]?.decimalScale}
           fixedDecimalScale={true}
           isNumericString={true}
         />
       );
     } else {
-      return <div></div>;
-    }
+      return <div>{value}</div>;
+    } */
   }
 }
