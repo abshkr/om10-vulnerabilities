@@ -485,7 +485,9 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
       centered: true,
       onOk: async () => {
         // get the water volume from water level
-        const waterVol = await getQtyByLevel(selected?.tank_code, _.toNumber(payload?.tank_water_lvl));
+        const waterVol = _.toNumber(payload?.tank_water_lvl) === 0 
+          ? 0
+          : await getQtyByLevel(selected?.tank_code, _.toNumber(payload?.tank_water_lvl));
         // get the total volume from prod level
         const totalVol = await getQtyByLevel(selected?.tank_code, _.toNumber(payload?.tank_prod_lvl));
         // get the ambient volume

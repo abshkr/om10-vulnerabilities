@@ -28,27 +28,6 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
   const highSG = _.round(calcSgFromApi(range?.low), config?.precisionSG);
   const highSGDef = _.round(calcSgFromApi(0), config?.precisionSG);
 
-  /* const getTankVCF = async (base, temp, density) => {
-    const values = {
-      tank_base: base,
-      tank_qty_type: "LT",
-      tank_qty_amount: 10000,
-      tank_temp: temp,
-      tank_density: density,
-    };
-
-    const results = await api.post(TANK_STATUS.CALCULATE_QUANTITY, values);
-    // console.log('............getTankVCF', results);
-
-    return results?.data;
-  };
-
-  const getQtyByLevel = async (code, level) => {
-    const results = await api.get(`${TANK_STATUS.QTY_BY_LEVEL}?tank_code=${code}&tank_lvl=${level}`);
-    console.log('............getQtyByLevel', results);
-
-    return results?.data;
-  }; */
 
   const onCheck = (v) => {
     setDensityMode(v.target.checked);
@@ -209,7 +188,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
     const values = getFieldsValue(['tank_total_vol', 'tank_water', 'tank_ifc']);
     const totalVol =
       values?.tank_total_vol === '' || values?.tank_total_vol === undefined ? 0 : values?.tank_total_vol;
-    const waterVol = await getQtyByLevel(value?.tank_code, v);
+    const waterVol = _.toNumber(v) === 0 ? 0 : await getQtyByLevel(value?.tank_code, v);
     const ifcVol = values?.tank_ifc === '' || values?.tank_ifc === undefined ? 0 : values?.tank_ifc;
     const vol = totalVol - waterVol - ifcVol;
     const isAdtv = value?.tank_base_class === '6' || value?.tank_base_class === '11';
