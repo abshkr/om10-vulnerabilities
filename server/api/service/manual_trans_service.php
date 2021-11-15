@@ -614,11 +614,11 @@ class ManualTransactionService
             /* preload quantity */
             $msg->cmpt_det[$i]->asmx = new XASM();
             $msg->cmpt_det[$i]->asmx->amb_vol =
-                sprintf("%012d", $this->compartments[$i]->preload_amb_vol);
+                sprintf("%012d", round($this->compartments[$i]->preload_amb_vol));
             $msg->cmpt_det[$i]->asmx->cor_vol =
-                sprintf("%012d", $this->compartments[$i]->preload_cor_vol);
+                sprintf("%012d", round($this->compartments[$i]->preload_cor_vol));
             $msg->cmpt_det[$i]->asmx->liq_kg =
-                sprintf("%012d", $this->compartments[$i]->preload_liq_kg);
+                sprintf("%012d", round($this->compartments[$i]->preload_liq_kg));
 
             $msg->cmpt_det[$i]->Nr_of_Drums_Specified = "00000"; /* Fixed */
             $msg->cmpt_det[$i]->prod_class1 = new XPC(); /* Unloading */
@@ -640,9 +640,9 @@ class ManualTransactionService
             $msg->cmpt_det[$i]->asm4 = new XASM(); /* loaded proudct quantity */
             for ($j = 0; $j < $this->num_of_transfers; ++$j) /* Find right data to fill in */ {
                 if ($this->transfers[$j]->nr_in_tkr == $i + 1) {
-                    $msg->cmpt_det[$i]->asm4->amb_vol = sprintf("%012d", $this->transfers[$j]->amb_vol);
-                    $msg->cmpt_det[$i]->asm4->cor_vol = sprintf("%012d", $this->transfers[$j]->cor_vol);
-                    $msg->cmpt_det[$i]->asm4->liq_kg = sprintf("%012d", $this->transfers[$j]->liq_kg);
+                    $msg->cmpt_det[$i]->asm4->amb_vol = sprintf("%012d", round($this->transfers[$j]->amb_vol));
+                    $msg->cmpt_det[$i]->asm4->cor_vol = sprintf("%012d", round($this->transfers[$j]->cor_vol));
+                    $msg->cmpt_det[$i]->asm4->liq_kg = sprintf("%012d", round($this->transfers[$j]->liq_kg));
                     break;
                 }
             }
@@ -703,18 +703,18 @@ class ManualTransactionService
             /* Sample: "GASOLINE"*/
             $msg->trf_det[$i]->prod_class->prod_class = "        ";
             $msg->trf_det[$i]->prod_class->dens =
-                sprintf("%07d", $this->transfers[$i]->dens); /* Sample: "0735300"*/
+                sprintf("%07d", round($this->transfers[$i]->dens)); /* Sample: "0735300"*/
 
             $msg->trf_det[$i]->temps = new XTEMPS();
-            $msg->trf_det[$i]->temps->Temperature = sprintf("%+06d", $this->transfers[$i]->Temperature);
+            $msg->trf_det[$i]->temps->Temperature = sprintf("%+06d", round($this->transfers[$i]->Temperature));
 
             $msg->trf_det[$i]->asm2 = new XASM();
             $msg->trf_det[$i]->asm2->amb_vol =
-                sprintf("%012d", $this->transfers[$i]->amb_vol); /* Sample: "000001010000"*/
+                sprintf("%012d", round($this->transfers[$i]->amb_vol)); /* Sample: "000001010000"*/
             $msg->trf_det[$i]->asm2->cor_vol =
-                sprintf("%012d", $this->transfers[$i]->cor_vol); /* Sample: "000001011000"*/
+                sprintf("%012d", round($this->transfers[$i]->cor_vol)); /* Sample: "000001011000"*/
             $msg->trf_det[$i]->asm2->liq_kg =
-                sprintf("%012d", $this->transfers[$i]->liq_kg); /* Sample: "000000743000"*/
+                sprintf("%012d", round($this->transfers[$i]->liq_kg)); /* Sample: "000000743000"*/
 
             $msg->trf_det[$i]->prod_class1 = new XPC(); /* Always blank */
 
@@ -750,19 +750,19 @@ class ManualTransactionService
 
                 $msg->trf_det[$i]->mtr_det[$j]->asm2 = new XASM();
                 $msg->trf_det[$i]->mtr_det[$j]->asm2->amb_vol =
-                    sprintf("%012d", $this->transfers[$i]->meters[$j]->open_amb); /* Sample: "001916174000" */
+                    sprintf("%012d", round($this->transfers[$i]->meters[$j]->open_amb)); /* Sample: "001916174000" */
                 $msg->trf_det[$i]->mtr_det[$j]->asm2->cor_vol =
-                    sprintf("%012d", $this->transfers[$i]->meters[$j]->open_cor); /* Sample: "001920110000" */
+                    sprintf("%012d", round($this->transfers[$i]->meters[$j]->open_cor)); /* Sample: "001920110000" */
                 $msg->trf_det[$i]->mtr_det[$j]->asm2->liq_kg =
-                    sprintf("%012d", $this->transfers[$i]->meters[$j]->open_kg); /* Sample: "001450833000" */
+                    sprintf("%012d", round($this->transfers[$i]->meters[$j]->open_kg)); /* Sample: "001450833000" */
 
                 $msg->trf_det[$i]->mtr_det[$j]->asm3 = new XASM();
                 $msg->trf_det[$i]->mtr_det[$j]->asm3->amb_vol =
-                    sprintf("%012d", $this->transfers[$i]->meters[$j]->close_amb); /* Sample: "001917184000" */
+                    sprintf("%012d", round($this->transfers[$i]->meters[$j]->close_amb)); /* Sample: "001917184000" */
                 $msg->trf_det[$i]->mtr_det[$j]->asm3->cor_vol =
-                    sprintf("%012d", $this->transfers[$i]->meters[$j]->close_cor); /* Sample: "001921120000" */
+                    sprintf("%012d", round($this->transfers[$i]->meters[$j]->close_cor)); /* Sample: "001921120000" */
                 $msg->trf_det[$i]->mtr_det[$j]->asm3->liq_kg =
-                    sprintf("%012d", $this->transfers[$i]->meters[$j]->close_kg); /* Sample: "001451576000" */
+                    sprintf("%012d", round($this->transfers[$i]->meters[$j]->close_kg)); /* Sample: "001451576000" */
 
                 $msg->trf_det[$i]->mtr_det[$j]->Start_Mass = "            "; /* Always blank */
                 $msg->trf_det[$i]->mtr_det[$j]->End_Mass = "            "; /* Always blank */
@@ -815,19 +815,19 @@ class ManualTransactionService
                 $msg->trf_det[$i]->base[$j]->prod_class->prod_class =
                     strtoupper(sprintf("%-8.8s", $this->transfers[$i]->bases[$j]->prod_class)); /* Sample: "GASOLINE"*/
                 $msg->trf_det[$i]->base[$j]->prod_class->dens =
-                    sprintf("%07d", $this->transfers[$i]->bases[$j]->dens); /* Sample: "0735300"*/
+                    sprintf("%07d", round($this->transfers[$i]->bases[$j]->dens)); /* Sample: "0735300"*/
 
                 $msg->trf_det[$i]->base[$j]->temps = new XTEMPS();
                 $msg->trf_det[$i]->base[$j]->temps->Temperature =
-                    sprintf("%+06d", $this->transfers[$i]->bases[$j]->Temperature); /* Sample: "+01450"*/
+                    sprintf("%+06d", round($this->transfers[$i]->bases[$j]->Temperature)); /* Sample: "+01450"*/
 
                 $msg->trf_det[$i]->base[$j]->asmx = new XASM();
                 $msg->trf_det[$i]->base[$j]->asmx->amb_vol =
-                    sprintf("%012d", $this->transfers[$i]->bases[$j]->amb_vol); /* Sample: "000001010000" */
+                    sprintf("%012d", round($this->transfers[$i]->bases[$j]->amb_vol)); /* Sample: "000001010000" */
                 $msg->trf_det[$i]->base[$j]->asmx->cor_vol =
-                    sprintf("%012d", $this->transfers[$i]->bases[$j]->cor_vol); /* Sample: "000001011000" */
+                    sprintf("%012d", round($this->transfers[$i]->bases[$j]->cor_vol)); /* Sample: "000001011000" */
                 $msg->trf_det[$i]->base[$j]->asmx->liq_kg =
-                    sprintf("%012d", $this->transfers[$i]->bases[$j]->liq_kg); /* Sample: "000000743000" */
+                    sprintf("%012d", round($this->transfers[$i]->bases[$j]->liq_kg)); /* Sample: "000000743000" */
             }
 
             $msg->trf_det[$i]->Start_Mass = "            "; /* Always blank */
