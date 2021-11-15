@@ -68,6 +68,7 @@ const FormModal = ({
   expiryDateMode,
   expiryTypes,
   config,
+  setPage,
 }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -86,8 +87,11 @@ const FormModal = ({
     handleFormState(false, null);
     if (eqpt_code) {
       setEqptCode(eqpt_code);
-      revalidate();
+    } else {
+      setEqptCode('');
     }
+    setPage(1);
+    revalidate();
   };
 
   const checkCompartments = (cmpts) => {
@@ -201,7 +205,7 @@ const FormModal = ({
     api
       .post(`${EQUIPMENT_LIST.TOGGLE_LOCKS}?eqpt_id=${value.eqpt_id}`)
       .then((response) => {
-        onComplete(value.eqpt_id);
+        onComplete(value.eqpt_code);
 
         notification.success({
           message: t('messages.unlockSuccess'),

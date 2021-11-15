@@ -59,6 +59,8 @@ const FormModal = ({
   expiryTypes,
   config,
   tankers,
+  setTnkrCode,
+  setPage,
 }) => {
   const { t } = useTranslation();
   const { carrcode_tankernum_tag, tanker_slp_enabled } = useConfig();
@@ -90,12 +92,19 @@ const FormModal = ({
   const onComplete = (tnkr_code) => {
     resetFields();
     handleFormState(false, null);
-    if (tnkr_code) {
+    /* if (tnkr_code) {
       setFilterValue('' + tnkr_code);
       revalidate();
     } else {
       setFilterValue(' ');
+    } */
+    if (tnkr_code) {
+      setTnkrCode(tnkr_code);
+    } else {
+      setTnkrCode('');
     }
+    setPage(1);
+    revalidate();
   };
 
   const onFormClosed = () => {
