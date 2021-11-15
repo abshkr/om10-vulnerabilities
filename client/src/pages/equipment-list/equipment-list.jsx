@@ -242,6 +242,7 @@ const EquipmentList = () => {
           expiryDateMode={expiryDateMode}
           expiryTypes={expiryTypes?.records}
           config={config}
+          setPage={setPage}
         />
       )}
     </Page>

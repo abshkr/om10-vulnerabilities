@@ -156,6 +156,7 @@ const useConfig = () => {
     vin_number_enabled: false,
     fasttrackEnabled: false,
     saveToMeter: false,
+    siteUseMultiTerminals: false
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -366,9 +367,9 @@ const useConfig = () => {
         heatmapExtremeTo: configurationObject?.HEATMAP_EXTREME_TO || 99999,
         site_default_shls_ld_type: configurationObject?.SITE_DEFAULT_SHLS_LD_TYPE || '2',
         popupManualTransaction: configurationObject?.SITE_POPUP_MT || false,
-        siteEqptPaging: configurationObject?.SITE_PAGINATION_EQPT_LIST || true,
-        siteJnlPaging: configurationObject?.SITE_PAGINATION_JNL_LIST || true,
-        siteTnkrPaging: configurationObject?.SITE_PAGINATION_TNKR_LIST || true,
+        siteEqptPaging: configurationObject?.SITE_PAGINATION_EQPT_LIST || false,
+        siteJnlPaging: configurationObject?.SITE_PAGINATION_JNL_LIST || false,
+        siteTnkrPaging: configurationObject?.SITE_PAGINATION_TNKR_LIST || false,
         reports_closeout_job: configurationObject?.REPORTS_CLOSEOUT_JOB || false,
         decimal_thousand_separator: configurationObject?.SITE_DEC_TH_SEPERATORS || '10',
         driver_slp_enabled: configurationObject?.DRIVER_SLP_ENABLED || false,
@@ -377,6 +378,7 @@ const useConfig = () => {
         vin_number_enabled: configurationObject?.VIN_NUMBER_ENABLED || false,
         fasttrackEnabled: configurationObject?.FASTTRACK_ENABLED || false,
         saveToMeter: configurationObject?.FOLIO_SAVE_TO_METERS || false,
+        siteUseMultiTerminals: configurationObject?.SITE_ALLOW_MULTI_TERMINALS || false,
       });
 
       // utils function cannot use hooks, use global constants to by pass

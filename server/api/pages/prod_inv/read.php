@@ -7,7 +7,8 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/prod_inv.php';
 
-Utilities::read('ProdInv');
+// Utilities::read('ProdInv');
+Utilities::read('ProdInv', $method = 'read', $filter = true); 
 
 
 

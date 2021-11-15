@@ -27,6 +27,7 @@ import VcfRenderer from './vcf';
 import SeperatorRenderer from './seperator';
 import QuantitySeperatorRenderer from './quantitySeperator';
 import LegacyExpDateRenderer from './legacy-exp-date';
+import TagListRenderer from './tag-list';
 
 export {
   BooleanRenderer,
@@ -57,5 +58,6 @@ export {
   VcfRenderer,
   SeperatorRenderer,
   QuantitySeperatorRenderer,
-  LegacyExpDateRenderer
+  LegacyExpDateRenderer,
+  TagListRenderer
 };

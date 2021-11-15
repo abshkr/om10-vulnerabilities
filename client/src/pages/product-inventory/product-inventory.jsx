@@ -4,8 +4,10 @@ import { SyncOutlined, CloseOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Select, Button, Tabs, Form, Drawer } from 'antd';
 import useSWR from 'swr';
+import jwtDecode from 'jwt-decode';
 
 import { Page, DataTable, Download } from 'components';
+import {TerminalList} from 'components/fields';
 import { STOCK_MANAGEMENT } from 'api';
 import useAuth from 'hooks/use-auth';
 import auth from 'auth';
@@ -19,17 +21,22 @@ import BaseProductOwners from './base-owners';
 const { TabPane } = Tabs;
 
 const ProductInventory = () => {
-  const [unit, setUnit] = useState('Litres');
+  const config = useConfig();
+  const { t } = useTranslation();
+  const access = useAuth('M_PRODUCTINVENTORY');
 
+  const [unit, setUnit] = useState('Litres');
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
-  const config = useConfig();
+  const token = sessionStorage.getItem('token');
+  const decoded = jwtDecode(token);
+  const site_code = decoded?.site_code;
+  // const [terminal, setTerminal] = useState(site_code);
+  const [terminal, setTerminal] = useState('');
 
-  const { t } = useTranslation();
-  const { data, revalidate, isValidating } = useSWR(STOCK_MANAGEMENT.PRODUCT_INVENTORY);
-
-  const access = useAuth('M_PRODUCTINVENTORY');
+  // const { data, revalidate, isValidating } = useSWR(STOCK_MANAGEMENT.PRODUCT_INVENTORY);
+  const { data, revalidate, isValidating } = useSWR(`${STOCK_MANAGEMENT.PRODUCT_INVENTORY}?terminal=${terminal}`);
 
   const fields = columns(t, config);
   const payload = transform(data?.records, unit);
@@ -67,10 +74,15 @@ const ProductInventory = () => {
 
   const modifiers = (
     <>
+      {config?.siteUseMultiTerminals && (
+        <TerminalList value={terminal} listOptions={[]}
+        itemCode={'tank_terminal'} itemTitle={'terminal'} itemRequired={false} itemDisabled={false} onChange={setTerminal} />
+      )}
+
       <Select
         dropdownMatchSelectWidth={false}
         key="1"
-        style={{ width: 200 }}
+        style={{ width: 200, marginLeft: 5 }}
         defaultValue={unit}
         onChange={setUnit}
       >

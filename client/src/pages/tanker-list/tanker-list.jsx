@@ -252,6 +252,8 @@ const TankerList = () => {
           expiryTypes={expiryTypes}
           config={config}
           tankers={data}
+          setTnkrCode={setTnkrCode}
+          setPage={setPage}
         />
       )}
     </Page>

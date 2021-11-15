@@ -1,0 +1,63 @@
+const columns = (t) => [
+  {
+    headerName: t('fields.trmgrpCode'),
+    field: 'trmgrp_code',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    suppressSizeToFit: true,
+    width: 140,
+  },
+  {
+    headerName: t('fields.trmgrpName'),
+    field: 'trmgrp_name',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    suppressSizeToFit: true,
+    width: 140,
+  },
+  {
+    headerName: t('fields.trmgrpSites'),
+    field: 'trmgrp_sites',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'TagListRenderer',
+    cellRendererParams: {
+      dataColumn: 'trmgrp_sites',
+      flagColumn: 'trmgrp_active_flags',
+    },
+  },
+  {
+    headerName: t('fields.trmgrpCount'),
+    field: 'trmgrp_count',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    suppressSizeToFit: true,
+    width: 180,
+  },
+  {
+    headerName: t('fields.trmgrpNote'),
+    field: 'trmgrp_note',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    suppressSizeToFit: true,
+    width: 120,
+    hide: true,
+  },
+  {
+    headerName: t('fields.trmgrpActive'),
+    field: 'trmgrp_active',
+    filter: 'BooleanFilter',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'BooleanRenderer',
+    suppressSizeToFit: true,
+    width: 100,
+  },
+];
+
+export default columns;

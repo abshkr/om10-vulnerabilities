@@ -4451,16 +4451,27 @@
       "TERM_REMSITE": "Terminal Remsite",
       "TERM_COMMS_AVAIL": "Terminal Comms Avail"
     },
+    "TERMINAL_GROUPS": {
+      "TRMGRP_CODE": "Terminal Group Code",
+      "TRMGRP_NAME": "Terminal Group Name",
+      "TRMGRP_NOTE": "Comments",
+      "TRMGRP_ACTIVE": "Group Active"
+    },
+    "TERMINAL_GROUP_LINKS": {
+      "TGL_GROUP_CODE": "Terminal Group Code",
+      "TGL_TERM_CODE": "Terminal Code",
+      "TGL_LINK_ACTIVE": "Link Active"
+    },
     "TGRLINK": {
-      "TGR_GRLK": "Tgr Grlk",
-      "TGR_NTK": "Tgr Ntk",
-      "TGR_TKLK_TANKCODE": "Tgr Tklk Tankcode",
-      "TGR_TKLK_TANKDEPO": "Tgr Tklk Tankdepo"
+      "TGR_GRLK": "Tank Group Name",
+      "TGR_NTK": "Tank Active",
+      "TGR_TKLK_TANKCODE": "Tank Code",
+      "TGR_TKLK_TANKDEPO": "Tank Terminal"
     },
     "TGROUP": {
-      "TGR_NAME": "Tgr Name",
-      "TGR_DDI": "Tgr Ddi",
-      "TGR_NTAG": "Tgr Ntag"
+      "TGR_NAME": "Tank Group Name",
+      "TGR_DDI": "Tank Group DDI",
+      "TGR_NTAG": "Tank Group NTAG"
     },
     "TIMECODE": {
       "TCD_TITLE": "Tcd Title",
@@ -9390,6 +9401,17 @@
       "TERM_CONTACT": "油库联系方式",
       "TERM_REMSITE": "远程油库标记",
       "TERM_COMMS_AVAIL": "油库通讯可行性"
+    },
+    "TERMINAL_GROUPS": {
+      "TRMGRP_CODE": "油库组代码",
+      "TRMGRP_NAME": "油库组名称",
+      "TRMGRP_NOTE": "油库组备注",
+      "TRMGRP_ACTIVE": "油库组启用标志"
+    },
+    "TERMINAL_GROUP_LINKS": {
+      "TGL_GROUP_CODE": "油库组代码",
+      "TGL_TERM_CODE": "油库代码",
+      "TGL_LINK_ACTIVE": "油库启用标志"
     },
     "TGRLINK": {
       "TGR_GRLK": "油罐组名称",

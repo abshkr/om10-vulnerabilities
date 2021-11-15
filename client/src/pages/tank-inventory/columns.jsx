@@ -1,5 +1,25 @@
 const columns = (t, config) => [
   {
+    headerName: t('fields.terminal'),
+    field: 'tank_site',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
+    hide: true,
+    suppressSizeToFit: true,
+    width: 120,
+  },
+  {
+    headerName: t('fields.terminal'),
+    field: 'tank_sitename',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
+    hide: !config?.siteUseMultiTerminals,
+    suppressSizeToFit: true,
+    width: 180,
+  },
+  {
     headerName: t('fields.code'),
     field: 'tank_code',
     sortable: true,
@@ -14,7 +34,7 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     filter: 'MultiFilter',
-    width: 100,
+    width: 120,
     suppressSizeToFit: true,
   },
   {
@@ -23,6 +43,8 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     filter: 'MultiFilter',
+    suppressSizeToFit: true,
+    width: 180,
   },
 
   {
@@ -31,6 +53,8 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     hide: !config?.useWaterStrapping,
+    suppressSizeToFit: true,
+    width: 170,
   },
   {
     headerName: t(config?.siteLabelUser + 'fields.waterVolume') + ' (' + t('units.ltr') + ')',
@@ -38,12 +62,16 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     hide: true,
+    suppressSizeToFit: true,
+    width: 181,
   },
   {
     headerName: `${t('fields.tankLevel')} (${t('units.mm')})`,
     field: 'tank_prod_lvl',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 160,
   },
   {
     headerName: t('fields.tankIFC') + ' (' + t('units.ltr') + ')',
@@ -51,12 +79,16 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     hide: !config?.useWaterStrapping,
+    suppressSizeToFit: true,
+    width: 120,
   },
   {
     headerName: `${t('fields.temperature')} (°C)`,
     field: 'tank_temp',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 170,
   },
   {
     headerName: `${t(config?.siteLabelUser + 'fields.standardVolume')} (${t(
@@ -69,6 +101,8 @@ const columns = (t, config) => [
     cellRendererParams: {
       type: String(config?.decimal_thousand_separator),
     },
+    suppressSizeToFit: true,
+    width: 300,
   },
   {
     headerName: `${t(config?.siteLabelUser + 'fields.observedVolume')} (${t(
@@ -81,6 +115,8 @@ const columns = (t, config) => [
     cellRendererParams: {
       type: String(config?.decimal_thousand_separator),
     },
+    suppressSizeToFit: true,
+    width: 300,
   },
   {
     headerName: `${t('fields.pumpableVolume')} (${t(config?.siteLabelUser + 'units.lobs')})`,
@@ -91,6 +127,8 @@ const columns = (t, config) => [
     cellRendererParams: {
       type: String(config?.decimal_thousand_separator),
     },
+    suppressSizeToFit: true,
+    width: 220,
   },
   {
     headerName: `${t('fields.openingStock')} (${t(config?.siteLabelUser + 'units.lcor')})`,
@@ -101,6 +139,8 @@ const columns = (t, config) => [
     cellRendererParams: {
       type: String(config?.decimal_thousand_separator),
     },
+    suppressSizeToFit: true,
+    width: 200,
   },
   {
     headerName: `${t('fields.bookBalance')} (${t(config?.siteLabelUser + 'units.lcor')})`,
@@ -111,6 +151,8 @@ const columns = (t, config) => [
     cellRendererParams: {
       type: String(config?.decimal_thousand_separator),
     },
+    suppressSizeToFit: true,
+    width: 185,
   },
 ];
 

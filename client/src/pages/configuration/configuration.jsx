@@ -721,7 +721,7 @@ const Configuration = ({ user, config }) => {
           icon={<PlusOutlined />}
           // onClick={onFeatureDeselectAll}
           type="primary"
-          disabled={!access?.canUpdate}
+          disabled={!access?.canCreate}
           onClick={() => handleTerminalFormState(true, null)}
         >
           {t('operations.create')}
@@ -733,7 +733,7 @@ const Configuration = ({ user, config }) => {
           icon={<PlusOutlined />}
           // onClick={onFeatureDeselectAll}
           type="primary"
-          disabled={!access?.canUpdate}
+          disabled={!access?.canCreate}
           onClick={() => handleAxleFormState(true, null)}
         >
           {t('operations.create')}

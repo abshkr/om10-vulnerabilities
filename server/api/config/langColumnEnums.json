@@ -4470,6 +4470,17 @@
     "TERM_REMSITE": "NA",
     "TERM_COMMS_AVAIL": "NA"
   },
+  "TERMINAL_GROUPS": {
+    "TRMGRP_CODE": "NA",
+    "TRMGRP_NAME": "NA",
+    "TRMGRP_NOTE": "NA",
+    "TRMGRP_ACTIVE": "NA"
+  },
+  "TERMINAL_GROUP_LINKS": {
+    "TGL_GROUP_CODE": "NA",
+    "TGL_TERM_CODE": "NA",
+    "TGL_LINK_ACTIVE": "NA"
+  },
   "TGRLINK": {
     "TGR_GRLK": "NA",
     "TGR_NTK": "NA",
