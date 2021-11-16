@@ -1,4 +1,14 @@
-const columns = (t) => [
+const columns = (t, config) => [
+  {
+    headerName: t('fields.terminal'),
+    field: 'tank_sitedesc',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    width: 160,
+    suppressSizeToFit: true,
+    hide: true, // !config?.siteUseMultiTerminals,
+  },
   {
     headerName: t('fields.tkownerCode'),
     field: 'tkcmpy_link',

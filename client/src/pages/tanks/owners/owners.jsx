@@ -54,7 +54,7 @@ const TankOwners = ({ terminal, code, value, access, tanks, config }) => {
 
   const { resetFields, setFieldsValue, getFieldsValue } = form;
 
-  const fields = columns(t);
+  const fields = columns(t, config);
 
   // Find if the owner has the ownership in the current tank
   // and the existing owner will be disabled in owner list when adding new ownership

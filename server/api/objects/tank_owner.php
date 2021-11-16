@@ -131,7 +131,8 @@ class TankOwner extends CommonClass
         }
 
         $query = "
-            SELECT * FROM " . $this->VIEW_NAME . "
+            SELECT TANK_TERMINAL || ' - ' || TANK_SITENAME AS TANK_SITEDESC, tmp.* 
+            FROM " . $this->VIEW_NAME . " tmp
             WHERE 
                 1 = 1
         ";
@@ -181,6 +182,87 @@ class TankOwner extends CommonClass
     }
 
     public function read_by_summary()
+    {
+        if (!isset($this->tank_terminal) || $this->tank_terminal == 'undefined' || strlen($this->tank_terminal) == 0) {
+        // if (!isset($this->tank_terminal)) {
+            $this->tank_terminal = "-1";
+        }
+        if (!isset($this->cmpy_code)) {
+            $this->cmpy_code = "-1";
+        }
+        if (!isset($this->tank_base)) {
+            $this->tank_base = "-1";
+        }
+
+        $query = "
+            SELECT 
+                tov1.TANK_TERMINAL
+                , tov1.TANK_TERMINAL || ' - ' || tov1.TANK_SITENAME    AS TANK_SITEDESC
+                , tov1.TANK_BASE
+                , tov1.TANK_BASE_NAME
+                , tov1.CMPY_CODE
+                , tov1.CMPY_NAME
+                , tov1.TKO_PERCENTAGE2
+                , DECODE(tov2.TKOWNER_TOTAL, 0, 100, ROUND(tov1.TKOWNER_QTY/tov2.TKOWNER_TOTAL*100,4) )   AS TKO_PERCENTAGE
+                , tov2.TKOWNER_TOTAL
+                , tov1.TKOWNER_QTY
+                , tov1.TKO_STD_LTR
+                , tov1.TKO_AMB_LTR
+                , tov1.TKO_KG
+            FROM (
+                SELECT 
+                    TANK_TERMINAL
+                    , TANK_SITENAME
+                    , TANK_BASE
+                    , TANK_BASE_NAME
+                    , CMPY_CODE
+                    , CMPY_NAME
+                    , SUM(TKO_PERCENTAGE)  AS TKO_PERCENTAGE2
+                    , SUM(TKOWNER_QTY)     AS TKOWNER_QTY
+                    , SUM(TKO_STD_LTR)     AS TKO_STD_LTR
+                    , SUM(TKO_AMB_LTR)     AS TKO_AMB_LTR
+                    , SUM(TKO_KG)          AS TKO_KG
+                FROM TANK_OWNERS_VW
+                WHERE 
+                    1 = 1
+                    AND ('-1' = :code OR TKCMPY_LINK LIKE '%'||:code||'%')
+                    AND ('-1' = :base OR TANK_BASE = :base)
+                    AND ('-1' = :term OR TKLINK_TANKDEPO = :term)
+                    GROUP BY TANK_TERMINAL, TANK_SITENAME, TANK_BASE, TANK_BASE_NAME, CMPY_CODE, CMPY_NAME
+            ) tov1, (
+                SELECT 
+                    TANK_TERMINAL
+                    , TANK_SITENAME
+                    , TANK_BASE
+                    , SUM(TKOWNER_QTY)     AS TKOWNER_TOTAL
+                FROM TANK_OWNERS_VW
+                WHERE 
+                    1 = 1
+                    AND ('-1' = :code OR TKCMPY_LINK LIKE '%'||:code||'%')
+                    AND ('-1' = :base OR TANK_BASE = :base)
+                    AND ('-1' = :term OR TKLINK_TANKDEPO = :term)
+                    GROUP BY TANK_TERMINAL, TANK_SITENAME, TANK_BASE
+            ) tov2
+            WHERE 
+                tov1.TANK_BASE = tov2.TANK_BASE
+                AND tov1.TANK_TERMINAL = tov2.TANK_TERMINAL
+            ORDER BY TANK_TERMINAL, TANK_BASE, TANK_BASE_NAME, CMPY_CODE, CMPY_NAME
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':code', $this->cmpy_code);
+        oci_bind_by_name($stmt, ':base', $this->tank_base);
+        oci_bind_by_name($stmt, ':term', $this->tank_terminal);
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function read_by_summary_no_terminal()
     {
         if (!isset($this->cmpy_code)) {
             $this->cmpy_code = "-1";

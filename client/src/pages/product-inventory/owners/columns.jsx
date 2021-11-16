@@ -1,5 +1,25 @@
 const columns = (t, visible, config) => [
   {
+    headerName: t('fields.terminal'),
+    field: 'tank_terminal',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    width: 120,
+    suppressSizeToFit: true,
+    hide: true,
+  },
+  {
+    headerName: t('fields.terminal'),
+    field: 'tank_sitedesc',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    width: 160,
+    suppressSizeToFit: true,
+    hide: !config?.siteUseMultiTerminals,
+  },
+  {
     headerName: t('fields.tkownerCode'),
     field: 'cmpy_code',
     filter: 'FuzzyFilter',
