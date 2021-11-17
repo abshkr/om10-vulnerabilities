@@ -36,12 +36,7 @@ class SiteBal extends CommonClass
             (NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_IN_CVL, 0))        AS RECEIPTSVOL,
             NVL(TRSF_IN_CVL, 0)                                                                    AS TRANSFERIN,
             NVL(TRSF_OUT_CVL, 0)                                                                   AS TRANSFEROUT,
-            (((NVL(TANKS.TANK_LTR_CLOSE, 0.0)*NVL(TANKS.TANK_RPTVCFCLOSE, 1) 
-                + NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) 
-                - NVL(TRSF_IN_CVL, 0) +  NVL(TRSF_IN_CVL, 0)) 
-              - (NVL(TANKS.TANK_TRF_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_OUT_CVL, 0)) 
-              - (NVL(TRSF_OUT_CVL, 0))
-            ) - (NVL(TANKS.TANK_COR_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1)))                          AS GAINLOSS
+            NVL(TANKS.TANK_COR_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TANKS.TANK_LTR_CLOSE, 0.0)*NVL(TANKS.TANK_RPTVCFCLOSE, 1) - NVL(TANKS.TANK_RCPT_VOL, 0.0) * NVL(TANKS.TANK_RPTVCF, 1) + NVL(TANKS.TANK_TRF_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_IN_CVL, 0) + NVL(TRSF_OUT_CVL, 0)                          AS GAINLOSS
         FROM 
             TERMINAL, 
             CLOSEOUTS, 
