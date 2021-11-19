@@ -30,8 +30,10 @@ import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
 import moment from 'moment';
+import jwtDecode from 'jwt-decode';
 
 import { DataTable, Download } from '../../../components';
+import {TerminalList, FormTerminalList} from 'components/fields';
 import api, { BASE_OWNERS, BASE_OWNER_TRANSACTIONS, ORDER_LISTINGS, SPECIAL_MOVEMENTS } from '../../../api';
 import { SETTINGS } from '../../../constants';
 import { getCurrentTime } from '../../../utils';
@@ -42,6 +44,7 @@ import CheckboxContainer from './style';
 const { TabPane } = Tabs;
 
 const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value, access, config }) => {
+  const [terminal, setTerminal] = useState('');
   const [base, setBase] = useState(baseCode || value?.base_prod_code);
   const [supplier, setSupplier] = useState(suppCode || value?.supp_cmpy);
   const [transactionChanged, setTransactionChanged] = useState(0);
@@ -50,8 +53,14 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
   const [reportCreating, setReportCreating] = useState(false);
 
   const ownershipDensityVisible = false;
+  const baseTerminal = 'ownship_terminal';
+  const trsaTerminalsVisible = false;
 
-  const url = `${BASE_OWNER_TRANSACTIONS.READ}?base_code=${base || '-1'}&cmpy_code=${supplier || '-1'}`;
+  const token = sessionStorage.getItem('token');
+  const decoded = jwtDecode(token);
+  const site_code = decoded?.site_code;
+
+  const url = `${BASE_OWNER_TRANSACTIONS.READ}?base_code=${base || '-1'}&cmpy_code=${supplier || '-1'}&terminal=${terminal}`;
 
   const { data, isValidating } = useSWR(url);
 
@@ -71,7 +80,7 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
   const IS_CREATING = !selected;
   const percentPrecision = 4;
 
-  const { resetFields, setFieldsValue, getFieldsValue } = form;
+  const { resetFields, setFieldsValue, getFieldsValue, getFieldValue } = form;
 
   const reasons = [
     {
@@ -87,13 +96,15 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
   const fields = columns(t, reasons, ownershipDensityVisible, config);
 
   const getBaseSummary = async (prod) => {
-    const results = await api.get(`${BASE_OWNER_TRANSACTIONS.BASE_SUMMARY}?base_code=${prod}`);
+    const term = config?.siteUseMultiTerminals ? getFieldValue(baseTerminal) : '';
+    const results = await api.get(`${BASE_OWNER_TRANSACTIONS.BASE_SUMMARY}?base_code=${prod}&terminal=${term}`);
 
     return results?.data?.records;
   };
 
   const checkTransactionKey = async (code) => {
-    const results = await api.get(`${BASE_OWNER_TRANSACTIONS.CHECK_OWNERSHIP_BY_UKEY}?trsa_key=${code}`);
+    const term = config?.siteUseMultiTerminals ? getFieldValue(baseTerminal) : '';
+    const results = await api.get(`${BASE_OWNER_TRANSACTIONS.CHECK_OWNERSHIP_BY_UKEY}?trsa_key=${code}&terminal=${term}`);
 
     return results?.data?.records?.[0]?.cnt;
   };
@@ -211,8 +222,16 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
     handleOwnerUnit();
   };
 
+  const onTerminalChanged = async () => {
+    handleBaseDensity();
+    handleOwnership();
+    handleOwnershipTo();
+    handleOwnerUnit();
+  };
+
   const getOwnership = async (prod, supp) => {
-    const results = await api.get(`${BASE_OWNERS.READ}?base_code=${prod}&cmpy_code=${supp}`);
+    const term = config?.siteUseMultiTerminals ? getFieldValue(baseTerminal) : '';
+    const results = await api.get(`${BASE_OWNERS.READ}?base_code=${prod}&cmpy_code=${supp}&terminal=${term}`);
 
     return results?.data?.records;
   };
@@ -284,6 +303,11 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
   const updateBaseOwnership = async (vobj, who) => {
     const values = {};
 
+    if (config?.siteUseMultiTerminals) {
+      values.ownship_terminal = vobj?.ownship_terminal;
+    } else {
+      values.ownship_terminal = site_code;
+    }
     values.ownship_no = vobj?.ownship_no;
     values.base_prod_code = vobj?.base_prod_code;
     values.supp_cmpy = vobj?.supp_cmpy;
@@ -343,6 +367,11 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
   const createBaseOwnership = async (vobj, who) => {
     const values = {};
 
+    if (config?.siteUseMultiTerminals) {
+      values.ownship_terminal = vobj?.ownship_terminal;
+    } else {
+      values.ownship_terminal = site_code;
+    }
     values.ownship_no = -888888;
     values.base_prod_code = vobj?.base_prod_code;
     values.supp_cmpy = vobj?.supp_cmpy;
@@ -595,6 +624,12 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
     const values = await form.validateFields();
     // Since the ownship_trsa_no field is not in the form, we need to get it from selected
     values.ownship_trsa_no = selected?.ownship_trsa_no;
+    // If multi-terminal feature is off and terminal column is still required, we use the site code
+    if (!config?.siteUseMultiTerminals) {
+      values.ownship_terminal = site_code;
+      values.trsa_terminal = site_code;
+      values.trsa_terminal_to = site_code;
+    }
 
     const owners = await getOwnership(values.base_prod_code, values.supp_cmpy);
     const owners2 = await getOwnership(values.base_prod_code, values.supp_cmpy_to);
@@ -644,6 +679,11 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
           const trsa_qty = values?.qty;
           if (owners.length > 0) {
             values.ownship_no = owners?.[0]?.ownship_no;
+            if (config?.siteUseMultiTerminals) {
+              values.ownship_terminal = owners?.[0]?.ownship_terminal;
+            } else {
+              values.ownship_terminal = site_code;
+            }
             values.ownship_qty = owners?.[0]?.ownship_qty;
             values.ownship_density = owners?.[0]?.ownship_density;
             values.ownship_unit = owners?.[0]?.ownship_unit;
@@ -664,6 +704,11 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
           }
           if (owners2.length > 0) {
             values.ownship_no = owners2?.[0]?.ownship_no;
+            if (config?.siteUseMultiTerminals) {
+              values.ownship_terminal = owners2?.[0]?.ownship_terminal;
+            } else {
+              values.ownship_terminal = site_code;
+            }
             values.ownship_qty = owners2?.[0]?.ownship_qty;
             values.ownship_density = owners2?.[0]?.ownship_density;
             values.ownship_unit = owners2?.[0]?.ownship_unit;
@@ -696,6 +741,12 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
     const values = await form.validateFields();
     // Since the ownship_trsa_no field is not in the form, we need to get it from selected
     values.ownship_trsa_no = selected?.ownship_trsa_no;
+    // If multi-terminal feature is off and terminal column is still required, we use the site code
+    if (!config?.siteUseMultiTerminals) {
+      values.ownship_terminal = site_code;
+      values.trsa_terminal = site_code;
+      values.trsa_terminal_to = site_code;
+    }
 
     const owners = await getOwnership(values.base_prod_code, values.supp_cmpy);
     const owners2 = await getOwnership(values.base_prod_code, values.supp_cmpy_to);
@@ -735,6 +786,11 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
           const trsa_qty = values?.qty;
           if (owners.length > 0) {
             values.ownship_no = owners?.[0]?.ownship_no;
+            if (config?.siteUseMultiTerminals) {
+              values.ownship_terminal = owners?.[0]?.ownship_terminal;
+            } else {
+              values.ownship_terminal = site_code;
+            }
             values.ownship_qty = owners?.[0]?.ownship_qty;
             values.ownship_density = owners?.[0]?.ownship_density;
             values.ownship_unit = owners?.[0]?.ownship_unit;
@@ -755,6 +811,11 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
           }
           if (owners2.length > 0) {
             values.ownship_no = owners2?.[0]?.ownship_no;
+            if (config?.siteUseMultiTerminals) {
+              values.ownship_terminal = owners2?.[0]?.ownship_terminal;
+            } else {
+              values.ownship_terminal = site_code;
+            }
             values.ownship_qty = owners2?.[0]?.ownship_qty;
             values.ownship_density = owners2?.[0]?.ownship_density;
             values.ownship_unit = owners2?.[0]?.ownship_unit;
@@ -785,6 +846,12 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
 
   const onFinish = async () => {
     const values = await form.validateFields();
+    // If multi-terminal feature is off and terminal column is still required, we use the site code
+    if (!config?.siteUseMultiTerminals) {
+      values.ownship_terminal = site_code;
+      values.trsa_terminal = site_code;
+      values.trsa_terminal_to = site_code;
+    }
 
     const owners = await getOwnership(values.base_prod_code, values.supp_cmpy);
     const owners2 = await getOwnership(values.base_prod_code, values.supp_cmpy_to);
@@ -1028,6 +1095,9 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
     if (selected) {
       resetFields();
       setFieldsValue({
+        ownship_terminal: !config?.siteUseMultiTerminals ? site_code : selected?.ownship_terminal,
+        trsa_terminal: !config?.siteUseMultiTerminals ? site_code : selected?.trsa_terminal,
+        trsa_terminal_to: !config?.siteUseMultiTerminals ? site_code : selected?.trsa_terminal_to,
         trsa_key: selected?.trsa_key,
         trsa_number: selected?.trsa_number,
         base_prod_code: selected?.base_prod_code,
@@ -1107,6 +1177,14 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
                   })}
                 </Select>
               </Descriptions.Item>
+
+              {config?.siteUseMultiTerminals && (
+                <Descriptions.Item label={t('fields.terminal')} span={1}>
+                  <TerminalList value={terminal} listOptions={[]}
+                  itemCode={'terminal'} itemTitle={'terminal'} itemRequired={false} itemDisabled={false} onChange={setTerminal} />
+                </Descriptions.Item>
+              )}
+
             </Descriptions>
           </Col>
         </Row>
@@ -1276,7 +1354,14 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
               </Row>
 
               <Row gutter={[8, 1]}>
-                <Col span={12}>
+                {config?.siteUseMultiTerminals && (
+                  <Col span={9}>
+                    <FormTerminalList form={form} value={selected} listOptions={[]}
+                    itemCode={'ownship_terminal'} itemTitle={'terminal'} 
+                    itemRequired={true} itemDisabled={false} onChange={onTerminalChanged} />
+                  </Col>
+                )}
+                <Col span={!config?.siteUseMultiTerminals ? 12 : 9}>
                   <Form.Item
                     name="base_prod_code"
                     label={t('fields.baseProduct')}
@@ -1307,7 +1392,7 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
                     </Select>
                   </Form.Item>
                 </Col>
-                <Col span={12}>
+                <Col span={!config?.siteUseMultiTerminals ? 12 : 6}>
                   <Form.Item
                     name="trsa_density"
                     label={t('fields.baseOwnerTransDensity')}
@@ -1339,6 +1424,14 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
               <Row gutter={[8, 1]}>
                 <Col span={12}>
                   <Card size="small" title={t('fields.nomtranFromTitle')}>
+                    {config?.siteUseMultiTerminals && (
+                      <Row gutter={[8, 1]}>
+                        <Col span={24}>
+                          <FormTerminalList form={form} value={selected} listOptions={[]}
+                          itemCode={'trsa_terminal'} itemTitle={'terminal'} itemRequired={true} itemDisabled={false} />
+                        </Col>
+                      </Row>
+                    )}
                     <Row gutter={[8, 1]}>
                       <Col span={24}>
                         <Form.Item
@@ -1439,6 +1532,14 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
 
                 <Col span={12}>
                   <Card size="small" title={t('fields.nomtranToTitle')}>
+                    {config?.siteUseMultiTerminals && (
+                      <Row gutter={[8, 1]}>
+                        <Col span={24}>
+                          <FormTerminalList form={form} value={selected} listOptions={[]}
+                          itemCode={'trsa_terminal_to'} itemTitle={'terminal'} itemRequired={true} itemDisabled={false} />
+                        </Col>
+                      </Row>
+                    )}
                     <Row gutter={[8, 1]}>
                       <Col span={24}>
                         <Form.Item

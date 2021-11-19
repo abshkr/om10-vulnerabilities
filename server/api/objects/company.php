@@ -821,6 +821,7 @@ class Company extends CommonClass
                 , OWNSHIP_QTY
                 , OWNSHIP_UNIT
                 , OWNSHIP_DENSITY
+                , OWNSHIP_TERMINAL
             )
             select 
                 BASE_PROD_OWNSHIP_SEQ.NEXTVAL as OWNSHIP_NO
@@ -832,14 +833,16 @@ class Company extends CommonClass
                     1, DECODE(cbp.MASS_MODE, 'WiV', 17, 'WiA', 17, 17), 
                     11)                       as OWNSHIP_UNIT
                 , 0                           as OWNSHIP_DENSITY
+                , cbp.TERM_CODE               as OWNSHIP_TERMINAL
             from 
                 (
                     select 
-                        BASE_PROD_CODE
+                        OWNSHIP_TERMINAL
+                        , BASE_PROD_CODE
                         , SUPP_CMPY
                         , count(*) as BPO_COUNT 
                     from BASE_PROD_OWNSHIP 
-                    group by BASE_PROD_CODE, SUPP_CMPY
+                    group by OWNSHIP_TERMINAL, BASE_PROD_CODE, SUPP_CMPY
                 )          bpo
                 , (
                     select
@@ -849,15 +852,18 @@ class Company extends CommonClass
                         , bpd.BASE_STOCK_UNIT
                         , NVL((select CONFIG_VALUE from SITE_CONFIG where CONFIG_KEY='SITE_OWNERSHIP_VOLUME_MODE'), 'GSV') as VOLUME_MODE
                         , NVL((select CONFIG_VALUE from SITE_CONFIG where CONFIG_KEY='SITE_OWNERSHIP_MASS_MODE'), 'WiV')   as MASS_MODE
+                        , SITE.SITE_CODE  as TERM_CODE
                     from
                         GUI_COMPANYS     cmp
                         , BASE_PRODS     bpd
+                        , SITE
                     where
                         cmp.SUPPLIER = 'Y'
                 )          cbp
             where 
                 cbp.BASE_CODE = bpo.BASE_PROD_CODE(+)
                 and cbp.CMPY_CODE = bpo.SUPP_CMPY(+)
+                and cbp.TERM_CODE = bpo.OWNSHIP_TERMINAL(+)
                 and NVL(bpo.BPO_COUNT, 0) = 0
         ";
         $stmt = oci_parse($this->conn, $query);

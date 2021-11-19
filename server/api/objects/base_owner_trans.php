@@ -45,13 +45,21 @@ class BaseOwnerTrans extends CommonClass
     
     public function check_ownership_by_base()
     {
+        $terminal_condition = "";
+        if (isset($this->terminal) && $this->terminal != 'undefined' && strlen($this->terminal) > 0) {
+            $terminal_condition = " AND OWNSHIP_TERMINAL = :term_code ";
+        }
         $query = "
             SELECT COUNT(*) AS CNT 
             FROM PRODOWNSHIP_TRANSACT
             WHERE BASE_PROD_CODE=:code 
+            $terminal_condition
         ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':code', $this->base_code);
+        if (isset($this->terminal) && $this->terminal != 'undefined' && strlen($this->terminal) > 0) {
+            oci_bind_by_name($stmt, ':term_code', $this->terminal);
+        }
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
@@ -63,14 +71,22 @@ class BaseOwnerTrans extends CommonClass
 
     public function check_ownership_by_cmpy()
     {
+        $terminal_condition = "";
+        if (isset($this->terminal) && $this->terminal != 'undefined' && strlen($this->terminal) > 0) {
+            $terminal_condition = " AND OWNSHIP_TERMINAL = :term_code ";
+        }
         $query = "
             SELECT COUNT(*) AS CNT 
             FROM PRODOWNSHIP_TRANSACT
             WHERE SUPP_CMPY=:code 
+            $terminal_condition
         ";
 
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':code', $this->cmpy_code);
+        if (isset($this->terminal) && $this->terminal != 'undefined' && strlen($this->terminal) > 0) {
+            oci_bind_by_name($stmt, ':term_code', $this->terminal);
+        }
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
@@ -82,17 +98,25 @@ class BaseOwnerTrans extends CommonClass
 
     public function check_ownership_by_pkey()
     {
+        $terminal_condition = "";
+        if (isset($this->terminal) && $this->terminal != 'undefined' && strlen($this->terminal) > 0) {
+            $terminal_condition = " AND OWNSHIP_TERMINAL = :term_code ";
+        }
         $query = "
             SELECT COUNT(*) AS CNT 
             FROM PRODOWNSHIP_TRANSACT
             WHERE 
                 BASE_PROD_CODE=:base 
                 and SUPP_CMPY=:cmpy 
+                $terminal_condition
         ";
 
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':base', $this->base_code);
         oci_bind_by_name($stmt, ':cmpy', $this->cmpy_code);
+        if (isset($this->terminal) && $this->terminal != 'undefined' && strlen($this->terminal) > 0) {
+            oci_bind_by_name($stmt, ':term_code', $this->terminal);
+        }
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
@@ -104,14 +128,22 @@ class BaseOwnerTrans extends CommonClass
 
     public function check_ownership_by_ukey()
     {
+        $terminal_condition = "";
+        if (isset($this->terminal) && $this->terminal != 'undefined' && strlen($this->terminal) > 0) {
+            $terminal_condition = " AND OWNSHIP_TERMINAL = :term_code ";
+        }
         $query = "
             SELECT COUNT(*) AS CNT 
             FROM PRODOWNSHIP_TRANSACT
             WHERE TRSA_KEY=:trsa_key
+            $terminal_condition
         ";
 
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':trsa_key', $this->trsa_key);
+        if (isset($this->terminal) && $this->terminal != 'undefined' && strlen($this->terminal) > 0) {
+            oci_bind_by_name($stmt, ':term_code', $this->terminal);
+        }
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
@@ -167,6 +199,10 @@ class BaseOwnerTrans extends CommonClass
 
     public function read()
     {
+        $terminal_condition = "";
+        if (isset($this->terminal) && $this->terminal != 'undefined' && strlen($this->terminal) > 0) {
+            $terminal_condition = " AND tra.OWNSHIP_TERMINAL = :term_code ";
+        }
         if (!isset($this->base_code)) {
             $this->base_code = "-1";
         }
@@ -180,6 +216,7 @@ class BaseOwnerTrans extends CommonClass
         $query = "
             select
                 tra.OWNSHIP_TRSA_NO
+                , tra.OWNSHIP_TERMINAL
                 , tra.TRSA_KEY
                 , tra.TRSA_NUMBER
                 , tra.BASE_PROD_CODE
@@ -195,6 +232,8 @@ class BaseOwnerTrans extends CommonClass
                 , tra.TRSA_DENSITY
                 , tra.TRSA_UNIT
                 , unt.*
+                , tra.TRSA_TERMINAL
+                , tra.TRSA_TERMINAL_TO
                 , tra.TRSA_QTY_OWNED
                 , tra.TRSA_DENSITY_OWNED
                 , tra.SUPP_CMPY_TO
@@ -211,6 +250,9 @@ class BaseOwnerTrans extends CommonClass
                 , tra.TRSA_TIME_UPDATED
                 , tra.TRSA_TIME_APPROVED
                 , tra.TRSA_TIME_REVERSED
+                , tra.OWNSHIP_TERMINAL || ' - ' || trm.TERM_NAME   AS OWNSHIP_SITEDESC
+                , tra.TRSA_TERMINAL || ' - ' || trm2.TERM_NAME     AS TRSA_SITEDESC
+                , tra.TRSA_TERMINAL_TO || ' - ' || trm3.TERM_NAME  AS TRSA_SITEDESC_TO
             from 
                 PRODOWNSHIP_TRANSACT        tra
                 , MOVITEM_TYPES             typ
@@ -234,6 +276,9 @@ class BaseOwnerTrans extends CommonClass
                 , UNIT_SCALE_VW             unt
                 , GUI_COMPANYS              cmp
                 , GUI_COMPANYS              cmp2
+                , TERMINAL                  trm
+                , TERMINAL                  trm2
+                , TERMINAL                  trm3
             where
                 tra.REASON = typ.MOVITEM_TYPE_ID(+)
                 and tra.BASE_PROD_CODE = bpd.BASE_CODE(+)
@@ -241,18 +286,25 @@ class BaseOwnerTrans extends CommonClass
                 and tra.TRSA_UNIT = unt.UNIT_ID(+)
                 and tra.SUPP_CMPY = cmp.CMPY_CODE(+)
                 and tra.SUPP_CMPY_TO = cmp2.CMPY_CODE(+)
+                and tra.OWNSHIP_TERMINAL = trm.TERM_CODE(+)
+                and tra.TRSA_TERMINAL = trm2.TERM_CODE(+)
+                and tra.TRSA_TERMINAL_TO = trm3.TERM_CODE(+)
         ";
 
         $query .= "
                 and ('-1' = :base OR tra.BASE_PROD_CODE = :base)
                 and ('-1' = :cmpy OR tra.SUPP_CMPY = :cmpy OR tra.SUPP_CMPY_TO = :cmpy)
                 and (-1 = :catg OR bpd.BASE_CAT = :catg)
-            ORDER BY tra.OWNSHIP_TRSA_NO, tra.BASE_PROD_CODE, tra.SUPP_CMPY, tra.SUPP_CMPY_TO
+                $terminal_condition
+            ORDER BY tra.OWNSHIP_TERMINAL, tra.OWNSHIP_TRSA_NO, tra.BASE_PROD_CODE, tra.SUPP_CMPY, tra.SUPP_CMPY_TO
         ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':base', $this->base_code);
         oci_bind_by_name($stmt, ':cmpy', $this->cmpy_code);
         oci_bind_by_name($stmt, ':catg', $this->base_class);
+        if (isset($this->terminal) && $this->terminal != 'undefined' && strlen($this->terminal) > 0) {
+            oci_bind_by_name($stmt, ':term_code', $this->terminal);
+        }
 
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
@@ -358,6 +410,10 @@ class BaseOwnerTrans extends CommonClass
 
     public function read_by_summary()
     {
+        $terminal_condition = "";
+        if (isset($this->terminal) && $this->terminal != 'undefined' && strlen($this->terminal) > 0) {
+            $terminal_condition = " AND OWNSHIP_TERMINAL = :term_code ";
+        }
         if (!isset($this->base_code)) {
             $this->base_code = "-1";
         }
@@ -367,7 +423,9 @@ class BaseOwnerTrans extends CommonClass
 
         $query = "
             SELECT 
-                BASE_CODE           AS BASE_PROD_CODE
+                OWNSHIP_TERMINAL
+                , OWNSHIP_SITEDESC
+                , BASE_CODE         AS BASE_PROD_CODE
                 , BASE_NAME
                 , CMPY_CODE         AS SUPP_CMPY
                 , CMPY_NAME
@@ -375,10 +433,12 @@ class BaseOwnerTrans extends CommonClass
                 , SUM(QTY)          AS QTY
             FROM (
                 select bot.*, bpd.*, bpc.*, cmp.*, unt.*
+                    , bot.OWNSHIP_TERMINAL || ' - ' || trm.TERM_NAME   AS OWNSHIP_SITEDESC
                 from
                     (
                         select
                             bro.OWNSHIP_NO
+                            , bro.OWNSHIP_TERMINAL
                             , bro.BASE_PROD_CODE
                             , bro.SUPP_CMPY
                             , bro.OWNSHIP_QTY
@@ -400,6 +460,7 @@ class BaseOwnerTrans extends CommonClass
                         where
                             bro.BASE_PROD_CODE = tra.BASE_PROD_CODE(+)
                             and bro.SUPP_CMPY = tra.SUPP_CMPY(+)
+                            and bro.OWNSHIP_TERMINAL = tra.OWNSHIP_TERMINAL(+)
                     )   bot
                     , BASE_PRODS        bpd
                     , GUI_COMPANYS      cmp
@@ -420,23 +481,29 @@ class BaseOwnerTrans extends CommonClass
                             and bcls.BCLASS_NO = bctyp.BCLASS_ID(+)
                     ) 					bpc
                     , UNIT_SCALE_VW     unt
+                    , TERMINAL          trm
                 where
                     bot.BASE_PROD_CODE = bpd.BASE_CODE(+)
                     and bpd.BASE_CAT = bpc.BCLASS_NO(+)
                     and bot.SUPP_CMPY = cmp.CMPY_CODE(+)
                     and bot.TRSA_UNIT = unt.UNIT_ID(+)
                     and bot.OWNSHIP_TRSA_NO is not NULL
+                    and bot.OWNSHIP_TERMINAL = trm.TERM_CODE(+)
             )
             WHERE 
                 1 = 1
                 AND ('-1' = :base OR BASE_CODE = :base)
                 AND ('-1' = :cmpy OR CMPY_CODE = :cmpy)
-            GROUP BY BASE_CODE, BASE_NAME, CMPY_CODE, CMPY_NAME
-            ORDER BY BASE_CODE, BASE_NAME, CMPY_CODE, CMPY_NAME
+                $terminal_condition
+            GROUP BY OWNSHIP_TERMINAL, OWNSHIP_SITEDESC, BASE_CODE, BASE_NAME, CMPY_CODE, CMPY_NAME
+            ORDER BY OWNSHIP_TERMINAL, OWNSHIP_SITEDESC, BASE_CODE, BASE_NAME, CMPY_CODE, CMPY_NAME
         ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':base', $this->base_code);
         oci_bind_by_name($stmt, ':cmpy', $this->cmpy_code);
+        if (isset($this->terminal) && $this->terminal != 'undefined' && strlen($this->terminal) > 0) {
+            oci_bind_by_name($stmt, ':term_code', $this->terminal);
+        }
 
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
@@ -450,12 +517,17 @@ class BaseOwnerTrans extends CommonClass
     // get qunatities from tank closeout for the prorate density
     public function get_base_summary()
     {
+        $terminal_condition = "";
+        if (isset($this->terminal) && $this->terminal != 'undefined' && strlen($this->terminal) > 0) {
+            $terminal_condition = " AND TANK_TERMINAL = :term_code ";
+        }
         if (!isset($this->base_code)) {
             $this->base_code = "-1";
         }
 
         $query = "
             SELECT 
+                TANK_TERMINAL,
                 TANK_BASE,
                 SUM(TANK_COR_VOL)                                   AS TANK_COR_VOL,
                 SUM(TANK_LIQUID_KG)                                 AS TANK_LIQUID_KG2,
@@ -490,10 +562,14 @@ class BaseOwnerTrans extends CommonClass
             WHERE 
                 1 = 1
                 AND ('-1' = :base OR TANK_BASE = :base)
-            GROUP BY TANK_BASE
+                $terminal_condition
+            GROUP BY TANK_TERMINAL, TANK_BASE
         ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':base', $this->base_code);
+        if (isset($this->terminal) && $this->terminal != 'undefined' && strlen($this->terminal) > 0) {
+            oci_bind_by_name($stmt, ':term_code', $this->terminal);
+        }
 
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;

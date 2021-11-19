@@ -101,7 +101,7 @@ const TerminalList = ({ form, value, listOptions, itemCode, itemTitle, itemRequi
     <Form.Item 
       name={itemCode} 
       label={field} 
-      extra 
+      // extra 
       rules={[{ 
         required: itemRequired === undefined ? false : itemRequired, 
         validator: validate, 

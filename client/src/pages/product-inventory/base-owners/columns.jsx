@@ -1,5 +1,25 @@
 const columns = (t, visible, config) => [
   {
+    headerName: t('fields.terminal'),
+    field: 'ownship_terminal',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    width: 120,
+    suppressSizeToFit: true,
+    hide: true,
+  },
+  {
+    headerName: t('fields.terminal'),
+    field: 'bpo_sitedesc',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    width: 160,
+    suppressSizeToFit: true,
+    hide: !config?.siteUseMultiTerminals,
+  },
+  {
     headerName: t('fields.baseOwnerNo'),
     field: 'ownship_no',
     filter: 'FuzzyFilter',

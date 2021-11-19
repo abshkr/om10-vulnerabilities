@@ -30,6 +30,7 @@ import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
 
 import { DataTable, Download } from '../../../components';
+import {TerminalList} from 'components/fields';
 import api, { BASE_OWNERS, BASE_PRODUCTS, ORDER_LISTINGS } from '../../../api';
 import columns from './columns';
 import transform from './transform';
@@ -41,12 +42,13 @@ const { TabPane } = Tabs;
 
 const BaseProductOwners = ({ value, access, config, unit, units }) => {
   const [volUnit, setVolUnit] = useState(unit);
+  const [terminal, setTerminal] = useState('');
   const [base, setBase] = useState(value?.base_code);
   const [supplier, setSupplier] = useState(undefined);
   const [showMakeTransactions, setShowMakeTransactions] = useState(false);
   const [selected, setSelected] = useState(undefined);
 
-  const url = `${BASE_OWNERS.READ}?base_code=${base || '-1'}&cmpy_code=${supplier || '-1'}`;
+  const url = `${BASE_OWNERS.READ}?base_code=${base || '-1'}&cmpy_code=${supplier || '-1'}&terminal=${terminal}`;
   const { data, isValidating } = useSWR(url);
 
   const { data: bases } = useSWR(BASE_PRODUCTS.READ);
@@ -180,6 +182,14 @@ const BaseProductOwners = ({ value, access, config, unit, units }) => {
                   </Select>
                 </Descriptions.Item>
               )}
+
+              {config?.siteUseMultiTerminals && (
+                <Descriptions.Item label={t('fields.terminal')} span={1}>
+                  <TerminalList value={terminal} listOptions={[]}
+                  itemCode={'terminal'} itemTitle={'terminal'} itemRequired={false} itemDisabled={false} onChange={setTerminal} />
+                </Descriptions.Item>
+              )}
+
             </Descriptions>
           </Col>
         </Row>
