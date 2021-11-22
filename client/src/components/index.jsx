@@ -3,6 +3,7 @@ export { default as RangeCalendar } from './range-calendar';
 export { default as DateTimeRangePicker } from './datetime-range-picker';
 export { default as Expiry } from './expiry';
 export { default as Download } from './download';
+export { default as PageExporter } from './page-exporter';
 export { default as Loading } from './loading';
 export { default as Navigation } from './navigation';
 export { default as Page } from './page';

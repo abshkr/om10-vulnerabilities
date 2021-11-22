@@ -6,7 +6,7 @@ import { Button, Switch, notification } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
 
-import { Page, DataTable, Download, WindowSearch } from '../../components';
+import { Page, DataTable, Download, PageExporter, WindowSearch } from '../../components';
 import api, { EQUIPMENT_LIST, SITE_CONFIGURATION } from '../../api';
 
 import columns from './columns';
@@ -36,6 +36,15 @@ const EquipmentList = () => {
 
   const access = useAuth('M_EQUIPMENTLIST');
 
+  const baseUrl =
+    parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
+      ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${
+          pagingFlag ? 'Y' : 'N'
+        }`
+      : `${EQUIPMENT_LIST.READ}?pgflag=${
+          pagingFlag ? 'Y' : 'N'
+        }&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
+
   const url =
     parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
       ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${
@@ -61,6 +70,44 @@ const EquipmentList = () => {
 
   const page = t('pageMenu.operations');
   const name = t(config?.siteLabelUser + 'pageNames.equipmentList');
+
+
+  const onDownloadPages = async (data) => {
+    if (!pagingFlag) {
+      return data;
+    }
+
+    let counter=0;
+    let startPos=0;
+    let size=500;
+    let endPos=500;
+    let pages=[];
+    for (;;) {
+      const url =
+        parentEqpt && parentEqpt?.length > 0
+          ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${
+              pagingFlag ? 'Y' : 'N'
+            }&start_num=${startPos}&end_num=${endPos}`
+          : `${EQUIPMENT_LIST.READ}?pgflag=${
+              pagingFlag ? 'Y' : 'N'
+            }&start_num=${startPos}&end_num=${endPos}&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
+
+      const results = await api.get(url);
+      const total = results?.data?.count;
+      const items = results?.data?.records;
+      pages.push(items);
+      counter += items?.length;
+      if (counter >= total) {
+        break;
+      } else {
+        startPos = endPos + 1;
+        endPos = startPos + size;
+      }
+
+    }
+
+    return pages;
+  }
 
   const onChangePagination = async (v) => {
     setPagingFlag(v);
@@ -173,7 +220,13 @@ const EquipmentList = () => {
         {t('operations.refresh')}
       </Button>
 
-      <Download data={data} isLoading={isValidating || isSearching} columns={fields} />
+      {!pagingFlag && (
+        <Download data={data} isLoading={isValidating || isSearching} columns={fields} />
+      )}
+      
+      {pagingFlag && (
+        <PageExporter baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} columns={fields} />
+      )}
 
       <Button
         type="primary"
