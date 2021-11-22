@@ -54,6 +54,9 @@ import {
   LoadSecurityInformation,
   SpecialInstructions,
   Terminal,
+  EndWeight,
+  StartWeight,
+  DiffWeight,
 } from './fields';
 
 import { SelectInput, PartnershipManager } from '../../../components';
@@ -90,6 +93,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     site_customer_carrier,
     siteUseSpecIns,
     showLSI,
+    siteUseWeighbridge,
     siteSchdTypeConvertible,
     siteSchdPreloadEditable,
     fasttrackEnabled
@@ -143,6 +147,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     6	D	DELIVERED OK
   */
   const IS_CREATING = !value;
+  const SHOW_WEIGHTS = !IS_CREATING && siteUseWeighbridge;
   const CAN_PRINT = ['2', '3', '4'].includes(tab);
   const READ_ONLY = value?.status !== 'F' && !IS_CREATING;
   const CAN_VIEW_REPORTS = value?.shlsload_load_id !== '0';
@@ -1423,6 +1428,22 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
                 </Col>
               )}
             </Row>
+
+            {SHOW_WEIGHTS && (
+              <Row gutter={[8, 8]}>
+                <Col span={8}>
+                  <EndWeight form={form} value={value} />
+                </Col>
+
+                <Col span={8}>
+                  <StartWeight form={form} value={value} />
+                </Col>
+
+                <Col span={8}>
+                  <DiffWeight form={form} value={value} />
+                </Col>
+              </Row>
+            )}
 
             {mode === '2' && !READ_ONLY && (
               <Compartments

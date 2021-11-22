@@ -12,6 +12,9 @@ import ShipTo from './ship-to';
 import LoadSecurityInformation from './load-security-instructions';
 import SpecialInstructions from './special-instructions';
 import Terminal from './terminal';
+import EndWeight from './end-weight';
+import StartWeight from './start-weight';
+import DiffWeight from './diff-weight';
 
 export {
   Supplier,
@@ -28,4 +31,7 @@ export {
   LoadSecurityInformation,
   SpecialInstructions,
   Terminal,
+  EndWeight,
+  StartWeight,
+  DiffWeight
 };
