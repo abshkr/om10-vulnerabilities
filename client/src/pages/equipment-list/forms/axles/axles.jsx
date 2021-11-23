@@ -225,8 +225,9 @@ const Axles = ({ form, value, equipment, type, count }) => {
   }, [equipment, type, count, axleWeights, initByEquipment]);
 
   useEffect(() => {
-    console.log('.........data4 equipment, count, data', count, data, equipment);
-    if (data && setFieldsValue) {
+    console.log('.........data4 equipment, count, data', count, data, equipment, 
+      (count===''), (count===undefined), (count===null), _.isNumber(count), _.isFinite(count));
+    if (data && setFieldsValue && (count !== '' && count !== null && _.isFinite(count))) {
       console.log('.........data5 data', count, data, equipment);
       if (
         ((data?.length > 0 && type !== data?.[0]?.limit_type_id) || count !== data?.length) &&
