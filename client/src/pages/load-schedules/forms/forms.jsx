@@ -57,6 +57,7 @@ import {
   EndWeight,
   StartWeight,
   DiffWeight,
+  Isotainer
 } from './fields';
 
 import { SelectInput, PartnershipManager } from '../../../components';
@@ -94,6 +95,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     siteUseSpecIns,
     showLSI,
     siteUseWeighbridge,
+    siteUseIsotainer,
     siteSchdTypeConvertible,
     siteSchdPreloadEditable,
     fasttrackEnabled
@@ -1403,13 +1405,19 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
                 </Form.Item>
               </Col>
 
-              <Col span={6}>
+              <Col span={siteUseIsotainer ? 3 : 6}>
                 <Shift form={form} value={value} />
               </Col>
 
-              <Col span={6}>
+              <Col span={siteUseIsotainer ? 3 : 6}>
                 <Priority form={form} value={value} />
               </Col>
+
+              {siteUseIsotainer && (
+                <Col span={6}>
+                  <Isotainer form={form} value={value} />
+                </Col>
+              )}
 
               <Col span={6}>
                 <HostData form={form} value={value} />

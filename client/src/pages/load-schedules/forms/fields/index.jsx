@@ -15,6 +15,7 @@ import Terminal from './terminal';
 import EndWeight from './end-weight';
 import StartWeight from './start-weight';
 import DiffWeight from './diff-weight';
+import Isotainer from './isotainer';
 
 export {
   Supplier,
@@ -33,5 +34,6 @@ export {
   Terminal,
   EndWeight,
   StartWeight,
-  DiffWeight
+  DiffWeight,
+  Isotainer
 };

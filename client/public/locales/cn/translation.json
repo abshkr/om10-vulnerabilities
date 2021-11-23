@@ -1685,6 +1685,7 @@
     "schdEndWeight": "结束重量",
     "schdStartWeight": "开始重量",
     "schdDiffWeight": "重量差",
+    "schdIsotainer": "等容器ID",
     "schedDate": "提单日期",
     "schedulable": "可调度车型",
     "schedule": "订单油量",
