@@ -443,7 +443,7 @@ const FormModal = ({
                 <Col span={6}>
                   <Row gutter={[8, 2]}>
                     <Col span={24}>
-                      <AxleGroupNumber form={form} value={value} onChange={setAxleGroupNumber} />
+                      <AxleGroupNumber form={form} value={value} onChange={setAxleGroupNumber} limitType={massLimitType} />
                     </Col>
                   </Row>
                   <Row gutter={[8, 2]}>
