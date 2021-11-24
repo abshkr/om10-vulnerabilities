@@ -954,12 +954,13 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
     });
   };
 
-  const onCreateReport = (values) => {
+  const onCreateReport = async () => {
     setReportCreating(true);
 
     api
       .post(BASE_OWNER_TRANSACTIONS.DIRECT_REPORT, {
-        report: "LHC_CPO"
+        report: "LHC_CPO",
+        ownship_trsa_no: selected?.ownship_trsa_no
       })
       .then((response) => {
         setReportCreating(false);

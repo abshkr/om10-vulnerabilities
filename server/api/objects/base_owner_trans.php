@@ -177,7 +177,7 @@ class BaseOwnerTrans extends CommonClass
         }
 
         $output_file = $_SERVER['DOCUMENT_ROOT'] . "/reports/" . $this->report . ".pdf";
-        $jreport_cmd = $bin . "/JReport.sh " . $jasper_file . " " . $output_file . " pdf TRSA_ID:" . $this->tra_id;
+        $jreport_cmd = $bin . "/JReport.sh " . $jasper_file . " " . $output_file . " pdf OWNSHIP_TRSA_NO:" . $this->ownship_trsa_no;
         
         write_log(sprintf("to run %s", $jreport_cmd), __FILE__, __LINE__, LogLevel::INFO);
         foreach ($_SERVER as $env_key => $env_value) {
