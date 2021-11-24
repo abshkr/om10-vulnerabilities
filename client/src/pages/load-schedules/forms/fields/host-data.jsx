@@ -4,7 +4,7 @@ import { Form, Input } from 'antd';
 
 import { REGEX } from '../../../../constants';
 
-const HostData = ({ form, value }) => {
+const HostData = ({ form, value, canEdit }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -46,7 +46,7 @@ const HostData = ({ form, value }) => {
 
   return (
     <Form.Item name="shl_fleet_data" label={t('fields.hostData')} rules={[{ required: false, validator: validate }]}>
-      <Input style={{ width: '100%' }} maxLength={40} disabled={IS_DISABLED} />
+      <Input style={{ width: '100%' }} maxLength={40} disabled={IS_DISABLED || !canEdit} />
     </Form.Item>
   );
 };

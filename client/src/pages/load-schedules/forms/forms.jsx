@@ -96,12 +96,16 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     showLSI,
     siteUseWeighbridge,
     siteUseIsotainer,
+    canEditDOR,
+    showDORNumber,
     siteSchdTypeConvertible,
     siteSchdPreloadEditable,
     fasttrackEnabled
   } = config;
     
   const popupMT = config?.popupManualTransaction;
+
+  const SHOW_ISO_DOR = siteUseIsotainer && showDORNumber;
 
   const send_to_ft_ready = value?.status === 'F' && value?.shls_ld_type === '2'
 
@@ -1405,11 +1409,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
                 </Form.Item>
               </Col>
 
-              <Col span={siteUseIsotainer ? 3 : 6}>
+              <Col span={SHOW_ISO_DOR ? 3 : 6}>
                 <Shift form={form} value={value} />
               </Col>
 
-              <Col span={siteUseIsotainer ? 3 : 6}>
+              <Col span={SHOW_ISO_DOR ? 3 : 6}>
                 <Priority form={form} value={value} />
               </Col>
 
@@ -1419,9 +1423,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
                 </Col>
               )}
 
-              <Col span={6}>
-                <HostData form={form} value={value} />
-              </Col>
+              {showDORNumber && (
+                <Col span={6}>
+                  <HostData form={form} value={value} canEdit={canEditDOR} />
+                </Col>
+              )}
             </Row>
 
             <Row gutter={[8, 2]}>
