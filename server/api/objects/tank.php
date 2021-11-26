@@ -90,6 +90,10 @@ class Tank extends CommonClass
         "TANK_POLL_GAP"
     );
 
+    public $AMPERSAND_FIELDS = array(
+        "TANK_DRV_TYPE",
+    );
+
     protected $primary_keys = array("tank_code");
     protected $PRIMIRAY_KEY_EXCLUSIONS = array('TANK_TERMINAL');
 
