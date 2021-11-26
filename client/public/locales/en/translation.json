@@ -2030,6 +2030,7 @@
     "convertSuccessSchedule": "Successfully converted the schedule",
     "copyQuantitySuccess": "Successfully copied",
     "copyright": "Copyright",
+    "createFailed": "Failed to create",
     "createSuccess": "Successfully created",
     "csvDownloadSuccessful": "CSV data downloaded successfully. You can save it now.",
     "csvGenerationSuccessful": "Generated successfully. You can open or save it now.",

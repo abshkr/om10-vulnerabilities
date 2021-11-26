@@ -2013,6 +2013,7 @@
     "convertSuccessSchedule": "提单类型成功转换",
     "copyQuantitySuccess": "油量成功复制",
     "copyright": "版权",
+    "createFailed": "记录创建失败",
     "createSuccess": "记录成功创建",
     "csvDownloadSuccessful": "CSV数据已成功导出，接下来您可以保存文件。",
     "csvGenerationSuccessful": "导出数据已成功生成CSV文件，您可以浏览或者保存文件。",
