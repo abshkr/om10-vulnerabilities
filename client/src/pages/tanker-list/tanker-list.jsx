@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 
-import { Page, DataTable, Download, WindowSearch } from '../../components';
+import { Page, DataTable, Download, PageExporter, WindowSearch } from '../../components';
 import api, { TANKER_LIST, SITE_CONFIGURATION } from '../../api';
 import columns from './columns';
 import { useAuth, useConfig, useQuery } from '../../hooks';
@@ -38,6 +38,10 @@ const TankerList = () => {
   const { setCount, take, offset, paginator, setPage, count } = usePagination();
 
   const access = useAuth('M_TANKERS');
+
+  const baseUrl = `${TANKER_LIST.READ}?pgflag=${
+    pagingFlag ? 'Y' : 'N'
+  }&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`;
 
   const url = `${TANKER_LIST.READ}?pgflag=${
     pagingFlag ? 'Y' : 'N'
@@ -176,7 +180,13 @@ const TankerList = () => {
         {t('operations.refresh')}
       </Button>
 
-      <Download data={data} isLoading={isValidating || isSearching} columns={fields} />
+      {!pagingFlag && (
+        <Download data={data} isLoading={isValidating || isSearching} columns={fields} />
+      )}
+      
+      {pagingFlag && (
+        <PageExporter baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} columns={fields} />
+      )}
 
       <Button
         type="primary"
