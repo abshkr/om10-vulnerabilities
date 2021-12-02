@@ -6,7 +6,7 @@ import { Button, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, DateTimeRangePicker, WindowSearch } from '../../components';
+import { Page, DataTable, Download, PageDownloader, PageExporter, DateTimeRangePicker, WindowSearch } from '../../components';
 import { LOAD_SCHEDULES } from '../../api';
 import { SETTINGS } from '../../constants';
 import { useAuth, useConfig } from 'hooks';
@@ -21,6 +21,7 @@ import usePagination from 'hooks/use-pagination';
 const LoadSchedules = () => {
   const config = useConfig();
 
+  const [pagingFlag, setPagingFlag] = useState(true);
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [isSearching, setSearching] = useState(false);
@@ -34,6 +35,7 @@ const LoadSchedules = () => {
   const [end, setEnd] = useState(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
   const { setCount, take, offset, paginator } = usePagination();
+  const baseUrl = `${LOAD_SCHEDULES.READ}?start_date=${start}&end_date=${end}`;
   const url = `${LOAD_SCHEDULES.READ}?start_date=${start}&end_date=${end}&start_num=${take}&end_num=${offset}`;
 
   const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
@@ -142,7 +144,16 @@ const LoadSchedules = () => {
         {t('operations.refresh')}
       </Button>
 
-      <Download data={data} isLoading={isLoading} columns={fields} />
+      {/* <Download data={data} isLoading={isLoading} columns={fields} /> */}
+
+      {!pagingFlag && (
+        <Download data={data} isLoading={isValidating || isSearching} columns={fields} />
+      )}
+      
+      {pagingFlag && (
+        // <PageExporter baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} columns={fields} />
+        <PageDownloader baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} pageSize={500} columns={fields} />
+      )}
 
       <Button
         type="primary"
