@@ -30,6 +30,7 @@ const PageDownloader = ({ baseUrl, startVar, endVar, pageSize, columns, round, i
       return;
     }
 
+    let sum = total;
     let counter=counts;
     let startPos=startPosition;
     let size=pageSize;
@@ -50,17 +51,17 @@ const PageDownloader = ({ baseUrl, startVar, endVar, pageSize, columns, round, i
       const url = `${baseUrl}&${startVar}=${startPos}&${endVar}=${endPos}`;
 
       const results = await api.get(url);
-      const total = results?.data?.count;
+      sum = results?.data?.count;
       const items = results?.data?.records;
       // pages.push(items);
       pages = _.concat(pages, items);
       counter += items?.length;
       setCounts(counter);
-      setTotal(total);
-      const percent = total > 0 ? _.round(counter/total*100.0, 0) : 0
+      setTotal(sum);
+      const percent = sum > 0 ? _.round(counter/sum*100.0, 0) : 0
       setRatio(percent);
-      setLabel(`${counter} / ${total}`);
-      if (counter >= total) {
+      setLabel(`${counter} / ${sum}`);
+      if (counter >= sum) {
         break;
       } else {
         startPos = endPos + 1;
@@ -76,7 +77,8 @@ const PageDownloader = ({ baseUrl, startVar, endVar, pageSize, columns, round, i
     setPageRecords(payload);
     setLoading(false);
     setCanSave(true);
-    if (total > 0 && counter > 0 && counter >= total) {
+    // console.log('.........total....count....', total, counts, counter, sum);
+    if (sum > 0 && counter > 0 && counter >= sum) {
       notification.success({
         message: t('messages.csvDownloadFullySuccessful'),
       });
