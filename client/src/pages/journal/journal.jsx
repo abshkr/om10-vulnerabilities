@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import moment from 'moment';
-import { Radio } from 'antd';
+import { Radio, Tabs } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import Live from './live';
@@ -18,10 +18,13 @@ import { FileSearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { Button, Switch } from 'antd';
 import { getDateRangeOffset, getCurrentTime } from 'utils';
 
+const { TabPane } = Tabs;
+
 const Journal = () => {
-  const { journalDateRange, serverTime, siteJnlPaging } = useConfig();
+  const { journalDateRange, serverTime, siteJnlPaging, siteJnlTabMode } = useConfig();
   const [pagingFlag, setPagingFlag] = useState(undefined);
   const { t } = useTranslation();
+  const tabMode = siteJnlTabMode; // true: tabs; false: menu items
 
   const access = useAuth('M_JOURNALREPORT');
 
@@ -150,18 +153,25 @@ const Journal = () => {
         </>
       )}
 
-      <Radio.Group
-        style={{ marginLeft: 5 }}
-        value={selected}
-        buttonStyle="solid"
-        onChange={(val) => {setSearch(null); setSelected(val.target.value)}}
-      >
-        <Radio.Button value="0"> {t('tabColumns.overview')}</Radio.Button>
-        <Radio.Button value="1"> {t('tabColumns.liveJournal')}</Radio.Button>
-        <Radio.Button value="2"> {t('tabColumns.historicalJournal')} </Radio.Button>
-      </Radio.Group>
+      {!tabMode && (
+        <Radio.Group
+          style={{ marginLeft: 5 }}
+          value={selected}
+          buttonStyle="solid"
+          onChange={(val) => {setSearch(null); setSelected(val.target.value)}}
+        >
+          <Radio.Button value="0"> {t('tabColumns.overview')}</Radio.Button>
+          <Radio.Button value="1"> {t('tabColumns.liveJournal')}</Radio.Button>
+          <Radio.Button value="2"> {t('tabColumns.historicalJournal')} </Radio.Button>
+        </Radio.Group>
+      )}
     </>
   );
+
+  const doTabChanges = (tabPaneKey) => {
+    setSearch(null); 
+    setSelected(tabPaneKey)
+  };
 
   return (
     <Page
@@ -172,11 +182,32 @@ const Journal = () => {
       access={access}
     >
       <JournalContainer>
-        {selected === '0' && (
+        {tabMode && (
+          <Tabs defaultActiveKey="1" onChange={doTabChanges} size="small" type="card">
+            <TabPane tab={t('tabColumns.overview')} key="0">
+              <Overview start={start} end={end} doSearch={doSearch} setTab={setSelected} setRange={setRange} />
+            </TabPane>
+            <TabPane tab={t('tabColumns.liveJournal')} key="1">
+              <Live t={t} setData={setData} setFields={setFields}/>
+            </TabPane>
+            <TabPane tab={t('tabColumns.historicalJournal')} key="2">
+              <Historical 
+                t={t} 
+                start={start} 
+                end={end} 
+                setData={setData} 
+                setFields={setFields} 
+                search={search}
+                pagingFlag={pagingFlag}
+              />
+            </TabPane>
+          </Tabs>
+        )}
+        {!tabMode && selected === '0' && (
           <Overview start={start} end={end} doSearch={doSearch} setTab={setSelected} setRange={setRange} />
         )}
-        {selected === '1' && <Live t={t} setData={setData} setFields={setFields} />}
-        {selected === '2' && (
+        {!tabMode && selected === '1' && <Live t={t} setData={setData} setFields={setFields} />}
+        {!tabMode && selected === '2' && (
           <Historical 
             t={t} 
             start={start} 
