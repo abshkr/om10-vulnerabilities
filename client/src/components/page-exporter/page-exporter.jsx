@@ -60,6 +60,16 @@ const PageExporter = ({ baseUrl, startVar, endVar, columns, round, icon }) => {
     });
   }
 
+  const onReset = () => {
+    setRatio(0);
+    setCounter(0);
+    setTotal(0);
+    setLabel(`0 / 0`);
+    setPageRecords([]);
+    setLoading(false);
+    setCanSave(false);
+  };
+
   return (
     <>
       <Button
@@ -93,6 +103,15 @@ const PageExporter = ({ baseUrl, startVar, endVar, columns, round, icon }) => {
                 onClick={() => setVisible(false)}
               >
                 {t('operations.cancel')}
+              </Button>
+
+              <Button
+                htmlType="button"
+                icon={<CloseOutlined />}
+                style={{ float: 'right' }}
+                onClick={() => onReset()}
+              >
+                {t('operations.reset')}
               </Button>
 
               <Button

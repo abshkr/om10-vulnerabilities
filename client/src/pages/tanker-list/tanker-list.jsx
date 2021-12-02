@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 
-import { Page, DataTable, Download, PageExporter, WindowSearch } from '../../components';
+import { Page, DataTable, Download, PageDownloader, PageExporter, WindowSearch } from '../../components';
 import api, { TANKER_LIST, SITE_CONFIGURATION } from '../../api';
 import columns from './columns';
 import { useAuth, useConfig, useQuery } from '../../hooks';
@@ -185,7 +185,8 @@ const TankerList = () => {
       )}
       
       {pagingFlag && (
-        <PageExporter baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} columns={fields} />
+        // <PageExporter baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} columns={fields} />
+        <PageDownloader baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} pageSize={500} columns={fields} />
       )}
 
       <Button
