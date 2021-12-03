@@ -30,7 +30,7 @@ const Historical = ({ t, start, end, setData, setFields, search, pagingFlag }) =
         params: values,
       })
       .then((res) => {
-        setCount(res?.data?.count);
+        setCount(res?.data?.count || res?.data?.records?.length);
         setLocalData(res.data.records);
         setData(res.data.records);
         setPage(1)
@@ -71,7 +71,7 @@ const Historical = ({ t, start, end, setData, setFields, search, pagingFlag }) =
           marginTop: 10,
         }}
       >
-        {pagingFlag ? paginator : t('fields.totalCount') + ': ' + count }
+        {pagingFlag && !search ? paginator : t('fields.totalCount') + ': ' + count }
       </div>
     </>
   );

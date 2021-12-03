@@ -8,9 +8,9 @@ import Live from './live';
 import auth from '../../auth';
 import Historical from './historical';
 import Overview from './overview';
-import api, { SITE_CONFIGURATION } from 'api';
+import api, { SITE_CONFIGURATION, JOURNAL } from 'api';
 
-import { Page, Calendar, Download, WindowSearch } from '../../components';
+import { Page, Calendar, Download, PageDownloader, PageExporter, WindowSearch } from '../../components';
 import { JournalContainer } from './style';
 import { SETTINGS } from '../../constants';
 import { useAuth, useConfig } from 'hooks';
@@ -36,9 +36,18 @@ const Journal = () => {
   const [start, setStart] = useState(moment().subtract(1, 'hour').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
 
+  /* const baseUrl = search || pagingFlag === undefined ? null :
+    `${JOURNAL.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${start}&end_date=${end}${
+      sortBy ? `&sort_by=${sortBy}` : ''
+    }`; */
+
+  const baseUrl = search || pagingFlag === undefined ? null :
+    `${JOURNAL.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${start}&end_date=${end}`;
+
   const setRange = (start, end) => {
     setStart(start);
     setEnd(end);
+    setSearch(null);
   };
 
   const doSearch = (values) => {
@@ -129,28 +138,43 @@ const Journal = () => {
       )}
 
       {selected !== '0' && (
-        <>
-          <Button icon={<SyncOutlined />} onClick={() => onRefresh()} disabled={selected === '1'}>
-            {t('operations.refresh')}
-          </Button>
+        <Button icon={<SyncOutlined />} onClick={() => onRefresh()} disabled={selected === '1'}>
+          {t('operations.refresh')}
+        </Button>
+      )}
 
-          <Download data={data} columns={fields} />
+      {selected === '1' && (
+        <Download data={data} columns={fields} />
+      )}
 
-          <Button
-            type="primary"
-            icon={<FileSearchOutlined />}
-            disabled={selected === '1'}
-            onClick={() =>
-              WindowSearch(doSearch, t('operations.search'), {
-                journal_msg: true,
-                journal_event: true,
-                journal_category: true,
-              })
-            }
-          >
-            {t('operations.search')}
-          </Button>
-        </>
+      {!pagingFlag && selected === '2' && (
+        <Download data={data} columns={fields} />
+      )}
+
+      {pagingFlag && selected === '2' && search && (
+        <Download data={data} columns={fields} />
+      )}
+      
+      {pagingFlag && selected === '2' && !search && (
+        // <PageExporter baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} columns={fields} />
+        <PageDownloader baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} pageSize={500} columns={fields} />
+      )}
+
+      {selected !== '0' && (
+        <Button
+          type="primary"
+          icon={<FileSearchOutlined />}
+          disabled={selected === '1'}
+          onClick={() =>
+            WindowSearch(doSearch, t('operations.search'), {
+              journal_msg: true,
+              journal_event: true,
+              journal_category: true,
+            })
+          }
+        >
+          {t('operations.search')}
+        </Button>
       )}
 
       {!tabMode && (
@@ -185,21 +209,27 @@ const Journal = () => {
         {tabMode && (
           <Tabs defaultActiveKey="1" onChange={doTabChanges} size="small" type="card">
             <TabPane tab={t('tabColumns.overview')} key="0">
-              <Overview start={start} end={end} doSearch={doSearch} setTab={setSelected} setRange={setRange} />
+              {selected === '0' && (
+                <Overview start={start} end={end} doSearch={doSearch} setTab={setSelected} setRange={setRange} />
+              )}
             </TabPane>
             <TabPane tab={t('tabColumns.liveJournal')} key="1">
-              <Live t={t} setData={setData} setFields={setFields}/>
+              {selected === '1' && (
+                <Live t={t} setData={setData} setFields={setFields}/>
+              )}
             </TabPane>
             <TabPane tab={t('tabColumns.historicalJournal')} key="2">
-              <Historical 
-                t={t} 
-                start={start} 
-                end={end} 
-                setData={setData} 
-                setFields={setFields} 
-                search={search}
-                pagingFlag={pagingFlag}
-              />
+              {selected === '2' && (
+                <Historical 
+                  t={t} 
+                  start={start} 
+                  end={end} 
+                  setData={setData} 
+                  setFields={setFields} 
+                  search={search}
+                  pagingFlag={pagingFlag}
+                />
+              )}
             </TabPane>
           </Tabs>
         )}
