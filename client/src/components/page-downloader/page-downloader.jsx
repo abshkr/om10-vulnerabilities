@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
-import { FileTextOutlined, QuestionCircleOutlined, CloseOutlined, DownloadOutlined, PauseOutlined } from '@ant-design/icons';
+import { FileTextOutlined, QuestionCircleOutlined, CloseOutlined, DownloadOutlined, PauseOutlined, ClearOutlined } from '@ant-design/icons';
 import { Button, notification, Progress, Modal, Drawer, Tag, Statistic, Row, Col } from 'antd';
 import { CSVLink } from 'react-csv';
 import { useTranslation } from 'react-i18next';
@@ -149,7 +149,7 @@ const PageDownloader = ({ baseUrl, startVar, endVar, pageSize, columns, round, i
 
               <Button
                 htmlType="button"
-                icon={<CloseOutlined />}
+                icon={<ClearOutlined />}
                 style={{ float: 'right' }}
                 onClick={() => onReset()}
               >

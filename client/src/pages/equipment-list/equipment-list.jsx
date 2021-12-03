@@ -6,7 +6,7 @@ import { Button, Switch, notification } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
 
-import { Page, DataTable, Download, PageExporter, WindowSearch } from '../../components';
+import { Page, DataTable, Download, PageDownloader, PageExporter, WindowSearch } from '../../components';
 import api, { EQUIPMENT_LIST, SITE_CONFIGURATION } from '../../api';
 
 import columns from './columns';
@@ -225,7 +225,8 @@ const EquipmentList = () => {
       )}
       
       {pagingFlag && (
-        <PageExporter baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} columns={fields} />
+        // <PageExporter baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} columns={fields} />
+        <PageDownloader baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} pageSize={500} columns={fields} />
       )}
 
       <Button
