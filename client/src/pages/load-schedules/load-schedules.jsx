@@ -25,6 +25,7 @@ const LoadSchedules = () => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [isSearching, setSearching] = useState(false);
+  const [searchParams, setSearchParams] = useState(null);
 
   const { t } = useTranslation();
 
@@ -34,7 +35,7 @@ const LoadSchedules = () => {
   const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
-  const { setCount, take, offset, paginator } = usePagination();
+  const { setCount, take, offset, paginator, setPage, count } = usePagination();
   const baseUrl = `${LOAD_SCHEDULES.READ}?start_date=${start}&end_date=${end}`;
   const url = `${LOAD_SCHEDULES.READ}?start_date=${start}&end_date=${end}&start_num=${take}&end_num=${offset}`;
 
@@ -49,10 +50,12 @@ const LoadSchedules = () => {
     setStart(start);
     setEnd(end);
     // revalidate();
+    setSearchParams(null);
   };
 
   const onRefresh = () => {
     setRefreshed(true);
+    setSearchParams(null);
   };
 
   const locateTrip = (value) => {
@@ -75,6 +78,7 @@ const LoadSchedules = () => {
     }
 
     setSearching(true);
+    setSearchParams(values);
 
     api
       .get(LOAD_SCHEDULES.SEARCH, {
@@ -93,6 +97,8 @@ const LoadSchedules = () => {
         // setCompartments(res.data.records);
         setData(res.data.records);
         setSearching(false);
+        setCount(res?.data?.records?.length);
+        setPage(1)
       })
       .catch((errors) => {
         _.forEach(errors.response.data.errors, (error) => {
@@ -147,10 +153,14 @@ const LoadSchedules = () => {
       {/* <Download data={data} isLoading={isLoading} columns={fields} /> */}
 
       {!pagingFlag && (
-        <Download data={data} isLoading={isValidating || isSearching} columns={fields} />
+        <Download data={data} isLoading={isValidating} columns={fields} />
+      )}
+
+      {pagingFlag && searchParams && (
+        <Download data={data} isLoading={isSearching} columns={fields} />
       )}
       
-      {pagingFlag && (
+      {pagingFlag && !searchParams && (
         // <PageExporter baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} columns={fields} />
         <PageDownloader baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} pageSize={500} columns={fields} />
       )}
@@ -206,7 +216,7 @@ const LoadSchedules = () => {
           marginTop: 10,
         }}
       >
-        {paginator}
+        {pagingFlag && !searchParams ? paginator : t('fields.totalCount') + ': ' + count }
       </div>
       {visible && (
         <Forms
