@@ -572,6 +572,9 @@ class ManualTrans extends CommonClass
                 $transfers[$i]->bases[$j]->Tank_Code = $this->transfers[$i]->bases[$j]->tank_code;
                 $transfers[$i]->bases[$j]->product_code = $this->transfers[$i]->bases[$j]->base_code;
                 $transfers[$i]->bases[$j]->prod_class = $this->transfers[$i]->bases[$j]->base_class;
+                if ($this->transfers[$i]->bases[$j]->base_class_code == '6') {
+                    $transfers[$i]->bases[$j]->prod_class = 'ADDITIVE';
+                }
                 $transfers[$i]->bases[$j]->dens = $this->transfers[$i]->bases[$j]->dens * 1000;
                 $transfers[$i]->bases[$j]->Temperature = $this->transfers[$i]->bases[$j]->temperature * 100;
 
