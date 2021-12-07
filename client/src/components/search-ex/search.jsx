@@ -82,6 +82,7 @@ const SearchForm = ({ onSearch, fields, modal, rangeRequired }) => {
   return (
     <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError style={{ marginTop: '1rem' }}>
       {fields?.terminal && <Terminal />}
+      {fields?.mv_key && <NominationKey />}
       {fields?.shls_trip_no && <Trip />}
       {fields?.mlitm_prodcmpy && <PlantSupplier />}
       {fields?.mlitm_id && <MovementID />}
@@ -99,7 +100,6 @@ const SearchForm = ({ onSearch, fields, modal, rangeRequired }) => {
       {fields?.order_cust_acnt && <OrderCustomer supplier={orderSupplier} />}
       {fields?.order_stat_id && <OrderStatus />}
       {fields?.order_ref_code && <OrderRefCode />}
-      {fields?.mv_key && <NominationKey />}
       {fields?.mv_status && <NominationStatus />}
       {fields?.mv_srctype && <NominationSource />}
       {fields?.mv_terminal && <NominationTerminal />}

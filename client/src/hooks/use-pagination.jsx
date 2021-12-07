@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { Pagination } from 'antd';
+import _ from 'lodash';
 
 export default function usePagination(initial = 1000) {
-  const show_size = sessionStorage.getItem('pageShowSize');
+  // the size was saved as string when using sessionStorage.setItem
+  //           Storage.setItem(key: string, value: string): void
+  // so we need to convert it to number when using sessionStorage.getItem,
+  // otherwise the result of "take+size" will become 600150 instead of 750 when take is numeric 600 but size is the text "150"
+  const show_size = _.toNumber(sessionStorage.getItem('pageShowSize'));
   const [size, setSize] = useState(show_size ? show_size : initial);
   const [count, setCount] = useState(0);
   const [page, setPage] = useState(1);

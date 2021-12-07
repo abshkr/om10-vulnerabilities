@@ -1,5 +1,15 @@
 const columns = (IS_NOMINATION, t, config) => [
   {
+    headerName: t('fields.terminal'),
+    field: 'shls_terminal',
+    filter: 'MultiFilter',
+    sortable: true,
+    resizable: true,
+    width: 120,
+    suppressSizeToFit: true,
+    pinned: 'left',
+  },
+  {
     headerName: t('fields.tripNumber'),
     field: 'shls_trip_no',
     filter: 'FuzzyFilter',

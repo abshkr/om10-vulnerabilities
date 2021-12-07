@@ -31,6 +31,7 @@ import * as FSC_STATUS from './fsc-status';
 import * as TANKS from './tanks';
 import * as SPECIAL_MOVEMENTS from './special-movements';
 import * as MOVEMENT_NOMIATIONS from './movement-nominations';
+import * as MOVEMENT_SCHEDULES from './movement-schedules';
 import * as LOAD_SCHEDULES from './load-schedules';
 import * as MOVEMENT_REASONS from './movement-reasons';
 import * as METER_DEVICES from './meter-devices';
@@ -106,6 +107,7 @@ export {
   REPORT_PROFILE,
   SPECIAL_MOVEMENTS,
   MOVEMENT_NOMIATIONS,
+  MOVEMENT_SCHEDULES,
   LOAD_SCHEDULES,
   MOVEMENT_REASONS,
   METER_DEVICES,
