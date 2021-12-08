@@ -2742,6 +2742,8 @@
     "lstd": "L(std)",
     "ltr": "L",
     "m3": "m³",
+    "ltr/min": "l/m",
+    "m3/h": "m³/h",
     "mass": "Mass",
     "massKG": "KG",
     "mm": "mm",

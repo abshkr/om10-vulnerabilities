@@ -74,6 +74,14 @@ export const TankIndicators = styled.div`
   flex-direction: column;
 `;
 
+export const TankFlowRate = styled.div`
+  position: absolute;
+  top: 83%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+`;
+
 export const TankVolume = styled.div`
   position: absolute;
   top: 55%;

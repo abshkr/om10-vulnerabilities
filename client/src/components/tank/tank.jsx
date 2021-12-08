@@ -1,5 +1,5 @@
 import React from 'react';
-import { SyncOutlined } from '@ant-design/icons';
+import { SyncOutlined, UpOutlined, DownOutlined, ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
 import { Card, Tag } from 'antd';
 import { Bar } from 'react-chartjs-2';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,7 @@ import {
   IndicatorContainer,
   TankLevel,
   WaterLevel,
+  TankFlowRate,
 } from './style';
 import Image from './img.png';
 
@@ -106,6 +107,23 @@ const Tank = React.memo(function Tank({ item }) {
             {item?.tank_water_lvl?.toLocaleString('en-AU') || '0'} {t('units.mm')}
           </WaterLevel>
         )}
+        <TankFlowRate style={{width: '100%', textAlign: 'center'}}>
+          <span style={{color: (item?.tank_flow_rate_min > 0 ? 'rgb(0,164,0)' : item?.tank_flow_rate_min < 0 ? 'rgb(164,0,0)' : 'rgb(0,0,164)')}}>
+            {item?.tank_flow_rate_min > 0 ? <ArrowUpOutlined/> : item?.tank_flow_rate_min < 0 ? <ArrowDownOutlined/> : ''}
+          </span> 
+          <Tag
+            style={{ color: 'rgb(0,84,164)', borderColor: 'rgb(0,84,164)', fontWeight: '400' }}
+            color={'rgba(220,220,220,0.3)'}
+          >
+            {item?.tank_flow_rate_min} {t('units.ltr/min')}
+          </Tag>
+          <Tag
+            style={{ color: 'rgb(0,84,164)', borderColor: 'rgb(0,84,164)', fontWeight: '400' }}
+            color={'rgba(220,220,220,0.3)'}
+          >
+            {item?.tank_flow_rate_hour} {t('units.m3/h')}
+          </Tag>
+        </TankFlowRate>
       </Card>
     </TankContainer>
   );

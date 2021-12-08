@@ -177,6 +177,8 @@ function transform(data, showAdditives, waterFlag) {
       tank?.tank_ul_level
     );
 
+    const tank_flow_rate_min = !tank?.tank_flow_rate ? 0 : _.round(tank?.tank_flow_rate, 0);
+
     const model = {
       code: tank?.tank_code,
       name: tank?.tank_name,
@@ -224,6 +226,9 @@ function transform(data, showAdditives, waterFlag) {
           },
         ],
       },
+
+      tank_flow_rate_min: tank_flow_rate_min,
+      tank_flow_rate_hour: _.round(tank_flow_rate_min * 60.0 / 1000.0, 0),
 
       ...tank,
     };
