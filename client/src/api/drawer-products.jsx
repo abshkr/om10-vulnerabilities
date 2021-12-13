@@ -12,6 +12,7 @@ export const CARRIERS = '/api/pages/product/material.php';
 export const CUSTOMERS = '/api/pages/product/customers.php';
 export const AVAILABLE_BASES = '/api/pages/product/base_products.php';
 export const BASES = '/api/pages/product/prod_ratios.php';
+export const PIPENODE_BASES = '/api/pages/product/pipenode_bases.php';
 
 export const GENERICS_READ = '/api/pages/generic_product/read.php';
 export const GENERICS_DELETE = '/api/pages/generic_product/delete.php';

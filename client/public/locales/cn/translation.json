@@ -1540,6 +1540,7 @@
     "pitemBaseName": "基础油品名称",
     "pitemBaseProduct": "基础油品",
     "pitemRatioValue": "比率",
+    "pitemRatioPercent": "百分比或PPM",
     "pitemBltolFlag": "基础油品超标检查",
     "pitemBltolFlag2": "检查混合油品中基础油品比例是否超标",
     "pitemBltolPtol": "超标上限 (%)",

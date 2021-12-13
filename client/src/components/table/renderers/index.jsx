@@ -28,6 +28,7 @@ import SeperatorRenderer from './seperator';
 import QuantitySeperatorRenderer from './quantitySeperator';
 import LegacyExpDateRenderer from './legacy-exp-date';
 import TagListRenderer from './tag-list';
+import RatioPercentageRenderer from './ratio-percentage';
 
 export {
   BooleanRenderer,
@@ -59,5 +60,6 @@ export {
   SeperatorRenderer,
   QuantitySeperatorRenderer,
   LegacyExpDateRenderer,
-  TagListRenderer
+  TagListRenderer,
+  RatioPercentageRenderer
 };

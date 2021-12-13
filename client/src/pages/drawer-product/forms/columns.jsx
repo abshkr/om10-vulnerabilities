@@ -1,6 +1,6 @@
 import { BASE_PRODUCTS } from 'constants/routes';
 
-const columns = (t, config) => [
+const columns = (t, config, form, pipenodeBases) => [
   {
     headerName: t('fields.pitemProdCode'),
     field: 'pitem_base_code',
@@ -35,6 +35,25 @@ const columns = (t, config) => [
     resizable: true,
     suppressSizeToFit: true,
     width: 80,
+  },
+  {
+    headerName: t('fields.pitemRatioPercent'),
+    field: 'pitem_ratio_percent',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    suppressSizeToFit: true,
+    width: 120,
+    cellRenderer: 'RatioPercentageRenderer',
+    cellRendererParams: {
+      form: form,
+      ratioField: 'bases',
+      codeField: 'pitem_base_code',
+      valueField: 'pitem_ratio_value',
+      adtvFlag: 'pitem_base_class',
+      seqField: 'pitem_ratio_seq',
+      pipenode: pipenodeBases,
+    },
   },
   {
     headerName: t('fields.pitemBltolFlag'),

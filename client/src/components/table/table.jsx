@@ -35,7 +35,8 @@ import {
   SeperatorRenderer,
   QuantitySeperatorRenderer,
   LegacyExpDateRenderer,
-  TagListRenderer
+  TagListRenderer,
+  RatioPercentageRenderer
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -96,7 +97,8 @@ const defaultComponents = {
   SeperatorRenderer,
   QuantitySeperatorRenderer,
   LegacyExpDateRenderer,
-  TagListRenderer
+  TagListRenderer,
+  RatioPercentageRenderer
 };
 
 const defaultColumnDef = {};

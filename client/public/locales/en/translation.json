@@ -1554,6 +1554,7 @@
     "pitemBaseName": "Base Product Name",
     "pitemBaseProduct": "Base Product",
     "pitemRatioValue": "Ratio",
+    "pitemRatioPercent": "% or PPM",
     "pitemBltolFlag": "Blend Tolerance Check Enabled",
     "pitemBltolFlag2": "Enable blend tolerance check for this base product",
     "pitemBltolPtol": "Upper limit (%)",

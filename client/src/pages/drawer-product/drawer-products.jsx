@@ -37,6 +37,7 @@ const DrawerProduct = () => {
   const access = useAuth('M_DRAWERPRODUCTS');
 
   const { data: payload, isValidating, revalidate } = useSWR(DRAWER_PRODUCTS.READ);
+  const { data: pipenode } = useSWR(DRAWER_PRODUCTS.PIPENODE_BASES);
 
   const doTabChanges = (tabPaneKey) => {
     if (tabPaneKey === '1') {
@@ -172,6 +173,7 @@ const DrawerProduct = () => {
               access={access}
               config={config}
               setFilterValue={setFilterValue}
+              pipenodeBases={pipenode?.records}
             />
           )}
         </Tabs.TabPane>

@@ -50,7 +50,7 @@ import LinkedDrawerProducts from './linked-drawer-products';
 
 const TabPane = Tabs.TabPane;
 
-const DrawerForm = ({ value, visible, handleFormState, access, config, setFilterValue }) => {
+const DrawerForm = ({ value, visible, handleFormState, access, config, setFilterValue, pipenodeBases }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -68,7 +68,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
 
   const { resetFields, setFieldsValue } = form;
 
-  const fields = columns(t, config);
+  const fields = columns(t, config, form, pipenodeBases);
 
   const IS_CREATING = !value;
 
