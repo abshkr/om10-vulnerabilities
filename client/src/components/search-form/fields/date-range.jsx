@@ -12,12 +12,13 @@ import zhLocale from 'antd/es/date-picker/locale/zh_CN';
 
 const momentLocales = { en: enLocale, cn: zhLocale };
 
-const DateRange = ({ form, timeOption, force }) => {
+const DateRange = ({ form, timeOptionType, force, useRange, startDate, endDate }) => {
   const { t, i18n } = useTranslation();
   const locale = momentLocales[i18n.language || 'en'];
 
   const { setFieldsValue } = form;
-  const [checked, setChecked] = useState(force);
+  const [checked, setChecked] = useState(force||useRange);
+  const [range, setRange] = useState([!startDate ? null : moment(startDate), !endDate ? null : moment(endDate)]);
 
   const openOrderTimeOptions = [
     {
@@ -60,6 +61,7 @@ const DateRange = ({ form, timeOption, force }) => {
       start_date: dates[0].format(SETTINGS.DATE_TIME_FORMAT),
       end_date: dates[1].format(SETTINGS.DATE_TIME_FORMAT),
     });
+    setRange(dates);
   };
 
   const onCheckBox = (v) => {
@@ -70,20 +72,29 @@ const DateRange = ({ form, timeOption, force }) => {
   };
 
   useEffect(() => {
+    console.log('..................date range useEffect', useRange, startDate, endDate);
     setFieldsValue({
-      start_date: moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT),
-      end_date: moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT),
+      // start_date: moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT),
+      // end_date: moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT),
+      start_date: !startDate ? null : moment(startDate).format(SETTINGS.DATE_TIME_FORMAT),
+      end_date: !endDate ? null : moment(endDate).format(SETTINGS.DATE_TIME_FORMAT),
+    }); 
+    setRange([!startDate ? null : moment(startDate), !endDate ? null : moment(endDate)]);
+    setFieldsValue({
+      use_date_range: useRange,
     });
-    if (timeOption === 'open_order') {
+    setChecked(useRange);
+    if (timeOptionType === 'open_order') {
       setFieldsValue({
         time_option: 'ORDER_ORD_TIME',
       });
-    } else if (timeOption === 'movement_nomination') {
-      setFieldsValue({
+    } else if (timeOptionType === 'movement_nomination') {
+      /* setFieldsValue({
         time_option: 'MV_DTIM_EFFECT',
-      });
+      }); */
     }
-  }, [form]);
+//  }, [form]);
+  }, [startDate, endDate, useRange, timeOptionType, setFieldsValue]);
 
   return (
     <div>
@@ -92,13 +103,14 @@ const DateRange = ({ form, timeOption, force }) => {
           style={{ marginTop: '3px', display: 'block' }}
           onChange={onCheckBox}
           disabled={force}
-          defaultChecked={force}
+          checked={checked}
+          defaultChecked={force||useRange}
         >
           {t('descriptions.maxDateRange')}
         </Checkbox>
       </Form.Item>
 
-      {timeOption === 'open_order' && (
+      {timeOptionType === 'open_order' && (
         <Form.Item name="time_option" noStyle>
           <Select
             style={{ marginTop: '5px', marginBottom: '3px', width: '100%' }}
@@ -120,7 +132,7 @@ const DateRange = ({ form, timeOption, force }) => {
         </Form.Item>
       )}
 
-      {timeOption === 'movement_nomination' && (
+      {timeOptionType === 'movement_nomination' && (
         <Form.Item name="time_option" noStyle>
           <Select
             style={{ marginTop: '5px', marginBottom: '3px', width: '100%' }}
@@ -144,7 +156,9 @@ const DateRange = ({ form, timeOption, force }) => {
         style={{ width: '100%' }}
         disabled={!checked}
         onChange={onRangeChange}
-        defaultValue={[moment().subtract(7, 'days'), moment().add(7, 'days')]}
+        // defaultValue={[moment().subtract(7, 'days'), moment().add(7, 'days')]}
+        defaultValue={[!startDate ? null : moment(startDate), !endDate ? null : moment(endDate)]}
+        value={range}
         locale={locale}
       />
 

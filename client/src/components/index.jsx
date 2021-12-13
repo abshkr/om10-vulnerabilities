@@ -26,6 +26,7 @@ export { default as TableTransfer } from './table-transfer';
 export { default as ListView } from './list-view';
 export { default as Favourites } from './favourites';
 export { default as WindowSearch } from './search-ex';
+export { default as WindowSearchForm } from './search-form';
 export { default as Locked } from './locked';
 export { default as Reset } from './reset';
 export { default as InputNumber } from './input-number';
