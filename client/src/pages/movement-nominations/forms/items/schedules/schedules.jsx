@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
 
-import { DataTable, Download, PageDownloader, PageExporter, WindowSearch } from '../../../../../components';
+import { DataTable, Download, PageDownloader, PageExporter, WindowSearch, WindowSearchForm } from '../../../../../components';
 import { useTranslation } from 'react-i18next';
 import { MOVEMENT_NOMIATIONS, MOVEMENT_SCHEDULES } from '../../../../../api';
 import useSWR from 'swr';
@@ -77,7 +77,7 @@ const Schedules = ({ selected, cbFunction, closeForm }) => {
   };
 
   const setSearch = (values) => {
-    if (
+    /* if (
       !values.shls_trip_no &&
       !values.supplier_code &&
       !values.tnkr_code &&
@@ -87,7 +87,7 @@ const Schedules = ({ selected, cbFunction, closeForm }) => {
       (!selected && !values.mv_key)
     ) {
       return;
-    }
+    } */
 
     setSearching(true);
     setMovKey(selected ? selected?.mvitm_key : !values.mv_key ? '' : values.mv_key);
@@ -131,7 +131,7 @@ const Schedules = ({ selected, cbFunction, closeForm }) => {
         type="primary"
         icon={<FileSearchOutlined />}
         onClick={() =>
-          WindowSearch(setSearch, t('operations.search'), {
+          WindowSearchForm(setSearch, t('operations.search'), {
             terminal: true,
             mv_key: !selected ? true : false,
             shls_trip_no: true,
@@ -139,6 +139,14 @@ const Schedules = ({ selected, cbFunction, closeForm }) => {
             trip_status: true,
             tnkr_code: true,
             carrier_code: true,
+          }, {
+            terminal: terminalCode,
+            mv_key: movKey,
+            shls_trip_no: tripNumber,
+            supplier_code: supplierCode,
+            trip_status: tripStatus,
+            tnkr_code: tankerCode,
+            carrier_code: carrierCode,
           }, false)
         }
       >
