@@ -405,10 +405,10 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
       const adtvRatios = getAdtvRatios(payload, 'pitem_ratio_value', 'pitem_base_class');
       _.forEach(payload, (item) => {
         if (String(item?.pitem_base_class) === '6' || String(item?.pitem_base_class) === '11') {
-          item.pitem_ratio_value = item?.pitem_ratio_percent_ppm;
+          item.pitem_ratio_value = !item?.pitem_ratio_percent_ppm ? item.pitem_ratio_value : item?.pitem_ratio_percent_ppm;
         } else {
           if (maxRatio === item?.pitem_ratio_value) {
-            item.pitem_ratio_value = item?.pitem_ratio_percent_ppm * 10000 - adtvRatios;
+            item.pitem_ratio_value = !item?.pitem_ratio_percent_ppm ? item.pitem_ratio_value : item?.pitem_ratio_percent_ppm * 10000 - adtvRatios;
           }
         }
       });

@@ -94,9 +94,9 @@ const FormModal = ({ value, handleBaseCallBack, config, tableBases }) => {
 
     if (config?.siteRecipeOnPercent) {
       if (adtvFlag) {
-        values.pitem_ratio_value = values.pitem_ratio_percent_ppm;
+        values.pitem_ratio_value = !values.pitem_ratio_percent_ppm ? value?.pitem_ratio_value: values.pitem_ratio_percent_ppm;
       } else {
-        let ratio = values.pitem_ratio_percent_ppm * 10000;
+        let ratio = !values.pitem_ratio_percent_ppm ? value?.pitem_ratio_value: values.pitem_ratio_percent_ppm * 10000;
 
         values.pitem_ratio_value = ratio;
       }
