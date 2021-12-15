@@ -124,13 +124,13 @@ const MovementNominations = () => {
     // setStart(start);
     // setEnd(end);
 
-    setUseSearch(false);
     setStartTimeSearch(null);
     setEndTimeSearch(null);
     setTimeOptionSearch(filterByExpiry ? 'MV_DTIM_EXPIRY' : 'MV_DTIM_CREATE');
     setUseDateRange('N');
     
     setTimeOption(filterByExpiry ? 'MV_DTIM_EXPIRY' : 'MV_DTIM_CREATE');
+    setUseSearch(false);
   
     setMovKey('');
     setMovStatus('');
@@ -167,7 +167,6 @@ const MovementNominations = () => {
     } */
 
     setSearching(true);
-    setUseSearch(true);
     setMovKey(!values.mv_key ? '' : values?.mv_key);
     setMovStatus(!values.mv_status ? '' : values?.mv_status);
     setMovSrcType(!values.mv_srctype ? '' : values?.mv_srctype);
@@ -177,6 +176,7 @@ const MovementNominations = () => {
     setStartTimeSearch(values.use_date_range ? (!values.start_date ? '-1' : values.start_date) : '-1');
     setEndTimeSearch(values.use_date_range ? (!values.end_date ? '-1' : values.end_date) : '-1');
     setTimeOptionSearch(values.use_date_range ? values.time_option : (filterByExpiry ? 'MV_DTIM_EXPIRY' : 'MV_DTIM_CREATE'));
+    setUseSearch(true);
     setPage(1);
     if (revalidate) revalidate();
     setSearching(false);
