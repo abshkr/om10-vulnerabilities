@@ -160,7 +160,7 @@ export default class RatioPercentageRenderer extends Component {
   };
 
   render() {
-    const { form, ratioField, codeField, valueField, adtvFlag, seqField, pipenode, data } = this.props;
+    const { form, ratioField, codeField, valueField, adtvFlag, seqField, pipenode, adtvDest, data } = this.props;
     let current = form.getFieldValue(ratioField);
 
     const isFlag = adtvFlag?.indexOf('flag') >= 0;
@@ -172,7 +172,9 @@ export default class RatioPercentageRenderer extends Component {
     const totalRatios = this.getTotalRatios(current, valueField);
     // get max ratio
     const maxRatio = this.getMaxRatio(current, valueField);
-    const adtv2Max = false;
+    // adtvDest === true: SITE_RECIPE_ON_PIPE_NODE = Y, use pipenode
+    // adtvDest === false: SITE_RECIPE_ON_PIPE_NODE = Y, use max ratio
+    const adtv2Max = !adtvDest; 
 
     let percentQty = undefined;
     let tipQty = undefined;

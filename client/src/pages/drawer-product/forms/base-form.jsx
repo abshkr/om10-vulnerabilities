@@ -16,7 +16,7 @@ import { DRAWER_PRODUCTS } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, handleBaseCallBack, config }) => {
+const FormModal = ({ value, handleBaseCallBack, config, tableBases }) => {
   const { data: payload } = useSWR(`${DRAWER_PRODUCTS.AVAILABLE_BASES}`);
   let baseProducts = payload?.records;
   
@@ -24,6 +24,7 @@ const FormModal = ({ value, handleBaseCallBack, config }) => {
   const [form] = Form.useForm();
   const { setFieldsValue } = form;
   const [ pitem_bltol_flag, setFlag ] = useState(value?.pitem_bltol_flag);
+  const [ adtvFlag, setAdtvFlag] = useState(value?.pitem_base_class === '6' || value?.pitem_base_class === '11');
 
   const IS_CREATING = !value;
 
@@ -37,12 +38,29 @@ const FormModal = ({ value, handleBaseCallBack, config }) => {
 
   const validateRatio = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.ratio')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.pitem_ratio_value')}`);
+    }
+
+    return Promise.resolve();
+  };
+
+  const validatePercent = (rule, input) => {
+    if (input === '' || !input) {
+      return Promise.reject(`${t('validate.set')} ─ ${adtvFlag ? t('fields.pitemRatioPPM') : t('fields.pitemRatioPercent')}`);
     }
 
     return Promise.resolve();
   };
   
+  const onChangeBase = (v) => {
+    const item = _.find(baseProducts, (o)=>(o?.base_code === v));
+    if (!item) {
+      setAdtvFlag(false);
+    } else {
+      setAdtvFlag(item?.bclass_no === '6' || item?.bclass_no === '11');
+    }
+  };
+
   const onCheck = v => {
     setFlag(v.target.checked);
     setFieldsValue({
@@ -66,13 +84,25 @@ const FormModal = ({ value, handleBaseCallBack, config }) => {
     values.pitem_bclass_name = baseItem.bclass_desc;
 
     values.pitem_base_class = baseItem.bclass_no;
-    values.pitem_adtv_flag = baseItem.base_adtv==='0' ? false : true;
+    values.pitem_adtv_flag = adtvFlag; //baseItem.base_adtv==='0' ? false : true;
     values.pitem_hot_check = baseItem.base_hot_check==='' ? null : (baseItem.base_hot_check==='0' ? false : true);
     values.pitem_bclass_dens_lo = baseItem.bclass_dens_lo;
     values.pitem_bclass_dens_hi = baseItem.bclass_dens_hi;
     values.pitem_bclass_vcf_alg = baseItem.bclass_vcf_alg;
     values.pitem_bclass_temp_lo = baseItem.bclass_temp_lo;
     values.pitem_bclass_temp_hi = baseItem.bclass_temp_hi;
+
+    if (config?.siteRecipeOnPercent) {
+      if (adtvFlag) {
+        values.pitem_ratio_value = values.pitem_ratio_percent_ppm;
+      } else {
+        let ratio = values.pitem_ratio_percent_ppm * 10000;
+
+        values.pitem_ratio_value = ratio;
+      }
+    } else {
+      values.pitem_ratio_percent_ppm = value?.pitem_ratio_percent_ppm;
+    }
     
     handleBaseCallBack(values);
     Modal.destroyAll();
@@ -88,6 +118,7 @@ const FormModal = ({ value, handleBaseCallBack, config }) => {
     if (value) {
       setFieldsValue({
         pitem_ratio_value: value.pitem_ratio_value,
+        pitem_ratio_percent_ppm: value.pitem_ratio_percent_ppm,
         pitem_bltol_ntol: value.pitem_bltol_ntol,
         pitem_bltol_flag: value.pitem_bltol_flag,
         pitem_bltol_ptol: value.pitem_bltol_ptol,
@@ -117,6 +148,7 @@ const FormModal = ({ value, handleBaseCallBack, config }) => {
                 dropdownMatchSelectWidth={false}
                 // loading={isValidating}
                 showSearch
+                onChange={onChangeBase}
                 optionFilterProp="children"
                 placeholder={!value ? t('placeholder.selectBaseProduct') : null}
                 filterOption={(input, option) =>
@@ -130,9 +162,28 @@ const FormModal = ({ value, handleBaseCallBack, config }) => {
                 )):null}
               </Select>
             </Form.Item>
-            <Form.Item name="pitem_ratio_value" label={t('fields.pitemRatioValue')} rules={[{ required: true, validator: validateRatio }]}>
-              <InputNumber min={1} style={{ width: '100%' }} />
-            </Form.Item>
+
+            {!config?.siteRecipeOnPercent && (
+              <Form.Item name="pitem_ratio_value" label={t('fields.pitemRatioValue')} rules={[{ required: true, validator: validateRatio }]}>
+                <InputNumber min={1} style={{ width: '100%' }} />
+              </Form.Item>
+            )}
+
+            {config?.siteRecipeOnPercent && (
+              <Form.Item 
+                name="pitem_ratio_percent_ppm" 
+                label={adtvFlag ? t('fields.pitemRatioPPM') + ' (1 ppm ~ 1,000,000 ppm)' : t('fields.pitemRatioPercent') + '(1% ~ 100%)'} 
+                rules={[{ required: true, validator: validatePercent }]}
+              >
+                <InputNumber min={1} max={adtvFlag ? 1000000 : 100} precision={adtvFlag ? 0 : 4} style={{ width: '100%' }} />
+              </Form.Item>
+            )}
+
+            {config?.siteRecipeOnPercent && (
+              <div style={{color: 'red', paddingBottom: 20}}>
+                {t('descriptions.ratioPercentPPM')}
+              </div>
+            )}
 
             <Form.Item name="pitem_bltol_flag" label={t('fields.pitemBltolFlag2')} valuePropName="checked" >
               <Checkbox 

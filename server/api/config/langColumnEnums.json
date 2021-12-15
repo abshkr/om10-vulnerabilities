@@ -3508,6 +3508,7 @@
     "RAT_PROD_PRODCODE": "NA",
     "RAT_PROD_PRODCMPY": "NA",
     "RATIO_VALUE": "NA",
+    "RATIO_PERCENT_PPM": "NA",
     "RAT_BLTOL_FLAG": "NA",
     "RAT_BLTOL_PTOL": "NA",
     "RAT_BLTOL_NTOL": "NA",

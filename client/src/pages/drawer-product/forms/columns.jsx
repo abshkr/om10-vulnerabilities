@@ -37,12 +37,13 @@ const columns = (t, config, form, pipenodeBases) => [
     width: 80,
   },
   {
-    headerName: t('fields.pitemRatioPercent'),
-    field: 'pitem_ratio_percent',
+    headerName: t('fields.pitemRatioAsPercent'),
+    field: 'pitem_ratio_as_percent',
     filter: 'FuzzyFilter',
     sortable: true,
     resizable: true,
     suppressSizeToFit: true,
+    hide: config?.siteRecipeOnPercent,
     width: 120,
     cellRenderer: 'RatioPercentageRenderer',
     cellRendererParams: {
@@ -53,6 +54,21 @@ const columns = (t, config, form, pipenodeBases) => [
       adtvFlag: 'pitem_base_class',
       seqField: 'pitem_ratio_seq',
       pipenode: pipenodeBases,
+      adtvDest: config?.siteRecipeOnPipenode,
+    },
+  },
+  {
+    headerName: t('fields.pitemRatioPercentPPM'),
+    field: 'pitem_ratio_percent_ppm',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    suppressSizeToFit: true,
+    hide: !config?.siteRecipeOnPercent,
+    width: 120,
+    cellRenderer: 'PpmPercentageRenderer',
+    cellRendererParams: {
+      adtvFlag: 'pitem_base_class',
     },
   },
   {

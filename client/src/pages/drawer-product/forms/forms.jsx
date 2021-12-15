@@ -132,6 +132,172 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
     return isBlend;
   };
 
+
+  const getTotalRatios = (items, valueField) => {
+    let total = 0;
+    for (let i=0; i<items?.length; i++) {
+      const item = items?.[i];
+      total += !item?.[valueField] ? 0 : _.toNumber(item?.[valueField]);
+    }
+
+    return total;
+  };
+
+  const getMaxRatio = (items, valueField) => {
+    let ratio = 0;
+    for (let i=0; i<items?.length; i++) {
+      const item = items?.[i];
+      const value = !item?.[valueField] ? 0 : _.toNumber(item?.[valueField]);
+      if (value > ratio) {
+        ratio = value;
+      }
+    }
+
+    return ratio;
+  };
+
+  const getAdtvRatios = (items, valueField, adtvFlag) => {
+    let total = 0;
+    for (let i=0; i<items?.length; i++) {
+      const item = items?.[i];
+      const isFlag = adtvFlag?.indexOf('flag') >= 0;
+      const isAdditive = isFlag
+        ? item?.[adtvFlag] === true || item?.[adtvFlag] === '1'
+        : String(item?.[adtvFlag]) === '6' || String(item?.[adtvFlag]) === '11';
+      if (isAdditive) {
+        total += !item?.[valueField] ? 0 : _.toNumber(item?.[valueField]);
+      }
+    }
+
+    return total;
+  };
+
+  const getMainBaseTotals = (items, valueField, adtvFlag) => {
+    let total = 0;
+    for (let i=0; i<items?.length; i++) {
+      const item = items?.[i];
+      const isFlag = adtvFlag?.indexOf('flag') >= 0;
+      const isAdditive = isFlag
+        ? item?.[adtvFlag] === true || item?.[adtvFlag] === '1'
+        : String(item?.[adtvFlag]) === '6' || String(item?.[adtvFlag]) === '11';
+      if (!isAdditive) {
+        total += !item?.[valueField] ? 0 : _.toNumber(item?.[valueField]);
+      }
+    }
+
+    return total;
+  };
+
+  const isStreamRecipeMatched = (items, nodes, codeField) => {
+    if (nodes?.length === 0 || items?.length === 0) {
+      return false;
+    }
+    // console.log('isStreamRecipeMatched2.....', items, nodes, codeField);
+    let matched = true;
+    for (let i=0; i<items?.length; i++) {
+      const item = items?.[i];
+      const node = _.find(nodes, (o) => (o?.stream_basecode === item?.[codeField]));
+      // console.log('isStreamRecipeMatched.....', node);
+      if (!node) {
+        matched = false;
+        break;
+      }
+    }
+
+    return matched;
+  }
+
+  const getStreamMembers = (data, items, streams, codeField) => {
+    // find the matched node
+    let bases = [];
+    for (let i=0; i<streams?.length; i++) {
+      const stream = streams?.[i];
+      if (stream?.stream_basecode === data?.[codeField]) {
+        // found the node
+        const index = stream?.stream_index;
+        // found the node, now get all the members of the stream.
+        bases = _.filter(streams, (o) => (o?.stream_index === index));
+        // now check if the stream contains all members of the recipe
+        const found = isStreamRecipeMatched(items, bases, codeField);
+        // console.log('...getStreamMembers.........', index, found, bases);
+        if (found) {
+          break;
+        }
+      }
+    }
+
+    return bases;
+  };
+
+  const getStreamMainRatios = (data, items, streams, codeField, valueField, adtvFlag) => {
+    // get all the members of a stream containing the recipe
+    const nodes = getStreamMembers(data, items, streams, codeField);
+    // console.log('getStreamMainRatios..............', data, nodes);
+
+    // find the stream_seq of the base product in the stream.
+    // the additives attached to a major base product will share the same value of stream_seq
+    const node = _.find(nodes, (o) => (o?.stream_basecode === data?.[codeField]));
+    if (!node) {
+      // recipe base not found in pipenode
+      const maxRatio = getMaxRatio(items, valueField);
+      if (maxRatio === data?.[valueField]) {
+        // this is the main base product
+        // get total additive ratios
+        const adtvRatios = getAdtvRatios(items, valueField, adtvFlag);
+        const mainRatio = maxRatio + adtvRatios;
+        return mainRatio;
+      } else {
+        return _.toNumber(data?.[valueField]);
+      }
+    }
+
+    // recipe base found in pipenode
+    const seq = node?.stream_seq;
+    let total = 0;
+    for (let i=0; i<items?.length; i++) {
+      const item = items?.[i];
+      const base = _.find(nodes, (o) => (o?.stream_basecode === item?.[codeField] && o?.stream_seq === seq));
+      if (base) {
+        total += _.toNumber(item?.[valueField]);
+      }
+    }
+
+    return total;
+  };
+
+  const getStreamAdtvRatios = (data, items, streams, codeField, valueField, adtvFlag) => {
+    // get all the members of a stream containing the recipe
+    const nodes = getStreamMembers(data, items, streams, codeField);
+
+    // find the stream_seq of the base product in the stream.
+    // the additives attached to a major base product will share the same value of stream_seq
+    const node = _.find(nodes, (o) => (o?.stream_basecode === data?.[codeField]));
+    if (!node) {
+      // recipe base not found in pipenode, just return 0
+      return 0;
+    }
+
+    // recipe base found in pipenode
+    const seq = node?.stream_seq;
+    let total = 0;
+    for (let i=0; i<items?.length; i++) {
+      const item = items?.[i];
+      const isFlag = adtvFlag?.indexOf('flag') >= 0;
+      const isAdditive = isFlag
+        ? item?.[adtvFlag] === true || item?.[adtvFlag] === '1'
+        : String(item?.[adtvFlag]) === '6' || String(item?.[adtvFlag]) === '11';
+      if (isAdditive) {
+        const base = _.find(nodes, (o) => (o?.stream_basecode === item?.[codeField] && o?.stream_seq === seq));
+        if (base) {
+            total += _.toNumber(item?.[valueField]);
+        }
+      }
+    }
+
+    return total;
+  };
+
+
   const handleBaseCallBack = (values) => {
     if (values.to_delete) {
       return deleteBase();
@@ -152,6 +318,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
           selected.pitem_bltol_flag = values.pitem_bltol_flag;
           selected.pitem_bltol_ptol = values.pitem_bltol_ptol;
           selected.pitem_ratio_value = values.pitem_ratio_value;
+          selected.pitem_ratio_percent_ppm = values.pitem_ratio_percent_ppm;
           selected.pitem_hot_main = values.pitem_hot_main;
 
           selected.pitem_base_name = values.pitem_base_name;
@@ -211,6 +378,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
         pitem_bltol_flag: values.pitem_bltol_flag,
         pitem_bltol_ptol: values.pitem_bltol_ptol,
         pitem_ratio_value: values.pitem_ratio_value,
+        pitem_ratio_percent_ppm: values.pitem_ratio_percent_ppm,
         pitem_hot_main: values.pitem_hot_main,
         pitem_base_name: values.pitem_base_name,
         pitem_bclass_name: values.pitem_bclass_name,
@@ -229,6 +397,23 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
       bases: payload,
     }); */
 
+    if (config?.siteRecipeOnPercent) {
+      const totalRatios = getTotalRatios(payload, 'pitem_ratio_value');
+      // get max ratio
+      const maxRatio = getMaxRatio(payload, 'pitem_ratio_value');
+      // get total additive ratios
+      const adtvRatios = getAdtvRatios(payload, 'pitem_ratio_value', 'pitem_base_class');
+      _.forEach(payload, (item) => {
+        if (String(item?.pitem_base_class) === '6' || String(item?.pitem_base_class) === '11') {
+          item.pitem_ratio_value = item?.pitem_ratio_percent_ppm;
+        } else {
+          if (maxRatio === item?.pitem_ratio_value) {
+            item.pitem_ratio_value = item?.pitem_ratio_percent_ppm * 10000 - adtvRatios;
+          }
+        }
+      });
+    }
+
     setBases(payload);
   };
 
@@ -245,10 +430,11 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
   };
 
   const handleBase = (v) => {
+    const tableBases = form.getFieldValue('bases');
     FormModal({
-      width: '30vw',
+      width: '40vw',
       value: v,
-      form: <BaseProductForm value={v} handleBaseCallBack={handleBaseCallBack} config={config} />,
+      form: <BaseProductForm value={v} handleBaseCallBack={handleBaseCallBack} config={config} tableBases={tableBases} />,
       id: v?.pitem_base_code,
       name: v?.pitem_base_name,
       t,
@@ -283,6 +469,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
   const onFinish = async () => {
     try {
       const values = await form.validateFields();
+      console.log('.............base values', values);
 
       if (values.bases === undefined || values.bases.length <= 0) {
         Modal.info({
@@ -290,6 +477,19 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
           okText: t('operations.cancel'),
         });
         return;
+      }
+
+      if (config?.siteRecipeOnPercent) {
+        const totalRatios = getTotalRatios(values.bases, 'pitem_ratio_value');
+        // get total additive ratios
+        const mainBaseTotals = getMainBaseTotals(values.bases, 'pitem_ratio_percent_ppm', 'pitem_base_class');
+        if (totalRatios !== 1000000 || mainBaseTotals !== 100) {
+          Modal.info({
+            title: (totalRatios !== 1000000 ? t('prompts.ratioTotalNotMillion') : '') + (mainBaseTotals !== 100 ? t('prompts.percentTotalNot100') : ''),
+            okText: t('operations.cancel'),
+          });
+          return;
+        }
       }
 
       values.prod_is_blend = adjustBlendFlag(values?.bases);

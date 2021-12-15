@@ -12,6 +12,7 @@ class Product extends CommonClass
     protected $TABLE_NAME = 'PRODUCTS';
     protected $VIEW_NAME = 'GUI_PRODUCTS';
     public $NUMBER_FIELDS = array(
+        "PITEM_RATIO_PERCENT_PPM",
         "PITEM_RATIO_VALUE",
         "PITEM_RATIO_TOTAL",
         "PITEM_BCLASS_DENS_LO",
@@ -236,6 +237,7 @@ class Product extends CommonClass
                 RAT_PROD_PRODCODE,
                 RAT_PROD_PRODCMPY,
                 RATIO_VALUE,
+                RATIO_PERCENT_PPM,
                 RAT_BLTOL_FLAG,
                 RAT_BLTOL_PTOL,
                 RAT_BLTOL_NTOL,
@@ -245,6 +247,7 @@ class Product extends CommonClass
                 :rat_prod_prodcode,
                 :rat_prod_prodcmpy,
                 :ratio_value,
+                :ratio_percent_ppm,
                 :rat_bltol_flag,
                 :rat_bltol_ptol,
                 :rat_bltol_ntol,
@@ -255,6 +258,7 @@ class Product extends CommonClass
             oci_bind_by_name($stmt, ':rat_prod_prodcode', $this->prod_code);
             oci_bind_by_name($stmt, ':rat_prod_prodcmpy', $this->prod_cmpy);
             oci_bind_by_name($stmt, ':ratio_value', $value->pitem_ratio_value);
+            oci_bind_by_name($stmt, ':ratio_percent_ppm', $value->pitem_ratio_percent_ppm);
             oci_bind_by_name($stmt, ':rat_bltol_flag', $value->pitem_bltol_flag);
             oci_bind_by_name($stmt, ':rat_bltol_ptol', $value->pitem_bltol_ptol);
             oci_bind_by_name($stmt, ':rat_bltol_ntol', $value->pitem_bltol_ntol);

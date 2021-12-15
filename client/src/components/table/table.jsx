@@ -36,6 +36,7 @@ import {
   QuantitySeperatorRenderer,
   LegacyExpDateRenderer,
   TagListRenderer,
+  PpmPercentageRenderer,
   RatioPercentageRenderer
 } from './renderers';
 
@@ -98,6 +99,7 @@ const defaultComponents = {
   QuantitySeperatorRenderer,
   LegacyExpDateRenderer,
   TagListRenderer,
+  PpmPercentageRenderer,
   RatioPercentageRenderer
 };
 

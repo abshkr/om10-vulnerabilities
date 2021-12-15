@@ -159,6 +159,8 @@ const useConfig = () => {
     vin_number_enabled: false,
     fasttrackEnabled: false,
     saveToMeter: false,
+    siteRecipeOnPercent: false,
+    siteRecipeOnPipenode: false,
     siteUseMultiTerminals: false
   });
 
@@ -384,6 +386,8 @@ const useConfig = () => {
         vin_number_enabled: configurationObject?.VIN_NUMBER_ENABLED || false,
         fasttrackEnabled: configurationObject?.FASTTRACK_ENABLED || false,
         saveToMeter: configurationObject?.FOLIO_SAVE_TO_METERS || false,
+        siteRecipeOnPercent: configurationObject?.SITE_RECIPE_ON_PERCENT || false,
+        siteRecipeOnPipenode: configurationObject?.SITE_RECIPE_ON_PIPENODE || false,
         siteUseMultiTerminals: configurationObject?.SITE_ALLOW_MULTI_TERMINALS || false,
       });
 
