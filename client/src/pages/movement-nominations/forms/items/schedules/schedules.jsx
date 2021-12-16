@@ -38,12 +38,20 @@ const Schedules = ({ selected, cbFunction, closeForm }) => {
   
   const { setCount, take, offset, paginator, setPage, count } = usePagination(200);
 
-  const baseUrl = selected
+  const [mainUrl, setMainUrl] = useState(selected
     ? `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&mvitm_item_id=${selected?.mvitm_item_id}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}`
-    : `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}`;
-  const url = selected
-    ? `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&mvitm_item_id=${selected?.mvitm_item_id}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}&start_num=${take}&end_num=${offset}`
-    : `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}&start_num=${take}&end_num=${offset}`;
+    : `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}`
+  );
+  const baseUrl = mainUrl;
+  const url = mainUrl + `&start_num=${take}&end_num=${offset}`;
+
+  // const baseUrl = selected
+  //   ? `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&mvitm_item_id=${selected?.mvitm_item_id}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}`
+  //   : `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}`;
+  // const url = selected
+  //   ? `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&mvitm_item_id=${selected?.mvitm_item_id}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}&start_num=${take}&end_num=${offset}`
+  //   : `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}&start_num=${take}&end_num=${offset}`;
+
   const { data: payload, isValidating, revalidate } = useSWR(url);
 
   const [data, setData] = useState(payload?.records);
@@ -72,6 +80,17 @@ const Schedules = ({ selected, cbFunction, closeForm }) => {
     setTerminalCode('');
     setTankerCode('');
     setTripStatus('');
+    
+    // const tempUrl = (selected
+    //   ? `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&mvitm_item_id=${selected?.mvitm_item_id}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}`
+    //   : `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}`
+    // );
+    const tempUrl = (selected
+      ? `${MOVEMENT_SCHEDULES.READ}?mv_key=${selected?.mvitm_key}&mvitm_item_id=${selected?.mvitm_item_id}&shls_trip_no=${''}&supplier_code=${''}&carrier_code=${''}&shls_terminal=${''}&tnkr_code=${''}&status=${''}`
+      : `${MOVEMENT_SCHEDULES.READ}?mv_key=${''}&shls_trip_no=${''}&supplier_code=${''}&carrier_code=${''}&shls_terminal=${''}&tnkr_code=${''}&status=${''}`
+    );
+    setMainUrl(tempUrl);
+
     setPage(1);
     revalidate();
   };
@@ -97,6 +116,21 @@ const Schedules = ({ selected, cbFunction, closeForm }) => {
     setTerminalCode(!values.terminal ? '' : values.terminal);
     setTankerCode(!values.tnkr_code ? '' : values.tnkr_code);
     setTripStatus(!values.trip_status ? '' : values.trip_status);
+    
+    // useState variables may be async, so use local variables here.
+    const movKey = (selected ? selected?.mvitm_key : !values.mv_key ? '' : values.mv_key);
+    const tripNumber = (!values.shls_trip_no ? '' : values.shls_trip_no);
+    const supplierCode = (!values.supplier_code ? '' : values.supplier_code);
+    const carrierCode = (!values.carrier_code ? '' : values.carrier_code);
+    const terminalCode = (!values.terminal ? '' : values.terminal);
+    const tankerCode = (!values.tnkr_code ? '' : values.tnkr_code);
+    const tripStatus = (!values.trip_status ? '' : values.trip_status);
+    const tempUrl = (selected
+      ? `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&mvitm_item_id=${selected?.mvitm_item_id}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}`
+      : `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}`
+    );
+    setMainUrl(tempUrl);
+
     setPage(1);
     if (revalidate) revalidate();
     setSearching(false);
