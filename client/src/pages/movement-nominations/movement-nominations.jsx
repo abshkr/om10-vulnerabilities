@@ -78,7 +78,12 @@ const MovementNominations = () => {
   const [movTerminal, setMovTerminal] = useState('');
   const [movNumber, setMovNumber] = useState('');
 
-  const baseUrl =
+  // const [mainUrl, setMainUrl] = useState(`${MOVEMENT_NOMIATIONS.READ}?start_date=${useSearch?startTimeSearch:start}&end_date=${useSearch?endTimeSearch:end}&time_option=${useSearch?timeOptionSearch:timeOption}`);
+  const [mainUrl, setMainUrl] = useState(`${MOVEMENT_NOMIATIONS.READ}?start_date=${!start?'-1':start}&end_date=${!end?'-1':end}&time_option=${timeOption}`);
+  const baseUrl = mainUrl;
+  const url = mainUrl + `&start_num=${take}&end_num=${offset}`;
+
+  /* const baseUrl =
     start && end
       ? `${MOVEMENT_NOMIATIONS.READ}?start_date=${useSearch?startTimeSearch:start}&end_date=${useSearch?endTimeSearch:end}&time_option=${useSearch?timeOptionSearch:timeOption}&mv_key=${movKey}&mv_status=${movStatus}&mv_srctype=${movSrcType}&mv_terminal=${movTerminal}&mv_number=${movNumber}`
       : null;
@@ -86,7 +91,7 @@ const MovementNominations = () => {
   const url =
     start && end
       ? `${MOVEMENT_NOMIATIONS.READ}?start_date=${useSearch?startTimeSearch:start}&end_date=${useSearch?endTimeSearch:end}&time_option=${useSearch?timeOptionSearch:timeOption}&mv_key=${movKey}&mv_status=${movStatus}&mv_srctype=${movSrcType}&mv_terminal=${movTerminal}&mv_number=${movNumber}&start_num=${take}&end_num=${offset}`
-      : null;
+      : null; */
 
   const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
   /* const { data: payload, isValidating, revalidate } = useSWR({url: `${MOVEMENT_NOMIATIONS.READ}`, args: {
@@ -118,6 +123,9 @@ const MovementNominations = () => {
   const setRange = (start, end) => {
     setStart(start);
     setEnd(end);
+    const tempUrl = `${MOVEMENT_NOMIATIONS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}&mv_key=${movKey}&mv_status=${movStatus}&mv_srctype=${movSrcType}&mv_terminal=${movTerminal}&mv_number=${movNumber}`;
+    setMainUrl(tempUrl);
+    setPage(1);
   };
 
   const onRefresh = () => {
@@ -137,6 +145,10 @@ const MovementNominations = () => {
     setMovSrcType('');
     setMovTerminal('');
     setMovNumber('');
+    // const tempUrl = `${MOVEMENT_NOMIATIONS.READ}?start_date=${useSearch?startTimeSearch:start}&end_date=${useSearch?endTimeSearch:end}&time_option=${useSearch?timeOptionSearch:timeOption}`;
+    const tempUrl = `${MOVEMENT_NOMIATIONS.READ}?start_date=${!start?'-1':start}&end_date=${!end?'-1':end}&time_option=${timeOption}`;
+    setMainUrl(tempUrl);
+
     setPage(1);
     if (revalidate) revalidate();
 
@@ -177,6 +189,20 @@ const MovementNominations = () => {
     setEndTimeSearch(values.use_date_range ? (!values.end_date ? '-1' : values.end_date) : '-1');
     setTimeOptionSearch(values.use_date_range ? values.time_option : (filterByExpiry ? 'MV_DTIM_EXPIRY' : 'MV_DTIM_CREATE'));
     setUseSearch(true);
+    
+    const movKey = (!values.mv_key ? '' : values?.mv_key);
+    const movStatus = (!values.mv_status ? '' : values?.mv_status);
+    const movSrcType = (!values.mv_srctype ? '' : values?.mv_srctype);
+    const movTerminal = (!values.mv_terminal ? '' : values?.mv_terminal);
+    const movNumber = (!values.mv_number ? '' : values?.mv_number);
+    const useDateRange = (!values.use_date_range ? 'N': 'Y');
+    const startTimeSearch = (values.use_date_range ? (!values.start_date ? '-1' : values.start_date) : '-1');
+    const endTimeSearch = (values.use_date_range ? (!values.end_date ? '-1' : values.end_date) : '-1');
+    const timeOptionSearch = (values.use_date_range ? values.time_option : (filterByExpiry ? 'MV_DTIM_EXPIRY' : 'MV_DTIM_CREATE'));
+    // const tempUrl = `${MOVEMENT_NOMIATIONS.READ}?start_date=${useSearch?startTimeSearch:start}&end_date=${useSearch?endTimeSearch:end}&time_option=${useSearch?timeOptionSearch:timeOption}&mv_key=${movKey}&mv_status=${movStatus}&mv_srctype=${movSrcType}&mv_terminal=${movTerminal}&mv_number=${movNumber}`;
+    const tempUrl = `${MOVEMENT_NOMIATIONS.READ}?start_date=${startTimeSearch}&end_date=${endTimeSearch}&time_option=${timeOptionSearch}&mv_key=${movKey}&mv_status=${movStatus}&mv_srctype=${movSrcType}&mv_terminal=${movTerminal}&mv_number=${movNumber}`;
+    setMainUrl(tempUrl);
+
     setPage(1);
     if (revalidate) revalidate();
     setSearching(false);
