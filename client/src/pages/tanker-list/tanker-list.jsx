@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 
-import { Page, DataTable, Download, PageDownloader, PageExporter, WindowSearch } from '../../components';
+import { Page, DataTable, Download, PageDownloader, PageExporter, WindowSearch, WindowSearchForm } from '../../components';
 import api, { TANKER_LIST, SITE_CONFIGURATION } from '../../api';
 import columns from './columns';
 import { useAuth, useConfig, useQuery } from '../../hooks';
@@ -39,13 +39,19 @@ const TankerList = () => {
 
   const access = useAuth('M_TANKERS');
 
-  const baseUrl = `${TANKER_LIST.READ}?pgflag=${
+  const [mainUrl, setMainUrl] = useState(`${TANKER_LIST.READ}?pgflag=${
     pagingFlag ? 'Y' : 'N'
-  }&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`;
+  }&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`);
+  const baseUrl = mainUrl;
+  const url = mainUrl + `&start_num=${take}&end_num=${offset}`;
 
-  const url = `${TANKER_LIST.READ}?pgflag=${
-    pagingFlag ? 'Y' : 'N'
-  }&start_num=${take}&end_num=${offset}&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`;
+  // const baseUrl = `${TANKER_LIST.READ}?pgflag=${
+  //   pagingFlag ? 'Y' : 'N'
+  // }&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`;
+  // const url = `${TANKER_LIST.READ}?pgflag=${
+  //   pagingFlag ? 'Y' : 'N'
+  // }&start_num=${take}&end_num=${offset}&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`;
+
   const { data: payload, isValidating, revalidate } = useSWR(pagingFlag === undefined ? null : url, { revalidateOnFocus: false });
 
   const { data: expiryTypes } = useSWR(TANKER_LIST.EXPIRY, { revalidateOnFocus: false });
@@ -72,6 +78,13 @@ const TankerList = () => {
     ];
 
     await api.post(SITE_CONFIGURATION.UPDATE, values);
+    
+    const tempUrl = (`${TANKER_LIST.READ}?pgflag=${
+      v ? 'Y' : 'N'
+    }&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`);
+    setMainUrl(tempUrl);
+
+    setPage(1);
   };
 
   const onRefresh = () => {
@@ -82,12 +95,27 @@ const TankerList = () => {
     setTnkrEtyp('');
     setTnkrLock('');
     setTnkrActive('');
+    
+    // const tempUrl = (`${TANKER_LIST.READ}?pgflag=${
+    //   pagingFlag ? 'Y' : 'N'
+    // }&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`);
+    const tempUrl = (`${TANKER_LIST.READ}?pgflag=${
+      pagingFlag ? 'Y' : 'N'
+    }&tnkr_code=${''}&tnkr_carrier=${''}&tnkr_owner=${''}&tnkr_etyp=${''}&tnkr_lock=${''}&tnkr_active=${''}`);
+    setMainUrl(tempUrl);
+
     setPage(1);
     revalidate();
   };
 
+  const onLocate = (value) => {
+    setSearch({
+      tnkr_code: value,
+    });
+  };
+
   const setSearch = (values) => {
-    if (
+    /* if (
       !values.tnkr_code &&
       !values.tnkr_carrier &&
       !values.tnkr_owner &&
@@ -96,7 +124,7 @@ const TankerList = () => {
       !values.tnkr_active
     ) {
       return;
-    }
+    } */
 
     setSearching(true);
     setTnkrCode(!values.tnkr_code ? '' : values.tnkr_code);
@@ -105,6 +133,19 @@ const TankerList = () => {
     setTnkrEtyp(!values.tnkr_etp ? '' : values.tnkr_etp);
     setTnkrLock(values.tnkr_lock === undefined ? '' : values.tnkr_lock);
     setTnkrActive(values.tnkr_active === undefined ? '' : values.tnkr_active);
+    
+    // useState variables may be async, so use local variables here.
+    const tnkrCode = (!values.tnkr_code ? '' : values.tnkr_code);
+    const tnkrCarrier = (!values.tnkr_carrier ? '' : values.tnkr_carrier);
+    const tnkrOwner = (!values.tnkr_owner ? '' : values.tnkr_owner);
+    const tnkrEtyp = (!values.tnkr_etp ? '' : values.tnkr_etp);
+    const tnkrLock = (values.tnkr_lock === undefined ? '' : values.tnkr_lock);
+    const tnkrActive = (values.tnkr_active === undefined ? '' : values.tnkr_active);
+    const tempUrl = (`${TANKER_LIST.READ}?pgflag=${
+      pagingFlag ? 'Y' : 'N'
+    }&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`);
+    setMainUrl(tempUrl);
+
     setPage(1);
     revalidate();
     setSearching(false);
@@ -193,7 +234,7 @@ const TankerList = () => {
         type="primary"
         icon={<FileSearchOutlined />}
         onClick={() =>
-          WindowSearch(
+          WindowSearchForm(
             setSearch,
             t('operations.search'),
             {
@@ -202,6 +243,14 @@ const TankerList = () => {
               tnkr_owner: true,
               tnkr_etyp: true,
               tnkr_flags: true,
+            },
+            {
+              tnkr_code_input: tnkrCode,
+              tnkr_carrier: tnkrCarrier,
+              tnkr_owner: tnkrOwner,
+              tnkr_etp: tnkrEtyp,
+              tnkr_lock: tnkrLock,
+              tnkr_active: tnkrActive,
             },
             false
           )
@@ -263,7 +312,7 @@ const TankerList = () => {
           expiryTypes={expiryTypes}
           config={config}
           tankers={data}
-          setTnkrCode={setTnkrCode}
+          onLocate={onLocate}
           setPage={setPage}
         />
       )}

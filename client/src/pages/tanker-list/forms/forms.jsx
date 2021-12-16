@@ -59,7 +59,7 @@ const FormModal = ({
   expiryTypes,
   config,
   tankers,
-  setTnkrCode,
+  onLocate,
   setPage,
 }) => {
   const { t } = useTranslation();
@@ -99,9 +99,9 @@ const FormModal = ({
       setFilterValue(' ');
     } */
     if (tnkr_code) {
-      setTnkrCode(tnkr_code);
+      onLocate(tnkr_code);
     } else {
-      setTnkrCode('');
+      onLocate('');
     }
     setPage(1);
     revalidate();
