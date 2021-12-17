@@ -9,17 +9,22 @@ class Allocation extends CommonClass
 {
     protected $TABLE_NAME = 'LOCKAL';
     protected $VIEW_NAME = 'GUI_ALLOCATIONS';
-    protected $primary_keys = array("lockatyp_at_type", "lockatyp_at_cmpy", "lockal_supl");
-    protected $view_keys = array("alloc_type", "alloc_cmpycode", "alloc_suppcode");
+    protected $primary_keys = array("lockal_index", "lockatyp_at_type", "lockatyp_at_cmpy", "lockal_supl");
+    protected $view_keys = array("alloc_index", "alloc_type", "alloc_cmpycode", "alloc_suppcode");
 
     protected $del_n_ins_children = false;   //Because ALLOCS has child ALL_CHILD
     
     protected $table_view_map = array(
+        "LOCKAL_INDEX" => "ALLOC_INDEX",
         "LOCKATYP_AT_TYPE" => "ALLOC_TYPE",
         "LOCKATYP_AT_CMPY" => "ALLOC_CMPYCODE",
         "LOCKAL_SUPL" => "ALLOC_SUPPCODE",
         "LOCKAL_LOCK" => "ALLOC_LOCK",
         "LOCKAL_PERIOD" => "ALLOC_PERIOD",
+        "LOCKAL_START_DMY" => "ALLOC_START_DATE",
+        "LOCKAL_END_DMY" => "ALLOC_END_DATE",
+        // "LOCKAL_NEXT_DMY" => "ALLOC_NEXT_DATE",
+        "LOCKAL_COMMENTS" => "ALLOC_COMMENTS",
         "ALLOC_LIMIT" => "AITEM_QTYLIMIT",
         "ALL_PROD_PRODCODE" => "AITEM_PRODCODE",
         "ALLOC_UNITS" => "AITEM_PRODUNIT"
@@ -31,15 +36,19 @@ class Allocation extends CommonClass
         "AITEM_QTYLEFT" => 0,
         "AITEM_PRODUNIT",
         "ALLOC_LOCK",
+        // "ALLOC_INDEX",
     );
 
     protected function retrieve_children_data()
     {
         $query = "SELECT * FROM GUI_ALLOCATION_ITEMS
-            WHERE AITEM_TYPE = :aitem_type
+            WHERE 
+                AITEM_INDEX = :aitem_index
+                AND AITEM_TYPE = :aitem_type
                 AND AITEM_CMPYCODE = :aitem_cmpycode
                 AND AITEM_SUPPCODE = :aitem_suppcode";
         $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':aitem_index', $this->alloc_index);
         oci_bind_by_name($stmt, ':aitem_type', $this->alloc_type);
         oci_bind_by_name($stmt, ':aitem_cmpycode', $this->alloc_cmpycode);
         oci_bind_by_name($stmt, ':aitem_suppcode', $this->alloc_suppcode);
@@ -52,6 +61,7 @@ class Allocation extends CommonClass
 
         $tank_max_flows = array();
         while ($flow_row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            // note: may need to use ($flow_row['AITEM_PRODCODE'] + '_' + $flow_row['AITEM_SUPPCODE'])
             $tank_max_flows[$flow_row['AITEM_PRODCODE']] = $flow_row;
             // array_push($tank_max_flows, $base_item);
         }
@@ -62,21 +72,21 @@ class Allocation extends CommonClass
 
     protected function journal_children_change($journal, $old, $new)
     {
-        $module = "allocation products";
+        $module = "ALLOCS";
         foreach ($old as $prod => $alloc_item) {
             if (isset($new[$prod]) &&
                 $alloc_item['AITEM_QTYLIMIT'] != $new[$prod]['AITEM_QTYLIMIT']) {
-                $record = sprintf("alloc type:%s, cmpy:%s, supp:%s, prod:%s",
+                $record = sprintf("all_atky_at_type:%s, all_atky_at_cmpy:%s, all_prod_prodcmpy:%s, all_prod_prodcode:%s",
                     $this->alloc_type, $this->alloc_cmpycode, $this->alloc_suppcode, $prod);
-                $journal->valueChange($module, $record, "quantity allocated", $alloc_item['AITEM_QTYLIMIT'], $new[$prod]['AITEM_QTYLIMIT']);
+                $journal->valueChange($module, $record, "ALLOC_LIMIT", $alloc_item['AITEM_QTYLIMIT'], $new[$prod]['AITEM_QTYLIMIT']);
             }
 
             if (!isset($new[$prod])) {
                 $jnl_data[0] = Utilities::getCurrPsn();
                 $jnl_data[1] = $module;
-                $jnl_data[2] = sprintf("alloc type:%s, cmpy:%s, supp:%s",
+                $jnl_data[2] = sprintf("all_atky_at_type:%s, all_atky_at_cmpy:%s, all_prod_prodcmpy:%s",
                     $this->alloc_type, $this->alloc_cmpycode, $this->alloc_suppcode);
-                $jnl_data[3] = sprintf("product:%s", $prod);
+                $jnl_data[3] = sprintf("all_prod_prodcode:%s", $prod);
 
                 if (!$journal->jnlLogEvent(
                     Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
@@ -94,9 +104,9 @@ class Allocation extends CommonClass
             if (!isset($old[$prod])) {
                 $jnl_data[0] = Utilities::getCurrPsn();
                 $jnl_data[1] = $module;
-                $jnl_data[2] = sprintf("alloc type:%s, cmpy:%s, supp:%s",
+                $jnl_data[2] = sprintf("all_atky_at_type:%s, all_atky_at_cmpy:%s, all_prod_prodcmpy:%s",
                     $this->alloc_type, $this->alloc_cmpycode, $this->alloc_suppcode);
-                $jnl_data[3] = sprintf("product:%s", $prod);
+                $jnl_data[3] = sprintf("all_prod_prodcode:%s", $prod);
 
                 if (!$journal->jnlLogEvent(
                     Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
@@ -115,12 +125,15 @@ class Allocation extends CommonClass
     {
         $query = "UPDATE ALLOCS
         SET ALLOC_LEFT = ALLOC_LIMIT
-        WHERE ALL_ATKY_AT_TYPE = :alloc_type
+        WHERE 
+            ALL_INDEX = :alloc_index
+            AND ALL_ATKY_AT_TYPE = :alloc_type
             AND ALL_ATKY_AT_CMPY = :alloc_cmpycode
             AND ALL_PROD_PRODCMPY = :alloc_suppcode
             AND ALL_PROD_PRODCODE = :aitem_prodcode
         ";
         $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':alloc_index', $this->aitem_index);
         oci_bind_by_name($stmt, ':alloc_suppcode', $this->aitem_suppcode);
         oci_bind_by_name($stmt, ':alloc_type', $this->aitem_type);
         oci_bind_by_name($stmt, ':alloc_cmpycode', $this->aitem_cmpycode);
@@ -131,6 +144,8 @@ class Allocation extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return false;
         }
+
+        // JOURNAL - TODO
 
         return true;
     }
@@ -162,6 +177,11 @@ class Allocation extends CommonClass
             }
         }
 
+        // get the next alloc_index:
+        if (!isset($this->alloc_index) || $this->alloc_index < 0) {
+            $this->alloc_index = $this->next_alloc_index();
+        }
+
         return true;
     }
 
@@ -174,11 +194,14 @@ class Allocation extends CommonClass
     {
         $query = "UPDATE LOCKAL
         SET LOCKAL_DMY = SYSDATE
-        WHERE LOCKATYP_AT_TYPE = :aitem_type
+        WHERE 
+            LOCKAL_INDEX = :aitem_index
+            AND LOCKATYP_AT_TYPE = :aitem_type
             AND LOCKATYP_AT_CMPY = :aitem_cmpycode
             AND LOCKAL_SUPL = :aitem_suppcode
         ";
         $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':aitem_index', $this->alloc_index);
         oci_bind_by_name($stmt, ':aitem_suppcode', $this->alloc_suppcode);
         oci_bind_by_name($stmt, ':aitem_type', $this->alloc_type);
         oci_bind_by_name($stmt, ':aitem_cmpycode', $this->alloc_cmpycode);
@@ -205,10 +228,13 @@ class Allocation extends CommonClass
                 if ($alloc->aitem_prodcode == $prodcode) {
                     if ($alloc->aitem_qtylimit == 0) {
                         $query = "DELETE FROM ALL_CHILD
-                            WHERE ALCH_ALP_ALL_PROD_PRODCMPY = :alloc_suppcode
+                            WHERE 
+                                ALCH_ALP_ALL_INDEX = :alloc_index
+                                AND ALCH_ALP_ALL_PROD_PRODCMPY = :alloc_suppcode
                                 AND ALCH_ALP_ALL_ATKY_AT_TYPE = :alloc_type
                                 AND ALCH_ALP_ALL_ATKY_AT_CMPY = :alloc_cmpycode";
                         $stmt = oci_parse($this->conn, $query);
+                        oci_bind_by_name($stmt, ':alloc_index', $this->alloc_index);
                         oci_bind_by_name($stmt, ':alloc_suppcode', $this->alloc_suppcode);
                         oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
                         oci_bind_by_name($stmt, ':alloc_cmpycode', $this->alloc_cmpycode);
@@ -219,11 +245,14 @@ class Allocation extends CommonClass
                         }
                         
                         $query = "DELETE FROM ALLOCS 
-                            WHERE ALL_PROD_PRODCMPY = :aitem_suppcode
+                            WHERE 
+                                ALL_INDEX = :aitem_index
+                                AND ALL_PROD_PRODCMPY = :aitem_suppcode
                                 AND ALL_ATKY_AT_TYPE = :aitem_type
                                 AND ALL_ATKY_AT_CMPY = :aitem_cmpycode
                                 AND ALL_PROD_PRODCODE = :aitem_prodcode";
                         $stmt = oci_parse($this->conn, $query);
+                        oci_bind_by_name($stmt, ':aitem_index', $this->alloc_index);
                         oci_bind_by_name($stmt, ':aitem_prodcode', $alloc->aitem_prodcode);
                         oci_bind_by_name($stmt, ':aitem_suppcode', $this->alloc_suppcode);
                         oci_bind_by_name($stmt, ':aitem_type', $this->alloc_type);
@@ -239,11 +268,14 @@ class Allocation extends CommonClass
                             SET ALLOC_LIMIT = :aitem_qtylimit,
                                 ALLOC_LEFT = :new_left,
                                 ALLOC_UNITS = :aitem_produnit
-                            WHERE ALL_PROD_PRODCMPY = :aitem_suppcode
+                            WHERE 
+                                ALL_INDEX = :aitem_index
+                                AND ALL_PROD_PRODCMPY = :aitem_suppcode
                                 AND ALL_ATKY_AT_TYPE = :aitem_type
                                 AND ALL_ATKY_AT_CMPY = :aitem_cmpycode
                                 AND ALL_PROD_PRODCODE = :aitem_prodcode";
                         $stmt = oci_parse($this->conn, $query);
+                        oci_bind_by_name($stmt, ':aitem_index', $this->alloc_index);
                         oci_bind_by_name($stmt, ':aitem_prodcode', $alloc->aitem_prodcode);
                         oci_bind_by_name($stmt, ':aitem_suppcode', $this->alloc_suppcode);
                         oci_bind_by_name($stmt, ':aitem_qtylimit', $alloc->aitem_qtylimit);
@@ -275,6 +307,7 @@ class Allocation extends CommonClass
                 ALLOC_LEFT,
                 ALLOC_LIMIT,
                 ALLOC_UNITS,
+                ALL_INDEX,
                 ALL_ATKY_AT_TYPE,
                 ALL_ATKY_AT_CMPY,
                 ALLOC_PER_CHILD)
@@ -284,11 +317,13 @@ class Allocation extends CommonClass
                 :aitem_qtylimit,
                 :aitem_qtylimit,
                 :aitem_produnit,
+                :aitem_index,
                 :aitem_type,
                 :aitem_cmpycode,
                 NULL
             )";
             $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':aitem_index', $this->alloc_index);
             oci_bind_by_name($stmt, ':aitem_prodcode', $alloc->aitem_prodcode);
             oci_bind_by_name($stmt, ':aitem_suppcode', $this->alloc_suppcode);
             oci_bind_by_name($stmt, ':aitem_qtylimit', $alloc->aitem_qtylimit);
@@ -327,6 +362,7 @@ class Allocation extends CommonClass
                 ALLOC_LEFT,
                 ALLOC_LIMIT,
                 ALLOC_UNITS,
+                ALL_INDEX,
                 ALL_ATKY_AT_TYPE,
                 ALL_ATKY_AT_CMPY,
                 ALLOC_PER_CHILD)
@@ -336,11 +372,13 @@ class Allocation extends CommonClass
                 :aitem_qtylimit,
                 :aitem_qtylimit,
                 :aitem_produnit,
+                :aitem_index,
                 :aitem_type,
                 :aitem_cmpycode,
                 NULL
             )";
             $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':aitem_index', $this->alloc_index);
             oci_bind_by_name($stmt, ':aitem_prodcode', $value->aitem_prodcode);
             oci_bind_by_name($stmt, ':aitem_suppcode', $this->alloc_suppcode);
             oci_bind_by_name($stmt, ':aitem_qtylimit', $value->aitem_qtylimit);
@@ -365,10 +403,13 @@ class Allocation extends CommonClass
             __FILE__, __LINE__);
 
         $query = "DELETE FROM ALL_CHILD
-            WHERE ALCH_ALP_ALL_PROD_PRODCMPY = :alloc_suppcode
+            WHERE 
+                ALCH_ALP_ALL_INDEX = :alloc_index
+                AND ALCH_ALP_ALL_PROD_PRODCMPY = :alloc_suppcode
                 AND ALCH_ALP_ALL_ATKY_AT_TYPE = :alloc_type
                 AND ALCH_ALP_ALL_ATKY_AT_CMPY = :alloc_cmpycode";
         $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':alloc_index', $this->alloc_index);
         oci_bind_by_name($stmt, ':alloc_suppcode', $this->alloc_suppcode);
         oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
         oci_bind_by_name($stmt, ':alloc_cmpycode', $this->alloc_cmpycode);
@@ -382,10 +423,13 @@ class Allocation extends CommonClass
         }
 
         $query = "DELETE FROM ALLOCS
-            WHERE ALL_PROD_PRODCMPY = :aitem_suppcode
+            WHERE 
+                ALL_INDEX = :aitem_index
+                AND ALL_PROD_PRODCMPY = :aitem_suppcode
                 AND ALL_ATKY_AT_TYPE = :aitem_type
                 AND ALL_ATKY_AT_CMPY = :aitem_cmpycode";
         $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':aitem_index', $this->alloc_index);
         oci_bind_by_name($stmt, ':aitem_suppcode', $this->alloc_suppcode);
         oci_bind_by_name($stmt, ':aitem_cmpycode', $this->alloc_cmpycode);
         oci_bind_by_name($stmt, ':aitem_type', $this->alloc_type);
@@ -404,6 +448,9 @@ class Allocation extends CommonClass
     public function read()
     {
         //write_log("DB error:" . print_r($this, true), __FILE__, __LINE__, LogLevel::ERROR);
+        if (!isset($this->alloc_index)) {
+            $this->alloc_index = -1;
+        }
         if (!isset($this->alloc_type)) {
             $this->alloc_type = -1;
         }
@@ -440,6 +487,7 @@ class Allocation extends CommonClass
                 AND ('-1' = :alloc_cmpycode OR ALLOC_CMPYCODE = :alloc_cmpycode)
                 AND ('-1' = :alloc_suppcode OR ALLOC_SUPPCODE = :alloc_suppcode)
                 AND (-1 = :alloc_lock OR ALLOC_LOCK = :alloc_lock)
+                AND (-1 = :alloc_index OR ALLOC_INDEX = :alloc_index)
         ";
 
         //        AND (:start_date = '-1' OR ALLOC_DATETIME > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
@@ -476,6 +524,7 @@ class Allocation extends CommonClass
         oci_bind_by_name($stmt, ':alloc_cmpycode', $this->alloc_cmpycode);
         oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
         oci_bind_by_name($stmt, ':alloc_lock', $this->alloc_lock);
+        oci_bind_by_name($stmt, ':alloc_index', $this->alloc_index);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
@@ -566,7 +615,9 @@ class Allocation extends CommonClass
     {
         if (isset($this->supplier)) {
             $query = "
-            SELECT NVL(GUI_ALLOCATION_ITEMS.AITEM_TYPE, ALL_PRODS.ALLOC_TYPE) AITEM_TYPE,
+            SELECT 
+                NVL(GUI_ALLOCATION_ITEMS.AITEM_INDEX, ALL_PRODS.ALLOC_INDEX) AITEM_INDEX,
+                NVL(GUI_ALLOCATION_ITEMS.AITEM_TYPE, ALL_PRODS.ALLOC_TYPE) AITEM_TYPE,
                 NVL(AITEM_TYPENAME, ALLOC_TYPENAME) AITEM_TYPENAME,
                 NVL(AITEM_CMPYCODE, ALLOC_CMPYCODE) AITEM_CMPYCODE,
                 NVL(AITEM_CMPYNAME, ALLOC_CMPYNAME) AITEM_CMPYNAME,
@@ -586,6 +637,7 @@ class Allocation extends CommonClass
                 SELECT PROD_CODE,
                     PROD_CMPY,
                     PROD_NAME,
+                    NULL ALLOC_INDEX,
                     NULL ALLOC_TYPE,
                     NULL ALLOC_TYPENAME,
                     NULL ALLOC_CMPYCODE,
@@ -600,8 +652,10 @@ class Allocation extends CommonClass
             ) ALL_PRODS,
             GUI_ALLOCATION_ITEMS
 	        , UNIT_SCALE_VW					aunit
-            WHERE ALL_PRODS.PROD_CODE = GUI_ALLOCATION_ITEMS.AITEM_PRODCODE(+)
+            WHERE 
+                ALL_PRODS.PROD_CODE = GUI_ALLOCATION_ITEMS.AITEM_PRODCODE(+)
                 AND ALL_PRODS.PROD_CMPY = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
+                AND ALL_PRODS.ALLOC_INDEX = GUI_ALLOCATION_ITEMS.AITEM_INDEX(+)
                 AND ALL_PRODS.ALLOC_TYPE = GUI_ALLOCATION_ITEMS.AITEM_TYPE(+)
                 AND ALL_PRODS.ALLOC_CMPYCODE = GUI_ALLOCATION_ITEMS.AITEM_CMPYCODE(+)
                 AND ALL_PRODS.ALLOC_SUPPCODE = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
@@ -612,7 +666,9 @@ class Allocation extends CommonClass
             oci_bind_by_name($stmt, ':supplier', $this->supplier);
         } else {
             $query = "
-            SELECT NVL(GUI_ALLOCATION_ITEMS.AITEM_TYPE, ALL_PRODS.ALLOC_TYPE) AITEM_TYPE,
+            SELECT 
+                NVL(GUI_ALLOCATION_ITEMS.AITEM_INDEX, ALL_PRODS.ALLOC_INDEX) AITEM_INDEX,
+                NVL(GUI_ALLOCATION_ITEMS.AITEM_TYPE, ALL_PRODS.ALLOC_TYPE) AITEM_TYPE,
                 NVL(AITEM_TYPENAME, ALLOC_TYPENAME) AITEM_TYPENAME,
                 NVL(AITEM_CMPYCODE, ALLOC_CMPYCODE) AITEM_CMPYCODE,
                 NVL(AITEM_CMPYNAME, ALLOC_CMPYNAME) AITEM_CMPYNAME,
@@ -632,6 +688,7 @@ class Allocation extends CommonClass
                 SELECT PROD_CODE,
                     PROD_CMPY,
                     PROD_NAME,
+                    ALLOC_INDEX,
                     ALLOC_TYPE,
                     ALLOC_TYPENAME,
                     ALLOC_CMPYCODE,
@@ -643,6 +700,7 @@ class Allocation extends CommonClass
                     ALLOC_PERIOD
                 FROM PRODUCTS, GUI_ALLOCATIONS
                 WHERE PRODUCTS.PROD_CMPY = GUI_ALLOCATIONS.ALLOC_SUPPCODE
+                    AND ALLOC_INDEX = :alloc_index
                     AND ALLOC_TYPE = :alloc_type
                     AND ALLOC_CMPYCODE = :alloc_cmpy
                     AND ALLOC_SUPPCODE = :alloc_supp
@@ -651,6 +709,7 @@ class Allocation extends CommonClass
 	        , UNIT_SCALE_VW					aunit
             WHERE ALL_PRODS.PROD_CODE = GUI_ALLOCATION_ITEMS.AITEM_PRODCODE(+)
                 AND ALL_PRODS.PROD_CMPY = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
+                AND ALL_PRODS.ALLOC_INDEX = GUI_ALLOCATION_ITEMS.AITEM_INDEX(+)
                 AND ALL_PRODS.ALLOC_TYPE = GUI_ALLOCATION_ITEMS.AITEM_TYPE(+)
                 AND ALL_PRODS.ALLOC_CMPYCODE = GUI_ALLOCATION_ITEMS.AITEM_CMPYCODE(+)
                 AND ALL_PRODS.ALLOC_SUPPCODE = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
@@ -658,6 +717,7 @@ class Allocation extends CommonClass
             ORDER BY AITEM_QTYLIMIT DESC, PROD_CODE
             ";
             $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':alloc_index', $this->alloc_index);
             oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
             oci_bind_by_name($stmt, ':alloc_cmpy', $this->alloc_cmpycode);
             oci_bind_by_name($stmt, ':alloc_supp', $this->alloc_suppcode);
@@ -676,7 +736,10 @@ class Allocation extends CommonClass
         $query = "
             SELECT COUNT(*) AS CNT 
             FROM LOCKAL 
-            WHERE LOCKATYP_AT_TYPE=:at_type AND LOCKATYP_AT_CMPY=:at_cmpy AND LOCKAL_SUPL=:supplier
+            WHERE 
+                LOCKATYP_AT_TYPE=:at_type 
+                AND LOCKATYP_AT_CMPY=:at_cmpy 
+                AND LOCKAL_SUPL=:supplier
         ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':at_type', $this->at_type);
@@ -689,5 +752,58 @@ class Allocation extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    public function check_multi_allocation()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT 
+            FROM LOCKAL 
+            WHERE 
+                LOCKATYP_AT_TYPE=:at_type 
+                AND LOCKATYP_AT_CMPY=:at_cmpy 
+                AND LOCKAL_SUPL=:supplier
+                AND LOCKAL_LOCK = :lock_type
+                AND (LOCKAL_LOCK!=3 OR LOCKAL_PERIOD = :period_type)
+        ";
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':lock_type', $this->lock_type);
+        oci_bind_by_name($stmt, ':period_type', $this->period_type);
+        oci_bind_by_name($stmt, ':at_type', $this->at_type);
+        oci_bind_by_name($stmt, ':at_cmpy', $this->at_cmpy);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function next_alloc_index()
+    {
+        $query = "
+            SELECT NVL(MAX(LOCKAL_INDEX), 0) + 1 NEXT_NO
+            FROM LOCKAL 
+            WHERE 
+                LOCKATYP_AT_TYPE = :alloc_type 
+                AND LOCKATYP_AT_CMPY = :alloc_cmpycode 
+                AND LOCKAL_SUPL = :alloc_suppcode
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':alloc_suppcode', $this->alloc_suppcode);
+        oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
+        oci_bind_by_name($stmt, ':alloc_cmpycode', $this->alloc_cmpycode);
+
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return -1;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        return $row['NEXT_NO'];
     }
 }

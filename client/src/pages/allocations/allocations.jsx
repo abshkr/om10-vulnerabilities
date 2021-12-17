@@ -13,6 +13,7 @@ import columns from './columns';
 import auth from '../../auth';
 
 import Forms from './forms';
+import NewForms from './forms/new-forms';
 import api from 'api';
 import _ from 'lodash';
 
@@ -60,11 +61,17 @@ const Allocations = ({ popup, params }) => {
     setRefreshed(true);
 
     // Don't need revalidate, let useSWR handle itself while parameter changes
-    // revalidate();
+    revalidate();
   };
 
   const locateLockal = (values) => {
-    if (!values.alloc_type && !values.alloc_cmpycode && !values.alloc_suppcode && !values.alloc_lock) {
+    if (
+      !values.alloc_type &&
+      !values.alloc_cmpycode &&
+      !values.alloc_suppcode &&
+      !values.alloc_lock &&
+      !values.alloc_index
+    ) {
       return;
     }
 
@@ -77,6 +84,7 @@ const Allocations = ({ popup, params }) => {
           alloc_cmpycode: values.alloc_cmpycode,
           alloc_suppcode: values.alloc_suppcode,
           alloc_lock: values.alloc_lock,
+          alloc_index: values.alloc_index,
         },
       })
       .then((res) => {
@@ -95,7 +103,7 @@ const Allocations = ({ popup, params }) => {
       });
   };
 
-  const fields = columns(t);
+  const fields = columns(t, config);
 
   // const data = payload?.records;
   const [data, setData] = useState(payload?.records);
@@ -162,7 +170,7 @@ const Allocations = ({ popup, params }) => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         clearFilterPlus={revalidate}
       />
-      {visible && (
+      {/* visible && !config?.siteAllocResetPeriodDateRanges && (
         <Forms
           value={selected}
           visible={visible}
@@ -170,6 +178,17 @@ const Allocations = ({ popup, params }) => {
           access={access}
           url={url}
           locateLockal={locateLockal}
+        />
+      ) */}
+      {visible && (
+        <NewForms
+          value={selected}
+          visible={visible}
+          handleFormState={handleFormState}
+          access={access}
+          url={url}
+          locateLockal={locateLockal}
+          config={config}
         />
       )}
     </Page>

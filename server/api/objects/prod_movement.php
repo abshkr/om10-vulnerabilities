@@ -5,6 +5,9 @@ include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../service/enum_service.php';
 include_once __DIR__ . '/../service/tank_service.php';
 include_once __DIR__ . '/../service/site_service.php';
+include_once __DIR__ . '/../shared/baiman_typedef.php';
+include_once __DIR__ . '/../shared/socket_client.php';
+include_once __DIR__ . '/../service/manual_trans_service.php';
 include_once 'common_class.php';
 
 class ProdMovement extends CommonClass
@@ -931,5 +934,317 @@ class ProdMovement extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    private function populate_product_mvnts_req()
+    {
+        $msg = new PRODUCT_MVMNT_REQ(); 
+        $msg->Message_Length = "000000"; /* Auto-calculate at the end of population */
+        $msg->message_number = "0000"; /* Fixed */
+        $msg->Source_system_device = "MANUAL_SYS    "; /* Fixed */
+        $msg->Source_device_flags = "0000"; /* Fixed */
+        $msg->Source_id_number = "   "; /* Fixed */
+        $msg->Dest_system_device = "BAI_999       "; /* Fixed */
+        $msg->Dest_id_number = "   "; /* Fixed */
+        $msg->Message_Type = "PRODUCT_MVMNT_REQ  "; /* Fixed */
+        $msg->Message_Version = "01.00.00"; /* Fixed */
+        $msg->pmv_number = sprintf("%09d", $this->pmv_number);
+
+        return $msg->to_string();
+    }
+
+    private function initial_baseprod($drawer, $prod, &$base, &$base_class)
+    {
+        $query = "SELECT RATIO_BASE, BASE_CAT, BCLASS_DESC 
+            FROM RATIOS, BASE_PRODS, BASECLASS 
+            WHERE RAT_PROD_PRODCMPY = :drawer 
+                AND RAT_PROD_PRODCODE = :prod 
+                AND BASE_CODE = RATIO_BASE 
+                AND BCLASS_NO = BASE_CAT";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':drawer', $drawer);
+        oci_bind_by_name($stmt, ':prod', $prod);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $base = $row['RATIO_BASE'];
+        $base_class = $row['BCLASS_DESC'];
+    }
+
+    private function initialize() 
+    {
+        $query = "SELECT 
+                TO_CHAR(NVL(pmv_date1, SYSDATE), 'DD.MM.RRRRHH24:MI:SS') pmv_date1, 
+                TO_CHAR(NVL(pmv_date2, SYSDATE), 'DD.MM.RRRRHH24:MI:SS') pmv_date2,
+                NVL(PMV_TEMPERATURE, 0) PMV_TEMPERATURE
+            FROM PRODUCT_MVMNTS WHERE PMV_NUMBER = :pmv_number";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        foreach ($row as $key => $value) {
+            $item = strtolower($key);
+            $this->$item = $value;
+        }
+
+        return true;
+    }
+
+    // Mark nomination/item to be MV_COMPLETED so it cannot be used again
+    private function finishup_nomination()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+        
+        $this->commit_mode = OCI_COMMIT_ON_SUCCESS;
+
+        $query = "UPDATE MOVEMENTS SET MV_STATUS = 5
+            WHERE MV_ID = (SELECT PMV_MV_ID FROM PRODUCT_MVMNTS WHERE PMV_NUMBER = :pmv_number)";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        $query = "UPDATE MOVEMENT_ITEMS SET MVITM_STATUS = 5
+            WHERE MVITM_MOVE_ID = (SELECT PMV_MV_ID FROM PRODUCT_MVMNTS WHERE PMV_NUMBER = :pmv_number)";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Refer to process1\baiman\baiman.pc::handle_special_movement, and https://doc.diamondkey.com/display/RD/Special+Movement+Logic
+     */
+    public function create_nomination()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        $this->initialize();
+        write_log(json_encode($this), __FILE__, __LINE__);
+
+        // Get site manager
+        $query = "SELECT CMPY_CODE SITE_MANAGER FROM COMPANYS WHERE BITAND(CMPY_TYPE, POWER(2, 0)) != 0";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return -1;
+        }
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $site_manager = $row['SITE_MANAGER'];
+
+        // Get suitable site manager product. A supplier product that has and only has pmv base product
+        $query = "SELECT RAT_PROD_PRODCODE FROM RPTOBJ_PROD_RATIOS_VW 
+            WHERE RAT_COUNT = 1 AND RAT_PROD_PRODCMPY = :site_manager AND RATIO_BASE = :pmv_prdctlnk AND ROWNUM = 1";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':site_manager', $site_manager);
+        oci_bind_by_name($stmt, ':pmv_prdctlnk', $this->pmv_prdctlnk);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(400, response("__COMPATIBLE_SITEMANAGER_PROD_FOUND__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $rat_prod_prodcode = $row['RAT_PROD_PRODCODE'];
+
+        // If there is already a nomination
+        $query = "SELECT NVL(PMV_MV_ID, -1) PMV_MV_ID FROM PRODUCT_MVMNTS WHERE PMV_NUMBER = :pmv_number";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return -1;
+        }
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        if ($row['PMV_MV_ID'] != '-1') {
+            $error = new EchoSchema(400, response("__NOMINATION_ALREADY_EXISTS__") . $row['PMV_MV_ID']);
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $special_msg = $this->populate_product_mvnts_req($this->pmv_number);
+        try {
+            $client = new SocketClient($this->conn);
+        } catch (Bay999Exception $e) {
+            $err_msg = $e->getMessage();
+            $error = new EchoSchema(400, response("__BAY999_ERROR__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return false;
+        }
+        
+        $client->send($special_msg);
+        $response = $client->get_repond();
+
+        write_log(sprintf("PRODUCT_MVMNT_REQ response:%s", $response), __FILE__, __LINE__);
+
+        if (substr($response, 0, 2) != "OK") {
+            write_log("Wrong PRODUCT_MVMNT_REQ response", __FILE__, __LINE__);
+            $err_msg = trim(substr($response, 0, 32));
+            $error = new EchoSchema(400, response("__INVALID_PRODUCT_MVMNT_REQ__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return false;
+        }
+
+        define('MV_RECEIPT', 0);
+        define('MV_DISPOSAL', 1);
+        define('MV_TRANSFER', 2);
+
+        $serv = new ManualTransactionService($this->conn);
+        $serv->set_property('supplier', trim(substr($response, 41, 20)));
+        $serv->set_property('trip_no', trim(substr($response, 32, 9)));
+        $serv->set_property('load_number', trim(substr($response, 32, 9)));
+        $serv->set_property('start_time', $this->pmv_date1);
+        $serv->set_property('finish_time', $this->pmv_date2);
+        $serv->set_property('drawer_code', trim(substr($response, 41, 20)));
+        $serv->set_property('drawer_name', "");
+        $serv->set_property('tanker_code', "SPECIAL");
+        $serv->set_property('operator_code', "");
+        $serv->set_property('order_number', 0);     //Not an open order 
+        $serv->set_property('num_of_transfers', 1); //For special movment, always 1 transfers
+
+        $num_of_transfers = 1;
+        $transfers = array();
+        for ($i = 0; $i < $num_of_transfers; ++$i) {
+            $transfers[$i] = new Manual_Transfer();
+            $transfers[$i]->Arm_Code = "";
+            //$transfers[$i]->Device_Code = "BAY01";       //Not important, baiman does not use it
+            $transfers[$i]->nr_in_tkr = 1;
+
+            $transfers[$i]->drawer_code = $site_manager;
+            $transfers[$i]->product_code = $rat_prod_prodcode;
+            
+            $transfers[$i]->dens = $this->pmv_obsvd_dens * 1000;
+            $transfers[$i]->Temperature = $this->pmv_temperature * 100;
+            $transfers[$i]->amb_vol = abs($this->pmv_close_amb - $this->pmv_open_amb) * 1000;
+            $transfers[$i]->cor_vol = abs($this->pmv_close_cor - $this->pmv_open_cor) * 1000;
+            $transfers[$i]->liq_kg = abs($this->pmv_close_kg - $this->pmv_open_kg) * 1000;
+
+            $transfers[$i]->num_of_meter = 0; // No meter info
+
+            /* Assume the drawer product has only one base. For speical movement, its reasonable */
+            $transfers[$i]->Number_of_Bases = 1;
+            $this->initial_baseprod($transfers[$i]->drawer_code, $transfers[$i]->product_code, $base, $base_class);
+            for ($j = 0; $j < $transfers[$i]->Number_of_Bases; ++$j) {
+                $transfers[$i]->bases[$j] = new Transfer_Base();
+                if ($this->pmv_srctype == '3') {
+                    // If source is TANK
+                    $transfers[$i]->bases[$j]->Tank_Code = $this->pmv_srccode;
+                } else {
+                    $transfers[$i]->bases[$j]->Tank_Code = $this->pmv_dstcode;
+                }
+                
+                $transfers[$i]->bases[$j]->product_code = $base;
+
+                $transfers[$i]->bases[$j]->prod_class = $base_class;
+                $transfers[$i]->bases[$j]->dens = $this->pmv_obsvd_dens * 1000;
+                $transfers[$i]->bases[$j]->Temperature = $this->pmv_temperature * 100;
+
+                $transfers[$i]->bases[$j]->amb_vol = abs($this->pmv_close_amb - $this->pmv_open_amb) * 1000;
+                $transfers[$i]->bases[$j]->cor_vol = abs($this->pmv_close_cor - $this->pmv_open_cor) * 1000;
+                $transfers[$i]->bases[$j]->liq_kg = abs($this->pmv_close_kg - $this->pmv_open_kg) * 1000;
+            }
+        }
+
+        $serv->set_property('transfers', $transfers);
+        $serv->set_property('is_nomination', false);
+        $serv->set_property('auto_complete', "T");          //For special, auto complete is T
+
+        $result = $serv->do_create($err_msg);
+        if (!($this->pmv_srctype == '3' && $this->pmv_dsttype == '3')) {
+            write_log("Not a transfer type, do not continue", __FILE__, __LINE__);
+            $this->finishup_nomination();
+            return $result;
+        }
+
+        if (!$result) {
+            //This means for transfer, the first schedule already goes wrong, so return it 
+            return $result;
+        }
+
+        $serv->unset_property('trsa_id');
+        $serv->unset_property('drawer_code');   //Do not set drawer so system retrieve it from db. 
+
+        /* for transfer, this is the second schedule, which is an unloading */
+        $serv->set_property('supplier', trim(substr($response, 70, 20)));
+        $serv->set_property('trip_no', trim(substr($response, 61, 9)));
+        $serv->set_property('load_number', trim(substr($response, 61, 9)));
+        $serv->set_property('start_time', $this->pmv_date1);
+        $serv->set_property('finish_time', $this->pmv_date2);
+        $serv->set_property('drawer_name', "");
+        $serv->set_property('tanker_code', "SPECIAL");
+        $serv->set_property('operator_code', "");
+        $serv->set_property('order_number', 0);     //Not an open order 
+        $serv->set_property('num_of_transfers', 1); //For special movment, always 1 transfers
+
+        $num_of_transfers = 1;
+        $transfers = array();
+        for ($i = 0; $i < $num_of_transfers; ++$i) {
+            $transfers[$i] = new Manual_Transfer();
+            $transfers[$i]->Arm_Code = "";
+            //$transfers[$i]->Device_Code = "BAY01";       //Not important, baiman does not use it
+            $transfers[$i]->nr_in_tkr = 1;
+
+            $transfers[$i]->drawer_code = $site_manager;
+            $transfers[$i]->product_code = $rat_prod_prodcode;
+            
+            $transfers[$i]->dens = $this->pmv_obsvd_dens * 1000;
+            $transfers[$i]->Temperature = $this->pmv_temperature * 100;
+            $transfers[$i]->amb_vol = abs($this->pmv_close_amb - $this->pmv_open_amb) * 1000;
+            $transfers[$i]->cor_vol = abs($this->pmv_close_cor - $this->pmv_open_cor) * 1000;
+            $transfers[$i]->liq_kg = abs($this->pmv_close_kg - $this->pmv_open_kg) * 1000;
+
+            $transfers[$i]->num_of_meter = 0; //Special movement does not have meter info
+
+            /* Assume the drawer product has only one base. For speical movement, its reasonable */
+            $transfers[$i]->Number_of_Bases = 1;
+            $this->initial_baseprod($transfers[$i]->drawer_code, $transfers[$i]->product_code, $base, $base_class);
+            for ($j = 0; $j < $transfers[$i]->Number_of_Bases; ++$j) {
+                $transfers[$i]->bases[$j] = new Transfer_Base();
+                $transfers[$i]->bases[$j]->Tank_Code = $this->pmv_dstcode;
+                $transfers[$i]->bases[$j]->product_code = $base;
+
+                $transfers[$i]->bases[$j]->prod_class = $base_class;
+                $transfers[$i]->bases[$j]->dens = $this->pmv_obsvd_dens * 1000;
+                $transfers[$i]->bases[$j]->Temperature = $this->pmv_temperature * 100;
+
+                $transfers[$i]->bases[$j]->amb_vol = abs($this->pmv_close_amb - $this->pmv_open_amb) * 1000;
+                $transfers[$i]->bases[$j]->cor_vol = abs($this->pmv_close_cor - $this->pmv_open_cor) * 1000;
+                $transfers[$i]->bases[$j]->liq_kg = abs($this->pmv_close_kg - $this->pmv_open_kg) * 1000;
+            }
+        }
+
+        $serv->set_property('transfers', $transfers);
+        $serv->set_property('is_nomination', false);
+        $serv->set_property('auto_complete', "T");          //For special, auto complete is T
+
+        $serv->do_create($err_msg);
+
+        $this->finishup_nomination();
+
+        $error = new EchoSchema(200, response("__PRODUCTMOVEMENT_NOMI_CREATED__"));
+        echo json_encode($error, JSON_PRETTY_PRINT);
+
+        return;
     }
 }

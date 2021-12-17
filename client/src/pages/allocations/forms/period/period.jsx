@@ -57,11 +57,15 @@ const PeriodForm = ({ value, units, parent, revalidate, data, onChange }) => {
       });
       return;
     }
-    if (_.find(data?.records, item => {
-      return item.aiprd_index != values.aiprd_index && 
-        (tmp_start < item.aiprd_dayend && tmp_end > item.aiprd_daystart ||
-        tmp_end > item.aiprd_daystart && tmp_start < item.aiprd_dayend);
-    })) {
+    if (
+      _.find(data?.records, (item) => {
+        return (
+          item.aiprd_index != values.aiprd_index &&
+          ((tmp_start < item.aiprd_dayend && tmp_end > item.aiprd_daystart) ||
+            (tmp_end > item.aiprd_daystart && tmp_start < item.aiprd_dayend))
+        );
+      })
+    ) {
       notification.error({
         message: t('messages.validationFailed'),
         description: t('descriptions.periodOverlap'),
@@ -70,6 +74,7 @@ const PeriodForm = ({ value, units, parent, revalidate, data, onChange }) => {
     }
 
     const record = {
+      aiprd_seq: parent?.aitem_index,
       aiprd_type: parent?.aitem_type,
       aiprd_cmpycode: parent?.aitem_cmpycode,
       aiprd_prodcode: parent?.aitem_prodcode,
@@ -241,10 +246,10 @@ const Period = ({ selected, setVisibility, visible, onChange }) => {
   const [form] = Form.useForm();
 
   const SHOULD_FETCH = !!selected;
-  
+
   const { data, isValidating, revalidate } = useSWR(
     SHOULD_FETCH
-      ? `${ALLOCATIONS.PERIOD_READ}?aiprd_type=${selected?.aitem_type}&aiprd_cmpycode=${selected?.aitem_cmpycode}&aiprd_prodcode=${selected?.aitem_prodcode}&aiprd_suppcode=${selected?.aitem_suppcode}`
+      ? `${ALLOCATIONS.PERIOD_READ}?aiprd_seq=${selected?.aitem_index}&aiprd_type=${selected?.aitem_type}&aiprd_cmpycode=${selected?.aitem_cmpycode}&aiprd_prodcode=${selected?.aitem_prodcode}&aiprd_suppcode=${selected?.aitem_suppcode}`
       : null
   );
 
@@ -297,7 +302,7 @@ const Period = ({ selected, setVisibility, visible, onChange }) => {
           >
             {t('operations.cancel')}
           </Button>
-          
+
           <Button
             type="primary"
             icon={<PlusOutlined />}
@@ -347,7 +352,11 @@ const Period = ({ selected, setVisibility, visible, onChange }) => {
                     ]}
                   >
                     <List.Item.Meta
-                      avatar={<Avatar style={{backgroundColor: item.active?'red':null}}>{item.aiprd_index}</Avatar>}
+                      avatar={
+                        <Avatar style={{ backgroundColor: item.active ? 'red' : null }}>
+                          {item.aiprd_index}
+                        </Avatar>
+                      }
                       // eslint-disable-next-line
                       title={
                         <a>

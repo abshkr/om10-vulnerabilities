@@ -145,6 +145,8 @@ const useConfig = () => {
     heatmapExtremeTo: 99999,
     site_default_shls_ld_type: '2',
     popupManualTransaction: false,
+    siteAllocResetPeriodDateRanges: false,
+    siteAllowMultiAllocations: false,
     siteEqptPaging: true,
     siteTnkrPaging: true,
     siteJnlPaging: true,
@@ -161,7 +163,7 @@ const useConfig = () => {
     saveToMeter: false,
     siteRecipeOnPercent: false,
     siteRecipeOnPipenode: false,
-    siteUseMultiTerminals: false
+    siteUseMultiTerminals: false,
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -372,12 +374,14 @@ const useConfig = () => {
         heatmapExtremeTo: configurationObject?.HEATMAP_EXTREME_TO || 99999,
         site_default_shls_ld_type: configurationObject?.SITE_DEFAULT_SHLS_LD_TYPE || '2',
         popupManualTransaction: configurationObject?.SITE_POPUP_MT || false,
-        siteEqptPaging: configurationObject?.SITE_PAGINATION_EQPT_LIST || false,
-        siteJnlPaging: configurationObject?.SITE_PAGINATION_JNL_LIST || false,
-        siteTnkrPaging: configurationObject?.SITE_PAGINATION_TNKR_LIST || false,
         siteJnlTabMode: configurationObject?.SITE_JNL_TAB_MODE || false,
         siteUseWeighbridge: configurationObject?.SITE_USE_WEIGHBRIDGE || false,
         siteUseIsotainer: configurationObject?.SITE_ISOTAINER_ENABLED || false,
+        siteAllocResetPeriodDateRanges: configurationObject?.SITE_ALLOC_RESET_PERIOD_DATERANGES || false,
+        siteAllowMultiAllocations: configurationObject?.SITE_ALLOW_MULTI_ALLOCATIONS || false,
+        siteEqptPaging: configurationObject?.SITE_PAGINATION_EQPT_LIST || true,
+        siteJnlPaging: configurationObject?.SITE_PAGINATION_JNL_LIST || true,
+        siteTnkrPaging: configurationObject?.SITE_PAGINATION_TNKR_LIST || true,
         reports_closeout_job: configurationObject?.REPORTS_CLOSEOUT_JOB || false,
         decimal_thousand_separator: configurationObject?.SITE_DEC_TH_SEPERATORS || '10',
         driver_slp_enabled: configurationObject?.DRIVER_SLP_ENABLED || false,

@@ -813,6 +813,31 @@ if (API_F == "YES") {
     }
 }
 
+class PRODUCT_MVMNT_REQ
+{
+    public $Message_Length;
+    public $message_number;
+    public $Source_system_device;
+    public $Source_device_flags;
+    public $Source_id_number;
+    public $Dest_system_device;
+    public $Dest_id_number;
+    public $Message_Type;
+    public $Message_Version;
+    public $pmv_number;
+
+    public function to_string()
+    {
+        $msg_string = $this->message_number . $this->Source_system_device . $this->Source_device_flags . $this->Source_id_number .
+        $this->Dest_system_device . $this->Dest_id_number . $this->Message_Type . $this->Message_Version . $this->pmv_number . "|";
+
+        $this->Message_Length = sprintf("%06d", strlen($msg_string) + 6);
+        $msg_string = $this->Message_Length . $msg_string;
+
+        return $msg_string;
+    }
+}
+
 class SPEC_MOVE_REQ
 {
     public $Message_Length;
@@ -824,8 +849,7 @@ class SPEC_MOVE_REQ
     public $Dest_id_number;
     public $Message_Type;
     public $Message_Version;
-    public $trip_no;
-    public $supplier;
+    public $mlitm_id;
 
     public function to_string()
     {

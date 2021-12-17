@@ -419,6 +419,26 @@ function response($case_name, $default = null, $params = null)
             "ENG" => "Jasper file does not not exist",
             "CHN" => "Jasper文件不存在"
         ),
+        "__PRODUCTMOVEMENT_NOMI_CREATED__" => array(
+            "ENG" => "Product movment nomination created and completed",
+            "CHN" => "已为油品入库产生大宗货单"
+        ),
+        "__INVALID_PRODUCT_MVMNT_REQ__" => array(
+            "ENG" => "Invalid product movement response message, please check journal or BAY999 debug",
+            "CHN" => "错误的返回信息"
+        ),
+        "__COMPATIBLE_SITEMANAGER_PROD_NOTFOUND__" => array(
+            "ENG" => "Cannot find suitable site manager product for this base product",
+            "CHN" => "没有匹配的供货商产品"
+        ),
+        "__NOMINATION_ALREADY_EXISTS__" => array(
+            "ENG" => "Nomination already exist for this product movement. Nomination ID:",
+            "CHN" => "大宗货单已经存在："
+        ),
+        "__BAY999_ERROR__" => array(
+            "ENG" => "Virtual bay error, please check status of BAY999",
+            "CHN" => "虚拟油台错误，请检查虚拟油台状态"
+        )
     );
 
     $lang = Utilities::getCurrLang();

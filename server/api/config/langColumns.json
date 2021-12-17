@@ -433,6 +433,7 @@
       "ALLOC_LEFT": "Qty Remained",
       "ALLOC_LIMIT": "Qty Allocated",
       "ALLOC_UNITS": "Alloc Unit",
+      "ALL_INDEX": "Alloc Index",
       "ALL_ATKY_AT_TYPE": "Alloc Type",
       "ALL_ATKY_AT_CMPY": "Alloc Company",
       "ALLOC_PER_CHILD": "Active Period"
@@ -499,6 +500,7 @@
       "AT_CMPY": "Alloc Company"
     },
     "ALL_CHILD": {
+      "ALCH_ALP_ALL_INDEX": "Alloc Index",
       "ALCH_ALP_ALL_ATKY_AT_TYPE": "Alloc Type",
       "ALCH_ALP_ALL_ATKY_AT_CMPY": "Alloc Company",
       "ALCH_ALP_ALL_PROD_PRODCODE": "Alloc Product Code",
@@ -2271,12 +2273,17 @@
       "LDW_LOGT_TANKDEPO": "Ldw Logt Tankdepo"
     },
     "LOCKAL": {
-      "LOCKAL_LOCK": "Lockal Lock",
-      "LOCKAL_PERIOD": "Lockal Period",
-      "LOCKAL_DMY": "Lockal Dmy",
-      "LOCKATYP_AT_TYPE": "Lockatyp Allocation Type Type",
-      "LOCKATYP_AT_CMPY": "Lockatyp Allocation Type Company",
-      "LOCKAL_SUPL": "Lockal Supl"
+      "LOCKAL_LOCK": "Lock Type",
+      "LOCKAL_PERIOD": "Reset Period",
+      "LOCKAL_DMY": "Created At",
+      "LOCKAL_START_DMY": "Start Date",
+      "LOCKAL_END_DMY": "End Date",
+      "LOCKAL_NEXT_DMY": "Next Date",
+      "LOCKAL_COMMENTS": "Comments",
+      "LOCKAL_INDEX": "Index",
+      "LOCKATYP_AT_TYPE": "Allocation Type",
+      "LOCKATYP_AT_CMPY": "Allocation Company",
+      "LOCKAL_SUPL": "Allocation Supplier"
     },
     "MENUS": {
       "MENU_ID": "Menu Id",
@@ -5385,6 +5392,7 @@
       "ALLOC_LEFT": "剩余配额量",
       "ALLOC_LIMIT": "配额总量",
       "ALLOC_UNITS": "配额计量单位",
+      "ALL_INDEX": "配额序号",
       "ALL_ATKY_AT_TYPE": "配额对象类别",
       "ALL_ATKY_AT_CMPY": "配额公司",
       "ALLOC_PER_CHILD": "配额有效期"
@@ -5451,6 +5459,7 @@
       "AT_CMPY": "配额对象公司"
     },
     "ALL_CHILD": {
+      "ALCH_ALP_ALL_INDEX": "配额序号",
       "ALCH_ALP_ALL_ATKY_AT_TYPE": "配额对象类别",
       "ALCH_ALP_ALL_ATKY_AT_CMPY": "配额公司",
       "ALCH_ALP_ALL_PROD_PRODCODE": "配额油品代码",
@@ -7226,6 +7235,11 @@
       "LOCKAL_LOCK": "配额类型",
       "LOCKAL_PERIOD": "配额重置周期",
       "LOCKAL_DMY": "配额生成日期",
+      "LOCKAL_START_DMY": "配额开始时间",
+      "LOCKAL_END_DMY": "配额结束时间",
+      "LOCKAL_NEXT_DMY": "下次重置时间",
+      "LOCKAL_COMMENTS": "备注",
+      "LOCKAL_INDEX": "序号",
       "LOCKATYP_AT_TYPE": "配额对象",
       "LOCKATYP_AT_CMPY": "配额公司",
       "LOCKAL_SUPL": "配额供应商"

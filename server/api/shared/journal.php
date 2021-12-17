@@ -56,6 +56,9 @@ class Journal
 
     // Map of table name and view name
     private $tvmaps = array(
+        "GUI_ALLOCATIONS" => "LOCKAL",
+        "GUI_ALLOCATION_ITEMS" => "ALLOCS",
+        "GUI_ALLOCATION_PERIODS" => "ALL_CHILD",
         "GUI_COMPANYS" => "COMPANYS",
         "GUI_PRODUCTS" => "PRODUCTS",
         "GUI_TANKS" => "TANKS",

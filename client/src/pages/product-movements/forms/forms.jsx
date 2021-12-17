@@ -221,6 +221,44 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
     });
   };
 
+  const onMakeNomination = async () => {
+    const values = await form.validateFields();
+    const params = {
+      ...value,
+      ...values,
+    };
+
+    Modal.confirm({
+      title: t('prompts.pmvMakeNomination'),
+      okText: t('operations.start'),
+      okType: 'primary',
+      icon: <RedoOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await api
+          .post(PRODUCT_MOVEMENTS.MAKE_NOMINATION, params)
+          .then((response) => {
+            onComplete();
+
+            notification.success({
+              message: t('messages.submitSuccess'),
+              description: t('descriptions.pmvNominationCreated'),
+            });
+          })
+
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
+            });
+          });
+      },
+    });
+  };
+
   const onCompleteBatch = () => {
     Modal.confirm({
       title: t('prompts.pmvCompleteBatch'),
@@ -490,6 +528,12 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
               disabled={!access?.canDelete}
             >
               {t('operations.delete')}
+            </Button>
+          )}
+
+          {!IS_CREATING && value.pmv_status === '3' /* Complete */ && (
+            <Button type="primary" style={{ float: 'right', marginRight: 5 }} onClick={onMakeNomination}>
+              {t('operations.createNomination')}
             </Button>
           )}
 
