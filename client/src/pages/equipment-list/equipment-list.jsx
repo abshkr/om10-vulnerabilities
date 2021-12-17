@@ -6,7 +6,7 @@ import { Button, Switch, notification } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
 
-import { Page, DataTable, Download, PageDownloader, PageExporter, WindowSearch } from '../../components';
+import { Page, DataTable, Download, PageDownloader, PageExporter, WindowSearch, WindowSearchForm } from '../../components';
 import api, { EQUIPMENT_LIST, SITE_CONFIGURATION } from '../../api';
 
 import columns from './columns';
@@ -36,7 +36,17 @@ const EquipmentList = () => {
 
   const access = useAuth('M_EQUIPMENTLIST');
 
-  const baseUrl =
+  const [mainUrl, setMainUrl] = useState(parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
+  ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${
+      pagingFlag ? 'Y' : 'N'
+    }`
+  : `${EQUIPMENT_LIST.READ}?pgflag=${
+      pagingFlag ? 'Y' : 'N'
+    }&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`);
+  const baseUrl = mainUrl;
+  const url = mainUrl + `&start_num=${take}&end_num=${offset}`;
+
+  /* const baseUrl =
     parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
       ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${
           pagingFlag ? 'Y' : 'N'
@@ -52,7 +62,8 @@ const EquipmentList = () => {
         }&start_num=${take}&end_num=${offset}`
       : `${EQUIPMENT_LIST.READ}?pgflag=${
           pagingFlag ? 'Y' : 'N'
-        }&start_num=${take}&end_num=${offset}&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
+        }&start_num=${take}&end_num=${offset}&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`; */
+
   const { data: payload, isValidating, revalidate } = useSWR(pagingFlag === undefined ? null : url, { revalidateOnFocus: false });
   const { data: expiryTypes } = useSWR(EQUIPMENT_LIST.EXPIRY, { revalidateOnFocus: false });
 
@@ -61,53 +72,16 @@ const EquipmentList = () => {
     columns(expiryTypes?.records, t, expiryDateMode, siteUseAxleWeightLimit)
   );
 
-  const handleFormState = (visibility, value) => {
-    setVisible(visibility);
-    setSelected(value);
-  };
-
   const [filterValue, setFilterValue] = useState(equipment);
 
   const page = t('pageMenu.operations');
   const name = t(config?.siteLabelUser + 'pageNames.equipmentList');
 
 
-  const onDownloadPages = async (data) => {
-    if (!pagingFlag) {
-      return data;
-    }
-
-    let counter=0;
-    let startPos=0;
-    let size=500;
-    let endPos=500;
-    let pages=[];
-    for (;;) {
-      const url =
-        parentEqpt && parentEqpt?.length > 0
-          ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${
-              pagingFlag ? 'Y' : 'N'
-            }&start_num=${startPos}&end_num=${endPos}`
-          : `${EQUIPMENT_LIST.READ}?pgflag=${
-              pagingFlag ? 'Y' : 'N'
-            }&start_num=${startPos}&end_num=${endPos}&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
-
-      const results = await api.get(url);
-      const total = results?.data?.count;
-      const items = results?.data?.records;
-      pages.push(items);
-      counter += items?.length;
-      if (counter >= total) {
-        break;
-      } else {
-        startPos = endPos + 1;
-        endPos = startPos + size;
-      }
-
-    }
-
-    return pages;
-  }
+  const handleFormState = (visibility, value) => {
+    setVisible(visibility);
+    setSelected(value);
+  };
 
   const onChangePagination = async (v) => {
     setPagingFlag(v);
@@ -121,29 +95,82 @@ const EquipmentList = () => {
     ];
 
     await api.post(SITE_CONFIGURATION.UPDATE, values);
+    
+    const tempUrl = (parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
+    ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${
+        v ? 'Y' : 'N'
+      }`
+    : `${EQUIPMENT_LIST.READ}?pgflag=${
+        v ? 'Y' : 'N'
+      }&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`);
+    setMainUrl(tempUrl);
+
+    setPage(1);
   };
 
   const onRefresh = () => {
-    // setFilterValue(' ');
+    setFilterValue(' ');
     setParentEqpt('');
     setEqptId('');
     setEqptCode('');
     setEqptOwner('');
     setEqptEtyp('');
+    
+    const parentEqpt = '';
+    // const tempUrl = (parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
+    // ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${
+    //     pagingFlag ? 'Y' : 'N'
+    //   }`
+    // : `${EQUIPMENT_LIST.READ}?pgflag=${
+    //     pagingFlag ? 'Y' : 'N'
+    //   }&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`);
+    const tempUrl = (parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
+    ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${
+        pagingFlag ? 'Y' : 'N'
+      }`
+    : `${EQUIPMENT_LIST.READ}?pgflag=${
+        pagingFlag ? 'Y' : 'N'
+      }&eqpt_id=${''}&eqpt_code=${''}&eqpt_owner=${''}&eqpt_etyp=${''}`);
+    setMainUrl(tempUrl);
+
     setPage(1);
     revalidate();
   };
 
-  const setSearch = (values) => {
-    if (!values.eqpt_id && !values.eqpt_code && !values.eqpt_owner && !values.eqpt_etp) {
-      return;
-    }
+  const onLocate = (value) => {
+    setSearch({
+      eqpt_code: value,
+    });
+  };
 
+  const setSearch = (values) => {
+    /* if (!values.eqpt_id && !values.eqpt_code && !values.eqpt_owner && !values.eqpt_etp) {
+      return;
+    } */
+    
+    setFilterValue(' ');
     setSearching(true);
+    setParentEqpt('');
     setEqptId(!values.eqpt_id ? '' : values.eqpt_id);
     setEqptCode(!values.eqpt_code ? '' : values.eqpt_code);
     setEqptOwner(!values.eqpt_owner ? '' : values.eqpt_owner);
     setEqptEtyp(!values.eqpt_etp ? '' : values.eqpt_etp);
+    
+    // useState variables may be async, so use local variables here.
+    const parentEqpt = '';
+    const eqptId = (!values.eqpt_id ? '' : values.eqpt_id);
+    const eqptCode = (!values.eqpt_code ? '' : values.eqpt_code);
+    const eqptOwner = (!values.eqpt_owner ? '' : values.eqpt_owner);
+    const eqptEtyp = (!values.eqpt_etp ? '' : values.eqpt_etp);
+    const tempUrl = (parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
+    ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${
+        pagingFlag ? 'Y' : 'N'
+      }`
+    : `${EQUIPMENT_LIST.READ}?pgflag=${
+        pagingFlag ? 'Y' : 'N'
+      }&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`);
+    setMainUrl(tempUrl);
+
     setPage(1);
     revalidate();
     setSearching(false);
@@ -233,7 +260,7 @@ const EquipmentList = () => {
         type="primary"
         icon={<FileSearchOutlined />}
         onClick={() =>
-          WindowSearch(
+          WindowSearchForm(
             setSearch,
             t('operations.search'),
             {
@@ -241,6 +268,12 @@ const EquipmentList = () => {
               eqpt_code: true,
               eqpt_owner: true,
               eqpt_etyp: true,
+            },
+            {
+              eqpt_id: eqptId,
+              eqpt_code: eqptCode,
+              eqpt_owner: eqptOwner,
+              eqpt_etp: eqptEtyp,
             },
             false
           )
@@ -291,7 +324,7 @@ const EquipmentList = () => {
           visible={visible}
           handleFormState={handleFormState}
           access={access}
-          setEqptCode={setEqptCode}
+          onLocate={onLocate}
           revalidate={revalidate}
           expiryDateMode={expiryDateMode}
           expiryTypes={expiryTypes?.records}
