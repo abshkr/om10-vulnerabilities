@@ -63,7 +63,7 @@ const FormModal = ({
   visible,
   handleFormState,
   access,
-  setEqptCode,
+  onLocate,
   revalidate,
   expiryDateMode,
   expiryTypes,
@@ -86,9 +86,9 @@ const FormModal = ({
   const onComplete = (eqpt_code) => {
     handleFormState(false, null);
     if (eqpt_code) {
-      setEqptCode(eqpt_code);
+      onLocate(eqpt_code);
     } else {
-      setEqptCode('');
+      onLocate('');
     }
     setPage(1);
     revalidate();
