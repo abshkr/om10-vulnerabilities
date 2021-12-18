@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { DownloadOutlined, PauseOutlined, ClearOutlined } from '@ant-design/icons';
-import { Button, notification, Progress, Statistic, Row, Col } from 'antd';
+import { Button, notification, Progress, Select, Statistic, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
@@ -28,6 +28,13 @@ const DataDownloader = ({ baseUrl, startVar, endVar, pageSize, round, icon, setD
   const total = useRef(0);
   const startPosition = useRef(0);
   const endPosition = useRef(pageSize);
+  const currSize = useRef(pageSize);
+
+  const setPageSize = (v) => {
+    currSize.current = v;
+    startPosition.current = 0;
+    endPosition.current = v;
+    };
 
   const onDownloadPages = async () => {
     console.log('...............onDownloadPages', total.current, counts.current);
@@ -38,7 +45,7 @@ const DataDownloader = ({ baseUrl, startVar, endVar, pageSize, round, icon, setD
     let sum = total.current;
     let counter=counts.current;
     let startPos=startPosition.current;
-    let size=pageSize;
+    let size=currSize.current; //pageSize;
     let endPos=endPosition.current;
     let pages=pageItems.current;
 
@@ -112,7 +119,7 @@ const DataDownloader = ({ baseUrl, startVar, endVar, pageSize, round, icon, setD
     setDownloading(false);
     pauseFlag.current = false;
     startPosition.current = 0;
-    endPosition.current = pageSize;
+    endPosition.current = currSize.current;
   };
 
   const onPause = () => {
@@ -137,7 +144,7 @@ const DataDownloader = ({ baseUrl, startVar, endVar, pageSize, round, icon, setD
 
   return (
     <div style={{display: 'flex'}}>
-      <Statistic title="" valueStyle={{ color: 'green', fontSize: '16px', width: '20vw' }} value={counts1} suffix={` / ${t('fields.totalSum')}: ${total1}`} />
+      <Statistic title="" valueStyle={{ color: 'green', fontSize: '16px', width: '10vw' }} value={counts1} suffix={` / ${t('fields.totalSum')}: ${total1}`} />
       
       <Progress type="line" style={{fontSize: '16px', fontWeight: 'bold', width: '60vw'}} percent={ratio1} strokeWidth={20} />
 
@@ -171,6 +178,24 @@ const DataDownloader = ({ baseUrl, startVar, endVar, pageSize, round, icon, setD
       >
         {''}
       </Button>
+
+      <Select
+        style={{paddingLeft: 10}}
+        dropdownMatchSelectWidth={false}
+        defaultValue={pageSize}
+        onChange={setPageSize}
+        optionFilterProp="children"
+        placeholder={null}
+        filterOption={(input, option) =>
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
+      >
+        {[100, 150, 250, 500, 1000].map((item, index) => (
+          <Select.Option key={index} value={item}>
+            {item + t('units.perPage')}
+          </Select.Option>
+        ))}
+      </Select>
 
     </div>
   );
