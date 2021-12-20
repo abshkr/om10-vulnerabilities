@@ -19,6 +19,7 @@ const OrderStatus = ({ value, onChange }) => {
       <Select
         loading={isValidating}
         showSearch
+        allowClear
         onChange={onChange}
         disabled={!!value}
         optionFilterProp="children"

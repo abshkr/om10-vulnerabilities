@@ -70,7 +70,215 @@ class OpenOrder extends CommonClass
         }
     }
 
+    public function pagination_count()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+        write_log(sprintf("%s::%s() START ****".$this->start_date."****".$this->end_date."****".$this->order_cust_no."****".$this->order_ref_code, __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        if (!isset($this->time_option) || $this->time_option == '') {
+            $this->time_option = "ORDER_ORD_TIME";
+        }
+        if (!isset($this->order_supp_code) || $this->order_supp_code == '') {
+            $this->order_supp_code = "-1";
+        }
+        if (!isset($this->order_cust_acnt) || $this->order_cust_acnt == '') {
+            $this->order_cust_acnt = "-1";
+        }
+        if (!isset($this->order_stat_id) || $this->order_stat_id == '') {
+            $this->order_stat_id = -1;
+        }
+        if (!isset($this->order_cust_no) || $this->order_cust_no == '' || $this->order_cust_no == '-1') {
+            $this->order_cust_no = -1;
+        }
+        if (!isset($this->order_ref_code) || $this->order_ref_code == '') {
+            $this->order_ref_code = "-1";
+        }
+        if (!isset($this->start_date) || $this->start_date == '') {
+            $this->start_date = "-1";
+        }
+        if (!isset($this->end_date) || $this->end_date == '') {
+            $this->end_date = "-1";
+        }
+        if (isset($this->order_cust_no) && $this->order_cust_no !== -1) {
+            $this->start_date = "-1";
+            $this->end_date = "-1";
+        }
+        if (isset($this->order_ref_code) && $this->order_ref_code !== "-1") {
+            $this->start_date = "-1";
+            $this->end_date = "-1";
+        }
+        if (isset($this->start_date) && $this->start_date === -1) {
+            $this->start_date = "-1";
+        }
+        if (isset($this->end_date) && $this->end_date === -1) {
+            $this->end_date = "-1";
+        }
+        $this->start_date = trim($this->start_date);
+        $this->end_date = trim($this->end_date);
+
+        $query = "
+            SELECT COUNT(*) CN FROM " . $this->VIEW_NAME . "
+            WHERE 
+                1 = 1
+        ";
+
+        //        AND ('-1' = :start_date OR " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+        if ( $this->start_date === "-1") {
+            $query .= "
+                AND ('-1' = :start_date) 
+            ";
+        } else {
+            $query .= "
+                AND (" . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+            ";
+        }
+        //        AND ('-1' = :end_date OR " . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+        if ( $this->end_date === "-1") {
+            $query .= "
+                AND ('-1' = :end_date)
+            ";
+        } else {
+            $query .= "
+                AND (" . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+            ";
+        }
+
+        $query .= "
+                AND ('-1' = :supplier OR ORDER_SUPP_CODE = :supplier)
+                AND ('-1' = :customer OR ORDER_CUST_ACNT = :customer)
+                AND (-1 = :status OR ORDER_STAT_ID = :status)
+                AND (-1 = :order_cust_no OR ORDER_CUST_NO LIKE '%'||:order_cust_no||'%')
+                AND ('-1' = :order_ref_code OR ORDER_REF_CODE LIKE '%'||:order_ref_code||'%')
+        ";
+
+        $stmt = oci_parse($this->conn, $query);
+
+        oci_bind_by_name($stmt, ':start_date', $this->start_date);
+        oci_bind_by_name($stmt, ':end_date', $this->end_date);
+        oci_bind_by_name($stmt, ':supplier', $this->order_supp_code);
+        oci_bind_by_name($stmt, ':customer', $this->order_cust_acnt);
+        oci_bind_by_name($stmt, ':status', $this->order_stat_id);
+        oci_bind_by_name($stmt, ':order_cust_no', $this->order_cust_no);
+        oci_bind_by_name($stmt, ':order_ref_code', $this->order_ref_code);
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            return (int) $row['CN'];
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error111:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return 0;
+        }
+    }
+
     public function read()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+        write_log(sprintf("%s::%s() START ****".$this->start_date."****".$this->end_date."****".$this->order_cust_no."****".$this->order_ref_code, __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        if (!isset($this->time_option) || $this->time_option == '') {
+            $this->time_option = "ORDER_ORD_TIME";
+        }
+        if (!isset($this->order_supp_code) || $this->order_supp_code == '') {
+            $this->order_supp_code = "-1";
+        }
+        if (!isset($this->order_cust_acnt) || $this->order_cust_acnt == '') {
+            $this->order_cust_acnt = "-1";
+        }
+        if (!isset($this->order_stat_id) || $this->order_stat_id == '') {
+            $this->order_stat_id = -1;
+        }
+        if (!isset($this->order_cust_no) || $this->order_cust_no == '' || $this->order_cust_no == '-1') {
+            $this->order_cust_no = -1;
+        }
+        if (!isset($this->order_ref_code) || $this->order_ref_code == '') {
+            $this->order_ref_code = "-1";
+        }
+        if (!isset($this->start_date) || $this->start_date == '') {
+            $this->start_date = "-1";
+        }
+        if (!isset($this->end_date) || $this->end_date == '') {
+            $this->end_date = "-1";
+        }
+        if (isset($this->order_cust_no) && $this->order_cust_no !== -1) {
+            $this->start_date = "-1";
+            $this->end_date = "-1";
+        }
+        if (isset($this->order_ref_code) && $this->order_ref_code !== "-1") {
+            $this->start_date = "-1";
+            $this->end_date = "-1";
+        }
+        if (isset($this->start_date) && $this->start_date === -1) {
+            $this->start_date = "-1";
+        }
+        if (isset($this->end_date) && $this->end_date === -1) {
+            $this->end_date = "-1";
+        }
+        $this->start_date = trim($this->start_date);
+        $this->end_date = trim($this->end_date);
+
+        $query = "
+            SELECT * FROM " . $this->VIEW_NAME . "
+            WHERE 
+                1 = 1
+        ";
+
+        //        AND ('-1' = :start_date OR " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+        if ( $this->start_date === "-1") {
+            $query .= "
+                AND ('-1' = :start_date) 
+            ";
+        } else {
+            $query .= "
+                AND (" . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+            ";
+        }
+        //        AND ('-1' = :end_date OR " . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+        if ( $this->end_date === "-1") {
+            $query .= "
+                AND ('-1' = :end_date)
+            ";
+        } else {
+            $query .= "
+                AND (" . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+            ";
+        }
+        $query .= "
+                AND ('-1' = :supplier OR ORDER_SUPP_CODE = :supplier)
+                AND ('-1' = :customer OR ORDER_CUST_ACNT = :customer)
+                AND (-1 = :status OR ORDER_STAT_ID = :status)
+                AND (-1 = :order_cust_no OR ORDER_CUST_NO LIKE '%'||:order_cust_no||'%')
+                AND ('-1' = :order_ref_code OR ORDER_REF_CODE LIKE '%'||:order_ref_code||'%')
+            ORDER BY " . $this->time_option . " DESC
+        ";
+        $query = $this->pagination_query($query);
+
+        $stmt = oci_parse($this->conn, $query);
+
+        oci_bind_by_name($stmt, ':start_date', $this->start_date);
+        oci_bind_by_name($stmt, ':end_date', $this->end_date);
+        oci_bind_by_name($stmt, ':supplier', $this->order_supp_code);
+        oci_bind_by_name($stmt, ':customer', $this->order_cust_acnt);
+        oci_bind_by_name($stmt, ':status', $this->order_stat_id);
+        oci_bind_by_name($stmt, ':order_cust_no', $this->order_cust_no);
+        oci_bind_by_name($stmt, ':order_ref_code', $this->order_ref_code);
+
+        $this->pagination_binds($stmt);
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function read_all_pages()
     {
         if (!isset($this->time_option)) {
             $this->time_option = "ORDER_ORD_TIME";

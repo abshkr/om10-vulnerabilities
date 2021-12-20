@@ -22,6 +22,7 @@ const TankerSearch = ({ carrier }) => {
         <Select
           loading={isValidating}
           showSearch
+          allowClear
           optionFilterProp="children"
           placeholder={t('placeholder.selectTanker')}
         >

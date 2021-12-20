@@ -23,6 +23,7 @@ const OrderCustomer = ({ value, supplier, onChange }) => {
       <Select
         loading={isValidating}
         showSearch
+        allowClear
         dropdownMatchSelectWidth={false}
         onChange={onChange}
         disabled={!!value}

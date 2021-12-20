@@ -25,6 +25,7 @@ const MovementReason = ({ value, type, onChange }) => {
       <Select
         loading={isValidating}
         showSearch
+        allowClear
         onChange={onChange}
         disabled={!!value || !type}
         optionFilterProp="children"

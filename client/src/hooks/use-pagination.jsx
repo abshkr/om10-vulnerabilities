@@ -13,7 +13,8 @@ export default function usePagination(initial = 1000) {
   const [page, setPage] = useState(1);
 
   const take = page === 1 ? 0 : (page - 1) * size + 1;
-  const offset = page === 1 ? size : take + size;
+  // const offset = page === 1 ? size : take + size;
+  const offset = page === 1 ? size : take + size - 1;
 
   const showSizeHandler = (page, size) => {
     setSize(size);
@@ -26,7 +27,7 @@ export default function usePagination(initial = 1000) {
       onChange={setPage}
       pageSize={size}
       onShowSizeChange={showSizeHandler}
-      pageSizeOptions={[150, 250, 500, 1000]}
+      pageSizeOptions={[100, 150, 200, 250, 500, 750, 1000, 1500, 2000]}
       total={count}
       disabled={count === 0}
       showTotal={(total, range) => {

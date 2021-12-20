@@ -19,6 +19,7 @@ const NominationStatus = ({ value, onChange }) => {
         disabled={!!value}
         loading={isValidating}
         showSearch
+        allowClear
         onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectNominationStatus') : null}

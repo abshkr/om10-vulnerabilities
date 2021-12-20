@@ -20,6 +20,7 @@ const NominationSource = ({ value, onChange }) => {
         disabled={!!value}
         loading={isValidating}
         showSearch
+        allowClear
         onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectNominationSource') : null}
