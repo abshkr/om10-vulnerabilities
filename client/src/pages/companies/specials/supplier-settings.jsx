@@ -5,13 +5,14 @@ import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 
 import _ from 'lodash';
-import { useConfig } from 'hooks';
+// import { useConfig } from 'hooks';
 
 import api, { COMPANIES } from '../../../api';
+import {generateMaxInt} from '../../../utils';
 
-const SupplierForm = ({ value, form }) => {
+const SupplierForm = ({ value, form, config }) => {
   const { data: payload } = useSWR(`${COMPANIES.CONFIG}?cmpy_code=${value?.cmpy_code}`);
-  const { externalBlendAllowed } = useConfig();
+  const { externalBlendAllowed, maxLengthTripNum } = config;
 
   const { t } = useTranslation();
   const { resetFields, setFieldsValue, getFieldDecorator } = form;
@@ -329,7 +330,7 @@ const SupplierForm = ({ value, form }) => {
               message: `${t('validate.select')} ─ ${t('fields.startAt')}`,
             }]}
           >
-            <InputNumber min={1} max={999999999} style={{ width: '11vh' }} />
+            <InputNumber min={1} max={generateMaxInt(maxLengthTripNum)} style={{ width: 200 }} />
           </Form.Item>
         </Col>
         <Col span={7}>
@@ -341,7 +342,7 @@ const SupplierForm = ({ value, form }) => {
               message: `${t('validate.select')} ─ ${t('fields.endAt')}`,
             }]}
           >
-            <InputNumber min={1} max={999999999} style={{ width: '11vh' }} />
+            <InputNumber min={1} max={generateMaxInt(maxLengthTripNum)} style={{ width: 200 }} />
           </Form.Item>
         </Col>
         <Col span={7}>
@@ -353,7 +354,7 @@ const SupplierForm = ({ value, form }) => {
               message: `${t('validate.select')} ─ ${t('fields.lastUsed')}`,
             }]}
           >
-            <InputNumber min={0} max={999999999} style={{ width: '11vh' }} />
+            <InputNumber min={0} max={generateMaxInt(maxLengthTripNum)} style={{ width: 200 }} />
           </Form.Item>
         </Col>
       </Row>

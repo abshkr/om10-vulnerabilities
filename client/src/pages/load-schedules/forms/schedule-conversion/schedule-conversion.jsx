@@ -72,8 +72,8 @@ const ScheduleConversion = ({
     }
 
     const len = new TextEncoder().encode(input).length;
-    if (input && len > 9) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 9 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && len > config?.maxLengthTripNum) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: ${config?.maxLengthTripNum} ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();

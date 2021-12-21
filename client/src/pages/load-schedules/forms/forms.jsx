@@ -90,6 +90,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     showSeals,
     manageAdditionalHostData,
     manageViewDeliveryDetails,
+    maxLengthTripNum,
     site_customer_product,
     site_customer_carrier,
     siteUseSpecIns,
@@ -203,8 +204,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     }
 
     const len = new TextEncoder().encode(input).length;
-    if (input && len > 9) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 9 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && len > maxLengthTripNum) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: ${maxLengthTripNum} ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();

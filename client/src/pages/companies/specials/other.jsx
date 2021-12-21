@@ -6,9 +6,11 @@ import useSWR from 'swr';
 import _ from 'lodash';
 
 import { COMPANIES } from '../../../api';
+import {generateMaxInt} from '../../../utils';
 
-const OtherForm = ({ value, form }) => {
+const OtherForm = ({ value, form, config }) => {
   const { data: payload } = useSWR(`${COMPANIES.CONFIG}?cmpy_code=${value?.cmpy_code}`);
+  const { maxLengthOrderNum } = config;
 
   const { t } = useTranslation();
   const { TextArea } = Input;
@@ -152,17 +154,17 @@ const OtherForm = ({ value, form }) => {
           <Row justify="center" gutter="8">
             <Col span={7}>
               <Form.Item name="cmpy_ord_strt" label={t('fields.startAt')} rules={[{ required: true }]}>
-                <InputNumber min={1} max={999999999} style={{ width: '11vh' }} />
+                <InputNumber min={1} max={generateMaxInt(maxLengthOrderNum)} style={{ width: 200 }} />
               </Form.Item>
             </Col>
             <Col span={7}>
               <Form.Item name="cmpy_ord_end" label={t('fields.endAt')} rules={[{ required: true }]}>
-                <InputNumber min={1} max={999999999} style={{ width: '11vh' }} />
+                <InputNumber min={1} max={generateMaxInt(maxLengthOrderNum)} style={{ width: 200 }} />
               </Form.Item>
             </Col>
             <Col span={7}>
               <Form.Item name="cmpy_ord_last" label={t('fields.lastUsed')} rules={[{ required: true }]}>
-                <InputNumber min={0} max={999999999} style={{ width: '11vh' }} />
+                <InputNumber min={0} max={generateMaxInt(maxLengthOrderNum)} style={{ width: 200 }} />
               </Form.Item>
             </Col>
           </Row>

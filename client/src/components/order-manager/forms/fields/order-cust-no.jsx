@@ -5,7 +5,7 @@ import useSWR from 'swr';
 import api, { ORDER_LISTINGS } from '../../../../api';
 import { validatorStatus } from 'utils';
 
-const OrderCustNo = ({ form, value, supplier, pageState }) => {
+const OrderCustNo = ({ form, value, supplier, pageState, digits }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue, validateFields } = form;
@@ -31,8 +31,9 @@ const OrderCustNo = ({ form, value, supplier, pageState }) => {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.orderCustNo')}`);
     }
     
-    if (input && input.length > 9) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 9 ─ ${t('descriptions.maxCharacters')}`);
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > digits) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: ${digits} ─ ${t('descriptions.maxCharacters')}`);
     }
 
     if (existed && !value) {

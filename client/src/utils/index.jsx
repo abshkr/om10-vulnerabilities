@@ -35,6 +35,7 @@ import * as VCFManager from './vcf-manager';
 import generatePassword from './generate-password';
 import getChildrenFromTxt from './get-children-from-txt';
 import decimalThousandSeparator from './decimal-thousand-separator';
+import generateMaxInt from './generate-maxint';
 
 export {
   search,
@@ -76,4 +77,5 @@ export {
   generatePassword,
   getChildrenFromTxt,
   decimalThousandSeparator,
+  generateMaxInt,
 };

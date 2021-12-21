@@ -598,7 +598,7 @@ const FormModal = ({
               </Col>
 
               <Col span={6}>
-                <OrderCustNo form={form} value={value} supplier={supplier} pageState={pageState} />
+                <OrderCustNo form={form} value={value} supplier={supplier} pageState={pageState} digits={config?.maxLengthOrderNum} />
               </Col>
 
               <Col span={6}>

@@ -17,7 +17,8 @@ import { mutate } from 'swr';
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, handleFormState, setFilterValue }) => {
-  const { bolVersion } = useConfig();
+  const config  = useConfig();
+  const { bolVersion } = config;
   
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -123,11 +124,11 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
         <Tabs defaultActiveKey="1">
           {value?.supplier && 
           <TabPane tab={t('tabColumns.supplierSettings')} key="1" style={{ height: '65vh' }}>
-            <SupplierForm value={value} form={form}></SupplierForm>
+            <SupplierForm value={value} form={form} config={config}></SupplierForm>
           </TabPane>
           }
           <TabPane tab={t('tabColumns.others')} key="2" style={{ height: '60vh' }}>
-            <OtherForm value={value} form={form}></OtherForm>
+            <OtherForm value={value} form={form} config={config}></OtherForm>
           </TabPane>
           <TabPane tab={t('tabColumns.printerSettings')} key="3" style={{ height: '60vh' }}>
             <PrinterForm value={value} form={form}></PrinterForm>
