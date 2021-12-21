@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 import {
   EditOutlined,
@@ -41,11 +41,12 @@ import {
   Tag,
 } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { mutate } from 'swr';
 import _ from 'lodash';
+import Supplier from './fields/supplier'
 
 import api, { PRODUCT_MOVEMENTS } from 'api';
-import useSWR from 'swr';
+import { SWRConfig } from 'swr';
+import { fetcher } from 'utils';
 
 const TabPane = Tabs.TabPane;
 
@@ -53,6 +54,9 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
+
+  const mvKeyRef = useRef()
+  const mvNumRef = useRef()
 
   const IS_CREATING = !value;
 
@@ -228,13 +232,43 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
       ...values,
     };
 
+    const mvNumberHandler = (value) => {
+      params['mv_number'] = value
+    }
+
+    const mvKeyHandler = (value) => {
+      params['mv_key'] = value
+    }
+
+    const supplierChangeHandler = (value) => {
+      params['supplier'] = value
+    }
+
     Modal.confirm({
       title: t('prompts.pmvMakeNomination'),
       okText: t('operations.start'),
       okType: 'primary',
-      icon: <RedoOutlined />,
-      cancelText: t('operations.no'),
+      // icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.cancel'),
       centered: true,
+      content: (
+        <SWRConfig
+          value={{
+            refreshInterval: 0,
+            fetcher,
+          }}
+        >
+          <Form layout="vertical">
+            <Supplier onChange={supplierChangeHandler} />
+            <Form.Item name="mv_key" label={t('fields.nominationKey')} >
+              <InputNumber onChange={mvKeyHandler} style={{width: "100%"}}/>
+            </Form.Item>
+            <Form.Item name="mv_number" label={t('fields.nominationNumber')}>
+              <InputNumber onChange={mvNumberHandler} style={{width: "100%"}}/>
+            </Form.Item>
+          </Form>
+        </SWRConfig>
+        ),
       onOk: async () => {
         await api
           .post(PRODUCT_MOVEMENTS.MAKE_NOMINATION, params)
@@ -531,8 +565,13 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
             </Button>
           )}
 
-          {!IS_CREATING && value.pmv_status === '3' /* Complete */ && (
-            <Button type="primary" style={{ float: 'right', marginRight: 5 }} onClick={onMakeNomination}>
+          {!IS_CREATING && value.pmv_status === '3' /* Complete */ && config.prodmvmnt_to_movement && (
+            <Button 
+              type="primary" 
+              style={{ float: 'right', marginRight: 5 }} 
+              onClick={onMakeNomination}
+              disabled={value?.pmv_mv_id > 0}
+            >
               {t('operations.createNomination')}
             </Button>
           )}

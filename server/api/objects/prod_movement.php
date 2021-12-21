@@ -37,6 +37,7 @@ class ProdMovement extends CommonClass
         "BAY_CVL_SUM" => 0,
         "PERCENTAGE", 
         "PMV_NUMBER",
+        "PMV_MV_ID"
     );
 
     /*
@@ -577,6 +578,7 @@ class ProdMovement extends CommonClass
                 PMV.PMV_PRDCTLNK,
                 PMV.PMV_BATCHCODE,
                 PMV.PMV_STATUS,
+                PMV.PMV_MV_ID,
                 PMV_STATE_TYP.PMV_STATE_NAME PMV_STATUS_NAME
             FROM PRODUCT_MVMNTS PMV, PMV_STATE_TYP, PMV_TYP PMV_TYP1, PMV_TYP PMV_TYP2, UNIT_SCALE_VW, PMV_TRANSFER_CLASS_TYP
             WHERE PMV.PMV_STATUS = PMV_STATE_TYP.PMV_STATE_ID(+)
@@ -1016,6 +1018,32 @@ class ProdMovement extends CommonClass
             return false;
         }
 
+        if (isset($this->mv_key)) {
+            $query = "UPDATE MOVEMENTS SET MV_KEY = :mv_key
+                WHERE MV_ID = (SELECT PMV_MV_ID FROM PRODUCT_MVMNTS WHERE PMV_NUMBER = :pmv_number)";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':mv_key', $this->mv_key);
+            oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+        }
+
+        if (isset($this->mv_number)) {
+            $query = "UPDATE MOVEMENTS SET MV_NUMBER = :mv_number
+                WHERE MV_ID = (SELECT PMV_MV_ID FROM PRODUCT_MVMNTS WHERE PMV_NUMBER = :pmv_number)";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':mv_number', $this->mv_number);
+            oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+        }
+
         $query = "UPDATE MOVEMENT_ITEMS SET MVITM_STATUS = 5
             WHERE MVITM_MOVE_ID = (SELECT PMV_MV_ID FROM PRODUCT_MVMNTS WHERE PMV_NUMBER = :pmv_number)";
         $stmt = oci_parse($this->conn, $query);
@@ -1040,22 +1068,26 @@ class ProdMovement extends CommonClass
         $this->initialize();
         write_log(json_encode($this), __FILE__, __LINE__);
 
-        // Get site manager
-        $query = "SELECT CMPY_CODE SITE_MANAGER FROM COMPANYS WHERE BITAND(CMPY_TYPE, POWER(2, 0)) != 0";
-        $stmt = oci_parse($this->conn, $query);
-        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return -1;
+        // Get supplier
+        if (isset($this->supplier)) {
+            $supplier = $this->supplier;
+        } else {
+            $query = "SELECT CMPY_CODE SITE_MANAGER FROM COMPANYS WHERE BITAND(CMPY_TYPE, POWER(2, 0)) != 0";
+            $stmt = oci_parse($this->conn, $query);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return -1;
+            }
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            $supplier = $row['SITE_MANAGER'];
         }
-        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-        $site_manager = $row['SITE_MANAGER'];
-
+        
         // Get suitable site manager product. A supplier product that has and only has pmv base product
         $query = "SELECT RAT_PROD_PRODCODE FROM RPTOBJ_PROD_RATIOS_VW 
-            WHERE RAT_COUNT = 1 AND RAT_PROD_PRODCMPY = :site_manager AND RATIO_BASE = :pmv_prdctlnk AND ROWNUM = 1";
+            WHERE RAT_COUNT = 1 AND RAT_PROD_PRODCMPY = :supplier AND RATIO_BASE = :pmv_prdctlnk AND ROWNUM = 1";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':site_manager', $site_manager);
+        oci_bind_by_name($stmt, ':supplier', $supplier);
         oci_bind_by_name($stmt, ':pmv_prdctlnk', $this->pmv_prdctlnk);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
@@ -1131,7 +1163,7 @@ class ProdMovement extends CommonClass
             //$transfers[$i]->Device_Code = "BAY01";       //Not important, baiman does not use it
             $transfers[$i]->nr_in_tkr = 1;
 
-            $transfers[$i]->drawer_code = $site_manager;
+            $transfers[$i]->drawer_code = $supplier;
             $transfers[$i]->product_code = $rat_prod_prodcode;
             
             $transfers[$i]->dens = $this->pmv_obsvd_dens * 1000;
@@ -1205,7 +1237,7 @@ class ProdMovement extends CommonClass
             //$transfers[$i]->Device_Code = "BAY01";       //Not important, baiman does not use it
             $transfers[$i]->nr_in_tkr = 1;
 
-            $transfers[$i]->drawer_code = $site_manager;
+            $transfers[$i]->drawer_code = $supplier;
             $transfers[$i]->product_code = $rat_prod_prodcode;
             
             $transfers[$i]->dens = $this->pmv_obsvd_dens * 1000;

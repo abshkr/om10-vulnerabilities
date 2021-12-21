@@ -6,7 +6,7 @@ const columns = (t, config) => [
     resizable: true,
     filter: 'FuzzyFilter',
     pinned: 'left',
-    width: 100,
+    width: 60,
     suppressSizeToFit: true,
   },
   {
@@ -103,6 +103,15 @@ const columns = (t, config) => [
     resizable: true,
     suppressSizeToFit: true,
     width: 110,
+  },
+  {
+    headerName: t('fields.nomtranNomId'),
+    field: 'pmv_mv_id',
+    sortable: true,
+    resizable: true,
+    hide: !config.prodmvmnt_to_movement,
+    suppressSizeToFit: true,
+    width: 80,
   },
   {
     headerName: t('fields.progress'),

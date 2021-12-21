@@ -166,6 +166,7 @@ const useConfig = () => {
     siteRecipeOnPercent: false,
     siteRecipeOnPipenode: false,
     siteUseMultiTerminals: false,
+    prodmvmnt_to_movement: false,
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -397,6 +398,7 @@ const useConfig = () => {
         siteRecipeOnPercent: configurationObject?.SITE_RECIPE_ON_PERCENT || false,
         siteRecipeOnPipenode: configurationObject?.SITE_RECIPE_ON_PIPENODE || false,
         siteUseMultiTerminals: configurationObject?.SITE_ALLOW_MULTI_TERMINALS || false,
+        prodmvmnt_to_movement: configurationObject?.PRODUCT_MVMNT_TO_MOVEMENT || false,
       });
 
       // utils function cannot use hooks, use global constants to by pass
