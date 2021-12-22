@@ -1,6 +1,6 @@
 import { BASE_PRODUCTS } from 'constants/routes';
 
-const columns = (t, config, form, pipenodeBases) => [
+const columns = (t, config, form, pipenodeBases, user_code) => [
   {
     headerName: t('fields.pitemProdCode'),
     field: 'pitem_base_code',
@@ -35,6 +35,7 @@ const columns = (t, config, form, pipenodeBases) => [
     resizable: true,
     suppressSizeToFit: true,
     width: 80,
+    hide: (config?.siteRecipeOnPercent && user_code !== '9999'),
   },
   {
     headerName: t('fields.pitemRatioAsPercent'),

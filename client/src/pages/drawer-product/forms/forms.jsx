@@ -26,6 +26,7 @@ import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import { SWRConfig } from 'swr';
 import { fetcher } from 'utils';
+import jwtDecode from 'jwt-decode';
 
 import _ from 'lodash';
 import api, { DRAWER_PRODUCTS } from '../../../api';
@@ -54,6 +55,10 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
+  const token = sessionStorage.getItem('token');
+  const decoded = jwtDecode(token);
+  const user_code = decoded?.per_code;
+
   const { TextArea } = Input;
 
   const [bases, setBases] = useState([]);
@@ -68,7 +73,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
 
   const { resetFields, setFieldsValue } = form;
 
-  const fields = columns(t, config, form, pipenodeBases);
+  const fields = columns(t, config, form, pipenodeBases, user_code);
 
   const IS_CREATING = !value;
 
@@ -485,7 +490,8 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
         const mainBaseTotals = getMainBaseTotals(values.bases, 'pitem_ratio_percent_ppm', 'pitem_base_class');
         if (totalRatios !== 1000000 || mainBaseTotals !== 100) {
           Modal.info({
-            title: (totalRatios !== 1000000 ? t('prompts.ratioTotalNotMillion') : '') + (mainBaseTotals !== 100 ? t('prompts.percentTotalNot100') : ''),
+            // title: (totalRatios !== 1000000 && user_code === '9999' ? t('prompts.ratioTotalNotMillion') : '') + (mainBaseTotals !== 100 ? t('prompts.percentTotalNot100') : ''),
+            title: t('prompts.percentTotalNot100'),
             okText: t('operations.cancel'),
           });
           return;
