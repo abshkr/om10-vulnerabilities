@@ -2606,7 +2606,7 @@
     "notEnoughBase": "Drawer product must have at least one base product",
     "onReverse": "Are you sure you want to reverse this record?",
     "pmvCompleteBatch": "Are you sure you want to complete this batch?",
-    "pmvMakeNomination": "Are you sure you want to make a nomination out of this product movement?",
+    "pmvMakeNomination": "Please input supplier, nomination id, nomination key to create nomination",
     "pmvComplete": "Are you sure you want to complete this product movement?",
     "pmvHalt": "Are you sure you want to halt this product movement?",
     "pmvStart": "Are you sure you want to start this product movement?",

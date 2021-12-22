@@ -1058,6 +1058,58 @@ class ProdMovement extends CommonClass
     }
 
     /**
+     * This is because in module\nomination.pc::Mv_prepare_product_mvmnt, it is using site manager. 
+     * do not want to change message definition to baiman, so update product here. 
+     */
+    private function adjust_mv_products() 
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        $query = "UPDATE MOVEMENTS 
+            SET MV_DRAWER = :supplier, MV_SUPPLIER = :supplier
+            WHERE MV_ID = (SELECT PMV_MV_ID FROM PRODUCT_MVMNTS WHERE PMV_NUMBER = :pmv_number)";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        $query = "UPDATE MOVEMENT_ITEMS 
+            SET MVITM_PRODCMPY_FROM = :supplier, MVITM_PRODCODE_FROM = :supp_product
+            WHERE MVITM_MOVE_ID = (SELECT PMV_MV_ID FROM PRODUCT_MVMNTS WHERE PMV_NUMBER = :pmv_number)
+                AND MVITM_PRODCMPY_FROM IS NOT NULL";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        oci_bind_by_name($stmt, ':supp_product', $this->supp_product);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        $query = "UPDATE MOVEMENT_ITEMS 
+            SET MVITM_PRODCMPY_TO = :supplier, MVITM_PRODCODE_TO = :supp_product
+            WHERE MVITM_MOVE_ID = (SELECT PMV_MV_ID FROM PRODUCT_MVMNTS WHERE PMV_NUMBER = :pmv_number)
+                AND MVITM_PRODCMPY_TO IS NOT NULL";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        oci_bind_by_name($stmt, ':supp_product', $this->supp_product);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Refer to process1\baiman\baiman.pc::handle_special_movement, and https://doc.diamondkey.com/display/RD/Special+Movement+Logic
      */
     public function create_nomination()
@@ -1069,18 +1121,20 @@ class ProdMovement extends CommonClass
         write_log(json_encode($this), __FILE__, __LINE__);
 
         // Get supplier
+        $query = "SELECT CMPY_CODE SITE_MANAGER FROM COMPANYS WHERE BITAND(CMPY_TYPE, POWER(2, 0)) != 0";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return -1;
+        }
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $site_manager = $row['SITE_MANAGER'];
+
         if (isset($this->supplier)) {
             $supplier = $this->supplier;
         } else {
-            $query = "SELECT CMPY_CODE SITE_MANAGER FROM COMPANYS WHERE BITAND(CMPY_TYPE, POWER(2, 0)) != 0";
-            $stmt = oci_parse($this->conn, $query);
-            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-                $e = oci_error($stmt);
-                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-                return -1;
-            }
-            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-            $supplier = $row['SITE_MANAGER'];
+            $supplier = $site_manager;
         }
         
         // Get suitable site manager product. A supplier product that has and only has pmv base product
@@ -1098,6 +1152,12 @@ class ProdMovement extends CommonClass
         }
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         $rat_prod_prodcode = $row['RAT_PROD_PRODCODE'];
+        if (!$rat_prod_prodcode) {
+            $error = new EchoSchema(500, "This supplier does not have compatible supplier product");
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+        $this->supp_product = $rat_prod_prodcode;
 
         // If there is already a nomination
         $query = "SELECT NVL(PMV_MV_ID, -1) PMV_MV_ID FROM PRODUCT_MVMNTS WHERE PMV_NUMBER = :pmv_number";
@@ -1137,6 +1197,9 @@ class ProdMovement extends CommonClass
             echo json_encode($error, JSON_PRETTY_PRINT);
             return false;
         }
+
+        //Update MOVEMENT/MOVEMENT_ITEMS, product related
+        $this->adjust_mv_products();
 
         define('MV_RECEIPT', 0);
         define('MV_DISPOSAL', 1);

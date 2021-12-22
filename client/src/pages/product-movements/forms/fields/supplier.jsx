@@ -6,22 +6,21 @@ import { Form, Select } from 'antd';
 
 import { LOAD_SCHEDULES } from 'api';
 
-const Supplier = ({ value, onChange }) => {
+const Supplier = ({ value }) => {
   const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(LOAD_SCHEDULES.SUPPLIERS);
-  console.log("Supplier start")
 
   return (
     <Form.Item
-      name="supplier_code"
+      name="supplier"
       label={t('fields.supplier')}
+      rules={[{ required: true }]}
     >
       <Select
         loading={isValidating}
         showSearch
         dropdownMatchSelectWidth={false}
-        onChange={onChange}
         disabled={!!value}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectSupplier') : null}
