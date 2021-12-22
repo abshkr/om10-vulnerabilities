@@ -5,7 +5,7 @@ import { Form, Input } from 'antd';
 import api, { MOVEMENT_NOMIATIONS } from 'api';
 import _ from 'lodash';
 
-const MvKey = ({ }) => {
+const MvKey = ({form}) => {
   const [mvKey, setMvKey] = useState(null)
   const [isValidating, setIsValidating] = useState(false)
   const [existed, setExisted] = useState(false);
@@ -20,6 +20,7 @@ const MvKey = ({ }) => {
       .then((response) => {
         setIsValidating(false)
         setExisted(parseInt(response.data?.records[0]?.cnt) > 0)
+        form.validateFields(['mv_key'])
       })
       .catch((errors) => {
         setIsValidating(false)
@@ -57,7 +58,7 @@ const MvKey = ({ }) => {
       name="mv_key" 
       hasFeedback
       label={t('fields.nominationKey')} 
-      rules={[{ required: true, validator: validate }]}
+      rules={[{ validator: validate }]}
       validateStatus={mvKey > 0 ? status : null}
     >
       <Input

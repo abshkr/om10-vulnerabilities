@@ -49,8 +49,8 @@ const MakeNomination = ({ value, t, visible, setVisible, onComplete }) => {
             <Form form={form} layout="vertical">
                 <p>{t('prompts.pmvMakeNomination')}</p>
                 <Supplier />
-                <MvKey />
-                <Form.Item name="mv_number" label={t('fields.nominationNumber')} rules={[{ required: true }]}>
+                <MvKey form={form} />
+                <Form.Item name="mv_number" label={t('fields.nominationNumber')} >
                     <Input style={{width: "100%"}} />
                 </Form.Item>
             </Form>
