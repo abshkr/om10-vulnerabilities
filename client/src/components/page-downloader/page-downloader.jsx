@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { FileTextOutlined, QuestionCircleOutlined, CloseOutlined, DownloadOutlined, PauseOutlined, ClearOutlined } from '@ant-design/icons';
-import { Button, notification, Progress, Modal, Drawer, Tag, Statistic, Row, Col } from 'antd';
+import { Button, notification, Progress, Modal, Drawer, Tag, Statistic, Select, Row, Col } from 'antd';
 import { CSVLink } from 'react-csv';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -24,6 +24,7 @@ const PageDownloader = ({ baseUrl, startVar, endVar, pageSize, columns, round, i
   const [canSave, setCanSave] = useState(false);
   const [startPosition, setStartPosition] = useState(0);
   const [endPosition, setEndPosition] = useState(pageSize);
+  const stepSize = useRef(pageSize);
 
   const onDownloadPages = async () => {
     if (total > 0 && counts >= total) {
@@ -33,7 +34,7 @@ const PageDownloader = ({ baseUrl, startVar, endVar, pageSize, columns, round, i
     let sum = total;
     let counter=counts;
     let startPos=startPosition;
-    let size=pageSize;
+    let size=stepSize.current;
     let endPos=endPosition;
     let pages=pageItems;
 
@@ -100,7 +101,7 @@ const PageDownloader = ({ baseUrl, startVar, endVar, pageSize, columns, round, i
     setCanSave(false);
     pauseFlag.current = false;
     setStartPosition(0);
-    setEndPosition(pageSize);
+    setEndPosition(stepSize.current);
   };
 
   const onPause = () => {
@@ -111,6 +112,14 @@ const PageDownloader = ({ baseUrl, startVar, endVar, pageSize, columns, round, i
     setVisible(false);
     onReset();
   }
+
+  const setPageSize = (v) => {
+    stepSize.current = v;
+    const endPos = startPosition > 0 ? startPosition + v - 1 : v;
+    setEndPosition(endPos);
+    //onReset();
+    //onDownloadPages();
+  };
 
   return (
     <>
@@ -194,6 +203,25 @@ const PageDownloader = ({ baseUrl, startVar, endVar, pageSize, columns, round, i
               >
                 {t('operations.pause')}
               </Button>
+
+              <Select
+                style={{paddingLeft: 10}}
+                dropdownMatchSelectWidth={false}
+                defaultValue={stepSize.current}
+                disabled={loading}
+                onChange={setPageSize}
+                optionFilterProp="children"
+                placeholder={null}
+                filterOption={(input, option) =>
+                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+              >
+                {[100, 150, 200, 250, 500, 750, 1000, 1500, 2000].map((item, index) => (
+                  <Select.Option key={index} value={item}>
+                    {item + t('units.perPage')}
+                  </Select.Option>
+                ))}
+              </Select>
 
             </>
           }
