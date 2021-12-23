@@ -499,7 +499,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
                 type="primary" 
                 style={{ float: 'right', marginRight: 5 }} 
                 onClick={() => setMvModalVisible(true)}
-                disabled={value?.pmv_mv_id > 0}
+                disabled={value?.pmv_mv_id > 0 || value?.pmv_moved_qty <= 0}
               >
                 {t('operations.createNomination')}
               </Button>
