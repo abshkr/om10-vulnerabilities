@@ -43,6 +43,20 @@ const columns = (IS_NOMINATION, t, config) => [
     cellRenderer: 'SourceRender',
   },
   {
+    headerName: t('fields.schdConvertTrace'),
+    field: 'shls_cnvrt_trace',
+    filter: 'MultiFilter',
+    sortable: true,
+    resizable: true,
+    width: 130,
+    suppressSizeToFit: true,
+    hide: IS_NOMINATION || !config?.siteSchdTypeConvertible,
+    cellRenderer: 'ConvertTraceRender',
+    cellRendererParams: {
+      t: t,
+    },
+  },
+  {
     headerName: t('fields.schedDate'),
     field: 'shls_caldate',
     sortable: true,

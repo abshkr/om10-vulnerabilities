@@ -15,6 +15,7 @@ import auth from '../../auth';
 import Forms from './forms';
 import api from 'api';
 import SourceRender from './source-render';
+import ConvertTraceRender from './convert-trace-render';
 import _ from 'lodash';
 import usePagination from 'hooks/use-pagination';
 
@@ -58,6 +59,7 @@ const LoadSchedules = () => {
 
   const components = {
     SourceRender,
+    ConvertTraceRender,
   };
   // const data = payload?.records;
   const [data, setData] = useState(payload?.records);

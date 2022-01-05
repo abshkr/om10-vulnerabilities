@@ -726,7 +726,11 @@ class Schedule extends CommonClass
         // only change the SHL_TANKER, and SHLS_ORIG_TKR remain unchanged
         $query = "
             UPDATE SCHEDULE 
-            SET SHL_TANKER = :tnkr_code, SHLS_LD_TYPE = :schd_type
+            SET 
+                SHL_TANKER = :tnkr_code
+                , SHLS_LD_TYPE = :schd_type
+                , SHLS_CNVRT_TRACE = '32'
+                , SHLS_CNVRT_TIME = SYSDATE
             WHERE SHLS_TRIP_NO = :trip and SHLS_SUPP = :supplier
         ";
         $stmt = oci_parse($this->conn, $query);
@@ -751,7 +755,10 @@ class Schedule extends CommonClass
     {
         $query = "
             UPDATE SCHEDULE 
-            SET SHLS_LD_TYPE = 3
+            SET 
+                SHLS_LD_TYPE = 3
+                , SHLS_CNVRT_TRACE = '23'
+                , SHLS_CNVRT_TIME = SYSDATE
             WHERE SHLS_TRIP_NO = :trip and SHLS_SUPP = :supplier
         ";
         $stmt = oci_parse($this->conn, $query);
