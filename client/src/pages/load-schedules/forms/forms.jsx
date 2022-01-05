@@ -101,18 +101,18 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     showDORNumber,
     siteSchdTypeConvertible,
     siteSchdPreloadEditable,
-    fasttrackEnabled
+    fasttrackEnabled,
   } = config;
     
   const popupMT = config?.popupManualTransaction;
 
   const SHOW_ISO_DOR = siteUseIsotainer && showDORNumber;
 
-  const send_to_ft_ready = value?.status === 'F' && value?.shls_ld_type === '2'
+  const send_to_ft_ready = value?.status === 'F' && value?.shls_ld_type === '2';
 
   const { authenticated } = useSelector((state) => state.auth);
-  const decoded = jwtDecode(authenticated)
-  const FASTTRACK_ENABLED = decoded?.per_code === '9999' && fasttrackEnabled
+  const decoded = jwtDecode(authenticated);
+  const FASTTRACK_ENABLED = decoded?.per_code === '9999' && fasttrackEnabled;
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -157,6 +157,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
   const SHOW_WEIGHTS = !IS_CREATING && siteUseWeighbridge;
   const CAN_PRINT = ['2', '3', '4'].includes(tab);
   const READ_ONLY = value?.status !== 'F' && !IS_CREATING;
+  const CAN_EDIT_PRELOAD = READ_ONLY && config?.siteSchdPreloadEditableEnd;
   const CAN_VIEW_REPORTS = value?.shlsload_load_id !== '0';
   const CAN_VIEW_TRANSACTIONS = value?.status !== 'F';
   const CAN_DELIVERY_DETAIL = value !== null && value !== undefined && manageViewDeliveryDetails;
@@ -945,7 +946,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
         });
       });
     });
-  }
+  };
 
   useEffect(() => {
     if (!value) {
@@ -1042,7 +1043,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
           )}
 
           {!IS_CREATING &&
-            READ_ONLY &&
+            CAN_EDIT_PRELOAD &&
             tab !== '6' &&
             tab !== '7' &&
             tab !== '8' &&

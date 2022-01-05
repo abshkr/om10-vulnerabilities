@@ -1,4 +1,4 @@
-const columns = (t, form, products, soldTo, shipTo, units, config) => [
+const columns = (t, form, config) => [
   {
     headerName: t('fields.equipment'),
     field: 'eqpt_code',
@@ -67,8 +67,8 @@ const columns = (t, form, products, soldTo, shipTo, units, config) => [
     resizable: true,
     width: 90,
     suppressSizeToFit: true,
-    editable: true,
-    cellClass: 'editable-ag-grid-cell',
+    editable: config?.siteSchdPreloadEditableEnd, // true,
+    cellClass: config?.siteSchdPreloadEditableEnd ? 'editable-ag-grid-cell' : '',
     cellEditor: 'PreloadEditor',
     cellEditorParams: {
       min: 0,

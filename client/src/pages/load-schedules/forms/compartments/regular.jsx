@@ -278,8 +278,8 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
       resizable: true,
       width: 90,
       suppressSizeToFit: true,
-      editable: true,
-      cellClass: 'editable-ag-grid-cell',
+      editable: config?.siteSchdPreloadEditableNew, // true,
+      cellClass: config?.siteSchdPreloadEditableNew ? 'editable-ag-grid-cell' : '',
       cellEditor: 'PreloadEditor',
       cellEditorParams: {
         min: 0,

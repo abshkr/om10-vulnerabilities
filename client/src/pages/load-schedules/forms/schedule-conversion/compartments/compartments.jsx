@@ -11,7 +11,7 @@ import { ProductEditor, UnitEditor, ScheduleEditor, PreloadEditor } from './fiel
 
 import useSWR from 'swr';
 
-const Compartments = ({ form, value, tanker, products, units }) => {
+const Compartments = ({ form, value, tanker, config, products, units }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
@@ -174,8 +174,8 @@ const Compartments = ({ form, value, tanker, products, units }) => {
       resizable: true,
       width: 90,
       suppressSizeToFit: true,
-      editable: true,
-      cellClass: 'editable-ag-grid-cell',
+      editable: config?.siteSchdPreloadEditableNew, // true,
+      cellClass: config?.siteSchdPreloadEditableNew ? 'editable-ag-grid-cell' : '',
       cellEditor: 'PreloadEditor',
       cellEditorParams: {
         min: 0,
