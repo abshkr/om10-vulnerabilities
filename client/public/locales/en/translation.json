@@ -192,11 +192,12 @@
     "searchRequired": "Please input at least one field to search except for date range",
     "preSchedProd": "Select product for compartment",
     "preSchedProdUnit": "Select unit for compartment",
+    
     "prescheduleReady": "Select product in at least one compartment",
     "prescheduleReadyByDragDrop": "Drag and drop the product in at least one compartment",
     "preOrder": "Pre Order",
     "preSchedule":"Pre Schedule",
-    "preOrderFromSched": "Pre Order, reverted from Pre Schdeule",
+    "preOrderFromSched": "Pre Order, reverted from Pre Schedule",
     "preScheduleFromOrder":"Pre Schedule, converted by Pre Order",
     "printBOLFailed": "Failed to reverse the BOL",
     "printBOLSuccess": "You have Printed the BOL",
