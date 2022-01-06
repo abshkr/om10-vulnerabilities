@@ -531,6 +531,15 @@ class ManualTransactionService
             __FILE__, __LINE__);
         // write_log(json_encode($this), __FILE__, __LINE__);
 
+        $query = "SELECT NVL(MAX(CONFIG_VALUE), 9) TRIP_NUMBER_LENGTH FROM SITE_CONFIG WHERE CONFIG_KEY = 'TRIP_NUMBER_LENGTH'";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $trip_number_length = intval($row['TRIP_NUMBER_LENGTH']);
+
         $msg = new XTRANSAC_DET();
         $msg->Message_Length = "000000";                /* Auto-calculate at the end of population */
         $msg->message_number = "0000";                  /* Fixed */
@@ -549,7 +558,8 @@ class ManualTransactionService
 
         $msg->Transaction_Number = sprintf("%07d", $this->trsa_id);     /* Get it from parameter*/
         $msg->Standalone_Mode = "OMEGA ";                               /* Fixed, still use operator mode */
-        $msg->Load_Number = sprintf("%09d", $this->load_number);        /* Get it from parameter */
+        $trip_format = sprintf("%d", $trip_number_length);
+        $msg->Load_Number = sprintf("%0" . $trip_format . "d", $this->load_number);        /* Get it from parameter */
         $msg->Number_of_keys = "000";                                   /* Fixed, always set it 0 */
         $msg->load_unload = "T";                                        /* TODO: load/unload ? */
         $msg->end_load_on_WB = "F";                                     /* Fixed */

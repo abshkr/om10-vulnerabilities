@@ -982,6 +982,12 @@ class ProdMovement extends CommonClass
         $query = "SELECT 
                 TO_CHAR(NVL(pmv_date1, SYSDATE), 'DD.MM.RRRRHH24:MI:SS') pmv_date1, 
                 TO_CHAR(NVL(pmv_date2, SYSDATE), 'DD.MM.RRRRHH24:MI:SS') pmv_date2,
+                PMV_OPEN_AMB,
+                PMV_OPEN_COR,
+                PMV_CLOSE_AMB,
+                PMV_CLOSE_COR,
+                PMV_OPEN_KG,
+                PMV_CLOSE_KG,
                 NVL(PMV_TEMPERATURE, 0) PMV_TEMPERATURE
             FROM PRODUCT_MVMNTS WHERE PMV_NUMBER = :pmv_number";
         $stmt = oci_parse($this->conn, $query);
@@ -1260,7 +1266,7 @@ class ProdMovement extends CommonClass
                 $transfers[$i]->bases[$j]->liq_kg = abs($this->pmv_close_kg - $this->pmv_open_kg) * 1000;
             }
         }
-
+        
         $serv->set_property('transfers', $transfers);
         $serv->set_property('is_nomination', false);
         $serv->set_property('auto_complete', "T");          //For special, auto complete is T
