@@ -1,2 +1,2 @@
-import EquipmentList from './equipment-list';
+import EquipmentList from './equipment-list-dnld';
 export default EquipmentList;

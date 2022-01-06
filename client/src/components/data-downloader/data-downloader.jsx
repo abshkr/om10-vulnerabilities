@@ -13,28 +13,28 @@ const DataDownloader = ({ baseUrl, startVar, endVar, pageSize, round, icon, setD
 
   // const [pageItems, setPageItems] = useState([]);
   // const [loading, setLoading] = useState(false);
-  const [ratio1, setRatio] = useState(0);
-  // const [label, setLabel] = useState('');
-  const [counts1, setCounts] = useState(0);
-  const [total1, setTotal] = useState(0);
+  const [ratioState, setRatio] = useState(0);
+  const [countsState, setCounts] = useState(0);
+  const [totalState, setTotal] = useState(0);
   // const [startPosition, setStartPosition] = useState(0);
   // const [endPosition, setEndPosition] = useState(pageSize);
 
   const pageItems = useRef([]);
   const loading = useRef(false);
   const ratio = useRef(0);
-  const label = useRef('');
   const counts = useRef(0);
   const total = useRef(0);
   const startPosition = useRef(0);
   const endPosition = useRef(pageSize);
-  const currSize = useRef(pageSize);
+  const stepSize = useRef(pageSize);
 
   const setPageSize = (v) => {
-    currSize.current = v;
+    stepSize.current = v;
     startPosition.current = 0;
     endPosition.current = v;
-    };
+    setData([]);
+    setRunUrl(true);
+  };
 
   const onDownloadPages = async () => {
     console.log('...............onDownloadPages', total.current, counts.current);
@@ -45,7 +45,7 @@ const DataDownloader = ({ baseUrl, startVar, endVar, pageSize, round, icon, setD
     let sum = total.current;
     let counter=counts.current;
     let startPos=startPosition.current;
-    let size=currSize.current; //pageSize;
+    let size=stepSize.current; //pageSize;
     let endPos=endPosition.current;
     let pages=pageItems.current;
 
@@ -73,7 +73,6 @@ const DataDownloader = ({ baseUrl, startVar, endVar, pageSize, round, icon, setD
       total.current = sum;
       percent = sum > 0 ? _.round(counter/sum*100.0, 0) : 0
       ratio.current = percent;
-      label.current = `${counter} / ${sum}`;
 
       setCounts(counter);
       setTotal(sum);
@@ -112,14 +111,13 @@ const DataDownloader = ({ baseUrl, startVar, endVar, pageSize, round, icon, setD
     setCounts(0);
     setTotal(0);
     setRatio(0);
-    label.current = `0 / 0`;
     pageItems.current = [];
     setData([]);
     loading.current = false;
     setDownloading(false);
     pauseFlag.current = false;
     startPosition.current = 0;
-    endPosition.current = currSize.current;
+    endPosition.current = stepSize.current;
   };
 
   const onPause = () => {
@@ -144,9 +142,9 @@ const DataDownloader = ({ baseUrl, startVar, endVar, pageSize, round, icon, setD
 
   return (
     <div style={{display: 'flex'}}>
-      <Statistic title="" valueStyle={{ color: 'green', fontSize: '16px', width: '10vw' }} value={counts1} suffix={` / ${t('fields.totalSum')}: ${total1}`} />
+      <Statistic title="" valueStyle={{ color: 'green', fontSize: '16px', width: '10vw' }} value={countsState} suffix={` / ${t('fields.totalSum')}: ${totalState}`} />
       
-      <Progress type="line" style={{fontSize: '16px', fontWeight: 'bold', width: '60vw'}} percent={ratio1} strokeWidth={20} />
+      <Progress type="line" style={{fontSize: '16px', fontWeight: 'bold', width: '60vw'}} percent={ratioState} strokeWidth={20} />
 
       <Button
         type="primary"
@@ -190,7 +188,7 @@ const DataDownloader = ({ baseUrl, startVar, endVar, pageSize, round, icon, setD
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
-        {[100, 150, 250, 500, 1000].map((item, index) => (
+        {[100, 150, 200, 250, 500, 750, 1000, 1500, 2000].map((item, index) => (
           <Select.Option key={index} value={item}>
             {item + t('units.perPage')}
           </Select.Option>

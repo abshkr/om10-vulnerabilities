@@ -18,7 +18,7 @@ import Forms from './forms';
 const EquipmentList = () => {
   const query = useQuery();
   const config = useConfig();
-  const { expiryDateMode, siteUseAxleWeightLimit, siteEqptPaging } = useConfig();
+  const { expiryDateMode, siteUseAxleWeightLimit, siteEqptPaging, siteUseDownloader } = useConfig();
 
   let equipment = query.get('equipment') || '';
 
@@ -35,7 +35,7 @@ const EquipmentList = () => {
   const { setCount, take, offset, paginator, setPage, count } = usePagination();
 
   const [isDownloading, setDownloading] = useState(false);
-  const runUrlFlag = useRef(true);
+  const runUrlFlag = useRef(!pagingFlag);
   const setRunUrlFlag = (flag) => {
     runUrlFlag.current = flag;
   };
@@ -50,7 +50,7 @@ const EquipmentList = () => {
       pagingFlag ? 'Y' : 'N'
     }&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`);
   const baseUrl = mainUrl;
-  const url = !pagingFlag ? null : mainUrl + `&start_num=${take}&end_num=${offset}`;
+  const url = !pagingFlag && siteUseDownloader ? null : mainUrl + `&start_num=${take}&end_num=${offset}`;
   const pageUrl = mainUrl.replace('pgflag=N', 'pgflag=Y');
 
   /* const baseUrl =
@@ -79,7 +79,8 @@ const EquipmentList = () => {
     columns(expiryTypes?.records, t, expiryDateMode, siteUseAxleWeightLimit)
   );
 
-  const [filterValue, setFilterValue] = useState(equipment);
+  // const [filterValue, setFilterValue] = useState(equipment);
+  const [filterValue, setFilterValue] = useState('');
 
   const page = t('pageMenu.operations');
   const name = t(config?.siteLabelUser + 'pageNames.equipmentList');
@@ -115,11 +116,7 @@ const EquipmentList = () => {
     setMainUrl(tempUrl);
 
     setPage(1);
-    if (!pagingFlag) {
-      setRunUrlFlag(true);
-    } else {
-      setRunUrlFlag(false);
-    }
+    setRunUrlFlag(!pagingFlag);
   };
 
   const onRefresh = () => {
@@ -149,11 +146,7 @@ const EquipmentList = () => {
     setMainUrl(tempUrl);
 
     setPage(1);
-    if (!pagingFlag) {
-      setRunUrlFlag(true);
-    } else {
-      setRunUrlFlag(false);
-    }
+    setRunUrlFlag(!pagingFlag);
     if (revalidate) revalidate();
   };
 
@@ -194,11 +187,7 @@ const EquipmentList = () => {
     setMainUrl(tempUrl);
 
     setPage(1);
-    if (!pagingFlag) {
-      setRunUrlFlag(true);
-    } else {
-      setRunUrlFlag(false);
-    }
+    setRunUrlFlag(!pagingFlag);
     if (revalidate) revalidate();
     setSearching(false);
 
@@ -352,8 +341,10 @@ const EquipmentList = () => {
         {/* pagingFlag ? paginator : t('fields.totalCount') + ': ' + count */}
         {pagingFlag 
           ? paginator 
-          : <DataDownloader baseUrl={pageUrl} startVar={'start_num'} endVar={'end_num'} pageSize={100} 
-            setData={setData} setDownloading={setDownloading} runUrl={runUrlFlag.current} setRunUrl={setRunUrlFlag} />
+          : siteUseDownloader === false 
+            ? (t('fields.totalCount') + ': ' + count)
+            : <DataDownloader baseUrl={pageUrl} startVar={'start_num'} endVar={'end_num'} pageSize={100} 
+              setData={setData} setDownloading={setDownloading} runUrl={runUrlFlag.current} setRunUrl={setRunUrlFlag} />
         }
       </div>
       {visible && (
