@@ -8,46 +8,17 @@ import { JOURNAL } from '../../../api';
 import { DataTable } from '../../../components';
 import api from 'api';
 
-const Historical = ({ t, start, end, setData, setFields, search, pagingFlag }) => {
-  const [localData, setLocalData] = useState([]);
+const Historical = ({ t, data, setData, setFields, url, pagingFlag, paginator, setCount, count }) => {
   const [sortBy, setSortBy] = useState(null);
 
-  const { setCount, take, offset, paginator, setPage, count } = usePagination();
-
-  const { data: payload, isValidating, revalidate } = useSWR(search || pagingFlag === undefined ? null :
-      `${JOURNAL.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${start}&end_date=${end}&start_num=${take}&end_num=${offset}${
-        sortBy ? `&sort_by=${sortBy}` : ''
-      }`, { revalidateOnFocus: false }
-    );
+  const { data: payload, isValidating, revalidate } = useSWR(url+`${sortBy ? `&sort_by=${sortBy}` : ''}`, { revalidateOnFocus: false });
 
   const fields = columns(t);
-
-  const doSearch = (values) => {
-    console.log(values);
-
-    api
-      .get(JOURNAL.SEARCH, {
-        params: values,
-      })
-      .then((res) => {
-        setCount(res?.data?.count || res?.data?.records?.length);
-        setLocalData(res.data.records);
-        setData(res.data.records);
-        setPage(1)
-      });
-  };
-
-  useEffect(() => {
-    if (!!search) {
-      doSearch(search);
-    }
-  }, [search]);
 
   useEffect(() => {
     if (payload?.records) {
       setCount(payload?.count || 0);
       setData(payload?.records);
-      setLocalData(payload?.records);
       setFields(fields);
       payload.records = null;
     }
@@ -58,7 +29,7 @@ const Historical = ({ t, start, end, setData, setFields, search, pagingFlag }) =
       <DataTable
         height="295px"
         columns={columns(t)}
-        data={localData}
+        data={data}
         isLoading={isValidating}
         onSortChanged={setSortBy}
       />
@@ -71,7 +42,7 @@ const Historical = ({ t, start, end, setData, setFields, search, pagingFlag }) =
           marginTop: 10,
         }}
       >
-        {pagingFlag && !search ? paginator : t('fields.totalCount') + ': ' + count }
+        {pagingFlag ? paginator : t('fields.totalCount') + ': ' + count }
       </div>
     </>
   );

@@ -10,10 +10,10 @@ import Historical from './historical';
 import Overview from './overview';
 import api, { SITE_CONFIGURATION, JOURNAL } from 'api';
 
-import { Page, Calendar, Download, PageDownloader, PageExporter, WindowSearch, WindowSearchForm } from '../../components';
+import { Page, Calendar, Download, PageDownloader, PageExporter, WindowSearch } from '../../components';
 import { JournalContainer } from './style';
 import { SETTINGS } from '../../constants';
-import { useAuth, useConfig, usePagination } from 'hooks';
+import { useAuth, useConfig } from 'hooks';
 import { FileSearchOutlined, SyncOutlined } from '@ant-design/icons';
 import { Button, Switch } from 'antd';
 import { getDateRangeOffset, getCurrentTime } from 'utils';
@@ -22,129 +22,62 @@ const { TabPane } = Tabs;
 
 const Journal = () => {
   const { journalDateRange, serverTime, siteJnlPaging, siteJnlTabMode } = useConfig();
-
-  const [pagingFlag, setPagingFlag] = useState(true);
-  const [isSearching, setSearching] = useState(false);
-
+  const [pagingFlag, setPagingFlag] = useState(undefined);
   const { t } = useTranslation();
   const tabMode = siteJnlTabMode; // true: tabs; false: menu items
 
   const access = useAuth('M_JOURNALREPORT');
 
-  const { setCount, take, offset, paginator, setPage, count } = usePagination();
-
   const [selected, setSelected] = useState('1');
   const [fields, setFields] = useState([]);
   const [data, setData] = useState([]);
+  const [search, setSearch] = useState(null);
 
   const [start, setStart] = useState(moment().subtract(1, 'hour').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
-  const [useDateRange, setUseDateRange] = useState('Y');
 
-  const [startTimeSearch, setStartTimeSearch] = useState(null);
-  const [endTimeSearch, setEndTimeSearch] = useState(null);
-  const [useSearch, setUseSearch] = useState(false);
+  /* const baseUrl = search || pagingFlag === undefined ? null :
+    `${JOURNAL.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${start}&end_date=${end}${
+      sortBy ? `&sort_by=${sortBy}` : ''
+    }`; */
 
-  const [msgEvent, setMsgEvent] = useState('');
-  const [msgClass, setMsgClass] = useState('');
-  const [msgDetails, setMsgDetails] = useState('');
-  
-  
-  const [mainUrl, setMainUrl] = useState(`${JOURNAL.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${start}&end_date=${end}`);
-  const baseUrl = mainUrl;
-  const url = mainUrl + `&start_num=${take}&end_num=${offset}`;
-
+  const baseUrl = search || pagingFlag === undefined ? null :
+    `${JOURNAL.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${start}&end_date=${end}`;
 
   const setRange = (start, end) => {
     setStart(start);
     setEnd(end);
-    // setSearch(null);
-    const tempUrl = (
-      `${JOURNAL.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${start}&end_date=${end}&msg_event=${msgEvent}&msg_class=${msgClass}&target_str=${msgDetails}`
-    );
-    setMainUrl(tempUrl);
-    setPage(1);
+    setSearch(null);
   };
 
   const doSearch = (values) => {
-    // if (!values.target_str && !values.msg_event && !values.msg_class && !values.start_date) {
-    //   return;
-    // }
+    if (!values.target_str && !values.msg_event && !values.msg_class && !values.start_date) {
+      return;
+    }
 
     setSearch(values);
   };
 
   const revalidate = () => {
-    // setSearch(null);
+    setSearch(null);
   };
 
   const onRefresh = async () => {
-    let startTime = start;
-    let endTime = end;
     if (journalDateRange !== false) {
       const ranges = getDateRangeOffset(String(journalDateRange), '0.125');
 
       const currTime = await getCurrentTime();
-      startTime = moment(currTime, SETTINGS.DATE_TIME_FORMAT)
+      const startTime = moment(currTime, SETTINGS.DATE_TIME_FORMAT)
         .subtract(ranges.beforeToday * 24, 'hour')
         .format(SETTINGS.DATE_TIME_FORMAT);
-      endTime = moment(currTime, SETTINGS.DATE_TIME_FORMAT)
+      const endTime = moment(currTime, SETTINGS.DATE_TIME_FORMAT)
         .add(ranges.afterToday * 24, 'hour')
         .format(SETTINGS.DATE_TIME_FORMAT);
       setStart(startTime);
       setEnd(endTime);
     }
 
-    setStartTimeSearch(null);
-    setEndTimeSearch(null);
-    setUseDateRange('N');
-    
-    setUseSearch(false);
-  
-    setMsgEvent('');
-    setMsgClass('');
-    setMsgDetails('');
-    // const tempUrl = (
-    //   `${JOURNAL.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${start}&end_date=${end}&msg_event=${msgEvent}&msg_class=${msgClass}&target_str=${msgDetails}`
-    // );
-    const tempUrl = (
-      `${JOURNAL.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${startTime}&end_date=${endTime}&msg_event=${''}&msg_class=${''}&target_str=${''}`
-    );
-    setMainUrl(tempUrl);
-
-    setPage(1);
     revalidate();
-  };
-
-  const setSearch = (values) => {
-
-    setSearching(true);
-
-    setMsgEvent(!values?.msg_event ? '' : values?.msg_event);
-    setMsgClass(!values?.msg_class ? '' : values?.msg_class);
-    setMsgDetails(!values?.target_str ? '' : values?.target_str);
-    setUseDateRange(!values.use_date_range ? 'N': 'Y');
-    setStartTimeSearch(values.use_date_range ? (!values.start_date ? '-1' : values.start_date) : '-1');
-    setEndTimeSearch(values.use_date_range ? (!values.end_date ? '-1' : values.end_date) : '-1');
-    setUseSearch(true);
-
-    const msgEvent = (!values?.msg_event ? '' : values?.msg_event);
-    const msgClass = (!values?.msg_class ? '' : values?.msg_class);
-    const msgDetails = (!values?.target_str ? '' : values?.target_str);
-    const useDateRange = (!values.use_date_range ? 'N': 'Y');
-    const startTimeSearch = (values.use_date_range ? (!values.start_date ? '-1' : values.start_date) : '-1');
-    const endTimeSearch = (values.use_date_range ? (!values.end_date ? '-1' : values.end_date) : '-1');
-    // const tempUrl = (
-    //   `${JOURNAL.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${useSearch?startTimeSearch:start}&end_date=${useSearch?endTimeSearch:end}&msg_event=${msgEvent}&msg_class=${msgClass}&target_str=${msgDetails}`
-    // );
-    const tempUrl = (
-      `${JOURNAL.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${startTimeSearch}&end_date=${endTimeSearch}&msg_event=${msgEvent}&msg_class=${msgClass}&target_str=${msgDetails}`
-    );
-    setMainUrl(tempUrl);
-
-    setPage(1);
-    if (revalidate) revalidate();
-    setSearching(false);
   };
 
   const onChangePagination = async (v) => {
@@ -165,27 +98,21 @@ const Journal = () => {
     if (journalDateRange !== false && serverTime) {
       const ranges = getDateRangeOffset(String(journalDateRange), '0.125');
 
-      let startTime = start;
-      let endTime = end;
       if (ranges.beforeToday !== -1) {
-        startTime = moment(serverTime, SETTINGS.DATE_TIME_FORMAT)
-          .subtract(ranges.beforeToday * 24, 'hour')
-           .format(SETTINGS.DATE_TIME_FORMAT);
-        setStart(startTime);
+        setStart(
+          moment(serverTime, SETTINGS.DATE_TIME_FORMAT)
+            .subtract(ranges.beforeToday * 24, 'hour')
+            .format(SETTINGS.DATE_TIME_FORMAT)
+        );
       }
 
       if (ranges.afterToday !== -1) {
-        endTime = moment(serverTime, SETTINGS.DATE_TIME_FORMAT)
-          .add(ranges.afterToday * 24, 'hour')
-           .format(SETTINGS.DATE_TIME_FORMAT);
-        setEnd(endTime);
+        setEnd(
+          moment(serverTime, SETTINGS.DATE_TIME_FORMAT)
+            .add(ranges.afterToday * 24, 'hour')
+            .format(SETTINGS.DATE_TIME_FORMAT)
+        );
       }
-
-      const tempUrl = (
-        `${JOURNAL.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${startTime}&end_date=${endTime}&msg_event=${msgEvent}&msg_class=${msgClass}&target_str=${msgDetails}`
-      );
-      setMainUrl(tempUrl);
-      setPage(1);
     }
   }, [journalDateRange, serverTime]);
 
@@ -223,8 +150,12 @@ const Journal = () => {
       {!pagingFlag && selected === '2' && (
         <Download data={data} columns={fields} />
       )}
+
+      {pagingFlag && selected === '2' && search && (
+        <Download data={data} columns={fields} />
+      )}
       
-      {pagingFlag && selected === '2' && (
+      {pagingFlag && selected === '2' && !search && (
         // <PageExporter baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} columns={fields} />
         <PageDownloader baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} pageSize={500} columns={fields} />
       )}
@@ -235,17 +166,10 @@ const Journal = () => {
           icon={<FileSearchOutlined />}
           disabled={selected === '1'}
           onClick={() =>
-            WindowSearchForm(doSearch, t('operations.search'), {
+            WindowSearch(doSearch, t('operations.search'), {
               journal_msg: true,
               journal_event: true,
               journal_category: true,
-            }, {
-              msg_event: msgEvent,
-              msg_class: msgClass,
-              target_str: msgDetails,
-              start_date: startTimeSearch,
-              end_date: endTimeSearch,
-              use_date_range: useDateRange === 'Y' ? true : false,
             })
           }
         >
@@ -258,10 +182,7 @@ const Journal = () => {
           style={{ marginLeft: 5 }}
           value={selected}
           buttonStyle="solid"
-          onChange={(val) => {
-            // setSearch(null); 
-            setSelected(val.target.value)
-          }}
+          onChange={(val) => {setSearch(null); setSelected(val.target.value)}}
         >
           <Radio.Button value="0"> {t('tabColumns.overview')}</Radio.Button>
           <Radio.Button value="1"> {t('tabColumns.liveJournal')}</Radio.Button>
@@ -272,7 +193,7 @@ const Journal = () => {
   );
 
   const doTabChanges = (tabPaneKey) => {
-    // setSearch(null); 
+    setSearch(null); 
     setSelected(tabPaneKey)
   };
 
@@ -301,14 +222,12 @@ const Journal = () => {
               {selected === '2' && (
                 <Historical 
                   t={t} 
-                  data={data} 
+                  start={start} 
+                  end={end} 
                   setData={setData} 
                   setFields={setFields} 
-                  url={url}
+                  search={search}
                   pagingFlag={pagingFlag}
-                  paginator={paginator} 
-                  setCount={setCount}
-                  count={count}
                 />
               )}
             </TabPane>
@@ -321,14 +240,12 @@ const Journal = () => {
         {!tabMode && selected === '2' && (
           <Historical 
             t={t} 
-            data={data} 
+            start={start} 
+            end={end} 
             setData={setData} 
             setFields={setFields} 
-            url={url}
+            search={search}
             pagingFlag={pagingFlag}
-            paginator={paginator} 
-            setCount={setCount}
-            count={count}
           />
         )}
       </JournalContainer>

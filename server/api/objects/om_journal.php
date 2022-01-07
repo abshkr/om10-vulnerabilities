@@ -101,23 +101,67 @@ class OMJournal extends CommonClass
     {
         if (!isset($this->start_date) || !isset($this->end_date)) {
             //get journal in 30 min
-            $query = "SELECT COUNT(*) CN FROM GUI_SITE_JOURNAL WHERE GEN_DATE >= SYSDATE - 30 / 1440 AND REGION_CODE = :lang ";
+            $query = "
+            SELECT COUNT(*) CN 
+            FROM GUI_SITE_JOURNAL 
+            WHERE GEN_DATE >= SYSDATE - 30 / 1440 
+                AND REGION_CODE = :lang 
+            ";
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':lang', $this->lang);
         } else {
-            $query = "SELECT COUNT(*) CN
+            $query = "
+            SELECT COUNT(*) CN
             FROM GUI_SITE_JOURNAL
             WHERE REGION_CODE = :lang
-                AND GEN_DATE >= TO_DATE(:start_date, 'yyyy-mm-dd hh24:mi:ss')
-                AND GEN_DATE <= TO_DATE(:end_date, 'yyyy-mm-dd hh24:mi:ss')";
+            ";
+            //    AND GEN_DATE >= TO_DATE(:start_date, 'yyyy-mm-dd hh24:mi:ss')
+            //    AND GEN_DATE <= TO_DATE(:end_date, 'yyyy-mm-dd hh24:mi:ss')
+
+            if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1' && $this->start_date != '') {
+                $query .= "  AND GEN_DATE >= TO_DATE(:start_date, 'yyyy-mm-dd hh24:mi:ss')";
+            }
+            if (isset($this->end_date) && $this->end_date != -1 && $this->end_date != '-1' && $this->end_date != '') {
+                $query .= "  AND GEN_DATE <= TO_DATE(:end_date, 'yyyy-mm-dd hh24:mi:ss')";
+            }
+
+            if (isset($this->msg_event) && $this->msg_event != '') {
+                $query .= " AND MSG_EVENT = :msg_event ";
+            }
+            if (isset($this->msg_class) && $this->msg_class != '') {
+                $query .= " AND MSG_CLASS = :msg_class ";
+            }
+            if (isset($this->target_str) && $this->target_str != '') {
+                $query .= " AND UPPER(MESSAGE) LIKE UPPER(:target_str) ";
+            }
+        
             // write_log(json_encode($query), __FILE__, __LINE__);
             $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':start_date', $this->start_date);
-            oci_bind_by_name($stmt, ':end_date', $this->end_date);
+
+            if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1' && $this->start_date != '') {
+                oci_bind_by_name($stmt, ':start_date', $this->start_date);
+            }
+            if (isset($this->end_date) && $this->end_date != -1 && $this->end_date != '-1' && $this->end_date != '') {
+                oci_bind_by_name($stmt, ':end_date', $this->end_date);
+            }
+            // oci_bind_by_name($stmt, ':start_date', $this->start_date);
+            // oci_bind_by_name($stmt, ':end_date', $this->end_date);
             oci_bind_by_name($stmt, ':lang', $this->lang);
-            if (isset($this->region_code)) {
+            if (isset($this->region_code) && $this->region_code != '') {
                 oci_bind_by_name($stmt, ':region_code', $this->region_code);
             }
+
+            if (isset($this->msg_event) && $this->msg_event != '') {
+                oci_bind_by_name($stmt, ':msg_event', $this->msg_event);
+            }
+            if (isset($this->msg_class) && $this->msg_class != '') {
+                oci_bind_by_name($stmt, ':msg_class', $this->msg_class);
+            }
+            if (isset($this->target_str) && $this->target_str != '') {
+                $percent_str = '%' . $this->target_str . '%';
+                oci_bind_by_name($stmt, ':target_str', $percent_str);
+            }
+    
         }
 
         if (oci_execute($stmt, $this->commit_mode)) {
@@ -132,6 +176,124 @@ class OMJournal extends CommonClass
 
     // read personnel
     public function read()
+    {
+        // write_log(json_encode($this), __FILE__, __LINE__);
+        if (!isset($this->lang)) {
+            $this->lang = Utilities::getCurrLang();
+        }
+
+        if (!isset($this->start_date) || !isset($this->end_date)) {
+            //get journal in 30 min
+            $query = "
+            SELECT GEN_DATE,
+                REGION_CODE,
+                PRINT_DATE,
+                COMPANY_CODE,
+                MSG_EVENT,
+                MSG_CLASS,
+                MESSAGE,
+                SEQ,
+                JNL_CAT
+            FROM GUI_SITE_JOURNAL
+            WHERE GEN_DATE >= SYSDATE - 30 / 1440
+                AND REGION_CODE = :lang
+            ORDER BY GEN_DATE DESC";
+            if (!(isset($this->pgflag) && $this->pgflag==='N')) {
+                //By default, use pagination, unless there is an explicit pgflag=N
+                $query = $this->pagination_query($query);
+            }
+            $stmt = oci_parse($this->conn, $query);
+            
+            oci_bind_by_name($stmt, ':lang', $this->lang);
+            
+            if (!(isset($this->pgflag) && $this->pgflag==='N')) {
+                $this->pagination_binds($stmt);
+            }
+        } else {
+            $query = "
+            SELECT GEN_DATE,
+                REGION_CODE,
+                PRINT_DATE,
+                COMPANY_CODE,
+                MSG_EVENT,
+                MSG_CLASS,
+                MESSAGE,
+                SEQ,
+                JNL_CAT
+            FROM GUI_SITE_JOURNAL
+            WHERE REGION_CODE = :lang
+            ";
+            //    AND GEN_DATE >= TO_DATE(:start_date, 'yyyy-mm-dd hh24:mi:ss')
+            //    AND GEN_DATE <= TO_DATE(:end_date, 'yyyy-mm-dd hh24:mi:ss')
+
+            if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1' && $this->start_date != '') {
+                $query .= "  AND GEN_DATE >= TO_DATE(:start_date, 'yyyy-mm-dd hh24:mi:ss')";
+            }
+            if (isset($this->end_date) && $this->end_date != -1 && $this->end_date != '-1' && $this->end_date != '') {
+                $query .= "  AND GEN_DATE <= TO_DATE(:end_date, 'yyyy-mm-dd hh24:mi:ss')";
+            }
+
+            if (isset($this->msg_event) && $this->msg_event != '') {
+                $query .= " AND MSG_EVENT = :msg_event ";
+            }
+            if (isset($this->msg_class) && $this->msg_class != '') {
+                $query .= " AND MSG_CLASS = :msg_class ";
+            }
+            if (isset($this->target_str) && $this->target_str != '') {
+                $query .= " AND UPPER(MESSAGE) LIKE UPPER(:target_str) ";
+            }
+        
+            $query .= "ORDER BY GEN_DATE DESC";
+
+            if (!(isset($this->pgflag) && $this->pgflag==='N')) {
+                $query = $this->pagination_query($query);
+            }
+            // write_log(json_encode($query), __FILE__, __LINE__);
+            $stmt = oci_parse($this->conn, $query);
+
+            if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1' && $this->start_date != '') {
+                oci_bind_by_name($stmt, ':start_date', $this->start_date);
+            }
+            if (isset($this->end_date) && $this->end_date != -1 && $this->end_date != '-1' && $this->end_date != '') {
+                oci_bind_by_name($stmt, ':end_date', $this->end_date);
+            }
+
+            // oci_bind_by_name($stmt, ':start_date', $this->start_date);
+            // oci_bind_by_name($stmt, ':end_date', $this->end_date);
+            oci_bind_by_name($stmt, ':lang', $this->lang);
+            if (isset($this->region_code) && $this->region_code != '') {
+                oci_bind_by_name($stmt, ':region_code', $this->region_code);
+            }
+
+            if (isset($this->msg_event) && $this->msg_event != '') {
+                oci_bind_by_name($stmt, ':msg_event', $this->msg_event);
+            }
+            if (isset($this->msg_class) && $this->msg_class != '') {
+                oci_bind_by_name($stmt, ':msg_class', $this->msg_class);
+            }
+            if (isset($this->target_str) && $this->target_str != '') {
+                $percent_str = '%' . $this->target_str . '%';
+                oci_bind_by_name($stmt, ':target_str', $percent_str);
+            }
+    
+            if (!(isset($this->pgflag) && $this->pgflag==='N')) {
+                $this->pagination_binds($stmt);
+            }
+        }
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+
+    
+    // read personnel
+    public function read_daterange_only()
     {
         // write_log(json_encode($this), __FILE__, __LINE__);
         if (!isset($this->lang)) {

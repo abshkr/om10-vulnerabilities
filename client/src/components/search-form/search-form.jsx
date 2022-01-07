@@ -145,7 +145,7 @@ const SearchForm = ({ onSearch, fields, initValues, modal, rangeRequired }) => {
         <DateRange 
           form={form} 
           timeOptionType={fields?.time_option_type} 
-          force={fields?.journal_msg}
+          // force={fields?.journal_msg}
           useRange={formValues?.use_date_range}
           startDate={!formValues?.start_date || formValues?.start_date === '-1' ? null : formValues?.start_date} 
           endDate={!formValues?.end_date || formValues?.end_date === '-1' ? null : formValues?.end_date} 
