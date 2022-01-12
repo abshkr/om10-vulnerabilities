@@ -2,18 +2,28 @@ import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
 
 import columns from './columns';
-import usePagination from 'hooks/use-pagination';
+import columnsLive from '../live/columns';
 
-import { JOURNAL } from '../../../api';
-import { DataTable } from '../../../components';
+import { DataTable, DataDownloader } from '../../../components';
 import api from 'api';
 
-const Historical = ({ t, data, setData, setFields, url, pagingFlag, paginator, setCount, count }) => {
-  const [sortBy, setSortBy] = useState(null);
+const Historical = ({
+  t,
+  data,
+  setData,
+  setFields,
+  url,
+  pagingFlag,
+  paginator,
+  setCount,
+  count,
+  downloader,
+  setDownloading,
+  setSortBy,
+}) => {
+  const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
 
-  const { data: payload, isValidating, revalidate } = useSWR(url+`${sortBy ? `&sort_by=${sortBy}` : ''}`, { revalidateOnFocus: false });
-
-  const fields = columns(t);
+  const fields = pagingFlag ? columns(t) : columnsLive(t);
 
   useEffect(() => {
     if (payload?.records) {
@@ -24,11 +34,17 @@ const Historical = ({ t, data, setData, setFields, url, pagingFlag, paginator, s
     }
   }, [payload]);
 
+  useEffect(() => {
+    if (isValidating !== undefined) {
+      setDownloading(isValidating);
+    }
+  }, [isValidating]);
+
   return (
     <>
       <DataTable
         height="295px"
-        columns={columns(t)}
+        columns={fields}
         data={data}
         isLoading={isValidating}
         onSortChanged={setSortBy}
@@ -42,7 +58,7 @@ const Historical = ({ t, data, setData, setFields, url, pagingFlag, paginator, s
           marginTop: 10,
         }}
       >
-        {pagingFlag ? paginator : t('fields.totalCount') + ': ' + count }
+        {pagingFlag ? paginator : downloader}
       </div>
     </>
   );

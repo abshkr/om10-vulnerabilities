@@ -390,7 +390,7 @@ const useConfig = () => {
         siteAllocResetPeriodDateRanges: configurationObject?.SITE_ALLOC_RESET_PERIOD_DATERANGES || false,
         siteAllowMultiAllocations: configurationObject?.SITE_ALLOW_MULTI_ALLOCATIONS || false,
         siteEqptPaging: configurationObject?.SITE_PAGINATION_EQPT_LIST || false,
-        siteJnlPaging: configurationObject?.SITE_PAGINATION_JNL_LIST || true,
+        siteJnlPaging: configurationObject?.SITE_PAGINATION_JNL_LIST || false,
         siteTnkrPaging: configurationObject?.SITE_PAGINATION_TNKR_LIST || false,
         siteUseDownloader: configurationObject?.SITE_USE_DOWNLOADER || false,
         reports_closeout_job: configurationObject?.REPORTS_CLOSEOUT_JOB || false,
