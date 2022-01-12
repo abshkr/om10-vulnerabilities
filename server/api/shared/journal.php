@@ -1029,6 +1029,18 @@ class Journal
         return true;
     }
 
+	public function getMessageArray($txt, $step)
+	{
+		$arr = array();
+		$len = strlen($txt);
+		for($i=0; $i<$len; $i+=$step)
+		{
+			$msg = substr($txt, $i, $step);
+			$arr[] = $msg;
+		}
+		return $arr;
+	}
+
     /*
         RECORD_ADDED      22	CHN	[%] 新增 [%] 记录 [%]: [%]
         RECORD_ADDED      22	ENG	[%] added [%] record with [%]: [%] 
@@ -1157,41 +1169,50 @@ class Journal
             $jnl_event_str = $this->getEventStr($jnl_event, $lang);
             $jnl_class_str = $this->getClassStr($jnl_class, $lang);
             
-            $query = "INSERT INTO SITE_JOURNAL
-                    (GEN_DATE,
-                    REGION_CODE,
-                    COMPANY_CODE,
-                    MSG_EVENT,
-                    MSG_CLASS,
-                    MESSAGE,
-                    SEQ)
-            SELECT SYSDATE,
-                    :lang,
-                    SITE_MNGR,
-                    :jnl_event,
-                    :jnl_class,
-                    :message,
-                    JOURNAL_SEQ.NEXTVAL
-            FROM SITE";
-            $stmt2 = oci_parse($this->conn, $query);
+            $msgarr = $this->getMessageArray( $message, 512 );
 
-            oci_bind_by_name($stmt2, ':lang', $lang);
-            oci_bind_by_name($stmt2, ':jnl_event', $jnl_event_str);
-            oci_bind_by_name($stmt2, ':jnl_class', $jnl_class_str);
-            oci_bind_by_name($stmt2, ':message', $message);
+            foreach ($msgarr as $msgstr) 
+            {
 
-            if ($this->autoCommit) {
-                $mode = OCI_COMMIT_ON_SUCCESS;
-            } else {
-                $mode = OCI_NO_AUTO_COMMIT;
-            }
+                $query = "
+                INSERT INTO SITE_JOURNAL
+                        (GEN_DATE,
+                        REGION_CODE,
+                        COMPANY_CODE,
+                        MSG_EVENT,
+                        MSG_CLASS,
+                        MESSAGE,
+                        SEQ)
+                SELECT SYSDATE,
+                        :lang,
+                        SITE_MNGR,
+                        :jnl_event,
+                        :jnl_class,
+                        :message,
+                        JOURNAL_SEQ.NEXTVAL
+                FROM SITE
+                ";
+                $stmt2 = oci_parse($this->conn, $query);
 
-            if (!oci_execute($stmt2, $mode)) {
-                $e = oci_error($stmt2);
-                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-                write_log("Failed to write journal", __FILE__, __LINE__);
-                oci_free_statement($stmt);
-                return false;
+                oci_bind_by_name($stmt2, ':lang', $lang);
+                oci_bind_by_name($stmt2, ':jnl_event', $jnl_event_str);
+                oci_bind_by_name($stmt2, ':jnl_class', $jnl_class_str);
+                oci_bind_by_name($stmt2, ':message', $msgstr);
+
+                if ($this->autoCommit) {
+                    $mode = OCI_COMMIT_ON_SUCCESS;
+                } else {
+                    $mode = OCI_NO_AUTO_COMMIT;
+                }
+
+                if (!oci_execute($stmt2, $mode)) {
+                    $e = oci_error($stmt2);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    write_log("Failed to write journal", __FILE__, __LINE__);
+                    oci_free_statement($stmt);
+                    return false;
+                }
+
             }
         }
 
@@ -1302,13 +1323,13 @@ class Journal
         } */
 
         $jnl_data[4] = $orig_value;
-        if (strlen($jnl_data[4]) > 200) {
-            $jnl_data[4] = substr($orig_value, 0, 200) . " ...";
-        }
+        // if (strlen($jnl_data[4]) > 200) {
+        //     $jnl_data[4] = substr($orig_value, 0, 200) . " ...";
+        // }
         $jnl_data[5] = $new_value;
-        if (strlen($jnl_data[5]) > 200) {
-            $jnl_data[5] = substr($new_value, 0, 200) . " ...";
-        }
+        // if (strlen($jnl_data[5]) > 200) {
+        //     $jnl_data[5] = substr($new_value, 0, 200) . " ...";
+        // }
 
         if (!$this->jnlLogEvent(
             Lookup::RECORD_CHANGED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
