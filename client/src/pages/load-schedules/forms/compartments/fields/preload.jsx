@@ -102,16 +102,23 @@ export default class Preload extends Component {
   }
 
   handleChange(value) {
-    const { form, rowIndex, data } = this.props;
+    const { form, rowIndex, data, flag } = this.props;
 
     const safefill = !data?.safefill ? 0 : _.toNumber(data?.safefill);
-    const scheduled = !data?.qty_scheduled ? 0 : _.toNumber(data?.qty_scheduled);
+    const scheduled = !data?.qty_scheduled ? 0 : _.round(_.toNumber(data?.qty_scheduled), 0);
     // const loaded = !data?.qty_loaded ? 0 : _.toNumber(data?.qty_loaded);
 
-    // const max = _.min([safefill, scheduled, loaded]);
-    const max = _.min([safefill, scheduled]);
-    let current = form.getFieldValue('compartments');
+    let max = 0;
+    if (flag) {
+      // flag === true: RTC always deduct the returns from preset (Scheduled qty) [RULE: preload <= min(safeFill, preset)].
+      // max = _.min([safefill, scheduled, loaded]);
+      max = _.min([safefill, scheduled]);
+    } else {
+      // flag === false: Load the preset amount and do not deduct the returns [RULE: preloaded + scheduled (preset) <= safefill].
+      max = safefill - scheduled;
+    }
 
+    let current = form.getFieldValue('compartments');
     current[rowIndex].qty_reload = value;
 
     form.setFieldsValue({

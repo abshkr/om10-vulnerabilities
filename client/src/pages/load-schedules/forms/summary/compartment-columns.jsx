@@ -74,6 +74,7 @@ const columns = (t, form, config) => [
       min: 0,
       max: 999999,
       form: form,
+      flag: config?.sitePreloadDeductFromPreset,
     },
     /* cellEditor: 'NumericEditor',
     cellEditorParams: {

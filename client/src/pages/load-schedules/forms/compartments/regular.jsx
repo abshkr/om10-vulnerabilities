@@ -285,6 +285,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
         min: 0,
         max: 999999,
         form: form,
+        flag: config?.sitePreloadDeductFromPreset,
       },
       /* cellEditor: 'NumericEditor',
       cellEditorParams: {

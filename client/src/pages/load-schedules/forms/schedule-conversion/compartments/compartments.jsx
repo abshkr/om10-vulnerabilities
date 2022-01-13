@@ -181,6 +181,7 @@ const Compartments = ({ form, value, tanker, config, products, units }) => {
         min: 0,
         max: 999999,
         form: form,
+        flag: config?.sitePreloadDeductFromPreset,
       },
     },
 
