@@ -1,5 +1,12 @@
-import React, {useState, useEffect, useRef} from 'react';
-import { FileTextOutlined, QuestionCircleOutlined, CloseOutlined, DownloadOutlined, PauseOutlined, ClearOutlined } from '@ant-design/icons';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  FileTextOutlined,
+  QuestionCircleOutlined,
+  CloseOutlined,
+  DownloadOutlined,
+  PauseOutlined,
+  ClearOutlined,
+} from '@ant-design/icons';
 import { Button, notification, Progress, Modal, Drawer, Tag, Statistic, Select, Row, Col } from 'antd';
 import { CSVLink } from 'react-csv';
 import { useTranslation } from 'react-i18next';
@@ -32,15 +39,15 @@ const PageDownloader = ({ baseUrl, startVar, endVar, pageSize, columns, round, i
     }
 
     let sum = total;
-    let counter=counts;
-    let startPos=startPosition;
-    let size=stepSize.current;
-    let endPos=endPosition;
-    let pages=pageItems;
+    let counter = counts;
+    let startPos = startPosition;
+    let size = stepSize.current;
+    let endPos = endPosition;
+    let pages = pageItems;
 
     pauseFlag.current = false;
     setLoading(true);
-    let percent = total > 0 ? _.round(counter/total*100.0, 0) : 0
+    let percent = total > 0 ? _.round((counter / total) * 100.0, 0) : 0;
     setRatio(percent);
     setCanSave(false);
 
@@ -59,7 +66,7 @@ const PageDownloader = ({ baseUrl, startVar, endVar, pageSize, columns, round, i
       counter += items?.length;
       setCounts(counter);
       setTotal(sum);
-      const percent = sum > 0 ? _.round(counter/sum*100.0, 0) : 0
+      const percent = sum > 0 ? _.round((counter / sum) * 100.0, 0) : 0;
       setRatio(percent);
       setLabel(`${counter} / ${sum}`);
       if (counter >= sum) {
@@ -88,7 +95,7 @@ const PageDownloader = ({ baseUrl, startVar, endVar, pageSize, columns, round, i
         message: t('messages.csvDownloadPartialSuccessful'),
       });
     }
-  }
+  };
 
   const onReset = () => {
     setRatio(0);
@@ -106,12 +113,12 @@ const PageDownloader = ({ baseUrl, startVar, endVar, pageSize, columns, round, i
 
   const onPause = () => {
     pauseFlag.current = true;
-  }
+  };
 
   const onClose = () => {
     setVisible(false);
     onReset();
-  }
+  };
 
   const setPageSize = (v) => {
     stepSize.current = v;
@@ -152,6 +159,7 @@ const PageDownloader = ({ baseUrl, startVar, endVar, pageSize, columns, round, i
                 icon={<CloseOutlined />}
                 style={{ float: 'right' }}
                 onClick={onClose}
+                disabled={loading}
               >
                 {t('operations.cancel')}
               </Button>
@@ -161,6 +169,7 @@ const PageDownloader = ({ baseUrl, startVar, endVar, pageSize, columns, round, i
                 icon={<ClearOutlined />}
                 style={{ float: 'right' }}
                 onClick={() => onReset()}
+                disabled={loading}
               >
                 {t('operations.reset')}
               </Button>
@@ -171,7 +180,7 @@ const PageDownloader = ({ baseUrl, startVar, endVar, pageSize, columns, round, i
                 icon={icon || <DownloadOutlined />}
                 onClick={onDownloadPages}
                 // disabled={loading || pageRecords?.length===0 || !pageRecords}
-                disabled={loading}
+                disabled={loading || (total > 0 && total === counts)}
               >
                 {t('operations.download')}
               </Button>
@@ -186,7 +195,7 @@ const PageDownloader = ({ baseUrl, startVar, endVar, pageSize, columns, round, i
                       message: t('messages.csvSaveSuccessful'),
                     })
                   }
-                  disabled={loading || pageRecords?.length===0 || !canSave}
+                  disabled={loading || pageRecords?.length === 0 || !canSave}
                 >
                   {t('operations.save')}
                 </Button>
@@ -205,7 +214,7 @@ const PageDownloader = ({ baseUrl, startVar, endVar, pageSize, columns, round, i
               </Button>
 
               <Select
-                style={{paddingLeft: 10}}
+                style={{ paddingLeft: 10 }}
                 dropdownMatchSelectWidth={false}
                 defaultValue={stepSize.current}
                 disabled={loading}
@@ -222,14 +231,23 @@ const PageDownloader = ({ baseUrl, startVar, endVar, pageSize, columns, round, i
                   </Select.Option>
                 ))}
               </Select>
-
             </>
           }
         >
-          <div style={{textAlign: 'center'}}>
-            <Progress type="circle" style={{fontSize: '96px', fontWeight: 'bold'}} percent={ratio} width={360} />
+          <div style={{ textAlign: 'center' }}>
+            <Progress
+              type="circle"
+              style={{ fontSize: '96px', fontWeight: 'bold' }}
+              percent={ratio}
+              width={360}
+            />
             {/* <Tag color='blue'>{label}</Tag> */}
-            <Statistic title="" valueStyle={{ color: 'green' }} value={counts} suffix={` / ${t('fields.totalSum')}: ${total}`} />
+            <Statistic
+              title=""
+              valueStyle={{ color: 'green' }}
+              value={counts}
+              suffix={` / ${t('fields.totalSum')}: ${total}`}
+            />
           </div>
         </Drawer>
       )}

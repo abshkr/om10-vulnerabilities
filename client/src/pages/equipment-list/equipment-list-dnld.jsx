@@ -6,7 +6,16 @@ import { Button, Switch, notification } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
 
-import { Page, DataTable, Download, DataDownloader, PageDownloader, PageExporter, WindowSearch, WindowSearchForm } from '../../components';
+import {
+  Page,
+  DataTable,
+  Download,
+  DataDownloader,
+  PageDownloader,
+  PageExporter,
+  WindowSearch,
+  WindowSearchForm,
+} from '../../components';
 import api, { EQUIPMENT_LIST, SITE_CONFIGURATION } from '../../api';
 
 import columns from './columns';
@@ -42,14 +51,14 @@ const EquipmentList = () => {
 
   const access = useAuth('M_EQUIPMENTLIST');
 
-  const [mainUrl, setMainUrl] = useState(parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
-  ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${
-      pagingFlag ? 'Y' : 'N'
-    }`
-  : `${EQUIPMENT_LIST.READ}?pgflag=${
-      pagingFlag ? 'Y' : 'N'
-    }&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`);
-  const baseUrl = mainUrl;
+  const [mainUrl, setMainUrl] = useState(
+    parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
+      ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${pagingFlag ? 'Y' : 'N'}`
+      : `${EQUIPMENT_LIST.READ}?pgflag=${
+          pagingFlag ? 'Y' : 'N'
+        }&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`
+  );
+  const baseUrl = mainUrl.replace('pgflag=N', 'pgflag=Y');
   const url = !pagingFlag && siteUseDownloader ? null : mainUrl + `&start_num=${take}&end_num=${offset}`;
   const pageUrl = mainUrl.replace('pgflag=N', 'pgflag=Y');
 
@@ -71,7 +80,9 @@ const EquipmentList = () => {
           pagingFlag ? 'Y' : 'N'
         }&start_num=${take}&end_num=${offset}&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`; */
 
-  const { data: payload, isValidating, revalidate } = useSWR(pagingFlag === undefined ? null : url, { revalidateOnFocus: false });
+  const { data: payload, isValidating, revalidate } = useSWR(pagingFlag === undefined ? null : url, {
+    revalidateOnFocus: false,
+  });
   const { data: expiryTypes } = useSWR(EQUIPMENT_LIST.EXPIRY, { revalidateOnFocus: false });
 
   const [data, setData] = useState(payload?.records);
@@ -84,7 +95,6 @@ const EquipmentList = () => {
 
   const page = t('pageMenu.operations');
   const name = t(config?.siteLabelUser + 'pageNames.equipmentList');
-
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -103,16 +113,15 @@ const EquipmentList = () => {
     ];
 
     await api.post(SITE_CONFIGURATION.UPDATE, values);
-    
+
     setData([]);
 
-    const tempUrl = (parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
-    ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${
-        v ? 'Y' : 'N'
-      }`
-    : `${EQUIPMENT_LIST.READ}?pgflag=${
-        v ? 'Y' : 'N'
-      }&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`);
+    const tempUrl =
+      parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
+        ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${v ? 'Y' : 'N'}`
+        : `${EQUIPMENT_LIST.READ}?pgflag=${
+            v ? 'Y' : 'N'
+          }&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
     setMainUrl(tempUrl);
 
     setPage(1);
@@ -127,7 +136,7 @@ const EquipmentList = () => {
     setEqptCode('');
     setEqptOwner('');
     setEqptEtyp('');
-    
+
     const parentEqpt = '';
     // const tempUrl = (parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
     // ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${
@@ -136,13 +145,12 @@ const EquipmentList = () => {
     // : `${EQUIPMENT_LIST.READ}?pgflag=${
     //     pagingFlag ? 'Y' : 'N'
     //   }&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`);
-    const tempUrl = (parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
-    ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${
-        pagingFlag ? 'Y' : 'N'
-      }`
-    : `${EQUIPMENT_LIST.READ}?pgflag=${
-        pagingFlag ? 'Y' : 'N'
-      }&eqpt_id=${''}&eqpt_code=${''}&eqpt_owner=${''}&eqpt_etyp=${''}`);
+    const tempUrl =
+      parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
+        ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${pagingFlag ? 'Y' : 'N'}`
+        : `${EQUIPMENT_LIST.READ}?pgflag=${
+            pagingFlag ? 'Y' : 'N'
+          }&eqpt_id=${''}&eqpt_code=${''}&eqpt_owner=${''}&eqpt_etyp=${''}`;
     setMainUrl(tempUrl);
 
     setPage(1);
@@ -160,7 +168,7 @@ const EquipmentList = () => {
     /* if (!values.eqpt_id && !values.eqpt_code && !values.eqpt_owner && !values.eqpt_etp) {
       return;
     } */
-    
+
     setData([]);
 
     setFilterValue(' ');
@@ -170,20 +178,19 @@ const EquipmentList = () => {
     setEqptCode(!values.eqpt_code ? '' : values.eqpt_code);
     setEqptOwner(!values.eqpt_owner ? '' : values.eqpt_owner);
     setEqptEtyp(!values.eqpt_etp ? '' : values.eqpt_etp);
-    
+
     // useState variables may be async, so use local variables here.
     const parentEqpt = '';
-    const eqptId = (!values.eqpt_id ? '' : values.eqpt_id);
-    const eqptCode = (!values.eqpt_code ? '' : values.eqpt_code);
-    const eqptOwner = (!values.eqpt_owner ? '' : values.eqpt_owner);
-    const eqptEtyp = (!values.eqpt_etp ? '' : values.eqpt_etp);
-    const tempUrl = (parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
-    ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${
-        pagingFlag ? 'Y' : 'N'
-      }`
-    : `${EQUIPMENT_LIST.READ}?pgflag=${
-        pagingFlag ? 'Y' : 'N'
-      }&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`);
+    const eqptId = !values.eqpt_id ? '' : values.eqpt_id;
+    const eqptCode = !values.eqpt_code ? '' : values.eqpt_code;
+    const eqptOwner = !values.eqpt_owner ? '' : values.eqpt_owner;
+    const eqptEtyp = !values.eqpt_etp ? '' : values.eqpt_etp;
+    const tempUrl =
+      parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
+        ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${pagingFlag ? 'Y' : 'N'}`
+        : `${EQUIPMENT_LIST.READ}?pgflag=${
+            pagingFlag ? 'Y' : 'N'
+          }&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
     setMainUrl(tempUrl);
 
     setPage(1);
@@ -269,13 +276,17 @@ const EquipmentList = () => {
         {t('operations.refresh')}
       </Button>
 
-      {!pagingFlag && (
-        <Download data={data} isLoading={isDownloading || isSearching} columns={fields} />
-      )}
-      
+      {!pagingFlag && <Download data={data} isLoading={isDownloading || isSearching} columns={fields} />}
+
       {pagingFlag && (
         // <PageExporter baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} columns={fields} />
-        <PageDownloader baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} pageSize={500} columns={fields} />
+        <PageDownloader
+          baseUrl={baseUrl}
+          startVar={'start_num'}
+          endVar={'end_num'}
+          pageSize={500}
+          columns={fields}
+        />
       )}
 
       <Button
@@ -321,7 +332,7 @@ const EquipmentList = () => {
       <DataTable
         columns={fields}
         data={data}
-        isLoading={isDownloading || isSearching }
+        isLoading={isDownloading || isSearching}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
         selectionMode="single"
@@ -339,13 +350,22 @@ const EquipmentList = () => {
         }}
       >
         {/* pagingFlag ? paginator : t('fields.totalCount') + ': ' + count */}
-        {pagingFlag 
-          ? paginator 
-          : siteUseDownloader === false 
-            ? (t('fields.totalCount') + ': ' + count)
-            : <DataDownloader baseUrl={pageUrl} startVar={'start_num'} endVar={'end_num'} pageSize={100} 
-              setData={setData} setDownloading={setDownloading} runUrl={runUrlFlag.current} setRunUrl={setRunUrlFlag} />
-        }
+        {pagingFlag ? (
+          paginator
+        ) : siteUseDownloader === false ? (
+          t('fields.totalCount') + ': ' + count
+        ) : (
+          <DataDownloader
+            baseUrl={pageUrl}
+            startVar={'start_num'}
+            endVar={'end_num'}
+            pageSize={100}
+            setData={setData}
+            setDownloading={setDownloading}
+            runUrl={runUrlFlag.current}
+            setRunUrl={setRunUrlFlag}
+          />
+        )}
       </div>
       {visible && (
         <Forms
