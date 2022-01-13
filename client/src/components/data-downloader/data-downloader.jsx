@@ -173,7 +173,7 @@ const DataDownloader = ({
         icon={icon || <DownloadOutlined />}
         onClick={onDownloadPages}
         // disabled={loading || pageRecords?.length===0 || !pageRecords}
-        disabled={loading.current}
+        disabled={loading.current || (total.current > 0 && total.current === counts.current)}
       >
         {''}
       </Button>
@@ -194,6 +194,7 @@ const DataDownloader = ({
         icon={<ClearOutlined />}
         // style={{ float: 'right' }}
         onClick={() => onReset()}
+        disabled={loading.current}
       >
         {''}
       </Button>
