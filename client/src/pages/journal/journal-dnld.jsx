@@ -69,7 +69,7 @@ const Journal = () => {
   const [mainUrl, setMainUrl] = useState(
     `${JOURNAL.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${start}&end_date=${end}`
   );
-  const baseUrl = mainUrl;
+  const baseUrl = mainUrl.replace('pgflag=N', 'pgflag=Y');
   const url =
     !pagingFlag && useDownloader
       ? null

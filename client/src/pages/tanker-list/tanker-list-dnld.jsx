@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import useSWR from 'swr';
 import { Button, Switch, notification } from 'antd';
@@ -10,6 +10,7 @@ import {
   Page,
   DataTable,
   Download,
+  DataDownloader,
   PageDownloader,
   PageExporter,
   WindowSearch,
@@ -28,7 +29,7 @@ const TankerList = () => {
 
   const tanker = query.get('tanker') || '';
 
-  const { expiryDateMode, siteUseAxleWeightLimit, siteTnkrPaging } = useConfig();
+  const { expiryDateMode, siteUseAxleWeightLimit, siteTnkrPaging, siteUseDownloader } = useConfig();
 
   const { t } = useTranslation();
 
@@ -45,6 +46,12 @@ const TankerList = () => {
   const [isSearching, setSearching] = useState(false);
   const { setCount, take, offset, paginator, setPage, count } = usePagination();
 
+  const [isDownloading, setDownloading] = useState(false);
+  const runUrlFlag = useRef(!pagingFlag);
+  const setRunUrlFlag = (flag) => {
+    runUrlFlag.current = flag;
+  };
+
   const access = useAuth('M_TANKERS');
 
   const [mainUrl, setMainUrl] = useState(
@@ -52,8 +59,9 @@ const TankerList = () => {
       pagingFlag ? 'Y' : 'N'
     }&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`
   );
-  const baseUrl = mainUrl;
-  const url = mainUrl + `&start_num=${take}&end_num=${offset}`;
+  const baseUrl = mainUrl.replace('pgflag=N', 'pgflag=Y');
+  const url = !pagingFlag && siteUseDownloader ? null : mainUrl + `&start_num=${take}&end_num=${offset}`;
+  const pageUrl = mainUrl.replace('pgflag=N', 'pgflag=Y');
 
   // const baseUrl = `${TANKER_LIST.READ}?pgflag=${
   //   pagingFlag ? 'Y' : 'N'
@@ -91,15 +99,19 @@ const TankerList = () => {
 
     await api.post(SITE_CONFIGURATION.UPDATE, values);
 
+    setData([]);
+
     const tempUrl = `${TANKER_LIST.READ}?pgflag=${
       v ? 'Y' : 'N'
     }&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`;
     setMainUrl(tempUrl);
 
     setPage(1);
+    setRunUrlFlag(!pagingFlag);
   };
 
   const onRefresh = () => {
+    setData([]);
     // setFilterValue(' ');
     setTnkrCode('');
     setTnkrCarrier('');
@@ -117,7 +129,8 @@ const TankerList = () => {
     setMainUrl(tempUrl);
 
     setPage(1);
-    revalidate();
+    setRunUrlFlag(!pagingFlag);
+    if (revalidate) revalidate();
   };
 
   const onLocate = (value) => {
@@ -137,6 +150,8 @@ const TankerList = () => {
     ) {
       return;
     } */
+
+    setData([]);
 
     setSearching(true);
     setTnkrCode(!values.tnkr_code ? '' : values.tnkr_code);
@@ -159,37 +174,9 @@ const TankerList = () => {
     setMainUrl(tempUrl);
 
     setPage(1);
-    revalidate();
+    setRunUrlFlag(!pagingFlag);
+    if (revalidate) revalidate();
     setSearching(false);
-
-    /* api
-      .get(EQUIPMENT_LIST.READ, {
-        params: {
-          tnkr_code: values.tnkr_code,
-          tnkr_carrier: values.tnkr_carrier,
-          tnkr_owner: values.tnkr_owner,
-          tnkr_etyp: values.tnkr_etp,
-          tnkr_lock: values.tnkr_lock,
-          tnkr_active: values.tnkr_active,
-          pgflag: pagingFlag ? 'Y' : 'N',
-          start_num: take,
-          end_num: offset,
-        },
-      })
-      .then((res) => {
-        setData(res.data.records);
-        setCount(res.data.count || 0);
-        setSearching(false);
-      })
-      .catch((errors) => {
-        _.forEach(errors.response.data.errors, (error) => {
-          notification.error({
-            message: error.type,
-            description: error.message,
-          });
-        });
-        setSearching(false);
-      }); */
   };
 
   useEffect(() => {
@@ -220,6 +207,12 @@ const TankerList = () => {
     }
   }, [payload]);
 
+  useEffect(() => {
+    if (isValidating !== undefined) {
+      setDownloading(isValidating);
+    }
+  }, [isValidating]);
+
   const modifiers = (
     <>
       <Switch
@@ -229,11 +222,11 @@ const TankerList = () => {
         onChange={(value) => onChangePagination(value)}
       />
 
-      <Button icon={<SyncOutlined />} onClick={() => onRefresh()} loading={isValidating}>
+      <Button icon={<SyncOutlined />} onClick={() => onRefresh()} loading={isDownloading || isSearching}>
         {t('operations.refresh')}
       </Button>
 
-      {!pagingFlag && <Download data={data} isLoading={isValidating || isSearching} columns={fields} />}
+      {!pagingFlag && <Download data={data} isLoading={isDownloading || isSearching} columns={fields} />}
 
       {pagingFlag && (
         // <PageExporter baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} columns={fields} />
@@ -279,7 +272,7 @@ const TankerList = () => {
         type="primary"
         icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
-        loading={isValidating}
+        loading={isDownloading || isSearching}
         disabled={!access.canCreate}
       >
         {t('operations.create')}
@@ -298,7 +291,7 @@ const TankerList = () => {
       <DataTable
         columns={fields}
         data={data}
-        isLoading={isValidating || isSearching}
+        isLoading={isDownloading || isSearching}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
         selectionMode="single"
@@ -314,7 +307,23 @@ const TankerList = () => {
           marginTop: 10,
         }}
       >
-        {pagingFlag ? paginator : t('fields.totalCount') + ': ' + count}
+        {/* pagingFlag ? paginator : t('fields.totalCount') + ': ' + count */}
+        {pagingFlag ? (
+          paginator
+        ) : siteUseDownloader === false ? (
+          t('fields.totalCount') + ': ' + count
+        ) : (
+          <DataDownloader
+            baseUrl={pageUrl}
+            startVar={'start_num'}
+            endVar={'end_num'}
+            pageSize={100}
+            setData={setData}
+            setDownloading={setDownloading}
+            runUrl={runUrlFlag.current}
+            setRunUrl={setRunUrlFlag}
+          />
+        )}
       </div>
       {visible && (
         <Forms
