@@ -1657,7 +1657,12 @@ class Schedule extends CommonClass
             ORDER BY SHLS_CALDATE DESC, SUPPLIER_CODE, SHLS_TRIP_NO
         ";
 
-        $query = $this->pagination_query($query);
+        if (!isset($this->pgflag)) {
+            $this->pgflag = 'Y';
+        }
+        if (isset($this->pgflag) && $this->pgflag==='Y') {
+            $query = $this->pagination_query($query);
+        }
 
         $stmt = oci_parse($this->conn, $query);
 
@@ -1692,7 +1697,9 @@ class Schedule extends CommonClass
             oci_bind_by_name($stmt, ':end_date', $this->end_date);
         }
 
-        $this->pagination_binds($stmt);
+        if (isset($this->pgflag) && $this->pgflag==='Y') {
+            $this->pagination_binds($stmt);
+        }
 
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
