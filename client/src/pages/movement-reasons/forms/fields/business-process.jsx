@@ -10,10 +10,10 @@ const BusinessProcess = ({ form, value }) => {
 
   const validate = (rule, value) => {
     if (value === '' || !value) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.businessProcess')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.businessProcessReason')}`);
     }
 
-    const len = (new TextEncoder().encode(value)).length;
+    const len = new TextEncoder().encode(value).length;
     if (value && len > 128) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 128 ─ ${t('descriptions.maxCharacters')}`);
     }
@@ -24,7 +24,7 @@ const BusinessProcess = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        mr_action: value.mr_action
+        mr_action: value.mr_action,
       });
     }
   }, [value, setFieldsValue]);
@@ -32,7 +32,7 @@ const BusinessProcess = ({ form, value }) => {
   return (
     <Form.Item
       name="mr_action"
-      label={t('fields.businessProcess')}
+      label={t('fields.businessProcessReason')}
       rules={[{ required: true, validator: validate }]}
     >
       <Input disabled={value?.mr_status === '2'} />

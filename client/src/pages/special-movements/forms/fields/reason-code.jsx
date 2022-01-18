@@ -9,7 +9,7 @@ import { SPECIAL_MOVEMENTS } from '../../../../api';
 const index = {
   0: 'R',
   1: 'D',
-  2: 'T'
+  2: 'T',
 };
 
 const ReasonCode = ({ form, value, type, disabled }) => {
@@ -24,7 +24,7 @@ const ReasonCode = ({ form, value, type, disabled }) => {
 
   const validate = (rule, value) => {
     if (value === '' || !value) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.reasonCode')}`);
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.businessProcessReason')}`);
     }
 
     return Promise.resolve();
@@ -33,7 +33,7 @@ const ReasonCode = ({ form, value, type, disabled }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        mlitm_reason_code: value.mlitm_reason_code
+        mlitm_reason_code: value.mlitm_reason_code,
       });
     }
   }, [value, setFieldsValue]);
@@ -41,7 +41,7 @@ const ReasonCode = ({ form, value, type, disabled }) => {
   return (
     <Form.Item
       name="mlitm_reason_code"
-      label={t('fields.reasonCode')}
+      label={t('fields.businessProcessReason')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select
@@ -49,7 +49,7 @@ const ReasonCode = ({ form, value, type, disabled }) => {
         showSearch
         disabled={IS_DISABLED}
         optionFilterProp="children"
-        placeholder={t('placeholder.selectReasonCode')}
+        placeholder={t('placeholder.selectReasonBusinessProcess')}
         filterOption={(input, option) =>
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
