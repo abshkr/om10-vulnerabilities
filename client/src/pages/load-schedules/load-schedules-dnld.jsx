@@ -155,7 +155,7 @@ const LoadSchedules = () => {
     setTripCarrier('');
     setTripTanker('');
     setTripStatus('');
-    // const tempUrl = (
+    /* // const tempUrl = (
     //   `${LOAD_SCHEDULES.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${!start?'-1':start}&end_date=${!end?'-1':end}&shls_terminal=${tripTerminal}&shls_trip_no=${tripNumber}&supplier_code=${tripSupplier}&carrier_code=${tripCarrier}&tnkr_code=${tripTanker}&status=${tripStatus}`
     // );
     const tempUrl = `${LOAD_SCHEDULES.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${
@@ -167,8 +167,9 @@ const LoadSchedules = () => {
 
     setPage(1);
     setRunUrlFlag(!pagingFlag);
-    if (revalidate) revalidate();
+    if (revalidate) revalidate(); */
 
+    // this will trigger setRange so the above lines are not needed
     setRefreshed(true);
   };
 
