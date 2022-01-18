@@ -1136,6 +1136,29 @@ class Schedule extends CommonClass
         return true;
     }
 
+    //
+    private function update_last_changed() 
+    {
+        $curr_psn = Utilities::getCurrPsn();
+
+        $query = "
+            UPDATE SCHEDULE SET LAST_CHG_TIME = SYSDATE, OPERATOR = :curr_user 
+            WHERE SHLS_TRIP_NO = :trip and SHLS_SUPP = :supplier
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        // oci_bind_by_name($stmt, ':default', $default);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier_code);
+        oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+        oci_bind_by_name($stmt, ':curr_user', $curr_psn);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            throw new DatabaseException($e['message']);;
+        }
+
+        return;
+    }
+
     //update preloads
     public function update_preloads()
     {
@@ -1152,6 +1175,8 @@ class Schedule extends CommonClass
                     return false;
                 }
             }
+            // update the time and user which did the change
+            $this->update_last_changed();
         }
 
         $result = new EchoSchema(200, response("__UPDATE_SUCCEEDED__",
