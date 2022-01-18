@@ -1,3 +1,3 @@
-import MovementNominations from './movement-nominations';
+import MovementNominations from './movement-nominations-dnld';
 
 export default MovementNominations;

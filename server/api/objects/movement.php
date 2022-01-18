@@ -700,7 +700,12 @@ class Movement extends CommonClass
             ORDER BY " . $this->time_option . " DESC
         ";
 
-        $query = $this->pagination_query($query);
+        if (!isset($this->pgflag)) {
+            $this->pgflag = 'Y';
+        }
+        if (isset($this->pgflag) && $this->pgflag==='Y') {
+            $query = $this->pagination_query($query);
+        }
 
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':start_date', $this->start_date);
@@ -712,7 +717,9 @@ class Movement extends CommonClass
         oci_bind_by_name($stmt, ':mv_terminal', $this->mv_terminal);
         // write_log("DB error2:>>>" . $this->start_date . "<<< >>>>".$this->end_date."<<<<", __FILE__, __LINE__, LogLevel::ERROR);
 
-        $this->pagination_binds($stmt);
+        if (isset($this->pgflag) && $this->pgflag==='Y') {
+            $this->pagination_binds($stmt);
+        }
         
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
