@@ -47,7 +47,7 @@ import {
   TnkrFlags,
 } from './fields';
 
-const SearchForm = ({ onSearch, fields, initValues, modal, rangeRequired }) => {
+const SearchForm = ({ onSearch, fields, initValues, modal, rangeRequired, timeRequired }) => {
   const [orderSupplier, setOrderSupplier] = useState(null);
   const [specmvType, setSpecmvType] = useState(null);
   const [carrier, setCarrier] = useState(null);
@@ -75,8 +75,15 @@ const SearchForm = ({ onSearch, fields, initValues, modal, rangeRequired }) => {
 
     const converted = { ...values };
     if (rangeRequired) {
-      converted.start_date = !values?.start_date ? null : values.start_date.substr(0, 10) + ' 00:00:00';
-      converted.end_date = !values?.end_date ? null : values.end_date.substr(0, 10) + ' 23:59:59';
+      if (timeRequired) {
+        // time section is visible, and the actual time is used
+        converted.start_date = !values?.start_date ? null : values.start_date;
+        converted.end_date = !values?.end_date ? null : values.end_date;
+      } else {
+        // time section is hidden, and the time values are adjusted
+        converted.start_date = !values?.start_date ? null : values.start_date.substr(0, 10) + ' 00:00:00';
+        converted.end_date = !values?.end_date ? null : values.end_date.substr(0, 10) + ' 23:59:59';
+      }
     }
     modal.destroy();
     onSearch(converted);
@@ -86,7 +93,7 @@ const SearchForm = ({ onSearch, fields, initValues, modal, rangeRequired }) => {
     const clearValues = {};
     for (const property in formValues) {
       if (property !== 'time_option_type' && property !== 'time_option') {
-        if (property === 'start_date' || property === 'end_date' ) {
+        if (property === 'start_date' || property === 'end_date') {
           clearValues[property] = null;
         } else if (property === 'use_date_range') {
           clearValues[property] = false;
@@ -104,7 +111,14 @@ const SearchForm = ({ onSearch, fields, initValues, modal, rangeRequired }) => {
   }, [initValues]);
  */
   return (
-    <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError style={{ marginTop: '1rem' }} initialValues={formValues}>
+    <Form
+      layout="vertical"
+      form={form}
+      onFinish={onFinish}
+      scrollToFirstError
+      style={{ marginTop: '1rem' }}
+      initialValues={formValues}
+    >
       {fields?.terminal && <Terminal />}
       {fields?.mv_key && <NominationKey />}
       {fields?.shls_trip_no && <Trip />}
@@ -142,13 +156,16 @@ const SearchForm = ({ onSearch, fields, initValues, modal, rangeRequired }) => {
       {fields?.tnkr_flags && <TnkrFlags />}
 
       {rangeRequired && (
-        <DateRange 
-          form={form} 
-          timeOptionType={fields?.time_option_type} 
+        <DateRange
+          form={form}
+          timeOptionType={fields?.time_option_type}
           // force={fields?.journal_msg}
           useRange={formValues?.use_date_range}
-          startDate={!formValues?.start_date || formValues?.start_date === '-1' ? null : formValues?.start_date} 
-          endDate={!formValues?.end_date || formValues?.end_date === '-1' ? null : formValues?.end_date} 
+          startDate={
+            !formValues?.start_date || formValues?.start_date === '-1' ? null : formValues?.start_date
+          }
+          endDate={!formValues?.end_date || formValues?.end_date === '-1' ? null : formValues?.end_date}
+          timeRequired={timeRequired}
         />
       )}
 
@@ -185,7 +202,14 @@ const SearchForm = ({ onSearch, fields, initValues, modal, rangeRequired }) => {
   );
 };
 
-const WindowSearchForm = (onSearch, title, fields, values=[], rangeRequired = true) => {
+const WindowSearchForm = (
+  onSearch,
+  title,
+  fields,
+  values = [],
+  rangeRequired = true,
+  timeRequired = false
+) => {
   const modal = Modal.info();
   modal.update({
     className: 'form-container',
@@ -201,7 +225,14 @@ const WindowSearchForm = (onSearch, title, fields, values=[], rangeRequired = tr
           fetcher,
         }}
       >
-        <SearchForm onSearch={onSearch} fields={fields} initValues={values} modal={modal} rangeRequired={rangeRequired} />
+        <SearchForm
+          onSearch={onSearch}
+          fields={fields}
+          initValues={values}
+          modal={modal}
+          rangeRequired={rangeRequired}
+          timeRequired={timeRequired}
+        />
       </SWRConfig>
     ),
     okButtonProps: {

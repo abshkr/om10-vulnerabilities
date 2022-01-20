@@ -12,7 +12,7 @@ import zhLocale from 'antd/es/date-picker/locale/zh_CN';
 
 const momentLocales = { en: enLocale, cn: zhLocale };
 
-const DateRange = ({ form, timeOptionType, force, useRange, startDate, endDate }) => {
+const DateRange = ({ form, timeOptionType, force, useRange, startDate, endDate, timeRequired }) => {
   const { t, i18n } = useTranslation();
   const locale = momentLocales[i18n.language || 'en'];
 
@@ -109,7 +109,7 @@ const DateRange = ({ form, timeOptionType, force, useRange, startDate, endDate }
           checked={checked}
           defaultChecked={force || useRange}
         >
-          {t('descriptions.maxDateRange')}
+          {timeRequired ? t('descriptions.maxDateRangeToSeconds') : t('descriptions.maxDateRangeToDays')}
         </Checkbox>
       </Form.Item>
 
@@ -157,7 +157,7 @@ const DateRange = ({ form, timeOptionType, force, useRange, startDate, endDate }
 
       <DatePicker.RangePicker
         style={{ width: '100%' }}
-        showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
+        showTime={!timeRequired ? false : { defaultValue: moment('00:00:00', 'HH:mm:ss') }}
         disabled={!checked}
         onChange={onRangeChange}
         // defaultValue={[moment().subtract(7, 'days'), moment().add(7, 'days')]}

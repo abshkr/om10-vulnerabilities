@@ -307,7 +307,9 @@ const Journal = () => {
                 start_date: startTimeSearch,
                 end_date: endTimeSearch,
                 use_date_range: useDateRange === 'Y' ? true : false,
-              }
+              },
+              true, // rangeRequired
+              true // timeRequired
             )
           }
         >

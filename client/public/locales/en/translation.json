@@ -142,6 +142,8 @@
     "loginSuccess": "You have logged in as: ",
     "maxCharacters": "This character count is too high",
     "maxDateRange": "Date Range limited to (days): ",
+    "maxDateRangeToDays": "Date Range limited to (days): ",
+    "maxDateRangeToSeconds": "Date Range limited to (seconds): ",
     "maxExpTarget": "Maximum expiry date type under this target is 10",
     "maxNumber": "This number is too high",
     "minCharacters": "This character count is too low",

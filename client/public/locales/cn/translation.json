@@ -142,6 +142,8 @@
     "loginSuccess": "登录账号: ",
     "maxCharacters": "字符数目太高超过允许上限",
     "maxDateRange": "日期范围：",
+    "maxDateRangeToDays": "日期范围(到天)：",
+    "maxDateRangeToSeconds": "日期范围(到秒)：",
     "maxExpTarget": "该目标允许的有效日期类型的上限数是10",
     "maxNumber": "此数值太大",
     "minCharacters": "字符数目太低小于允许下限",
