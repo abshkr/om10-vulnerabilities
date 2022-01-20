@@ -364,7 +364,7 @@ const Journal = () => {
     >
       <JournalContainer>
         {tabMode && (
-          <Tabs defaultActiveKey="1" onChange={doTabChanges} size="small" type="card">
+          <Tabs defaultActiveKey="1" activeKey={selected} onChange={doTabChanges} size="small" type="card">
             <TabPane tab={t('tabColumns.overview')} key="0">
               {selected === '0' && (
                 <Overview

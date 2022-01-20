@@ -34,16 +34,17 @@ export default function Overview({ doSearch, setTab, setRange }) {
     const startIndex = start;
     const endIndex = end || moment().format(DATE_TIME_FORMAT);
 
+    console.log('...............', start, end, messageEvent, startIndex, endIndex);
     doSearch({
       end_date: endIndex,
       msg_class: undefined,
       msg_event: messageEvent,
       start_date: startIndex,
       target_str: undefined,
-      use_date_range: undefined,
+      use_date_range: true, //undefined,
     });
 
-    setRange(startIndex, endIndex);
+    // setRange(startIndex, endIndex);
 
     setTab('2');
   }
@@ -55,19 +56,31 @@ export default function Overview({ doSearch, setTab, setRange }) {
           <Row gutter={[10, 10]}>
             <Col span={8}>
               <Card className="statistic" size="small" loading={isInitialLoading}>
-                <Statistic title={t('fields.journal24h')} value={overview?.day} suffix={t('fields.journalEntry')} />
+                <Statistic
+                  title={t('fields.journal24h')}
+                  value={overview?.day}
+                  suffix={t('fields.journalEntry')}
+                />
               </Card>
             </Col>
 
             <Col span={8}>
               <Card className="statistic" size="small" loading={isInitialLoading}>
-                <Statistic title={t('fields.journal7d')} value={overview?.week} suffix={t('fields.journalEntry')} />
+                <Statistic
+                  title={t('fields.journal7d')}
+                  value={overview?.week}
+                  suffix={t('fields.journalEntry')}
+                />
               </Card>
             </Col>
 
             <Col span={8} style={{ paddingRight: 15 }}>
               <Card className="statistic" size="small" loading={isInitialLoading}>
-                <Statistic title={t('fields.journal30d')} value={overview?.month} suffix={t('fields.journalEntry')} />
+                <Statistic
+                  title={t('fields.journal30d')}
+                  value={overview?.month}
+                  suffix={t('fields.journalEntry')}
+                />
               </Card>
             </Col>
           </Row>

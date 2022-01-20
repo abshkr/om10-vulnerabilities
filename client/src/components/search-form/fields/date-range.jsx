@@ -17,8 +17,11 @@ const DateRange = ({ form, timeOptionType, force, useRange, startDate, endDate }
   const locale = momentLocales[i18n.language || 'en'];
 
   const { setFieldsValue } = form;
-  const [checked, setChecked] = useState(force||useRange);
-  const [range, setRange] = useState([!startDate ? null : moment(startDate), !endDate ? null : moment(endDate)]);
+  const [checked, setChecked] = useState(force || useRange);
+  const [range, setRange] = useState([
+    !startDate ? null : moment(startDate),
+    !endDate ? null : moment(endDate),
+  ]);
 
   const openOrderTimeOptions = [
     {
@@ -78,7 +81,7 @@ const DateRange = ({ form, timeOptionType, force, useRange, startDate, endDate }
       // end_date: moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT),
       start_date: !startDate ? null : moment(startDate).format(SETTINGS.DATE_TIME_FORMAT),
       end_date: !endDate ? null : moment(endDate).format(SETTINGS.DATE_TIME_FORMAT),
-    }); 
+    });
     setRange([!startDate ? null : moment(startDate), !endDate ? null : moment(endDate)]);
     setFieldsValue({
       use_date_range: useRange,
@@ -93,7 +96,7 @@ const DateRange = ({ form, timeOptionType, force, useRange, startDate, endDate }
         time_option: 'MV_DTIM_EFFECT',
       }); */
     }
-//  }, [form]);
+    //  }, [form]);
   }, [startDate, endDate, useRange, timeOptionType, setFieldsValue]);
 
   return (
@@ -104,7 +107,7 @@ const DateRange = ({ form, timeOptionType, force, useRange, startDate, endDate }
           onChange={onCheckBox}
           disabled={force}
           checked={checked}
-          defaultChecked={force||useRange}
+          defaultChecked={force || useRange}
         >
           {t('descriptions.maxDateRange')}
         </Checkbox>
@@ -154,6 +157,7 @@ const DateRange = ({ form, timeOptionType, force, useRange, startDate, endDate }
 
       <DatePicker.RangePicker
         style={{ width: '100%' }}
+        showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
         disabled={!checked}
         onChange={onRangeChange}
         // defaultValue={[moment().subtract(7, 'days'), moment().add(7, 'days')]}
