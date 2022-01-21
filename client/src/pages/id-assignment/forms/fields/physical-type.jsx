@@ -24,7 +24,7 @@ const PhysicalType = ({ form, value, onChange }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        kya_phys_type: value.kya_phys_type
+        kya_phys_type: value.kya_phys_type,
       });
 
       onChange(value.kya_phys_type);
@@ -41,6 +41,7 @@ const PhysicalType = ({ form, value, onChange }) => {
         dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
+        allowClear
         onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectPhysicalType') : null}

@@ -13,6 +13,7 @@ import Personnel from './personnel';
 import DrawerField from './drawer';
 import Supplier from './supplier';
 import Carrier from './carrier';
+import Owner from './owner';
 import Tanker from './tanker';
 import EquipmentCarrier from './equipment-carrier';
 import TransportEquipment from './transport-equipment';
@@ -33,6 +34,7 @@ export {
   DrawerField,
   Supplier,
   Carrier,
+  Owner,
   Tanker,
   EquipmentCarrier,
   TransportEquipment,

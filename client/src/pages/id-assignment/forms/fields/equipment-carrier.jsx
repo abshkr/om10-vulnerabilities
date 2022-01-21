@@ -41,6 +41,7 @@ const EquipmentCarrier = ({ form, value, onChange }) => {
         dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
+        allowClear
         onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectEquipmentCarrier') : null}

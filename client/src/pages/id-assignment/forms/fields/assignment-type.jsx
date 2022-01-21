@@ -24,7 +24,7 @@ const AssignmentType = ({ form, value, onChange }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        kya_type: value.kya_type
+        kya_type: value.kya_type,
       });
 
       onChange(value.kya_type);
@@ -42,6 +42,7 @@ const AssignmentType = ({ form, value, onChange }) => {
         disabled={!!value}
         loading={isValidating}
         showSearch
+        allowClear
         onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectAssignmentType') : null}

@@ -24,7 +24,7 @@ const Supplier = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        kya_supplier: value.kya_supplier
+        kya_supplier: value.kya_supplier,
       });
     }
   }, [value, setFieldsValue]);
@@ -39,6 +39,7 @@ const Supplier = ({ form, value }) => {
         dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
+        allowClear
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectSupplier') : null}
         filterOption={(input, option) =>

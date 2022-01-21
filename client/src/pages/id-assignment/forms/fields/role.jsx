@@ -24,7 +24,7 @@ const Role = ({ form, value, onChange }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        kya_role: value.kya_role
+        kya_role: value.kya_role,
       });
 
       onChange(value.kya_role);
@@ -37,6 +37,7 @@ const Role = ({ form, value, onChange }) => {
         dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
+        allowClear
         optionFilterProp="children"
         onChange={onChange}
         placeholder={!value ? t('placeholder.selectRole') : null}

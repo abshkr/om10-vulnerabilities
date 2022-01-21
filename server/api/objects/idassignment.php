@@ -140,6 +140,8 @@ class IDAssignment extends CommonClass
                     KYA_TANKER||'['||KYA_TNKR_NAME||']') KYA_TNKR_DESC,
                 KYA_TNKR_CMPY,
                 KYA_TNKR_CMPY_NAME,
+	            KYA_TNKR_CARRIER,
+	            KYA_TNKR_CARRIER_NAME,
                 KYA_EQUIPMENT,
                 KYA_EQPT_NAME,
                 DECODE(KYA_EQPT_NAME, NULL, TO_CHAR(KYA_EQPT_CODE),
@@ -204,6 +206,46 @@ class IDAssignment extends CommonClass
     }
 
     public function tankers()
+    {
+        $query = "
+            SELECT TNKR_CODE,
+                TNKR_NAME,
+                TNKR_ETP AS TNKR_ETYP_ID,
+                TNKR_EQPT_NAME AS TNKR_ETYP_NAME,
+                TNKR_CARRIER,
+                TNKR_CARRIER_NAME,
+                TNKR_OWNER,
+                TNKR_OWNER_NAME,
+                DECODE(TNKR_NAME, NULL, TNKR_CODE, TNKR_CODE||'['||TNKR_NAME||']') AS TNKR_DESC,
+                TNKR_NUMBER
+            FROM GUI_TANKERS
+            WHERE (TNKR_OWNER LIKE :tnkr_owner AND TNKR_CARRIER LIKE :tnkr_carrier)
+            ORDER BY TNKR_CODE ASC";
+
+        $stmt = oci_parse($this->conn, $query);
+        if (isset($this->tnkr_owner) && $this->tnkr_owner != 'null' && $this->tnkr_owner != 'undefined' && $this->tnkr_owner != '') {
+            $this->tnkr_owner = '%' . $this->tnkr_owner . '%';
+        } else {
+            $this->tnkr_owner = '%';
+        }
+        if (isset($this->tnkr_carrier) && $this->tnkr_carrier != 'null' && $this->tnkr_carrier != 'undefined' && $this->tnkr_carrier != '') {
+            $this->tnkr_carrier = '%' . $this->tnkr_carrier . '%';
+        } else {
+            $this->tnkr_carrier = '%';
+        }
+
+        oci_bind_by_name($stmt, ':tnkr_owner', $this->tnkr_owner);
+        oci_bind_by_name($stmt, ':tnkr_carrier', $this->tnkr_carrier);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function tankers_by_either()
     {
         $query = "
             SELECT TNKR_CODE,

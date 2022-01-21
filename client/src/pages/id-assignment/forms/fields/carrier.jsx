@@ -24,16 +24,16 @@ const Carrier = ({ form, value, setCarrier }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        kya_tnkr_cmpy: value.kya_tnkr_cmpy
+        kya_tnkr_carrier: value.kya_tnkr_carrier,
       });
 
-      setCarrier(value.kya_tnkr_cmpy);
+      setCarrier(value.kya_tnkr_carrier);
     }
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item
-      name="kya_tnkr_cmpy"
+      name="kya_tnkr_carrier"
       label={t('fields.schdCarrier')}
       rules={[{ required: true, validator: validate }]}
     >
@@ -41,6 +41,7 @@ const Carrier = ({ form, value, setCarrier }) => {
         dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
+        allowClear
         onChange={setCarrier}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectCarrier') : null}

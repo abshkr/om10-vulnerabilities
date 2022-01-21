@@ -27,6 +27,7 @@ import {
   DrawerField,
   Supplier,
   Carrier,
+  Owner,
   Tanker,
   EquipmentCarrier,
   TransportEquipment,
@@ -49,6 +50,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   const [issuer, setIssuer] = useState(null);
   const [physType, setPhysType] = useState(null);
   const [carrier, setCarrier] = useState(null);
+  const [owner, setOwner] = useState(null);
   const [employer, setEmployer] = useState(null);
   const [role, setRole] = useState(null);
   const [autoTag, setAutoTag] = useState(null);
@@ -250,7 +252,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     if (carrcode_tankernum_tag) {
       setAutoTag(carrier + tnkr_number);
     }
-  }
+  };
 
   return (
     <Drawer
@@ -325,12 +327,12 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             </Row>
             <Row gutter={[8, 3]}>
               <Col span={24}>
-                <PhysicalTagText 
-                  form={form} 
-                  value={value} 
-                  physType={physType} 
-                  autoTag={autoTag} 
-                  disabled={carrcode_tankernum_tag && type == '4' /* 4 means TANKER */ } 
+                <PhysicalTagText
+                  form={form}
+                  value={value}
+                  physType={physType}
+                  autoTag={autoTag}
+                  disabled={carrcode_tankernum_tag && type == '4' /* 4 means TANKER */}
                 />
               </Col>
             </Row>
@@ -386,11 +388,20 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               {['4', '5'].includes(type) && (
                 <div>
                   <Row gutter={[8, 3]}>
-                    <Col span={12}>
+                    <Col span={8}>
+                      <Owner form={form} value={value} setOwner={setOwner} />
+                    </Col>
+                    <Col span={8}>
                       <Carrier form={form} value={value} setCarrier={setCarrier} />
                     </Col>
-                    <Col span={12}>
-                      <Tanker form={form} value={value} carrier={carrier} setTnkrNumber={onTnkrNumberChange} />
+                    <Col span={8}>
+                      <Tanker
+                        form={form}
+                        value={value}
+                        owner={owner}
+                        carrier={carrier}
+                        setTnkrNumber={onTnkrNumberChange}
+                      />
                     </Col>
                   </Row>
                 </div>
@@ -400,10 +411,10 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
                 <div>
                   <Row gutter={[8, 3]}>
                     <Col span={12}>
-                      <EquipmentCarrier form={form} value={value} onChange={setCarrier} />
+                      <EquipmentCarrier form={form} value={value} onChange={setOwner} />
                     </Col>
                     <Col span={12}>
-                      <TransportEquipment form={form} value={value} type={type} carrier={carrier} />
+                      <TransportEquipment form={form} value={value} type={type} carrier={owner} />
                     </Col>
                   </Row>
                 </div>

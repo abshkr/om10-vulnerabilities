@@ -24,7 +24,7 @@ const Drawer = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        kya_drawer: value.kya_drawer
+        kya_drawer: value.kya_drawer,
       });
     }
   }, [value, setFieldsValue]);
@@ -35,6 +35,7 @@ const Drawer = ({ form, value }) => {
         dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
+        allowClear
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectDrawer') : null}
         filterOption={(input, option) =>

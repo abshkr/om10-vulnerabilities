@@ -66,6 +66,7 @@ const TransportEquipment = ({ form, value, type, carrier }) => {
         dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
+        allowClear
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectTransportEquipment') : null}
         filterOption={(input, option) =>

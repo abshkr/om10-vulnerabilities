@@ -6,12 +6,14 @@ import { Form, Select } from 'antd';
 import _ from 'lodash';
 import { ID_ASSIGNMENT } from '../../../../api';
 
-const Tanker = ({ form, value, carrier, setTnkrNumber }) => {
+const Tanker = ({ form, value, owner, carrier, setTnkrNumber }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
 
-  const { data: options, isValidating } = useSWR(`${ID_ASSIGNMENT.TANKERS}?tnkr_owner=${carrier}`);
+  const { data: options, isValidating } = useSWR(
+    `${ID_ASSIGNMENT.TANKERS}?tnkr_owner=${owner}&tnkr_carrier=${carrier}`
+  );
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
@@ -26,6 +28,16 @@ const Tanker = ({ form, value, carrier, setTnkrNumber }) => {
       return item.tnkr_code === value;
     });
     setTnkrNumber(target?.tnkr_carrier, target?.tnkr_number);
+    if (!owner) {
+      setFieldsValue({
+        kya_tnkr_cmpy: target?.tnkr_owner,
+      });
+    }
+    if (!carrier) {
+      setFieldsValue({
+        kya_tnkr_carrier: target?.tnkr_carrier,
+      });
+    }
   };
 
   useEffect(() => {
@@ -42,7 +54,7 @@ const Tanker = ({ form, value, carrier, setTnkrNumber }) => {
         kya_tanker: undefined,
       });
     } else {
-      if (carrier && options) {
+      if ((owner || carrier) && options) {
         const found = _.find(options?.records, (o) => o?.tnkr_code === value.kya_tanker);
         if (!found) {
           setFieldsValue({
@@ -55,15 +67,16 @@ const Tanker = ({ form, value, carrier, setTnkrNumber }) => {
         }
       }
     }
-  }, [carrier, options, setFieldsValue, value]);
+  }, [owner, carrier, options, setFieldsValue, value]);
 
   return (
     <Form.Item name="kya_tanker" label={t('fields.tanker')} rules={[{ required: true, validator: validate }]}>
       <Select
         dropdownMatchSelectWidth={false}
-        disabled={!carrier}
+        disabled={!owner && !carrier}
         loading={isValidating}
         showSearch
+        allowClear
         onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectTanker') : null}

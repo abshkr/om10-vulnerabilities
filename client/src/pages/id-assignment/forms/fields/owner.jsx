@@ -6,16 +6,16 @@ import { Form, Select } from 'antd';
 
 import { ID_ASSIGNMENT } from '../../../../api';
 
-const Issuer = ({ form, value, onChange }) => {
+const Owner = ({ form, value, setOwner }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
 
-  const { data: options, isValidating } = useSWR(ID_ASSIGNMENT.ISSUER);
+  const { data: options, isValidating } = useSWR(ID_ASSIGNMENT.CARRIERS);
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.issuer')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.owner')}`);
     }
 
     return Promise.resolve();
@@ -24,28 +24,27 @@ const Issuer = ({ form, value, onChange }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        kya_key_issuer: value.kya_key_issuer,
+        kya_tnkr_cmpy: value.kya_tnkr_cmpy,
       });
 
-      onChange(value.kya_key_issuer);
+      setOwner(value.kya_tnkr_cmpy);
     }
   }, [value, setFieldsValue]);
 
   return (
     <Form.Item
-      name="kya_key_issuer"
-      label={t('fields.issuer')}
+      name="kya_tnkr_cmpy"
+      label={t('fields.owner')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select
         dropdownMatchSelectWidth={false}
-        disabled={!!value}
         loading={isValidating}
         showSearch
         allowClear
-        onChange={onChange}
+        onChange={setOwner}
         optionFilterProp="children"
-        placeholder={!value ? t('placeholder.selectIssuer') : null}
+        placeholder={!value ? t('placeholder.selectOwner') : null}
         filterOption={(input, option) =>
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
@@ -60,4 +59,4 @@ const Issuer = ({ form, value, onChange }) => {
   );
 };
 
-export default Issuer;
+export default Owner;

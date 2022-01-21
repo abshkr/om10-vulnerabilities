@@ -62,6 +62,7 @@ const Personnel = ({ form, value, employer, role }) => {
         disabled={!employer || !role}
         loading={isValidating}
         showSearch
+        allowClear
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectPersonnel') : null}
         filterOption={(input, option) =>
