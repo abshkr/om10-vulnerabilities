@@ -51,7 +51,16 @@ import LinkedDrawerProducts from './linked-drawer-products';
 
 const TabPane = Tabs.TabPane;
 
-const DrawerForm = ({ value, visible, handleFormState, access, config, setFilterValue, pipenodeBases }) => {
+const DrawerForm = ({
+  value,
+  visible,
+  handleFormState,
+  access,
+  config,
+  setFilterValue,
+  pipenodeBases,
+  maskFlag,
+}) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -137,10 +146,9 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
     return isBlend;
   };
 
-
   const getTotalRatios = (items, valueField) => {
     let total = 0;
-    for (let i=0; i<items?.length; i++) {
+    for (let i = 0; i < items?.length; i++) {
       const item = items?.[i];
       total += !item?.[valueField] ? 0 : _.toNumber(item?.[valueField]);
     }
@@ -150,7 +158,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
 
   const getMaxRatio = (items, valueField) => {
     let ratio = 0;
-    for (let i=0; i<items?.length; i++) {
+    for (let i = 0; i < items?.length; i++) {
       const item = items?.[i];
       const value = !item?.[valueField] ? 0 : _.toNumber(item?.[valueField]);
       if (value > ratio) {
@@ -163,7 +171,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
 
   const getAdtvRatios = (items, valueField, adtvFlag) => {
     let total = 0;
-    for (let i=0; i<items?.length; i++) {
+    for (let i = 0; i < items?.length; i++) {
       const item = items?.[i];
       const isFlag = adtvFlag?.indexOf('flag') >= 0;
       const isAdditive = isFlag
@@ -179,7 +187,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
 
   const getMainBaseTotals = (items, valueField, adtvFlag) => {
     let total = 0;
-    for (let i=0; i<items?.length; i++) {
+    for (let i = 0; i < items?.length; i++) {
       const item = items?.[i];
       const isFlag = adtvFlag?.indexOf('flag') >= 0;
       const isAdditive = isFlag
@@ -199,9 +207,9 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
     }
     // console.log('isStreamRecipeMatched2.....', items, nodes, codeField);
     let matched = true;
-    for (let i=0; i<items?.length; i++) {
+    for (let i = 0; i < items?.length; i++) {
       const item = items?.[i];
-      const node = _.find(nodes, (o) => (o?.stream_basecode === item?.[codeField]));
+      const node = _.find(nodes, (o) => o?.stream_basecode === item?.[codeField]);
       // console.log('isStreamRecipeMatched.....', node);
       if (!node) {
         matched = false;
@@ -210,18 +218,18 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
     }
 
     return matched;
-  }
+  };
 
   const getStreamMembers = (data, items, streams, codeField) => {
     // find the matched node
     let bases = [];
-    for (let i=0; i<streams?.length; i++) {
+    for (let i = 0; i < streams?.length; i++) {
       const stream = streams?.[i];
       if (stream?.stream_basecode === data?.[codeField]) {
         // found the node
         const index = stream?.stream_index;
         // found the node, now get all the members of the stream.
-        bases = _.filter(streams, (o) => (o?.stream_index === index));
+        bases = _.filter(streams, (o) => o?.stream_index === index);
         // now check if the stream contains all members of the recipe
         const found = isStreamRecipeMatched(items, bases, codeField);
         // console.log('...getStreamMembers.........', index, found, bases);
@@ -241,7 +249,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
 
     // find the stream_seq of the base product in the stream.
     // the additives attached to a major base product will share the same value of stream_seq
-    const node = _.find(nodes, (o) => (o?.stream_basecode === data?.[codeField]));
+    const node = _.find(nodes, (o) => o?.stream_basecode === data?.[codeField]);
     if (!node) {
       // recipe base not found in pipenode
       const maxRatio = getMaxRatio(items, valueField);
@@ -259,9 +267,9 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
     // recipe base found in pipenode
     const seq = node?.stream_seq;
     let total = 0;
-    for (let i=0; i<items?.length; i++) {
+    for (let i = 0; i < items?.length; i++) {
       const item = items?.[i];
-      const base = _.find(nodes, (o) => (o?.stream_basecode === item?.[codeField] && o?.stream_seq === seq));
+      const base = _.find(nodes, (o) => o?.stream_basecode === item?.[codeField] && o?.stream_seq === seq);
       if (base) {
         total += _.toNumber(item?.[valueField]);
       }
@@ -276,7 +284,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
 
     // find the stream_seq of the base product in the stream.
     // the additives attached to a major base product will share the same value of stream_seq
-    const node = _.find(nodes, (o) => (o?.stream_basecode === data?.[codeField]));
+    const node = _.find(nodes, (o) => o?.stream_basecode === data?.[codeField]);
     if (!node) {
       // recipe base not found in pipenode, just return 0
       return 0;
@@ -285,23 +293,22 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
     // recipe base found in pipenode
     const seq = node?.stream_seq;
     let total = 0;
-    for (let i=0; i<items?.length; i++) {
+    for (let i = 0; i < items?.length; i++) {
       const item = items?.[i];
       const isFlag = adtvFlag?.indexOf('flag') >= 0;
       const isAdditive = isFlag
         ? item?.[adtvFlag] === true || item?.[adtvFlag] === '1'
         : String(item?.[adtvFlag]) === '6' || String(item?.[adtvFlag]) === '11';
       if (isAdditive) {
-        const base = _.find(nodes, (o) => (o?.stream_basecode === item?.[codeField] && o?.stream_seq === seq));
+        const base = _.find(nodes, (o) => o?.stream_basecode === item?.[codeField] && o?.stream_seq === seq);
         if (base) {
-            total += _.toNumber(item?.[valueField]);
+          total += _.toNumber(item?.[valueField]);
         }
       }
     }
 
     return total;
   };
-
 
   const handleBaseCallBack = (values) => {
     if (values.to_delete) {
@@ -410,10 +417,14 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
       const adtvRatios = getAdtvRatios(payload, 'pitem_ratio_value', 'pitem_base_class');
       _.forEach(payload, (item) => {
         if (String(item?.pitem_base_class) === '6' || String(item?.pitem_base_class) === '11') {
-          item.pitem_ratio_value = !item?.pitem_ratio_percent_ppm ? item.pitem_ratio_value : item?.pitem_ratio_percent_ppm;
+          item.pitem_ratio_value = !item?.pitem_ratio_percent_ppm
+            ? item.pitem_ratio_value
+            : item?.pitem_ratio_percent_ppm;
         } else {
           if (maxRatio === item?.pitem_ratio_value) {
-            item.pitem_ratio_value = !item?.pitem_ratio_percent_ppm ? item.pitem_ratio_value : item?.pitem_ratio_percent_ppm * 10000 - adtvRatios;
+            item.pitem_ratio_value = !item?.pitem_ratio_percent_ppm
+              ? item.pitem_ratio_value
+              : item?.pitem_ratio_percent_ppm * 10000 - adtvRatios;
           }
         }
       });
@@ -439,7 +450,14 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
     FormModal({
       width: '40vw',
       value: v,
-      form: <BaseProductForm value={v} handleBaseCallBack={handleBaseCallBack} config={config} tableBases={tableBases} />,
+      form: (
+        <BaseProductForm
+          value={v}
+          handleBaseCallBack={handleBaseCallBack}
+          config={config}
+          tableBases={tableBases}
+        />
+      ),
       id: v?.pitem_base_code,
       name: v?.pitem_base_name,
       t,
@@ -613,7 +631,7 @@ const DrawerForm = ({ value, visible, handleFormState, access, config, setFilter
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
-      mask={IS_CREATING}
+      mask={maskFlag}
       placement="right"
       width="60vw"
       visible={visible}

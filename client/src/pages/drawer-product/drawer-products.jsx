@@ -30,6 +30,7 @@ const DrawerProduct = () => {
   const [selected, setSelected] = useState(null);
   const [filterValue, setFilterValue] = useState('');
   const [mainTabOn, setMainTabOn] = useState(true);
+  const [maskFlag, setMaskFlag] = useState(true);
 
   const { t } = useTranslation();
   const config = useConfig();
@@ -137,7 +138,10 @@ const DrawerProduct = () => {
       <Button
         type="primary"
         icon={<PlusOutlined />}
-        onClick={() => handleFormState(true, null)}
+        onClick={() => {
+          setMaskFlag(true);
+          handleFormState(true, null);
+        }}
         loading={isLoading}
         disabled={!access.canCreate || !mainTabOn}
       >
@@ -160,8 +164,14 @@ const DrawerProduct = () => {
             columns={fields}
             isLoading={isLoading}
             selectionMode="single"
-            onClick={(payload) => handleFormState(true, payload)}
-            handleSelect={(payload) => handleFormState(true, payload[0])}
+            onClick={(payload) => {
+              setMaskFlag(false);
+              handleFormState(true, payload);
+            }}
+            handleSelect={(payload) => {
+              setMaskFlag(false);
+              handleFormState(true, payload[0]);
+            }}
             autoColWidth
             filterValue={filterValue}
           />
@@ -174,6 +184,7 @@ const DrawerProduct = () => {
               config={config}
               setFilterValue={setFilterValue}
               pipenodeBases={pipenode?.records}
+              maskFlag={maskFlag}
             />
           )}
         </Tabs.TabPane>
