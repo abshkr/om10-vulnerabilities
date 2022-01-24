@@ -32,6 +32,7 @@ const EquipmentList = () => {
   let equipment = query.get('equipment') || '';
 
   const { t } = useTranslation();
+  const [maskFlag, setMaskFlag] = useState(true);
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [parentEqpt, setParentEqpt] = useState(equipment);
@@ -318,7 +319,10 @@ const EquipmentList = () => {
       <Button
         type="primary"
         icon={<PlusOutlined />}
-        onClick={() => handleFormState(true, null)}
+        onClick={() => {
+          setMaskFlag(true);
+          handleFormState(true, null);
+        }}
         loading={isDownloading || isSearching}
         disabled={!access.canCreate}
       >
@@ -333,8 +337,14 @@ const EquipmentList = () => {
         columns={fields}
         data={data}
         isLoading={isDownloading || isSearching}
-        onClick={(payload) => handleFormState(true, payload)}
-        handleSelect={(payload) => handleFormState(true, payload[0])}
+        onClick={(payload) => {
+          setMaskFlag(false);
+          handleFormState(true, payload);
+        }}
+        handleSelect={(payload) => {
+          setMaskFlag(false);
+          handleFormState(true, payload[0]);
+        }}
         selectionMode="single"
         autoColWidth
         filterValue={filterValue}
@@ -379,6 +389,7 @@ const EquipmentList = () => {
           expiryTypes={expiryTypes?.records}
           config={config}
           setPage={setPage}
+          maskFlag={maskFlag}
         />
       )}
     </Page>

@@ -9,20 +9,7 @@ import {
   UnlockOutlined,
 } from '@ant-design/icons';
 
-import {
-  Form,
-  Button,
-  Tabs,
-  notification,
-  Modal,
-  Drawer,
-  Divider,
-  Row,
-  Col,
-  Tag,
-  Tooltip,
-  Card,
-} from 'antd';
+import { Form, Button, Tabs, notification, Modal, Drawer, Divider, Row, Col, Tag, Tooltip, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
@@ -47,7 +34,7 @@ import {
   AxleGroupNumber,
   AxleLimitTypes,
   SLP,
-  VIN
+  VIN,
   // FrontWeightLimit,
   // RearWeightLimit,
   // FrontAxleGroups,
@@ -69,12 +56,15 @@ const FormModal = ({
   expiryTypes,
   config,
   setPage,
+  maskFlag,
 }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
 
-  const { data: payload } = useSWR(value?.eqpt_code ? `${EQUIPMENT_LIST.MATCHES_BY_TITLE}?eqpt_title=${value?.eqpt_title}` : null);
+  const { data: payload } = useSWR(
+    value?.eqpt_code ? `${EQUIPMENT_LIST.MATCHES_BY_TITLE}?eqpt_title=${value?.eqpt_title}` : null
+  );
   const [eqptType, setEqptType] = useState(undefined);
   const [image, setImage] = useState(null);
   const [massLimitType, setMassLimitType] = useState(1);
@@ -280,7 +270,7 @@ const FormModal = ({
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
-      mask={IS_CREATING}
+      mask={maskFlag}
       placement="right"
       width="60vw"
       visible={visible}
@@ -373,19 +363,21 @@ const FormModal = ({
               </Col>
             </Row>
 
-            { (config?.equip_slp_enabled || config?.vin_number_enabled) && 
+            {(config?.equip_slp_enabled || config?.vin_number_enabled) && (
               <Row gutter={[8, 2]}>
-                {config?.equip_slp_enabled && 
-                <Col span={8}>
-                  <SLP form={form} value={value} />
-                </Col>}
-                {config?.vin_number_enabled && 
-                <Col span={8}>
-                  <VIN form={form} value={value} />
-                </Col>}
+                {config?.equip_slp_enabled && (
+                  <Col span={8}>
+                    <SLP form={form} value={value} />
+                  </Col>
+                )}
+                {config?.vin_number_enabled && (
+                  <Col span={8}>
+                    <VIN form={form} value={value} />
+                  </Col>
+                )}
               </Row>
-            }
-            
+            )}
+
             <Row gutter={[8, 2]}>
               <Col span={8}>
                 <Locks form={form} value={value} />
@@ -394,7 +386,6 @@ const FormModal = ({
                 <Comments form={form} value={value} />
               </Col>
             </Row>
-
 
             {/* config?.siteUseAxleWeightLimit && (
               <Row gutter={[12, 12]}>
@@ -420,13 +411,7 @@ const FormModal = ({
               </Col>
             </Row>
 
-            <Compartments
-              form={form}
-              value={value}
-              eqptType={eqptType}
-              onChange={setImage}
-              config={config}
-            />
+            <Compartments form={form} value={value} eqptType={eqptType} onChange={setImage} config={config} />
 
             <Divider>{t('tabColumns.expiryDates')}</Divider>
 
@@ -443,7 +428,12 @@ const FormModal = ({
                 <Col span={6}>
                   <Row gutter={[8, 2]}>
                     <Col span={24}>
-                      <AxleGroupNumber form={form} value={value} onChange={setAxleGroupNumber} limitType={massLimitType} />
+                      <AxleGroupNumber
+                        form={form}
+                        value={value}
+                        onChange={setAxleGroupNumber}
+                        limitType={massLimitType}
+                      />
                     </Col>
                   </Row>
                   <Row gutter={[8, 2]}>
