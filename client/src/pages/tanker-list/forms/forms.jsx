@@ -61,6 +61,7 @@ const FormModal = ({
   tankers,
   onLocate,
   setPage,
+  maskFlag,
 }) => {
   const { t } = useTranslation();
   const { carrcode_tankernum_tag, tanker_slp_enabled } = useConfig();
@@ -72,19 +73,30 @@ const FormModal = ({
   const [tripCount, setTripCount] = useState(0);
   const [carrier, setCarrier] = useState(null);
 
-  const { data: payload } = useSWR(value?.tnkr_name ? `${TANKER_LIST.MATCHES_BY_NAME}?tnkr_name=${value?.tnkr_name}` : null);
-  
+  const { data: payload } = useSWR(
+    value?.tnkr_name ? `${TANKER_LIST.MATCHES_BY_NAME}?tnkr_name=${value?.tnkr_name}` : null
+  );
+
   const [equipment, setEquipment] = useState(undefined);
 
-  const { data: tags } = useSWR(value?.tnkr_code ? `${TANKER_LIST.CHECK_TANKER_TAGS}?tanker=${value?.tnkr_code}` : null, {
-    refreshInterval: 0,
-  });
-  const { data: loads } = useSWR(value?.tnkr_code? `${TANKER_LIST.CHECK_TANKER_LOADS}?tanker=${value?.tnkr_code}` : null, {
-    refreshInterval: 0,
-  });
-  const { data: trips } = useSWR(value?.tnkr_code? `${TANKER_LIST.CHECK_TANKER_TRIPS}?tanker=${value?.tnkr_code}` : null, {
-    refreshInterval: 0,
-  });
+  const { data: tags } = useSWR(
+    value?.tnkr_code ? `${TANKER_LIST.CHECK_TANKER_TAGS}?tanker=${value?.tnkr_code}` : null,
+    {
+      refreshInterval: 0,
+    }
+  );
+  const { data: loads } = useSWR(
+    value?.tnkr_code ? `${TANKER_LIST.CHECK_TANKER_LOADS}?tanker=${value?.tnkr_code}` : null,
+    {
+      refreshInterval: 0,
+    }
+  );
+  const { data: trips } = useSWR(
+    value?.tnkr_code ? `${TANKER_LIST.CHECK_TANKER_TRIPS}?tanker=${value?.tnkr_code}` : null,
+    {
+      refreshInterval: 0,
+    }
+  );
 
   const fields = columns(t);
   const IS_CREATING = !value;
@@ -366,7 +378,7 @@ const FormModal = ({
       onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
-      mask={IS_CREATING}
+      mask={maskFlag}
       placement="right"
       width="60vw"
       visible={visible}
@@ -508,9 +520,7 @@ const FormModal = ({
             </Row>
 
             <Row gutter={[8, 2]}>
-              <Col span={8}>
-                { tanker_slp_enabled && <SLP form={form} value={value} />}
-              </Col>
+              <Col span={8}>{tanker_slp_enabled && <SLP form={form} value={value} />}</Col>
               <Col span={16}>
                 <Locks form={form} value={value} />
               </Col>
