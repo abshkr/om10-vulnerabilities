@@ -39,7 +39,7 @@ import { SETTINGS } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, url, locateNomination, config }) => {
+const FormModal = ({ value, visible, handleFormState, access, url, locateNomination, config, maskFlag }) => {
   const [tableAPI, setTableAPI] = useState(null);
   const [carrier, setCarrier] = useState(null);
   const [receiptCount, setReceiptCount] = useState(0);
@@ -292,7 +292,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
       onClose={onFormClosed}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
-      mask={IS_CREATING}
+      mask={maskFlag}
       placement="right"
       width="80vw"
       visible={visible}

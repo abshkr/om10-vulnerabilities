@@ -41,6 +41,7 @@ const MovementNominations = () => {
   const [timeOption, setTimeOption] = useState(filterByExpiry ? 'MV_DTIM_EXPIRY' : 'MV_DTIM_CREATE'); //'MV_DTIM_EFFECT');
   const [data, setData] = useState(null);
   const [scheduleOpen, setScheduleOpen] = useState(false);
+  const [maskFlag, setMaskFlag] = useState(true);
 
   const { t } = useTranslation();
 
@@ -427,7 +428,10 @@ const MovementNominations = () => {
       <Button
         type="primary"
         icon={<PlusOutlined />}
-        onClick={() => handleFormState(true, null)}
+        onClick={() => {
+          setMaskFlag(true);
+          handleFormState(true, null);
+        }}
         loading={isDownloading || isSearching}
         disabled={!access.canCreate}
       >
@@ -455,8 +459,14 @@ const MovementNominations = () => {
           data={data}
           isLoading={isDownloading || isSearching}
           selectionMode="single"
-          onClick={(payload) => handleFormState(true, payload)}
-          handleSelect={(payload) => handleFormState(true, payload[0])}
+          onClick={(payload) => {
+            setMaskFlag(false);
+            handleFormState(true, payload);
+          }}
+          handleSelect={(payload) => {
+            setMaskFlag(false);
+            handleFormState(true, payload[0]);
+          }}
           clearFilterPlus={revalidate}
         />
         <div
@@ -496,6 +506,7 @@ const MovementNominations = () => {
             url={url}
             locateNomination={locateNomination}
             config={config}
+            maskFlag={maskFlag}
           />
         )}
       </Page>
