@@ -188,6 +188,8 @@
     "pleaseFillLineField": "请输入该字段，行号：",
     "pleaseKeepValueRange": "请将数值保持于此范围：",
     "pmvBatchCompleted": "您已完成了油品移动批量操作",
+    "pmvNominationCreated": "您已根据油品移动操作创建了大宗货单",
+    "possibleReasonsToFailVCF": "失败原因可能是：密度或温度超出范围、或者基础油品数据错误。",
     "preOrderProdUnit": "请为油品选择计量单位",
     "preOrderReady": "给至少一个油品输入油量",
     "searchRequired": "请输入至少一项(不包括日期)查找",

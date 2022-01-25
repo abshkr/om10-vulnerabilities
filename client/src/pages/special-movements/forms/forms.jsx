@@ -366,17 +366,33 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
               frm_real_dens: values.mlitm_dens_cor,
             })
             .then((response) => {
-              const WIA =
-                _.toNumber(response?.data?.real_kg) -
-                _.toNumber(response?.data?.real_litre15) * config?.airBuoyancyFactor;
-              setFieldsValue({
-                mlitm_qty_amb: response?.data?.real_litre,
-                mlitm_qty_cor: response?.data?.real_litre15,
-                mlitm_qty_kg: response?.data?.real_kg,
-                mlitm_air_kg: WIA,
-                // backend used real_cvf which is a typo, anyway keep it for now
-                mlitm_vcf: _.round(response?.data?.real_cvf, config?.precisionVCF),
-              });
+              if (!response?.data?.real_litre) {
+                let errmsg = t('descriptions.possibleReasonsToFailVCF');
+                if (!response?.data?.msg_code || !response?.data?.msg_desc) {
+                  errmsg = t('descriptions.possibleReasonsToFailVCF');
+                } else {
+                  errmsg = response?.data?.msg_code + ': ' + response?.data?.msg_desc;
+                }
+                notification.error({
+                  message:
+                    t('descriptions.calculateFailed') +
+                    ': ' +
+                    (TO.includes(type) ? values.mlitm_prodcode_to : values.mlitm_prodcode),
+                  description: errmsg,
+                });
+              } else {
+                const WIA =
+                  _.toNumber(response?.data?.real_kg) -
+                  _.toNumber(response?.data?.real_litre15) * config?.airBuoyancyFactor;
+                setFieldsValue({
+                  mlitm_qty_amb: response?.data?.real_litre,
+                  mlitm_qty_cor: response?.data?.real_litre15,
+                  mlitm_qty_kg: response?.data?.real_kg,
+                  mlitm_air_kg: WIA,
+                  // backend used real_cvf which is a typo, anyway keep it for now
+                  mlitm_vcf: _.round(response?.data?.real_cvf, config?.precisionVCF),
+                });
+              }
             });
         } catch (error) {
           message.error({

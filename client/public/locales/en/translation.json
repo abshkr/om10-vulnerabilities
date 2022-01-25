@@ -189,6 +189,7 @@
     "pleaseKeepValueRange": "Please keep the values between ",
     "pmvBatchCompleted": "You have completed the batch",
     "pmvNominationCreated": "You have created a nomination out of this product movement",
+    "possibleReasonsToFailVCF": "The failure could be due to density or temperature out of range or wrong base product details ",
     "preOrderProdUnit": "Select unit for product",
     "preOrderReady": "Input quantity for at least one product",
     "searchRequired": "Please input at least one field to search except for date range",

@@ -522,12 +522,18 @@ const FormModal = ({
         })
         .then((response) => {
           if (!response?.data?.real_litre) {
+            let errmsg = t('descriptions.possibleReasonsToFailVCF');
+            if (!response?.data?.msg_code || !response?.data?.msg_desc) {
+              errmsg = t('descriptions.possibleReasonsToFailVCF');
+            } else {
+              errmsg = response?.data?.msg_code + ': ' + response?.data?.msg_desc;
+            }
             notification.error({
               message:
                 t('descriptions.calculateFailed') +
                 ': ' +
                 (pageState === 'receipt' ? value?.mvitm_prodcode_to : value?.mvitm_prodcode_from),
-              description: response?.data?.msg_code || ' ' + ': ' + response?.data?.msg_desc || ' ',
+              description: errmsg,
             });
           } else {
             const WIA =
@@ -576,9 +582,16 @@ const FormModal = ({
         values?.mlitm_temp_amb
       );
       if (response?.result === false) {
+        let errmsg = response?.message;
+        if (!errmsg) {
+          errmsg = t('descriptions.possibleReasonsToFailVCF');
+        }
+        if (errmsg?.indexOf('undefined') >= 0) {
+          errmsg = errmsg.replace('undefined: undefined', t('descriptions.possibleReasonsToFailVCF'));
+        }
         notification.error({
           message: t('descriptions.calculateFailed'),
-          description: response?.message,
+          description: errmsg,
         });
       } else {
         const WIA = _.toNumber(response?.load_kg) - _.toNumber(response?.qty_cor) * config?.airBuoyancyFactor;

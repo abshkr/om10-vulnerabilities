@@ -469,10 +469,18 @@ const DrawerProductTransfers = ({
       transfer?.trsf_temp
     );
     if (response?.result === false) {
+      let errmsg = response?.message;
+      if (!errmsg) {
+        errmsg = t('descriptions.possibleReasonsToFailVCF');
+      }
+      if (errmsg?.indexOf('undefined') >= 0) {
+        errmsg = errmsg.replace('undefined: undefined', t('descriptions.possibleReasonsToFailVCF'));
+      }
       notification.error({
         message: t('descriptions.calculateFailed'),
-        description: response?.message,
+        description: errmsg,
       });
+      transfer.trsf_vcf = '';
     } else {
       transfer.trsf_qty_amb = response?.qty_amb;
       transfer.trsf_qty_cor = response?.qty_cor;
@@ -568,10 +576,24 @@ const DrawerProductTransfers = ({
     setClicked(option);
     //setUpdating(false);
 
-    notification.success({
-      message: t('messages.calculateSuccess'),
-      description: t('descriptions.calculateSuccess'),
-    });
+    // check VCFs
+    const payload2 = form.getFieldValue('transfers');
+    console.log('...................vcf checks', payload2);
+    let foundVCF = true;
+    for (let tidx = 0; tidx < payload2.length; tidx++) {
+      const titem = payload2?.[tidx];
+      if (!titem.trsf_vcf || String(titem.trsf_vcf).trim() === '') {
+        foundVCF = false;
+        break;
+      }
+    }
+    if (foundVCF === true) {
+      notification.success({
+        message: t('messages.calculateSuccess'),
+        description: t('descriptions.calculateSuccess'),
+      });
+    }
+
     setDrawerChanges([]);
   };
 
