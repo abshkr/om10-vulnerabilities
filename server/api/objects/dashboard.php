@@ -53,7 +53,7 @@ class Dashboard extends CommonClass
             __FILE__, __LINE__);
 
         $result = array();
-        $query = "
+        /* $query = "
             SELECT BAYS_PER_LOAD, 
                 LOADS,
                 (SELECT COUNT(DISTINCT trsaldid_load_id) 
@@ -66,6 +66,24 @@ class Dashboard extends CommonClass
                     SELECT TRSALDID_LOAD_ID, COUNT(DISTINCT TRSA_BAY_CD) BAYS_PER_LOAD  
                     FROM TRANSACTIONS, TRANSFERS WHERE TRSA_ID = TRSFTRID_TRSA_ID 
                     GROUP BY TRSALDID_LOAD_ID
+                )
+                GROUP BY BAYS_PER_LOAD
+                ORDER BY BAYS_PER_LOAD
+            ) TMP
+        "; */
+        $query = "
+            SELECT BAYS_PER_LOAD, 
+                LOADS,
+                (SELECT COUNT(DISTINCT load_id) 
+                FROM GUI_TRANSACTIONS, transfers where trsa_id = trsftrid_trsa_id)  TOTAL
+            FROM
+            (
+                SELECT BAYS_PER_LOAD, COUNT(*) LOADS
+                FROM 
+                (
+                    SELECT LOAD_ID, COUNT(DISTINCT TRSA_BAY_CD) BAYS_PER_LOAD  
+                    FROM GUI_TRANSACTIONS, TRANSFERS WHERE TRSA_ID = TRSFTRID_TRSA_ID 
+                    GROUP BY LOAD_ID
                 )
                 GROUP BY BAYS_PER_LOAD
                 ORDER BY BAYS_PER_LOAD
@@ -106,6 +124,7 @@ class Dashboard extends CommonClass
         $hook_item['transaction_ids'] = $result;
 
         $result = array();
+        /*
         $query = "  SELECT TRANSACTIONS.TRSA_BAY_CD, 
                         LOADS,
                         SUM(TRSF_QTY_AMB) SUM_AMB, 
@@ -126,6 +145,29 @@ class Dashboard extends CommonClass
                         AND TRSA_COUNTS.TRSA_BAY_CD = TRANSACTIONS.TRSA_BAY_CD
                     GROUP BY TRANSACTIONS.TRSA_BAY_CD, LOADS
                     ORDER BY TRANSACTIONS.TRSA_BAY_CD";
+        */
+        $query = "
+            SELECT GTRA.TRSA_BAY_CD, 
+                        LOADS,
+                        SUM(TRSF_QTY_AMB) SUM_AMB, 
+                        SUM(TRSF_QTY_COR) SUM_COR, 
+                        SUM(TRSF_LOAD_KG) SUM_KG,
+                        ROUND(SUM(TRSF_QTY_AMB) / COUNT(GTRA.LOAD_ID), 3) AVGAMB_PER_LOAD
+                    FROM GUI_TRANSACTIONS GTRA, TRANSFERS, CLOSEOUTS,
+                        (
+                            SELECT TRSA_BAY_CD, COUNT(*) LOADS
+                            FROM GUI_TRANSACTIONS, CLOSEOUTS
+                            WHERE STATUS = 0
+                                AND TO_DATE(TRSA_ED_DMY, 'YYYY-MM-DD HH24:MI:SS') > PREV_CLOSEOUT_DATE
+                            GROUP BY TRSA_BAY_CD
+                        ) TRSA_COUNTS
+                    WHERE TRSA_ID = TRSFTRID_TRSA_ID
+                        AND STATUS = 0
+                        AND TO_DATE(TRSA_ED_DMY, 'YYYY-MM-DD HH24:MI:SS') > PREV_CLOSEOUT_DATE
+                        AND TRSA_COUNTS.TRSA_BAY_CD = GTRA.TRSA_BAY_CD
+                    GROUP BY GTRA.TRSA_BAY_CD, LOADS
+                    ORDER BY GTRA.TRSA_BAY_CD                    
+        ";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
@@ -200,6 +242,7 @@ class Dashboard extends CommonClass
         // $hook_item['throughput'] = $result;
 
         $result = array();
+        /*
         $query = "
             SELECT TRUNC(TRSA_ED_DMY) AS DMY,
                 SUM(TRSF_QTY_COR)/1000 AS QTY_COR,
@@ -209,6 +252,17 @@ class Dashboard extends CommonClass
                 AND TRSA_ED_DMY >= (SELECT TRUNC(SYSDATE-6) FROM DUAL)
             GROUP BY TRUNC(TRSA_ED_DMY)
             ORDER BY TRUNC(TRSA_ED_DMY)";
+        */
+        $query = "
+            SELECT TRUNC(TO_DATE(TRSA_ED_DMY, 'YYYY-MM-DD HH24:MI:SS')) AS DMY,
+                SUM(TRSF_QTY_COR)/1000 AS QTY_COR,
+                SUM(TRSF_QTY_AMB)/1000 AS QTY_AMB
+            FROM GUI_TRANSACTIONS TRSA, TRANSFERS TRSF 
+            WHERE TRSA.TRSA_ID = TRSF.TRSFTRID_TRSA_ID 
+                AND TO_DATE(TRSA_ED_DMY, 'YYYY-MM-DD HH24:MI:SS') >= (SELECT TRUNC(SYSDATE-6) FROM DUAL)
+            GROUP BY TRUNC(TO_DATE(TRSA_ED_DMY, 'YYYY-MM-DD HH24:MI:SS'))
+            ORDER BY TRUNC(TO_DATE(TRSA_ED_DMY, 'YYYY-MM-DD HH24:MI:SS'))
+        ";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
@@ -273,6 +327,7 @@ class Dashboard extends CommonClass
         //         AND TRSA_ED_DMY > PREV_CLOSEOUT_DATE
         //     GROUP BY BASE_CODE, BASE_NAME, TRSB_UNT
         //     ORDER BY BASE_NAME";
+        /*
         $query = "
             SELECT 
                 NVL(DECODE(TRSB_UNT, 34, SUM(TRSB_AVL) / 1000, SUM(TRSB_AVL)), 0) / 1000    QTY_AMB, 
@@ -307,6 +362,42 @@ class Dashboard extends CommonClass
                 AND TRSA_ED_DMY > PREV_CLOSEOUT_DATE
             GROUP BY BASE_CODE, BASE_NAME, TRSB_UNT, BC.BCLASS_DESC
             ORDER BY BASE_NAME";
+        */
+        $query = "
+            SELECT 
+                NVL(DECODE(TRSB_UNT, 34, SUM(TRSB_AVL) / 1000, SUM(TRSB_AVL)), 0) / 1000    QTY_AMB, 
+                NVL(DECODE(TRSB_UNT, 34, SUM(TRSB_CVL) / 1000, SUM(TRSB_CVL)), 0) / 1000    QTY_CMB, 
+                BASE_CODE                                                                   TRSF_BASE_P, 
+                BASE_NAME, 
+                BC.BCLASS_DESC                                                              BCLASS_DESC
+            FROM 
+                GUI_TRANSACTIONS, 
+                TRANSFERS, 
+                CLOSEOUTS, 
+                TRANBASE, 
+                BASE_PRODS, 
+                (
+                    SELECT
+                        BS.BCLASS_NO,
+                        NVL(BM.BCLASS_NAME, BS.BCLASS_DESC)           AS BCLASS_DESC,
+                        BS.BCLASS_DENS_LO,
+                        BS.BCLASS_DENS_HI,
+                        BS.BCLASS_VCF_ALG,
+                        BS.BCLASS_TEMP_LO,
+                        BS.BCLASS_TEMP_HI
+                    FROM BASECLASS BS,
+                        BCLASS_TYP BM
+                    WHERE BS.BCLASS_NO = BM.BCLASS_ID(+)
+                ) BC
+            WHERE TRSA_ID = TRSFTRID_TRSA_ID
+                AND STATUS = 0
+                AND TRSB_ID_TRSF_ID = TRSF_ID
+                AND TRSB_BS = BASE_CODE
+                AND BASE_CAT = BC.BCLASS_NO
+                AND TO_DATE(TRSA_ED_DMY, 'YYYY-MM-DD HH24:MI:SS') > PREV_CLOSEOUT_DATE
+            GROUP BY BASE_CODE, BASE_NAME, TRSB_UNT, BC.BCLASS_DESC
+            ORDER BY BASE_NAME
+        ";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
@@ -363,6 +454,7 @@ class Dashboard extends CommonClass
         //     WHERE WEEK = LOAD_WEEK(+)
         //         AND WEEKS.BASE_CODE = LOAD_DATE.BASE_CODE(+)
         //     ORDER BY WEEK, BASE_NAME";
+        /*
         $query = " 	
             SELECT TO_CHAR(TRSA_ST_DMY,'IW') AS WK,
                 TRSF_BASE_P,
@@ -378,6 +470,27 @@ class Dashboard extends CommonClass
             WHERE TRSA_ST_DMY >= (SELECT TRUNC(SYSDATE,'YEAR') FROM DUAL)
             GROUP BY TO_CHAR(TRSA_ST_DMY, 'IW'), TRSF_BASE_P, BASE_NAME
             ORDER BY TO_CHAR(TRSA_ST_DMY, 'IW'), BASE_NAME";
+        */
+        $query = "
+            SELECT TO_CHAR(TO_DATE(TRSA_ST_DMY, 'YYYY-MM-DD HH24:MI:SS'),'IW') AS WK,
+                TRSF_BASE_P,
+                BASE_NAME,
+                SUM(TRSF_QTY_COR)/1000 AS QTY_COR,
+                SUM(TRSF_QTY_AMB)/1000 AS QTY_AMB
+            FROM
+                GUI_TRANSACTIONS TRSA 
+            INNER JOIN
+                TRANSFERS TRSF 
+            ON
+                TRSA.TRSA_ID = TRSF.TRSFTRID_TRSA_ID AND TRSA.TRSA_TERMINAL = TRSF.TRSFTRID_TRSA_TRM 
+            LEFT JOIN
+                BASE_PRODS PR_BASE 
+            ON
+                TRSF.TRSF_BASE_P = PR_BASE.BASE_CODE
+            WHERE TO_DATE(TRSA_ST_DMY, 'YYYY-MM-DD HH24:MI:SS') >= (SELECT TRUNC(SYSDATE,'YEAR') FROM DUAL)
+            GROUP BY TO_CHAR(TO_DATE(TRSA_ST_DMY, 'YYYY-MM-DD HH24:MI:SS'), 'IW'), TRSF_BASE_P, BASE_NAME
+            ORDER BY TO_CHAR(TO_DATE(TRSA_ST_DMY, 'YYYY-MM-DD HH24:MI:SS'), 'IW'), BASE_NAME
+        ";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
