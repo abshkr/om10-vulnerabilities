@@ -192,6 +192,15 @@ class SiteBal extends CommonClass
 
         // trsa_class: The class of the transaction. 0: the transaction for nomral loading; 1:the transaction for nomination movement.
         // trsa_iotype: The flow direction of the arm in the transaction. -1: in, 1: out.
+        // [1]Opening Stock
+        // [2]Receipts To Site
+        // [3]Transfer In
+        // [4]=[1+2+3]Total Acc
+        // [5]Disposal For Offsite ? TRANSFERVOL
+        // [6]Transfer Out
+        // [7]=[4-5-6]Book Balance
+        // [8]Closing Stock
+        // [9]=[8-7]Gain/Loss
 
         $query = "
         SELECT
@@ -203,19 +212,24 @@ class SiteBal extends CommonClass
             NVL(TANKS.TANK_DENSITY, 0.0)                                                           AS TANK_DENSITY,
             (NVL(TANKS.TANK_LTR_CLOSE, 0.0)*NVL(TANKS.TANK_RPTVCFCLOSE, 1))                        AS OPENINGSTOCK,
             (NVL(TANKS.TANK_LTR_CLOSE, 0.0)*NVL(TANKS.TANK_RPTVCFCLOSE, 1) 
-                + NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) 
-                - NVL(TRSF_IN_CVL, 0) +  NVL(TRSF_IN_CVL, 0))                                      AS ACCNTTOT,
+                + (NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_IN_CVL, 0)) 
+                +  NVL(TRSF_IN_CVL, 0))                                                            AS ACCNTTOT,
             (NVL(TANKS.TANK_TRF_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_OUT_CVL, 0))        AS TRANSFERVOL,
             ((NVL(TANKS.TANK_LTR_CLOSE, 0.0)*NVL(TANKS.TANK_RPTVCFCLOSE, 1) 
-                + NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) 
-                - NVL(TRSF_IN_CVL, 0) +  NVL(TRSF_IN_CVL, 0)) 
+                + NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_IN_CVL, 0) 
+                +  NVL(TRSF_IN_CVL, 0)) 
               - (NVL(TANKS.TANK_TRF_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_OUT_CVL, 0)) 
               - (NVL(TRSF_OUT_CVL, 0)))                                                            AS BOOKBALANCE,
             (NVL(TANKS.TANK_COR_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1))                               AS CLOSINGSTOCK,
             (NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_IN_CVL, 0))        AS RECEIPTSVOL,
             NVL(TRSF_IN_CVL, 0)                                                                    AS TRANSFERIN,
             NVL(TRSF_OUT_CVL, 0)                                                                   AS TRANSFEROUT,
-            NVL(TANKS.TANK_COR_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TANKS.TANK_LTR_CLOSE, 0.0)*NVL(TANKS.TANK_RPTVCFCLOSE, 1) - NVL(TANKS.TANK_RCPT_VOL, 0.0) * NVL(TANKS.TANK_RPTVCF, 1) + NVL(TANKS.TANK_TRF_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_IN_CVL, 0) + NVL(TRSF_OUT_CVL, 0)                          AS GAINLOSS
+            ((NVL(TANKS.TANK_COR_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1)) -
+            ((NVL(TANKS.TANK_LTR_CLOSE, 0.0)*NVL(TANKS.TANK_RPTVCFCLOSE, 1) 
+                + NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_IN_CVL, 0) 
+                +  NVL(TRSF_IN_CVL, 0)) 
+              - (NVL(TANKS.TANK_TRF_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_OUT_CVL, 0)) 
+              - (NVL(TRSF_OUT_CVL, 0))))                                                           AS GAINLOSS
         FROM 
             TERMINAL, 
             CLOSEOUTS, 
