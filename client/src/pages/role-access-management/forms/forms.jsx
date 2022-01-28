@@ -215,7 +215,11 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
     { label: t('fields.accessPassword'), value: 'Password' },
   ];
   // const options = ['View', 'Update', 'Create', 'Delete', 'Password'];
-  const loadScheduleOptions = [...options, { label: t('fields.accessScheduleProduct'), value: 'Extra' }];
+  const loadScheduleOptions = [
+    ...options,
+    { label: t('fields.accessScheduleProduct'), value: 'Extra' },
+    { label: t('fields.accessIgnoreTolerance'), value: 'Extra2' },
+  ];
   // const loadScheduleOptions = [...options, 'Schedule Product'];
   const folioOptions = [...options, { label: t('fields.accessCloseFreezeFolio'), value: 'Extra' }];
   // const folioOptions = [...options, 'Close/Freeze Folio'];

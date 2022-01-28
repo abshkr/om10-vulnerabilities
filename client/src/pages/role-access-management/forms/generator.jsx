@@ -13,6 +13,7 @@ const generator = (data, values) => {
       element.priv_update = changed.includes('Update');
       element.priv_view = changed.includes('View');
       element.priv_extra = changed.includes('Extra');
+      element.priv_extra2 = changed.includes('Extra2');
     }
 
     payload.push(element);
@@ -49,6 +50,10 @@ const setter = (data) => {
 
     if (element.priv_extra) {
       value.push('Extra');
+    }
+
+    if (element.priv_extra2) {
+      value.push('Extra2');
     }
 
     payload[element.object_text] = value;

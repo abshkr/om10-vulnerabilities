@@ -356,6 +356,7 @@
     "accessDelete": "删除",
     "accessPassword": "认证",
     "accessScheduleProduct": "调度油品",
+    "accessIgnoreTolerance": "忽略容许偏差的检查",
     "accessType": "访问类型",
     "accessUpdate": "修改",
     "accessView": "查看",

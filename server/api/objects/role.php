@@ -19,6 +19,7 @@ class Role extends CommonClass
         "PRIV_DELETE" => 1,
         "PRIV_PROTECT" => 1,
         "PRIV_EXTRA" => 1,
+        "PRIV_EXTRA2" => 1,
         "LOCK_CHECK" => "Y",
         "DELETE_CHECK" => "Y",
     );
@@ -118,9 +119,12 @@ class Role extends CommonClass
                     CASE WHEN (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES F
                     WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 5
                         AND F.DOMAIN_ID = A.DOMAIN_ID AND F.OBJECT_ID = A.OBJECT_ID) > 0 THEN 1 ELSE 0 END PRIV_PROTECT,
-                    CASE WHEN (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES F
+                    CASE WHEN (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES G
                     WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 6
-                        AND F.DOMAIN_ID = A.DOMAIN_ID AND F.OBJECT_ID = A.OBJECT_ID) > 0 THEN 1 ELSE 0 END PRIV_EXTRA    
+                        AND G.DOMAIN_ID = A.DOMAIN_ID AND G.OBJECT_ID = A.OBJECT_ID) > 0 THEN 1 ELSE 0 END PRIV_EXTRA,
+                    CASE WHEN (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES H
+                    WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 7
+                        AND H.DOMAIN_ID = A.DOMAIN_ID AND H.OBJECT_ID = A.OBJECT_ID) > 0 THEN 1 ELSE 0 END PRIV_EXTRA2    
                 FROM URBAC_DOMAIN_OBJECTS A, URBAC_DOMAINS, URBAC_OBJECTS
                 WHERE A.DOMAIN_ID != 1
                     AND A.DOMAIN_ID = URBAC_DOMAINS.DOMAIN_ID
@@ -361,6 +365,10 @@ class Role extends CommonClass
                     $this->insert_into_priv($value, 6);
                 }
 
+                if ($value->priv_extra2 == 1) {
+                    $this->insert_into_priv($value, 7);
+                }
+
                 $lineno += 1;
             }
         }
@@ -388,7 +396,10 @@ class Role extends CommonClass
                 AND F.DOMAIN_ID = A.DOMAIN_ID AND F.OBJECT_ID = A.OBJECT_ID) PRIV_PROTECT,
             (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES G
             WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 6
-                AND G.DOMAIN_ID = A.DOMAIN_ID AND G.OBJECT_ID = A.OBJECT_ID) PRIV_EXTRA
+                AND G.DOMAIN_ID = A.DOMAIN_ID AND G.OBJECT_ID = A.OBJECT_ID) PRIV_EXTRA,
+            (SELECT COUNT(*) FROM URBAC_ROLE_DOMAINS_PRIVILEGES H
+            WHERE ROLE_ID = :role_id AND DOMAIN_ROLE_ACTIVE = 1 AND PRIVILEGE_ID = 7
+                AND H.DOMAIN_ID = A.DOMAIN_ID AND H.OBJECT_ID = A.OBJECT_ID) PRIV_EXTRA2
         FROM URBAC_DOMAIN_OBJECTS A, URBAC_DOMAINS, URBAC_OBJECTS
         WHERE A.DOMAIN_ID != 1
             AND A.DOMAIN_ID = URBAC_DOMAINS.DOMAIN_ID
@@ -471,6 +482,21 @@ class Role extends CommonClass
                     $record = sprintf("role_code:%s, object_text:%s",
                         $this->role_code, $priv['OBJECT_TEXT']);
                     $journal->valueChange($module, $record, $priv_option, $priv['PRIV_EXTRA'], $new[$OBJECT_ID]['PRIV_EXTRA']);
+                }
+            }
+
+            if ($priv['OBJECT_TEXT'] == "M_LOADSCHEDULES") {
+                $priv_option2 = "PRIV_EXTRA2";
+                if ($priv['OBJECT_TEXT'] == "M_LOADSCHEDULES") {
+                    $priv_option2 = "PRIV_IGNORETOL";
+                }
+                // write_log(sprintf("%s Check object %s, prev:%s", $priv_option, $priv['OBJECT_TEXT'], print_r($priv, TRUE)), __FILE__, __LINE__);
+                // write_log(sprintf("%s Check object %s, new prev:%s", $priv_option, $priv['OBJECT_TEXT'], $new[$OBJECT_ID]['PRIV_EXTRA']), __FILE__, __LINE__);
+                // write_log(sprintf("%s Check object %s, view prev:%s", $priv_option, $priv['OBJECT_TEXT'], $priv['PRIV_VIEW']), __FILE__, __LINE__);
+                if (isset($priv['PRIV_EXTRA2']) && $priv['PRIV_EXTRA2'] != $new[$OBJECT_ID]['PRIV_EXTRA2']) {
+                    $record = sprintf("role_code:%s, object_text:%s",
+                        $this->role_code, $priv['OBJECT_TEXT']);
+                    $journal->valueChange($module, $record, $priv_option2, $priv['PRIV_EXTRA2'], $new[$OBJECT_ID]['PRIV_EXTRA2']);
                 }
             }
         }

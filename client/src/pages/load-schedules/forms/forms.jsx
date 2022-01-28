@@ -57,7 +57,7 @@ import {
   EndWeight,
   StartWeight,
   DiffWeight,
-  Isotainer
+  Isotainer,
 } from './fields';
 
 import { SelectInput, PartnershipManager } from '../../../components';
@@ -103,7 +103,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     siteSchdPreloadEditable,
     fasttrackEnabled,
   } = config;
-    
+
   const popupMT = config?.popupManualTransaction;
 
   const SHOW_ISO_DOR = siteUseIsotainer && showDORNumber;
@@ -206,7 +206,9 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
 
     const len = new TextEncoder().encode(input).length;
     if (input && len > maxLengthTripNum) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: ${maxLengthTripNum} ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${maxLengthTripNum} ─ ${t('descriptions.maxCharacters')}`
+      );
     }
 
     return Promise.resolve();
@@ -928,24 +930,24 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
 
   const sendtoFasttrack = () => {
     api
-    .post(LOAD_SCHEDULES.SENDTO_FT, {
-      trip_no: value?.shls_trip_no,
-      supplier: value?.supplier_code
-    })
-    .then(() => {
-      notification.success({
-        message: t('messages.startSuccess'),
-        description: t('descriptions.startSuccess'),
-      });
-    })
-    .catch((errors) => {
-      _.forEach(errors.response.data.errors, (error) => {
-        notification.error({
-          message: error.type,
-          description: error.message,
+      .post(LOAD_SCHEDULES.SENDTO_FT, {
+        trip_no: value?.shls_trip_no,
+        supplier: value?.supplier_code,
+      })
+      .then(() => {
+        notification.success({
+          message: t('messages.startSuccess'),
+          description: t('descriptions.startSuccess'),
+        });
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
         });
       });
-    });
   };
 
   useEffect(() => {
@@ -1083,7 +1085,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
             )}
 
           {tab === '3' && !IS_CREATING && (
-            <Checkbox checked={supermode} onChange={(e) => setSupermode(e.target.checked)}>
+            <Checkbox
+              checked={supermode}
+              onChange={(e) => setSupermode(e.target.checked)}
+              disabled={!access?.extra2}
+            >
               {t('descriptions.ignoreTolerance')}
             </Checkbox>
           )}
@@ -1162,18 +1168,14 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
               >
                 {t('operations.archive')}
               </Button>
-
-              
             </>
           )}
 
-          { FASTTRACK_ENABLED &&  <Button
-            type="primary"
-            onClick={sendtoFasttrack}
-            disabled={!send_to_ft_ready}
-          >
-            {t('operations.sendtoFT')}
-          </Button> }
+          {FASTTRACK_ENABLED && (
+            <Button type="primary" onClick={sendtoFasttrack} disabled={!send_to_ft_ready}>
+              {t('operations.sendtoFT')}
+            </Button>
+          )}
 
           {!(
             IS_CREATING ||

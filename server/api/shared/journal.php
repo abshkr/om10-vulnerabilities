@@ -254,7 +254,9 @@ class Journal
                 "PRIV_DELETE" => "删除权限",
                 "PRIV_PROTECT" => "密码保护",
                 "PRIV_EXTRA" => "额外权限",
+                "PRIV_EXTRA2" => "额外权限2",
                 "PRIV_SCHEDPROD" => "调度油品权限",
+                "PRIV_IGNORETOL" => "忽略容许偏差的检查权限",
                 "PRIV_FREEZEFOLIO" => "结束/冻结预盘权限",
             )
         ),
@@ -393,7 +395,9 @@ class Journal
                 "PRIV_DELETE" => "Delete Privilege",
                 "PRIV_PROTECT" => "Password",
                 "PRIV_EXTRA" => "Extra Privilege",
+                "PRIV_EXTRA2" => "Extra Privilege 2nd",
                 "PRIV_SCHEDPROD" => "Schedule Product",
+                "PRIV_IGNORETOL" => "Ignore Tolerance Check",
                 "PRIV_FREEZEFOLIO" => "Close/Freeze Folio",
             )
         )

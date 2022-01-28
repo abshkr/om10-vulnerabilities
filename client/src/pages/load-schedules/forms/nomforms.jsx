@@ -579,7 +579,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, c
           )}
 
           {tab === '3' && !IS_CREATING && (
-            <Checkbox onChange={(e) => setFieldsValue({ supermode: e.target.checked })}>
+            <Checkbox
+              onChange={(e) => setFieldsValue({ supermode: e.target.checked })}
+              disabled={!access?.extra2}
+            >
               {t('descriptions.ignoreTolerance')}
             </Checkbox>
           )}

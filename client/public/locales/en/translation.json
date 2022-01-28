@@ -371,6 +371,7 @@
     "accessDelete": "Delete",
     "accessPassword": "Password",
     "accessScheduleProduct": "Schedule Product",
+    "accessIgnoreTolerance": "Ignore Tolerance Check",
     "accessType": "Access Type",
     "accessUpdate": "Update",
     "accessView": "View",
