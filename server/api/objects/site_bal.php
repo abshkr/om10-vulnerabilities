@@ -9,7 +9,7 @@ class SiteBal extends CommonClass
     protected $TABLE_NAME = 'TANKS';
 
     // this one may have issue because it includes only nomination transactions in transfer in&out.
-    public function read2()
+    public function read()
     {
         $terminal_condition = "";
         if (isset($this->terminal) && $this->terminal != 'undefined' && strlen($this->terminal) > 0) {
@@ -18,6 +18,15 @@ class SiteBal extends CommonClass
 
         // trsa_class: The class of the transaction. 0: the transaction for nomral loading; 1:the transaction for nomination movement.
         // trsa_iotype: The flow direction of the arm in the transaction. -1: in, 1: out.
+        // [1]Opening Stock
+        // [2]Receipts To Site  - truck unloading + nomination recipt, but excludes nomination transfer;
+        // [3]Transfer In -  includes incoming part of nomination transfer type within current folio time range
+        // [4]=[1+2+3]Total Acc
+        // [5]Disposal For Offsite ? TRANSFERVOL -  includes truck loading + nomination disposal , but excludes nomination transfer type
+        // [6]Transfer Out -  includes outgoing part of nomination transfer type within current folio time range
+        // [7]=[4-5-6]Book Balance
+        // [8]Closing Stock
+        // [9]=[8-7]Gain/Loss
 
         $query = "
         SELECT
@@ -29,26 +38,33 @@ class SiteBal extends CommonClass
             NVL(TANKS.TANK_DENSITY, 0.0)                                                           AS TANK_DENSITY,
             (NVL(TANKS.TANK_LTR_CLOSE, 0.0)*NVL(TANKS.TANK_RPTVCFCLOSE, 1))                        AS OPENINGSTOCK,
             (NVL(TANKS.TANK_LTR_CLOSE, 0.0)*NVL(TANKS.TANK_RPTVCFCLOSE, 1) 
-                + NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) 
-                - NVL(TRSF_IN_CVL, 0) +  NVL(TRSF_IN_CVL, 0))                                      AS ACCNTTOT,
+                + NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_IN_CVL, 0) 
+                +  NVL(TRSF_IN_CVL, 0))                                                            AS ACCNTTOT,
             (NVL(TANKS.TANK_TRF_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_OUT_CVL, 0))        AS TRANSFERVOL,
             ((NVL(TANKS.TANK_LTR_CLOSE, 0.0)*NVL(TANKS.TANK_RPTVCFCLOSE, 1) 
-                + NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) 
-                - NVL(TRSF_IN_CVL, 0) +  NVL(TRSF_IN_CVL, 0)) 
+                + NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_IN_CVL, 0) 
+                +  NVL(TRSF_IN_CVL, 0)) 
               - (NVL(TANKS.TANK_TRF_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_OUT_CVL, 0)) 
               - (NVL(TRSF_OUT_CVL, 0)))                                                            AS BOOKBALANCE,
             (NVL(TANKS.TANK_COR_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1))                               AS CLOSINGSTOCK,
             (NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_IN_CVL, 0))        AS RECEIPTSVOL,
             NVL(TRSF_IN_CVL, 0)                                                                    AS TRANSFERIN,
             NVL(TRSF_OUT_CVL, 0)                                                                   AS TRANSFEROUT,
-            NVL(TANKS.TANK_COR_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TANKS.TANK_LTR_CLOSE, 0.0)*NVL(TANKS.TANK_RPTVCFCLOSE, 1) - NVL(TANKS.TANK_RCPT_VOL, 0.0) * NVL(TANKS.TANK_RPTVCF, 1) + NVL(TANKS.TANK_TRF_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_IN_CVL, 0) + NVL(TRSF_OUT_CVL, 0)                          AS GAINLOSS
+            NVL(RCPT_CVL, 0)                                                                       AS RCPT_CVL,
+            NVL(RACK_CVL, 0)                                                                       AS RACK_CVL,
+            ((NVL(TANKS.TANK_COR_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1)) -
+            ((NVL(TANKS.TANK_LTR_CLOSE, 0.0)*NVL(TANKS.TANK_RPTVCFCLOSE, 1) 
+                + NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_IN_CVL, 0) 
+                +  NVL(TRSF_IN_CVL, 0)) 
+              - (NVL(TANKS.TANK_TRF_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_OUT_CVL, 0)) 
+              - (NVL(TRSF_OUT_CVL, 0))))                                                           AS GAINLOSS
         FROM 
             TERMINAL, 
             CLOSEOUTS, 
             CLOSEOUT_TANK, 
             TANKS, 
             BASE_PRODS,
-            /* (
+            (
                 SELECT 
                     SUM(TRANBASE.TRSB_AVL) RCPT_AVL, 
                     SUM(TRANBASE.TRSB_CVL) RCPT_CVL, 
@@ -64,10 +80,11 @@ class SiteBal extends CommonClass
                     AND TRANSFERS.TRSFTRID_TRSA_ID = TRANSACTIONS.TRSA_ID
                     AND TRANSFERS.TRSFTRID_TRSA_TRM = TRANSACTIONS.TRSA_TERMINAL
                     AND TRANSACTIONS.TRSA_IOTYPE = -1
+                    AND TRANSACTIONS.TRSA_ED_DMY > (SELECT PREV_CLOSEOUT_DATE FROM CLOSEOUTS WHERE CLOSEOUT_NR = :cls_out)
                     AND (TRANSFERS.TRSF_ID, TRANSFERS.TRSF_TERMINAL) NOT IN (SELECT MTITM_TRSF_ID, MTITM_TERMINAL FROM MOV_TRSF_ITEMS, MOVEMENT_ITEMS
                         WHERE MTITM_MOV_ID = MVITM_MOVE_ID AND MTITM_MOV_LINE = MVITM_LINE_ID AND MVITM_TYPE = 2)
                 GROUP BY TRANBASE.TRSB_TK_TANKDEPO, TRANBASE.TRSB_TK_TANKCODE
-            ) RECEIPT_INFO, */
+            ) RECEIPT_INFO,
             (
                 SELECT 
                     SUM(TRANBASE.TRSB_AVL) TRSF_IN_AVL, 
@@ -86,7 +103,7 @@ class SiteBal extends CommonClass
                     AND TRANSACTIONS.TRSA_IOTYPE = -1 AND TRANSACTIONS.TRSA_CLASS = 1
                     AND TRANSACTIONS.TRSA_ED_DMY > (SELECT PREV_CLOSEOUT_DATE FROM CLOSEOUTS WHERE CLOSEOUT_NR = :cls_out)
                     AND (TRANSFERS.TRSF_ID, TRANSFERS.TRSF_TERMINAL) IN (SELECT MTITM_TRSF_ID, MTITM_TERMINAL FROM MOV_TRSF_ITEMS, MOVEMENT_ITEMS
-                        WHERE MTITM_MOV_ID = MVITM_MOVE_ID AND MTITM_MOV_LINE = MVITM_LINE_ID AND (MVITM_TYPE = 2 OR MVITM_TYPE = 0))
+                        WHERE MTITM_MOV_ID = MVITM_MOVE_ID AND MTITM_MOV_LINE = MVITM_LINE_ID AND MVITM_TYPE = 2)
                 GROUP BY TRANBASE.TRSB_TK_TANKDEPO, TRANBASE.TRSB_TK_TANKCODE
             ) TRANSFER_IN_INFO,
             (
@@ -125,11 +142,11 @@ class SiteBal extends CommonClass
                 ON 
                     MOVEMENTS.MV_ID = MOVEMENT_ITEMS.MVITM_MOVE_ID
                     AND MOV_TRSF_ITEMS.MTITM_QTY = MOVEMENT_ITEMS.MVITM_PROD_QTY
-                    AND (MOVEMENT_ITEMS.MVITM_TYPE = 2 OR MOVEMENT_ITEMS.MVITM_TYPE = 1)
+                    AND (MOVEMENT_ITEMS.MVITM_TYPE = 2)
                 WHERE 
                     TRANSACTIONS.TRSA_ED_DMY > (SELECT PREV_CLOSEOUT_DATE FROM CLOSEOUTS WHERE CLOSEOUT_NR = :cls_out)
                 GROUP BY TRANBASE.TRSB_TK_TANKDEPO, TRANBASE.TRSB_TK_TANKCODE
-            ) TRANSFER_OUT_INFO /* ,
+            ) TRANSFER_OUT_INFO,
             (
                 SELECT 
                     SUM(TRANBASE.TRSB_AVL) RACK_AVL, 
@@ -150,19 +167,19 @@ class SiteBal extends CommonClass
                     AND (TRANSFERS.TRSF_ID, TRANSFERS.TRSF_TERMINAL) NOT IN (SELECT MTITM_TRSF_ID, MTITM_TERMINAL FROM MOV_TRSF_ITEMS, MOVEMENT_ITEMS
                         WHERE MTITM_MOV_ID = MVITM_MOVE_ID AND MTITM_MOV_LINE = MVITM_LINE_ID AND MVITM_TYPE = 2)
                 GROUP BY TRANBASE.TRSB_TK_TANKDEPO, TRANBASE.TRSB_TK_TANKCODE
-            ) RACK_INFO */
+            ) RACK_INFO
         WHERE CLOSEOUTS.CLOSEOUT_NR = :cls_out
             AND CLOSEOUTS.CLOSEOUT_NR = CLOSEOUT_TANK.CLOSEOUT_NR
             AND CLOSEOUT_TANK.TANK_CODE = TANKS.TANK_CODE
             AND BASE_PRODS.BASE_CODE = TANK_BASE
-            -- AND TANKS.TANK_CODE = RECEIPT_INFO.TRSB_TK_TANKCODE(+)
+            AND TANKS.TANK_CODE = RECEIPT_INFO.TRSB_TK_TANKCODE(+)
             AND TANKS.TANK_CODE = TRANSFER_IN_INFO.TRSB_TK_TANKCODE(+)
             AND TANKS.TANK_CODE = TRANSFER_OUT_INFO.TRSB_TK_TANKCODE(+)
-            -- AND TANKS.TANK_CODE = RACK_INFO.TRSB_TK_TANKCODE(+)
-            -- AND TANKS.TANK_TERMINAL = RECEIPT_INFO.TRSB_TK_TANKDEPO(+)
+            AND TANKS.TANK_CODE = RACK_INFO.TRSB_TK_TANKCODE(+)
+            AND TANKS.TANK_TERMINAL = RECEIPT_INFO.TRSB_TK_TANKDEPO(+)
             AND TANKS.TANK_TERMINAL = TRANSFER_IN_INFO.TRSB_TK_TANKDEPO(+)
             AND TANKS.TANK_TERMINAL = TRANSFER_OUT_INFO.TRSB_TK_TANKDEPO(+)
-            -- AND TANKS.TANK_TERMINAL = RACK_INFO.TRSB_TK_TANKDEPO(+)
+            AND TANKS.TANK_TERMINAL = RACK_INFO.TRSB_TK_TANKDEPO(+)
             AND TANKS.TANK_TERMINAL = TERMINAL.TERM_CODE
             $terminal_condition
         ORDER BY TANKS.TANK_TERMINAL, TANKS.TANK_CODE
@@ -183,7 +200,7 @@ class SiteBal extends CommonClass
     }
 
     // transfer in&out should include all transactions, not just nomination
-    public function read()
+    public function read2()
     {
         $terminal_condition = "";
         if (isset($this->terminal) && $this->terminal != 'undefined' && strlen($this->terminal) > 0) {
