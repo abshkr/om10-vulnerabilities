@@ -118,6 +118,18 @@ Team DKI", $auth_code);
                 echo json_encode($error, JSON_PRETTY_PRINT);
             } else {
                 write_log("2FA auth passed", __FILE__, __LINE__);
+
+                $journal = new Journal($this->conn);
+                $jnl_data[0] = sprintf("Omega System Login. User: %s", Utilities::getCurrPsn());
+
+                if (!$journal->jnlLogEvent(
+                    Lookup::TMM_TEXT_ONLY, $jnl_data, JnlEvent::JNLT_SYS, JnlClass::JNLC_EVENT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+
                 unset($_SESSION['AUTH_CODE']);
                 unset($_SESSION['AUTH_CODE_CREATE_TIME']);
                 $error = new EchoSchema(200, response("__ACTION_SUCCEED__"));

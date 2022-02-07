@@ -957,6 +957,15 @@ class ManualTransactionService
             __FILE__, __LINE__);
         write_log(json_encode($this), __FILE__, __LINE__);
 
+        $query = "SELECT NVL(MAX(CONFIG_VALUE), 9) TRIP_NUMBER_LENGTH FROM SITE_CONFIG WHERE CONFIG_KEY = 'TRIP_NUMBER_LENGTH'";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $trip_number_length = intval($row['TRIP_NUMBER_LENGTH']);
+
         //Open order sample
         //0002500000OBP_SYS       0000   BAI_SYS          OBP_AUTH_REQ       01.05.000010021000008707002000000D0B533----------------------------PERSONNEL ACC TYPE   TOUCH_BUTTON_DEV000000D0AE5C----------------------------EQUIP ACC ACC TYPE   TOUCH_BUTTON_DEVT|
         $msg = new XAUTH_REQ();
@@ -973,7 +982,9 @@ class ManualTransactionService
         }
 
         $msg->Transaction_num = sprintf("%07d", $this->trsa_id);
-        $msg->Trip_number = sprintf("%09d", $this->number_entered);       /* Fixed */
+        $trip_format = sprintf("%d", $trip_number_length);
+        $msg->Trip_number = sprintf("%0" . $trip_format . "d", $this->number_entered);        /* Get it from parameter */
+        // $msg->Trip_number = sprintf("%09d", $this->number_entered);       /* Fixed */
 
         if (isset($this->is_nomination) && $this->is_nomination == false) { 
             /* For open order, use populate_openorder_personkey_info which */
