@@ -99,15 +99,19 @@ const DrawerProductTransfers = ({
         `${MANUAL_TRANSACTIONS.ORDER_DETAILS}?supplier=${supplier}&order_cust_no=${order}&tanker=${tanker}`)
   );
 
+  // By default, SWR uses a global cache to store and share data across all components.
+  // When API arguments remain unchanged, SWR will look for the data from Cache first
+  // To break this default action, we use a date number as a random index in API arguments.
+  const random = React.useRef(Date.now());
   const { data: products } = useSWR(
     (sourceType === 'SCHEDULE' &&
       supplier &&
       trip &&
-      `${MANUAL_TRANSACTIONS.TRIP_PRODUCTS}?supplier_code=${supplier}&shls_trip_no=${trip}`) ||
+      `${MANUAL_TRANSACTIONS.TRIP_PRODUCTS}?supplier_code=${supplier}&shls_trip_no=${trip}&trig=${random.current}`) ||
       (sourceType === 'OPENORDER' &&
         supplier &&
         order &&
-        `${MANUAL_TRANSACTIONS.ORDER_PRODUCTS}?supplier=${supplier}&order_cust_no=${order}`)
+        `${MANUAL_TRANSACTIONS.ORDER_PRODUCTS}?supplier=${supplier}&order_cust_no=${order}&trig=${random.current}`)
   );
 
   const { data: transactions } = useSWR(
@@ -1008,6 +1012,7 @@ const DrawerProductTransfers = ({
 
   useEffect(() => {
     if (supplier && products && !productArms && !loadingArms) {
+      // console.log('.....................get product arms......', supplier, products, productArms, loadingArms);
       getProductArms(supplier, products?.records);
     }
   }, [supplier, products, productArms, loadingArms, getProductArms]);
