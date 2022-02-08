@@ -1,25 +1,5 @@
 <?php
 
-// include database and object files
-include_once __DIR__ . '/../config/database.php';
-include_once __DIR__ . '/../service/site_service.php';
-
-$database = new Database();
-$db = $database->getConnection2();
-
-$serv = new SiteService($db);
-$multi_flag = $serv->site_config_value("SITE_ALLOW_MULTI_ALLOCATIONS", "N");
-
-if ($multi_flag === "Y") {
-    include_once __DIR__ . '/allocation_multiple.php';
-} else {
-    include_once __DIR__ . '/allocation_legacy.php';
-}
-
-/*
-return;
-
-
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
@@ -533,9 +513,9 @@ class Allocation extends CommonClass
         $query .= "
             ORDER BY ALLOC_TYPE DESC
         ";
-        // write_log("DB error:" . $query, __FILE__, __LINE__, LogLevel::ERROR);
-        // write_log("DB error: start>>>>" . $this->start_date."<<<<", __FILE__, __LINE__, LogLevel::ERROR);
-        // write_log("DB error: end>>>>" . $this->end_date."<<<<", __FILE__, __LINE__, LogLevel::ERROR);
+        /* write_log("DB error:" . $query, __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB error: start>>>>" . $this->start_date."<<<<", __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB error: end>>>>" . $this->end_date."<<<<", __FILE__, __LINE__, LogLevel::ERROR); */
 
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':start_date', $this->start_date);
@@ -827,4 +807,3 @@ class Allocation extends CommonClass
         return $row['NEXT_NO'];
     }
 }
-*/

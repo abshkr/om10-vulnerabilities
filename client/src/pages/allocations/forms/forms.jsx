@@ -41,7 +41,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal 
   const { resetFields } = form;
 
   const IS_CREATING = !value;
-  const CAN_ALLOCATE_PERIOD = selected && value && lockType === '4';
+  const CAN_ALLOCATE_PERIOD = selected && value && lockType === '4' && selected?.aitem_qtylimit > 0;
 
   const checkAllocation = async (type, cmpy, supp) => {
     const values = {
