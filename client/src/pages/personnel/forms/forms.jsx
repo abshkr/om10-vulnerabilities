@@ -30,6 +30,7 @@ import {
   Comment,
   Lock,
   LegacyExpires,
+  Phone
 } from './fields';
 
 import { CheckList, PasswordReset, Expiry } from '../../../components';
@@ -363,6 +364,12 @@ const FormModal = ({
                   <SLP form={form} value={value} />
                 </Col>)
               }
+            </Row>
+
+            <Row gutter={[8, 2]}>
+              <Col span={8}>
+                <Phone form={form} value={value} isMandatory={config.site2FAMethod==='SMS'} />
+              </Col>
             </Row>
 
             <Row gutter={[8, 2]}>

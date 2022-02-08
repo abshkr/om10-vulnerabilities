@@ -139,6 +139,15 @@ const columns = (expiryTypes, t, expiryDateMode) => {
       width: 140,
     },
     {
+      headerName: t('fields.phone'),
+      field: 'per_phone',
+      sortable: true,
+      resizable: true,
+      filter: 'FuzzyFilter',
+      suppressSizeToFit: true,
+      width: 140,
+    },
+    {
       headerName: t('fields.lastModified'),
       field: 'per_last_modified',
       sortable: true,

@@ -181,6 +181,7 @@ class Personnel extends CommonClass
                 PER_LEVEL_NUM,
                 PER_TERMINAL,
                 PER_COMMENTS,
+                PER_PHONE,
                 PER_EMAIL,
                 PER_LAST_MODIFIED)
         VALUES (:per_code,
@@ -197,6 +198,7 @@ class Personnel extends CommonClass
                 :per_level_num,
                 :per_terminal,
                 :per_comments,
+                :per_phone,
                 :per_email,
                 SYSDATE)";
         $stmt = oci_parse($this->conn, $query);
@@ -212,6 +214,7 @@ class Personnel extends CommonClass
         oci_bind_by_name($stmt, ':per_level_num', $this->per_level_num);
         oci_bind_by_name($stmt, ':per_terminal', $this->per_terminal);
         oci_bind_by_name($stmt, ':per_comments', $this->per_comments);
+        oci_bind_by_name($stmt, ':per_phone', $this->per_phone);
         oci_bind_by_name($stmt, ':per_email', $this->per_email);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {

@@ -923,6 +923,7 @@
     "driver": "司机",
     "effectiveFrom": "生效日期",
     "email": "电子邮件",
+	"phone": "手机号码",
     "emergencyActionCode": "紧急情况行动代码",
     "emergencyProcedureGuide": "紧急情况应急指导",
     "employer": "雇主公司",
