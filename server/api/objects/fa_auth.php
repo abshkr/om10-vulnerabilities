@@ -64,6 +64,28 @@ class FaAuth extends CommonClass
         return $email;
     }
 
+    private function TwoFA_phone($user)
+    {
+        $query = "
+            SELECT NVL(PER_PHONE, '-1') PER_PHONE FROM PERSONNEL WHERE PER_CODE = :per_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':per_code', $user);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return "Database error:" . $e['message'];
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $phone = $row['PER_PHONE'];
+        if ($phone === '-1') {
+            write_log(sprintf("Phone number not set for user %s", $user), __FILE__, __LINE__, LogLevel::ERROR);
+            return response("__2FA_EMAIL_NOT_SET__");
+        }
+
+        return $phone;
+    }
+
     private function TwoFA_code()
     {
         $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -105,40 +127,63 @@ Team DKI", $auth_code);
             session_start();
         }
 
-        write_log(sprintf("%s::%s() START. auth code:%s, expected:%s", 
-            __CLASS__, __FUNCTION__, $this->two_factor_code, $_SESSION['AUTH_CODE']),
+        write_log(sprintf("%s::%s() START. auth code:%s", __CLASS__, __FUNCTION__, $this->two_factor_code), 
             __FILE__, __LINE__);
-        if ($this->two_factor_code === $_SESSION['AUTH_CODE']) {
-            $serv = new SiteService($this->conn);
-            $timecout = $serv->FA2_timeout();
-            if (time() - intval($_SESSION['AUTH_CODE_CREATE_TIME']) > $timecout) {
-                write_log(sprintf("2FA auth timeout. cur:%d, auth created:%s", time(), $_SESSION['AUTH_CODE_CREATE_TIME']),
-                    __FILE__, __LINE__, LogLevel::ERROR);
-                $error = new EchoSchema(500, response("__2FA_TIMEOUT__"));
+        
+        $check_result = false;
+        $serv = new SiteService($this->conn);
+        if ($serv->FA2_method() === 'SMS') {
+            $user = Utilities::getCurrPsn();
+            $phone = $this->TwoFA_phone($user);
+            $scriptfile = __DIR__  . "/../scripts/sms_verify.sh";
+            chmod($scriptfile, 0755);
+            $pyfile = __DIR__  . "/../scripts/sms_verify.py";
+            chmod($pyfile, 0755);
+            write_log($scriptfile . " " . $phone . " " . $this->two_factor_code, __FILE__, __LINE__);
+            $result = shell_exec($scriptfile . " " . $phone . " " . $this->two_factor_code);
+            if (strpos($result, "approved") === false) {
+                write_log("Failed to verify. result from script: " . $result, __FILE__, __LINE__);
+                $error = new EchoSchema(500, response("__2FA_FAILED__"));
                 echo json_encode($error, JSON_PRETTY_PRINT);
             } else {
-                write_log("2FA auth passed", __FILE__, __LINE__);
-
-                $journal = new Journal($this->conn);
-                $jnl_data[0] = sprintf("Omega System Login. User: %s", Utilities::getCurrPsn());
-
-                if (!$journal->jnlLogEvent(
-                    Lookup::TMM_TEXT_ONLY, $jnl_data, JnlEvent::JNLT_SYS, JnlClass::JNLC_EVENT)) {
-                    $e = oci_error($stmt);
-                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-                    oci_rollback($this->conn);
-                    return false;
-                }
-
-                unset($_SESSION['AUTH_CODE']);
-                unset($_SESSION['AUTH_CODE_CREATE_TIME']);
-                $error = new EchoSchema(200, response("__ACTION_SUCCEED__"));
-                echo json_encode($error, JSON_PRETTY_PRINT);
+                $check_result = true;
             }
         } else {
-            write_log(sprintf("Fails 2FA, auth code:%s, expected:%s", $this->two_factor_code, $_SESSION['AUTH_CODE']),
-                __FILE__, __LINE__, LogLevel::ERROR);
-            $error = new EchoSchema(500, response("__2FA_FAILED__"));
+            if ($this->two_factor_code === $_SESSION['AUTH_CODE']) {
+                $timecout = $serv->FA2_timeout();
+                if (time() - intval($_SESSION['AUTH_CODE_CREATE_TIME']) > $timecout) {
+                    write_log(sprintf("2FA auth timeout. cur:%d, auth created:%s", time(), $_SESSION['AUTH_CODE_CREATE_TIME']),
+                        __FILE__, __LINE__, LogLevel::ERROR);
+                    $error = new EchoSchema(500, response("__2FA_TIMEOUT__"));
+                    echo json_encode($error, JSON_PRETTY_PRINT);
+                } else {
+                    $check_result = true;
+                }
+            } else {
+                write_log(sprintf("Fails 2FA, auth code:%s, expected:%s", $this->two_factor_code, $_SESSION['AUTH_CODE']),
+                    __FILE__, __LINE__, LogLevel::ERROR);
+                $error = new EchoSchema(500, response("__2FA_FAILED__"));
+                echo json_encode($error, JSON_PRETTY_PRINT);
+            }
+        }
+
+        if ($check_result) {
+            write_log("2FA auth passed", __FILE__, __LINE__);
+    
+            $journal = new Journal($this->conn);
+            $jnl_data[0] = sprintf("Omega System Login. User: %s", Utilities::getCurrPsn());
+
+            if (!$journal->jnlLogEvent(
+                Lookup::TMM_TEXT_ONLY, $jnl_data, JnlEvent::JNLT_SYS, JnlClass::JNLC_EVENT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return false;
+            }
+
+            unset($_SESSION['AUTH_CODE']);
+            unset($_SESSION['AUTH_CODE_CREATE_TIME']);
+            $error = new EchoSchema(200, response("__ACTION_SUCCEED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
         }
     }
@@ -146,20 +191,27 @@ Team DKI", $auth_code);
     //If 2FA not needed, return "NA", or if email not correctly set
     public function pre_check($user)
     {
-        // write_log(sprintf("%s::%s() START. user:%s", __CLASS__, __FUNCTION__, $user),
-        //     __FILE__, __LINE__);
+        write_log(sprintf("%s::%s() START. user:%s", __CLASS__, __FUNCTION__, $user),
+            __FILE__, __LINE__);
         $serv = new SiteService($this->conn);
         if ($serv->FA2_enabled()) {
-            $mail = $this->TwoFA_mail($user);
-            if (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
-                return $mail;
-            } 
+            if ($serv->FA2_method() === 'SMS') {
+                $phone = $this->TwoFA_phone($user);
+                if ($phone[0] != '+' && $phone[0] != '0') {
+                    return $phone;
+                }
+            } else {
+                $mail = $this->TwoFA_mail($user);
+                if (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
+                    return $mail;
+                } 
+            }
         }
-
+        
         return "OK";
     }
 
-    //Send out a mail that includes the factor. If 2FA not enabled, returns NA
+    //Send out a mail/SMS that includes the factor. If 2FA not enabled, returns NA
     public function sendout_factor($user)
     {
         // write_log(sprintf("%s::%s() START. user:%s", __CLASS__, __FUNCTION__, $user),
@@ -167,22 +219,37 @@ Team DKI", $auth_code);
         $serv = new SiteService($this->conn);
         if ($serv->FA2_enabled()) {
             write_log("2FA enabled, start 2FA auth process. " . $user, __FILE__, __LINE__);
-            $mail = $this->TwoFA_mail($user);
-            if (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
-                return $mail;
-            }
-            
-            $auth_code = $this->TwoFA_mailout($mail);
-            
-            if (!isset($_SESSION)) {
-                session_start();
-            }
+                
+            if ($serv->FA2_method() === 'SMS') {
+                $phone = $this->TwoFA_phone($user);
+                $scriptfile = __DIR__  . "/../scripts/sms_sending.sh";
+                chmod($scriptfile, 0755);
+                $pyfile = __DIR__  . "/../scripts/sms_sending.py";
+                chmod($pyfile, 0755);
+                write_log($scriptfile . " " . $phone, __FILE__, __LINE__);
+                $result = shell_exec($scriptfile . " " . $phone);
+                if (strpos($result, "pending") !== false) {
+                    return "AUTH 2FA";
+                }
+                write_log("Failed to send SMS. result from script: " . $result, __FILE__, __LINE__);
+            } else {
+                $mail = $this->TwoFA_mail($user);
+                if (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
+                    return $mail;
+                }
+                
+                $auth_code = $this->TwoFA_mailout($mail);
+                
+                if (!isset($_SESSION)) {
+                    session_start();
+                }
 
-            $_SESSION['AUTH_CODE'] = $auth_code;
-            $_SESSION['AUTH_CODE_CREATE_TIME'] = time();
+                $_SESSION['AUTH_CODE'] = $auth_code;
+                $_SESSION['AUTH_CODE_CREATE_TIME'] = time();
 
-            // write_log(json_encode($_SESSION), __FILE__, __LINE__);
-            return "AUTH 2FA";
+                // write_log(json_encode($_SESSION), __FILE__, __LINE__);
+                return "AUTH 2FA";
+            }
         }
 
         return "NA";

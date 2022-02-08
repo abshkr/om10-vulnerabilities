@@ -100,6 +100,11 @@ class SiteService
         return ($config_value === 'Y' || $config_value === 'y');
     }
 
+    public function FA2_method()
+    {
+        return $this->site_config_value('SITE_2FA_METHOD', 'EMAIL');
+    }
+
     public function site_customer_carrier()
     {
         $config_value = $this->site_config_boolean('SITE_CUSTOMER_CARRIER', 'N');
