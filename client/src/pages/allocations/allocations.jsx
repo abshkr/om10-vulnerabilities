@@ -170,7 +170,7 @@ const Allocations = ({ popup, params }) => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         clearFilterPlus={revalidate}
       />
-      {/* visible && !config?.siteAllocResetPeriodDateRanges && (
+      {visible && !config?.siteAllowMultiAllocations && (
         <Forms
           value={selected}
           visible={visible}
@@ -179,8 +179,8 @@ const Allocations = ({ popup, params }) => {
           url={url}
           locateLockal={locateLockal}
         />
-      ) */}
-      {visible && (
+      )}
+      {visible && config?.siteAllowMultiAllocations && (
         <NewForms
           value={selected}
           visible={visible}
