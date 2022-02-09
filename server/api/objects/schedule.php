@@ -729,7 +729,7 @@ class Schedule extends CommonClass
             SET 
                 SHL_TANKER = :tnkr_code
                 , SHLS_LD_TYPE = :schd_type
-                , SHLS_CNVRT_TRACE = '32'
+                , SHLS_CNVRT_TRACE = DECODE(SHLS_CNVRT_TRACE, '', '32', '')
                 , SHLS_CNVRT_TIME = SYSDATE
             WHERE SHLS_TRIP_NO = :trip and SHLS_SUPP = :supplier
         ";
@@ -757,7 +757,7 @@ class Schedule extends CommonClass
             UPDATE SCHEDULE 
             SET 
                 SHLS_LD_TYPE = 3
-                , SHLS_CNVRT_TRACE = '23'
+                , SHLS_CNVRT_TRACE = DECODE(SHLS_CNVRT_TRACE, '', '23', '')
                 , SHLS_CNVRT_TIME = SYSDATE
             WHERE SHLS_TRIP_NO = :trip and SHLS_SUPP = :supplier
         ";
