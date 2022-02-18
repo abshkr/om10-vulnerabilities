@@ -48,6 +48,7 @@ export const INTEGER_NON_POSITIVE = /^((-[1-9]\d*)|(0))$/;
 // export const NUMERIC_NON_POSITIVE = /^((-(([1-9]\\d*)|(0)?)(\\.\\d+)?)|(0+(\\.0+)?))$/;
 // export const NUMERIC_NON_NEGATIVE = /^(([1-9]\\d*)|(0)?)(\\.\\d+)?$/;
 export const NUMERIC = /^(-?(([1-9]\d*)|(0)))(\.\d+)?$/;
+export const NUMERIC_CHARS = /^[0-9]*$/;
 export const NUMERIC_NEGATIVE = /^(-((([1-9]\d*)(\.\d+)?)|((0)?(\.((\d*[1-9]\d*)|([1-9]\d*)))+)))$/;
 export const NUMERIC_POSITIVE = /^((([1-9]\d*)(\.\d+)?)|((0)?(\.((\d*[1-9]\d*)|([1-9]\d*)))+))$/;
 export const NUMERIC_NON_POSITIVE = /^((-(([1-9]\d*)|(0)?)(\.\d+)?)|(0+(\.0+)?))$/;

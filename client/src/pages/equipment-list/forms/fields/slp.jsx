@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import { InfoCircleOutlined } from '@ant-design/icons';
-import { Form, Input, Tooltip } from 'antd';
+import { Form, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { REGEX } from '../../../../constants';
 
 const SLP = ({ form, value }) => {
   const { t } = useTranslation();
@@ -19,6 +19,11 @@ const SLP = ({ form, value }) => {
   const validate = (rule, input) => {
     if (input && input.length > 40) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    const regex = new RegExp(REGEX.NUMERIC_CHARS);
+    if (!regex.exec(input)) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('descriptions.mustBeNumber')}`);
     }
 
     return Promise.resolve();
