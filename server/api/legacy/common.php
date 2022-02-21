@@ -2,6 +2,9 @@
 $PROTOCOL = "https://";
 //$HOST = $_SERVER['HTTP_HOST'];
 $HOST = $_SERVER['SERVER_ADDR'];
+if (getenv('USE_SERVER_NAME_IN_CGI') == 'Y') {
+    $HOST = $_SERVER['SERVER_NAME'];
+}
 // We want all cgi-bin calls to go via localhost only.
 //$HOST = "127.0.0.1";
 $PORT = $_SERVER['SERVER_PORT'];
