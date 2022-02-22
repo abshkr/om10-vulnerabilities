@@ -1272,6 +1272,63 @@ class OpenOrder extends CommonClass
         return $tank_max_flows;
     }
 
+    protected function journal_children_change($journal, $old, $new)
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        // write_log(json_encode($old), __FILE__, __LINE__);
+        // write_log(json_encode($new), __FILE__, __LINE__);
+
+        $module = "GUI_ORDERS";
+        foreach ($old as $item_key => $item_array) {
+            if (isset($new[$item_key])) {
+                foreach ($item_array as $field => $value) {
+                    if ($new[$item_key][$field] != $value) {
+                        $record = sprintf("order no:%s, cust order no:%s, product code:%s, name:%s",
+                            $this->order_sys_no, $this->order_cust_ordno, $item_key, $new[$item_key]['OITEM_PROD_NAME']);
+                        $journal->valueChange($module, $record, $field, $value, $new[$item_key][$field]);
+                    }
+                }
+            }
+
+             if (!isset($new[$item_key])) {
+                $jnl_data[0] = Utilities::getCurrPsn();
+                $jnl_data[1] = $module;
+                $jnl_data[2] = sprintf("order no:%s, cust order no:%s", $this->order_sys_no, $this->order_cust_ordno);
+                $jnl_data[3] = sprintf("product code:%s, name:%s", $item_key, $old[$item_key]['OITEM_PROD_NAME']);
+                
+                if (!$journal->jnlLogEvent(
+                    Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'],
+                        __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+            }
+        }
+
+        //In new but not in old.
+        foreach ($new as $item_key => $item_array) {
+            if (!isset($old[$item_key])) {
+                $jnl_data[0] = Utilities::getCurrPsn();
+                $jnl_data[1] = $module;
+                $jnl_data[2] = sprintf("order no:%s, cust order no:%s", $this->order_sys_no, $this->order_cust_ordno);
+                $jnl_data[3] = sprintf("product code:%s, name:%s, quantity ordered:%s", 
+                    $item_key, $new[$item_key]['OITEM_PROD_NAME'], $new[$item_key]['OITEM_PROD_QTY']);
+
+                if (!$journal->jnlLogEvent(
+                    Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+            }
+        }
+    }
+
     public function order_instructions()
     {
         $query = "

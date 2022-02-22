@@ -78,6 +78,7 @@ class Journal
     //Mainly table name
     private $modules = array(
         "CHN" => array(
+            "GUI_ORDERS" => "发油订单产品",
             "GUI_TANKS" => "油罐",
             "GUI_REPORT_COMPANY" => "可用报表设置配置",
             "GUI_REPORT_PROFILE" => "基础报表",
@@ -97,6 +98,7 @@ class Journal
             "URBAC_ROLE_DOMAINS_PRIVILEGES" => "角色访问权限"
         ),
         "ENG" => array(
+            "GUI_ORDERS" => "order products",
             "GUI_TANKS" => "Tank",
             "GUI_REPORT_COMPANY" => "Report Configuration",
             "GUI_REPORT_PROFILE" => "Report Profile",
@@ -167,6 +169,10 @@ class Journal
             "EXPIRY_DATE_DETAILS" => array(
 
             ),
+            "GUI_ORDERS" => array(
+                "OITEM_PROD_QTY" => "油量",
+            ),
+            
             "TIMECODE" => array(
                 "TCD_MON" => "星期一",
                 "TCD_TUE" => "星期二",
@@ -307,6 +313,9 @@ class Journal
             ),
             "EXPIRY_DATE_DETAILS" => array(
 
+            ),
+            "GUI_ORDERS" => array(
+                "OITEM_PROD_QTY" => "quantity ordered",
             ),
             "TIMECODE" => array(
                 "TCD_MON" => "Monday",
