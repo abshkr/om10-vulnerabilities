@@ -240,6 +240,9 @@ class SpecialMvService
         define('MV_TRANSFER', 2);
 
         $serv = new ManualTransactionService($this->conn);
+        if (isset($this->mlitm_vcf)) {
+            $serv->set_property('mlitm_vcf', $this->mlitm_vcf);
+        }
         $serv->set_property('supplier', trim(substr($response, 41, 20)));
         $serv->set_property('trip_no', trim(substr($response, 32, 9)));
         $serv->set_property('load_number', trim(substr($response, 32, 9)));

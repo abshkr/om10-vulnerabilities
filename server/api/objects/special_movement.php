@@ -524,8 +524,11 @@ class SpecialMovement extends CommonClass
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
-
+        
         $serv = new SpecialMvService($this->conn, $mlitm_id = $this->mlitm_id);
+        if (isset($this->mlitm_vcf)) {
+            $serv->mlitm_vcf = $this->mlitm_vcf;
+        }
         
         $error_msg = null;
         if ($serv->submit($error_msg)) {

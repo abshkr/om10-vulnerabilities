@@ -1202,37 +1202,72 @@ class ManualTransactionService
             }
         }
 
-        $query = "UPDATE TRANSFERS 
-                SET TRSF_VCF = TRSF_QTY_COR / TRSF_QTY_AMB
+        if (isset($this->mlitm_vcf)) {
+            $query = "UPDATE TRANSFERS 
+                SET TRSF_VCF = :vcf
+                WHERE TRSF_QTY_AMB > 0 AND TRSFTRID_TRSA_ID IN (
+                SELECT TRSA_ID FROM TRANSACTIONS WHERE TRSALDID_LOAD_ID = (
+                        SELECT SHLSLOAD_LOAD_ID FROM SCHEDULE 
+                        WHERE SHLS_TRIP_NO = :trip AND SHLS_SUPP = :supplier
+                    )
+                    )";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':trip', $this->trip_no);
+            oci_bind_by_name($stmt, ':supplier', $this->supplier);
+            oci_bind_by_name($stmt, ':vcf', $this->mlitm_vcf);
+        } else {
+            $query = "UPDATE TRANSFERS 
+                SET TRSF_VCF = ROUND(TRSF_QTY_COR / TRSF_QTY_AMB, 4)
                 WHERE TRSF_QTY_AMB > 0 AND TRSFTRID_TRSA_ID IN (
                 SELECT TRSA_ID FROM TRANSACTIONS WHERE TRSALDID_LOAD_ID = (
                         SELECT SHLSLOAD_LOAD_ID FROM SCHEDULE 
                         WHERE SHLS_TRIP_NO = :trip AND SHLS_SUPP = :supplier
                     )
                 )";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':trip', $this->trip_no);
-        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':trip', $this->trip_no);
+            oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        }
+        
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return -1;
         }
 
-        $query = "UPDATE TRANBASE 
-            SET TRSB_VCF = TRSB_CVL / TRSB_AVL
-            WHERE TRSB_AVL > 0 AND TRSB_ID_TRSF_ID IN (
-                SELECT TRSF_ID FROM TRANSFERS 
-                WHERE TRSFTRID_TRSA_ID IN (
-                    SELECT TRSA_ID FROM TRANSACTIONS WHERE TRSALDID_LOAD_ID = (
-                            SELECT SHLSLOAD_LOAD_ID FROM SCHEDULE 
-                            WHERE SHLS_TRIP_NO = :trip AND SHLS_SUPP = :supplier
+        if (isset($this->mlitm_vcf)) {
+            $query = "UPDATE TRANBASE 
+                SET TRSB_VCF = :vcf
+                WHERE TRSB_AVL > 0 AND TRSB_ID_TRSF_ID IN (
+                    SELECT TRSF_ID FROM TRANSFERS 
+                    WHERE TRSFTRID_TRSA_ID IN (
+                        SELECT TRSA_ID FROM TRANSACTIONS WHERE TRSALDID_LOAD_ID = (
+                                SELECT SHLSLOAD_LOAD_ID FROM SCHEDULE 
+                                WHERE SHLS_TRIP_NO = :trip AND SHLS_SUPP = :supplier
+                        )
                     )
-                )
-            )";
-        $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':trip', $this->trip_no);
-        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+                )";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':trip', $this->trip_no);
+            oci_bind_by_name($stmt, ':supplier', $this->supplier);
+            oci_bind_by_name($stmt, ':vcf', $this->mlitm_vcf);
+        } else {
+            $query = "UPDATE TRANBASE 
+                SET TRSB_VCF = ROUND(TRSB_CVL / TRSB_AVL, 4)
+                WHERE TRSB_AVL > 0 AND TRSB_ID_TRSF_ID IN (
+                    SELECT TRSF_ID FROM TRANSFERS 
+                    WHERE TRSFTRID_TRSA_ID IN (
+                        SELECT TRSA_ID FROM TRANSACTIONS WHERE TRSALDID_LOAD_ID = (
+                                SELECT SHLSLOAD_LOAD_ID FROM SCHEDULE 
+                                WHERE SHLS_TRIP_NO = :trip AND SHLS_SUPP = :supplier
+                        )
+                    )
+                )";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':trip', $this->trip_no);
+            oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        }
+        
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
