@@ -256,7 +256,9 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal 
   }, [resetFields, value, visible]);
 
   useEffect(() => {
-    getAllocations();
+    if (type && company && supplier) {
+      getAllocations();
+    }
   }, [type, company, supplier, getAllocations]);
 
   return (

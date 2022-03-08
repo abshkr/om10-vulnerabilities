@@ -420,7 +420,9 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
   }, [resetFields, value, visible]);
 
   useEffect(() => {
-    getAllocations();
+    if (type && company && supplier && allocIndex) {
+      getAllocations();
+    }
   }, [type, company, supplier, allocIndex, getAllocations]);
 
   return (
