@@ -116,9 +116,12 @@ const TankOwners = ({ terminal, code, value, access, tanks, config }) => {
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
-                message: error.code === 400 || error.code === 500
-                  ? (IS_CREATING ? t('messages.createFailed') : t('messages.updateFailed')) 
-                  : error.type,
+                message:
+                  error.code === 400 || error.code === 500
+                    ? IS_CREATING
+                      ? t('messages.createFailed')
+                      : t('messages.updateFailed')
+                    : error.type,
                 description: error.message,
               });
             });
@@ -149,7 +152,8 @@ const TankOwners = ({ terminal, code, value, access, tanks, config }) => {
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
-                message: error.type,
+                // message: error.type,
+                message: error.code === 500 ? t('messages.deleteFailed') : error.type,
                 description: error.message,
               });
             });
