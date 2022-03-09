@@ -317,6 +317,21 @@
     "zeroCompartmentCount": "油仓数目不能为零",
     "periodOverlap": "周期时间与已有周期重叠"
   },
+  "separators": {
+    "canadianEnglishFrench": "加拿大（英语和法语）: 1 234 567,089",
+    "danish": "丹麦语: 1 234 567,089",
+    "finnish": "芬兰语: 1 234 567,089",
+    "french": "法语: 1 234 567,089",
+    "german": "德语: 1.234.567,089",
+    "italian": "意大利语: 1.234.567,089",
+    "norwegian": "挪威语: 1.234.567,089",
+    "spanish": "西班牙语: 1.234.567,089",
+    "swedish": "瑞典语: 1 234 567,089",
+    "gbEnglish": "英国英语: 1,234,567.89",
+    "usEnglish": "美国英语: 1,234,567.89",
+    "thai": "泰国语: 1,234,567.89",
+    "noSeparator": "无分隔符: 1234567.089"
+  },
   "divider": {
     "baseProducts": "基础油品",
     "calculation": "油品计算",

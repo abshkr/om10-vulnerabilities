@@ -375,21 +375,22 @@ const FormSwitch = ({ config, onChange }) => {
         <Select
           dropdownMatchSelectWidth={false}
           defaultValue={config.config_value}
-          style={{ width: 280 }}
+          style={{ width: 360 }}
           onChange={(value) => onChange(config, value)}
         >
-          <Option value="1">{decimalThousandSeparator('1', t)}</Option>
-          <Option value="2">{decimalThousandSeparator('2', t)}</Option>
-          <Option value="3">{decimalThousandSeparator('3', t)}</Option>
-          <Option value="4">{decimalThousandSeparator('4', t)}</Option>
-          <Option value="5">{decimalThousandSeparator('5', t)}</Option>
-          <Option value="6">{decimalThousandSeparator('6', t)}</Option>
-          <Option value="7">{decimalThousandSeparator('7', t)}</Option>
-          <Option value="8">{decimalThousandSeparator('8', t)}</Option>
-          <Option value="9">{decimalThousandSeparator('9', t)}</Option>
-          <Option value="10">{decimalThousandSeparator('10', t)}</Option>
-          <Option value="11">{decimalThousandSeparator('11', t)}</Option>
-          <Option value="12">{decimalThousandSeparator('12', t)}</Option>
+          <Option value="1">{'1 - ' + decimalThousandSeparator('1', t)}</Option>
+          <Option value="2">{'2 - ' + decimalThousandSeparator('2', t)}</Option>
+          <Option value="3">{'3 - ' + decimalThousandSeparator('3', t)}</Option>
+          <Option value="4">{'4 - ' + decimalThousandSeparator('4', t)}</Option>
+          <Option value="5">{'5 - ' + decimalThousandSeparator('5', t)}</Option>
+          <Option value="6">{'6 - ' + decimalThousandSeparator('6', t)}</Option>
+          <Option value="7">{'7 - ' + decimalThousandSeparator('7', t)}</Option>
+          <Option value="8">{'8 - ' + decimalThousandSeparator('8', t)}</Option>
+          <Option value="9">{'9 - ' + decimalThousandSeparator('9', t)}</Option>
+          <Option value="10">{'10 - ' + decimalThousandSeparator('10', t)}</Option>
+          <Option value="11">{'11 - ' + decimalThousandSeparator('11', t)}</Option>
+          <Option value="12">{'12 - ' + decimalThousandSeparator('12', t)}</Option>
+          <Option value="13">{'13 - ' + decimalThousandSeparator('13', t)}</Option>
         </Select>
       );
 

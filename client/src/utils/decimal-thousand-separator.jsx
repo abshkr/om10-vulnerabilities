@@ -23,6 +23,8 @@ const decimalThousandSeparator = (separator, t) => {
     return t('separators.usEnglish');
   } else if (separator === '12') {
     return t('separators.thai');
+  } else if (separator === '13') {
+    return t('separators.noSeparator');
   }
 };
 
