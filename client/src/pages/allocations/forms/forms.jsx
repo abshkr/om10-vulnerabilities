@@ -334,8 +334,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal 
             <Type form={form} value={value} onChange={setType} onSupplier={setSupplier} />
             <Company form={form} value={value} type={type} onChange={setCompany} />
             <Supplier form={form} value={value} type={type} onChange={setSupplier} />
-            <LockType form={form} value={value} onChange={setLockType} />
-            <PeriodItem form={form} value={value} lockType={lockType} />
+            <LockType form={form} value={value} onChange={setLockType} enableWhenEdit={true} />
+            <PeriodItem form={form} value={value} lockType={lockType} enableWhenEdit={true} />
             <Divider />
             <Form.Item name="allocs">
               <DataTable

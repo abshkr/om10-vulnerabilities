@@ -517,10 +517,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
 
             <Row gutter={[8, 3]}>
               <Col span={12}>
-                <LockType form={form} value={value} onChange={setLockType} />
+                <LockType form={form} value={value} onChange={setLockType} enableWhenEdit={false} />
               </Col>
               <Col span={12}>
-                <PeriodItem form={form} value={value} lockType={lockType} />
+                <PeriodItem form={form} value={value} lockType={lockType} enableWhenEdit={false} />
               </Col>
             </Row>
 

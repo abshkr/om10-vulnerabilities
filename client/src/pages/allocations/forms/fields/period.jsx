@@ -5,7 +5,7 @@ import useSWR from 'swr';
 
 import { ALLOCATIONS } from '../../../../api';
 
-const Period = ({ form, value, lockType }) => {
+const Period = ({ form, value, lockType, enableWhenEdit }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
@@ -47,7 +47,7 @@ const Period = ({ form, value, lockType }) => {
       <Select
         loading={isValidating}
         showSearch
-        disabled={String(lockType) !== '3'}
+        disabled={String(lockType) !== '3' || (value && !enableWhenEdit)}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.setPeriod') : null}
         filterOption={(input, option) =>

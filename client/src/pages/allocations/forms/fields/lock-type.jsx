@@ -5,7 +5,7 @@ import useSWR from 'swr';
 
 import { ALLOCATIONS } from '../../../../api';
 
-const LockType = ({ form, value, onChange }) => {
+const LockType = ({ form, value, onChange, enableWhenEdit }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
@@ -42,6 +42,7 @@ const LockType = ({ form, value, onChange }) => {
         loading={isValidating}
         showSearch
         onChange={onChange}
+        disabled={value && !enableWhenEdit}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectLockType') : null}
         filterOption={(input, option) =>
