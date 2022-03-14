@@ -110,41 +110,21 @@ class SiteBal extends CommonClass
                 SELECT 
                     SUM(TRANBASE.TRSB_AVL) TRSF_OUT_AVL, 
                     SUM(TRANBASE.TRSB_CVL) TRSF_OUT_CVL, 
-                    TRANBASE.TRSB_TK_TANKDEPO, 
+                    TRANBASE.TRSB_TK_TANKDEPO,
                     TRANBASE.TRSB_TK_TANKCODE
                 FROM 
+                    TRANSFERS, 
+                    TRANSACTIONS, 
                     TRANBASE
-                INNER JOIN 
-                    TRANSFERS
-                ON 
+                WHERE 
                     TRANBASE.TRSB_ID_TRSF_ID = TRANSFERS.TRSF_ID
                     AND TRANBASE.TRSB_ID_TRSF_TRM = TRANSFERS.TRSF_TERMINAL
-                INNER JOIN 
-                    TRANSACTIONS
-                ON 
-                    TRANSFERS.TRSFTRID_TRSA_ID = TRANSACTIONS.TRSA_ID
+                    AND TRANSFERS.TRSFTRID_TRSA_ID = TRANSACTIONS.TRSA_ID
                     AND TRANSFERS.TRSFTRID_TRSA_TRM = TRANSACTIONS.TRSA_TERMINAL
-                    AND TRANSACTIONS.TRSA_IOTYPE = 1 
-                    AND TRANSACTIONS.TRSA_CLASS = 1
-                INNER JOIN 
-                    MOV_TRSF_ITEMS
-                ON 
-                    TRANSFERS.TRSF_ID = MOV_TRSF_ITEMS.MTITM_TRSF_ID
-                    AND TRANSFERS.TRSF_TERMINAL = MOV_TRSF_ITEMS.MTITM_TERMINAL
-                    AND MOV_TRSF_ITEMS.MTITM_IOTYPE = 1 
-                    AND MOV_TRSF_ITEMS.MTITM_CLASS = 1
-                INNER JOIN 
-                    MOVEMENTS
-                ON 
-                    MOV_TRSF_ITEMS.MTITM_MOV_ID = MOVEMENTS.MV_ID
-                INNER JOIN 
-                    MOVEMENT_ITEMS
-                ON 
-                    MOVEMENTS.MV_ID = MOVEMENT_ITEMS.MVITM_MOVE_ID
-                    AND MOV_TRSF_ITEMS.MTITM_QTY = MOVEMENT_ITEMS.MVITM_PROD_QTY
-                    AND (MOVEMENT_ITEMS.MVITM_TYPE = 2)
-                WHERE 
-                    TRANSACTIONS.TRSA_ED_DMY > (SELECT PREV_CLOSEOUT_DATE FROM CLOSEOUTS WHERE CLOSEOUT_NR = :cls_out)
+                    AND TRANSACTIONS.TRSA_IOTYPE = 1 AND TRANSACTIONS.TRSA_CLASS = 1
+                    AND TRANSACTIONS.TRSA_ED_DMY > (SELECT PREV_CLOSEOUT_DATE FROM CLOSEOUTS WHERE CLOSEOUT_NR = :cls_out)
+                    AND (TRANSFERS.TRSF_ID, TRANSFERS.TRSF_TERMINAL) IN (SELECT MTITM_TRSF_ID, MTITM_TERMINAL FROM MOV_TRSF_ITEMS, MOVEMENT_ITEMS
+                        WHERE MTITM_MOV_ID = MVITM_MOVE_ID AND MTITM_MOV_LINE = MVITM_LINE_ID AND MVITM_TYPE = 2)
                 GROUP BY TRANBASE.TRSB_TK_TANKDEPO, TRANBASE.TRSB_TK_TANKCODE
             ) TRANSFER_OUT_INFO,
             (
