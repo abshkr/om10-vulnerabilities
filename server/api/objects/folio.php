@@ -865,12 +865,15 @@ class Folio extends CommonClass
             
             if (isset($value->close_amb_tot)) {
                 $tank_staus->tank_amb_vol = $value->close_amb_tot;
+                $tank_staus->tank_amb_close = $value->close_amb_tot;
             }
             if (isset($value->close_std_tot)) {
                 $tank_staus->tank_cor_vol = $value->close_std_tot;
+                $tank_staus->tank_ltr_close = $value->close_std_tot;
             }
             if (isset($value->close_mass_tot)) {
                 $tank_staus->tank_liquid_kg = $value->close_mass_tot;
+                $tank_staus->tank_kg_close = $value->close_mass_tot;
             }
             if (isset($value->close_temp)) {
                 $tank_staus->tank_temp = $value->close_temp;
