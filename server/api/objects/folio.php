@@ -551,7 +551,39 @@ class Folio extends CommonClass
         }
     }
 
-    public function get_tanks()
+    protected function is_multi_folio_tank_base()
+    {
+        // check if the flag is turned on
+        $query = "
+            SELECT NVL(CONFIG_VALUE, 'N') CONFIG_VALUE 
+            FROM SITE_CONFIG WHERE CONFIG_KEY = 'SITE_FOLIO_TANK_BASE_CHANGE'
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        } 
+        $row = oci_fetch_array($stmt, OCI_NO_AUTO_COMMIT);
+        if ($row['CONFIG_VALUE'] !== 'Y') {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function get_tanks() 
+    {
+        $flag = $this->is_multi_folio_tank_base();
+        if ($flag) {
+            return $this->get_tanks_with_base_change();
+        } else {
+            return $this->get_tanks_no_base_change();
+        }
+
+    }
+
+    public function get_tanks_no_base_change()
     {
         $query = "
         SELECT 
@@ -669,7 +701,6 @@ class Folio extends CommonClass
                     , ct.TANK_IFC
                 FROM CLOSEOUT_TANK ct, CLOSEOUTS cl
                 WHERE ct.CLOSEOUT_NR = cl.CLOSEOUT_NR
-                  AND (ct.CLOSEOUT_NR, ct.TANK_TERMINAL, ct.TANK_CODE, 1) not in (select CLOSEOUT_NR, TANK_TERMINAL, TANK_CODE, BASE_PERIOD_INDEX from CLOSEOUT_TANK_BASES)
             ) ctgrp
             WHERE 1=1
             ) CLOSEOUT_TANK, 
