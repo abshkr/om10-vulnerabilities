@@ -8,8 +8,41 @@ class SiteBal extends CommonClass
 {
     protected $TABLE_NAME = 'TANKS';
 
-    // this one may have issue because it includes only nomination transactions in transfer in&out.
-    public function read()
+
+    protected function is_multi_folio_tank_base()
+    {
+        // check if the flag is turned on
+        $query = "
+            SELECT NVL(CONFIG_VALUE, 'N') CONFIG_VALUE 
+            FROM SITE_CONFIG WHERE CONFIG_KEY = 'SITE_FOLIO_TANK_BASE_CHANGE'
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        } 
+        $row = oci_fetch_array($stmt, OCI_NO_AUTO_COMMIT);
+        if ($row['CONFIG_VALUE'] !== 'Y') {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function read() 
+    {
+        $flag = $this->is_multi_folio_tank_base();
+        if ($flag) {
+            return $this->read_with_base_change();
+        } else {
+            return $this->read_no_base_change();
+        }
+
+    }
+
+    // read the Site Balance from the Current Folio without the changes of tank base product
+    public function read_no_base_change()
     {
         $terminal_condition = "";
         if (isset($this->terminal) && $this->terminal != 'undefined' && strlen($this->terminal) > 0) {

@@ -1407,6 +1407,8 @@
     "openingAmbient": "起始视量",
     "openingCorrected": "起始标量",
     "openingDate": "开始时间",
+    "openingDateTime": "开始日期时间",
+    "closingDateTime": "结束日期时间",
     "openingMass": "起始重量",
     "openingStock": "起始库存",
     "openingTime": "盘点开始时间",
