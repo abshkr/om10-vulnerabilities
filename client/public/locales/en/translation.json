@@ -1396,6 +1396,8 @@
     "openingAmbient": "Opening Ambient",
     "openingCorrected": "Opening Corrected",
     "openingDate": "Opening Date",
+    "openingDateTime": "Opening Date Time",
+    "closingDateTime": "Closing Date Time",
     "openingMass": "Opening Mass",
     "openingStock": "Opening Stock",
     "openingTime": "Opening Time",

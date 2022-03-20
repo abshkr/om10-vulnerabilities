@@ -118,6 +118,28 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
     width: 120,
   },
+  {
+    headerName: t('fields.openingDateTime'),
+    field: 'base_period_open',
+    cellRenderer: 'DateRenderer',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: !config?.siteFolioTankBaseChange,
+    suppressSizeToFit: true,
+    width: 180,
+  },
+  {
+    headerName: t('fields.closingDateTime'),
+    field: 'base_period_close',
+    cellRenderer: 'DateRenderer',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: !config?.siteFolioTankBaseChange,
+    suppressSizeToFit: true,
+    width: 180,
+  },
 ];
 
 export default columns;

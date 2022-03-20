@@ -562,4 +562,114 @@ class FolioTankBase extends CommonClass
 
         return true;
     }
+
+    public function adjust_new()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        $cur_user = Utilities::getCurrPsn();
+
+        // find if there is record in CLOSEOUT_TANK_BASES for current closeout_nr and tank
+        $nrec = $this->count_folio_tank_bases($this->closeout_nr, $this->tank_terminal, $this->tank_code);
+
+        if ($nrec > 0) {
+            // it is not the 1st time change, get the last record of current closeout_nr and tank
+            $row_prev_base = $this->get_last_folio_tank_base($this->closeout_nr, $this->tank_terminal, $this->tank_code);
+            $row_prev_base['USER_CODE'] = $cur_user;
+        } else {
+            // copy the record from CLOSEOUT_TANK 
+            // get the current record of current closeout_nr and tank from CLOSEOUT_TANK, 
+            // need assign values to BASE_PERIOD_INDEX, BASE_PERIOD_OPEN, and BASE_PERIOD_CLOSE
+            $row_prev_base = $this->get_first_folio_tank_base($this->closeout_nr, $this->tank_terminal, $this->tank_code);
+            $row_prev_base['USER_CODE'] = $cur_user;
+            // then insert this record to CLOSEOUT_TANK_BASES
+            if ($this->create_folio_base_tank($row_prev_base) == false) {
+                return false;
+            }
+        }
+
+        $row_old_base = array();
+        foreach($row_prev_base as $k => $v) {
+            $row_old_base[$k] = $v;
+        }
+        $row_cur_base = array();
+        foreach($row_prev_base as $k => $v) {
+            $row_cur_base[$k] = $v;
+        }
+
+        /* , OPEN_STD_TOT                = :open_std_tot
+        , OPEN_MASS_TOT               = :open_mass_tot
+        , OPEN_TEMP                   = :open_temp
+        , OPEN_DENSITY                = :open_density
+        , OPEN_AMB_TOT                = :open_amb_tot
+        
+        , CLOSE_STD_TOT               = :close_std_tot
+        , CLOSE_MASS_TOT              = :close_mass_tot
+        , CLOSE_TEMP                  = :close_temp
+        , CLOSE_DENSITY               = :close_density
+        , CLOSE_AMB_TOT               = :close_amb_tot
+        
+        , FREEZE_STD_TOT              = :freeze_std_tot
+        , FREEZE_MASS_TOT             = :freeze_mass_tot
+        , FREEZE_TEMP                 = :freeze_temp
+        , FREEZE_DENSITY              = :freeze_density
+        , FREEZE_AMB_TOT              = :freeze_amb_tot */
+
+        // close the old base
+        $row_old_base['CLOSE_STD_TOT']   = $row_old_base['OPEN_STD_TOT'];
+        $row_old_base['CLOSE_MASS_TOT']  = $row_old_base['OPEN_MASS_TOT'];
+        $row_old_base['CLOSE_TEMP']      = $row_old_base['OPEN_TEMP'];
+        $row_old_base['CLOSE_DENSITY']   = $row_old_base['OPEN_DENSITY'];
+        $row_old_base['CLOSE_AMB_TOT']   = $row_old_base['OPEN_AMB_TOT'];
+
+        $row_old_base['FREEZE_STD_TOT']  = $row_old_base['CLOSE_STD_TOT'];
+        $row_old_base['FREEZE_MASS_TOT'] = $row_old_base['CLOSE_MASS_TOT'];
+        $row_old_base['FREEZE_TEMP']     = $row_old_base['CLOSE_TEMP'];
+        $row_old_base['FREEZE_DENSITY']  = $row_old_base['CLOSE_DENSITY'];
+        $row_old_base['FREEZE_AMB_TOT']  = $row_old_base['CLOSE_AMB_TOT'];
+
+        if ($this->update_folio_base_tank($row_old_base) == false) {
+            return false;
+        } else {
+            // get the closing time
+            $row_prev_closed = $this->get_last_folio_tank_base($this->closeout_nr, $this->tank_terminal, $this->tank_code);
+        }
+
+        // open the cur base, and leave it open
+        $row_cur_base['BASE_PERIOD_INDEX'] = $row_old_base['BASE_PERIOD_INDEX']+1;
+        $row_cur_base['TANK_BASECODE']     = $this->tank_basecode;
+        $row_cur_base['TANK_BASENAME']     = $this->tank_basename;
+        $row_cur_base['BASE_PERIOD_OPEN']  = $row_prev_closed['BASE_PERIOD_CLOSE'];
+        $row_cur_base['BASE_PERIOD_CLOSE'] = null;
+
+        $row_cur_base['OPEN_STD_TOT']    = $row_old_base['CLOSE_STD_TOT'];
+        $row_cur_base['OPEN_MASS_TOT']   = $row_old_base['CLOSE_MASS_TOT'];
+        $row_cur_base['OPEN_TEMP']       = $row_old_base['CLOSE_TEMP'];
+        $row_cur_base['OPEN_DENSITY']    = $row_old_base['CLOSE_DENSITY'];
+        $row_cur_base['OPEN_AMB_TOT']    = $row_old_base['CLOSE_AMB_TOT'];
+
+        $row_cur_base['CLOSE_STD_TOT']   = null;
+        $row_cur_base['CLOSE_MASS_TOT']  = null;
+        $row_cur_base['CLOSE_TEMP']      = null;
+        $row_cur_base['CLOSE_DENSITY']   = null;
+        $row_cur_base['CLOSE_AMB_TOT']   = null;
+
+        $row_cur_base['FREEZE_STD_TOT']  = $row_cur_base['CLOSE_STD_TOT'];
+        $row_cur_base['FREEZE_MASS_TOT'] = $row_cur_base['CLOSE_MASS_TOT'];
+        $row_cur_base['FREEZE_TEMP']     = $row_cur_base['CLOSE_TEMP'];
+        $row_cur_base['FREEZE_DENSITY']  = $row_cur_base['CLOSE_DENSITY'];
+        $row_cur_base['FREEZE_AMB_TOT']  = $row_cur_base['CLOSE_AMB_TOT'];
+
+        if ($this->create_folio_base_tank($row_cur_base) == false) {
+            return false;
+        }
+
+        oci_commit($this->conn);
+
+        $error = new EchoSchema(200, response("__SAVE_SUCCEEDED__"));
+        echo json_encode($error, JSON_PRETTY_PRINT);
+
+        return true;
+    }
 }
