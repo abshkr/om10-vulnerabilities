@@ -449,8 +449,80 @@ class SpecialMovement extends CommonClass
         }
     }
 
+    protected function is_multi_folio_tank_base()
+    {
+        // check if the flag is turned on
+        $query = "
+            SELECT NVL(CONFIG_VALUE, 'N') CONFIG_VALUE 
+            FROM SITE_CONFIG WHERE CONFIG_KEY = 'SITE_FOLIO_TANK_BASE_CHANGE'
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        } 
+        $row = oci_fetch_array($stmt, OCI_NO_AUTO_COMMIT);
+        if ($row['CONFIG_VALUE'] !== 'Y') {
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function get_folios_by_date($start_date = null, $end_date = null)
+    {
+        // theoretically, the periods of different closeouts will not be overlapped
+        // when start_date = end_date, there should be one closeout matched
+        // when either date is null, we will use the current folio id
+        if (isset($start_date) && isset($end_date)) {
+            $query = "
+            SELECT CLOSEOUT_NR,
+                CLOSEOUT_DATE END_DATE,
+                PREV_CLOSEOUT_DATE START_DATE,
+                STATUS,
+                DECODE(STATUS,
+                    0, 'OPEN',
+                    1, 'FROZEN',
+                    2, 'CLOSE') STATUS_DESC
+            FROM CLOSEOUTS
+            WHERE 
+                PREV_CLOSEOUT_DATE <= :start_date
+                AND (CLOSEOUT_DATE IS NULL OR CLOSEOUT_DATE >= :end_date)
+            ORDER BY CLOSEOUT_NR DESC";
+
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':start_date', $start_date);
+            oci_bind_by_name($stmt, ':end_date', $end_date);
+        } else {
+            $query = "
+            SELECT CLOSEOUT_NR,
+                PREV_CLOSEOUT_DATE START_DATE,
+                CLOSEOUT_DATE END_DATE,
+                STATUS,
+                DECODE(STATUS,
+                    0, 'OPEN',
+                    1, 'FROZEN',
+                    2, 'CLOSE') STATUS_DESC
+            FROM CLOSEOUTS
+            ORDER BY CLOSEOUT_NR DESC";
+            $stmt = oci_parse($this->conn, $query);
+        }
+
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return -1;
+        } 
+        $row = oci_fetch_array($stmt, OCI_NO_AUTO_COMMIT);
+        $nr = $row['CLOSEOUT_NR'];
+
+        return $nr;
+    }
+
     public function supp_tank_products()
     {
+        $flag = $this->is_multi_folio_tank_base();
         $query = "
             SELECT 
                 GT.TANK_BASE,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import {
   EditOutlined,
@@ -8,10 +8,25 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal, Divider, Drawer, Card } from 'antd';
+import {
+  Form,
+  Button,
+  Tabs,
+  notification,
+  message,
+  Modal,
+  Divider,
+  Drawer,
+  Card,
+  Row,
+  Col,
+  Select,
+  Tag,
+} from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
+import moment from 'moment';
 
 import {
   Name,
@@ -47,7 +62,16 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
   const [product, setProduct] = useState(undefined);
   const [density, setDensity] = useState(undefined);
 
+  const [fromSupplierProduct, setFromSupplierProduct] = useState(undefined);
+  const [toSupplierProduct, setToSupplierProduct] = useState(undefined);
+
+  const [flagTankUpdated, setFlagTankUpdated] = useState(0);
+  const [flagSpmTransfer, setFlagSpmTransfer] = useState(0);
+  const [flagFolioTank, setFlagFolioTank] = useState(0);
+
   const { data: baseItem } = useSWR(`${BASE_PRODUCTS.READ}?base_code=${product}`);
+  const { data: baseItemOld } = useSWR(`${BASE_PRODUCTS.READ}?base_code=${value?.tank_base}`);
+  const { data: availProducts } = useSWR(`${SPECIAL_MOVEMENTS.DRAWER_PRODUCTS_BY_BASE}`);
 
   const IS_CREATING = !value;
 
@@ -296,6 +320,14 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     });
   };
 
+  const onChangeFromProduct = (value) => {
+    setFromSupplierProduct(value);
+  };
+
+  const onChangeToProduct = (value) => {
+    setToSupplierProduct(value);
+  };
+
   const onFinish = async () => {
     const values = await form.validateFields();
 
@@ -357,7 +389,6 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
               </div>
             </Tag>
           )}
-
           {config?.siteFolioTankBaseChange && !hasGainLoss && (
             <Tag color={'green'}>
               <div
@@ -427,6 +458,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
           : null,
       okButtonProps: {
         disabled: ownershipNotEnough, // config?.siteFolioTankBaseChange && !IS_CREATING && values?.tank_base !== value?.tank_base && (!values?.tank_prod_from || !values?.tank_prod_to),
+        disabled: hasGainLoss, // config?.siteFolioTankBaseChange && !IS_CREATING && values?.tank_base !== value?.tank_base && (!values?.tank_prod_from || !values?.tank_prod_to),
       },
       onOk: async () => {
         await api
@@ -505,6 +537,21 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     }
   }, [value, visible]);
 
+  useEffect(() => {
+    if (flagTankUpdated !== 0 && flagSpmTransfer !== 0 && flagFolioTank !== 0) {
+      onComplete(value?.tank_code);
+
+      notification.success({
+        message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+        description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
+      });
+
+      setFlagTankUpdated(0);
+      setFlagSpmTransfer(0);
+      setFlagFolioTank(0);
+    }
+  }, [flagTankUpdated, flagSpmTransfer, flagFolioTank]);
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -516,6 +563,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       placement="right"
       width="55vw"
       visible={visible}
+      disabled={flagTankUpdated === 1 && (flagSpmTransfer === 0 || flagFolioTank === 0)}
       footer={
         <>
           <Button

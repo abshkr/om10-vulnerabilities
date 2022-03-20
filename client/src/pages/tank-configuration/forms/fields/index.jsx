@@ -3,6 +3,7 @@ import Density from './density';
 import MontlhyVariance from './monthly-variance';
 import DailyVariance from './daily-variance';
 import Product from './product';
+import TransferProduct from './transfer-product';
 import MaxFlow from './max-flow';
 import Flags from './flags';
 import Code from './code';

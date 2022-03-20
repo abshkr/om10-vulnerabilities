@@ -175,6 +175,7 @@ const useConfig = () => {
     siteRecipeOnPercent: false,
     siteRecipeOnPipenode: false,
     siteUseMultiTerminals: false,
+    siteFolioTankBaseChange: false,
     prodmvmnt_to_movement: false,
   });
 
@@ -416,6 +417,7 @@ const useConfig = () => {
         siteRecipeOnPercent: configurationObject?.SITE_RECIPE_ON_PERCENT || false,
         siteRecipeOnPipenode: configurationObject?.SITE_RECIPE_ON_PIPENODE || false,
         siteUseMultiTerminals: configurationObject?.SITE_ALLOW_MULTI_TERMINALS || false,
+        siteFolioTankBaseChange: configurationObject?.SITE_FOLIO_TANK_BASE_CHANGE || false,
         prodmvmnt_to_movement: configurationObject?.PRODUCT_MVMNT_TO_MOVEMENT || false,
       });
 

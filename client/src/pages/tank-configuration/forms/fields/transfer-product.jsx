@@ -28,7 +28,7 @@ const TransferProduct = ({ form, value, code, title, prompt, base, options, onCh
         showSearch
         onChange={onSelectionChange}
         optionFilterProp="children"
-        placeholder={t('placeholder.' + prompt)}
+        placeholder={!value ? t('placeholder.' + prompt) : null}
         filterOption={(input, option) =>
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }

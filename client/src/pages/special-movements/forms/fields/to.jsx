@@ -1,8 +1,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Select, Row, Col } from 'antd';
+import moment from 'moment';
 import _ from 'lodash';
 import api, { SPECIAL_MOVEMENTS } from 'api';
+import { SETTINGS } from '../../../../constants';
 
 const To = ({
   type,
@@ -17,6 +19,8 @@ const To = ({
   value,
   disabled,
   setTankSelected,
+  config,
+  spmTime,
 }) => {
   const { t } = useTranslation();
 
@@ -80,11 +84,21 @@ const To = ({
     (suppCode, tankCode, fromTank) => {
       setLoading(true);
 
+      // get the time
+      let moveTime = getFieldValue('mlitm_dtim_start');
+      const serverCurrent = moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT);
+      if (moveTime === null || moveTime === undefined) {
+        moveTime = serverCurrent.format(SETTINGS.DATE_TIME_FORMAT);
+      } else {
+        moveTime = moveTime?.format(SETTINGS.DATE_TIME_FORMAT);
+      }
+
       api
         .get(SPECIAL_MOVEMENTS.SUPP_TANK_PRODUCTS, {
           params: {
             supplier: suppCode,
             tank_code: tankCode,
+            move_time: moveTime,
           },
         })
         .then((response) => {
@@ -194,6 +208,12 @@ const To = ({
       getProducts(prodCompany, tankCode, false);
     }
   }, [value, getTanks, getProducts]);
+
+  useEffect(() => {
+    if (supplier && tank) {
+      getProducts(supplier, tank, false);
+    }
+  }, [spmTime, supplier, tank]);
 
   const validate = (rule, value) => {
     if (rule.required === false) {
