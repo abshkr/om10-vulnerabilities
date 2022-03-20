@@ -311,6 +311,9 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
     values.ownship_no = vobj?.ownship_no;
     values.base_prod_code = vobj?.base_prod_code;
     values.supp_cmpy = vobj?.supp_cmpy;
+    values.action = vobj?.trsa_reversed === true ? "REVERSE": null;
+    values.ownship_trsa_no = vobj?.ownship_trsa_no;
+    values.qty = vobj?.qty;
 
     /* // adjust the quantity
     const volume = _.toNumber(vobj?.ownship_qty) + _.toNumber(vobj?.reason) * _.toNumber(vobj?.qty);
