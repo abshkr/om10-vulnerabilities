@@ -42,6 +42,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
   const [productTo, setProductTo] = useState(undefined);
   const [quantitySource, setQuantitySource] = useState(null);
   const [tankSelected, setTankSelected] = useState(false);
+  const [spmTime, setSpmTime] = useState(undefined);
 
   /* const changeToTank = (tank) => {
     if (type !== '2') {
@@ -713,7 +714,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
                 <ReasonCode form={form} value={value} type={type} disabled={DISABLED} />
               </Col>
               <Col span={8}>
-                <MovementTime form={form} value={value} type={type} disabled={DISABLED} />
+                <MovementTime
+                  form={form}
+                  value={value}
+                  type={type}
+                  disabled={DISABLED}
+                  onChange={setSpmTime}
+                />
               </Col>
             </Row>
 
@@ -735,6 +742,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
                 value={value}
                 disabled={DISABLED}
                 setTankSelected={setTankSelected}
+                config={config}
+                spmTime={spmTime}
               />
             )}
 
@@ -752,6 +761,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
                 value={value}
                 disabled={DISABLED}
                 setTankSelected={setTankSelected}
+                config={config}
+                spmTime={spmTime}
               />
             )}
 

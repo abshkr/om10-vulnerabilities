@@ -8,7 +8,7 @@ import { useConfig } from '../../../../hooks';
 import { SETTINGS } from '../../../../constants';
 import { getDateTimeFormat } from '../../../../utils';
 
-const MovementTime = ({ form, value, type, disabled }) => {
+const MovementTime = ({ form, value, type, disabled, onChange }) => {
   const config = useConfig();
   const { t } = useTranslation();
 
@@ -37,7 +37,13 @@ const MovementTime = ({ form, value, type, disabled }) => {
 
   return (
     <Form.Item name="mlitm_dtim_start" label={t('fields.movementDateAndTime')}>
-      <DatePicker showTime format={FORMAT} disabled={IS_DISABLED} style={{ width: '100%' }} />
+      <DatePicker
+        showTime
+        format={FORMAT}
+        disabled={IS_DISABLED}
+        style={{ width: '100%' }}
+        onChange={onChange}
+      />
     </Form.Item>
   );
 };

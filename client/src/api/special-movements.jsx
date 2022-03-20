@@ -10,6 +10,7 @@ export const PLANT_SUPPLIERS = '/api/pages/special_mv/plant_suppliers.php';
 export const TANKS = '/api/pages/special_mv/tanks.php';
 export const PRODUCTS = '/api/pages/special_mv/tank_proddata.php';
 export const SUPP_TANK_PRODUCTS = '/api/pages/special_mv/supp_tank_products.php';
+export const DRAWER_PRODUCTS_BY_BASE = '/api/pages/special_mv/drawer_products_by_base.php';
 
 export const REVERSE = '/api/pages/special_mv/reverse.php';
 export const CALCULATE = '/api/pages/special_mv/calc_vcf.php';
