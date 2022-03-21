@@ -33,7 +33,7 @@ import moment from 'moment';
 import jwtDecode from 'jwt-decode';
 
 import { DataTable, Download } from '../../../components';
-import {TerminalList, FormTerminalList} from 'components/fields';
+import { TerminalList, FormTerminalList } from 'components/fields';
 import api, { BASE_OWNERS, BASE_OWNER_TRANSACTIONS, ORDER_LISTINGS, SPECIAL_MOVEMENTS } from '../../../api';
 import { SETTINGS } from '../../../constants';
 import { getCurrentTime } from '../../../utils';
@@ -60,7 +60,9 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
   const decoded = jwtDecode(token);
   const site_code = decoded?.site_code;
 
-  const url = `${BASE_OWNER_TRANSACTIONS.READ}?base_code=${base || '-1'}&cmpy_code=${supplier || '-1'}&terminal=${terminal}`;
+  const url = `${BASE_OWNER_TRANSACTIONS.READ}?base_code=${base || '-1'}&cmpy_code=${
+    supplier || '-1'
+  }&terminal=${terminal}`;
 
   const { data, isValidating } = useSWR(url);
 
@@ -97,14 +99,18 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
 
   const getBaseSummary = async (prod) => {
     const term = config?.siteUseMultiTerminals ? getFieldValue(baseTerminal) : '';
-    const results = await api.get(`${BASE_OWNER_TRANSACTIONS.BASE_SUMMARY}?base_code=${prod}&terminal=${term}`);
+    const results = await api.get(
+      `${BASE_OWNER_TRANSACTIONS.BASE_SUMMARY}?base_code=${prod}&terminal=${term}`
+    );
 
     return results?.data?.records;
   };
 
   const checkTransactionKey = async (code) => {
     const term = config?.siteUseMultiTerminals ? getFieldValue(baseTerminal) : '';
-    const results = await api.get(`${BASE_OWNER_TRANSACTIONS.CHECK_OWNERSHIP_BY_UKEY}?trsa_key=${code}&terminal=${term}`);
+    const results = await api.get(
+      `${BASE_OWNER_TRANSACTIONS.CHECK_OWNERSHIP_BY_UKEY}?trsa_key=${code}&terminal=${term}`
+    );
 
     return results?.data?.records?.[0]?.cnt;
   };
@@ -311,9 +317,6 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
     values.ownship_no = vobj?.ownship_no;
     values.base_prod_code = vobj?.base_prod_code;
     values.supp_cmpy = vobj?.supp_cmpy;
-    values.action = vobj?.trsa_reversed === true ? "REVERSE": null;
-    values.ownship_trsa_no = vobj?.ownship_trsa_no;
-    values.qty = vobj?.qty;
 
     /* // adjust the quantity
     const volume = _.toNumber(vobj?.ownship_qty) + _.toNumber(vobj?.reason) * _.toNumber(vobj?.qty);
@@ -962,8 +965,8 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
 
     api
       .post(BASE_OWNER_TRANSACTIONS.DIRECT_REPORT, {
-        report: "LHC_CPO",
-        ownship_trsa_no: selected?.ownship_trsa_no
+        report: 'LHC_CPO',
+        ownship_trsa_no: selected?.ownship_trsa_no,
       })
       .then((response) => {
         setReportCreating(false);
@@ -991,7 +994,7 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
     const min = rule?.minValue || 0;
     const max = rule?.maxValue || 999999999;
     const limit = rule?.maxLen || 256;
-    
+
     if (rule?.required) {
       if (input === '' || (input !== 0 && !input)) {
         return Promise.reject(`${t('validate.set')} ─ ${rule?.label}`);
@@ -1184,11 +1187,17 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
 
               {config?.siteUseMultiTerminals && (
                 <Descriptions.Item label={t('fields.terminal')} span={1}>
-                  <TerminalList value={terminal} listOptions={[]}
-                  itemCode={'terminal'} itemTitle={'terminal'} itemRequired={false} itemDisabled={false} onChange={setTerminal} />
+                  <TerminalList
+                    value={terminal}
+                    listOptions={[]}
+                    itemCode={'terminal'}
+                    itemTitle={'terminal'}
+                    itemRequired={false}
+                    itemDisabled={false}
+                    onChange={setTerminal}
+                  />
                 </Descriptions.Item>
               )}
-
             </Descriptions>
           </Col>
         </Row>
@@ -1360,9 +1369,16 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
               <Row gutter={[8, 1]}>
                 {config?.siteUseMultiTerminals && (
                   <Col span={9}>
-                    <FormTerminalList form={form} value={selected} listOptions={[]}
-                    itemCode={'ownship_terminal'} itemTitle={'terminal'} 
-                    itemRequired={true} itemDisabled={false} onChange={onTerminalChanged} />
+                    <FormTerminalList
+                      form={form}
+                      value={selected}
+                      listOptions={[]}
+                      itemCode={'ownship_terminal'}
+                      itemTitle={'terminal'}
+                      itemRequired={true}
+                      itemDisabled={false}
+                      onChange={onTerminalChanged}
+                    />
                   </Col>
                 )}
                 <Col span={!config?.siteUseMultiTerminals ? 12 : 9}>
@@ -1431,8 +1447,15 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
                     {config?.siteUseMultiTerminals && (
                       <Row gutter={[8, 1]}>
                         <Col span={24}>
-                          <FormTerminalList form={form} value={selected} listOptions={[]}
-                          itemCode={'trsa_terminal'} itemTitle={'terminal'} itemRequired={true} itemDisabled={false} />
+                          <FormTerminalList
+                            form={form}
+                            value={selected}
+                            listOptions={[]}
+                            itemCode={'trsa_terminal'}
+                            itemTitle={'terminal'}
+                            itemRequired={true}
+                            itemDisabled={false}
+                          />
                         </Col>
                       </Row>
                     )}
@@ -1539,8 +1562,15 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
                     {config?.siteUseMultiTerminals && (
                       <Row gutter={[8, 1]}>
                         <Col span={24}>
-                          <FormTerminalList form={form} value={selected} listOptions={[]}
-                          itemCode={'trsa_terminal_to'} itemTitle={'terminal'} itemRequired={true} itemDisabled={false} />
+                          <FormTerminalList
+                            form={form}
+                            value={selected}
+                            listOptions={[]}
+                            itemCode={'trsa_terminal_to'}
+                            itemTitle={'terminal'}
+                            itemRequired={true}
+                            itemDisabled={false}
+                          />
                         </Col>
                       </Row>
                     )}
