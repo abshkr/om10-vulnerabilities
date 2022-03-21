@@ -598,6 +598,7 @@ class Folio extends CommonClass
                 ctgrp.*
             FROM (
                 SELECT ctb.* FROM CLOSEOUT_TANK_BASES ctb
+                WHERE ctb.BASE_PERIOD_CLOSE IS NULL OR ctb.BASE_PERIOD_OPEN != ctb.BASE_PERIOD_CLOSE
                 union all
                 SELECT 
                     ct.CLOSEOUT_NR
@@ -636,6 +637,7 @@ class Folio extends CommonClass
                     , ct.TANK_IFC
                 FROM CLOSEOUT_TANK ct, CLOSEOUTS cl
                 WHERE ct.CLOSEOUT_NR = cl.CLOSEOUT_NR
+                  AND (ct.CLOSEOUT_NR, ct.TANK_TERMINAL, ct.TANK_CODE, 1) not in (select CLOSEOUT_NR, TANK_TERMINAL, TANK_CODE, BASE_PERIOD_INDEX from CLOSEOUT_TANK_BASES)
             ) ctgrp
             WHERE 1=1
             ) CLOSEOUT_TANK, 

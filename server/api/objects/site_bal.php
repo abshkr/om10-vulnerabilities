@@ -268,27 +268,11 @@ class SiteBal extends CommonClass
             TERMINAL, 
             CLOSEOUTS,
             (
---            SELECT
---                ctgrp2.CLOSEOUT_NR
---                , ctgrp2.TANK_TERMINAL
---                , ctgrp2.TANK_CODE
---                , ctgrp2.TANK_BASECODE
---                , ctgrp2.TANK_BASENAME
---                , ctgrp2.BASE_PERIOD_OPEN BSOPEN
---                , MIN(ctgrp2.BASE_PERIOD_OPEN)    as BASE_PERIOD_OPEN
---                , MAX(ctgrp2.BASE_PERIOD_CLOSE)   as BASE_PERIOD_CLOSE
---            FROM (
             SELECT
-                ctgrp.CLOSEOUT_NR
-                , ctgrp.TANK_TERMINAL
-                , ctgrp.TANK_CODE
-                , ctgrp.BASE_PERIOD_INDEX
-                , ctgrp.TANK_BASECODE
-                , ctgrp.TANK_BASENAME
-                , MIN(ctgrp.BASE_PERIOD_OPEN)    as BASE_PERIOD_OPEN
-                , MAX(ctgrp.BASE_PERIOD_CLOSE)   as BASE_PERIOD_CLOSE
+                ctgrp.*
             FROM (
                 SELECT ctb.* FROM CLOSEOUT_TANK_BASES ctb
+                WHERE ctb.BASE_PERIOD_CLOSE IS NULL OR ctb.BASE_PERIOD_OPEN != ctb.BASE_PERIOD_CLOSE
                 union all
                 SELECT 
                     ct.CLOSEOUT_NR
@@ -327,24 +311,9 @@ class SiteBal extends CommonClass
                     , ct.TANK_IFC
                 FROM CLOSEOUT_TANK ct, CLOSEOUTS cl
                 WHERE ct.CLOSEOUT_NR = cl.CLOSEOUT_NR
+                  AND (ct.CLOSEOUT_NR, ct.TANK_TERMINAL, ct.TANK_CODE, 1) not in (select CLOSEOUT_NR, TANK_TERMINAL, TANK_CODE, BASE_PERIOD_INDEX from CLOSEOUT_TANK_BASES)
             ) ctgrp
             WHERE 1=1
-            GROUP BY 
-                ctgrp.CLOSEOUT_NR
-                , ctgrp.TANK_TERMINAL
-                , ctgrp.TANK_CODE
-                , ctgrp.BASE_PERIOD_INDEX
-                , ctgrp.TANK_BASECODE
-                , ctgrp.TANK_BASENAME
---            ) ctgrp2
---            WHERE 1=1
---            GROUP BY
---                ctgrp2.CLOSEOUT_NR
---                , ctgrp2.TANK_TERMINAL
---                , ctgrp2.TANK_CODE
---                , ctgrp2.TANK_BASECODE
---                , ctgrp2.TANK_BASENAME
---                , ctgrp2.BASE_PERIOD_OPEN
             ) CLOSEOUT_TANK, 
             TANKS, 
             BASE_PRODS,
