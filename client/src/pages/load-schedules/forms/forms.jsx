@@ -928,6 +928,24 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     return false;
   };
 
+  const gotoFasttrack = () => {
+    // window.sessionStorage.setItem('email', 'binzhou@diamondkey.com');
+    // window.sessionStorage.setItem('passeord', 'admin123');
+    if (config?.fasttrackURL?.length === 0) {
+      notification.error({
+        message: t('messages.linkFailed'),
+        description: t('descriptions.linkNotExist'),
+      });
+    } else {
+      window.open(
+        // `https://fasttrack.dki.cloud/login?email=${'binzhou@diamondkey.com'}&password=${'admin123'}`,
+        // `http://localhost:3000/login?email=${'binzhou@diamondkey.com'}&password=${'admin123'}`,
+        config?.fasttrackURL,
+        '_blank'
+      );
+    }
+  };
+
   const sendtoFasttrack = () => {
     api
       .post(LOAD_SCHEDULES.SENDTO_FT, {
@@ -1174,6 +1192,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
           {FASTTRACK_ENABLED && (
             <Button type="primary" onClick={sendtoFasttrack} disabled={!send_to_ft_ready}>
               {t('operations.sendtoFT')}
+            </Button>
+          )}
+
+          {FASTTRACK_ENABLED && (
+            <Button type="primary" onClick={gotoFasttrack} disabled={false}>
+              {t('operations.gotoFT')}
             </Button>
           )}
 

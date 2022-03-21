@@ -132,6 +132,7 @@
     "keyReaderDeviceNotUsed": "This Key Reader Device is not used by any Site Access Devices so can be deleted.",
     "keyReaderDeviceUsed": "This Key Reader Device is used by a Site Access Device so cannot be deleted.",
     "lastFieldChanged": "Last field changed",
+    "linkNotExist": "The FastTrack URL is not defined.",
     "listFirstIn": "First in",
     "listFirstOut": "First out",
     "listLastIn": "Last in",
@@ -2092,6 +2093,7 @@
     "inputOmegaPassword": "Input your password",
     "inputOmegaUser": "Input your OMEGA user",
     "inventoryManagement": "Inventory Management",
+    "linkFailed": "Failed to link",
     "loadSuccess": "Successfully loaded",
     "lockSuccess": "Successfully locked",
     "loginFailed": "Failed to login",
@@ -2323,6 +2325,7 @@
     "addJob": "Add Job",
     "editJob": "Edit Job",
     "deleteJob": "Delete Job",
+    "gotoFT": "Go To Fasttrack",
     "sendtoFT": "Send To Fasttrack"
   },
   "pageMenu": {

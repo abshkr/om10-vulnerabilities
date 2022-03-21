@@ -132,6 +132,7 @@
     "keyReaderDeviceNotUsed": "该标识密钥设备尚未被任何油库出入安检设备使用，可以删除。",
     "keyReaderDeviceUsed": "该标识密钥设备已被油库出入安检设备使用，不可删除。",
     "lastFieldChanged": "最后修改的字段",
+    "linkNotExist": "未定义FastTrack系统的URL。",
     "listFirstIn": "先进",
     "listFirstOut": "先出",
     "listLastIn": "后进",
@@ -2087,6 +2088,7 @@
     "inputOmegaPassword": "输入您的密码",
     "inputOmegaUser": "输入您的OMEGA用户名",
     "inventoryManagement": "库存管理",
+    "linkFailed": "链接失败",
     "loadSuccess": "记录成功加载",
     "lockSuccess": "记录成功锁定",
     "loginFailed": "登录失败",
@@ -2317,6 +2319,7 @@
     "addJob": "增加任务",
     "editJob": "修改任务",
     "deleteJob": "删除任务",
+    "gotoFT": "登入Fasttrack",
     "sendtoFT": "发送至Fasttrack"
   },
   "pageMenu": {
