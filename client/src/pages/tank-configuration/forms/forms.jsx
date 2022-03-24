@@ -137,7 +137,9 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       const serverCurrent = moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT);
       values.mlitm_dtim_start = serverCurrent.format(SETTINGS.DATE_TIME_FORMAT);
 
-      values.mlitm_reason_code = '6';
+      // use 0 as default transfer type
+      // INSERT INTO MOV_REASONS (MR_ID, MR_ACTION, MR_TYPE, MR_FLAG, MR_SHOW_COMMENT) VALUES ('0', 'Product Change System Generated', 'T', '0', '0')
+      values.mlitm_reason_code = '0';
       values.mlitm_qty_amb = value?.tank_amb_vol;
       values.mlitm_qty_cor = value?.tank_cor_vol;
       values.mlitm_qty_kg = value?.tank_liquid_kg;
