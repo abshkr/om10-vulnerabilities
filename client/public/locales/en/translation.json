@@ -268,6 +268,8 @@
     "spmOnTankBaseChangeTransfer": "A tank to tank transfer will be processed by a special movment from [{{OLD_PROD}}] to [{{NEW_PROD}}].",
     "spmOnTankBaseChangeGainLoss": "Warning: Please mannually ensure that the Book Stock is equal to the current Stock in the tank (Book Stock: {{BOOK_STOCK}}, Closing Stock: {{CLOSE_STOCK}}).",
     "spmOnTankBaseChangeGainLossNo": "Note: Book Stock is equal to the current Stock in the tank (Book Stock: {{BOOK_STOCK}}, Closing Stock: {{CLOSE_STOCK}}).",
+    "spmOnTankDensityChangeDesc": "You are about to change the standard density in the tank from [{{OLD_DENS}}] to [{{NEW_DENS}}]. ",
+    "spmOnTankDensityChangeCalcManual": "After the density is changed successfully, you need go to Tank Status screen to re-calculate VCF, GSV, WiV and WiA.",
     "startFailed": "Failed to start the process",
     "startSuccess": "You have started the process",
     "strapDataNotFound": "Strapping data not found for tank",

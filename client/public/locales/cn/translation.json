@@ -267,6 +267,8 @@
     "spmOnTankBaseChangeTransfer": "系统将创建特殊货单以执行油罐的油品转移操作 (原调配油品: [{{OLD_PROD}}]; 新调配油品: [{{NEW_PROD}}])。",
     "spmOnTankBaseChangeGainLoss": "警告: 请手工调整以确保油罐的结余库存等于实际库存 (结余库存: {{BOOK_STOCK}}, 实际库存: {{CLOSE_STOCK}})。",
     "spmOnTankBaseChangeGainLossNo": "当前油罐的结余库存等于实际库存 (结余库存: {{BOOK_STOCK}}, 实际库存: {{CLOSE_STOCK}})。",
+    "spmOnTankDensityChangeDesc": "您将要修改当前油罐的标准密度 (原密度: [{{OLD_DENS}}]; 新密度: [{{NEW_DENS}}])。",
+    "spmOnTankDensityChangeCalcManual": "在标准密度修改成功之后，您需要去油罐状态页面根据新密度重新计算油品的VCF、标准容量、真空重量和空气中重量。",
     "startFailed": "进程开始失败",
     "startSuccess": "您已成功开始了进程",
     "strapDataNotFound": "此油罐尚无校正容积数据",

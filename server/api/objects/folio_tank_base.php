@@ -420,6 +420,17 @@ class FolioTankBase extends CommonClass
         return true;
     }
 
+    /*
+        closeout_nr: closeout,
+        tank_terminal: value?.tank_terminal,
+        tank_code: value?.tank_code,
+        tank_basecode: base?.base_code,
+        tank_basename: base?.base_name,
+        tank_basecode_old: baseOld?.base_code,
+        tank_basename_old: baseOld?.base_name,
+        tank_density_old: oldDensity,
+        tank_density_new: newDensity,
+    */
     public function adjust()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
@@ -478,6 +489,11 @@ class FolioTankBase extends CommonClass
         , FREEZE_AMB_TOT              = :freeze_amb_tot */
 
         // close the old base
+        // set the base code and name here in case the major opening record does not have the values
+        $row_old_base['TANK_BASECODE']     = $this->tank_basecode_old;
+        $row_old_base['TANK_BASENAME']     = $this->tank_basename_old;
+        $row_old_base['OPEN_DENSITY']      = $this->tank_density_old;
+
         $row_old_base['CLOSE_STD_TOT']   = 0; // $row_old_base['OPEN_STD_TOT'];
         $row_old_base['CLOSE_MASS_TOT']  = 0; // $row_old_base['OPEN_MASS_TOT'];
         $row_old_base['CLOSE_TEMP']      = $row_old_base['OPEN_TEMP'];
@@ -507,13 +523,13 @@ class FolioTankBase extends CommonClass
         $row_new_base['OPEN_STD_TOT']    = $row_old_base['CLOSE_STD_TOT'];
         $row_new_base['OPEN_MASS_TOT']   = $row_old_base['CLOSE_MASS_TOT'];
         $row_new_base['OPEN_TEMP']       = $row_old_base['CLOSE_TEMP'];
-        $row_new_base['OPEN_DENSITY']    = $row_old_base['CLOSE_DENSITY'];
+        $row_new_base['OPEN_DENSITY']    = $this->tank_density_new; // $row_old_base['CLOSE_DENSITY'];
         $row_new_base['OPEN_AMB_TOT']    = $row_old_base['CLOSE_AMB_TOT'];
 
         $row_new_base['CLOSE_STD_TOT']   = $row_old_base['OPEN_STD_TOT'];
         $row_new_base['CLOSE_MASS_TOT']  = $row_old_base['OPEN_MASS_TOT'];
         $row_new_base['CLOSE_TEMP']      = $row_old_base['OPEN_TEMP'];
-        $row_new_base['CLOSE_DENSITY']   = $row_old_base['OPEN_DENSITY'];
+        $row_new_base['CLOSE_DENSITY']   = $row_new_base['OPEN_DENSITY'];
         $row_new_base['CLOSE_AMB_TOT']   = $row_old_base['OPEN_AMB_TOT'];
 
         $row_new_base['FREEZE_STD_TOT']  = $row_new_base['CLOSE_STD_TOT'];
@@ -563,6 +579,17 @@ class FolioTankBase extends CommonClass
         return true;
     }
 
+    /*
+        closeout_nr: closeout,
+        tank_terminal: value?.tank_terminal,
+        tank_code: value?.tank_code,
+        tank_basecode: base?.base_code,
+        tank_basename: base?.base_name,
+        tank_basecode_old: baseOld?.base_code,
+        tank_basename_old: baseOld?.base_name,
+        tank_density_old: oldDensity,
+        tank_density_new: newDensity,
+    */
     public function adjust_2row()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
@@ -621,6 +648,11 @@ class FolioTankBase extends CommonClass
         , FREEZE_AMB_TOT              = :freeze_amb_tot */
 
         // close the old base
+        // set the base code and name here in case the major opening record does not have the values
+        $row_old_base['TANK_BASECODE']     = $this->tank_basecode_old;
+        $row_old_base['TANK_BASENAME']     = $this->tank_basename_old;
+        $row_old_base['OPEN_DENSITY']      = $this->tank_density_old;
+
         $row_old_base['CLOSE_STD_TOT']   = 0; // $row_old_base['OPEN_STD_TOT'];
         $row_old_base['CLOSE_MASS_TOT']  = 0; // $row_old_base['OPEN_MASS_TOT'];
         $row_old_base['CLOSE_TEMP']      = $row_old_base['OPEN_TEMP'];
@@ -640,7 +672,7 @@ class FolioTankBase extends CommonClass
             $row_prev_closed = $this->get_last_folio_tank_base($this->closeout_nr, $this->tank_terminal, $this->tank_code);
         }
 
-        // open the new base, and close it immediately with the qty of old base
+        // open the new base, 
         $row_new_base['BASE_PERIOD_INDEX'] = $row_old_base['BASE_PERIOD_INDEX']+1;
         $row_new_base['TANK_BASECODE']     = $this->tank_basecode;
         $row_new_base['TANK_BASENAME']     = $this->tank_basename;
@@ -650,7 +682,7 @@ class FolioTankBase extends CommonClass
         $row_new_base['OPEN_STD_TOT']    = $row_old_base['OPEN_STD_TOT'];
         $row_new_base['OPEN_MASS_TOT']   = $row_old_base['OPEN_MASS_TOT'];
         $row_new_base['OPEN_TEMP']       = $row_old_base['OPEN_TEMP'];
-        $row_new_base['OPEN_DENSITY']    = $row_old_base['OPEN_DENSITY'];
+        $row_new_base['OPEN_DENSITY']    = $this->tank_density_new; // $row_old_base['OPEN_DENSITY'];
         $row_new_base['OPEN_AMB_TOT']    = $row_old_base['OPEN_AMB_TOT'];
 
         $row_new_base['CLOSE_STD_TOT']   = null; // $row_old_base['OPEN_STD_TOT'];
@@ -677,6 +709,17 @@ class FolioTankBase extends CommonClass
         return true;
     }
 
+    /*
+        closeout_nr: closeout,
+        tank_terminal: value?.tank_terminal,
+        tank_code: value?.tank_code,
+        tank_basecode: base?.base_code,
+        tank_basename: base?.base_name,
+        tank_basecode_old: baseOld?.base_code,
+        tank_basename_old: baseOld?.base_name,
+        tank_density_old: oldDensity,
+        tank_density_new: newDensity,
+    */
     public function adjust_new()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
@@ -731,6 +774,11 @@ class FolioTankBase extends CommonClass
         , FREEZE_AMB_TOT              = :freeze_amb_tot */
 
         // close the old base
+        // set the base code and name here in case the major opening record does not have the values
+        $row_old_base['TANK_BASECODE']     = $this->tank_basecode_old;
+        $row_old_base['TANK_BASENAME']     = $this->tank_basename_old;
+        $row_old_base['OPEN_DENSITY']      = $this->tank_density_old;
+
         $row_old_base['CLOSE_STD_TOT']   = $row_old_base['OPEN_STD_TOT'];
         $row_old_base['CLOSE_MASS_TOT']  = $row_old_base['OPEN_MASS_TOT'];
         $row_old_base['CLOSE_TEMP']      = $row_old_base['OPEN_TEMP'];
@@ -760,7 +808,7 @@ class FolioTankBase extends CommonClass
         $row_cur_base['OPEN_STD_TOT']    = $row_old_base['CLOSE_STD_TOT'];
         $row_cur_base['OPEN_MASS_TOT']   = $row_old_base['CLOSE_MASS_TOT'];
         $row_cur_base['OPEN_TEMP']       = $row_old_base['CLOSE_TEMP'];
-        $row_cur_base['OPEN_DENSITY']    = $row_old_base['CLOSE_DENSITY'];
+        $row_cur_base['OPEN_DENSITY']    = $this->tank_density_new; // $row_old_base['CLOSE_DENSITY'];
         $row_cur_base['OPEN_AMB_TOT']    = $row_old_base['CLOSE_AMB_TOT'];
 
         $row_cur_base['CLOSE_STD_TOT']   = null;

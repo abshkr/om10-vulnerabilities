@@ -53,6 +53,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
 
   const [tab, setTab] = useState('1');
   const [product, setProduct] = useState(undefined);
+  const [density, setDensity] = useState(undefined);
 
   const [fromSupplierProduct, setFromSupplierProduct] = useState(undefined);
   const [toSupplierProduct, setToSupplierProduct] = useState(undefined);
@@ -219,7 +220,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     }
   };
 
-  const adjustFolioTankBases = async (value, base) => {
+  const adjustFolioTankBases = async (value, base, baseOld, oldDensity, newDensity) => {
     try {
       const closeouts = await api.get(`${STOCK_MANAGEMENT.CURR_CLOSEOUT}`);
       const closeout = closeouts?.data?.records?.[0]?.closeout_nr;
@@ -229,6 +230,10 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
         tank_code: value?.tank_code,
         tank_basecode: base?.base_code,
         tank_basename: base?.base_name,
+        tank_basecode_old: baseOld?.base_code,
+        tank_basename_old: baseOld?.base_name,
+        tank_density_old: oldDensity,
+        tank_density_new: newDensity,
       };
 
       await api
@@ -268,6 +273,23 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
 
   const onFinish = async () => {
     const values = await form.validateFields();
+
+    let lines2 = null;
+    if (config?.siteFolioTankBaseChange && !IS_CREATING && values?.tank_density !== value?.tank_density) {
+      lines2 = (
+        <Tag color={'red'}>
+          <div style={{ wordWrap: 'break-word', whiteSpace: 'normal', fontWeight: 'bold', color: 'blue' }}>
+            {t('descriptions.spmOnTankDensityChangeDesc', {
+              OLD_DENS: value?.tank_density,
+              NEW_DENS: values?.tank_density,
+            })}
+          </div>
+          <div style={{ wordWrap: 'break-word', whiteSpace: 'normal', fontWeight: 'bold' }}>
+            {t('descriptions.spmOnTankDensityChangeCalcManual')}
+          </div>
+        </Tag>
+      );
+    }
 
     let hasGainLoss = false;
     let lines = null;
@@ -322,6 +344,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
               </div>
             </Tag>
           )}
+          {lines2}
         </Card>
       );
     }
@@ -352,7 +375,13 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
               // add two records in CLOSEOUT_TANK_BASES
               // Closing Stock for PRODUCT_1 = 0
               // Opening Stock for PRODUCT_2 = 0
-              adjustFolioTankBases(value, baseItem?.records?.[0]);
+              adjustFolioTankBases(
+                value,
+                baseItem?.records?.[0],
+                baseItemOld?.records?.[0],
+                value?.tank_density,
+                values?.tank_density
+              );
             } else {
               onComplete(values?.tank_code);
 
@@ -552,7 +581,23 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
                 </Col>
               </Row>
             )}
-            <Density form={form} value={value} product={product} config={config} />
+
+            {config?.siteFolioTankBaseChange && !IS_CREATING && density !== value?.tank_density && (
+              <Tag color={'red'}>
+                <div
+                  style={{ wordWrap: 'break-word', whiteSpace: 'normal', fontWeight: 'bold', color: 'blue' }}
+                >
+                  {t('descriptions.spmOnTankDensityChangeDesc', {
+                    OLD_DENS: value?.tank_density,
+                    NEW_DENS: density,
+                  })}
+                </div>
+                <div style={{ wordWrap: 'break-word', whiteSpace: 'normal', fontWeight: 'bold' }}>
+                  {t('descriptions.spmOnTankDensityChangeCalcManual')}
+                </div>
+              </Tag>
+            )}
+            <Density form={form} value={value} product={product} config={config} onChange={setDensity} />
             <Divider>{t('divider.variances')}</Divider>
             <DailyVariance form={form} value={value} base={baseItem?.records?.[0]} />
             <MontlhyVariance form={form} value={value} base={baseItem?.records?.[0]} />

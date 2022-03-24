@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { BASE_PRODUCTS } from '../../../../api';
 import { getDensityRange } from '../../../../utils';
 
-const Density = ({ form, value, product, config }) => {
+const Density = ({ form, value, product, config, onChange }) => {
   const { t } = useTranslation();
   const { data: payload, isValidating } = useSWR(BASE_PRODUCTS.READ);
 
@@ -44,6 +44,7 @@ const Density = ({ form, value, product, config }) => {
       setFieldsValue({
         tank_density: value.tank_density,
       });
+      onChange(value.tank_density);
     }
   }, [value, setFieldsValue]);
 
@@ -92,6 +93,10 @@ const Density = ({ form, value, product, config }) => {
     }
   }, [payload, product]);
 
+  const onFieldChanged = (event) => {
+    onChange(event?.target?.value);
+  };
+
   const affix = isValidating ? t('messages.calculating') : `${low} - ${high} ${t('units.kg/m3')}`;
   const disabled = isValidating || !product;
 
@@ -101,7 +106,7 @@ const Density = ({ form, value, product, config }) => {
       label={t('fields.standardDensity')}
       rules={[{ required: true, validator: validate }]}
     >
-      <Input disabled={disabled} addonAfter={affix} />
+      <Input disabled={disabled} addonAfter={affix} onChange={onFieldChanged} />
     </Form.Item>
   );
 };
