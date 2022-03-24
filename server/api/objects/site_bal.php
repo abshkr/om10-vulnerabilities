@@ -272,7 +272,7 @@ class SiteBal extends CommonClass
                 ctgrp.*
             FROM (
                 SELECT ctb.* FROM CLOSEOUT_TANK_BASES ctb
-                WHERE ctb.BASE_PERIOD_CLOSE IS NULL OR ctb.BASE_PERIOD_OPEN != ctb.BASE_PERIOD_CLOSE
+                -- WHERE ctb.BASE_PERIOD_CLOSE IS NULL OR ctb.BASE_PERIOD_OPEN != ctb.BASE_PERIOD_CLOSE
                 union all
                 SELECT 
                     ct.CLOSEOUT_NR
