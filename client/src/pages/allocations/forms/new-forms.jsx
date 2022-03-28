@@ -420,10 +420,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
   }, [resetFields, value, visible]);
 
   useEffect(() => {
-    if (type && company && supplier && allocIndex) {
+    // console.log('................getAllocs', type, company, supplier);
+    if ((IS_CREATING && supplier) || (!IS_CREATING && type && company && supplier && allocIndex)) {
       getAllocations();
     }
-  }, [type, company, supplier, allocIndex, getAllocations]);
+  }, [IS_CREATING, type, company, supplier, allocIndex, getAllocations]);
 
   return (
     <Drawer

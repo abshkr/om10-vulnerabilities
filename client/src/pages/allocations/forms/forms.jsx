@@ -256,10 +256,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal 
   }, [resetFields, value, visible]);
 
   useEffect(() => {
-    if (type && company && supplier) {
+    // console.log('................getAllocs', type, company, supplier);
+    if ((IS_CREATING && supplier) || (!IS_CREATING && type && company && supplier)) {
       getAllocations();
     }
-  }, [type, company, supplier, getAllocations]);
+  }, [IS_CREATING, type, company, supplier, getAllocations]);
 
   return (
     <Drawer
