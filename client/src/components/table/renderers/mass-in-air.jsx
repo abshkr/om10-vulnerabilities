@@ -26,7 +26,7 @@ export default class MassInAirRenderer extends Component {
     const AIR = !factor ? 0.0011 : factor;
     let WiA = undefined;
     let tipQty = undefined;
-    if (!WiV || !GSV) {
+    if ((WiV !== 0 && !WiV) || (GSV !== 0 && !GSV)) {
       WiA = '';
       tipQty = '';
     } else {
