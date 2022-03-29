@@ -183,6 +183,29 @@ class FolioTankBase extends CommonClass
         return $row;
     }
     
+    protected function get_tank_details($tank_terminal, $tank_code)
+    {
+        $row = null;
+        $query = "
+            SELECT * 
+            FROM TANKS
+            WHERE TANK_TERMINAL = :tank_terminal AND TANK_CODE = :tank_code
+        ";
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tank_terminal', $tank_terminal);
+        oci_bind_by_name($stmt, ':tank_code', $tank_code);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        } else {
+            // get the last one
+            $row = oci_fetch_array($stmt, OCI_NO_AUTO_COMMIT);
+        }
+        
+        return $row;
+    }
+    
     protected function get_last_folio_tank_base($closeout_nr, $tank_terminal, $tank_code)
     {
         $row = null;
@@ -334,6 +357,25 @@ class FolioTankBase extends CommonClass
 
     // mainly close the base record
     public function update_folio_base_tank($row) {
+        // get the tank detail
+        $tankdet = $this->get_tank_details($row['TANK_TERMINAL'], $row['TANK_CODE']);
+        $tnk = array();
+        $tnk['RCPT_VOL']            = $row['RCPT_VOL'];
+        $tnk['TRF_VOL']             = $row['TRF_VOL'];
+        $tnk['TANK_LEVEL']          = $row['TANK_LEVEL'];
+        $tnk['TANK_WATER_LVL']      = $row['TANK_WATER_LVL'];
+        $tnk['TANK_WATER']          = $row['TANK_WATER'];
+        $tnk['TANK_ROOF_WEIGHT']    = $row['TANK_ROOF_WEIGHT'];
+        $tnk['TANK_IFC']            = $row['TANK_IFC'];
+        if ($tankdet != null) {
+            $tnk['RCPT_VOL']            = $tankdet['TANK_RCPT_VOL'];
+            $tnk['TRF_VOL']             = $tankdet['TANK_TRF_VOL'];
+            $tnk['TANK_LEVEL']          = $tankdet['TANK_PROD_LVL'];
+            $tnk['TANK_WATER_LVL']      = $tankdet['TANK_WATER_LVL'];
+            $tnk['TANK_WATER']          = $tankdet['TANK_WATER'];
+            $tnk['TANK_ROOF_WEIGHT']    = $tankdet['TANK_ROOF_WEIGHT'];
+            $tnk['TANK_IFC']            = $tankdet['TANK_IFC'];
+        }
 
         $query = "
         UPDATE CLOSEOUT_TANK_BASES SET
@@ -390,8 +432,8 @@ class FolioTankBase extends CommonClass
         oci_bind_by_name($stmt, ':close_mass_tot',         $row['CLOSE_MASS_TOT']);
         oci_bind_by_name($stmt, ':freeze_std_tot',         $row['FREEZE_STD_TOT']);
         oci_bind_by_name($stmt, ':freeze_mass_tot',        $row['FREEZE_MASS_TOT']);
-        oci_bind_by_name($stmt, ':rcpt_vol',               $row['RCPT_VOL']);
-        oci_bind_by_name($stmt, ':trf_vol',                $row['TRF_VOL']);
+        oci_bind_by_name($stmt, ':rcpt_vol',               $tnk['RCPT_VOL']);
+        oci_bind_by_name($stmt, ':trf_vol',                $tnk['TRF_VOL']);
         oci_bind_by_name($stmt, ':open_temp',              $row['OPEN_TEMP']);
         oci_bind_by_name($stmt, ':open_density',           $row['OPEN_DENSITY']);
         oci_bind_by_name($stmt, ':freeze_temp',            $row['FREEZE_TEMP']);
@@ -404,11 +446,11 @@ class FolioTankBase extends CommonClass
         oci_bind_by_name($stmt, ':open_amb_tot',           $row['OPEN_AMB_TOT']);
         oci_bind_by_name($stmt, ':close_amb_tot',          $row['CLOSE_AMB_TOT']);
         oci_bind_by_name($stmt, ':freeze_amb_tot',         $row['FREEZE_AMB_TOT']);
-        oci_bind_by_name($stmt, ':tank_level',             $row['TANK_LEVEL']);
-        oci_bind_by_name($stmt, ':tank_water_lvl',         $row['TANK_WATER_LVL']);
-        oci_bind_by_name($stmt, ':tank_water',             $row['TANK_WATER']);
-        oci_bind_by_name($stmt, ':tank_roof_weight',       $row['TANK_ROOF_WEIGHT']);
-        oci_bind_by_name($stmt, ':tank_ifc',               $row['TANK_IFC']);
+        oci_bind_by_name($stmt, ':tank_level',             $tnk['TANK_LEVEL']);
+        oci_bind_by_name($stmt, ':tank_water_lvl',         $tnk['TANK_WATER_LVL']);
+        oci_bind_by_name($stmt, ':tank_water',             $tnk['TANK_WATER']);
+        oci_bind_by_name($stmt, ':tank_roof_weight',       $tnk['TANK_ROOF_WEIGHT']);
+        oci_bind_by_name($stmt, ':tank_ifc',               $tnk['TANK_IFC']);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);

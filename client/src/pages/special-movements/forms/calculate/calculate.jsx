@@ -4,6 +4,9 @@ import api from 'api';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber, Select, Row, Col } from 'antd';
 import _ from 'lodash';
+import moment from 'moment';
+
+import { SETTINGS } from '../../../../constants';
 
 import { SPECIAL_MOVEMENTS } from 'api';
 import { getDensityRange } from 'utils';
@@ -38,15 +41,35 @@ const Calculate = ({
   const getLimit = useCallback((tank) => {
     setLoading(true);
 
+    // get the time
+    let moveTime = getFieldValue('mlitm_dtim_start');
+    const serverCurrent = moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT);
+    if (moveTime === null || moveTime === undefined) {
+      moveTime = serverCurrent.format(SETTINGS.DATE_TIME_FORMAT);
+    } else {
+      moveTime = moveTime?.format(SETTINGS.DATE_TIME_FORMAT);
+    }
+
     api
       .get(SPECIAL_MOVEMENTS.PRODUCTS, {
         params: {
           tank_code: tank,
+          move_time: moveTime,
         },
       })
       .then((response) => {
         if (response?.data?.records?.length > 0) {
-          const prod = response.data.records[0];
+          let productList = response.data.records;
+          if (config?.siteFolioTankBaseChange) {
+            productList = response?.data?.records?.filter(
+              (o) =>
+                (o.base_period_open === '' || o.base_period_open <= moveTime) &&
+                (o.base_period_close === '' || o.base_period_close >= moveTime)
+            );
+          }
+
+          const prod = productList?.[0];
+          console.log('...............tankproddata', prod, productList);
           setFieldsValue({
             mlitm_dens_cor: prod?.tank_density,
           });

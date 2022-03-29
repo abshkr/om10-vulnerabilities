@@ -572,6 +572,10 @@ class SpecialMovement extends CommonClass
                     GT.TANK_NAME, 
                     GT.TANK_TERMINAL TERM_CODE,  
                     GT.TANK_SITENAME TERM_NAME,
+                    GT.CLOSEOUT_NR,
+                    GT.BASE_PERIOD_INDEX,
+                    GT.BASE_PERIOD_OPEN,
+                    GT.BASE_PERIOD_CLOSE,
                     DP.PROD_CMPY, 
                     DP.PROD_CODE, 
                     DP.PROD_NAME
@@ -588,6 +592,8 @@ class SpecialMovement extends CommonClass
                     AND PR.RAT_COUNT  = 1 
                     AND DP.PROD_CMPY  != 'BaSePrOd'
                     AND GT.CLOSEOUT_NR = :closeout_nr
+                    -- AND (GT.BASE_PERIOD_OPEN IS NULL OR GT.BASE_PERIOD_OPEN <= :move_time)
+                    -- AND (GT.BASE_PERIOD_CLOSE IS NULL OR GT.BASE_PERIOD_CLOSE >= :move_time)
             ORDER BY DP.PROD_CMPY, GT.TANK_TERMINAL, GT.TANK_CODE
             ";
         }
@@ -598,6 +604,7 @@ class SpecialMovement extends CommonClass
         if ($flag) {
             $closeout_nr = $this->get_folios_by_date($this->move_time, $this->move_time);
             oci_bind_by_name($stmt, ':closeout_nr', $closeout_nr);
+            // oci_bind_by_name($stmt, ':move_time', $this->move_time);
         }
         
         if (oci_execute($stmt, $this->commit_mode)) {
