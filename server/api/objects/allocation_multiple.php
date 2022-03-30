@@ -152,6 +152,16 @@ class Allocation extends CommonClass
 
     public function pre_create()
     {
+        // get the next alloc_index:
+        if (!isset($this->alloc_index) || $this->alloc_index < 0) {
+            $this->alloc_index = $this->next_alloc_index_internal();
+            $this->lockal_index = $this->alloc_index;
+        }
+        // $this->alloc_index = $this->next_alloc_index_internal();
+        // $this->lockal_index = $this->alloc_index;
+        write_log(sprintf("%s::%s() START index=".$this->alloc_index, __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
         $query = "SELECT COUNT(*) CN FROM ALLOC_TYPE
             WHERE AT_TYPE = :at_type AND AT_CMPY = :at_cmpy";
         $stmt = oci_parse($this->conn, $query);
@@ -175,11 +185,6 @@ class Allocation extends CommonClass
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 return false;
             }
-        }
-
-        // get the next alloc_index:
-        if (!isset($this->alloc_index) || $this->alloc_index < 0) {
-            $this->alloc_index = $this->next_alloc_index();
         }
 
         return true;
@@ -878,6 +883,8 @@ class Allocation extends CommonClass
 
     public function check_multi_allocation()
     {
+        $checkPeriod = true;
+
         $query = "
             SELECT COUNT(*) AS CNT 
             FROM LOCKAL 
@@ -888,6 +895,10 @@ class Allocation extends CommonClass
                 AND LOCKAL_LOCK = :lock_type
                 AND (LOCKAL_LOCK!=3 OR LOCKAL_PERIOD = :period_type)
         ";
+        if ($checkPeriod) {
+            $query .= "AND LOCKAL_START_DMY = TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS') ";
+            $query .= "AND LOCKAL_END_DMY = TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS') ";
+        }
 
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':lock_type', $this->lock_type);
@@ -895,6 +906,11 @@ class Allocation extends CommonClass
         oci_bind_by_name($stmt, ':at_type', $this->at_type);
         oci_bind_by_name($stmt, ':at_cmpy', $this->at_cmpy);
         oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        if ($checkPeriod) {
+            oci_bind_by_name($stmt, ':start_date', $this->start_date);
+            oci_bind_by_name($stmt, ':end_date', $this->end_date);
+        }
+
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
@@ -905,6 +921,30 @@ class Allocation extends CommonClass
     }
 
     public function next_alloc_index()
+    {
+        $query = "
+            SELECT NVL(MAX(LOCKAL_INDEX), 0) + 1 NEXT_NO
+            FROM LOCKAL 
+            WHERE 
+                LOCKATYP_AT_TYPE = :alloc_type 
+                AND LOCKATYP_AT_CMPY = :alloc_cmpycode 
+                AND LOCKAL_SUPL = :alloc_suppcode
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':alloc_suppcode', $this->alloc_suppcode);
+        oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
+        oci_bind_by_name($stmt, ':alloc_cmpycode', $this->alloc_cmpycode);
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function next_alloc_index_internal()
     {
         $query = "
             SELECT NVL(MAX(LOCKAL_INDEX), 0) + 1 NEXT_NO
