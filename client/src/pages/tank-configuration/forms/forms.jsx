@@ -100,9 +100,14 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       `${STOCK_MANAGEMENT.SITE_BALANCE}?cls_out=${closeout}&terminal=${terminal}`
     );
     const stocks = results?.data?.records?.find(
-      (o) => o?.tanksite === terminal && o?.tankcode === tank && o?.productcode === base
+      (o) =>
+        o?.tanksite === terminal &&
+        o?.tankcode === tank &&
+        o?.productcode === base &&
+        o?.base_period_close === ''
     );
 
+    console.log('.......................getStock', stocks);
     return stocks;
   };
 
@@ -362,7 +367,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
           ? '600px'
           : null,
       okButtonProps: {
-        disabled: hasGainLoss, // config?.siteFolioTankBaseChange && !IS_CREATING && values?.tank_base !== value?.tank_base && (!values?.tank_prod_from || !values?.tank_prod_to),
+        disabled: false, // hasGainLoss, // config?.siteFolioTankBaseChange && !IS_CREATING && values?.tank_base !== value?.tank_base && (!values?.tank_prod_from || !values?.tank_prod_to),
       },
       onOk: async () => {
         await api
