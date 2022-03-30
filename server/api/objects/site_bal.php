@@ -250,18 +250,32 @@ class SiteBal extends CommonClass
             BASE_PRODS.BASE_CODE                                                                   AS PRODUCTCODE,
             BASE_PRODS.BASE_NAME                                                                   AS PRODUCTNAME,
             NVL(TANKS.TANK_DENSITY, 0.0)                                                           AS TANK_DENSITY,
-            (NVL(TANKS.TANK_LTR_CLOSE, 0.0)*NVL(TANKS.TANK_RPTVCFCLOSE, 1))                        AS OPENINGSTOCK,
+            (NVL(TANKS.TANK_LTR_CLOSE, 0.0)*NVL(TANKS.TANK_RPTVCFCLOSE, 1))                        AS OPENINGSTOCK2,
+            (NVL(CLOSEOUT_TANK.OPEN_STD_TOT, 0.0))                                                 AS OPENINGSTOCK,
             (NVL(TANKS.TANK_LTR_CLOSE, 0.0)*NVL(TANKS.TANK_RPTVCFCLOSE, 1) 
                 + NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_IN_CVL, 0) 
+                +  NVL(TRSF_IN_CVL, 0))                                                            AS ACCNTTOT2,
+            (NVL(CLOSEOUT_TANK.OPEN_STD_TOT, 0.0) 
+                + NVL(RCPT_CVL, 0) 
                 +  NVL(TRSF_IN_CVL, 0))                                                            AS ACCNTTOT,
-            (NVL(TANKS.TANK_TRF_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_OUT_CVL, 0))        AS TRANSFERVOL,
+            (NVL(TANKS.TANK_TRF_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_OUT_CVL, 0))        AS TRANSFERVOL2,
+            NVL(RACK_CVL, 0)                                                                       AS TRANSFERVOL,
             ((NVL(TANKS.TANK_LTR_CLOSE, 0.0)*NVL(TANKS.TANK_RPTVCFCLOSE, 1) 
                 + NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_IN_CVL, 0) 
                 +  NVL(TRSF_IN_CVL, 0)) 
               - (NVL(TANKS.TANK_TRF_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_OUT_CVL, 0)) 
+              - (NVL(TRSF_OUT_CVL, 0)))                                                            AS BOOKBALANCE2,
+            ((NVL(CLOSEOUT_TANK.OPEN_STD_TOT, 0.0) 
+                + NVL(RCPT_CVL, 0) 
+                +  NVL(TRSF_IN_CVL, 0)) 
+              - NVL(RACK_CVL, 0) 
               - (NVL(TRSF_OUT_CVL, 0)))                                                            AS BOOKBALANCE,
-            (NVL(TANKS.TANK_COR_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1))                               AS CLOSINGSTOCK,
-            (NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_IN_CVL, 0))        AS RECEIPTSVOL,
+            (NVL(TANKS.TANK_COR_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1))                               AS CLOSINGSTOCK2,
+            (CASE WHEN CLOSEOUT_TANK.BASE_PERIOD_CLOSE IS NULL 
+            THEN NVL(TANKS.TANK_COR_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) 
+            ELSE NVL(CLOSEOUT_TANK.CLOSE_STD_TOT, 0.0) END)                                        AS CLOSINGSTOCK,
+            (NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_IN_CVL, 0))        AS RECEIPTSVOL1,
+            NVL(RCPT_CVL, 0)                                                                       AS RECEIPTSVOL,
             NVL(TRSF_IN_CVL, 0)                                                                    AS TRANSFERIN,
             NVL(TRSF_OUT_CVL, 0)                                                                   AS TRANSFEROUT,
             NVL(RCPT_CVL, 0)                                                                       AS RCPT_CVL,
@@ -271,6 +285,14 @@ class SiteBal extends CommonClass
                 + NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_IN_CVL, 0) 
                 +  NVL(TRSF_IN_CVL, 0)) 
               - (NVL(TANKS.TANK_TRF_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_OUT_CVL, 0)) 
+              - (NVL(TRSF_OUT_CVL, 0))))                                                           AS GAINLOSS1,
+            ((CASE WHEN CLOSEOUT_TANK.BASE_PERIOD_CLOSE IS NULL 
+            THEN NVL(TANKS.TANK_COR_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) 
+            ELSE NVL(CLOSEOUT_TANK.CLOSE_STD_TOT, 0.0) END) -
+            ((NVL(CLOSEOUT_TANK.OPEN_STD_TOT, 0.0) 
+                + NVL(RCPT_CVL, 0) 
+                +  NVL(TRSF_IN_CVL, 0)) 
+              - (NVL(RACK_CVL, 0)) 
               - (NVL(TRSF_OUT_CVL, 0))))                                                           AS GAINLOSS
         FROM 
             TERMINAL, 
@@ -407,7 +429,8 @@ class SiteBal extends CommonClass
                     AND TRANBASE.TRSB_ID_TRSF_TRM = TRANSFERS.TRSF_TERMINAL
                     AND TRANSFERS.TRSFTRID_TRSA_ID = TRANSACTIONS.TRSA_ID
                     AND TRANSFERS.TRSFTRID_TRSA_TRM = TRANSACTIONS.TRSA_TERMINAL
-                    AND TRANSACTIONS.TRSA_IOTYPE = 1 AND TRANSACTIONS.TRSA_CLASS = 0
+                    AND TRANSACTIONS.TRSA_IOTYPE = 1 
+                    -- AND TRANSACTIONS.TRSA_CLASS = 0
                     AND TRANSACTIONS.TRSA_ED_DMY > (SELECT PREV_CLOSEOUT_DATE FROM CLOSEOUTS WHERE CLOSEOUT_NR = :cls_out)
                     AND (TRANSFERS.TRSF_ID, TRANSFERS.TRSF_TERMINAL) NOT IN (SELECT MTITM_TRSF_ID, MTITM_TERMINAL FROM MOV_TRSF_ITEMS, MOVEMENT_ITEMS
                         WHERE MTITM_MOV_ID = MVITM_MOVE_ID AND MTITM_MOV_LINE = MVITM_LINE_ID AND MVITM_TYPE = 2)
