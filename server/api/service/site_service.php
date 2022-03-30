@@ -111,6 +111,12 @@ class SiteService
         return ($config_value === 'Y' || $config_value === 'y');
     }
 
+    public function site_customer_product()
+    {
+        $config_value = $this->site_config_boolean('SITE_CUSTOMER_PRODUCT', 'N');
+        return ($config_value === 'Y' || $config_value === 'y');
+    }
+
     public function FA2_timeout()
     {
         return $this->site_config_value('SITE_2FA_TIMEOUT', '300');

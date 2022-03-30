@@ -119,11 +119,15 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
   };
 
   const getAllocations = useCallback(() => {
+    let customer = null;
+    if (type == 3) {
+      customer = company;
+    }
     const url = IS_CREATING
-      ? `${ALLOCATIONS.ITEMS}?supplier=${supplier}`
+      ? `${ALLOCATIONS.ITEMS}?supplier=${supplier}&customer=${customer}`
       : `${ALLOCATIONS.ITEMS}?alloc_index=${
           allocIndex === undefined ? value?.alloc_index : allocIndex
-        }&alloc_type=${type}&alloc_cmpycode=${company}&alloc_suppcode=${supplier}`;
+        }&alloc_type=${type}&alloc_cmpycode=${company}&alloc_suppcode=${supplier}&customer=${customer}`;
 
     api.get(url).then((response) => {
       const payload = response.data?.records || [];

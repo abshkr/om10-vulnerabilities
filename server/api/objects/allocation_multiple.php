@@ -613,114 +613,236 @@ class Allocation extends CommonClass
 
     public function items()
     {
+        $serv = new SiteService($this->conn);
+        //Because Reactjs can call carriers.php?customer=undefined, so undefined becomes a string
+        
         if (isset($this->supplier)) {
-            $query = "
-            SELECT 
-                NVL(GUI_ALLOCATION_ITEMS.AITEM_INDEX, ALL_PRODS.ALLOC_INDEX) AITEM_INDEX,
-                NVL(GUI_ALLOCATION_ITEMS.AITEM_TYPE, ALL_PRODS.ALLOC_TYPE) AITEM_TYPE,
-                NVL(AITEM_TYPENAME, ALLOC_TYPENAME) AITEM_TYPENAME,
-                NVL(AITEM_CMPYCODE, ALLOC_CMPYCODE) AITEM_CMPYCODE,
-                NVL(AITEM_CMPYNAME, ALLOC_CMPYNAME) AITEM_CMPYNAME,
-                NVL(AITEM_PRODCODE, PROD_CODE) AITEM_PRODCODE,
-                NVL(AITEM_PRODNAME, PROD_NAME) AITEM_PRODNAME,
-                NVL(AITEM_SUPPCODE, ALLOC_SUPPCODE) AITEM_SUPPCODE,
-                NVL(AITEM_SUPPNAME, ALLOC_SUPPNAME) AITEM_SUPPNAME,
-                NVL(AITEM_QTYLIMIT, 0) AITEM_QTYLIMIT,
-                NVL(AITEM_QTYUSED, 0) AITEM_QTYUSED,
-                NVL(AITEM_QTYLEFT, 0) AITEM_QTYLEFT,
-                NVL(AITEM_PRODUNIT, 5) AITEM_PRODUNIT,
-                NVL(AITEM_UNITNAME, 'l (amb)') AITEM_UNITNAME2,
-                aunit.DESCRIPTION  AITEM_UNITNAME,
-                NVL(AITEM_PERCHILD, ALLOC_PERIOD) AITEM_PERCHILD
-            FROM
-            (
-                SELECT PROD_CODE,
-                    PROD_CMPY,
-                    PROD_NAME,
-                    NULL ALLOC_INDEX,
-                    NULL ALLOC_TYPE,
-                    NULL ALLOC_TYPENAME,
-                    NULL ALLOC_CMPYCODE,
-                    NULL ALLOC_CMPYNAME,
-                    NULL ALLOC_SUPPCODE,
-                    NULL ALLOC_SUPPNAME,
-                    NULL ALLOC_LOCK,
-                    NULL ALLOC_LOCKNAME,
-                    NULL ALLOC_PERIOD
-                FROM PRODUCTS
-                WHERE PRODUCTS.PROD_CMPY = :supplier
-            ) ALL_PRODS,
-            GUI_ALLOCATION_ITEMS
-	        , UNIT_SCALE_VW					aunit
-            WHERE 
-                ALL_PRODS.PROD_CODE = GUI_ALLOCATION_ITEMS.AITEM_PRODCODE(+)
-                AND ALL_PRODS.PROD_CMPY = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
-                AND ALL_PRODS.ALLOC_INDEX = GUI_ALLOCATION_ITEMS.AITEM_INDEX(+)
-                AND ALL_PRODS.ALLOC_TYPE = GUI_ALLOCATION_ITEMS.AITEM_TYPE(+)
-                AND ALL_PRODS.ALLOC_CMPYCODE = GUI_ALLOCATION_ITEMS.AITEM_CMPYCODE(+)
-                AND ALL_PRODS.ALLOC_SUPPCODE = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
-                AND NVL(GUI_ALLOCATION_ITEMS.AITEM_PRODUNIT, 5) = aunit.UNIT_ID
-            ORDER BY AITEM_QTYLIMIT DESC, PROD_CODE
-            ";
-            $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':supplier', $this->supplier);
+            if (isset($this->customer) && $this->customer !== "null" && $serv->site_customer_product()) {
+                $query = "
+                SELECT 
+                    NVL(GUI_ALLOCATION_ITEMS.AITEM_INDEX, ALL_PRODS.ALLOC_INDEX) AITEM_INDEX,
+                    NVL(GUI_ALLOCATION_ITEMS.AITEM_TYPE, ALL_PRODS.ALLOC_TYPE) AITEM_TYPE,
+                    NVL(AITEM_TYPENAME, ALLOC_TYPENAME) AITEM_TYPENAME,
+                    NVL(AITEM_CMPYCODE, ALLOC_CMPYCODE) AITEM_CMPYCODE,
+                    NVL(AITEM_CMPYNAME, ALLOC_CMPYNAME) AITEM_CMPYNAME,
+                    NVL(AITEM_PRODCODE, PROD_CODE) AITEM_PRODCODE,
+                    NVL(AITEM_PRODNAME, PROD_NAME) AITEM_PRODNAME,
+                    NVL(AITEM_SUPPCODE, ALLOC_SUPPCODE) AITEM_SUPPCODE,
+                    NVL(AITEM_SUPPNAME, ALLOC_SUPPNAME) AITEM_SUPPNAME,
+                    NVL(AITEM_QTYLIMIT, 0) AITEM_QTYLIMIT,
+                    NVL(AITEM_QTYUSED, 0) AITEM_QTYUSED,
+                    NVL(AITEM_QTYLEFT, 0) AITEM_QTYLEFT,
+                    NVL(AITEM_PRODUNIT, 5) AITEM_PRODUNIT,
+                    NVL(AITEM_UNITNAME, 'l (amb)') AITEM_UNITNAME2,
+                    aunit.DESCRIPTION  AITEM_UNITNAME,
+                    NVL(AITEM_PERCHILD, ALLOC_PERIOD) AITEM_PERCHILD
+                FROM
+                (
+                    SELECT PRODUCTS.PROD_CODE,
+                        PRODUCTS.PROD_CMPY,
+                        PRODUCTS.PROD_NAME,
+                        NULL ALLOC_INDEX,
+                        NULL ALLOC_TYPE,
+                        NULL ALLOC_TYPENAME,
+                        NULL ALLOC_CMPYCODE,
+                        NULL ALLOC_CMPYNAME,
+                        NULL ALLOC_SUPPCODE,
+                        NULL ALLOC_SUPPNAME,
+                        NULL ALLOC_LOCK,
+                        NULL ALLOC_LOCKNAME,
+                        NULL ALLOC_PERIOD
+                    FROM PRODUCTS, CUSTOMER_PRODUCT
+                    WHERE PRODUCTS.PROD_CMPY = :supplier AND CUST_ACCT = :customer
+                        AND PRODUCTS.PROD_CODE = CUSTOMER_PRODUCT.PROD_CODE
+                        AND PRODUCTS.PROD_CMPY = CUSTOMER_PRODUCT.PROD_CMPY
+                ) ALL_PRODS,
+                GUI_ALLOCATION_ITEMS
+                , UNIT_SCALE_VW					aunit
+                WHERE 
+                    ALL_PRODS.PROD_CODE = GUI_ALLOCATION_ITEMS.AITEM_PRODCODE(+)
+                    AND ALL_PRODS.PROD_CMPY = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
+                    AND ALL_PRODS.ALLOC_INDEX = GUI_ALLOCATION_ITEMS.AITEM_INDEX(+)
+                    AND ALL_PRODS.ALLOC_TYPE = GUI_ALLOCATION_ITEMS.AITEM_TYPE(+)
+                    AND ALL_PRODS.ALLOC_CMPYCODE = GUI_ALLOCATION_ITEMS.AITEM_CMPYCODE(+)
+                    AND ALL_PRODS.ALLOC_SUPPCODE = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
+                    AND NVL(GUI_ALLOCATION_ITEMS.AITEM_PRODUNIT, 5) = aunit.UNIT_ID
+                ORDER BY AITEM_QTYLIMIT DESC, PROD_CODE
+                ";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':supplier', $this->supplier);
+                oci_bind_by_name($stmt, ':customer', $this->customer);
+            } else {
+                $query = "
+                SELECT 
+                    NVL(GUI_ALLOCATION_ITEMS.AITEM_INDEX, ALL_PRODS.ALLOC_INDEX) AITEM_INDEX,
+                    NVL(GUI_ALLOCATION_ITEMS.AITEM_TYPE, ALL_PRODS.ALLOC_TYPE) AITEM_TYPE,
+                    NVL(AITEM_TYPENAME, ALLOC_TYPENAME) AITEM_TYPENAME,
+                    NVL(AITEM_CMPYCODE, ALLOC_CMPYCODE) AITEM_CMPYCODE,
+                    NVL(AITEM_CMPYNAME, ALLOC_CMPYNAME) AITEM_CMPYNAME,
+                    NVL(AITEM_PRODCODE, PROD_CODE) AITEM_PRODCODE,
+                    NVL(AITEM_PRODNAME, PROD_NAME) AITEM_PRODNAME,
+                    NVL(AITEM_SUPPCODE, ALLOC_SUPPCODE) AITEM_SUPPCODE,
+                    NVL(AITEM_SUPPNAME, ALLOC_SUPPNAME) AITEM_SUPPNAME,
+                    NVL(AITEM_QTYLIMIT, 0) AITEM_QTYLIMIT,
+                    NVL(AITEM_QTYUSED, 0) AITEM_QTYUSED,
+                    NVL(AITEM_QTYLEFT, 0) AITEM_QTYLEFT,
+                    NVL(AITEM_PRODUNIT, 5) AITEM_PRODUNIT,
+                    NVL(AITEM_UNITNAME, 'l (amb)') AITEM_UNITNAME2,
+                    aunit.DESCRIPTION  AITEM_UNITNAME,
+                    NVL(AITEM_PERCHILD, ALLOC_PERIOD) AITEM_PERCHILD
+                FROM
+                (
+                    SELECT PROD_CODE,
+                        PROD_CMPY,
+                        PROD_NAME,
+                        NULL ALLOC_INDEX,
+                        NULL ALLOC_TYPE,
+                        NULL ALLOC_TYPENAME,
+                        NULL ALLOC_CMPYCODE,
+                        NULL ALLOC_CMPYNAME,
+                        NULL ALLOC_SUPPCODE,
+                        NULL ALLOC_SUPPNAME,
+                        NULL ALLOC_LOCK,
+                        NULL ALLOC_LOCKNAME,
+                        NULL ALLOC_PERIOD
+                    FROM PRODUCTS
+                    WHERE PRODUCTS.PROD_CMPY = :supplier
+                ) ALL_PRODS,
+                GUI_ALLOCATION_ITEMS
+                , UNIT_SCALE_VW					aunit
+                WHERE 
+                    ALL_PRODS.PROD_CODE = GUI_ALLOCATION_ITEMS.AITEM_PRODCODE(+)
+                    AND ALL_PRODS.PROD_CMPY = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
+                    AND ALL_PRODS.ALLOC_INDEX = GUI_ALLOCATION_ITEMS.AITEM_INDEX(+)
+                    AND ALL_PRODS.ALLOC_TYPE = GUI_ALLOCATION_ITEMS.AITEM_TYPE(+)
+                    AND ALL_PRODS.ALLOC_CMPYCODE = GUI_ALLOCATION_ITEMS.AITEM_CMPYCODE(+)
+                    AND ALL_PRODS.ALLOC_SUPPCODE = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
+                    AND NVL(GUI_ALLOCATION_ITEMS.AITEM_PRODUNIT, 5) = aunit.UNIT_ID
+                ORDER BY AITEM_QTYLIMIT DESC, PROD_CODE
+                ";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':supplier', $this->supplier);
+            }
         } else {
-            $query = "
-            SELECT 
-                NVL(GUI_ALLOCATION_ITEMS.AITEM_INDEX, ALL_PRODS.ALLOC_INDEX) AITEM_INDEX,
-                NVL(GUI_ALLOCATION_ITEMS.AITEM_TYPE, ALL_PRODS.ALLOC_TYPE) AITEM_TYPE,
-                NVL(AITEM_TYPENAME, ALLOC_TYPENAME) AITEM_TYPENAME,
-                NVL(AITEM_CMPYCODE, ALLOC_CMPYCODE) AITEM_CMPYCODE,
-                NVL(AITEM_CMPYNAME, ALLOC_CMPYNAME) AITEM_CMPYNAME,
-                NVL(AITEM_PRODCODE, PROD_CODE) AITEM_PRODCODE,
-                NVL(AITEM_PRODNAME, PROD_NAME) AITEM_PRODNAME,
-                NVL(AITEM_SUPPCODE, ALLOC_SUPPCODE) AITEM_SUPPCODE,
-                NVL(AITEM_SUPPNAME, ALLOC_SUPPNAME) AITEM_SUPPNAME,
-                NVL(AITEM_QTYLIMIT, 0) AITEM_QTYLIMIT,
-                NVL(AITEM_QTYUSED, 0) AITEM_QTYUSED,
-                NVL(AITEM_QTYLEFT, 0) AITEM_QTYLEFT,
-                NVL(AITEM_PRODUNIT, 5) AITEM_PRODUNIT,
-                NVL(AITEM_UNITNAME, 'l (amb)') AITEM_UNITNAME2,
-                aunit.DESCRIPTION  AITEM_UNITNAME,
-                NVL(AITEM_PERCHILD, ALLOC_PERIOD) AITEM_PERCHILD
-            FROM
-            (
-                SELECT PROD_CODE,
-                    PROD_CMPY,
-                    PROD_NAME,
-                    ALLOC_INDEX,
-                    ALLOC_TYPE,
-                    ALLOC_TYPENAME,
-                    ALLOC_CMPYCODE,
-                    ALLOC_CMPYNAME,
-                    ALLOC_SUPPCODE,
-                    ALLOC_SUPPNAME,
-                    ALLOC_LOCK,
-                    ALLOC_LOCKNAME,
-                    ALLOC_PERIOD
-                FROM PRODUCTS, GUI_ALLOCATIONS
-                WHERE PRODUCTS.PROD_CMPY = GUI_ALLOCATIONS.ALLOC_SUPPCODE
-                    AND ALLOC_INDEX = :alloc_index
-                    AND ALLOC_TYPE = :alloc_type
-                    AND ALLOC_CMPYCODE = :alloc_cmpy
-                    AND ALLOC_SUPPCODE = :alloc_supp
-            ) ALL_PRODS,
-            GUI_ALLOCATION_ITEMS
-	        , UNIT_SCALE_VW					aunit
-            WHERE ALL_PRODS.PROD_CODE = GUI_ALLOCATION_ITEMS.AITEM_PRODCODE(+)
-                AND ALL_PRODS.PROD_CMPY = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
-                AND ALL_PRODS.ALLOC_INDEX = GUI_ALLOCATION_ITEMS.AITEM_INDEX(+)
-                AND ALL_PRODS.ALLOC_TYPE = GUI_ALLOCATION_ITEMS.AITEM_TYPE(+)
-                AND ALL_PRODS.ALLOC_CMPYCODE = GUI_ALLOCATION_ITEMS.AITEM_CMPYCODE(+)
-                AND ALL_PRODS.ALLOC_SUPPCODE = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
-                AND NVL(GUI_ALLOCATION_ITEMS.AITEM_PRODUNIT, 5) = aunit.UNIT_ID
-            ORDER BY AITEM_QTYLIMIT DESC, PROD_CODE
-            ";
-            $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':alloc_index', $this->alloc_index);
-            oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
-            oci_bind_by_name($stmt, ':alloc_cmpy', $this->alloc_cmpycode);
-            oci_bind_by_name($stmt, ':alloc_supp', $this->alloc_suppcode);
+            if (isset($this->customer) && $this->customer !== "null" && $serv->site_customer_product()) {
+                $query = "
+                SELECT 
+                    NVL(GUI_ALLOCATION_ITEMS.AITEM_INDEX, ALL_PRODS.ALLOC_INDEX) AITEM_INDEX,
+                    NVL(GUI_ALLOCATION_ITEMS.AITEM_TYPE, ALL_PRODS.ALLOC_TYPE) AITEM_TYPE,
+                    NVL(AITEM_TYPENAME, ALLOC_TYPENAME) AITEM_TYPENAME,
+                    NVL(AITEM_CMPYCODE, ALLOC_CMPYCODE) AITEM_CMPYCODE,
+                    NVL(AITEM_CMPYNAME, ALLOC_CMPYNAME) AITEM_CMPYNAME,
+                    NVL(AITEM_PRODCODE, PROD_CODE) AITEM_PRODCODE,
+                    NVL(AITEM_PRODNAME, PROD_NAME) AITEM_PRODNAME,
+                    NVL(AITEM_SUPPCODE, ALLOC_SUPPCODE) AITEM_SUPPCODE,
+                    NVL(AITEM_SUPPNAME, ALLOC_SUPPNAME) AITEM_SUPPNAME,
+                    NVL(AITEM_QTYLIMIT, 0) AITEM_QTYLIMIT,
+                    NVL(AITEM_QTYUSED, 0) AITEM_QTYUSED,
+                    NVL(AITEM_QTYLEFT, 0) AITEM_QTYLEFT,
+                    NVL(AITEM_PRODUNIT, 5) AITEM_PRODUNIT,
+                    NVL(AITEM_UNITNAME, 'l (amb)') AITEM_UNITNAME2,
+                    aunit.DESCRIPTION  AITEM_UNITNAME,
+                    NVL(AITEM_PERCHILD, ALLOC_PERIOD) AITEM_PERCHILD
+                FROM
+                (
+                    SELECT PRODUCTS.PROD_CODE,
+                        PRODUCTS.PROD_CMPY,
+                        PRODUCTS.PROD_NAME,
+                        ALLOC_INDEX,
+                        ALLOC_TYPE,
+                        ALLOC_TYPENAME,
+                        ALLOC_CMPYCODE,
+                        ALLOC_CMPYNAME,
+                        ALLOC_SUPPCODE,
+                        ALLOC_SUPPNAME,
+                        ALLOC_LOCK,
+                        ALLOC_LOCKNAME,
+                        ALLOC_PERIOD
+                    FROM PRODUCTS, GUI_ALLOCATIONS, CUSTOMER_PRODUCT
+                    WHERE PRODUCTS.PROD_CMPY = GUI_ALLOCATIONS.ALLOC_SUPPCODE
+                        AND PRODUCTS.PROD_CODE = CUSTOMER_PRODUCT.PROD_CODE
+                        AND PRODUCTS.PROD_CMPY = CUSTOMER_PRODUCT.PROD_CMPY
+                        AND ALLOC_INDEX = :alloc_index
+                        AND ALLOC_TYPE = :alloc_type
+                        AND ALLOC_CMPYCODE = :alloc_cmpy
+                        AND ALLOC_SUPPCODE = :alloc_supp
+                        AND CUST_ACCT = :customer
+                ) ALL_PRODS,
+                GUI_ALLOCATION_ITEMS
+                , UNIT_SCALE_VW					aunit
+                WHERE ALL_PRODS.PROD_CODE = GUI_ALLOCATION_ITEMS.AITEM_PRODCODE(+)
+                    AND ALL_PRODS.PROD_CMPY = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
+                    AND ALL_PRODS.ALLOC_INDEX = GUI_ALLOCATION_ITEMS.AITEM_INDEX(+)
+                    AND ALL_PRODS.ALLOC_TYPE = GUI_ALLOCATION_ITEMS.AITEM_TYPE(+)
+                    AND ALL_PRODS.ALLOC_CMPYCODE = GUI_ALLOCATION_ITEMS.AITEM_CMPYCODE(+)
+                    AND ALL_PRODS.ALLOC_SUPPCODE = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
+                    AND NVL(GUI_ALLOCATION_ITEMS.AITEM_PRODUNIT, 5) = aunit.UNIT_ID
+                ORDER BY AITEM_QTYLIMIT DESC, PROD_CODE
+                ";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':alloc_index', $this->alloc_index);
+                oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
+                oci_bind_by_name($stmt, ':alloc_cmpy', $this->alloc_cmpycode);
+                oci_bind_by_name($stmt, ':alloc_supp', $this->alloc_suppcode);
+                oci_bind_by_name($stmt, ':customer', $this->customer);
+            } else {
+                $query = "
+                SELECT 
+                    NVL(GUI_ALLOCATION_ITEMS.AITEM_INDEX, ALL_PRODS.ALLOC_INDEX) AITEM_INDEX,
+                    NVL(GUI_ALLOCATION_ITEMS.AITEM_TYPE, ALL_PRODS.ALLOC_TYPE) AITEM_TYPE,
+                    NVL(AITEM_TYPENAME, ALLOC_TYPENAME) AITEM_TYPENAME,
+                    NVL(AITEM_CMPYCODE, ALLOC_CMPYCODE) AITEM_CMPYCODE,
+                    NVL(AITEM_CMPYNAME, ALLOC_CMPYNAME) AITEM_CMPYNAME,
+                    NVL(AITEM_PRODCODE, PROD_CODE) AITEM_PRODCODE,
+                    NVL(AITEM_PRODNAME, PROD_NAME) AITEM_PRODNAME,
+                    NVL(AITEM_SUPPCODE, ALLOC_SUPPCODE) AITEM_SUPPCODE,
+                    NVL(AITEM_SUPPNAME, ALLOC_SUPPNAME) AITEM_SUPPNAME,
+                    NVL(AITEM_QTYLIMIT, 0) AITEM_QTYLIMIT,
+                    NVL(AITEM_QTYUSED, 0) AITEM_QTYUSED,
+                    NVL(AITEM_QTYLEFT, 0) AITEM_QTYLEFT,
+                    NVL(AITEM_PRODUNIT, 5) AITEM_PRODUNIT,
+                    NVL(AITEM_UNITNAME, 'l (amb)') AITEM_UNITNAME2,
+                    aunit.DESCRIPTION  AITEM_UNITNAME,
+                    NVL(AITEM_PERCHILD, ALLOC_PERIOD) AITEM_PERCHILD
+                FROM
+                (
+                    SELECT PROD_CODE,
+                        PROD_CMPY,
+                        PROD_NAME,
+                        ALLOC_INDEX,
+                        ALLOC_TYPE,
+                        ALLOC_TYPENAME,
+                        ALLOC_CMPYCODE,
+                        ALLOC_CMPYNAME,
+                        ALLOC_SUPPCODE,
+                        ALLOC_SUPPNAME,
+                        ALLOC_LOCK,
+                        ALLOC_LOCKNAME,
+                        ALLOC_PERIOD
+                    FROM PRODUCTS, GUI_ALLOCATIONS
+                    WHERE PRODUCTS.PROD_CMPY = GUI_ALLOCATIONS.ALLOC_SUPPCODE
+                        AND ALLOC_INDEX = :alloc_index
+                        AND ALLOC_TYPE = :alloc_type
+                        AND ALLOC_CMPYCODE = :alloc_cmpy
+                        AND ALLOC_SUPPCODE = :alloc_supp
+                ) ALL_PRODS,
+                GUI_ALLOCATION_ITEMS
+                , UNIT_SCALE_VW					aunit
+                WHERE ALL_PRODS.PROD_CODE = GUI_ALLOCATION_ITEMS.AITEM_PRODCODE(+)
+                    AND ALL_PRODS.PROD_CMPY = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
+                    AND ALL_PRODS.ALLOC_INDEX = GUI_ALLOCATION_ITEMS.AITEM_INDEX(+)
+                    AND ALL_PRODS.ALLOC_TYPE = GUI_ALLOCATION_ITEMS.AITEM_TYPE(+)
+                    AND ALL_PRODS.ALLOC_CMPYCODE = GUI_ALLOCATION_ITEMS.AITEM_CMPYCODE(+)
+                    AND ALL_PRODS.ALLOC_SUPPCODE = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
+                    AND NVL(GUI_ALLOCATION_ITEMS.AITEM_PRODUNIT, 5) = aunit.UNIT_ID
+                ORDER BY AITEM_QTYLIMIT DESC, PROD_CODE
+                ";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':alloc_index', $this->alloc_index);
+                oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
+                oci_bind_by_name($stmt, ':alloc_cmpy', $this->alloc_cmpycode);
+                oci_bind_by_name($stmt, ':alloc_supp', $this->alloc_suppcode);
+            }
         }   
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
