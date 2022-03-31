@@ -73,13 +73,15 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
     }
   };
 
-  const checkMultiAllocation = async (type, cmpy, supp, lock, period) => {
+  const checkMultiAllocation = async (type, cmpy, supp, lock, period, start, end) => {
     const values = {
       at_type: type,
       at_cmpy: cmpy,
       supplier: supp,
       lock_type: lock,
       period_type: period,
+      start_date: start,
+      end_date: end,
     };
 
     const results = await api.post(ALLOCATIONS.CHECK_MULTI_ALLOC, values);
@@ -156,9 +158,15 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
     }
 
     if (IS_CREATING) {
-      values.alloc_index =
+      /* values.alloc_index =
         _.toInteger(values?.alloc_lock) * 100 +
-        (!values?.alloc_period ? 0 : _.toInteger(values?.alloc_period));
+        (!values?.alloc_period ? 0 : _.toInteger(values?.alloc_period)); */
+      // values.alloc_index = undefined;
+      values.alloc_index = await nextAllocIndex(
+        values?.alloc_type,
+        values?.alloc_cmpycode,
+        values?.alloc_suppcode
+      );
     } else {
       if (values?.alloc_index === undefined) {
         values.alloc_index = value?.alloc_index;
@@ -173,7 +181,9 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
           values?.alloc_cmpycode,
           values?.alloc_suppcode,
           values?.alloc_lock,
-          values?.alloc_period
+          values?.alloc_period,
+          values?.alloc_start_date,
+          values?.alloc_end_date
         );
         if (counter > 0) {
           let notes = t('descriptions.alreadyExistsRecord');
@@ -199,6 +209,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
               t('fields.supplier') +
               ': ' +
               values?.alloc_suppcode +
+              '(' +
+              values?.alloc_start_date +
+              '~' +
+              values.alloc_end_date +
+              ')' +
               '"'
           );
           notification.error({
