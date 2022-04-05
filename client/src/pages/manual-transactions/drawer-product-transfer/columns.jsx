@@ -330,6 +330,7 @@ const columns = (
       txt: t,
       form,
       digits: config?.precisionVolume,
+      factor: config?.airBuoyancyFactor,
     },
     cellRenderer: 'QuantityRenderer',
     cellRendererParams: {
@@ -375,6 +376,8 @@ const columns = (
       massInVacuum: 'trsf_load_kg',
       standardVolume: 'trsf_qty_cor',
       factor: config?.airBuoyancyFactor,
+      densityColumn: 'trsf_density',
+      diffTip: false,
     },
   },
   {
