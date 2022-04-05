@@ -36,6 +36,7 @@ import generatePassword from './generate-password';
 import getChildrenFromTxt from './get-children-from-txt';
 import decimalThousandSeparator from './decimal-thousand-separator';
 import generateMaxInt from './generate-maxint';
+import castNumber from './cast-number';
 
 export {
   search,
@@ -78,4 +79,5 @@ export {
   getChildrenFromTxt,
   decimalThousandSeparator,
   generateMaxInt,
+  castNumber,
 };
