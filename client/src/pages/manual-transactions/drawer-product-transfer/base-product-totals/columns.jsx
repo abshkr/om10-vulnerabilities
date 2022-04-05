@@ -127,6 +127,8 @@ const columns = (t, config) => [
       factor: config?.airBuoyancyFactor,
       adtvFlag: 'trsf_bs_adtv_flag_tot',
       adtvDigits: config?.precisionAdditive,
+      densityColumn: 'trsf_bs_den_tot',
+      diffTip: false,
     },
   },
   {

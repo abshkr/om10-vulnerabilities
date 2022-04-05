@@ -102,7 +102,7 @@ export default class Standard extends Component {
   }
 
   handleChange(value) {
-    const { min, max, txt, data, colDef, form, rowIndex } = this.props;
+    const { min, max, txt, data, colDef, form, rowIndex, factor } = this.props;
 
     let capacity = max;
     // do not need to limit the quantity to compartment capacity in manual transactions
@@ -114,6 +114,19 @@ export default class Standard extends Component {
       let current = form.getFieldValue('transfers');
 
       current[rowIndex][colDef.field] = value;
+
+      if (value !== 0 && !value) {
+        current[rowIndex]['trsf_air_kg'] = '';
+      } else {
+        const GSV = value;
+        const Dstd = current[rowIndex]['trsf_density'];
+        const AIR = !factor ? 0.0011 : factor;
+        const precision = 0;
+        current[rowIndex]['trsf_air_kg'] = _.round(
+          _.toNumber(GSV) * (_.toNumber(Dstd) / 1000.0 - AIR),
+          precision
+        );
+      }
 
       form.setFieldsValue({
         transfers: current,
