@@ -203,7 +203,8 @@ class Allocation extends CommonClass
             $still_exist = false;
             foreach ($this->allocs as $alloc) {
                 if ($alloc->aitem_prodcode == $prodcode) {
-                    if ($alloc->aitem_qtylimit == 0) {
+                    // if ($alloc->aitem_qtylimit == 0) {
+                    if ($alloc->aitem_qtylimit === '' || is_null($alloc->aitem_qtylimit)) {
                         $query = "DELETE FROM ALL_CHILD
                             WHERE ALCH_ALP_ALL_PROD_PRODCMPY = :alloc_suppcode
                                 AND ALCH_ALP_ALL_ATKY_AT_TYPE = :alloc_type
@@ -233,7 +234,8 @@ class Allocation extends CommonClass
                             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                             return false;
                         }
-                    } else if ($alloc->aitem_qtylimit > 0) {
+                    // } else if ($alloc->aitem_qtylimit > 0) {
+                    } else if ($alloc->aitem_qtylimit >= 0) {
                         $new_left = $item_array['AITEM_QTYLEFT'] + ($alloc->aitem_qtylimit - $item_array['AITEM_QTYLIMIT']);
                         $query = "UPDATE ALLOCS
                             SET ALLOC_LIMIT = :aitem_qtylimit,
@@ -265,7 +267,8 @@ class Allocation extends CommonClass
         //In new but not in old.
         foreach ($this->allocs as $alloc) {
             if (isset($old_children[$alloc->aitem_prodcode])
-                || $alloc->aitem_qtylimit === 0) {
+                || ($alloc->aitem_qtylimit === '' || is_null($alloc->aitem_qtylimit))) {
+                // || $alloc->aitem_qtylimit === 0) {
                 continue;
             }
 
@@ -316,7 +319,8 @@ class Allocation extends CommonClass
         }
         
         foreach ($this->allocs as $value) {
-            if ($value->aitem_qtylimit <= 0) {
+            // if ($value->aitem_qtylimit <= 0) {
+            if ($value->aitem_qtylimit === '' || is_null($value->aitem_qtylimit) || $value->aitem_qtylimit < 0) {
                 continue;
             }
             
@@ -574,7 +578,7 @@ class Allocation extends CommonClass
                 NVL(AITEM_PRODNAME, PROD_NAME) AITEM_PRODNAME,
                 NVL(AITEM_SUPPCODE, ALLOC_SUPPCODE) AITEM_SUPPCODE,
                 NVL(AITEM_SUPPNAME, ALLOC_SUPPNAME) AITEM_SUPPNAME,
-                NVL(AITEM_QTYLIMIT, 0) AITEM_QTYLIMIT,
+                NVL(AITEM_QTYLIMIT, NULL) AITEM_QTYLIMIT,
                 NVL(AITEM_QTYUSED, 0) AITEM_QTYUSED,
                 NVL(AITEM_QTYLEFT, 0) AITEM_QTYLEFT,
                 NVL(AITEM_PRODUNIT, 5) AITEM_PRODUNIT,
@@ -606,7 +610,7 @@ class Allocation extends CommonClass
                 AND ALL_PRODS.ALLOC_CMPYCODE = GUI_ALLOCATION_ITEMS.AITEM_CMPYCODE(+)
                 AND ALL_PRODS.ALLOC_SUPPCODE = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
                 AND NVL(GUI_ALLOCATION_ITEMS.AITEM_PRODUNIT, 5) = aunit.UNIT_ID
-            ORDER BY AITEM_QTYLIMIT DESC, PROD_CODE
+            ORDER BY AITEM_QTYLIMIT DESC NULLS LAST, PROD_CODE
             ";
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':supplier', $this->supplier);
@@ -620,7 +624,7 @@ class Allocation extends CommonClass
                 NVL(AITEM_PRODNAME, PROD_NAME) AITEM_PRODNAME,
                 NVL(AITEM_SUPPCODE, ALLOC_SUPPCODE) AITEM_SUPPCODE,
                 NVL(AITEM_SUPPNAME, ALLOC_SUPPNAME) AITEM_SUPPNAME,
-                NVL(AITEM_QTYLIMIT, 0) AITEM_QTYLIMIT,
+                NVL(AITEM_QTYLIMIT, NULL) AITEM_QTYLIMIT,
                 NVL(AITEM_QTYUSED, 0) AITEM_QTYUSED,
                 NVL(AITEM_QTYLEFT, 0) AITEM_QTYLEFT,
                 NVL(AITEM_PRODUNIT, 5) AITEM_PRODUNIT,
@@ -655,7 +659,7 @@ class Allocation extends CommonClass
                 AND ALL_PRODS.ALLOC_CMPYCODE = GUI_ALLOCATION_ITEMS.AITEM_CMPYCODE(+)
                 AND ALL_PRODS.ALLOC_SUPPCODE = GUI_ALLOCATION_ITEMS.AITEM_SUPPCODE(+)
                 AND NVL(GUI_ALLOCATION_ITEMS.AITEM_PRODUNIT, 5) = aunit.UNIT_ID
-            ORDER BY AITEM_QTYLIMIT DESC, PROD_CODE
+            ORDER BY AITEM_QTYLIMIT DESC NULLS LAST, PROD_CODE
             ";
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);

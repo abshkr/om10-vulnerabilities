@@ -15,6 +15,7 @@ import { mutate } from 'swr';
 import _ from 'lodash';
 import useSWR from 'swr';
 
+import { castNumber } from '../../../utils';
 import { Type, Company, Supplier, LockType, Period as PeriodItem, Unit } from './fields';
 import { DataTable } from '../../../components';
 import api, { ALLOCATIONS } from '../../../api';
@@ -129,7 +130,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal 
     _.forEach(values?.allocs, (alloc) => {
       allocs.push({
         aitem_prodcode: alloc.aitem_prodcode,
-        aitem_qtylimit: _.toNumber(alloc.aitem_qtylimit),
+        aitem_qtylimit: castNumber(alloc.aitem_qtylimit),
         aitem_produnit: _.toNumber(alloc.aitem_produnit),
       });
     });
