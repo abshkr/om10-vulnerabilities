@@ -44,7 +44,9 @@ const Density = ({ form, value, product, config, onChange }) => {
       setFieldsValue({
         tank_density: value.tank_density,
       });
-      onChange(value.tank_density);
+      if (onChange) {
+        onChange(value.tank_density);
+      }
     }
   }, [value, setFieldsValue]);
 
@@ -94,7 +96,9 @@ const Density = ({ form, value, product, config, onChange }) => {
   }, [payload, product]);
 
   const onFieldChanged = (event) => {
-    onChange(event?.target?.value);
+    if (onChange) {
+      onChange(event?.target?.value);
+    }
   };
 
   const affix = isValidating ? t('messages.calculating') : `${low} - ${high} ${t('units.kg/m3')}`;
