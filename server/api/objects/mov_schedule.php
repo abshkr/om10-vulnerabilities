@@ -12,7 +12,7 @@ class MovementSchedule extends CommonClass
 
     public $NUMBER_FIELDS = array(
         "SHLS_TRIP_NO",
-        "LOAD_REVERSE_FLAG",
+        // "LOAD_REVERSE_FLAG",
         "MV_ID",
         "SHLSLOAD_LOAD_ID",
         "SHLS_LD_TYPE",
