@@ -20,7 +20,6 @@ class Schedule extends CommonClass
     // protected $primary_keys = array("area_k");
 
     public $NUMBER_FIELDS = array(
-        "SHLS_TRIP_NO",
         "ORDER_NO",
         "ORDER_CUST_ORDNO",
         "QTY_AMB",
