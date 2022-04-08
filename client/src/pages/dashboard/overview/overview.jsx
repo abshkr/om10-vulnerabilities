@@ -10,6 +10,84 @@ import { DASHBOARD } from '../../../api';
 
 import locale from './locale';
 
+/*
+yaxis: {
+      show: true,
+      showAlways: true,
+      showForNullSeries: true,
+      seriesName: undefined,
+      opposite: false,
+      reversed: false,
+      logarithmic: false,
+      logBase: 10,
+      tickAmount: 6,
+      min: 6,
+      max: 6,
+      forceNiceScale: false,
+      floating: false,
+      decimalsInFloat: undefined,
+      labels: {
+          show: true,
+          align: 'right',
+          minWidth: 0,
+          maxWidth: 160,
+          style: {
+              colors: [],
+              fontSize: '12px',
+              fontFamily: 'Helvetica, Arial, sans-serif',
+              fontWeight: 400,
+              cssClass: 'apexcharts-yaxis-label',
+          },
+          offsetX: 0,
+          offsetY: 0,
+          rotate: 0,
+          formatter: (value) => { return val },
+      },
+      axisBorder: {
+          show: true,
+          color: '#78909C',
+          offsetX: 0,
+          offsetY: 0
+      },
+      axisTicks: {
+          show: true,
+          borderType: 'solid',
+          color: '#78909C',
+          width: 6,
+          offsetX: 0,
+          offsetY: 0
+      },
+      title: {
+          text: undefined,
+          rotate: -90,
+          offsetX: 0,
+          offsetY: 0,
+          style: {
+              color: undefined,
+              fontSize: '12px',
+              fontFamily: 'Helvetica, Arial, sans-serif',
+              fontWeight: 600,
+              cssClass: 'apexcharts-yaxis-title',
+          },
+      },
+      crosshairs: {
+          show: true,
+          position: 'back',
+          stroke: {
+              color: '#b6b6b6',
+              width: 1,
+              dashArray: 0,
+          },
+      },
+      tooltip: {
+          enabled: true,
+          offsetX: 0,
+      },
+      
+  }
+  
+*/
+
 const Overview = () => {
   const { t, i18n } = useTranslation();
 
@@ -29,6 +107,7 @@ const Overview = () => {
   const [storageOptions, setStorageOptions] = useState({});
   const [storageClass, setStorageClass] = useState(txtAll);
   const [storageTypes, setStorageTypes] = useState([]);
+  const [storageMode, setStorageMode] = useState('linear');
 
   const [folioSeries, setFolioSeries] = useState([]);
   const [folioOptions, setFolioOptions] = useState({});
@@ -92,6 +171,7 @@ const Overview = () => {
 
         yaxis: {
           logarithmic: weeklyMode !== 'linear',
+          showAlways: true,
           min: weeklyMin,
           forceNiceScale: true,
           labels: {
@@ -201,7 +281,9 @@ const Overview = () => {
         },
 
         yaxis: {
-          logarithmic: true,
+          logarithmic: storageMode !== 'linear',
+          forceNiceScale: true,
+          showAlways: true,
           labels: {
             formatter: function (value, timestamp) {
               return value?.toFixed(2);
@@ -225,7 +307,7 @@ const Overview = () => {
       setStorageOptions(options);
       setStorageSeries(payload);
     }
-  }, [payload, storageClass, i18n]);
+  }, [payload, storageMode, storageClass, i18n]);
 
   useEffect(() => {
     const entry = payload?.records && payload?.records[0];
@@ -406,19 +488,29 @@ const Overview = () => {
             size="small"
             loading={!payload}
             extra={
-              <Select
-                dropdownMatchSelectWidth={false}
-                value={storageClass}
-                style={{ width: 250 }}
-                loading={!payload}
-                onChange={(value) => setStorageClass(value)}
-              >
-                {storageTypes.map((item) => (
-                  <Select.Option value={item} key={item}>
-                    {`${item !== txtAll ? t('fields.class') + ': ' : ''} ${item}`}
-                  </Select.Option>
-                ))}
-              </Select>
+              <>
+                <Radio.Group
+                  defaultValue={storageMode}
+                  buttonStyle="solid"
+                  onChange={(event) => setStorageMode(event.target.value)}
+                >
+                  <Radio.Button value="linear">{t('fields.chartLinear')}</Radio.Button>
+                  <Radio.Button value="log">{t('fields.chartLogarithmic')}</Radio.Button>
+                </Radio.Group>
+                <Select
+                  dropdownMatchSelectWidth={false}
+                  value={storageClass}
+                  style={{ width: 250 }}
+                  loading={!payload}
+                  onChange={(value) => setStorageClass(value)}
+                >
+                  {storageTypes.map((item) => (
+                    <Select.Option value={item} key={item}>
+                      {`${item !== txtAll ? t('fields.class') + ': ' : ''} ${item}`}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </>
             }
           >
             <Chart
