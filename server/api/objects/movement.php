@@ -2537,7 +2537,8 @@ class Movement extends CommonClass
         if (isset($this->mv_id)) {
             $query = "
                 SELECT GUI_TRANSACTIONS.*, 
-                    DECODE(TRSA_REVERSE_FLAG, 1, TRSA_REVERSE, NULL) TRSA_REVERSE_EX 
+                    DECODE(TRSA_REVERSE_FLAG, 1, TRSA_REVERSE, NULL) TRSA_REVERSE_EX,
+                    DECODE(TRSA_REVERSE_FLAG, 1, 'Reversal', 2, 'Repost', NULL) TRSA_REVERSE_DESC
                 FROM GUI_TRANSACTIONS 
                 WHERE (TRSA_TRIP, TRSA_SUPPLIER) IN 
                     (SELECT MS.MS_SHLSTRIP, MS.MS_SHLSSUPP FROM MOV_SCHEDULES MS, MOV_SCHD_ITEMS MI 
@@ -2550,7 +2551,8 @@ class Movement extends CommonClass
         } else {
             $query = "
                 SELECT GUI_TRANSACTIONS.*, 
-                    DECODE(TRSA_REVERSE_FLAG, 1, TRSA_REVERSE, NULL) TRSA_REVERSE_EX 
+                    DECODE(TRSA_REVERSE_FLAG, 1, TRSA_REVERSE, NULL) TRSA_REVERSE_EX,
+                    DECODE(TRSA_REVERSE_FLAG, 1, 'Reversal', 2, 'Repost', NULL) TRSA_REVERSE_DESC
                 FROM GUI_TRANSACTIONS 
                 WHERE TRSA_TRIP = :trip_no
                     AND TRSA_SUPPLIER = :supplier
