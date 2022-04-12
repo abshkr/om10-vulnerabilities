@@ -39,7 +39,7 @@ import {
   DailyVariance,
   MontlhyVariance,
 } from './fields';
-import api, { TANKS, BASE_PRODUCTS, SPECIAL_MOVEMENTS, STOCK_MANAGEMENT } from '../../../api';
+import api, { TANKS, BASE_PRODUCTS, SPECIAL_MOVEMENTS, STOCK_MANAGEMENT, BASE_OWNERS } from '../../../api';
 import { SETTINGS } from '../../../constants';
 
 import TankAdaptiveFlowControl from '../../tanks/afc';
@@ -90,6 +90,14 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     const results = await api.get(`${SPECIAL_MOVEMENTS.DRAWER_PRODUCTS_BY_BASE}?base_code=${base}`);
 
     return results?.data?.records;
+  };
+
+  const getBaseOwnershipBySupplier = async (base, supplier, terminal) => {
+    const results = await api.get(
+      `${BASE_OWNERS.READ}?base_code=${base}&cmpy_code=${supplier}&terminal=${terminal}`
+    );
+
+    return results?.data?.records?.[0];
   };
 
   const getTankStocks = async (terminal, tank, base) => {
@@ -296,6 +304,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       );
     }
 
+    let ownershipNotEnough = false;
     let hasGainLoss = false;
     let lines = null;
     if (!IS_CREATING && values?.tank_base !== value?.tank_base) {
@@ -307,6 +316,15 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       // check to ensure for the intended Tank, that the Book Stock is equal to the current Stock (this is a manual process)
       const stocks = await getTankStocks(value?.tank_terminal, value?.tank_code, value?.tank_base);
       hasGainLoss = _.toNumber(stocks?.gainloss) !== 0;
+
+      // check if the supplier base ownership is enough
+      const ownership = await getBaseOwnershipBySupplier(
+        values?.tank_base,
+        itemNewProd?.prod_cmpy,
+        value?.tank_terminal
+      );
+      ownershipNotEnough =
+        !!ownership && _.toNumber(ownership?.ownship_qty) < _.toNumber(value?.tank_cor_vol);
 
       lines = (
         <Card
@@ -327,6 +345,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
               </div>
             </Tag>
           )}
+
           {config?.siteFolioTankBaseChange && !hasGainLoss && (
             <Tag color={'green'}>
               <div
@@ -349,6 +368,34 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
               </div>
             </Tag>
           )}
+
+          {config?.siteFolioTankBaseChange && !ownershipNotEnough && (
+            <Tag color={'green'}>
+              <div
+                style={{ wordWrap: 'break-word', whiteSpace: 'normal', fontWeight: 'bold', color: 'green' }}
+              >
+                {t('descriptions.spmOnTankBaseChangeOwnershipEnough', {
+                  BASE_SUPPLIER: `${itemNewProd?.prod_cmpy} - ${itemNewProd?.cmpy_name}`,
+                  NEW_BASE: baseItem?.records?.[0]?.base_text,
+                  OWNER_STOCK: ownership?.ownship_qty,
+                  TANK_STOCK: value?.tank_cor_vol,
+                })}
+              </div>
+            </Tag>
+          )}
+          {config?.siteFolioTankBaseChange && ownershipNotEnough && (
+            <Tag color={'red'}>
+              <div style={{ wordWrap: 'break-word', whiteSpace: 'normal', fontWeight: 'bold', color: 'red' }}>
+                {t('descriptions.spmOnTankBaseChangeOwnershipNotEnough', {
+                  BASE_SUPPLIER: `${itemNewProd?.prod_cmpy} - ${itemNewProd?.cmpy_name}`,
+                  NEW_BASE: baseItem?.records?.[0]?.base_text,
+                  OWNER_STOCK: ownership?.ownship_qty,
+                  TANK_STOCK: value?.tank_cor_vol,
+                })}
+              </div>
+            </Tag>
+          )}
+
           {lines2}
         </Card>
       );
@@ -367,7 +414,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
           ? '600px'
           : null,
       okButtonProps: {
-        disabled: false, // hasGainLoss, // config?.siteFolioTankBaseChange && !IS_CREATING && values?.tank_base !== value?.tank_base && (!values?.tank_prod_from || !values?.tank_prod_to),
+        disabled: ownershipNotEnough, // config?.siteFolioTankBaseChange && !IS_CREATING && values?.tank_base !== value?.tank_base && (!values?.tank_prod_from || !values?.tank_prod_to),
       },
       onOk: async () => {
         await api
