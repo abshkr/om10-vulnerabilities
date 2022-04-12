@@ -39,7 +39,14 @@ import {
   DailyVariance,
   MontlhyVariance,
 } from './fields';
-import api, { TANKS, BASE_PRODUCTS, SPECIAL_MOVEMENTS, STOCK_MANAGEMENT, BASE_OWNERS } from '../../../api';
+import api, {
+  TANKS,
+  BASE_PRODUCTS,
+  SPECIAL_MOVEMENTS,
+  STOCK_MANAGEMENT,
+  BASE_OWNERS,
+  SITE_CONFIGURATION,
+} from '../../../api';
 import { SETTINGS } from '../../../constants';
 
 import TankAdaptiveFlowControl from '../../tanks/afc';
@@ -90,6 +97,12 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     const results = await api.get(`${SPECIAL_MOVEMENTS.DRAWER_PRODUCTS_BY_BASE}?base_code=${base}`);
 
     return results?.data?.records;
+  };
+
+  const getServerTime = async () => {
+    const results = await api.get(`${SITE_CONFIGURATION.GET_SERVER_DATA}`);
+
+    return results?.data?.records?.[0]?.server_time;
   };
 
   const getBaseOwnershipBySupplier = async (base, supplier, terminal) => {
@@ -148,7 +161,10 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
 
       values.mlitm_type = moveType;
 
-      const serverCurrent = moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT);
+      const serverTime = await getServerTime();
+      const serverCurrent = moment(serverTime, SETTINGS.DATE_TIME_FORMAT);
+      // console.log('...........................server time', serverCurrent, serverTime);
+      // const serverCurrent = moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT);
       values.mlitm_dtim_start = serverCurrent.format(SETTINGS.DATE_TIME_FORMAT);
 
       // use 0 as default transfer type
