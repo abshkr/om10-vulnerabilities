@@ -333,10 +333,10 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       const stocks = await getTankStocks(value?.tank_terminal, value?.tank_code, value?.tank_base);
       hasGainLoss = _.toNumber(stocks?.gainloss) !== 0;
 
-      // check if the supplier base ownership is enough
+      // check if the FROM supplier base ownership is enough
       const ownership = await getBaseOwnershipBySupplier(
-        values?.tank_base,
-        itemNewProd?.prod_cmpy,
+        value?.tank_base,
+        itemOldProd?.prod_cmpy,
         value?.tank_terminal
       );
       ownershipNotEnough =
@@ -391,8 +391,8 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
                 style={{ wordWrap: 'break-word', whiteSpace: 'normal', fontWeight: 'bold', color: 'green' }}
               >
                 {t('descriptions.spmOnTankBaseChangeOwnershipEnough', {
-                  BASE_SUPPLIER: `${itemNewProd?.prod_cmpy} - ${itemNewProd?.cmpy_name}`,
-                  NEW_BASE: baseItem?.records?.[0]?.base_text,
+                  FROM_SUPPLIER: `${itemOldProd?.prod_cmpy} - ${itemOldProd?.cmpy_name}`,
+                  FROM_BASE: baseItemOld?.records?.[0]?.base_text,
                   OWNER_STOCK: ownership?.ownship_qty,
                   TANK_STOCK: value?.tank_cor_vol,
                 })}
@@ -403,8 +403,8 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             <Tag color={'red'}>
               <div style={{ wordWrap: 'break-word', whiteSpace: 'normal', fontWeight: 'bold', color: 'red' }}>
                 {t('descriptions.spmOnTankBaseChangeOwnershipNotEnough', {
-                  BASE_SUPPLIER: `${itemNewProd?.prod_cmpy} - ${itemNewProd?.cmpy_name}`,
-                  NEW_BASE: baseItem?.records?.[0]?.base_text,
+                  FROM_SUPPLIER: `${itemOldProd?.prod_cmpy} - ${itemOldProd?.cmpy_name}`,
+                  FROM_BASE: baseItemOld?.records?.[0]?.base_text,
                   OWNER_STOCK: ownership?.ownship_qty,
                   TANK_STOCK: value?.tank_cor_vol,
                 })}
