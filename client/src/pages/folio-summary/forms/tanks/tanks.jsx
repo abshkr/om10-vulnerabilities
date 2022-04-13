@@ -91,7 +91,17 @@ const Tanks = ({ id, enabled, saveToFolioTrigger, saveToTanksTrigger, calculateT
             const payload = [];
 
             tableAPI.forEachNodeAfterFilterAndSort((rowNode, index) => {
-              const filtered = _.find(response.data.data, ['tank_code', rowNode.data.tank_code]);
+              // const filtered = _.find(response.data.data, ['tank_code', rowNode.data.tank_code]);
+              const filtered = _.find(
+                response.data.data,
+                (o) =>
+                  o?.tank_code === rowNode.data.tank_code &&
+                  o?.tank_basecode === rowNode.data.tank_basecode &&
+                  o?.base_period_open === rowNode.data.base_period_open &&
+                  o?.base_period_close === rowNode.data.base_period_close
+              );
+
+              // console.log('......................filtered', filtered);
 
               if (filtered) {
                 rowNode.data.close_amb_tot = filtered.close_amb_tot;
