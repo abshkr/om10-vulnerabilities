@@ -1842,7 +1842,7 @@ class Tanker extends CommonClass
             $tag_obj = new IDAssignment($this->conn);
             $tag_obj->kya_txt         = $tag_txt;
             $tag_obj->kya_tanker      = $this->tnkr_code;
-            $tag_obj->kya_phys_type   = 7;
+            $tag_obj->kya_phys_type   = 6;   // P.I.N. KEY
             $tag_obj->kya_type        = 4;
             $tag_obj->kya_lock        = 'N';
             $tag_obj->kya_adhoc       = 'N';
