@@ -4,11 +4,13 @@ include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
 include_once __DIR__ . '/../service/company_service.php';
+include_once __DIR__ . '/../service/site_service.php';
 include_once 'expiry_date.php';
 include_once 'expiry_type.php';
 include_once 'common_class.php';
 include_once 'eqpt_type.php';
 include_once 'eqpt.php';
+include_once 'idassignment.php';
 
 class Tanker extends CommonClass
 {
@@ -1014,6 +1016,12 @@ class Tanker extends CommonClass
             return false;
         }
 
+        //Create idassignment tag if in SITE_CARRCODE_TANKERNUM_TAG mode
+        $tag_result = $this->insert_tanker_tag();
+        if (!$tag_result) {
+            return false;
+        }
+
         oci_commit($this->conn);
         return true;
     }
@@ -1043,6 +1051,12 @@ class Tanker extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
+        //Delete idassignment tag if in SITE_CARRCODE_TANKERNUM_TAG mode
+        $tag_result = $this->delete_tanker_tag();
+        if (!$tag_result) {
+            return false;
+        }
+
         $query = "
             DELETE FROM TNKR_EQUIP
             WHERE TC_TANKER = :tnkr_code";
@@ -1054,7 +1068,7 @@ class Tanker extends CommonClass
             oci_rollback($this->conn);
             return false;
         }
-
+        /*
         $query = "
             UPDATE ACCESS_KEYS
             SET KYA_TANKER = NULL
@@ -1067,7 +1081,7 @@ class Tanker extends CommonClass
             oci_rollback($this->conn);
             return false;
         }
-
+        */
         $query = "
             DELETE FROM TANKERS
             WHERE TNKR_CODE = :tnkr_code";
@@ -1200,6 +1214,11 @@ class Tanker extends CommonClass
         }
 
         //Update idassignment tag if in SITE_CARRCODE_TANKERNUM_TAG mode
+        $tag_result = $this->update_tanker_tag($old_row);
+        if (!$tag_result) {
+            return false;
+        }
+        /*
         $query = "SELECT NVL(MAX(CONFIG_VALUE), 'N') CONFIG_VALUE FROM SITE_CONFIG WHERE CONFIG_KEY = 'SITE_CARRCODE_TANKERNUM_TAG'";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
@@ -1254,6 +1273,7 @@ class Tanker extends CommonClass
                 }
             }
         }
+        */
 
         $query = "
             SELECT NVL(MAX(CONFIG_VALUE), '2') CONFIG_VALUE 
@@ -1665,5 +1685,246 @@ class Tanker extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    public function update_tanker_tag2($old_row)
+    {
+
+        $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("SITE_CARRCODE_TANKERNUM_TAG", "N");
+        $tag_flag = ($config_value === 'Y' || $config_value === 'y');
+        
+        if ($tag_flag && ($this->tnkr_number != $old_row['TNKR_NUMBER'] || $this->tnkr_carrier != $old_row['TNKR_CARRIER'])) {
+            $tag_txt = $this->tnkr_carrier . $this->tnkr_number;
+            write_log(sprintf("Update id assignment tag that tanker is %s. new tag:%s", $this->tnkr_code, $tag_txt), 
+                __FILE__, __LINE__, LogLevel::INFO);
+
+            $affected = 0;
+            $query = "SELECT COUNT(*) CN FROM ACCESS_KEYS WHERE KYA_TANKER = :tnkr_code";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            } else {
+                $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+                $affected = (int) $row['CN'];
+                write_log(sprintf("ID assignment recors to be updated:%d", $affected), __FILE__, __LINE__);
+            }
+
+            $query = "
+                UPDATE ACCESS_KEYS SET KYA_TXT = :tag_txt WHERE KYA_TANKER = :tnkr_code";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':tag_txt', $tag_txt);
+            oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                throw new DatabaseException($e['message']);
+                return false;
+            }
+
+            if ($affected > 0) {
+                write_log("Update SITE_KYA_UPDATE in SITE table", __FILE__, __LINE__, LogLevel::INFO);
+                $query = "
+                    UPDATE SITE
+                    SET KYA_CHANGE_DMY = SYSDATE, SITE_KYA_UPDATE = SITE_KYA_UPDATE + 1";
+                $stmt = oci_parse($this->conn, $query);
+                if (!oci_execute($stmt, $this->commit_mode)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    throw new DatabaseException($e['message']);
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+
+    public function update_tanker_tag($old_row)
+    {
+        // check the site setting SITE_CARRCODE_TANKERNUM_TAG
+        $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("SITE_CARRCODE_TANKERNUM_TAG", "N");
+        $tag_flag = ($config_value === 'Y' || $config_value === 'y');
+        
+        // when SITE_CARRCODE_TANKERNUM_TAG=Y and carrier or tanker number changed
+        if ($tag_flag && ($this->tnkr_number != $old_row['TNKR_NUMBER'] || $this->tnkr_carrier != $old_row['TNKR_CARRIER'])) {
+            $tag_txt = $this->tnkr_carrier . $this->tnkr_number;
+            // get the old tag records of the tanker, which may have more than one tag.
+            $query = "SELECT * FROM ACCESS_KEYS WHERE KYA_TANKER = :tnkr_code and KYA_TYPE = 4";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return false;
+            } else {
+                $tags = array();
+                while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+                    $tags[] = $row;
+                }
+            }
+
+            $tag_obj = new IDAssignment($this->conn);
+            $tag_obj->kya_txt = $tag_txt;
+            $tag_obj->kya_tanker = $this->tnkr_code;
+            foreach ($tags as $key => $tag_row) {
+                $tag_obj->kya_phys_type   = $tag_row['KYA_PHYS_TYPE'];
+                $tag_obj->kya_lock        = $tag_row['KYA_LOCK'];
+                $tag_obj->kya_adhoc       = $tag_row['KYA_ADHOC'];
+                $tag_obj->kya_personnel   = $tag_row['KYA_PSN'];
+                $tag_obj->kya_role        = $tag_row['KYA_ROLE'];
+                $tag_obj->kya_drawer      = $tag_row['KYA_DRAWER'];
+                $tag_obj->kya_equipment   = $tag_row['KYA_EQUIPMENT'];
+                $tag_obj->kya_supplier    = $tag_row['KYA_SP_SUPPLIER'];
+                $tag_obj->kya_timecode    = $tag_row['KYA_TIMECD'];
+                $tag_obj->kya_key_issuer  = $tag_row['KYA_KEY_ISSUER'];
+                $tag_obj->kya_key_no      = $tag_row['KYA_KEY_NO'];
+
+
+                write_log(sprintf("Update id assignment tag that tanker is %s. new tag:%s", $this->tnkr_code, $tag_txt), 
+                __FILE__, __LINE__, LogLevel::INFO);
+
+                if (!$tag_obj->update()) {
+                    write_log("Failed to update tanker tag ID",
+                        __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public function insert_tanker_tag()
+    {
+        // check the site setting SITE_CARRCODE_TANKERNUM_TAG
+        $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("SITE_CARRCODE_TANKERNUM_TAG", "N");
+        $tag_flag = ($config_value === 'Y' || $config_value === 'y');
+        
+        // when SITE_CARRCODE_TANKERNUM_TAG=Y
+        if ($tag_flag) {
+            $tag_txt = $this->tnkr_carrier . $this->tnkr_number;
+            // get the site manager code
+            $query = "SELECT SITE_MNGR FROM SITE";
+            $stmt = oci_parse($this->conn, $query);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return false;
+            }
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            $issuer = $row['SITE_MNGR'];
+    
+            // get the next key no
+            $query = "SELECT NVL(MAX(KYA_KEY_NO), 0) AS MAX_NO FROM ACCESS_KEYS";
+            $stmt = oci_parse($this->conn, $query);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return false;
+            } else {
+                $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+                $next_no = (int) $row['MAX_NO'] + 1;
+                write_log(sprintf("ID assignment recors to be updated:%d", $next_no), __FILE__, __LINE__);
+            }
+
+            $tag_obj = new IDAssignment($this->conn);
+            $tag_obj->kya_txt         = $tag_txt;
+            $tag_obj->kya_tanker      = $this->tnkr_code;
+            $tag_obj->kya_phys_type   = 7;
+            $tag_obj->kya_type        = 4;
+            $tag_obj->kya_lock        = 'N';
+            $tag_obj->kya_adhoc       = 'N';
+            $tag_obj->kya_personnel   = '-1';
+            $tag_obj->kya_role        = '-1';
+            $tag_obj->kya_drawer      = '-1';
+            $tag_obj->kya_equipment   = '-1';
+            $tag_obj->kya_supplier = '-1';
+            $tag_obj->kya_timecode    = 'AL';
+            $tag_obj->kya_key_issuer  = $issuer;
+            $tag_obj->kya_key_no      = $next_no;
+
+            write_log(sprintf("Create id assignment tag that tanker is %s. new tag:%s", $this->tnkr_code, $tag_txt), 
+            __FILE__, __LINE__, LogLevel::INFO);
+
+            if (!$tag_obj->create()) {
+                write_log("Failed to create tanker tag ID",
+                    __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function delete_tanker_tag()
+    {
+        // check the site setting SITE_CARRCODE_TANKERNUM_TAG
+        $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("SITE_CARRCODE_TANKERNUM_TAG", "N");
+        $tag_flag = ($config_value === 'Y' || $config_value === 'y');
+        
+        // when SITE_CARRCODE_TANKERNUM_TAG=Y
+        if ($tag_flag) {
+            // get the all tag records of the tanker, which may have more than one tag.
+            $query = "SELECT * FROM ACCESS_KEYS WHERE KYA_TANKER = :tnkr_code";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return false;
+            } else {
+                $tags = array();
+                while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+                    $tags[] = $row;
+                }
+            }
+
+            // delete them one by one
+            $tag_obj = new IDAssignment($this->conn);
+            foreach ($tags as $key => $tag_row) {
+                $tag_obj->kya_key_issuer  = $tag_row['KYA_KEY_ISSUER'];
+                $tag_obj->kya_key_no      = $tag_row['KYA_KEY_NO'];
+
+                write_log(sprintf("Delete id assignment tag that tanker is %s. new tag:%s", $this->tnkr_code, $tag_txt), 
+                __FILE__, __LINE__, LogLevel::INFO);
+
+                if (!$tag_obj->delete()) {
+                    write_log("Failed to delete tanker tag ID",
+                        __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                    return false;
+                }
+            }
+        } else {
+            $query = "
+                UPDATE ACCESS_KEYS
+                SET KYA_TANKER = NULL
+                WHERE KYA_TANKER = :tnkr_code";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return false;
+            }
+        }
+
+        return true;
     }
 }

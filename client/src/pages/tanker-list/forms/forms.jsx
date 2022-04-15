@@ -10,7 +10,21 @@ import {
 } from '@ant-design/icons';
 
 import { Scrollbars } from 'react-custom-scrollbars';
-import { Form, Button, Tabs, notification, Modal, Drawer, Row, Col, Divider, Tag, Tooltip, Card } from 'antd';
+import {
+  Form,
+  Button,
+  Tabs,
+  notification,
+  Modal,
+  Drawer,
+  Row,
+  Col,
+  Divider,
+  Tag,
+  Tooltip,
+  Card,
+  Space,
+} from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 import moment from 'moment';
@@ -184,6 +198,59 @@ const FormModal = ({
 
   const onFinish = async () => {
     const values = await form.validateFields();
+
+    const linesTagCreate = (
+      <Card
+        style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+        size="small"
+        title={t('validate.warning')}
+      >
+        <Tag color={'red'}>
+          <div
+            style={{
+              wordWrap: 'break-word',
+              whiteSpace: 'normal',
+              fontWeight: 'bold',
+              color: 'red',
+              padding: '5px',
+            }}
+          >
+            {t('descriptions.autoTankerTagCreate', {
+              CARRIER: values?.tnkr_carrier,
+              TANKER: `${values?.tnkr_code}(${values?.tnkr_number})`,
+              TAG_TEXT: `${values?.tnkr_carrier}${values?.tnkr_number}`,
+            })}
+          </div>
+        </Tag>
+      </Card>
+    );
+
+    const linesTagUpdate = (
+      <Card
+        style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+        size="small"
+        title={t('validate.warning')}
+      >
+        <Tag color={'red'}>
+          <div
+            style={{
+              wordWrap: 'break-word',
+              whiteSpace: 'normal',
+              fontWeight: 'bold',
+              color: 'red',
+              padding: '5px',
+            }}
+          >
+            {t('descriptions.autoTankerTagUpdate', {
+              CARRIER: value?.tnkr_carrier,
+              TANKER: `${value?.tnkr_code}(${value?.tnkr_number})`,
+              TAG_TEXT: `${value?.tnkr_carrier}${value?.tnkr_number}`,
+            })}
+          </div>
+        </Tag>
+      </Card>
+    );
+
     let matches = [];
     let bulk_edit = [];
     const setBulk = (bulk) => {
@@ -257,10 +324,24 @@ const FormModal = ({
       cancelText: t('operations.no'),
       centered: true,
       content: IS_CREATING ? (
-        lines
+        <>
+          {lines}
+          {carrcode_tankernum_tag && linesTagCreate}
+        </>
       ) : matches.length > 0 ? (
-        <CheckList form={form} matches={matches} columns={fields} rowKey="tnkr_code" setBulk={setBulk} />
-      ) : null,
+        <>
+          <CheckList form={form} matches={matches} columns={fields} rowKey="tnkr_code" setBulk={setBulk} />
+          {carrcode_tankernum_tag &&
+            (values?.tnkr_number !== value?.tnkr_number || values?.tnkr_carrier !== value?.tnkr_carrier) &&
+            linesTagUpdate}
+        </>
+      ) : (
+        <>
+          {carrcode_tankernum_tag &&
+            (values?.tnkr_number !== value?.tnkr_number || values?.tnkr_carrier !== value?.tnkr_carrier) &&
+            linesTagUpdate}
+        </>
+      ),
       onOk: async () => {
         values.bulk_edit = bulk_edit;
         await api
@@ -323,6 +404,33 @@ const FormModal = ({
       okType: 'danger',
       cancelText: t('operations.no'),
       centered: true,
+      content: carrcode_tankernum_tag ? (
+        <>
+          <Card
+            style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+            size="small"
+            title={t('validate.warning')}
+          >
+            <Tag color={'red'}>
+              <div
+                style={{
+                  wordWrap: 'break-word',
+                  whiteSpace: 'normal',
+                  fontWeight: 'bold',
+                  color: 'red',
+                  padding: '10px',
+                }}
+              >
+                {t('descriptions.autoTankerTagDelete', {
+                  CARRIER: value?.tnkr_carrier,
+                  TANKER: `${value?.tnkr_code}(${value?.tnkr_number})`,
+                  TAG_TEXT: `${value?.tnkr_carrier}${value?.tnkr_number}`,
+                })}
+              </div>
+            </Tag>
+          </Card>
+        </>
+      ) : null,
       onOk: async () => {
         await api
           .post(TANKER_LIST.DELETE, value)
@@ -441,7 +549,12 @@ const FormModal = ({
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={!access?.canDelete || tagCount > 0 || loadCount > 0 || tripCount > 0}
+              disabled={
+                !access?.canDelete ||
+                (!carrcode_tankernum_tag && tagCount > 0) ||
+                loadCount > 0 ||
+                tripCount > 0
+              }
             >
               {t('operations.delete')}
             </Button>
