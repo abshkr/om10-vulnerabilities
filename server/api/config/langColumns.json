@@ -3036,6 +3036,13 @@
       "OVCDEL_ADDR": "Ovcdel Address",
       "OVCDEL_TRIP": "Ovcdel Trip"
     },
+    "OWNER_TRSA_REASONS": {
+      "OTR_ID": "Index",
+      "OTR_CODE": "Reason Code",
+      "OTR_TEXT": "Reason Description",
+      "OTR_TYPE": "Movement Type",
+      "OTR_FLAG": "Active"
+    },
     "O_CLOSEOUT": {
       "OCLOSEOUT_KEY": "Ocloseout Key",
       "OC_SUPPLIER": "Oc Supplier",
@@ -7994,6 +8001,13 @@
     "OVCDEL": {
       "OVCDEL_ADDR": "Ovcdel Address",
       "OVCDEL_TRIP": "Ovcdel Trip"
+    },
+    "OWNER_TRSA_REASONS": {
+      "OTR_ID": "序号",
+      "OTR_CODE": "所有权交易理由代码",
+      "OTR_TEXT": "所有权交易理由描述",
+      "OTR_TYPE": "交易类型",
+      "OTR_FLAG": "激活"
     },
     "O_CLOSEOUT": {
       "OCLOSEOUT_KEY": "Ocloseout Key",

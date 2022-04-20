@@ -33,6 +33,7 @@ import * as SPECIAL_MOVEMENTS from './special-movements';
 import * as MOVEMENT_NOMIATIONS from './movement-nominations';
 import * as MOVEMENT_SCHEDULES from './movement-schedules';
 import * as LOAD_SCHEDULES from './load-schedules';
+import * as OWNER_TRSA_REASONS from './base-owner-reasons';
 import * as MOVEMENT_REASONS from './movement-reasons';
 import * as METER_DEVICES from './meter-devices';
 import * as SITE_ACCESS_DEVICES from './site-access-devices';
@@ -110,6 +111,7 @@ export {
   MOVEMENT_SCHEDULES,
   LOAD_SCHEDULES,
   MOVEMENT_REASONS,
+  OWNER_TRSA_REASONS,
   METER_DEVICES,
   SITE_ACCESS_DEVICES,
   MANUAL_TRANSACTIONS,
