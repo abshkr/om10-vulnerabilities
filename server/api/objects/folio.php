@@ -141,6 +141,70 @@ class FolioTank extends CommonClass
             }
         }
 
+        /* Extra data to treat CLOSEOUT_TANK_BASES.
+        The reason we need to handle CLOSEOUT_TANK_BASES is there is a replicate record in CLOSEOUT_TANK_BASES
+        table since We already have this record in CLOSEOUT_TANK. 
+        In CLOSEOUT_TANK_BASES, it is desined this way: first record is original data, and every new recrod 
+        represent a change.
+        */
+        $query = "SELECT NVL(MAX(BASE_PERIOD_INDEX), -1) BASE_PERIOD_INDEX
+            FROM CLOSEOUT_TANK_BASES
+            WHERE CLOSEOUT_NR = :closeout_nr AND TANK_CODE = :tank_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':closeout_nr', $this->closeout_nr);
+        oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        } 
+        $row = oci_fetch_array($stmt, OCI_NO_AUTO_COMMIT);
+        $base_period_index = $row['BASE_PERIOD_INDEX'];
+        if ($base_period_index == '-1') {
+            return true;
+        }
+        
+        write_log(sprintf("Treat CLOSEOUT_TANK_BASES, tank:%s, closeout_nr:%d", $this->tank_code, $this->closeout_nr),
+            __FILE__, __LINE__);
+        
+        $query = "
+            UPDATE CLOSEOUT_TANK_BASES 
+            SET CLOSE_STD_TOT = :close_std_tot,
+                CLOSE_MASS_TOT = :close_mass_tot,
+                DESCRIPTION = :description,
+                CLOSE_AMB_TOT = :close_amb_tot,
+                CLOSE_DENSITY = :close_density,
+                CLOSE_TEMP = :close_temp,
+                TANK_LEVEL = :tank_level,
+                TANK_WATER_LVL = :tank_water_lvl,
+                TANK_WATER = :tank_water,
+                TANK_ROOF_WEIGHT = :tank_roof_weight,
+                TANK_IFC = :tank_ifc
+            WHERE CLOSEOUT_NR = :closeout_nr
+                AND TANK_CODE = :tank_code
+                AND BASE_PERIOD_INDEX = :base_period_index";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':close_mass_tot', $this->close_mass_tot);
+        oci_bind_by_name($stmt, ':close_std_tot', $this->close_std_tot);
+        oci_bind_by_name($stmt, ':close_density', $this->close_density);
+        oci_bind_by_name($stmt, ':close_amb_tot', $this->close_amb_tot);
+        oci_bind_by_name($stmt, ':close_temp', $this->close_temp);
+        oci_bind_by_name($stmt, ':tank_level', $this->tank_level);
+        oci_bind_by_name($stmt, ':tank_water_lvl', $this->tank_water_lvl);
+        oci_bind_by_name($stmt, ':tank_water', $this->tank_water);
+        oci_bind_by_name($stmt, ':tank_roof_weight', $this->tank_roof_weight);
+        oci_bind_by_name($stmt, ':tank_ifc', $this->tank_ifc);
+        oci_bind_by_name($stmt, ':description', $this->description);
+        oci_bind_by_name($stmt, ':closeout_nr', $this->closeout_nr);
+        oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+        oci_bind_by_name($stmt, ':base_period_index', $this->base_period_index);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
         return true;
     }
 }
