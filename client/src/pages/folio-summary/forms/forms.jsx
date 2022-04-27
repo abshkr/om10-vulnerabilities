@@ -1,7 +1,13 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tabs, Drawer, Button } from 'antd';
-import { RedoOutlined, CloseOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
+import { Tabs, Drawer, Modal, Button, Card } from 'antd';
+import {
+  RedoOutlined,
+  CloseOutlined,
+  EditOutlined,
+  SaveOutlined,
+  QuestionCircleOutlined,
+} from '@ant-design/icons';
 
 import Tanks from './tanks';
 import Reports from './reports';
@@ -20,6 +26,34 @@ const Forms = ({ value, visible, handleFormState, closeoutIsIdle, access, config
   const [calculateTrigger, setCalculateTrigger] = useState(0);
   const [isRegenerating, setRegenerate] = useState(false);
   const [tab, setTab] = useState('1');
+
+  const onExitClicked = () => {
+    if (!config?.siteFormCloseAlert) {
+      handleFormState(false, null);
+      return;
+    }
+
+    Modal.confirm({
+      title: t('prompts.cancel'),
+      okText: t('operations.leave'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.stay'),
+      content: (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.cancelWarning')}
+        </Card>
+      ),
+      centered: true,
+      onOk: () => {
+        handleFormState(false, null);
+      },
+    });
+  };
 
   const showCloseoutStatus = () => {
     if (!closeoutIsIdle) {
@@ -45,10 +79,10 @@ const Forms = ({ value, visible, handleFormState, closeoutIsIdle, access, config
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
       forceRender
-      onClose={() => handleFormState(false, null)}
-      // maskClosable={IS_CREATING}
+      onClose={() => onExitClicked()}
+      maskClosable={config?.siteFormCloseAlert ? false : true}
+      mask={config?.siteFormCloseAlert ? true : true}
       destroyOnClose={true}
-      // mask={IS_CREATING}
       placement="right"
       width="90vw"
       visible={visible}
@@ -58,7 +92,7 @@ const Forms = ({ value, visible, handleFormState, closeoutIsIdle, access, config
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={() => onExitClicked()}
           >
             {t('operations.cancel')}
           </Button>
@@ -79,27 +113,27 @@ const Forms = ({ value, visible, handleFormState, closeoutIsIdle, access, config
 
           {tab === '2' && (
             <>
-            {config.saveToMeter &&
+              {config.saveToMeter && (
+                <Button
+                  type="primary"
+                  icon={<SaveOutlined />}
+                  style={{ float: 'right', marginRight: 5 }}
+                  onClick={() => setSaveToMetersTrigger(saveToMetersTrigger + 1)}
+                  disabled={!enabled || !access.canUpdate}
+                >
+                  {t('operations.saveToMeters')}
+                </Button>
+              )}
+
               <Button
                 type="primary"
-                icon={<SaveOutlined />}
+                icon={<EditOutlined />}
                 style={{ float: 'right', marginRight: 5 }}
-                onClick={() => setSaveToMetersTrigger(saveToMetersTrigger + 1)}
+                onClick={() => setMeterTrigger(meterTrigger + 1)}
                 disabled={!enabled || !access.canUpdate}
               >
-                {t('operations.saveToMeters')}
+                {t('operations.saveToFolio')}
               </Button>
-            }
-
-            <Button
-              type="primary"
-              icon={<EditOutlined />}
-              style={{ float: 'right', marginRight: 5 }}
-              onClick={() => setMeterTrigger(meterTrigger + 1)}
-              disabled={!enabled || !access.canUpdate}
-            >
-              {t('operations.saveToFolio')}
-            </Button>
             </>
           )}
 
