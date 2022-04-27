@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { PlusOutlined, MinusOutlined, EyeOutlined, CarryOutOutlined, LockOutlined } from '@ant-design/icons';
+import {
+  PlusOutlined,
+  MinusOutlined,
+  EyeOutlined,
+  CarryOutOutlined,
+  LockOutlined,
+  QuestionCircleOutlined,
+} from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Button, Form, Drawer, Modal, notification } from 'antd';
+import { Button, Form, Drawer, Modal, notification, Card } from 'antd';
 import useSWR, { mutate } from 'swr';
 import moment from 'moment';
 import _ from 'lodash';
@@ -46,6 +53,34 @@ const Items = ({ setTableAPIContext, value, config, cbFunction, setReceiptCount,
   const canModifyFurther = selected?.[0]?.mvitm_status === 0 || disabled;
   const removeItemDisabled = disabled || selected?.[0]?.mvitm_status !== 0;
   const fields = useColumns(value, selected, config);
+
+  const onExitClicked = () => {
+    if (!config?.siteFormCloseAlert) {
+      setMakeTransactionVisible(false);
+      return;
+    }
+
+    Modal.confirm({
+      title: t('prompts.cancel'),
+      okText: t('operations.leave'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.stay'),
+      content: (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.cancelWarning')}
+        </Card>
+      ),
+      centered: true,
+      onOk: () => {
+        setMakeTransactionVisible(false);
+      },
+    });
+  };
 
   const handleButtonState = (state) => {
     /** 
@@ -593,7 +628,7 @@ const Items = ({ setTableAPIContext, value, config, cbFunction, setReceiptCount,
         <Drawer
           placement="right"
           bodyStyle={{ paddingTop: 5 }}
-          onClose={() => setMakeTransactionVisible(false)}
+          onClose={() => onExitClicked()}
           visible={makeTransactionVisible}
           width="100vw"
         >

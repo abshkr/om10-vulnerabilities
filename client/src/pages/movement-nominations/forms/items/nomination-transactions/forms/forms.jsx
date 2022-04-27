@@ -164,6 +164,36 @@ const FormModal = ({
     console.log('end of onComplete');
   };
 
+  const onExitClicked = () => {
+    if (!config?.siteFormCloseAlert) {
+      Modal.destroyAll();
+      onComplete();
+      return;
+    }
+
+    Modal.confirm({
+      title: t('prompts.cancel'),
+      okText: t('operations.leave'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.stay'),
+      content: (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.cancelWarning')}
+        </Card>
+      ),
+      centered: true,
+      onOk: () => {
+        Modal.destroyAll();
+        onComplete();
+      },
+    });
+  };
+
   const getArmTankCodes = (arms) => {
     let codes = '';
     _.forEach(arms, (arm) => {
@@ -637,10 +667,7 @@ const FormModal = ({
         htmlType="button"
         icon={<CloseOutlined />}
         style={{ float: 'right', marginRight: 5 }}
-        onClick={() => {
-          Modal.destroyAll();
-          onComplete();
-        }}
+        onClick={onExitClicked}
       >
         {t('operations.cancel')}
       </Button>
