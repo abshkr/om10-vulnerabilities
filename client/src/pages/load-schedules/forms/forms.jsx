@@ -110,8 +110,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
 
   const send_to_ft_ready = value?.status === 'F' && value?.shls_ld_type === '2';
 
-  const { authenticated } = useSelector((state) => state.auth);
-  const decoded = jwtDecode(authenticated);
+  // const { authenticated } = useSelector((state) => state.auth);
+  // const decoded = jwtDecode(authenticated);
+  const token = sessionStorage.getItem('token');
+  const decoded = jwtDecode(token);
   const FASTTRACK_ENABLED = decoded?.per_code === '9999' && fasttrackEnabled;
 
   const { t } = useTranslation();
@@ -231,6 +233,62 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     } else {
       mutate(url);
     }
+  };
+
+  const onExitClicked = () => {
+    if (!config?.siteFormCloseAlert) {
+      onFormClosed();
+      return;
+    }
+
+    Modal.confirm({
+      title: t('prompts.cancel'),
+      okText: t('operations.leave'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.stay'),
+      content: (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.cancelWarning')}
+        </Card>
+      ),
+      centered: true,
+      onOk: () => {
+        onFormClosed();
+      },
+    });
+  };
+
+  const onPopupExitClicked = (callback) => {
+    if (!config?.siteFormCloseAlert) {
+      callback(false);
+      return;
+    }
+
+    Modal.confirm({
+      title: t('prompts.cancel'),
+      okText: t('operations.leave'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.stay'),
+      content: (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.cancelWarning')}
+        </Card>
+      ),
+      centered: true,
+      onOk: () => {
+        callback(false);
+      },
+    });
   };
 
   const changeSupplier = (supplier) => {
@@ -1028,11 +1086,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     }
   }, [trips]);
 
+  // const MASK_CLOSE_FLAG = config?.siteFormCloseAlert ? false : IS_CREATING;
+  // const MASK_FLAG = config?.siteFormCloseAlert ? true : (IS_CREATING || tab === '8' || tab === '9');
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
       forceRender
-      onClose={() => onFormClosed()}
+      onClose={() => onExitClicked()}
       maskClosable={IS_CREATING}
       mask={IS_CREATING || tab === '8' || tab === '9'}
       destroyOnClose
@@ -1045,7 +1105,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => onFormClosed()}
+            onClick={() => onExitClicked()}
           >
             {t('operations.cancel')}
           </Button>
@@ -1651,7 +1711,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
             title={t('tabColumns.createTripTransactions')}
             placement="right"
             bodyStyle={{ paddingTop: 5 }}
-            onClose={() => setShowCreateTransactions(false)}
+            onClose={() => onPopupExitClicked(setShowCreateTransactions)}
             visible={showCreateTransactions}
             width="100vw"
             destroyOnClose={true}
@@ -1677,7 +1737,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
           title={t('tabColumns.repostTripTransactions')}
           placement="right"
           bodyStyle={{ paddingTop: 5 }}
-          onClose={() => setShowRepostTransactions(false)}
+          onClose={() => onPopupExitClicked(setShowRepostTransactions)}
           visible={showRepostTransactions}
           width="100vw"
           destroyOnClose={true}
