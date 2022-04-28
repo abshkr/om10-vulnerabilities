@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { SyncOutlined, SwapOutlined } from '@ant-design/icons';
+import { SyncOutlined, SwapOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Button, Tabs } from 'antd';
+import { Button, Tabs, Modal, Card } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
 
@@ -57,6 +57,34 @@ const Tanks = () => {
   const onSelect = (value) => {
     setCurrTank(value);
     setSelected(value);
+  };
+
+  const onExitClicked = (value) => {
+    if (!config?.siteFormCloseAlert || currTank === null) {
+      onSelect(value);
+      return;
+    }
+
+    Modal.confirm({
+      title: t('prompts.switchTank'),
+      okText: t('operations.switchTank'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.stay'),
+      content: (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.switchTankWarning')}
+        </Card>
+      ),
+      centered: true,
+      onOk: () => {
+        onSelect(value);
+      },
+    });
   };
 
   const onViewChange = () => {
@@ -140,7 +168,7 @@ const Tanks = () => {
           data={payload}
           id="tank_code"
           name="tank_name"
-          onSelect={onSelect}
+          onSelect={(value) => onExitClicked(value)}
           description={description}
           selected={selected?.tank_code}
           isLoading={isLoading}

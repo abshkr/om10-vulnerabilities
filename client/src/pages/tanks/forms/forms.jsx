@@ -8,7 +8,7 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal, Drawer } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Drawer, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import api from 'api';
@@ -52,6 +52,34 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     if (tank_code) {
       setFilterValue('' + tank_code);
     }
+  };
+
+  const onExitClicked = () => {
+    if (!config?.siteFormCloseAlert) {
+      handleFormState(false, null);
+      return;
+    }
+
+    Modal.confirm({
+      title: t('prompts.cancel'),
+      okText: t('operations.leave'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.stay'),
+      content: (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.cancelWarning')}
+        </Card>
+      ),
+      centered: true,
+      onOk: () => {
+        handleFormState(false, null);
+      },
+    });
   };
 
   const onFinish = async () => {
@@ -529,9 +557,10 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       centered: true,
       onOk: async () => {
         // get the water volume from water level
-        const waterVol = _.toNumber(payload?.tank_water_lvl) === 0 
-        ? 0
-        : await getQtyByLevel(value?.tank_code, _.toNumber(payload?.tank_water_lvl));
+        const waterVol =
+          _.toNumber(payload?.tank_water_lvl) === 0
+            ? 0
+            : await getQtyByLevel(value?.tank_code, _.toNumber(payload?.tank_water_lvl));
         // get the total volume from prod level
         const totalVol = await getQtyByLevel(value?.tank_code, _.toNumber(payload?.tank_prod_lvl));
         // get the ambient volume
@@ -845,10 +874,10 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
       forceRender
-      onClose={() => handleFormState(false, null)}
-      maskClosable={IS_CREATING}
+      onClose={() => onExitClicked()}
+      maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
       destroyOnClose={true}
-      mask={IS_CREATING}
+      mask={config?.siteFormCloseAlert ? true : IS_CREATING}
       placement="right"
       width="70vw"
       visible={visible}
@@ -858,7 +887,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={() => onExitClicked()}
           >
             {t('operations.cancel')}
           </Button>
