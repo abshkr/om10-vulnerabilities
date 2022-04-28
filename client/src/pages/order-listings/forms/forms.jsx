@@ -11,7 +11,7 @@ import {
   CaretDownOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Row, Col } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Row, Col, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import useSWR from 'swr';
@@ -185,6 +185,62 @@ const FormModal = ({
     setSelected(null);
     handleFormState(false, null);
     // console.log('end of onComplete');
+  };
+
+  const onExitClicked = () => {
+    if (!config?.siteFormCloseAlert) {
+      onFormClosed();
+      return;
+    }
+
+    Modal.confirm({
+      title: t('prompts.cancel'),
+      okText: t('operations.leave'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.stay'),
+      content: (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.cancelWarning')}
+        </Card>
+      ),
+      centered: true,
+      onOk: () => {
+        onFormClosed();
+      },
+    });
+  };
+
+  const onPopupExitClicked = () => {
+    if (!config?.siteFormCloseAlert) {
+      setShowMakeTransactions(false);
+      return;
+    }
+
+    Modal.confirm({
+      title: t('prompts.cancel'),
+      okText: t('operations.leave'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.stay'),
+      content: (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.cancelWarning')}
+        </Card>
+      ),
+      centered: true,
+      onOk: () => {
+        setShowMakeTransactions(false);
+      },
+    });
   };
 
   const getOrderItems = useCallback(() => {
@@ -468,10 +524,10 @@ const FormModal = ({
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
       forceRender
-      onClose={onFormClosed}
-      maskClosable={IS_CREATING}
+      onClose={onExitClicked}
+      maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
       destroyOnClose={true}
-      mask={IS_CREATING || tabKey === '5'}
+      mask={config?.siteFormCloseAlert ? true : IS_CREATING || tabKey === '5'}
       placement="right"
       width={drawerWidth}
       visible={visible}
@@ -481,7 +537,7 @@ const FormModal = ({
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={() => onExitClicked()}
           >
             {t('operations.cancel')}
           </Button>
@@ -598,7 +654,13 @@ const FormModal = ({
               </Col>
 
               <Col span={6}>
-                <OrderCustNo form={form} value={value} supplier={supplier} pageState={pageState} digits={config?.maxLengthOrderNum} />
+                <OrderCustNo
+                  form={form}
+                  value={value}
+                  supplier={supplier}
+                  pageState={pageState}
+                  digits={config?.maxLengthOrderNum}
+                />
               </Col>
 
               <Col span={6}>
@@ -825,7 +887,7 @@ const FormModal = ({
           title={t('pageNames.manualTransactions')}
           placement="right"
           bodyStyle={{ paddingTop: 5 }}
-          onClose={() => setShowMakeTransactions(false)}
+          onClose={() => onPopupExitClicked()}
           visible={showMakeTransactions}
           width="100vw"
           destroyOnClose={true}
