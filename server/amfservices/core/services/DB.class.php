@@ -594,6 +594,7 @@ class DB{
         $this->tokendata = array();
 
         // Find the tokens in the query.
+		// logMe("query raw=" . $query, DBCLASS);
         $token_arr = $this->findToken($parsed);
         logMe("token_arr count=" . count($token_arr), DBCLASS); $it = 0; foreach ($token_arr as $t) {logMe("token_arr[" . $it ."]=" . $token_arr[$it++], DBCLASS);}
         logMe("param_arr count=" . count($param_arr), DBCLASS); $it = 0; foreach ($param_arr as $t) {logMe("param_arr[" . $it ."]=" . $param_arr[$it++], DBCLASS);}
@@ -604,7 +605,13 @@ class DB{
         $idx = 0;
         foreach ($token_arr as $token) {
             //oci_bind_by_name($stid, $token, $param_arr[$idx++]);
-            oci_bind_by_name($stid, $token, stringEncodingConversion($param_arr[$idx++]));
+            //oci_bind_by_name($stid, $token, stringEncodingConversion($param_arr[$idx++]));
+			$param_value = stringEncodingConversion($param_arr[$idx++]);
+			logMe("query binding index=" . $idx, DBCLASS);
+			logMe("query binding token=" . $token, DBCLASS);
+			logMe("query binding value=" . $param_value, DBCLASS);
+            $bind_result = oci_bind_by_name($stid, $token, $param_value);
+			logMe("query binding result=" . $bind_result, DBCLASS);
         }
 
 		return $stid;
@@ -725,11 +732,15 @@ class DB{
 
     public function retrieve($sql, $type="L", $mode = OCI_COMMIT_ON_SUCCESS)
     {
+        // logMe("1.before count retrieve=" . $sql, DBCLASS );
         // get the total number of the records
         $count = $this->count( $sql );
         // get the records
         $rows = $this->query($sql, $type, $mode);
-        
+        // logMe("1.after query retrieve=" . $type, DBCLASS );
+        // logMe("1.count retrieve=" . $count, DBCLASS );
+        // logMe("1.query retrieve=" . print_r($rows, true), DBCLASS );
+
 		$data = (object)array();
         $data->count = $count;
         $data->sqls = "OK";//$sql;
@@ -783,10 +794,14 @@ class DB{
 
     public function retrieveArray($sql, $type="L", $mode = OCI_COMMIT_ON_SUCCESS)
     {
+        // logMe("2.before count retrieve=" . $sql, DBCLASS );
         // get the total number of the records
         $count = $this->count( $sql );
         // get the records
         $rows = $this->query($sql, $type, $mode);
+        // logMe("2.after query retrieve=" . $type, DBCLASS );
+        // logMe("2.count retrieve=" . $count, DBCLASS );
+        // logMe("2.query retrieve=" . print_r($rows, true), DBCLASS );
         
 		$data = (object)array();
         $data->count = $count;

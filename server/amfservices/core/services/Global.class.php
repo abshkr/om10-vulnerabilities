@@ -51,11 +51,14 @@ if(!defined('ERRORLOG')) define('ERRORLOG',$GLOBALS['LOGDIR'] . $GLOBALS['SEPARA
 //if(isset($_SERVER['HTTP_HOST'])) {
 //    $GLOBALS['HOST'] = $_SERVER['HTTP_HOST'];
 //}
-if(isset($_SERVER['SERVER_NAME'])) {
-    $GLOBALS['HOST'] = $_SERVER['SERVER_NAME'];
+if(isset($_SERVER['SERVER_ADDR'])) {
+    $GLOBALS['HOST'] = $_SERVER['SERVER_ADDR'];
 }
 else {
     $GLOBALS['HOST'] = 'localhost';
+}
+if (getenv('USE_SERVER_NAME_IN_CGI') == 'Y' && isset($_SERVER['SERVER_NAME'])) {
+    $GLOBALS['HOST'] = $_SERVER['SERVER_NAME'];
 }
 
 /*============================================================================*/
