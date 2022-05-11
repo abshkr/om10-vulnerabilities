@@ -6,7 +6,7 @@ import _ from 'lodash';
 
 import { InputNumber as OmegaInputNumber } from '../../../components';
 
-const TheoreticalDensity = ({ value, onClose }) => {
+const TheoreticalDensity = ({ value, onClose, config }) => {
   const [densityReady, setDensityReady] = useState(false);
 
   const { t } = useTranslation();
@@ -51,14 +51,24 @@ const TheoreticalDensity = ({ value, onClose }) => {
 
     if (iGovReady && fGovReady) {
       const sGov = fGov - iGov;
-      setFieldsValue({ obs_vol_source: _.round(sGov, 0) });
+      setFieldsValue({
+        obs_vol_source: _.round(
+          sGov,
+          value?.tank_base_class === '6' ? config.precisionAdditive : config.precisionVolume
+        ),
+      });
     }
 
     if (iGovReady && fGovReady && sDensReady && iDensReady && fGov > 0) {
       const sGov = fGov - iGov;
-      setFieldsValue({ obs_vol_source: _.round(sGov, 0) });
+      setFieldsValue({
+        obs_vol_source: _.round(
+          sGov,
+          value?.tank_base_class === '6' ? config.precisionAdditive : config.precisionVolume
+        ),
+      });
       const fDens = (sGov * sDens + iGov * iDens) / fGov;
-      setFieldsValue({ std_dens_final: _.round(fDens, 3) });
+      setFieldsValue({ std_dens_final: _.round(fDens, config.precisionDensity) });
       setDensityReady(true);
     }
   };
@@ -86,7 +96,7 @@ const TheoreticalDensity = ({ value, onClose }) => {
         min={0}
         max={999999999}
         style={{ width: '100%' }}
-        precision={3}
+        precision={value?.tank_base_class === '6' ? config.precisionAdditive : config.precisionVolume}
         disabled={true}
         onChange={calcTheoreticalDensity}
       />
@@ -99,7 +109,7 @@ const TheoreticalDensity = ({ value, onClose }) => {
         min={0}
         max={999999999}
         style={{ width: '100%' }}
-        precision={3}
+        precision={value?.tank_base_class === '6' ? config.precisionAdditive : config.precisionVolume}
         // required={true}
         onChange={calcTheoreticalDensity}
       />
@@ -112,7 +122,7 @@ const TheoreticalDensity = ({ value, onClose }) => {
         min={1}
         max={999999999}
         style={{ width: '100%' }}
-        precision={3}
+        precision={value?.tank_base_class === '6' ? config.precisionAdditive : config.precisionVolume}
         // required={true}
         onChange={calcTheoreticalDensity}
       />
@@ -121,11 +131,11 @@ const TheoreticalDensity = ({ value, onClose }) => {
         form={form}
         value={value?.std_dens_source}
         name="std_dens_source"
-        label={`${t('fields.standardDensitySource')} (${t('units.litres')})`}
+        label={`${t('fields.standardDensitySource')} (${t('units.kg/m3')})`}
         min={0}
         max={999999999}
         style={{ width: '100%' }}
-        precision={3}
+        precision={config.precisionDensity}
         // required={true}
         onChange={calcTheoreticalDensity}
       />
@@ -134,11 +144,11 @@ const TheoreticalDensity = ({ value, onClose }) => {
         form={form}
         value={value?.std_dens_init}
         name="std_dens_init"
-        label={`${t('fields.standardDensityReceiptInit')} (${t('units.litres')})`}
+        label={`${t('fields.standardDensityReceiptInit')} (${t('units.kg/m3')})`}
         min={0}
         max={999999999}
         style={{ width: '100%' }}
-        precision={3}
+        precision={config.precisionDensity}
         // required={true}
         onChange={calcTheoreticalDensity}
       />
@@ -147,11 +157,11 @@ const TheoreticalDensity = ({ value, onClose }) => {
         form={form}
         value={value?.std_dens_final}
         name="std_dens_final"
-        label={`${t('fields.standardDensityReceiptFinal')} (${t('units.litres')})`}
+        label={`${t('fields.standardDensityReceiptFinal')} (${t('units.kg/m3')})`}
         min={0}
         max={999999999}
         style={{ width: '100%' }}
-        precision={3}
+        precision={config.precisionDensity}
         disabled={true}
         // onChange={handleAmbVolFinalFieldChange}
       />
