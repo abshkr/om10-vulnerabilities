@@ -22,6 +22,7 @@ import {
 import { GeneralContainer } from '../style';
 
 import api, { TANKS } from '../../../api';
+import { getQtyByLevel } from '../../../utils';
 
 const TabPane = Tabs.TabPane;
 
@@ -74,8 +75,36 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, 
     return errors;
   };
 
+  const calculatePumpable = async (values) => {
+    // get the value of TOV,
+    let TOV = 0;
+    if (!value?.tank_total_vol) {
+      TOV = _.toNumber(value?.tank_amb_vol);
+    } else {
+      TOV = _.toNumber(value?.tank_total_vol);
+    }
+
+    // get the volume from User L-level
+    let ULV = 0;
+    if (!values?.tank_ul_level) {
+      ULV = 0;
+    } else {
+      ULV = await getQtyByLevel(value?.tank_code, _.toNumber(values?.tank_ul_level));
+    }
+
+    let pumpable = TOV - ULV;
+    if (pumpable < 0 || !_.isFinite(pumpable)) {
+      pumpable = 0;
+    }
+
+    return pumpable;
+  };
+
   const onFinish = async () => {
     const values = await form.validateFields();
+
+    // calculate the pumpable volume.
+    values.tank_pump_vol = await calculatePumpable(values);
 
     const errors = IS_CREATING ? [] : checkLevels(values, value?.tank_prod_lvl);
 

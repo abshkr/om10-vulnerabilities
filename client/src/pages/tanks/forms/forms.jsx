@@ -54,6 +54,31 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     }
   };
 
+  const calculatePumpable = async (values) => {
+    // get the value of TOV,
+    let TOV = 0;
+    if (!values?.tank_total_vol) {
+      TOV = _.toNumber(values?.tank_amb_vol);
+    } else {
+      TOV = _.toNumber(values?.tank_total_vol);
+    }
+
+    // get the volume from User L-level
+    let ULV = 0;
+    if (!values?.tank_ul_level) {
+      ULV = 0;
+    } else {
+      ULV = await getQtyByLevel(value?.tank_code, _.toNumber(values?.tank_ul_level));
+    }
+
+    let pumpable = TOV - ULV;
+    if (pumpable < 0 || !_.isFinite(pumpable)) {
+      pumpable = 0;
+    }
+
+    return pumpable;
+  };
+
   const onFinish = async () => {
     const values = await form.validateFields();
 
@@ -65,6 +90,9 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       values.tank_prod_c_of_e = 0;
     }
 
+    // calculate the pumpable volume.
+    values.tank_pump_vol = await calculatePumpable(values);
+
     const payload = _.omit(
       {
         ...values,
@@ -73,6 +101,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       },
       ['tank_temp_unit']
     );
+    console.log('.......................tank status update: ', payload);
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
@@ -529,9 +558,10 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       centered: true,
       onOk: async () => {
         // get the water volume from water level
-        const waterVol = _.toNumber(payload?.tank_water_lvl) === 0 
-        ? 0
-        : await getQtyByLevel(value?.tank_code, _.toNumber(payload?.tank_water_lvl));
+        const waterVol =
+          _.toNumber(payload?.tank_water_lvl) === 0
+            ? 0
+            : await getQtyByLevel(value?.tank_code, _.toNumber(payload?.tank_water_lvl));
         // get the total volume from prod level
         const totalVol = await getQtyByLevel(value?.tank_code, _.toNumber(payload?.tank_prod_lvl));
         // get the ambient volume
