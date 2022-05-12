@@ -3,6 +3,7 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once __DIR__ . '/../service/strap_service.php';
 include_once 'common_class.php';
 include_once 'tank_max_flow.php';
 
@@ -209,6 +210,32 @@ class Tank extends CommonClass
         }
     }
 
+    public function calc_pumpable($item) {
+        // get the value of TOV,
+        $TOV = 0;
+        if (!isset($item['tank_total_vol'])) {
+            $TOV = (float)$item['tank_amb_vol'];
+        } else {
+            $TOV = (float)$item['tank_total_vol'];
+        }
+
+        // get the volume from User L-level
+        $ULV = 0;
+        if (!isset($item['tank_ul_level'])) {
+            $ULV = 0;
+        } else {
+            $strap_service = new StrapService($this->conn);
+            $ULV = $strap_service->get_amb($item['tank_code'], (float)$item['tank_ul_level']);
+        }
+
+        $pumpable = $TOV - $ULV;
+        if ($pumpable < 0 || !is_numeric($pumpable)) {
+            $pumpable = 0;
+        }
+
+        return $pumpable;
+    }
+
     //Because in db, some status like tank_hh_state is -1, which means null. This is old CGI legacy
     public function read_decorate(&$result_array)
     {
@@ -254,6 +281,9 @@ class Tank extends CommonClass
                 $result_array[$key]['tank_atg_status'] = 2;
                 $result_array[$key]['tank_atg_status_name'] = 'Not updated on time';
             }
+
+            // calculate pumpable
+            $result_array[$key]['tank_pump_vol'] = $this->calc_pumpable($tank_item);
         }
     }
 
