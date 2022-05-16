@@ -160,9 +160,16 @@ const EquipmentList = () => {
   };
 
   const onLocate = (value) => {
-    setSearch({
-      eqpt_code: value,
-    });
+    if (siteEqptPaging) {
+      setSearch({
+        eqpt_code: value,
+      });
+    } else {
+      setSearch({
+        eqpt_code: '',
+      });
+      setFilterValue(value === '' ? ' ' : value);
+    }
   };
 
   const setSearch = (values) => {
