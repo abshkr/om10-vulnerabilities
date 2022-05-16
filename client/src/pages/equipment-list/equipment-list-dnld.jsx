@@ -165,6 +165,7 @@ const EquipmentList = () => {
         eqpt_code: value,
       });
     } else {
+      setFilterValue(' ');
       setSearch({
         eqpt_code: '',
       });
