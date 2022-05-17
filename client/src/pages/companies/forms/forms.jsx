@@ -78,7 +78,7 @@ const FormModal = ({
     };
 
     const results = await api.post(COMPANIES.CHECK_COMPANY, values);
-    
+
     if (results?.data) {
       return _.toNumber(results?.data?.records[0]?.cnt);
     } else {
@@ -97,7 +97,7 @@ const FormModal = ({
     }
 
     const results = await api.post(ROLE_ACCESS_MANAGEMENT.CHECK_CHILDREN, values);
-    
+
     if (results?.data) {
       return results?.data?.records;
     } else {
@@ -157,6 +157,38 @@ const FormModal = ({
     if (cmpy_code) {
       setFilterValue('' + cmpy_code);
     }
+  };
+
+  const onFormClosed = () => {
+    handleFormState(false, null);
+  };
+
+  const onExitClicked = () => {
+    if (!config?.siteFormCloseAlert) {
+      onFormClosed();
+      return;
+    }
+
+    Modal.confirm({
+      title: t('prompts.cancel'),
+      okText: t('operations.leave'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.stay'),
+      content: (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.cancelWarning')}
+        </Card>
+      ),
+      centered: true,
+      onOk: () => {
+        onFormClosed();
+      },
+    });
   };
 
   const onManagerChange = async (v) => {
@@ -522,10 +554,10 @@ const FormModal = ({
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
       forceRender
-      onClose={() => handleFormState(false, null)}
-      maskClosable={IS_CREATING}
+      onClose={() => onExitClicked()}
+      maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
       destroyOnClose={true}
-      mask={IS_CREATING}
+      mask={config?.siteFormCloseAlert ? true : IS_CREATING}
       placement="right"
       width="48vw"
       visible={visible}
@@ -561,7 +593,7 @@ const FormModal = ({
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={() => onExitClicked()}
           >
             {t('operations.cancel')}
           </Button>

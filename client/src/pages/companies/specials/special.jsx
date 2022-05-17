@@ -2,7 +2,7 @@ import React from 'react';
 
 import { EditOutlined, QuestionCircleOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
 import SupplierForm from './supplier-settings';
 import OtherForm from './other';
@@ -17,9 +17,9 @@ import { mutate } from 'swr';
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, handleFormState, setFilterValue }) => {
-  const config  = useConfig();
+  const config = useConfig();
   const { bolVersion } = config;
-  
+
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -30,6 +30,38 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
     }
     mutate(COMPANIES.READ);
     Modal.destroyAll();
+  };
+
+  const onFormClosed = () => {
+    Modal.destroyAll();
+  };
+
+  const onExitClicked = () => {
+    if (!config?.siteFormCloseAlert) {
+      onFormClosed();
+      return;
+    }
+
+    Modal.confirm({
+      title: t('prompts.cancel'),
+      okText: t('operations.leave'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.stay'),
+      content: (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.cancelWarning')}
+        </Card>
+      ),
+      centered: true,
+      onOk: () => {
+        onFormClosed();
+      },
+    });
   };
 
   const onFinish = async () => {
@@ -122,22 +154,22 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
     <div>
       <Form form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1">
-          {value?.supplier && 
-          <TabPane tab={t('tabColumns.supplierSettings')} key="1" style={{ height: '65vh' }}>
-            <SupplierForm value={value} form={form} config={config}></SupplierForm>
-          </TabPane>
-          }
+          {value?.supplier && (
+            <TabPane tab={t('tabColumns.supplierSettings')} key="1" style={{ height: '65vh' }}>
+              <SupplierForm value={value} form={form} config={config}></SupplierForm>
+            </TabPane>
+          )}
           <TabPane tab={t('tabColumns.others')} key="2" style={{ height: '60vh' }}>
             <OtherForm value={value} form={form} config={config}></OtherForm>
           </TabPane>
           <TabPane tab={t('tabColumns.printerSettings')} key="3" style={{ height: '60vh' }}>
             <PrinterForm value={value} form={form}></PrinterForm>
           </TabPane>
-          {bolVersion === 'JASPER' && 
-          <TabPane tab={t('tabColumns.transportationDoc')} key="4" style={{ height: '60vh' }}>
-            <TemplateForm value={value} form={form}></TemplateForm>
-          </TabPane>
-          }
+          {bolVersion === 'JASPER' && (
+            <TabPane tab={t('tabColumns.transportationDoc')} key="4" style={{ height: '60vh' }}>
+              <TemplateForm value={value} form={form}></TemplateForm>
+            </TabPane>
+          )}
         </Tabs>
 
         <Form.Item>
@@ -145,7 +177,7 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => Modal.destroyAll()}
+            onClick={() => onExitClicked()}
           >
             {t('operations.cancel')}
           </Button>
