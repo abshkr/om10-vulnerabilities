@@ -135,9 +135,18 @@ const TankerList = () => {
   };
 
   const onLocate = (value) => {
-    setSearch({
-      tnkr_code: value,
-    });
+    console.log('..................onLocate....', value);
+    if (siteTnkrPaging) {
+      setSearch({
+        tnkr_code: value,
+      });
+    } else {
+      setFilterValue(' ');
+      setSearch({
+        tnkr_code: '',
+      });
+      setFilterValue(value === '' ? ' ' : value);
+    }
   };
 
   const setSearch = (values) => {
@@ -341,7 +350,7 @@ const TankerList = () => {
           visible={visible}
           handleFormState={handleFormState}
           access={access}
-          setFilterValue={setFilterValue}
+          // setFilterValue={setFilterValue}
           revalidate={revalidate}
           expiryDateMode={expiryDateMode}
           expiryTypes={expiryTypes}

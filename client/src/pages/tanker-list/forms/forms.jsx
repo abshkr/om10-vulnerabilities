@@ -67,7 +67,6 @@ const FormModal = ({
   visible,
   handleFormState,
   access,
-  setFilterValue,
   revalidate,
   expiryDateMode,
   expiryTypes,
