@@ -9,7 +9,7 @@ import {
   ClockCircleOutlined,
   CloseOutlined,
 } from '@ant-design/icons';
-import { Form, Button, Tabs, Modal, notification, Drawer, Divider } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import _ from 'lodash';
@@ -24,7 +24,7 @@ import Period from './period';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, url, locateLockal }) => {
+const FormModal = ({ value, visible, handleFormState, access, url, locateLockal, config }) => {
   const { data: units } = useSWR(ALLOCATIONS.PERIOD_TYPES);
 
   const { t } = useTranslation();
@@ -68,6 +68,38 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal 
     } else {
       mutate(url);
     }
+  };
+
+  const onFormClosed = () => {
+    handleFormState(false, null);
+  };
+
+  const onExitClicked = () => {
+    if (!config?.siteFormCloseAlert) {
+      onFormClosed();
+      return;
+    }
+
+    Modal.confirm({
+      title: t('prompts.cancel'),
+      okText: t('operations.leave'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.stay'),
+      content: (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.cancelWarning')}
+        </Card>
+      ),
+      centered: true,
+      onOk: () => {
+        onFormClosed();
+      },
+    });
   };
 
   const getAllocations = useCallback(() => {
@@ -267,10 +299,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal 
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
       forceRender
-      onClose={() => handleFormState(false, null)}
-      maskClosable={IS_CREATING}
+      onClose={() => onExitClicked()}
+      maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
       destroyOnClose={true}
-      mask={IS_CREATING}
+      mask={config?.siteFormCloseAlert ? true : IS_CREATING}
       placement="right"
       width="50vw"
       visible={visible}
@@ -289,7 +321,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal 
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={() => onExitClicked()}
           >
             {t('operations.cancel')}
           </Button>

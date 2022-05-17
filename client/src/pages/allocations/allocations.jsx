@@ -178,6 +178,7 @@ const Allocations = ({ popup, params }) => {
           access={access}
           url={url}
           locateLockal={locateLockal}
+          config={config}
         />
       )}
       {visible && config?.siteAllowMultiAllocations && (
