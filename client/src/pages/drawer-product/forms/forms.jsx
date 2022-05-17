@@ -86,6 +86,38 @@ const DrawerForm = ({
 
   const IS_CREATING = !value;
 
+  const onFormClosed = () => {
+    handleFormState(false, null);
+  };
+
+  const onExitClicked = () => {
+    if (!config?.siteFormCloseAlert) {
+      onFormClosed();
+      return;
+    }
+
+    Modal.confirm({
+      title: t('prompts.cancel'),
+      okText: t('operations.leave'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.stay'),
+      content: (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.cancelWarning')}
+        </Card>
+      ),
+      centered: true,
+      onOk: () => {
+        onFormClosed();
+      },
+    });
+  };
+
   const manageGenerics = () => {
     Modal.info({
       className: 'form-container',
@@ -628,10 +660,10 @@ const DrawerForm = ({
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
       forceRender
-      onClose={() => handleFormState(false, null)}
-      maskClosable={IS_CREATING}
+      onClose={() => onExitClicked()}
+      maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
       destroyOnClose={true}
-      mask={maskFlag}
+      mask={config?.siteFormCloseAlert ? true : maskFlag}
       placement="right"
       width="60vw"
       visible={visible}
@@ -651,7 +683,7 @@ const DrawerForm = ({
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={() => onExitClicked()}
           >
             {t('operations.cancel')}
           </Button>
