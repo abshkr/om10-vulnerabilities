@@ -9,7 +9,7 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal, Checkbox, Input, Drawer, Switch } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Checkbox, Input, Drawer, Switch, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
 import _ from 'lodash';
@@ -49,6 +49,34 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
   const onFormClosed = () => {
     resetFields();
     handleFormState(false, null);
+  };
+
+  const onExitClicked = () => {
+    if (!config?.siteFormCloseAlert) {
+      onFormClosed();
+      return;
+    }
+
+    Modal.confirm({
+      title: t('prompts.cancel'),
+      okText: t('operations.leave'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.stay'),
+      content: (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.cancelWarning')}
+        </Card>
+      ),
+      centered: true,
+      onOk: () => {
+        onFormClosed();
+      },
+    });
   };
 
   const onFinish = async () => {
@@ -327,10 +355,10 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
     <Drawer
       closable={false}
       bodyStyle={{ paddingTop: 5 }}
-      onClose={onFormClosed}
-      maskClosable={IS_CREATING}
+      onClose={onExitClicked}
+      maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
       destroyOnClose={true}
-      mask={IS_CREATING}
+      mask={config?.siteFormCloseAlert ? true : IS_CREATING}
       placement="right"
       width="50vw"
       visible={visible}
@@ -340,7 +368,7 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={onFormClosed}
+            onClick={onExitClicked}
           >
             {t('operations.cancel')}
           </Button>
