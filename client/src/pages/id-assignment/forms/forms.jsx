@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
-import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Row, Col } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Row, Col, Card } from 'antd';
 
 import {
   EditOutlined,
@@ -41,6 +41,7 @@ const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) => {
   const { t } = useTranslation();
+  const config = useConfig();
   const { carrcode_tankernum_tag } = useConfig();
   const [form] = Form.useForm();
   const { resetFields, getFieldsValue, setFieldsValue } = form;
@@ -56,6 +57,38 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   const [autoTag, setAutoTag] = useState(null);
 
   const IS_CREATING = !value;
+
+  const onFormClosed = () => {
+    handleFormState(false, null);
+  };
+
+  const onExitClicked = () => {
+    if (!config?.siteFormCloseAlert) {
+      onFormClosed();
+      return;
+    }
+
+    Modal.confirm({
+      title: t('prompts.cancel'),
+      okText: t('operations.leave'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.stay'),
+      content: (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.cancelWarning')}
+        </Card>
+      ),
+      centered: true,
+      onOk: () => {
+        onFormClosed();
+      },
+    });
+  };
 
   const onComplete = (kya_txt) => {
     handleFormState(false, null);
@@ -258,10 +291,10 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
       forceRender
-      onClose={() => handleFormState(false, null)}
-      maskClosable={IS_CREATING}
+      onClose={() => onExitClicked()}
+      maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
       destroyOnClose={true}
-      mask={IS_CREATING}
+      mask={config?.siteFormCloseAlert ? true : IS_CREATING}
       placement="right"
       width="50vw"
       visible={visible}
@@ -271,7 +304,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={() => onExitClicked()}
           >
             {t('operations.cancel')}
           </Button>
