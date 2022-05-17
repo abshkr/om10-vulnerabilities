@@ -138,6 +138,34 @@ const FormModal = ({
     handleFormState(false, null);
   };
 
+  const onExitClicked = () => {
+    if (!config?.siteFormCloseAlert) {
+      onFormClosed();
+      return;
+    }
+
+    Modal.confirm({
+      title: t('prompts.cancel'),
+      okText: t('operations.leave'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.stay'),
+      content: (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.cancelWarning')}
+        </Card>
+      ),
+      centered: true,
+      onOk: () => {
+        onFormClosed();
+      },
+    });
+  };
+
   const checkExpiry = (expiry) => {
     let invalid = false;
     if (expiry !== null && expiry !== '' && expiry !== undefined) {
@@ -482,10 +510,10 @@ const FormModal = ({
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
       forceRender
-      onClose={onFormClosed}
-      maskClosable={IS_CREATING}
+      onClose={onExitClicked}
+      maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
       destroyOnClose={true}
-      mask={maskFlag}
+      mask={config?.siteFormCloseAlert ? true : maskFlag}
       placement="right"
       width="60vw"
       visible={visible}
@@ -515,7 +543,7 @@ const FormModal = ({
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={onFormClosed}
+            onClick={onExitClicked}
           >
             {t('operations.cancel')}
           </Button>
