@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Button, Tabs, notification, Modal, Drawer, Row, Col, Divider } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Drawer, Row, Col, Divider, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
@@ -30,7 +30,7 @@ import {
   Comment,
   Lock,
   LegacyExpires,
-  Phone
+  Phone,
 } from './fields';
 
 import { CheckList, PasswordReset, Expiry } from '../../../components';
@@ -62,6 +62,38 @@ const FormModal = ({
   const fields = columns(t);
 
   const IS_CREATING = !value;
+
+  const onFormClosed = () => {
+    handleFormState(false, null);
+  };
+
+  const onExitClicked = () => {
+    if (!config?.siteFormCloseAlert) {
+      onFormClosed();
+      return;
+    }
+
+    Modal.confirm({
+      title: t('prompts.cancel'),
+      okText: t('operations.leave'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.stay'),
+      content: (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.cancelWarning')}
+        </Card>
+      ),
+      centered: true,
+      onOk: () => {
+        onFormClosed();
+      },
+    });
+  };
 
   const onComplete = (per_code) => {
     handleFormState(false, null);
@@ -205,10 +237,10 @@ const FormModal = ({
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
       forceRender
-      onClose={() => handleFormState(false, null)}
-      maskClosable={IS_CREATING}
+      onClose={() => onExitClicked()}
+      maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
       destroyOnClose={true}
-      mask={IS_CREATING}
+      mask={config?.siteFormCloseAlert ? true : IS_CREATING}
       placement="right"
       width="60vw"
       visible={visible}
@@ -218,7 +250,7 @@ const FormModal = ({
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={() => onExitClicked()}
           >
             {t('operations.cancel')}
           </Button>
@@ -358,17 +390,16 @@ const FormModal = ({
               <Col span={8}>
                 <DriverLicence form={form} value={value} />
               </Col>
-              { 
-                (config?.driver_slp_enabled && 
+              {config?.driver_slp_enabled && (
                 <Col span={8}>
                   <SLP form={form} value={value} />
-                </Col>)
-              }
+                </Col>
+              )}
             </Row>
 
             <Row gutter={[8, 2]}>
               <Col span={8}>
-                <Phone form={form} value={value} isMandatory={config.site2FAMethod==='SMS'} />
+                <Phone form={form} value={value} isMandatory={config.site2FAMethod === 'SMS'} />
               </Col>
             </Row>
 
