@@ -73,6 +73,38 @@ const FormModal = ({
   const fields = columns(t);
   const IS_CREATING = !value;
 
+  const onFormClosed = () => {
+    handleFormState(false, null);
+  };
+
+  const onExitClicked = () => {
+    if (!config?.siteFormCloseAlert) {
+      onFormClosed();
+      return;
+    }
+
+    Modal.confirm({
+      title: t('prompts.cancel'),
+      okText: t('operations.leave'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.stay'),
+      content: (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.cancelWarning')}
+        </Card>
+      ),
+      centered: true,
+      onOk: () => {
+        onFormClosed();
+      },
+    });
+  };
+
   const onComplete = (eqpt_code) => {
     handleFormState(false, null);
     if (eqpt_code) {
@@ -267,10 +299,10 @@ const FormModal = ({
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5, overflowY: 'hidden' }}
-      onClose={() => handleFormState(false, null)}
-      maskClosable={IS_CREATING}
+      onClose={() => onExitClicked()}
+      maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
       destroyOnClose={true}
-      mask={maskFlag}
+      mask={config?.siteFormCloseAlert ? true : maskFlag}
       placement="right"
       width="60vw"
       visible={visible}
@@ -286,11 +318,7 @@ const FormModal = ({
             </div>
           )}
 
-          <Button
-            icon={<CloseOutlined />}
-            style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
-          >
+          <Button icon={<CloseOutlined />} style={{ float: 'right' }} onClick={() => onExitClicked()}>
             {t('operations.cancel')}
           </Button>
 
