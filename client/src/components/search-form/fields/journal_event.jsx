@@ -12,14 +12,12 @@ const JournalEvent = ({ value, onChange }) => {
   const { data: options, isValidating } = useSWR(JOURNAL.EVENT_TYPES);
 
   return (
-    <Form.Item
-      name="msg_event"
-      label={t('fields.event')}
-    >
+    <Form.Item name="msg_event" label={t('fields.event')}>
       <Select
         loading={isValidating}
         showSearch
         allowClear
+        dropdownMatchSelectWidth={false}
         onChange={onChange}
         disabled={!!value}
         optionFilterProp="children"

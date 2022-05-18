@@ -11,15 +11,13 @@ const NominationStatus = ({ value, onChange }) => {
   const { data: options, isValidating } = useSWR(MOVEMENT_NOMIATIONS.STATUS);
 
   return (
-    <Form.Item
-      name="mv_status"
-      label={t('fields.nominationStatus')}
-    >
+    <Form.Item name="mv_status" label={t('fields.nominationStatus')}>
       <Select
         disabled={!!value}
         loading={isValidating}
         showSearch
         allowClear
+        dropdownMatchSelectWidth={false}
         onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectNominationStatus') : null}

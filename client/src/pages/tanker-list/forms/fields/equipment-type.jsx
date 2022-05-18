@@ -45,6 +45,8 @@ const EquipmentType = ({ form, value, onChange }) => {
         loading={isValidating}
         disabled={!!value}
         showSearch
+        // allowClear
+        dropdownMatchSelectWidth={false}
         onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectEquipmentType') : null}

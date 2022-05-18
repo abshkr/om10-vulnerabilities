@@ -7,25 +7,23 @@ import { Form, Select } from 'antd';
 import { SPECIAL_MOVEMENTS } from 'api';
 
 const codes = {
-    0: 'R',
-    1: 'D',
-    2: 'T'
-  };
-  
+  0: 'R',
+  1: 'D',
+  2: 'T',
+};
+
 const MovementReason = ({ value, type, onChange }) => {
   const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(`${SPECIAL_MOVEMENTS.REASONS}?mr_type=${codes[type]}`);
 
   return (
-    <Form.Item
-      name="mlitm_reason_code"
-      label={t('fields.reasonCode')}
-    >
+    <Form.Item name="mlitm_reason_code" label={t('fields.reasonCode')}>
       <Select
         loading={isValidating}
         showSearch
         allowClear
+        dropdownMatchSelectWidth={false}
         onChange={onChange}
         disabled={!!value || !type}
         optionFilterProp="children"

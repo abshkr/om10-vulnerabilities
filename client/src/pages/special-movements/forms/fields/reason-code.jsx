@@ -47,6 +47,8 @@ const ReasonCode = ({ form, value, type, disabled }) => {
       <Select
         loading={isValidating}
         showSearch
+        allowClear
+        dropdownMatchSelectWidth={false}
         disabled={IS_DISABLED}
         optionFilterProp="children"
         placeholder={t('placeholder.selectReasonBusinessProcess')}

@@ -12,15 +12,13 @@ const NominationSource = ({ value, onChange }) => {
   const { data: options, isValidating } = useSWR(MOVEMENT_NOMIATIONS.SOURCES);
 
   return (
-    <Form.Item
-      name="mv_srctype"
-      label={t('fields.nominationSource')}
-    >
+    <Form.Item name="mv_srctype" label={t('fields.nominationSource')}>
       <Select
         disabled={!!value}
         loading={isValidating}
         showSearch
         allowClear
+        dropdownMatchSelectWidth={false}
         onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectNominationSource') : null}
