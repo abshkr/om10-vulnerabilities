@@ -5,6 +5,7 @@ include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
 include_once __DIR__ . '/../service/manual_trans_service.php';
 include_once __DIR__ . '/../service/specialmv_service.php';
+include_once __DIR__ . '/../service/site_service.php';
 include_once 'common_class.php';
 
 class SpecialMovement extends CommonClass
@@ -678,6 +679,100 @@ class SpecialMovement extends CommonClass
         return true;
     }
 
+    //Adjust tank batch number to NULL
+    private function adjust_tank_batch()
+    {
+        // get the value of site settings SITE_USE_TANK_BATCH and SITE_TANK_BATCH_STRICT_MODE, and continue only when both settings are "Y", otherwise do nothing and exit.
+        $serv = new SiteService($this->conn);
+        $site_code = $serv->site_code();
+        $use_batch = $serv->site_config_value("SITE_USE_TANK_BATCH", "N");
+        $must_batch = $serv->site_config_value("SITE_TANK_BATCH_STRICT_MODE", "N");
+        if ($use_batch != 'Y' || $must_batch != 'Y') {
+            return false;
+        }
+
+
+        // find out if the transaction type is RECEIPT or TRANSAFER, if not, do nothing and exit.
+        // define('MV_RECEIPT', 0);
+        // define('MV_DISPOSAL', 1);
+        // define('MV_TRANSFER', 2);
+        if ($this->mlitm_type == 1) {
+            return false;
+        }
+
+
+        // get the current batch number in the TO_TANK
+        $query = "
+            SELECT TANK_BATCH_NO
+            FROM TANKS 
+            WHERE TANK_CODE = :tank_code AND TANK_TERMINAL = :tank_terminal
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tank_code', $this->mlitm_tankcode_to);
+        oci_bind_by_name($stmt, ':tank_terminal', $site_code);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        } 
+        $row = oci_fetch_array($stmt, OCI_NO_AUTO_COMMIT);
+        $curr_batch = $row['TANK_BATCH_NO'];
+        /*
+            See how php parses different values. $var is the variable.
+
+            $var            =    NULL    ""       0        "0"      1
+
+            strlen($var)    =    0       0        1        1        1
+            is_null($var)   =    TRUE    FALSE    FALSE    FALSE    FALSE
+            $var == ""      =    TRUE    TRUE     TRUE     FALSE    FALSE
+            !$var           =    TRUE    TRUE     TRUE     TRUE     FALSE
+            !is_null($var)  =    FALSE   TRUE     TRUE     TRUE     TRUE
+            $var != ""      =    FALSE   FALSE    FALSE    TRUE     TRUE
+            $var            =    FALSE   FALSE    FALSE    FALSE    TRUE
+        */
+        if (is_null($curr_batch) || strlen($curr_batch) == 0) {
+            return false;
+        }
+
+
+        // if the current batch number is not NULL, end its historical record in tank batch history table, and then continue; if it is NULL already, do nothing and exit
+        $query = "
+            UPDATE TANK_BATCHES
+            SET TANK_BATCH_END = SYSDATE
+            WHERE
+                TANK_BATCH_CODE = :tank_batch
+                AND TANK_CODE = :tank_code
+                AND TANK_TERMINAL = :tank_terminal
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tank_batch', $curr_batch);
+        oci_bind_by_name($stmt, ':tank_code', $this->mlitm_tankcode_to);
+        oci_bind_by_name($stmt, ':tank_terminal', $site_code);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+
+        // update the batch number to NULL in TO_TANK 
+        $query = "
+            UPDATE TANKS
+            SET TANK_BATCH_NO = NULL
+            WHERE TANK_CODE = :tank_code AND TANK_TERMINAL = :tank_terminal
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tank_code', $this->mlitm_tankcode_to);
+        oci_bind_by_name($stmt, ':tank_terminal', $site_code);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Old PHP: dmSpecialMovements.processSpecialMovement
      */
@@ -694,6 +789,8 @@ class SpecialMovement extends CommonClass
         $error_msg = null;
         if ($serv->submit($error_msg)) {
             $this->adjust_movement();
+            // handle tank batch
+            $this->adjust_tank_batch();
 
             $result = new EchoSchema(200, response("__SPECIAL_MOVEMENT_SUBMITTED__",
                 sprintf("Special movment %d submitted", $this->mlitm_id)));
