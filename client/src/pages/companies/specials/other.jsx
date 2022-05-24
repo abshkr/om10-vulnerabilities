@@ -6,11 +6,11 @@ import useSWR from 'swr';
 import _ from 'lodash';
 
 import { COMPANIES } from '../../../api';
-import {generateMaxInt} from '../../../utils';
+import { generateMaxInt } from '../../../utils';
 
 const OtherForm = ({ value, form, config }) => {
   const { data: payload } = useSWR(`${COMPANIES.CONFIG}?cmpy_code=${value?.cmpy_code}`);
-  const { maxLengthOrderNum } = config;
+  const { maxLengthOrderNum, bolVersion } = config;
 
   const { t } = useTranslation();
   const { TextArea } = Input;
@@ -24,6 +24,7 @@ const OtherForm = ({ value, form, config }) => {
   const [cmpy_req_pin_flag, setBlendTol] = useState(value?.cmpy_req_pin_flag);
   const [cmpy_wipe_ordets, setOrdCarrier] = useState(value?.cmpy_wipe_ordets);
   const [cmpy_enable_expd, setWghComplete] = useState(value?.cmpy_enable_expd);
+  const [cmpy_bol_text_copies_value, setCmpyBolTextCopiesValue] = useState(1);
 
   const emailValidate = (rule, input) => {
     const regEx = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
@@ -122,6 +123,20 @@ const OtherForm = ({ value, form, config }) => {
       setBlendTol(value.cmpy_req_pin_flag);
       setOrdCarrier(value.cmpy_wipe_ordets);
       setWghComplete(value.cmpy_enable_expd);
+    }
+    if (
+      payload &&
+      bolVersion === 'PLAIN_TEXT' &&
+      (value?.supplier || value?.carrier || value?.customer || value?.drawer)
+    ) {
+      const bolTextCopiesConfig = _.find(payload?.records, (item) => {
+        return item.config_key === 'CMPY_BOL_TEXT_COPIES';
+      });
+
+      setFieldsValue({
+        cmpy_bol_text_copies: bolTextCopiesConfig?.config_value || 1,
+      });
+      setCmpyBolTextCopiesValue(bolTextCopiesConfig?.config_value || 1);
     }
   }, [value, setFieldsValue, payload]);
 
@@ -325,6 +340,18 @@ const OtherForm = ({ value, form, config }) => {
             />
           </Form.Item>
         </Col>
+      </Row>
+
+      <Row justify="center" gutter="8">
+        <Col span={12}>
+          {bolVersion === 'PLAIN_TEXT' &&
+            (value?.supplier || value?.carrier || value?.customer || value?.drawer) && (
+              <Form.Item name="cmpy_bol_text_copies" label={t('fields.bolTextCopies')} {...leftItemLayout}>
+                <InputNumber min={1} max={99} style={{ width: 100 }} />
+              </Form.Item>
+            )}
+        </Col>
+        <Col span={12}></Col>
       </Row>
 
       <Row justify="center" gutter="8">

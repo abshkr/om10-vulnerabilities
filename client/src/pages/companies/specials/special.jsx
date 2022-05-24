@@ -116,6 +116,18 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
       },
     ];
 
+    if (
+      bolVersion === 'PLAIN_TEXT' &&
+      (value?.supplier || value?.carrier || value?.customer || value?.drawer)
+    ) {
+      const bolText = {
+        cmpy_code: value.cmpy_code,
+        config_key: 'CMPY_BOL_TEXT_COPIES',
+        config_value: values.cmpy_bol_text_copies || 1,
+      };
+      values.company_configs.push(bolText);
+    }
+
     Modal.confirm({
       title: t('prompts.update'),
       okText: t('operations.update'),

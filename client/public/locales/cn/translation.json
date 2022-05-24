@@ -633,6 +633,7 @@
     "bayTypeNominationMovement": "大宗油品交易",
     "baysLoads": "单次发油占用发油台数",
     "blendToleranceCheck": "基础油品超标检查",
+    "bolTextCopies": "文本格式发油账单拷贝份数",
     "bookBalance": "结余库存",
     "boolFalse": "假",
     "boolTrue": "真",
