@@ -13,8 +13,8 @@ const Supplier = ({ value }) => {
 
   return (
     <Form.Item
-      name="supplier"
-      label={t('fields.supplier')}
+      name="to_supplier"
+      label={t('fields.toSupplier')}
       rules={[{ required: true }]}
     >
       <Select

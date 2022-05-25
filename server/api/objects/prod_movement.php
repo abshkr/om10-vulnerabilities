@@ -1072,12 +1072,17 @@ class ProdMovement extends CommonClass
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
+        if ($this->from_supplier) {
+            $supplier = $this->from_supplier;
+        } else {
+            $supplier = $this->to_supplier;
+        }
         $query = "UPDATE MOVEMENTS 
             SET MV_DRAWER = :supplier, MV_SUPPLIER = :supplier
             WHERE MV_ID = (SELECT PMV_MV_ID FROM PRODUCT_MVMNTS WHERE PMV_NUMBER = :pmv_number)";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
-        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        oci_bind_by_name($stmt, ':supplier', $supplier);
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -1090,8 +1095,8 @@ class ProdMovement extends CommonClass
                 AND MVITM_PRODCMPY_FROM IS NOT NULL";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
-        oci_bind_by_name($stmt, ':supplier', $this->supplier);
-        oci_bind_by_name($stmt, ':supp_product', $this->supp_product);
+        oci_bind_by_name($stmt, ':supplier', $this->from_supplier);
+        oci_bind_by_name($stmt, ':supp_product', $this->from_supp_product);
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -1104,8 +1109,8 @@ class ProdMovement extends CommonClass
                 AND MVITM_PRODCMPY_TO IS NOT NULL";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
-        oci_bind_by_name($stmt, ':supplier', $this->supplier);
-        oci_bind_by_name($stmt, ':supp_product', $this->supp_product);
+        oci_bind_by_name($stmt, ':supplier', $this->to_supplier);
+        oci_bind_by_name($stmt, ':supp_product', $this->to_supp_product);
         if (!oci_execute($stmt, $this->commit_mode)) {
             $e = oci_error($stmt);
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -1137,17 +1142,17 @@ class ProdMovement extends CommonClass
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         $site_manager = $row['SITE_MANAGER'];
 
-        if (isset($this->supplier)) {
-            $supplier = $this->supplier;
+        if (isset($this->from_supplier)) {
+            $from_supplier = $this->from_supplier;
         } else {
-            $supplier = $site_manager;
+            $from_supplier = $site_manager;
         }
         
         // Get suitable site manager product. A supplier product that has and only has pmv base product
         $query = "SELECT RAT_PROD_PRODCODE FROM RPTOBJ_PROD_RATIOS_VW 
             WHERE RAT_COUNT = 1 AND RAT_PROD_PRODCMPY = :supplier AND RATIO_BASE = :pmv_prdctlnk AND ROWNUM = 1";
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':supplier', $supplier);
+        oci_bind_by_name($stmt, ':supplier', $from_supplier);
         oci_bind_by_name($stmt, ':pmv_prdctlnk', $this->pmv_prdctlnk);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
@@ -1157,13 +1162,47 @@ class ProdMovement extends CommonClass
             return;
         }
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-        $rat_prod_prodcode = $row['RAT_PROD_PRODCODE'];
-        if (!$rat_prod_prodcode) {
+        if (!$row['RAT_PROD_PRODCODE']) {
             $error = new EchoSchema(500, "This supplier does not have compatible supplier product");
             echo json_encode($error, JSON_PRETTY_PRINT);
             return;
         }
-        $this->supp_product = $rat_prod_prodcode;
+        $this->from_supp_product = $row['RAT_PROD_PRODCODE'];
+
+        // to_supplier product, same as from_supplier
+        if (isset($this->to_supplier)) {
+            $to_supplier = $this->to_supplier;
+        } else {
+            $to_supplier = $site_manager;
+        }
+        $query = "SELECT RAT_PROD_PRODCODE FROM RPTOBJ_PROD_RATIOS_VW 
+            WHERE RAT_COUNT = 1 AND RAT_PROD_PRODCMPY = :supplier AND RATIO_BASE = :pmv_prdctlnk AND ROWNUM = 1";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supplier', $to_supplier);
+        oci_bind_by_name($stmt, ':pmv_prdctlnk', $this->pmv_prdctlnk);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(400, response("__COMPATIBLE_SITEMANAGER_PROD_FOUND__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        if (!$row['RAT_PROD_PRODCODE']) {
+            $error = new EchoSchema(500, "This supplier does not have compatible supplier product");
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+        $this->to_supp_product = $row['RAT_PROD_PRODCODE'];
+        
+        $rat_prod_prodcode = $this->from_supp_product;
+        if (!$rat_prod_prodcode) {
+            $rat_prod_prodcode = $this->to_supp_product;
+        }
+        $supplier = $this->from_supplier;
+        if (!$supplier) {
+            $supplier = $this->to_supplier;
+        }
 
         // If there is already a nomination
         $query = "SELECT NVL(PMV_MV_ID, -1) PMV_MV_ID FROM PRODUCT_MVMNTS WHERE PMV_NUMBER = :pmv_number";
@@ -1306,8 +1345,8 @@ class ProdMovement extends CommonClass
             //$transfers[$i]->Device_Code = "BAY01";       //Not important, baiman does not use it
             $transfers[$i]->nr_in_tkr = 1;
 
-            $transfers[$i]->drawer_code = $supplier;
-            $transfers[$i]->product_code = $rat_prod_prodcode;
+            $transfers[$i]->drawer_code = $this->to_supplier;   //Second one is always to
+            $transfers[$i]->product_code = $this->to_supp_product;  
             
             $transfers[$i]->dens = $this->pmv_obsvd_dens * 1000;
             $transfers[$i]->Temperature = $this->pmv_temperature * 100;

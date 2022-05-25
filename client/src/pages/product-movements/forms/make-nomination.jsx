@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React from 'react';
 import { Form, Modal, Input, notification } from 'antd';
-import Supplier from './fields/supplier'
+import FromSupplier from './fields/from-supplier'
+import ToSupplier from './fields/to-supplier'
 import MvKey from './fields/mv_key'
 import api, { PRODUCT_MOVEMENTS } from 'api';
 import _ from 'lodash';
@@ -48,7 +49,8 @@ const MakeNomination = ({ value, t, visible, setVisible, onComplete }) => {
         >
             <Form form={form} layout="vertical">
                 <p>{t('prompts.pmvMakeNomination')}</p>
-                <Supplier />
+                {value?.pmv_srctype == '3' && <FromSupplier /> }    
+                {value?.pmv_dsttype == '3' && <ToSupplier /> }
                 <MvKey form={form} />
                 <Form.Item name="mv_number" label={t('fields.nominationNumber')} >
                     <Input style={{width: "100%"}} />
