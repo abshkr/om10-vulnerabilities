@@ -710,8 +710,12 @@ class ProdMovement extends CommonClass
 
                 // $result_array[$i]['bay_avl_sum'] = floatval($row['BAY_AVL_SUM']);
                 // $result_array[$i]['bay_cvl_sum'] = floatval($row['BAY_CVL_SUM']);
-                $result_array[$i]['percentage'] = 
-                    round(($produce_moved) * 100 / floatval($result_array[$i]['pmv_intended_qty']), 2);
+                if (floatval($result_array[$i]['pmv_intended_qty']) == 0) {
+                    $result_array[$i]['percentage'] = 0;
+                } else {
+                    $result_array[$i]['percentage'] = 
+                        round(($produce_moved) * 100 / floatval($result_array[$i]['pmv_intended_qty']), 2);
+                }
             }
         }
     }
