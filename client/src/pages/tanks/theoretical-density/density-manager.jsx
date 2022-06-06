@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import TheoreticalDensity from './density';
 
-const DensityManager = (title, value, onClose, width, height) => {
+const DensityManager = (title, value, onClose, width, height, config) => {
   Modal.info({
     className: 'form-container',
     title: title ? title : 'Seals',
@@ -23,7 +23,7 @@ const DensityManager = (title, value, onClose, width, height) => {
           fetcher,
         }}
       >
-        <TheoreticalDensity value={value} onClose={onClose} />
+        <TheoreticalDensity value={value} onClose={onClose} config={config} />
       </SWRConfig>
     ),
     okButtonProps: {

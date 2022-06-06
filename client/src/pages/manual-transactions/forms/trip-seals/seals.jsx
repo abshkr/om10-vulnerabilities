@@ -12,9 +12,10 @@ import columns from './columns';
 const { Search } = Input;
 
 const TripSeals = ({ value, onClose }) => {
-  const url = value && value?.shls_trip_no && value.supplier_code
-    ? `${LOAD_SCHEDULES.SEALS}?supplier=${value.supplier_code}&trip_no=${value?.shls_trip_no}`
-    : null;
+  const url =
+    value && value?.shls_trip_no && value.supplier_code
+      ? `${LOAD_SCHEDULES.SEALS}?supplier=${value.supplier_code}&trip_no=${value?.shls_trip_no}`
+      : null;
 
   const { t } = useTranslation();
 
@@ -58,8 +59,8 @@ const TripSeals = ({ value, onClose }) => {
     if (payload?.records?.length === 0) {
       if (val <= 0) {
         notification.error({
-          message: t("messages.validationFailed"),
-          description: t("descriptions.sealNumberRequired"),
+          message: t('messages.validationFailed'),
+          description: t('descriptions.sealNumberRequired'),
         });
         return;
       }
@@ -188,13 +189,18 @@ const TripSeals = ({ value, onClose }) => {
     const endpoint =
       val?.colDef?.field === 'seal_prefix' ? LOAD_SCHEDULES.SET_PREFIX : LOAD_SCHEDULES.SET_SUFFIX;
 
-    const prefix = val?.colDef?.field === 'seal_prefix' ? val?.data?.seal_prefix : val?.data?.seal_suffix;
+    // const prefix = val?.colDef?.field === 'seal_prefix' ? val?.data?.seal_prefix : val?.data?.seal_suffix;
+
+    const params = {};
+    params.seal_nr = val?.data?.seal_nr;
+    if (val?.colDef?.field === 'seal_prefix') {
+      params.prefix = val?.data?.seal_prefix;
+    } else {
+      params.suffix = val?.data?.seal_suffix;
+    }
 
     api
-      .post(endpoint, {
-        seal_nr: val?.data?.seal_nr,
-        prefix,
-      })
+      .post(endpoint, params)
       .then(() => {
         refreshSeals();
         refreshNextSeal();
@@ -239,20 +245,11 @@ const TripSeals = ({ value, onClose }) => {
   );
 
   return (
-    <Form 
-      layout="vertical" 
-      form={form} 
-      onFinish={onFinish} 
-      scrollToFirstError style={{marginTop: "1rem"}}
-    >
+    <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError style={{ marginTop: '1rem' }}>
       <Row gutter={[8, 10]}>
-        <Col span={12}>
-          {t('fields.supplier') + ' : ' + value?.supplier_code}
-        </Col>
+        <Col span={12}>{t('fields.supplier') + ' : ' + value?.supplier_code}</Col>
 
-        <Col span={12}>
-          {t('fields.tripNumber') + ' : ' + value?.shls_trip_no}
-        </Col>
+        <Col span={12}>{t('fields.tripNumber') + ' : ' + value?.shls_trip_no}</Col>
       </Row>
 
       <Row gutter={[8, 10]}>
@@ -283,8 +280,8 @@ const TripSeals = ({ value, onClose }) => {
         onCellUpdate={(value) => onCellUpdate(value)}
         height={'60vh'}
       />
-      
-      <div style={{marginTop: "2rem"}}>
+
+      <div style={{ marginTop: '2rem' }}>
         <Button
           htmlType="button"
           icon={<CloseOutlined />}

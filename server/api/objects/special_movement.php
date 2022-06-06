@@ -5,6 +5,7 @@ include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
 include_once __DIR__ . '/../service/manual_trans_service.php';
 include_once __DIR__ . '/../service/specialmv_service.php';
+include_once __DIR__ . '/../service/site_service.php';
 include_once 'common_class.php';
 
 class SpecialMovement extends CommonClass
@@ -482,9 +483,98 @@ class SpecialMovement extends CommonClass
                 AND PR.RAT_COUNT  = 1 
                 AND DP.PROD_CMPY  != 'BaSePrOd'
         ORDER BY DP.PROD_CMPY, GT.TANK_TERMINAL, GT.TANK_CODE";
+
+        if ($flag) {
+            $query = "
+                SELECT DISTINCT
+                    GT.TANK_BASE,
+                    GT.TANK_BASE_NAME,
+                    GT.TANK_BASE_CLASS,
+                    GT.TANK_BCLASS_NAME,
+                    GT.OPEN_DENSITY     as TANK_DENSITY,
+                    NVL(GT.TANK_BASE_DENS_LO, GT.TANK_BCLASS_DENS_LO) DENSITY_LO,
+                    NVL(GT.TANK_BASE_DENS_HI, GT.TANK_BCLASS_DENS_HI) DENSITY_HI,
+                    GT.OPEN_TEMP        as TANK_TEMP,
+                    GT.TANK_BCLASS_TEMP_LO TEMP_LO,
+                    GT.TANK_BCLASS_TEMP_HI TEMP_HI,
+                    GT.TANK_CODE, 
+                    GT.TANK_NAME, 
+                    GT.TANK_TERMINAL TERM_CODE,  
+                    GT.TANK_SITENAME TERM_NAME,
+                    GT.CLOSEOUT_NR,
+                    GT.BASE_PERIOD_INDEX,
+                    GT.BASE_PERIOD_OPEN,
+                    GT.BASE_PERIOD_CLOSE,
+                    DP.PROD_CMPY, 
+                    DP.PROD_CODE, 
+                    DP.PROD_NAME
+                FROM 
+                    PRODUCTS DP, 
+                    RPTOBJ_PROD_RATIOS_VW PR, 
+                    GUI_FOLIO_TANKS GT
+                WHERE 
+                    DP.PROD_CMPY = :supplier
+                    AND GT.TANK_CODE = :tank_code
+                    AND DP.PROD_CMPY  = PR.RAT_PROD_PRODCMPY 
+                    AND DP.PROD_CODE  = PR.RAT_PROD_PRODCODE 
+                    AND PR.RATIO_BASE = GT.TANK_BASE 
+                    AND PR.RAT_COUNT  = 1 
+                    AND DP.PROD_CMPY  != 'BaSePrOd'
+                    AND GT.CLOSEOUT_NR = :closeout_nr
+                    -- AND (GT.BASE_PERIOD_OPEN IS NULL OR GT.BASE_PERIOD_OPEN <= :move_time)
+                    -- AND (GT.BASE_PERIOD_CLOSE IS NULL OR GT.BASE_PERIOD_CLOSE >= :move_time)
+            ORDER BY DP.PROD_CMPY, GT.TANK_TERMINAL, GT.TANK_CODE
+            ";
+        }
+
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':supplier', $this->supplier);
         oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+        if ($flag) {
+            $closeout_nr = $this->get_folios_by_date($this->move_time, $this->move_time);
+            oci_bind_by_name($stmt, ':closeout_nr', $closeout_nr);
+            // oci_bind_by_name($stmt, ':move_time', $this->move_time);
+        }
+        
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function drawer_products_by_base()
+    {
+        $line = "1=1";
+        if (isset($this->base_code)) {
+            $line = "PR.RATIO_BASE = :base_code";
+        }
+        $query = "
+            SELECT 
+                DP.PROD_CMPY, 
+                DP.PROD_CODE, 
+                DP.PROD_NAME,
+                CM.CMPY_NAME,
+                PR.RATIO_BASE
+            FROM 
+                PRODUCTS DP, 
+                COMPANYS CM,
+                RPTOBJ_PROD_RATIOS_VW PR
+            WHERE 
+                $line 
+                AND DP.PROD_CMPY  = PR.RAT_PROD_PRODCMPY 
+                AND DP.PROD_CODE  = PR.RAT_PROD_PRODCODE 
+                AND PR.RAT_COUNT  = 1 
+                AND DP.PROD_CMPY  != 'BaSePrOd'
+                AND DP.PROD_CMPY  = CM.CMPY_CODE
+            ORDER BY DP.PROD_CODE, DP.PROD_CMPY
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (isset($this->base_code)) {
+            oci_bind_by_name($stmt, ':base_code', $this->base_code);
+        }
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {
@@ -517,6 +607,100 @@ class SpecialMovement extends CommonClass
         return true;
     }
 
+    //Adjust tank batch number to NULL
+    private function adjust_tank_batch()
+    {
+        // get the value of site settings SITE_USE_TANK_BATCH and SITE_TANK_BATCH_STRICT_MODE, and continue only when both settings are "Y", otherwise do nothing and exit.
+        $serv = new SiteService($this->conn);
+        $site_code = $serv->site_code();
+        $use_batch = $serv->site_config_value("SITE_USE_TANK_BATCH", "N");
+        $must_batch = $serv->site_config_value("SITE_TANK_BATCH_STRICT_MODE", "N");
+        if ($use_batch != 'Y' || $must_batch != 'Y') {
+            return false;
+        }
+
+
+        // find out if the transaction type is RECEIPT or TRANSAFER, if not, do nothing and exit.
+        // define('MV_RECEIPT', 0);
+        // define('MV_DISPOSAL', 1);
+        // define('MV_TRANSFER', 2);
+        if ($this->mlitm_type == 1) {
+            return false;
+        }
+
+
+        // get the current batch number in the TO_TANK
+        $query = "
+            SELECT TANK_BATCH_NO
+            FROM TANKS 
+            WHERE TANK_CODE = :tank_code AND TANK_TERMINAL = :tank_terminal
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tank_code', $this->mlitm_tankcode_to);
+        oci_bind_by_name($stmt, ':tank_terminal', $site_code);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        } 
+        $row = oci_fetch_array($stmt, OCI_NO_AUTO_COMMIT);
+        $curr_batch = $row['TANK_BATCH_NO'];
+        /*
+            See how php parses different values. $var is the variable.
+
+            $var            =    NULL    ""       0        "0"      1
+
+            strlen($var)    =    0       0        1        1        1
+            is_null($var)   =    TRUE    FALSE    FALSE    FALSE    FALSE
+            $var == ""      =    TRUE    TRUE     TRUE     FALSE    FALSE
+            !$var           =    TRUE    TRUE     TRUE     TRUE     FALSE
+            !is_null($var)  =    FALSE   TRUE     TRUE     TRUE     TRUE
+            $var != ""      =    FALSE   FALSE    FALSE    TRUE     TRUE
+            $var            =    FALSE   FALSE    FALSE    FALSE    TRUE
+        */
+        if (is_null($curr_batch) || strlen($curr_batch) == 0) {
+            return false;
+        }
+
+
+        // if the current batch number is not NULL, end its historical record in tank batch history table, and then continue; if it is NULL already, do nothing and exit
+        $query = "
+            UPDATE TANK_BATCHES
+            SET TANK_BATCH_END = SYSDATE
+            WHERE
+                TANK_BATCH_CODE = :tank_batch
+                AND TANK_CODE = :tank_code
+                AND TANK_TERMINAL = :tank_terminal
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tank_batch', $curr_batch);
+        oci_bind_by_name($stmt, ':tank_code', $this->mlitm_tankcode_to);
+        oci_bind_by_name($stmt, ':tank_terminal', $site_code);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+
+        // update the batch number to NULL in TO_TANK 
+        $query = "
+            UPDATE TANKS
+            SET TANK_BATCH_NO = NULL
+            WHERE TANK_CODE = :tank_code AND TANK_TERMINAL = :tank_terminal
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tank_code', $this->mlitm_tankcode_to);
+        oci_bind_by_name($stmt, ':tank_terminal', $site_code);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Old PHP: dmSpecialMovements.processSpecialMovement
      */
@@ -533,6 +717,8 @@ class SpecialMovement extends CommonClass
         $error_msg = null;
         if ($serv->submit($error_msg)) {
             $this->adjust_movement();
+            // handle tank batch
+            $this->adjust_tank_batch();
 
             $result = new EchoSchema(200, response("__SPECIAL_MOVEMENT_SUBMITTED__",
                 sprintf("Special movment %d submitted", $this->mlitm_id)));

@@ -30,13 +30,14 @@ import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
 
 import { DataTable, Download } from '../../../components';
-import {TerminalList} from 'components/fields';
+import { TerminalList } from 'components/fields';
 import api, { BASE_OWNERS, BASE_PRODUCTS, ORDER_LISTINGS } from '../../../api';
 import columns from './columns';
 import transform from './transform';
 // import BaseOwnerTransactions from '../base-owner-trans-io';
 // import BaseOwnerTransactions from '../base-owner-trans';
 import BaseOwnerTransactions from '../ownership-transactions';
+import BaseOwnerReasons from '../../../pages/base-owner-reasons';
 
 const { TabPane } = Tabs;
 
@@ -46,9 +47,12 @@ const BaseProductOwners = ({ value, access, config, unit, units }) => {
   const [base, setBase] = useState(value?.base_code);
   const [supplier, setSupplier] = useState(undefined);
   const [showMakeTransactions, setShowMakeTransactions] = useState(false);
+  const [showOwnerTrsaReason, setShowOwnerTrsaReason] = useState(false);
   const [selected, setSelected] = useState(undefined);
 
-  const url = `${BASE_OWNERS.READ}?base_code=${base || '-1'}&cmpy_code=${supplier || '-1'}&terminal=${terminal}`;
+  const url = `${BASE_OWNERS.READ}?base_code=${base || '-1'}&cmpy_code=${
+    supplier || '-1'
+  }&terminal=${terminal}`;
   const { data, isValidating } = useSWR(url);
 
   const { data: bases } = useSWR(BASE_PRODUCTS.READ);
@@ -80,6 +84,18 @@ const BaseProductOwners = ({ value, access, config, unit, units }) => {
 
   const modifiers = (
     <>
+      {config?.siteUseProdOwnership && config?.siteProdOwnershipLevel !== 'TANK' && (
+        <Button
+          type="primary"
+          icon={<EditOutlined />}
+          style={{ marginRight: 5 }}
+          disabled={false}
+          onClick={() => setShowOwnerTrsaReason(true)}
+        >
+          {t('tabColumns.ownerTrsaReasons')}
+        </Button>
+      )}
+
       <Download
         // data={data?.records}
         data={payload}
@@ -185,11 +201,17 @@ const BaseProductOwners = ({ value, access, config, unit, units }) => {
 
               {config?.siteUseMultiTerminals && (
                 <Descriptions.Item label={t('fields.terminal')} span={1}>
-                  <TerminalList value={terminal} listOptions={[]}
-                  itemCode={'terminal'} itemTitle={'terminal'} itemRequired={false} itemDisabled={false} onChange={setTerminal} />
+                  <TerminalList
+                    value={terminal}
+                    listOptions={[]}
+                    itemCode={'terminal'}
+                    itemTitle={'terminal'}
+                    itemRequired={false}
+                    itemDisabled={false}
+                    onChange={setTerminal}
+                  />
                 </Descriptions.Item>
               )}
-
             </Descriptions>
           </Col>
         </Row>
@@ -234,6 +256,19 @@ const BaseProductOwners = ({ value, access, config, unit, units }) => {
             value={selected}
             config={config}
           />
+        </Drawer>
+      )}
+      {config?.siteUseProdOwnership && config?.siteProdOwnershipLevel !== 'TANK' && (
+        <Drawer
+          title={t('tabColumns.ownerTrsaReasons')}
+          placement="right"
+          bodyStyle={{ paddingTop: 5 }}
+          onClose={() => setShowOwnerTrsaReason(false)}
+          visible={showOwnerTrsaReason}
+          width="70vw"
+          destroyOnClose={true}
+        >
+          <BaseOwnerReasons access={access} />
         </Drawer>
       )}
     </>

@@ -2,6 +2,7 @@
 
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
+include_once __DIR__ . '/../service/strap_service.php';
 include_once 'common_class.php';
 
 class TankInv extends CommonClass
@@ -40,6 +41,14 @@ class TankInv extends CommonClass
                 TANKS.TANK_PROD_LVL                                AS TANK_PROD_LVL,
                 TANKS.TANK_IFC                                     AS TANK_IFC,
                 TANKS.TANK_TEMP                                    AS TANK_TEMP,
+                NVL(TANKS.TANK_TOTAL_VOL, (NVL(TANKS.TANK_AMB_VOL,0) + NVL(TANKS.TANK_WATER,0) + NVL(TANKS.TANK_IFC,0))) 
+                                                                   AS TANK_TOTAL_VOL,
+                DECODE(NVL(TANK_ULLAGE,0), 0,
+                    NVL(TANKS.TANK_SAFE_CAPACITY,0)
+                        - NVL(TANKS.TANK_TOTAL_VOL, (NVL(TANKS.TANK_AMB_VOL,0) + NVL(TANKS.TANK_WATER,0) + NVL(TANKS.TANK_IFC,0))),
+                    NVL(TANK_ULLAGE,0))                            AS TANK_ULLAGE,
+                TANKS.TANK_AMB_VOL                                 AS TANK_AMB_VOL,
+                TANKS.TANK_UL_LEVEL                                AS TANK_UL_LEVEL,
                 TANK_COR_VOL * TANK_RPTVCF                         AS NETVOL,
                 TANK_AMB_VOL * TANK_RPTVCF                         AS GROSSVOL,
                 TANK_PUMP_VOL                                      AS PUMPABLEVOL,
@@ -68,6 +77,41 @@ class TankInv extends CommonClass
             return $stmt;
         } else {
             return null;
+        }
+    }
+
+    public function calc_pumpable($item) {
+        // get the value of TOV,
+        $TOV = 0;
+        if (!isset($item['tank_total_vol'])) {
+            $TOV = (float)$item['tank_amb_vol'];
+        } else {
+            $TOV = (float)$item['tank_total_vol'];
+        }
+
+        // get the volume from User L-level
+        $ULV = 0;
+        if (!isset($item['tank_ul_level'])) {
+            $ULV = 0;
+        } else {
+            $strap_service = new StrapService($this->conn);
+            $ULV = $strap_service->get_amb($item['tank_code'], (float)$item['tank_ul_level']);
+        }
+
+        $pumpable = $TOV - $ULV;
+        if ($pumpable < 0 || !is_numeric($pumpable)) {
+            $pumpable = 0;
+        }
+
+        return $pumpable;
+    }
+
+    //calculate the pumpable volumes adhoc for each tank
+    public function read_decorate(&$result_array)
+    {
+        foreach ($result_array as $key => $tank_item) {
+            // calculate pumpable
+            $result_array[$key]['pumpablevol'] = $this->calc_pumpable($tank_item);
         }
     }
 }

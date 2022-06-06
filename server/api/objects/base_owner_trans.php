@@ -227,7 +227,7 @@ class BaseOwnerTrans extends CommonClass
                 , cmp.CMPY_NAME
                 , tra.QTY
                 , tra.REASON
-                , typ.MOVITEM_TYPE_NAME     REASON_TEXT
+                , otr.OTR_TEXT     REASON_TEXT
                 , tra.TRSA_TIME
                 , tra.TRSA_DENSITY
                 , tra.TRSA_UNIT
@@ -255,7 +255,7 @@ class BaseOwnerTrans extends CommonClass
                 , tra.TRSA_TERMINAL_TO || ' - ' || trm3.TERM_NAME  AS TRSA_SITEDESC_TO
             from 
                 PRODOWNSHIP_TRANSACT        tra
-                , MOVITEM_TYPES             typ
+                , OWNER_TRSA_REASONS        otr
                 , BASE_PRODS                bpd
                 , (
                     select
@@ -280,7 +280,7 @@ class BaseOwnerTrans extends CommonClass
                 , TERMINAL                  trm2
                 , TERMINAL                  trm3
             where
-                tra.REASON = typ.MOVITEM_TYPE_ID(+)
+                tra.REASON = otr.OTR_ID(+)
                 and tra.BASE_PROD_CODE = bpd.BASE_CODE(+)
                 and bpd.BASE_CAT = bpc.BCLASS_NO(+)
                 and tra.TRSA_UNIT = unt.UNIT_ID(+)
@@ -347,7 +347,7 @@ class BaseOwnerTrans extends CommonClass
                         , tra.TRSA_QTY_OWNED
                         , tra.TRSA_DENSITY_OWNED
                         , tra.REASON
-                        , typ.MOVITEM_TYPE_NAME     REASON_TEXT
+                        , otr.OTR_TEXT     REASON_TEXT
                         , tra.TRSA_TIME
                         , (tra.TRSA_QTY_OWNED + tra.QTY * tra.REASON)  as TRSA_QTY_AFTER
                         , (tra.TRSA_QTY_OWNED * tra.TRSA_DENSITY_OWNED + tra.QTY * tra.REASON * tra.TRSA_DENSITY) 
@@ -355,11 +355,11 @@ class BaseOwnerTrans extends CommonClass
                     from 
                         BASE_PROD_OWNSHIP           bro
                         , PRODOWNSHIP_TRANSACT      tra
-                        , MOVITEM_TYPES             typ
+                        , OWNER_TRSA_REASONS        otr
                     where
                         bro.BASE_PROD_CODE = tra.BASE_PROD_CODE(+)
                         and bro.SUPP_CMPY = tra.SUPP_CMPY(+)
-                        and tra.REASON = typ.MOVITEM_TYPE_ID(+)
+                        and tra.REASON = otr.OTR_ID(+)
                 )   bot
                 , BASE_PRODS        bpd
                 , GUI_COMPANYS      cmp

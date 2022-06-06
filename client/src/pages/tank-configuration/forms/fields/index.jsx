@@ -10,4 +10,16 @@ import Code from './code';
 import Terminal from './terminal';
 import Levels from './levels';
 
-export { Name, Code, Product, Density, Flags, DailyVariance, MontlhyVariance, MaxFlow, Terminal, Levels };
+export {
+  Name,
+  Code,
+  Product,
+  TransferProduct,
+  Density,
+  Flags,
+  DailyVariance,
+  MontlhyVariance,
+  MaxFlow,
+  Terminal,
+  Levels,
+};

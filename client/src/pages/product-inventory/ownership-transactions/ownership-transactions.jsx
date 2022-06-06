@@ -34,7 +34,13 @@ import jwtDecode from 'jwt-decode';
 
 import { DataTable, Download } from '../../../components';
 import { TerminalList, FormTerminalList } from 'components/fields';
-import api, { BASE_OWNERS, BASE_OWNER_TRANSACTIONS, ORDER_LISTINGS, SPECIAL_MOVEMENTS } from '../../../api';
+import api, {
+  BASE_OWNERS,
+  BASE_OWNER_TRANSACTIONS,
+  ORDER_LISTINGS,
+  OWNER_TRSA_REASONS,
+  SPECIAL_MOVEMENTS,
+} from '../../../api';
 import { SETTINGS } from '../../../constants';
 import { getCurrentTime } from '../../../utils';
 import columns from './columns';
@@ -69,8 +75,8 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
   const isLoading = isValidating || !data;
 
   const { data: units } = useSWR(ORDER_LISTINGS.UNIT_TYPES);
-  // const { data: types } = useSWR(BASE_OWNER_TRANSACTIONS.REASONS);
-  const { data: types } = useSWR(SPECIAL_MOVEMENTS.TYPES);
+  const { data: types } = useSWR(OWNER_TRSA_REASONS.READ);
+  // const { data: types } = useSWR(SPECIAL_MOVEMENTS.TYPES);
 
   const { t } = useTranslation();
 
@@ -317,6 +323,9 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
     values.ownship_no = vobj?.ownship_no;
     values.base_prod_code = vobj?.base_prod_code;
     values.supp_cmpy = vobj?.supp_cmpy;
+    values.action = vobj?.trsa_reversed === true ? 'REVERSE' : null;
+    values.ownship_trsa_no = vobj?.ownship_trsa_no;
+    values.qty = vobj?.qty;
 
     /* // adjust the quantity
     const volume = _.toNumber(vobj?.ownship_qty) + _.toNumber(vobj?.reason) * _.toNumber(vobj?.qty);
@@ -1353,12 +1362,8 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
                       }
                     >
                       {types?.records?.map((item, index) => (
-                        <Select.Option
-                          key={index}
-                          disabled={_.toNumber(item.movitem_type_id) !== 2}
-                          value={_.toNumber(item.movitem_type_id)}
-                        >
-                          {item.movitem_type_name}
+                        <Select.Option key={index} disabled={false} value={_.toNumber(item.otr_id)}>
+                          {item.otr_text}
                         </Select.Option>
                       ))}
                     </Select>

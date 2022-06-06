@@ -3061,6 +3061,13 @@
     "OVCDEL_ADDR": "NA",
     "OVCDEL_TRIP": "NA"
   },
+  "OWNER_TRSA_REASONS": {
+    "OTR_ID": "NA",
+    "OTR_CODE": "NA",
+    "OTR_TEXT": "NA",
+    "OTR_TYPE": "ENUM|MOVITEM_TYPE|ENUM_LANG|ENUM_NO|ENUM_TEXT",
+    "OTR_FLAG": "NA"
+  },
   "O_CLOSEOUT": {
     "OCLOSEOUT_KEY": "NA",
     "OC_SUPPLIER": "NA",

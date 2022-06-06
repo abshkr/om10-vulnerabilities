@@ -88,16 +88,33 @@ const To = ({
           },
         })
         .then((response) => {
-          setProducts(response.data.records);
+          let productList = [];
+          if (config?.siteFolioTankBaseChange) {
+            if (IS_DISABLED) {
+              // record submitted or reversed, the data cannot be changed, get all the available products in the folio
+              productList = response.data.records;
+            } else {
+              // record new or created but not submitted yet, the data is editable, get the product of the particular period
+              productList = response?.data?.records?.filter(
+                (o) =>
+                  (o.base_period_open === '' || o.base_period_open <= moveTime) &&
+                  (o.base_period_close === '' || o.base_period_close >= moveTime)
+              );
+            }
+          } else {
+            productList = response.data.records;
+          }
+
+          setProducts(productList);
           setLoading(false);
 
           // const prodSelected = getFieldValue('mlitm_prodcode_to');
-          if (response.data.records.length > 0 && fromTank) {
-            // setProduct(response.data.records?.[0]?.tank_base);
-            setProduct(response.data.records?.[0]?.prod_code);
+          if (productList.length > 0 && fromTank) {
+            // setProduct(productList?.[0]?.tank_base);
+            setProduct(productList?.[0]?.prod_code);
             setFieldsValue({
-              // mlitm_prodcode_to: response.data.records?.[0]?.tank_base,
-              mlitm_prodcode_to: response.data.records?.[0]?.prod_code,
+              // mlitm_prodcode_to: productList?.[0]?.tank_base,
+              mlitm_prodcode_to: productList?.[0]?.prod_code,
             });
           }
         })
@@ -231,7 +248,7 @@ const To = ({
             </Select>
           </Form.Item>
         </Col>
-        <Col span={9}>
+        <Col span={5}>
           <Form.Item
             name="mlitm_tankcode_to"
             label={t('fields.toTank')}
@@ -260,7 +277,7 @@ const To = ({
             </Select>
           </Form.Item>
         </Col>
-        <Col span={9}>
+        <Col span={13}>
           <Form.Item
             name="mlitm_prodcode_to"
             label={t('fields.toProduct')}
@@ -278,11 +295,20 @@ const To = ({
                 option?.props?.children?.toLowerCase()?.indexOf(input?.toLowerCase()) >= 0
               }
             >
-              {products.map((item, index) => (
-                <Select.Option key={index} value={item.prod_code}>
-                  {`${item.prod_code} - ${item.prod_name}`}
-                </Select.Option>
-              ))}
+              {!config?.siteFolioTankBaseChange &&
+                products.map((item, index) => (
+                  <Select.Option key={index} value={item.prod_code}>
+                    {`${item.prod_code} - ${item.prod_name}`}
+                  </Select.Option>
+                ))}
+              {config?.siteFolioTankBaseChange &&
+                products.map((item, index) => (
+                  <Select.Option key={index} value={item.prod_code}>
+                    {`${item.prod_code} - ${item.prod_name} (${item.tank_density}${t('units.kg/m3')}, ${
+                      item.base_period_open
+                    }~${item.base_period_close})`}
+                  </Select.Option>
+                ))}
             </Select>
           </Form.Item>
         </Col>

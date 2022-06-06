@@ -141,6 +141,70 @@ class FolioTank extends CommonClass
             }
         }
 
+        /* Extra data to treat CLOSEOUT_TANK_BASES.
+        The reason we need to handle CLOSEOUT_TANK_BASES is there is a replicate record in CLOSEOUT_TANK_BASES
+        table since We already have this record in CLOSEOUT_TANK. 
+        In CLOSEOUT_TANK_BASES, it is desined this way: first record is original data, and every new recrod 
+        represent a change.
+        */
+        $query = "SELECT NVL(MAX(BASE_PERIOD_INDEX), -1) BASE_PERIOD_INDEX
+            FROM CLOSEOUT_TANK_BASES
+            WHERE CLOSEOUT_NR = :closeout_nr AND TANK_CODE = :tank_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':closeout_nr', $this->closeout_nr);
+        oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        } 
+        $row = oci_fetch_array($stmt, OCI_NO_AUTO_COMMIT);
+        $base_period_index = $row['BASE_PERIOD_INDEX'];
+        if ($base_period_index == '-1') {
+            return true;
+        }
+        
+        write_log(sprintf("Treat CLOSEOUT_TANK_BASES, tank:%s, closeout_nr:%d", $this->tank_code, $this->closeout_nr),
+            __FILE__, __LINE__);
+        
+        $query = "
+            UPDATE CLOSEOUT_TANK_BASES 
+            SET CLOSE_STD_TOT = :close_std_tot,
+                CLOSE_MASS_TOT = :close_mass_tot,
+                DESCRIPTION = :description,
+                CLOSE_AMB_TOT = :close_amb_tot,
+                CLOSE_DENSITY = :close_density,
+                CLOSE_TEMP = :close_temp,
+                TANK_LEVEL = :tank_level,
+                TANK_WATER_LVL = :tank_water_lvl,
+                TANK_WATER = :tank_water,
+                TANK_ROOF_WEIGHT = :tank_roof_weight,
+                TANK_IFC = :tank_ifc
+            WHERE CLOSEOUT_NR = :closeout_nr
+                AND TANK_CODE = :tank_code
+                AND BASE_PERIOD_INDEX = :base_period_index";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':close_mass_tot', $this->close_mass_tot);
+        oci_bind_by_name($stmt, ':close_std_tot', $this->close_std_tot);
+        oci_bind_by_name($stmt, ':close_density', $this->close_density);
+        oci_bind_by_name($stmt, ':close_amb_tot', $this->close_amb_tot);
+        oci_bind_by_name($stmt, ':close_temp', $this->close_temp);
+        oci_bind_by_name($stmt, ':tank_level', $this->tank_level);
+        oci_bind_by_name($stmt, ':tank_water_lvl', $this->tank_water_lvl);
+        oci_bind_by_name($stmt, ':tank_water', $this->tank_water);
+        oci_bind_by_name($stmt, ':tank_roof_weight', $this->tank_roof_weight);
+        oci_bind_by_name($stmt, ':tank_ifc', $this->tank_ifc);
+        oci_bind_by_name($stmt, ':description', $this->description);
+        oci_bind_by_name($stmt, ':closeout_nr', $this->closeout_nr);
+        oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+        oci_bind_by_name($stmt, ':base_period_index', $this->base_period_index);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
         return true;
     }
 }
@@ -541,6 +605,111 @@ class Folio extends CommonClass
             return null;
         }
     }
+
+    public function get_tanks_with_base_change()
+    {
+        $query = "
+        SELECT 
+            CLOSEOUT_TANK.*,
+            NVL(CLOSEOUT_TANK.TANK_BASECODE, TANKS.TANK_BASE)  TANK_BASECODE2,
+            NVL(CLOSEOUT_TANK.TANK_BASENAME, BASE_PRODS.BASE_NAME)  TANK_BASENAME2,
+            TANKS.TANK_BASE  CURR_BASECODE,
+            TANK_LEVEL TANK_PROD_LVL,
+            TANKS.TANK_GAUGINGMTHD,
+            GAUGE_METHOD_NAME TANK_GAUGINGMTHD_DESC,
+            BASE_PRODS.BASE_NAME  CURR_BASENAME,
+            BASECLASS.BCLASS_DESC,
+            BASECLASS.BCLASS_NO,
+            BASECLASS.BCLASS_DENS_LO,
+            BASECLASS.BCLASS_DENS_HI,
+            BASECLASS.BCLASS_VCF_ALG,
+            TANKS.TANK_DENSITY
+        FROM 
+            (
+            SELECT
+                ctgrp.*
+            FROM (
+                SELECT ctb.* FROM CLOSEOUT_TANK_BASES ctb
+                -- WHERE ctb.BASE_PERIOD_CLOSE IS NULL OR ctb.BASE_PERIOD_OPEN != ctb.BASE_PERIOD_CLOSE
+                union all
+                SELECT 
+                    ct.CLOSEOUT_NR
+                    , ct.TANK_TERMINAL
+                    , ct.TANK_CODE
+                    , 1                      as BASE_PERIOD_INDEX
+                    , cl.PREV_CLOSEOUT_DATE  as BASE_PERIOD_OPEN
+                    , cl.CLOSEOUT_DATE       as BASE_PERIOD_CLOSE
+                    , ct.TANK_BASECODE
+                    , ct.TANK_BASENAME
+                    , ct.OPEN_STD_TOT
+                    , ct.OPEN_MASS_TOT
+                    , ct.LAST_GAUGE_TIME
+                    , ct.CLOSE_STD_TOT
+                    , ct.CLOSE_MASS_TOT
+                    , ct.FREEZE_STD_TOT
+                    , ct.FREEZE_MASS_TOT
+                    , ct.RCPT_VOL
+                    , ct.TRF_VOL
+                    , ct.OPEN_TEMP
+                    , ct.OPEN_DENSITY
+                    , ct.FREEZE_TEMP
+                    , ct.FREEZE_DENSITY
+                    , ct.CLOSE_TEMP
+                    , ct.CLOSE_DENSITY
+                    , ct.DESCRIPTION
+                    , ct.USER_CODE
+                    , ct.LAST_CHG_TIME
+                    , ct.OPEN_AMB_TOT
+                    , ct.CLOSE_AMB_TOT
+                    , ct.FREEZE_AMB_TOT
+                    , ct.TANK_LEVEL
+                    , ct.TANK_WATER_LVL
+                    , ct.TANK_WATER
+                    , ct.TANK_ROOF_WEIGHT
+                    , ct.TANK_IFC
+                FROM CLOSEOUT_TANK ct, CLOSEOUTS cl
+                WHERE ct.CLOSEOUT_NR = cl.CLOSEOUT_NR
+                  AND (ct.CLOSEOUT_NR, ct.TANK_TERMINAL, ct.TANK_CODE, 1) not in (select CLOSEOUT_NR, TANK_TERMINAL, TANK_CODE, BASE_PERIOD_INDEX from CLOSEOUT_TANK_BASES)
+            ) ctgrp
+            WHERE 1=1
+            ) CLOSEOUT_TANK, 
+            TANKS, 
+            BASE_PRODS, 
+            (
+                SELECT
+                    BS.BCLASS_NO,
+                    NVL(BM.BCLASS_NAME, BS.BCLASS_DESC)           AS BCLASS_DESC,
+                    BS.BCLASS_DENS_LO,
+                    BS.BCLASS_DENS_HI,
+                    BS.BCLASS_VCF_ALG,
+                    BS.BCLASS_TEMP_LO,
+                    BS.BCLASS_TEMP_HI
+                FROM BASECLASS BS,
+                    BCLASS_TYP BM
+                WHERE BS.BCLASS_NO = BM.BCLASS_ID(+)
+            ) BASECLASS, 
+            GAUGE_METHOD_TYP
+        WHERE CLOSEOUT_TANK.TANK_CODE = TANKS.TANK_CODE
+            AND NVL(CLOSEOUT_TANK.TANK_BASECODE, TANKS.TANK_BASE) = BASE_PRODS.BASE_CODE
+            AND BASE_PRODS.BASE_CAT = BASECLASS.BCLASS_NO
+            AND TANK_GAUGINGMTHD = GAUGE_METHOD_ID(+)
+            AND CLOSEOUT_TANK.CLOSEOUT_NR = :closeout_nr
+        ORDER BY BASECLASS.BCLASS_NO, CLOSEOUT_TANK.TANK_CODE, CLOSEOUT_TANK.BASE_PERIOD_INDEX
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':closeout_nr', $this->closeout_nr);
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+
+
 
     //Old php: dmFolio.getMeters
     public function get_meters()

@@ -61,12 +61,13 @@ const columns = (t) => [
   },
   {
     headerName: t('fields.reversed'),
-    field: 'trsa_reverse_flag',
+    field: 'trsa_reverse_desc',
     sortable: true,
     resizable: true,
     width: 100,
     // suppressSizeToFit: true,
-    cellRenderer: 'TrueRenderer',
+    filter: 'MultiFilter',
+    // cellRenderer: 'TrueRenderer',
   },
   {
     headerName: t('fields.reversedTrans'),

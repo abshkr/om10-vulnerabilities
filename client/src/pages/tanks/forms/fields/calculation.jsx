@@ -28,7 +28,6 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
   const highSG = _.round(calcSgFromApi(range?.low), config?.precisionSG);
   const highSGDef = _.round(calcSgFromApi(0), config?.precisionSG);
 
-
   const onCheck = (v) => {
     setDensityMode(v.target.checked);
     setFieldsValue({
@@ -46,7 +45,7 @@ const Calculation = ({ form, value, range, densRange, config, pinQuantity, pinDe
 
   const onCalcTheoreticalDensity = () => {
     // pop up the dialog to calculate the theoretical density
-    DensityManager(t('fields.theoreticalDensityCalc'), {}, loadTheoreticalDensity, '80vw', '40vh');
+    DensityManager(t('fields.theoreticalDensityCalc'), {}, loadTheoreticalDensity, '80vw', '40vh', config);
   };
 
   useEffect(() => {

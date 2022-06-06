@@ -525,4 +525,22 @@ class SiteConfig extends CommonClass
             return null;
         }
     }
+
+    public function get_server_data()
+    {
+        $query = "
+            SELECT 
+                TZ_OFFSET(SESSIONTIMEZONE) SERVER_TIME_OFFSET,
+                SYSDATE SERVER_TIME
+            FROM DUAL 
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
 }

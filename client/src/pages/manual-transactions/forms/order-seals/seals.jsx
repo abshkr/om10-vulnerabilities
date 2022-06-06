@@ -31,7 +31,7 @@ const OrderSeals = ({ value, onClose }) => {
 
   const onFinish = () => {
     Modal.destroyAll();
-    onClose({sealRange: sealRange, sealList: sealList});
+    onClose({ sealRange: sealRange, sealList: sealList });
   };
 
   const adjustSealRange = (seals) => {
@@ -61,7 +61,6 @@ const OrderSeals = ({ value, onClose }) => {
     }
   };
 
-
   const onSealUpdate = (value) => {
     api
       .post(LOAD_SCHEDULES.SET_NEXT_SEAL, {
@@ -85,17 +84,16 @@ const OrderSeals = ({ value, onClose }) => {
   };
 
   const onAllocation = (val) => {
-    if (_.toNumber(val) > 0 ) {
-      setSealRange(next + "=" + String(_.toNumber(next)+_.toNumber(val)-1));
-    }
-    else {
+    if (_.toNumber(val) > 0) {
+      setSealRange(next + '=' + String(_.toNumber(next) + _.toNumber(val) - 1));
+    } else {
       setSealRange('');
     }
-    
+
     const seals = [];
     const len = _.toNumber(val);
     let nextNum = _.toNumber(next);
-    for (let i=0; i<len; i++) {
+    for (let i = 0; i < len; i++) {
       const o = {};
       o.seal_prefix = config.sealPreFix;
       o.seal_suffix = config.sealPostFix;
@@ -113,30 +111,31 @@ const OrderSeals = ({ value, onClose }) => {
 
   const onAllocateOneSeal = () => {
     const tempList = _.clone(sealList);
-    const o = {};		
+    const o = {};
     o.seal_prefix = config.sealPreFix;
     o.seal_suffix = config.sealPostFix;
-    o.seal_cmpt_nr = tempList.length+1;
+    o.seal_cmpt_nr = tempList.length + 1;
     o.seal_nr = next;
     tempList.push(o);
     setOrigList(tempList);
     setSealList(tempList);
-    setNext(String(_.toNumber(next)+1));
+    setNext(String(_.toNumber(next) + 1));
     adjustSealRange(tempList);
-    onSealUpdate(String(_.toNumber(next)+1));
-  }
+    onSealUpdate(String(_.toNumber(next) + 1));
+  };
 
   const onReallocateSelected = () => {
     let len = sealList?.length;
     const tempList = _.clone(sealList);
     let nextNum = _.toNumber(next);
-    for (let i=0; i<len; i++) {
-      const o = tempList[i]
-      if ( o.seal_nr === selected?.seal_nr )
-      {
+    for (let i = 0; i < len; i++) {
+      const o = tempList[i];
+      if (o.seal_nr === selected?.seal_nr) {
         o.seal_nr = String(nextNum);
         nextNum += 1;
-        _.remove(tempList, (item) => {return item.seal_nr === selected?.seal_nr});
+        _.remove(tempList, (item) => {
+          return item.seal_nr === selected?.seal_nr;
+        });
         tempList.push(o);
         setNext(String(nextNum));
         break;
@@ -152,11 +151,12 @@ const OrderSeals = ({ value, onClose }) => {
   const onDellocateSelected = () => {
     let len = sealList?.length;
     const tempList = _.clone(sealList);
-    for (let i=0; i<len; i++) {
-      const o = tempList[i]
-      if ( o.seal_nr === selected?.seal_nr )
-      {
-        _.remove(tempList, (item) => {return item.seal_nr===selected?.seal_nr});
+    for (let i = 0; i < len; i++) {
+      const o = tempList[i];
+      if (o.seal_nr === selected?.seal_nr) {
+        _.remove(tempList, (item) => {
+          return item.seal_nr === selected?.seal_nr;
+        });
         break;
       }
     }
@@ -176,13 +176,18 @@ const OrderSeals = ({ value, onClose }) => {
     const endpoint =
       val?.colDef?.field === 'seal_prefix' ? LOAD_SCHEDULES.SET_PREFIX : LOAD_SCHEDULES.SET_SUFFIX;
 
-    const prefix = val?.colDef?.field === 'seal_prefix' ? val?.data?.seal_prefix : val?.data?.seal_suffix;
+    // const prefix = val?.colDef?.field === 'seal_prefix' ? val?.data?.seal_prefix : val?.data?.seal_suffix;
+
+    const params = {};
+    params.seal_nr = val?.data?.seal_nr;
+    if (val?.colDef?.field === 'seal_prefix') {
+      params.prefix = val?.data?.seal_prefix;
+    } else {
+      params.suffix = val?.data?.seal_suffix;
+    }
 
     api
-      .post(endpoint, {
-        seal_nr: val?.data?.seal_nr,
-        prefix,
-      })
+      .post(endpoint, params)
       .then(() => {
         refreshNextSeal();
 
@@ -226,20 +231,11 @@ const OrderSeals = ({ value, onClose }) => {
   );
 
   return (
-    <Form 
-      layout="vertical" 
-      form={form} 
-      onFinish={onFinish} 
-      scrollToFirstError style={{marginTop: "1rem"}}
-    >
+    <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError style={{ marginTop: '1rem' }}>
       <Row gutter={[8, 10]}>
-        <Col span={12}>
-          {t('fields.supplier') + ' : ' + value?.supplier_code}
-        </Col>
+        <Col span={12}>{t('fields.supplier') + ' : ' + value?.supplier_code}</Col>
 
-        <Col span={12}>
-          {t('fields.orderNumber') + ' : ' + value?.order_no}
-        </Col>
+        <Col span={12}>{t('fields.orderNumber') + ' : ' + value?.order_no}</Col>
       </Row>
 
       <Row gutter={[8, 10]}>
@@ -256,9 +252,8 @@ const OrderSeals = ({ value, onClose }) => {
           <Search
             placeholder={sealList?.length}
             enterButton={sealList?.length === 0 ? t('operations.allocation') : t('operations.addOne')}
-            onSearch={sealList?.length === 0 
-              ? (value) => onAllocation(value) 
-              : (value) => onAllocateOneSeal(value)
+            onSearch={
+              sealList?.length === 0 ? (value) => onAllocation(value) : (value) => onAllocateOneSeal(value)
             }
             readOnly={!sealList || sealList?.length > 0}
           />
@@ -273,8 +268,8 @@ const OrderSeals = ({ value, onClose }) => {
         onCellUpdate={(value) => onCellUpdate(value)}
         height={'60vh'}
       />
-      
-      <div style={{marginTop: "2rem"}}>
+
+      <div style={{ marginTop: '2rem' }}>
         <Button
           htmlType="button"
           icon={<CloseOutlined />}
