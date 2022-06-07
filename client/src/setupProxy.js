@@ -6,8 +6,7 @@ module.exports = function (app) {
   app.use(
     '/api',
     createProxyMiddleware({
-      // target: ENDPOINT,
-      target: 'https://10.1.10.150',
+      target: ENDPOINT,
       changeOrigin: true,
       secure: false, // for self-signed cert to work
     })
