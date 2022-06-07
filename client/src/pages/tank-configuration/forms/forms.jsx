@@ -98,6 +98,27 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       onFormClosed();
       return;
     }
+
+    Modal.confirm({
+      title: t('prompts.cancel'),
+      okText: t('operations.leave'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.stay'),
+      content: (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.cancelWarning')}
+        </Card>
+      ),
+      centered: true,
+      onOk: () => {
+        onFormClosed();
+      },
+    });
   };
 
   const getDrawerProductsByBase = async (base) => {
@@ -297,27 +318,6 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
         content: t('descriptions.validationFailed'),
       });
     }
-
-    Modal.confirm({
-      title: t('prompts.cancel'),
-      okText: t('operations.leave'),
-      okType: 'primary',
-      icon: <QuestionCircleOutlined />,
-      cancelText: t('operations.stay'),
-      content: (
-        <Card
-          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
-          size="small"
-          title={t('validate.warning')}
-        >
-          {t('descriptions.cancelWarning')}
-        </Card>
-      ),
-      centered: true,
-      onOk: () => {
-        onFormClosed();
-      },
-    });
   };
 
   const onChangeFromProduct = (value) => {
@@ -458,7 +458,6 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
           : null,
       okButtonProps: {
         disabled: ownershipNotEnough, // config?.siteFolioTankBaseChange && !IS_CREATING && values?.tank_base !== value?.tank_base && (!values?.tank_prod_from || !values?.tank_prod_to),
-        disabled: hasGainLoss, // config?.siteFolioTankBaseChange && !IS_CREATING && values?.tank_base !== value?.tank_base && (!values?.tank_prod_from || !values?.tank_prod_to),
       },
       onOk: async () => {
         await api
