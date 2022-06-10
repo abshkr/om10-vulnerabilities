@@ -4,6 +4,7 @@ include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
 include_once __DIR__ . '/../service/role_service.php';
+include_once __DIR__ . '/../service/site_service.php';
 include_once 'common_class.php';
 
 class IDAssignment extends CommonClass
@@ -207,6 +208,15 @@ class IDAssignment extends CommonClass
 
     public function tankers()
     {
+        $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("SITE_HIDE_ARCHIVE_TANKER", "N");
+        $archive_flag = ($config_value === 'Y' || $config_value === 'y');
+        $archive_cond = "";
+        if ($archive_flag) { 
+            // hide the archived tanker
+            $archive_cond = " AND TNKR_ARCHIVE != 'Y' ";
+        }
+
         $query = "
             SELECT TNKR_CODE,
                 TNKR_NAME,
@@ -217,9 +227,13 @@ class IDAssignment extends CommonClass
                 TNKR_OWNER,
                 TNKR_OWNER_NAME,
                 DECODE(TNKR_NAME, NULL, TNKR_CODE, TNKR_CODE||'['||TNKR_NAME||']') AS TNKR_DESC,
-                TNKR_NUMBER
+                TNKR_NUMBER,
+                TNKR_ACTIVE, 
+                TNKR_LOCK, 
+                TNKR_ARCHIVE, 
+                TNKR_BAY_LOOP_CH
             FROM GUI_TANKERS
-            WHERE (TNKR_OWNER LIKE :tnkr_owner AND TNKR_CARRIER LIKE :tnkr_carrier)
+            WHERE (TNKR_OWNER LIKE :tnkr_owner AND TNKR_CARRIER LIKE :tnkr_carrier) $archive_cond
             ORDER BY TNKR_CODE ASC";
 
         $stmt = oci_parse($this->conn, $query);
@@ -247,6 +261,15 @@ class IDAssignment extends CommonClass
 
     public function tankers_by_either()
     {
+        $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("SITE_HIDE_ARCHIVE_TANKER", "N");
+        $archive_flag = ($config_value === 'Y' || $config_value === 'y');
+        $archive_cond = "";
+        if ($archive_flag) { 
+            // hide the archived tanker
+            $archive_cond = " AND TNKR_ARCHIVE != 'Y' ";
+        }
+
         $query = "
             SELECT TNKR_CODE,
                 TNKR_NAME,
@@ -257,9 +280,13 @@ class IDAssignment extends CommonClass
                 TNKR_OWNER,
                 TNKR_OWNER_NAME,
                 DECODE(TNKR_NAME, NULL, TNKR_CODE, TNKR_CODE||'['||TNKR_NAME||']') AS TNKR_DESC,
-                TNKR_NUMBER
+                TNKR_NUMBER,
+                TNKR_ACTIVE, 
+                TNKR_LOCK, 
+                TNKR_ARCHIVE, 
+                TNKR_BAY_LOOP_CH
             FROM GUI_TANKERS
-            WHERE (TNKR_OWNER LIKE :tnkr_owner OR TNKR_CARRIER LIKE :tnkr_owner)
+            WHERE (TNKR_OWNER LIKE :tnkr_owner OR TNKR_CARRIER LIKE :tnkr_owner) $archive_cond
             ORDER BY TNKR_CODE ASC";
 
         $stmt = oci_parse($this->conn, $query);
