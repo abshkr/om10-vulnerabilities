@@ -312,11 +312,17 @@ const FormModal = ({
           </Col>
 
           <Col span={6}>
-            <OrderCustNo form={form} value={value} supplier={supplier} pageState={pageState} digits={config?.maxLengthOrderNum} />
+            <OrderCustNo
+              form={form}
+              value={value}
+              supplier={supplier}
+              pageState={pageState}
+              digits={config?.maxLengthOrderNum}
+            />
           </Col>
 
           <Col span={6}>
-            <OrderRefCode form={form} value={value} pageState={pageState} />
+            <OrderRefCode form={form} value={value} pageState={pageState} config={config} />
           </Col>
         </Row>
 
