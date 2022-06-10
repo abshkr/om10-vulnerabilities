@@ -47,9 +47,18 @@ class Tanker extends CommonClass
 
     public function count()
     {
+        $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("SITE_HIDE_ARCHIVE_TANKER", "N");
+        $archive_flag = ($config_value === 'Y' || $config_value === 'y');
+        $archive_cond = "";
+        if ($archive_flag) { 
+            // hide the archived tanker
+            $archive_cond = " AND TNKR_ARCHIVE != 'Y' ";
+        }
+
         $query = "
             SELECT COUNT(*) CN
-            FROM GUI_TANKERS";
+            FROM GUI_TANKERS WHERE 1=1 $archive_cond";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
             $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
@@ -99,11 +108,21 @@ class Tanker extends CommonClass
 
     public function pagination_count()
     {
+        // check the site setting SITE_CARRCODE_TANKERNUM_TAG
+        $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("SITE_HIDE_ARCHIVE_TANKER", "N");
+        $archive_flag = ($config_value === 'Y' || $config_value === 'y');
+
         $query = "
             SELECT COUNT(*) CN
             FROM GUI_TANKERS
             WHERE 1=1
         ";
+
+        if ($archive_flag) { 
+            // hide the archived tanker
+            $query = $query . " AND TNKR_ARCHIVE != 'Y' ";
+        }
 
         if (isset($this->tnkr_code) && $this->tnkr_code!='') {
             $query = $query . " AND UPPER(TNKR_CODE) LIKE '%'||UPPER(:tnkr_code)||'%' ";
@@ -157,9 +176,18 @@ class Tanker extends CommonClass
 
     public function matches_by_name()
     {
+        $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("SITE_HIDE_ARCHIVE_TANKER", "N");
+        $archive_flag = ($config_value === 'Y' || $config_value === 'y');
+        $archive_cond = "";
+        if ($archive_flag) { 
+            // hide the archived tanker
+            $archive_cond = " AND TNKR_ARCHIVE != 'Y' ";
+        }
+
         $query = "SELECT GUI_TANKERS.* 
             FROM GUI_TANKERS 
-            WHERE TNKR_NAME = :tnkr_name
+            WHERE TNKR_NAME = :tnkr_name $archive_cond
             ORDER BY TNKR_CODE";
 
         $stmt = oci_parse($this->conn, $query);
@@ -176,6 +204,11 @@ class Tanker extends CommonClass
 
     public function read()
     {
+        // check the site setting SITE_CARRCODE_TANKERNUM_TAG
+        $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("SITE_HIDE_ARCHIVE_TANKER", "N");
+        $archive_flag = ($config_value === 'Y' || $config_value === 'y');
+
         $query = "
             SELECT * 
             FROM
@@ -234,6 +267,11 @@ class Tanker extends CommonClass
             )
             WHERE 1=1
         ";
+
+        if ($archive_flag) { 
+            // hide the archived tanker
+            $query = $query . " AND TNKR_ARCHIVE != 'Y' ";
+        }
 
         if (isset($this->tnkr_code) && $this->tnkr_code!='') {
             $query = $query . " AND UPPER(TNKR_CODE) LIKE '%'||UPPER(:tnkr_code)||'%' ";
@@ -446,10 +484,19 @@ class Tanker extends CommonClass
         // write_log(json_encode($this), __FILE__, __LINE__, LogLevel::ERROR);
         Utilities::sanitize($this);
 
+        $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("SITE_HIDE_ARCHIVE_TANKER", "N");
+        $archive_flag = ($config_value === 'Y' || $config_value === 'y');
+        $archive_cond = "";
+        if ($archive_flag) { 
+            // hide the archived tanker
+            $archive_cond = " AND TNKR_ARCHIVE != 'Y' ";
+        }
+
         $query = "
             SELECT COUNT(*) CN
                     FROM GUI_TANKERS
-                    WHERE TNKR_CODE LIKE :tnkr_code ";
+                    WHERE TNKR_CODE LIKE :tnkr_code $archive_cond ";
 
         if (isset($this->tnkr_owner)) {
             $query = $query . " AND TNKR_OWNER = :tnkr_owner ";
@@ -489,6 +536,15 @@ class Tanker extends CommonClass
         }
 
         Utilities::sanitize($this);
+
+        $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("SITE_HIDE_ARCHIVE_TANKER", "N");
+        $archive_flag = ($config_value === 'Y' || $config_value === 'y');
+        $archive_cond = "";
+        if ($archive_flag) { 
+            // hide the archived tanker
+            $archive_cond = " AND TNKR_ARCHIVE != 'Y' ";
+        }
 
         $query = "
             SELECT TNKR_CODE,
@@ -534,7 +590,7 @@ class Tanker extends CommonClass
                 (
                     SELECT GUI_TANKERS.*
                     FROM GUI_TANKERS
-                    WHERE TNKR_CODE LIKE :tnkr_code ";
+                    WHERE TNKR_CODE LIKE :tnkr_code $archive_cond ";
 
         if (isset($this->tnkr_owner)) {
             $query = $query . " AND TNKR_OWNER = :tnkr_owner ";

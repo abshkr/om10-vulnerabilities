@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Form, Select, Input, Button, Row, Col, DatePicker, Divider, Tag, Tooltip } from 'antd';
+import { LockOutlined, PaperClipOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 import moment from 'moment';
@@ -720,8 +721,14 @@ const Forms = ({
               }
             >
               {tankers?.records?.map((item, index) => (
-                <Select.Option key={index} value={item.tnkr_code}>
+                <Select.Option
+                  key={index}
+                  value={item.tnkr_code}
+                  disabled={item.tnkr_lock === 'Y' || item.tnkr_archive === 'Y'}
+                >
                   {item.tnkr_code + (!item.tnkr_name ? '' : ' - ' + item.tnkr_name)}
+                  {item.tnkr_lock === 'Y' && <LockOutlined style={{ color: 'red' }} />}
+                  {item.tnkr_archive === 'Y' && <PaperClipOutlined style={{ color: 'red' }} />}
                 </Select.Option>
               ))}
             </Select>
