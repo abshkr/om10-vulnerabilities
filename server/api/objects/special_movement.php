@@ -522,6 +522,15 @@ class SpecialMovement extends CommonClass
 
     public function supp_tank_products()
     {
+        $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("SITE_SAME_DRAW_BASE_CODE", "N");
+        $samecode_flag = ($config_value === 'Y' || $config_value === 'y');
+        $samecode_cond = "";
+        if ($samecode_flag) { 
+            // drawer product code must be equal to base code
+            $samecode_cond = "                AND DP.PROD_CODE = GT.TANK_BASE";
+        }
+
         $flag = $this->is_multi_folio_tank_base();
         $query = "
             SELECT 
@@ -554,6 +563,7 @@ class SpecialMovement extends CommonClass
                 AND PR.RATIO_BASE = GT.TANK_BASE 
                 AND PR.RAT_COUNT  = 1 
                 AND DP.PROD_CMPY  != 'BaSePrOd'
+                $samecode_cond
         ORDER BY DP.PROD_CMPY, GT.TANK_TERMINAL, GT.TANK_CODE";
 
         if ($flag) {
@@ -592,6 +602,7 @@ class SpecialMovement extends CommonClass
                     AND PR.RATIO_BASE = GT.TANK_BASE 
                     AND PR.RAT_COUNT  = 1 
                     AND DP.PROD_CMPY  != 'BaSePrOd'
+                    $samecode_cond
                     AND GT.CLOSEOUT_NR = :closeout_nr
                     -- AND (GT.BASE_PERIOD_OPEN IS NULL OR GT.BASE_PERIOD_OPEN <= :move_time)
                     -- AND (GT.BASE_PERIOD_CLOSE IS NULL OR GT.BASE_PERIOD_CLOSE >= :move_time)
