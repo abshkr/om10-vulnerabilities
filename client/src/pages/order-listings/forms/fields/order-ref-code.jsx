@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Form, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-const OrderRefCode = ({ form, value, pageState }) => {
+const OrderRefCode = ({ form, value, pageState, config }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -14,8 +14,12 @@ const OrderRefCode = ({ form, value, pageState }) => {
       }
     }
 
-    if (input && input.length > 32) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 32 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && input.length > config?.maxLengthOrderRefCode) {
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${config?.maxLengthOrderRefCode} ─ ${t(
+          'descriptions.maxCharacters'
+        )}`
+      );
     }
 
     return Promise.resolve();
@@ -24,20 +28,18 @@ const OrderRefCode = ({ form, value, pageState }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        order_ref_code: value.order_ref_code
+        order_ref_code: value.order_ref_code,
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item 
-      name="order_ref_code" 
-      label={t('fields.orderRefCode')} 
+    <Form.Item
+      name="order_ref_code"
+      label={t('fields.orderRefCode')}
       rules={[{ required: false, validator: validate }]}
     >
-      <Input 
-        disabled={(pageState==='create'||pageState==='edit')? false : true}
-      />
+      <Input disabled={pageState === 'create' || pageState === 'edit' ? false : true} />
     </Form.Item>
   );
 };
