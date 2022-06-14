@@ -10,7 +10,7 @@ import { useConfig } from 'hooks';
 import generator from './generator';
 import columns from './columns';
 
-const Tanks = ({ id, enabled, saveToFolioTrigger, saveToTanksTrigger, calculateTrigger }) => {
+const Tanks = ({ id, enabled, saveToFolioTrigger, saveToTanksTrigger, calculateTrigger, nullToZero }) => {
   const { t } = useTranslation();
   const config = useConfig();
 
@@ -28,7 +28,7 @@ const Tanks = ({ id, enabled, saveToFolioTrigger, saveToTanksTrigger, calculateT
     api.get(`${FOLIO_SUMMARY.TANKS}?closeout_nr=${id}`).then((response) => {
       setLoading(false);
 
-      const values = generator(response.data.records);
+      const values = generator(response.data.records, nullToZero);
       const filtered = _.filter(response.data.records, ['tank_gaugingmthd_desc', 'MANUAL']);
       const preSelected = _.uniq(_.map(filtered, 'tank_code'));
 
