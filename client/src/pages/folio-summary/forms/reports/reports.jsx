@@ -29,13 +29,13 @@ const Reports = ({ id, reportTrigger, setRegenerate }) => {
   useEffect(() => {
     if (reportTrigger > 0) {
       regenerate();
-    } 
-
+    }
   }, [reportTrigger]);
 
   return (
     <div>
       <Table
+        rowKey={'report'}
         size="small"
         dataSource={payload}
         columns={fields}

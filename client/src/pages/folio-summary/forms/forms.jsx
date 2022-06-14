@@ -207,6 +207,7 @@ const Forms = ({ value, visible, handleFormState, closeoutIsIdle, access, config
             saveToTanksTrigger={saveToTanksTrigger}
             calculateTrigger={calculateTrigger}
             // setTankSelected={setTankSelected}
+            nullToZero={config?.siteNullFolioQtyZero}
           />
         </TabPane>
       </Tabs>
