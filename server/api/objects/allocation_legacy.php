@@ -368,6 +368,25 @@ class Allocation extends CommonClass
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 
+        // delete ADJUSTS
+        $query = "DELETE FROM ADJUSTS
+            WHERE ADJALL_ALL_PROD_PRODCMPY = :alloc_suppcode
+                AND ADJALL_ALL_ATKY_AT_TYPE = :alloc_type
+                AND ADJALL_ALL_ATKY_AT_CMPY = :alloc_cmpycode";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':alloc_suppcode', $this->alloc_suppcode);
+        oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
+        oci_bind_by_name($stmt, ':alloc_cmpycode', $this->alloc_cmpycode);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+
+            throw new DatabaseException($e['message']);
+            return false;
+        }
+
+        // delete ALL_CHILD
         $query = "DELETE FROM ALL_CHILD
             WHERE ALCH_ALP_ALL_PROD_PRODCMPY = :alloc_suppcode
                 AND ALCH_ALP_ALL_ATKY_AT_TYPE = :alloc_type
@@ -385,6 +404,7 @@ class Allocation extends CommonClass
             return false;
         }
 
+        // delete ALLOCS
         $query = "DELETE FROM ALLOCS
             WHERE ALL_PROD_PRODCMPY = :aitem_suppcode
                 AND ALL_ATKY_AT_TYPE = :aitem_type
