@@ -62,6 +62,7 @@ const FormModal = ({
   pageState,
   revalidate,
   locateOrder,
+  maskFlag,
 }) => {
   const { site_customer_product, site_customer_carrier } = useConfig();
 
@@ -527,7 +528,7 @@ const FormModal = ({
       onClose={onExitClicked}
       maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
       destroyOnClose={true}
-      mask={config?.siteFormCloseAlert ? true : IS_CREATING || tabKey === '5'}
+      mask={config?.siteFormCloseAlert ? true : maskFlag || tabKey === '5'}
       placement="right"
       width={drawerWidth}
       visible={visible}
