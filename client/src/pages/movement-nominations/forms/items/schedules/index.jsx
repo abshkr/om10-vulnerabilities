@@ -1,2 +1,2 @@
-import Schedules from './schedules';
+import Schedules from './schedules-dnld';
 export default Schedules;
