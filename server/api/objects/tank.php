@@ -392,6 +392,30 @@ class Tank extends CommonClass
 
     protected function update_children($old_data = null)
     {
+        // because $del_n_ins_children = false in this Class, this function will be called directly in common_class.php after updates of main record
+        // remove the tank memeber if tank belongs to a tank group and base is changed
+        if (isset($this->tank_baseold) && isset($this->tank_tgrname)) {
+            if ($this->tank_baseold != $this->tank_base) {
+                // need delete the tank from tank group
+                $query = "
+                    DELETE TGRLINK
+                    WHERE 
+                        TGR_TKLK_TANKCODE = :tank_code 
+                        and TGR_TKLK_TANKDEPO = :tank_terminal
+                        and TGR_GRLK = :tank_tgrname
+                ";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+                oci_bind_by_name($stmt, ':tank_terminal', $this->tank_terminal);
+                oci_bind_by_name($stmt, ':tank_tgrname', $this->tank_tgrname);
+                if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    return false;
+                }
+
+            }
+        }
         if (!isset($this->tank_max_flow)) {
             return true;
         }

@@ -41,6 +41,7 @@ import {
 } from './fields';
 import api, {
   TANKS,
+  TANK_GROUPS,
   BASE_PRODUCTS,
   SPECIAL_MOVEMENTS,
   STOCK_MANAGEMENT,
@@ -72,6 +73,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
   const { data: baseItem } = useSWR(`${BASE_PRODUCTS.READ}?base_code=${product}`);
   const { data: baseItemOld } = useSWR(`${BASE_PRODUCTS.READ}?base_code=${value?.tank_base}`);
   const { data: availProducts } = useSWR(`${SPECIAL_MOVEMENTS.DRAWER_PRODUCTS_BY_BASE}`);
+  const { data: tankGroups } = useSWR(TANK_GROUPS.READ);
 
   const IS_CREATING = !value;
 
@@ -370,6 +372,15 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       ownershipNotEnough =
         !!ownership && _.toNumber(ownership?.ownship_qty) < _.toNumber(value?.tank_cor_vol);
 
+      // find if tank is in a group
+      const tankGroup = tankGroups?.records?.find((o) => o?.tgr_tanklist.indexOf(value?.tank_code) >= 0);
+      // console.log('............', tankGroup, tankGroups);
+      if (tankGroup) {
+        values.tank_tgrname = tankGroup?.tgr_name;
+        values.tank_baseold = value?.tank_base;
+      }
+      // console.log('...................values', values);
+
       lines = (
         <Card
           style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
@@ -380,6 +391,16 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             OLD_BASE: baseItemOld?.records?.[0]?.base_text,
             NEW_BASE: baseItem?.records?.[0]?.base_text,
           })}
+          {tankGroup && (
+            <Tag color={'red'}>
+              <div style={{ wordWrap: 'break-word', whiteSpace: 'normal', fontWeight: 'bold', color: 'red' }}>
+                {t('descriptions.spmOnTankBaseChangeGroup', {
+                  TANK: value?.tank_code,
+                  TKGRP: tankGroup?.tgr_name,
+                })}
+              </div>
+            </Tag>
+          )}
           {config?.siteFolioTankBaseChange && (
             <Tag color={'blue'}>
               <div
