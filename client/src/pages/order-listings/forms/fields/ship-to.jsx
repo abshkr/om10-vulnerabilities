@@ -25,20 +25,25 @@ const ShipTo = ({ form, value, supplier, pageState }) => {
     <Form.Item name="order_ship_to_num" label={t('fields.orderShipTo')}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
-        disabled={(pageState==='create'||pageState==='edit'||pageState==='detail')? false : true}
+        disabled={pageState === 'create' || pageState === 'edit' || pageState === 'detail' ? false : true}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectShipTo') : null}
         filterOption={(value, option) =>
           option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
         }
       >
-        {options?.records.filter((item)=>(!value?(item.partner_cmpy_code===''):(item.partner_cmpy_code===supplier))).map((item, index) => (
-          <Select.Option key={index} value={item.partner_code}>
-            {item.partner_cmpy_name}{!item.partner_cust_name?'':(' - '+item.partner_cust_name)} - {item.partner_code} - {item.partner_name1}
-          </Select.Option>
-        ))}
+        {options?.records
+          .filter((item) => (!value ? item.partner_cmpy_code === '' : item.partner_cmpy_code === supplier))
+          .map((item, index) => (
+            <Select.Option key={index} value={item.partner_code}>
+              {item.partner_cmpy_name}
+              {!item.partner_cust_name ? '' : ' - ' + item.partner_cust_name} - {item.partner_code} -{' '}
+              {item.partner_name1}
+            </Select.Option>
+          ))}
       </Select>
     </Form.Item>
   );

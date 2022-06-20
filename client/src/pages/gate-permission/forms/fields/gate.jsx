@@ -15,7 +15,7 @@ const Gate = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        prmssn_gate: value.prmssn_gate
+        prmssn_gate: value.prmssn_gate,
       });
     } else {
       setFieldsValue({
@@ -36,6 +36,7 @@ const Gate = ({ form, value }) => {
     <Form.Item name="prmssn_gate" label={t('fields.gate')} rules={[{ required: true, validator: validate }]}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         disabled={!!value}
         showSearch

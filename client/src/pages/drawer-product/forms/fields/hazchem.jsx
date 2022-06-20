@@ -34,6 +34,7 @@ const Hazchem = ({ form, value }) => {
     <Form.Item name="prod_hazid" label={t('fields.prodHazid')} rules={[{ validator: validate }]}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         onChange={handleChange}

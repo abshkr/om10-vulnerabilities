@@ -13,7 +13,7 @@ const Destination = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tnkr_dest_depot: value.tnkr_dest_depot
+        tnkr_dest_depot: value.tnkr_dest_depot,
       });
     }
   }, [value, setFieldsValue]);
@@ -22,6 +22,7 @@ const Destination = ({ form, value }) => {
     <Form.Item name="fields" label={t('fields.destination')} rules={[{ required: false }]}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         disabled={!!value}
         showSearch

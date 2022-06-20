@@ -16,7 +16,7 @@ const Area = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        prntr_area: value.prntr_area
+        prntr_area: value.prntr_area,
       });
     }
   }, [value, setFieldsValue]);
@@ -25,6 +25,7 @@ const Area = ({ form, value }) => {
     <Form.Item name="prntr_area" label={t('fields.areaLocation')}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         optionFilterProp="children"

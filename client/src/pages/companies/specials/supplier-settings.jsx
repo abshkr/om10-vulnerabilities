@@ -8,7 +8,7 @@ import _ from 'lodash';
 // import { useConfig } from 'hooks';
 
 import api, { COMPANIES } from '../../../api';
-import {generateMaxInt} from '../../../utils';
+import { generateMaxInt } from '../../../utils';
 
 const SupplierForm = ({ value, form, config }) => {
   const { data: payload } = useSWR(`${COMPANIES.CONFIG}?cmpy_code=${value?.cmpy_code}`);
@@ -322,37 +322,43 @@ const SupplierForm = ({ value, form, config }) => {
       <Divider orientation="left">{t('fields.autoTripNumbers')}</Divider>
       <Row justify="center">
         <Col span={7}>
-          <Form.Item 
-            name="cmpy_trip_strt" 
-            label={t('fields.startAt')} 
-            rules={[{ 
-              required: true,
-              message: `${t('validate.select')} ─ ${t('fields.startAt')}`,
-            }]}
+          <Form.Item
+            name="cmpy_trip_strt"
+            label={t('fields.startAt')}
+            rules={[
+              {
+                required: true,
+                message: `${t('validate.select')} ─ ${t('fields.startAt')}`,
+              },
+            ]}
           >
             <InputNumber min={1} max={generateMaxInt(maxLengthTripNum)} style={{ width: 200 }} />
           </Form.Item>
         </Col>
         <Col span={7}>
-          <Form.Item 
-            name="cmpy_trip_end" 
-            label={t('fields.endAt')} 
-            rules={[{ 
-              required: true,
-              message: `${t('validate.select')} ─ ${t('fields.endAt')}`,
-            }]}
+          <Form.Item
+            name="cmpy_trip_end"
+            label={t('fields.endAt')}
+            rules={[
+              {
+                required: true,
+                message: `${t('validate.select')} ─ ${t('fields.endAt')}`,
+              },
+            ]}
           >
             <InputNumber min={1} max={generateMaxInt(maxLengthTripNum)} style={{ width: 200 }} />
           </Form.Item>
         </Col>
         <Col span={7}>
-          <Form.Item 
-            name="cmpy_trip_last" 
-            label={t('fields.lastUsed')} 
-            rules={[{ 
-              required: true,
-              message: `${t('validate.select')} ─ ${t('fields.lastUsed')}`,
-            }]}
+          <Form.Item
+            name="cmpy_trip_last"
+            label={t('fields.lastUsed')}
+            rules={[
+              {
+                required: true,
+                message: `${t('validate.select')} ─ ${t('fields.lastUsed')}`,
+              },
+            ]}
           >
             <InputNumber min={0} max={generateMaxInt(maxLengthTripNum)} style={{ width: 200 }} />
           </Form.Item>
@@ -591,11 +597,7 @@ const SupplierForm = ({ value, form, config }) => {
           </Form.Item>
         </Col>
         <Col span={12}>
-          <Form.Item
-            name="axle_needed"
-            label={t('fields.axleNeeded')}
-            {...rightItemLayout}
-          >
+          <Form.Item name="axle_needed" label={t('fields.axleNeeded')} {...rightItemLayout}>
             <Switch
               checkedChildren={t('operations.yes')}
               unCheckedChildren={t('operations.no')}
@@ -607,13 +609,9 @@ const SupplierForm = ({ value, form, config }) => {
       </Row>
 
       <Row justify="center">
-      <Col span={12}>
+        <Col span={12}>
           {externalBlendAllowed && (
-            <Form.Item
-              name="cmpy_2nd_drawer_flag"
-              label={t('fields.linkToSecondDrawer')}
-              {...leftItemLayout}
-            >
+            <Form.Item name="cmpy_2nd_drawer_flag" label={t('fields.linkToSecondDrawer')} {...leftItemLayout}>
               <Switch
                 checkedChildren={t('operations.yes')}
                 unCheckedChildren={t('operations.no')}
@@ -628,6 +626,7 @@ const SupplierForm = ({ value, form, config }) => {
             <Form.Item name="cmpy_2nd_drawer" label={t('fields.linkedDrawer')} {...rightItemLayout}>
               <Select
                 dropdownMatchSelectWidth={false}
+                allowClear
                 // loading={isValidating}
                 // style={{ width: '14vh' }}
                 showSearch

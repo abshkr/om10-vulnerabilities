@@ -4,12 +4,12 @@ import { Form, Select } from 'antd';
 const options = [
   {
     key: 'LILO',
-    value: 'LILO (Last in / Last out)'
+    value: 'LILO (Last in / Last out)',
   },
   {
     key: 'LIFO',
-    value: 'LIFO (Last in / First out)'
-  }
+    value: 'LIFO (Last in / First out)',
+  },
 ];
 
 export default class AdaptiveArmPriority extends Component {
@@ -19,7 +19,7 @@ export default class AdaptiveArmPriority extends Component {
 
     if (!!value) {
       setFieldsValue({
-        afc_priority: value.afc_priority
+        afc_priority: value.afc_priority,
       });
     }
   }
@@ -31,11 +31,9 @@ export default class AdaptiveArmPriority extends Component {
     return (
       <Form.Item label="Adaptive Arm Priority">
         {getFieldDecorator('afc_priority', {
-          rules: [{ required: false, message: 'Please Select An Arm Priority.' }]
+          rules: [{ required: false, message: 'Please Select An Arm Priority.' }],
         })(
-          <Select
-            dropdownMatchSelectWidth={false}
-          >
+          <Select dropdownMatchSelectWidth={false} allowClear>
             {options.map((item, index) => (
               <Option key={index} value={item.key}>
                 {item.value}

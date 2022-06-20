@@ -43,14 +43,13 @@ const TerminalList = ({ value, listOptions, itemCode, itemTitle, itemRequired, i
     if (onChange) {
       onChange(v);
     }
-  }
+  };
 
   useEffect(() => {
     if (!options) {
       if ((!listOptions || listOptions?.length === 0) && !loading) {
         getTerminals();
-      }
-      else {
+      } else {
         // setLoading(true);
         setOptions(listOptions);
         // setLoading(false);
@@ -66,22 +65,23 @@ const TerminalList = ({ value, listOptions, itemCode, itemTitle, itemRequired, i
   }, [payload, isValidating]); */
 
   return (
-    <Select 
-        showSearch 
-        allowClear
-        defaultValue={value}
-        disabled={itemDisabled === undefined ? false : itemDisabled}
-        style={{width: 200}}
-        loading={loading} 
-        onChange={handleSelection}
-        optionFilterProp="children" 
-        filterOption={(input, option) => option?.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-      >
-        {options?.map((item) => (
-          <Select.Option key={item?.term_code} value={item?.term_code}>
-            {`${item?.term_code} - ${item?.term_name}`}
-          </Select.Option>
-        ))}
+    <Select
+      showSearch
+      dropdownMatchSelectWidth={false}
+      allowClear
+      defaultValue={value}
+      disabled={itemDisabled === undefined ? false : itemDisabled}
+      style={{ width: 200 }}
+      loading={loading}
+      onChange={handleSelection}
+      optionFilterProp="children"
+      filterOption={(input, option) => option?.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+    >
+      {options?.map((item) => (
+        <Select.Option key={item?.term_code} value={item?.term_code}>
+          {`${item?.term_code} - ${item?.term_name}`}
+        </Select.Option>
+      ))}
     </Select>
   );
 };

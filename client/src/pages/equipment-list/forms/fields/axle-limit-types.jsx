@@ -65,6 +65,7 @@ const AxleLimitTypes = ({ form, value, config, onChange }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         // disabled={!!value}
         showSearch

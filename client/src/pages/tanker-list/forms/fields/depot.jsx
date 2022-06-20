@@ -21,7 +21,7 @@ const Depot = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tnkr_base_site: value.tnkr_base_site
+        tnkr_base_site: value.tnkr_base_site,
       });
     }
   }, [value, setFieldsValue]);
@@ -34,6 +34,7 @@ const Depot = ({ form, value }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         disabled={!!value}
         showSearch

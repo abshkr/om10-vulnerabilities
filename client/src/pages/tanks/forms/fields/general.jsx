@@ -110,6 +110,7 @@ const General = ({ form, value, config, densRange }) => {
           <Form.Item name="tank_terminal" label={t('fields.terminal')}>
             <Select
               dropdownMatchSelectWidth={false}
+              allowClear
               loading={isLoading}
               showSearch
               disabled={true}
@@ -131,6 +132,7 @@ const General = ({ form, value, config, densRange }) => {
           <Form.Item name="tank_status" label={t('fields.tankStatus')}>
             <Select
               dropdownMatchSelectWidth={false}
+              allowClear
               loading={isLoading}
               showSearch
               optionFilterProp="children"
@@ -153,6 +155,7 @@ const General = ({ form, value, config, densRange }) => {
           <Form.Item name="tank_base" label={t('fields.baseProduct')}>
             <Select
               dropdownMatchSelectWidth={false}
+              allowClear
               loading={isLoading}
               showSearch
               disabled={true}
@@ -213,6 +216,7 @@ const General = ({ form, value, config, densRange }) => {
           >
             <Select
               dropdownMatchSelectWidth={false}
+              allowClear
               loading={isLoading}
               showSearch
               optionFilterProp="children"
@@ -233,6 +237,7 @@ const General = ({ form, value, config, densRange }) => {
           <Form.Item name="tank_location" label={t('fields.area')}>
             <Select
               dropdownMatchSelectWidth={false}
+              allowClear
               loading={isLoading}
               showSearch
               optionFilterProp="children"

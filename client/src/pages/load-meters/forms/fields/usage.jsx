@@ -37,6 +37,7 @@ const Usage = ({ form, value }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         disabled={!!value}

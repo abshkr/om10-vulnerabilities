@@ -12,12 +12,10 @@ const Supplier = ({ value, onChange }) => {
   const { data: options, isValidating } = useSWR(LOAD_SCHEDULES.SUPPLIERS);
 
   return (
-    <Form.Item
-      name="supplier_code"
-      label={t('fields.supplier')}
-    >
+    <Form.Item name="supplier_code" label={t('fields.supplier')}>
       <Select
         loading={isValidating}
+        allowClear
         showSearch
         dropdownMatchSelectWidth={false}
         onChange={onChange}

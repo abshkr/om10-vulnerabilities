@@ -163,6 +163,7 @@ const PeriodForm = ({ value, units, parent, revalidate, data, form }) => {
           <Form.Item name="oprd_prod_unit" label={t('fields.oprdUnitName')}>
             <Select
               dropdownMatchSelectWidth={false}
+              allowClear
               loading={!units}
               showSearch
               optionFilterProp="children"

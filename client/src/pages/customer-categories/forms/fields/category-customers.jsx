@@ -17,6 +17,7 @@ const CategoryCustomers = ({ form, value }) => {
     <Form.Item name="category_customers" label={t('fields.customersPerCategory')}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         showSearch
         disabled={false}
         optionFilterProp="children"

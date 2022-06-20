@@ -6,14 +6,14 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 import api, { ROLE_ACCESS_MANAGEMENT } from '../../../api';
 
-const CopyTo = ({current, targets, onCopyReturn}) => {
+const CopyTo = ({ current, targets, onCopyReturn }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
   const onFinish = (values) => {
     const target = _.find(targets, (item) => {
       return item.role_id === values.role_id;
-    })
+    });
 
     const payload = {
       role_id: values.role_id,
@@ -22,7 +22,8 @@ const CopyTo = ({current, targets, onCopyReturn}) => {
       auth_level_name: target?.auth_level_name,
     };
 
-    api.post(ROLE_ACCESS_MANAGEMENT.UPDATE, payload)
+    api
+      .post(ROLE_ACCESS_MANAGEMENT.UPDATE, payload)
       .then((response) => {
         onComplete();
         onCopyReturn(target?.auth_level_name);
@@ -44,30 +45,29 @@ const CopyTo = ({current, targets, onCopyReturn}) => {
 
   const onComplete = () => {
     Modal.destroyAll();
-  }
+  };
 
   return (
-    <Form form={form} onFinish={onFinish} scrollToFirstError style={{marginTop: "1rem"}} >
-      <Form.Item name="role_id" 
-        label={t("fields.copyToRole")} 
-      >
+    <Form form={form} onFinish={onFinish} scrollToFirstError style={{ marginTop: '1rem' }}>
+      <Form.Item name="role_id" label={t('fields.copyToRole')}>
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           showSearch
           optionFilterProp="children"
           filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
-          >
+        >
           {targets.map((item, index) => (
             <Select.Option key={index} value={item.role_id}>
               {item.role_code} - {item.auth_level_name}
             </Select.Option>
           ))}
         </Select>
-      </Form.Item>  
+      </Form.Item>
 
-      <div style={{marginTop: "2rem"}}>
+      <div style={{ marginTop: '2rem' }}>
         <Button
           htmlType="button"
           icon={<CloseOutlined />}
@@ -89,5 +89,5 @@ const CopyTo = ({current, targets, onCopyReturn}) => {
     </Form>
   );
 };
-  
-  export default CopyTo;
+
+export default CopyTo;

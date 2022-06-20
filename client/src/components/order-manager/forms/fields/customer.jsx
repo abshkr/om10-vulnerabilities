@@ -12,12 +12,10 @@ const Customer = ({ form, value, supplier, pageState }) => {
   const { t } = useTranslation();
 
   //const { data: options, isValidating } = useSWR(ORDER_LISTINGS.CUST_COMPANYS);
-  const { data: options, isValidating } = useSWR(
-    `${ORDER_LISTINGS.SUPP_CUSTOMERS}?supplier=${supplier}`,
-    { refreshInterval: 0,
-    }
-  );
-  
+  const { data: options, isValidating } = useSWR(`${ORDER_LISTINGS.SUPP_CUSTOMERS}?supplier=${supplier}`, {
+    refreshInterval: 0,
+  });
+
   const validate = (rule, input) => {
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.orderCustAcnt')}`);
@@ -42,6 +40,7 @@ const Customer = ({ form, value, supplier, pageState }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         //disabled={!!value || !supplier}
         disabled={true}

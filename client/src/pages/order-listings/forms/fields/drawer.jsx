@@ -49,10 +49,11 @@ const Drawer = ({ form, value, supplier, onChange, pageState }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         onChange={onChange}
-        disabled={(pageState==='create'||pageState==='edit')? false : true}
+        disabled={pageState === 'create' || pageState === 'edit' ? false : true}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectDrawer') : null}
         filterOption={(value, option) =>

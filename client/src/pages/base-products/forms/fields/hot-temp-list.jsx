@@ -27,9 +27,7 @@ const HotTempFlag = ({ form, value }) => {
 
   return (
     <Form.Item name="base_limit_preset_ht" label={t('fields.baseLimitPresetHt2')}>
-      <Select
-	    dropdownMatchSelectWidth={false}
-      >
+      <Select dropdownMatchSelectWidth={false} allowClear>
         {flags.map((item, index) => (
           <Select.Option key={index} value={item.value}>
             {item.name}

@@ -32,6 +32,7 @@ const Type = ({ form, value }) => {
     <Form.Item name="krdc_type" label={t('fields.type')} rules={[{ required: true, validator: validate }]}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         disabled={!!value}

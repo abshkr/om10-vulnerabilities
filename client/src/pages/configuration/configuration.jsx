@@ -76,6 +76,7 @@ const FormSwitch = ({ config, onChange }) => {
       return (
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           defaultValue={config.config_value}
           style={{ width: 280 }}
           onChange={(value) => onChange(config, value)}
@@ -91,6 +92,7 @@ const FormSwitch = ({ config, onChange }) => {
         <Select
           // dropdownMatchSelectWidth={false}
           defaultValue={config.config_value}
+          allowClear
           style={{ width: 280 }}
           onChange={(value) => onChange(config, value)}
         >
@@ -107,6 +109,7 @@ const FormSwitch = ({ config, onChange }) => {
       return (
         <Select
           // dropdownMatchSelectWidth={false}
+          allowClear
           defaultValue={config.config_value}
           style={{ width: 280 }}
           onChange={(value) => onChange(config, value)}
@@ -120,6 +123,7 @@ const FormSwitch = ({ config, onChange }) => {
       return (
         <Select
           // dropdownMatchSelectWidth={false}
+          allowClear
           defaultValue={config.config_value}
           style={{ width: 280 }}
           onChange={(value) => onChange(config, value)}
@@ -374,6 +378,7 @@ const FormSwitch = ({ config, onChange }) => {
       return (
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           defaultValue={config.config_value}
           style={{ width: 360 }}
           onChange={(value) => onChange(config, value)}

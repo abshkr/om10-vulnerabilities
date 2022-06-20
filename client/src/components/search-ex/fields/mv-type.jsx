@@ -12,12 +12,10 @@ const MovementType = ({ value, onChange }) => {
   const { data: options, isValidating } = useSWR(SPECIAL_MOVEMENTS.TYPES);
 
   return (
-    <Form.Item
-      name="mlitm_type"
-      label={t('fields.movementType')}
-    >
+    <Form.Item name="mlitm_type" label={t('fields.movementType')}>
       <Select
         loading={isValidating}
+        allowClear
         showSearch
         onChange={onChange}
         disabled={!!value}
@@ -27,9 +25,9 @@ const MovementType = ({ value, onChange }) => {
         }
       >
         {options?.records.map((item, index) => (
-        <Select.Option key={index} value={item.movitem_type_id}>
+          <Select.Option key={index} value={item.movitem_type_id}>
             {item.movitem_type_name}
-        </Select.Option>
+          </Select.Option>
         ))}
       </Select>
     </Form.Item>

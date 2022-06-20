@@ -16,7 +16,7 @@ const Carrier = ({ form, value, onChange }) => {
   useEffect(() => {
     if (value && value.mv_carrier !== '') {
       setFieldsValue({
-        mv_carrier: value.mv_carrier
+        mv_carrier: value.mv_carrier,
       });
 
       onChange(value.mv_carrier);
@@ -27,6 +27,7 @@ const Carrier = ({ form, value, onChange }) => {
     <Form.Item name="mv_carrier" label={t('fields.carrier')}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         onChange={onChange}

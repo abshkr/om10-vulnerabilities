@@ -48,6 +48,7 @@ const Tanker = ({ form, value, carrier, onChange, pageState }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         onChange={onTankerChange}

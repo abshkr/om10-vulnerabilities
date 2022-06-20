@@ -12,12 +12,10 @@ const StatusSerach = ({ value, onChange }) => {
   const { data: options, isValidating } = useSWR(SPECIAL_MOVEMENTS.STATUS);
 
   return (
-    <Form.Item
-      name="mlitm_status"
-      label={t('fields.movementStatus')}
-    >
+    <Form.Item name="mlitm_status" label={t('fields.movementStatus')}>
       <Select
         loading={isValidating}
+        allowClear
         showSearch
         onChange={onChange}
         disabled={!!value}

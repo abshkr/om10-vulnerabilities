@@ -39,7 +39,7 @@ const Status = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        user_status_flag: value.user_status_flag
+        user_status_flag: value.user_status_flag,
       });
     }
   }, [value, setFieldsValue]);
@@ -48,6 +48,7 @@ const Status = ({ form, value }) => {
     <Form.Item name="user_status_flag" label={t('fields.status')}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         optionFilterProp="children"
@@ -56,11 +57,13 @@ const Status = ({ form, value }) => {
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
-        {options?.records.filter((o)=>(o.user_status_flag!=='3')).map((item, index) => (
-          <Select.Option key={index} value={item.user_status_flag} disabled={item.user_status_flag !== '2'}>
-            {item.urer_status_name}
-          </Select.Option>
-        ))}
+        {options?.records
+          .filter((o) => o.user_status_flag !== '3')
+          .map((item, index) => (
+            <Select.Option key={index} value={item.user_status_flag} disabled={item.user_status_flag !== '2'}>
+              {item.urer_status_name}
+            </Select.Option>
+          ))}
         {/* states.filter((o)=>(o.visible===true)).map((item, index) => (
           <Select.Option key={index} value={item.user_status_flag} disabled={!item.enabled}>
             {item.urer_status_name}

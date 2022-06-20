@@ -39,16 +39,17 @@ export default class Equipment extends Component {
 
     return (
       <div style={{ display: 'flex' }}>
-        <Select 
+        <Select
           dropdownMatchSelectWidth={false}
-          value={this.state.value} 
-          style={{ width: '100%' }} 
-          onChange={this.onClick} 
+          allowClear
+          value={this.state.value}
+          style={{ width: '100%' }}
+          onChange={this.onClick}
           bordered={false}
-		>
+        >
           {values?.map((item) => (
             <Select.Option key={item.tc_eqpt} value={item.eqpt_code}>
-              {`${item.eqpt_code}${item.eqpt_code===item.eqpt_title?'':('['+item.eqpt_title+']')}`}
+              {`${item.eqpt_code}${item.eqpt_code === item.eqpt_title ? '' : '[' + item.eqpt_title + ']'}`}
               {/* {`${values?.length>1 ? (item.tc_seqno + ' - ') : ''}${item.eqpt_code}${item.eqpt_code===item.eqpt_title?'':('['+item.eqpt_title+']')}`} */}
             </Select.Option>
           ))}

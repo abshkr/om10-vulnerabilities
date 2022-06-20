@@ -38,10 +38,11 @@ const DeliveryLocation = ({ form, value, pageState }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
+        allowClear
         dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
-        disabled={(pageState==='create'||pageState==='edit')? false : true}
+        disabled={pageState === 'create' || pageState === 'edit' ? false : true}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectDeliveryLocation') : null}
         filterOption={(input, option) =>

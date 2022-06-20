@@ -23,7 +23,7 @@ const EquipmentType = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        eqpt_area: value.eqpt_area
+        eqpt_area: value.eqpt_area,
       });
     }
   }, [value, setFieldsValue]);
@@ -32,6 +32,7 @@ const EquipmentType = ({ form, value }) => {
     <Form.Item name="eqpt_area" label={t('fields.area')} rules={[{ required: true, validator: validate }]}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         optionFilterProp="children"

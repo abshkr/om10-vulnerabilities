@@ -47,9 +47,10 @@ const Company = ({ form, value, onChange, disable }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
-        disabled = {disable}
+        disabled={disable}
         onChange={handleChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectCompany') : null}

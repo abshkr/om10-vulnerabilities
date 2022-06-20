@@ -16,11 +16,11 @@ const AuthType = ({ value, form, enabled }) => {
   const onChange = (v) => {
     const ruleRole = _.find(roles, (item) => {
       return item.role_id === v;
-    })
+    });
     setFieldsValue({
-      rule_authname: ruleRole.auth_level_name
-    })
-  }
+      rule_authname: ruleRole.auth_level_name,
+    });
+  };
 
   useEffect(() => {
     if (value && enabled) {
@@ -51,13 +51,10 @@ const AuthType = ({ value, form, enabled }) => {
 
   return (
     <div>
-      <Form.Item 
-        name="rule_auth" 
-        label={t('fields.authorityType')} 
-        rules={enabled && [{ required: true }]}
-      >
+      <Form.Item name="rule_auth" label={t('fields.authorityType')} rules={enabled && [{ required: true }]}>
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           loading={isValidating}
           disabled={!enabled}
           showSearch
@@ -77,7 +74,7 @@ const AuthType = ({ value, form, enabled }) => {
       </Form.Item>
 
       <Form.Item name="rule_authname" noStyle>
-        <Input type="hidden"/>
+        <Input type="hidden" />
       </Form.Item>
     </div>
   );

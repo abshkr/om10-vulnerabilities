@@ -27,9 +27,10 @@ const Generic = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="dg_link_id" label={t('fields.dangerousGoods')} >
+    <Form.Item name="dg_link_id" label={t('fields.dangerousGoods')}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         onChange={handleChange}
@@ -38,13 +39,21 @@ const Generic = ({ form, value }) => {
         filterOption={(input, option) =>
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
-        dropdownRender={menu => (
-          <div style={{width:'500px'}}>
+        dropdownRender={(menu) => (
+          <div style={{ width: '500px' }}>
             <Row gutter={[8, 0]}>
-              <Col span={5}><b>{t('fields.material')}</b></Col>
-              <Col span={9}><b>{t('fields.adrDesc')}</b></Col>
-              <Col span={5}><b>{t('fields.adrName')}</b></Col>
-              <Col span={5}><b>{t('fields.adrType')}</b></Col>
+              <Col span={5}>
+                <b>{t('fields.material')}</b>
+              </Col>
+              <Col span={9}>
+                <b>{t('fields.adrDesc')}</b>
+              </Col>
+              <Col span={5}>
+                <b>{t('fields.adrName')}</b>
+              </Col>
+              <Col span={5}>
+                <b>{t('fields.adrType')}</b>
+              </Col>
             </Row>
             {menu}
           </div>

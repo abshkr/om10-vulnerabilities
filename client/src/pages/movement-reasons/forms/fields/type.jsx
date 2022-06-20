@@ -24,20 +24,21 @@ const Type = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        mr_type: value.mr_type
+        mr_type: value.mr_type,
         //mr_type_name: value.mr_type_name
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item 
-      name="mr_type" 
-      label={t('fields.movementType')} 
+    <Form.Item
+      name="mr_type"
+      label={t('fields.movementType')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         disabled={value?.mr_status === '2'}

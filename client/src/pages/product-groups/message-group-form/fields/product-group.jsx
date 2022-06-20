@@ -38,6 +38,7 @@ const ProductGroup = ({ form, value }) => {
       >
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           loading={isValidating}
           disabled={value}
           showSearch

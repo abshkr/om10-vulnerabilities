@@ -12,12 +12,10 @@ const OrderStatus = ({ value, onChange }) => {
   const { data: options, isValidating } = useSWR(ORDER_LISTINGS.ORDSTAT_TYPES);
 
   return (
-    <Form.Item
-      name="order_stat_id"
-      label={t('fields.orderStatName')}
-    >
+    <Form.Item name="order_stat_id" label={t('fields.orderStatName')}>
       <Select
         loading={isValidating}
+        allowClear
         showSearch
         onChange={onChange}
         disabled={!!value}

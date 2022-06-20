@@ -171,6 +171,7 @@ const Compartments = ({ form, value, equipment }) => {
               </div> */}
               <Select
                 dropdownMatchSelectWidth={false}
+                // allowClear
                 onChange={(value) => changeType(item, value, index)}
                 // value={item.tc_eqpt || undefined}
                 // placeholder={t('placeholder.selectEquipment')}

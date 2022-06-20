@@ -63,6 +63,7 @@ const Metering = () => {
         </span>
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           key="1"
           style={{ width: 200 }}
           defaultValue={massUnit}
@@ -92,6 +93,7 @@ const Metering = () => {
         </span>
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           key="1"
           style={{ width: 200 }}
           defaultValue={unit}

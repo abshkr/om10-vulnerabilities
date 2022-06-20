@@ -24,7 +24,7 @@ const Receiving = ({ form, value, onChange }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        mtd_dst_code: value.mtd_dst_code
+        mtd_dst_code: value.mtd_dst_code,
       });
 
       onChange(value.mtd_dst_code);
@@ -39,6 +39,7 @@ const Receiving = ({ form, value, onChange }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         onChange={onChange}

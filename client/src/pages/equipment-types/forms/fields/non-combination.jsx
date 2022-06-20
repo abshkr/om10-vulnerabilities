@@ -105,6 +105,7 @@ const NonCombination = ({ form, value }) => {
           <Form.Item name="unit">
             <Select
               dropdownMatchSelectWidth={false}
+              allowClear
               showSearch
               style={{ width: '100%', marginTop: 10 }}
               onChange={(key, value) => setUnit(value.children)}

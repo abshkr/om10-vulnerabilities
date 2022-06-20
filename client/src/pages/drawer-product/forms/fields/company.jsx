@@ -38,6 +38,7 @@ const Company = ({ form, value, onChange }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         disabled={!!value}
         showSearch

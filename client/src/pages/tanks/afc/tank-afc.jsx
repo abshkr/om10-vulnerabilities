@@ -352,6 +352,7 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks, config 
               >
                 <Select
                   dropdownMatchSelectWidth={false}
+                  allowClear
                   disabled={true}
                   showSearch
                   optionFilterProp="children"

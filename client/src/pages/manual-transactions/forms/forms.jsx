@@ -634,6 +634,7 @@ const Forms = ({
           <Form.Item name="source_type" label={t('fields.mtDataType')} rules={[{ required: true }]}>
             <Select
               dropdownMatchSelectWidth={false}
+              allowClear
               disabled={popup}
               onChange={handleTypeSelect}
               placeholder={t('placeholder.selectTransType')}

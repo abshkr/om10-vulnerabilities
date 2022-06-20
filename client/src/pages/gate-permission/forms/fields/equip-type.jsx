@@ -16,11 +16,11 @@ const EquipType = ({ value, form, enabled }) => {
   const onChange = (v) => {
     const ruleEtyp = _.find(equips, (item) => {
       return item.etyp_id === v;
-    })
+    });
     setFieldsValue({
-      rule_etypname: ruleEtyp.etyp_title
-    })
-  }
+      rule_etypname: ruleEtyp.etyp_title,
+    });
+  };
 
   useEffect(() => {
     if (value && enabled) {
@@ -51,13 +51,10 @@ const EquipType = ({ value, form, enabled }) => {
 
   return (
     <div>
-      <Form.Item 
-        name="rule_etyp" 
-        label={t('fields.equipmentType')} 
-        rules={enabled && [{ required: true }]}
-      >
+      <Form.Item name="rule_etyp" label={t('fields.equipmentType')} rules={enabled && [{ required: true }]}>
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           loading={isValidating}
           disabled={!enabled}
           showSearch
@@ -76,7 +73,7 @@ const EquipType = ({ value, form, enabled }) => {
       </Form.Item>
 
       <Form.Item name="rule_etypname" noStyle>
-        <Input type="hidden"/>
+        <Input type="hidden" />
       </Form.Item>
     </div>
   );

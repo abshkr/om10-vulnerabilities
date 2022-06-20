@@ -28,7 +28,7 @@ const ReceivingUnit = ({ form, value, receiving }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        mtd_dst_type: value.mtd_dst_type
+        mtd_dst_type: value.mtd_dst_type,
       });
     }
   }, [value, setFieldsValue]);
@@ -44,6 +44,7 @@ const ReceivingUnit = ({ form, value, receiving }) => {
       {IS_TANK ? (
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           loading={isValidating}
           showSearch
           optionFilterProp="children"
@@ -52,7 +53,7 @@ const ReceivingUnit = ({ form, value, receiving }) => {
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
-          {options?.records.map(item => (
+          {options?.records.map((item) => (
             <Select.Option key={item.tank_code} value={item.tank_code}>
               {item.tank_code}
             </Select.Option>

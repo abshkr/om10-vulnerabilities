@@ -30,7 +30,7 @@ import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
 
 import { DataTable, Download } from '../../../components';
-import {TerminalList} from 'components/fields';
+import { TerminalList } from 'components/fields';
 import api, { TANK_OWNERS } from '../../../api';
 import columns from './columns';
 import transform from './transform';
@@ -42,8 +42,8 @@ const TankProductOwners = ({ value, access, config, unit, units }) => {
   const [terminal, setTerminal] = useState('');
 
   // const url = value ? `${TANK_OWNERS.SUMMARY}?tank_base=${value?.base_code}` : null;
-  const url = value 
-    ? `${TANK_OWNERS.SUMMARY}?tank_base=${value?.base_code}&tank_terminal=${terminal}` 
+  const url = value
+    ? `${TANK_OWNERS.SUMMARY}?tank_base=${value?.base_code}&tank_terminal=${terminal}`
     : `${TANK_OWNERS.SUMMARY}?tank_terminal=${terminal}`;
 
   const { data, isValidating } = useSWR(url);
@@ -86,6 +86,7 @@ const TankProductOwners = ({ value, access, config, unit, units }) => {
               <Descriptions.Item label={t('fields.volumeUnit')} span={1}>
                 <Select
                   dropdownMatchSelectWidth={false}
+                  allowClear
                   key="1"
                   style={{ width: '100%' }}
                   defaultValue={unit}
@@ -103,11 +104,17 @@ const TankProductOwners = ({ value, access, config, unit, units }) => {
 
               {config?.siteUseMultiTerminals && (
                 <Descriptions.Item label={t('fields.terminal')} span={1}>
-                  <TerminalList value={terminal} listOptions={[]}
-                  itemCode={'tank_terminal'} itemTitle={'terminal'} itemRequired={false} itemDisabled={false} onChange={setTerminal} />
+                  <TerminalList
+                    value={terminal}
+                    listOptions={[]}
+                    itemCode={'tank_terminal'}
+                    itemTitle={'terminal'}
+                    itemRequired={false}
+                    itemDisabled={false}
+                    onChange={setTerminal}
+                  />
                 </Descriptions.Item>
               )}
-
             </Descriptions>
           </Col>
         </Row>

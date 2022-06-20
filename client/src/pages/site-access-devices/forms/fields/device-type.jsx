@@ -24,7 +24,7 @@ const DeviceType = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        adv_device: value.adv_device
+        adv_device: value.adv_device,
       });
     }
   }, [value, setFieldsValue]);
@@ -37,6 +37,7 @@ const DeviceType = ({ form, value }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         optionFilterProp="children"

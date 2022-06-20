@@ -22,7 +22,7 @@ const Employer = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        per_cmpy: value.per_cmpy
+        per_cmpy: value.per_cmpy,
       });
     }
   }, [value, setFieldsValue]);
@@ -31,6 +31,7 @@ const Employer = ({ form, value }) => {
     <Form.Item name="per_cmpy" label={t('fields.employer')} rules={[{ required: true, validator: validate }]}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         optionFilterProp="children"

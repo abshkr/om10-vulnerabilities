@@ -22,7 +22,7 @@ const Role = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        per_auth: value.per_auth
+        per_auth: value.per_auth,
       });
     }
   }, [value, setFieldsValue]);
@@ -31,6 +31,7 @@ const Role = ({ form, value }) => {
     <Form.Item name="per_auth" label={t('fields.role')} rules={[{ required: true, validator: validate }]}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         optionFilterProp="children"

@@ -39,6 +39,7 @@ const Class = ({ form, value }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isLoading}
         showSearch
         disabled={value}

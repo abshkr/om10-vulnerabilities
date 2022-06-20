@@ -966,6 +966,7 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
               >
                 <Select
                   dropdownMatchSelectWidth={false}
+                  allowClear
                   showSearch
                   defaultValue={2}
                   disabled={false}
@@ -1021,6 +1022,7 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
               >
                 <Select
                   dropdownMatchSelectWidth={false}
+                  allowClear
                   showSearch
                   disabled={true}
                   // onChange={handleChange}

@@ -12,12 +12,10 @@ const JournalCategory = ({ value, onChange }) => {
   const { data: options, isValidating } = useSWR(JOURNAL.CATEGORIES);
 
   return (
-    <Form.Item
-      name="msg_class"
-      label={t('fields.category')}
-    >
+    <Form.Item name="msg_class" label={t('fields.category')}>
       <Select
         loading={isValidating}
+        allowClear
         showSearch
         onChange={onChange}
         disabled={!!value}

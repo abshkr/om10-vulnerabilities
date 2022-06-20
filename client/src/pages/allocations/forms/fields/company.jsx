@@ -28,7 +28,7 @@ const Company = ({ form, value, type, onChange }) => {
       } else if (type == 4) {
         url = `${ALLOCATIONS.DRAWERS}`;
       }
-        
+
       api.get(url).then((response) => {
         const payload = response.data?.records || [];
         setOptions(payload);
@@ -53,6 +53,7 @@ const Company = ({ form, value, type, onChange }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         // loading={isValidating}
         disabled={!!value}
         showSearch

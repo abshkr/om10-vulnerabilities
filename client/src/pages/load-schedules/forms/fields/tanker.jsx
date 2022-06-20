@@ -99,6 +99,7 @@ const Tanker = ({ form, value, carrier, onChange, activeTrips }) => {
         >
           <Select
             dropdownMatchSelectWidth={false}
+            allowClear
             loading={isValidating}
             showSearch
             onChange={onChange}

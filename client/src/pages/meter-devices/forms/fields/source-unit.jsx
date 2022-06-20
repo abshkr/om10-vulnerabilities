@@ -28,7 +28,7 @@ const SourceUnit = ({ form, value, source }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        mtd_src_type: value.mtd_src_type
+        mtd_src_type: value.mtd_src_type,
       });
     }
   }, [value, setFieldsValue]);
@@ -44,6 +44,7 @@ const SourceUnit = ({ form, value, source }) => {
       {IS_TANK ? (
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           loading={isValidating}
           showSearch
           optionFilterProp="children"
@@ -52,7 +53,7 @@ const SourceUnit = ({ form, value, source }) => {
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
         >
-          {options?.records.map(item => (
+          {options?.records.map((item) => (
             <Select.Option key={item.tank_code} value={item.tank_code}>
               {item.tank_code}
             </Select.Option>

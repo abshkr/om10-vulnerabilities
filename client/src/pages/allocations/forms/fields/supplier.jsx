@@ -36,7 +36,8 @@ const Supplier = ({ form, value, type, onChange }) => {
       rules={[{ required: type !== '1', validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}	  
+        dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         onChange={onChange}
         disabled={!!value || type === '1'}

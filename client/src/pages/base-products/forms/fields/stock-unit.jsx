@@ -42,6 +42,7 @@ const StockUnit = ({ form, value, owners }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         disabled={value && owners?.length > 0}

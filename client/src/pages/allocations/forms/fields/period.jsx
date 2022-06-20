@@ -46,6 +46,7 @@ const Period = ({ form, value, lockType, enableWhenEdit }) => {
     >
       <Select
         loading={isValidating}
+        allowClear
         showSearch
         disabled={String(lockType) !== '3' || (value && !enableWhenEdit)}
         optionFilterProp="children"

@@ -520,6 +520,7 @@ const TankOwners = ({ terminal, code, value, access, tanks, config }) => {
               >
                 <Select
                   dropdownMatchSelectWidth={false}
+                  allowClear
                   loading={isValidating}
                   showSearch
                   disabled={!IS_CREATING}

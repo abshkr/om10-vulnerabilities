@@ -24,7 +24,7 @@ const Type = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        mtd_type: value.mtd_type
+        mtd_type: value.mtd_type,
       });
     }
   }, [value, setFieldsValue]);
@@ -33,6 +33,7 @@ const Type = ({ form, value }) => {
     <Form.Item name="mtd_type" label={t('fields.type')} rules={[{ required: true, validator: validate }]}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         disabled={!!value}

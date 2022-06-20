@@ -12,12 +12,10 @@ const Customer = ({ form, value, supplier }) => {
   const { t } = useTranslation();
 
   //const { data: options, isValidating } = useSWR(CUSTOMERS.CUST_COMPANYS);
-  const { data: options, isValidating } = useSWR(
-    `${CUSTOMERS.CUST_COMPANYS}?cust_supp_code=${supplier}`,
-    { refreshInterval: 0,
-    }
-  );
-  
+  const { data: options, isValidating } = useSWR(`${CUSTOMERS.CUST_COMPANYS}?cust_supp_code=${supplier}`, {
+    refreshInterval: 0,
+  });
+
   /*
   const { data: options, isValidating } = useSWR(
     `${CUSTOMERS.SUPP_CUST_COMPANYS}?cust_supp_code=${supplier}`,
@@ -25,7 +23,7 @@ const Customer = ({ form, value, supplier }) => {
     }
   );
   */
-  
+
   const validate = (rule, input) => {
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.custCompany')}`);
@@ -50,6 +48,7 @@ const Customer = ({ form, value, supplier }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         // disabled={!!value}
         showSearch
@@ -59,11 +58,13 @@ const Customer = ({ form, value, supplier }) => {
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
-        {options?.records.filter((item)=>(!value?(item.cust_supp===''):(item.cust_supp===supplier))).map((item, index) => (
-          <Select.Option key={index} value={item.cmpy_code}>
-            {item.cmpy_desc}
-          </Select.Option>
-        ))}
+        {options?.records
+          .filter((item) => (!value ? item.cust_supp === '' : item.cust_supp === supplier))
+          .map((item, index) => (
+            <Select.Option key={index} value={item.cmpy_code}>
+              {item.cmpy_desc}
+            </Select.Option>
+          ))}
       </Select>
     </Form.Item>
   );

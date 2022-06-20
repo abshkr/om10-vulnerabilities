@@ -27,9 +27,10 @@ const DrawerCompany = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="prod_cmpycode" label={t('fields.drawer')} >
+    <Form.Item name="prod_cmpycode" label={t('fields.drawer')}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         disabled
         showSearch

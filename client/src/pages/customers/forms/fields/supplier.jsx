@@ -14,7 +14,7 @@ const Supplier = ({ form, value, onChange }) => {
   const { data: options, isValidating } = useSWR(LOAD_SCHEDULES.SUPPLIERS);
 
   const validate = (rule, input) => {
-    console.log("supplier validate")
+    console.log('supplier validate');
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.custSupplier')}`);
     }
@@ -44,6 +44,7 @@ const Supplier = ({ form, value, onChange }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         disabled={!!value}
         showSearch

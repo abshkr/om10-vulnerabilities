@@ -22,21 +22,22 @@ const SupplyDepot = ({ form, value, pageState }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        order_strm_code: value.order_strm_code
+        order_strm_code: value.order_strm_code,
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item 
-      name="order_strm_code" 
-      label={t('fields.orderStrmName')} 
+    <Form.Item
+      name="order_strm_code"
+      label={t('fields.orderStrmName')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
-        disabled={(pageState==='create'||pageState==='edit')? false : true}
+        disabled={pageState === 'create' || pageState === 'edit' ? false : true}
         showSearch
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectSupplyDepot') : null}

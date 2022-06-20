@@ -39,6 +39,7 @@ const InvoiceType = ({ form, value }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         optionFilterProp="children"

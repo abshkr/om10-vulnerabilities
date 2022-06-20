@@ -11,7 +11,7 @@ const CustomerCategory = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        category_count: value.category_count
+        category_count: value.category_count,
       });
     }
   }, [value, setFieldsValue]);
@@ -20,6 +20,7 @@ const CustomerCategory = ({ form, value }) => {
     <Form.Item name="category_count" label={t('fields.customerCategory')}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         showSearch
         disabled={!value}
         optionFilterProp="children"

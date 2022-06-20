@@ -38,6 +38,7 @@ const EquipmentType = ({ form, value, onChange }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         dropdownStyle={{ maxWidth: '30vw' }}
         loading={isValidating}
         disabled={!!value}

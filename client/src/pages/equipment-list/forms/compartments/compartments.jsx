@@ -27,7 +27,7 @@ const Compartments = ({ form, value, eqptType, onChange, config }) => {
       setLoading(true);
 
       api.get(`${EQUIPMENT_LIST.COMPARTMENTS}?eqpt_id=${id}`).then((response) => {
-        setData([]);    //Muse do this before next setData, otherwise frontend does not refresh to new data
+        setData([]); //Muse do this before next setData, otherwise frontend does not refresh to new data
         setData(response.data.records);
         setFieldsValue({ compartments: response.data.records });
         setLoading(false);
@@ -96,7 +96,7 @@ const Compartments = ({ form, value, eqptType, onChange, config }) => {
           });
         });
     }
-  }, [ eqptType ]);
+  }, [eqptType]);
 
   useEffect(() => {
     // the eqpttype in value?.eqpt_etp is String and eqptType is Number,
@@ -148,6 +148,7 @@ const Compartments = ({ form, value, eqptType, onChange, config }) => {
       <Form.Item name="compartments">
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           placeholder={t('placeholder.selectPlease')}
           style={{ marginBottom: 10, marginTop: 10 }}
           showSearch

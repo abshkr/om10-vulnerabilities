@@ -89,6 +89,7 @@ const FormModal = ({ visible, onCreate, onCancel, gates }) => {
         >
           <Select
             dropdownMatchSelectWidth={false}
+            allowClear
             loading={isLoading}
             showSearch
             onChange={(value, key) => onDeviceChange(key)}
@@ -112,6 +113,7 @@ const FormModal = ({ visible, onCreate, onCancel, gates }) => {
         >
           <Select
             loading={isLoading}
+            allowClear
             showSearch
             optionFilterProp="children"
             filterOption={(input, option) =>
@@ -214,12 +216,7 @@ const Gates = ({ form, value }) => {
       <FormModal visible={visible} onCreate={onGateCreate} onCancel={() => setVisible(false)} gates={data} />
 
       {/* <Divider> {t('tabColumns.gates')} </Divider> */}
-      <Card 
-        size="small" 
-        title={t('tabColumns.gates')} 
-        extra={extra}
-      >
-
+      <Card size="small" title={t('tabColumns.gates')} extra={extra}>
         <Form.Item name="gates" noStyle>
           <List
             size="small"
@@ -231,7 +228,12 @@ const Gates = ({ form, value }) => {
               spinning: isLoading,
             }}
             renderItem={(item) => (
-              <Card size="small" hoverable style={{ marginBottom: 5, marginTop: 5 }} bodyStyle={{ padding: 5 }}>
+              <Card
+                size="small"
+                hoverable
+                style={{ marginBottom: 5, marginTop: 5 }}
+                bodyStyle={{ padding: 5 }}
+              >
                 <List.Item
                   actions={[
                     <Button
@@ -253,9 +255,7 @@ const Gates = ({ form, value }) => {
             )}
           />
         </Form.Item>
-        
       </Card>
-
     </>
   );
 };

@@ -250,6 +250,7 @@ const To = ({
           >
             <Select
               dropdownMatchSelectWidth={false}
+              allowClear
               showSearch
               loading={isLoading}
               onChange={onSupplierChange}
@@ -277,6 +278,7 @@ const To = ({
           >
             <Select
               dropdownMatchSelectWidth={false}
+              allowClear
               showSearch
               loading={isLoading}
               onChange={onTankChange}
@@ -306,6 +308,7 @@ const To = ({
           >
             <Select
               dropdownMatchSelectWidth={false}
+              allowClear
               showSearch
               loading={isLoading}
               disabled={IS_DISABLED || !tank}

@@ -6,7 +6,16 @@ import jwtDecode from 'jwt-decode';
 
 import api, { ORDER_LISTINGS } from '../../api';
 
-const TerminalList = ({ form, value, listOptions, itemCode, itemTitle, itemRequired, itemDisabled, onChange }) => {
+const TerminalList = ({
+  form,
+  value,
+  listOptions,
+  itemCode,
+  itemTitle,
+  itemRequired,
+  itemDisabled,
+  onChange,
+}) => {
   const { t } = useTranslation();
 
   const [loading, setLoading] = useState(false);
@@ -50,7 +59,7 @@ const TerminalList = ({ form, value, listOptions, itemCode, itemTitle, itemRequi
     if (onChange) {
       onChange(v);
     }
-  }
+  };
 
   const validate = (rule, input) => {
     if (rule.required) {
@@ -66,8 +75,7 @@ const TerminalList = ({ form, value, listOptions, itemCode, itemTitle, itemRequi
     if (!options) {
       if ((!listOptions || listOptions?.length === 0) && !loading) {
         getTerminals();
-      }
-      else {
+      } else {
         // setLoading(true);
         setOptions(listOptions);
         // setLoading(false);
@@ -85,11 +93,10 @@ const TerminalList = ({ form, value, listOptions, itemCode, itemTitle, itemRequi
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        [itemCode]: value?.[itemCode]
+        [itemCode]: value?.[itemCode],
       });
       handleSelection(value?.[itemCode]);
-    }
-    else {
+    } else {
       setFieldsValue({
         [itemCode]: site_code,
       });
@@ -98,25 +105,30 @@ const TerminalList = ({ form, value, listOptions, itemCode, itemTitle, itemRequi
   }, [value, site_code, setFieldsValue]);
 
   return (
-    <Form.Item 
-      name={itemCode} 
-      label={field} 
-      // extra 
-      rules={[{ 
-        required: itemRequired === undefined ? false : itemRequired, 
-        validator: validate, 
-        min: 1, 
-        max: 16 
-      }]}
+    <Form.Item
+      name={itemCode}
+      label={field}
+      // extra
+      rules={[
+        {
+          required: itemRequired === undefined ? false : itemRequired,
+          validator: validate,
+          min: 1,
+          max: 16,
+        },
+      ]}
     >
-      <Select 
-        showSearch 
+      <Select
+        showSearch
+        dropdownMatchSelectWidth={false}
         allowClear
         disabled={itemDisabled === undefined ? false : itemDisabled}
-        loading={loading} 
+        loading={loading}
         onChange={handleSelection}
-        optionFilterProp="children" 
-        filterOption={(input, option) => option?.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+        optionFilterProp="children"
+        filterOption={(input, option) =>
+          option?.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+        }
       >
         {options?.map((item) => (
           <Select.Option key={item?.term_code} value={item?.term_code}>

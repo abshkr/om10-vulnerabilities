@@ -24,7 +24,7 @@ const Company = ({ form, value, onChange }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        prt_cmpy: value.prt_cmpy
+        prt_cmpy: value.prt_cmpy,
       });
 
       onChange(value.prt_cmpy);
@@ -35,6 +35,7 @@ const Company = ({ form, value, onChange }) => {
     <Form.Item name="prt_cmpy" label={t('fields.company')} rules={[{ required: true, validator: validate }]}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         onChange={onChange}

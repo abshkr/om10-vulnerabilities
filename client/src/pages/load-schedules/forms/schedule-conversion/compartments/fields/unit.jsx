@@ -41,6 +41,7 @@ export default class Unit extends Component {
       <div style={{ display: 'flex' }}>
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           value={this.state.value}
           style={{ width: '100%' }}
           onChange={this.onClick}

@@ -8,7 +8,7 @@ export default class AdaptiveFlowControl extends Component {
 
     if (value) {
       setFieldsValue({
-        afc_enabled: value.afc_enabled
+        afc_enabled: value.afc_enabled,
       });
     }
   }
@@ -19,14 +19,14 @@ export default class AdaptiveFlowControl extends Component {
     const { Option } = Select;
     const control = [
       { key: true, value: 'Enabled' },
-      { key: false, value: 'Disabled' }
+      { key: false, value: 'Disabled' },
     ];
     return (
       <Form.Item label="Adaptive Flow Control">
         {getFieldDecorator('afc_enabled', {
-          rules: [{ required: false, message: 'Please Select A Flow Control Type' }]
+          rules: [{ required: false, message: 'Please Select A Flow Control Type' }],
         })(
-          <Select>
+          <Select dropdownMatchSelectWidth={false} allowClear>
             {control.map((item, index) => (
               <Option key={index} value={item.key}>
                 {item.value}

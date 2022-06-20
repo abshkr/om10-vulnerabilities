@@ -6,7 +6,7 @@ import useSWR from 'swr';
 
 const WindowName = ({ form, value, onTypeChange }) => {
   const { t } = useTranslation();
-  const IS_CREATING = value["seq"] === undefined;
+  const IS_CREATING = value['seq'] === undefined;
 
   const { setFieldsValue } = form;
   const { Option } = Select;
@@ -28,14 +28,15 @@ const WindowName = ({ form, value, onTypeChange }) => {
   };
 
   return (
-    <Form.Item 
-      name="window_name" 
-      label={t('fields.folioExceptionType')} 
+    <Form.Item
+      name="window_name"
+      label={t('fields.folioExceptionType')}
       rules={[{ required: true, validator: validate }]}
     >
-      <Select 
+      <Select
         dropdownMatchSelectWidth={false}
-        // defaultValue="DATE_WINDOW" 
+        allowClear
+        // defaultValue="DATE_WINDOW"
         disabled={!IS_CREATING}
         onChange={onTypeChange}
       >

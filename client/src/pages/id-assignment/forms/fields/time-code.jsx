@@ -24,7 +24,7 @@ const TimeCode = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        kya_timecode: value.kya_timecode
+        kya_timecode: value.kya_timecode,
       });
     }
   }, [value, setFieldsValue]);
@@ -32,7 +32,7 @@ const TimeCode = ({ form, value }) => {
   useEffect(() => {
     if (!value) {
       setFieldsValue({
-        kya_timecode: options?.records[0]?.tcd_title
+        kya_timecode: options?.records[0]?.tcd_title,
       });
     }
   }, [value, options, setFieldsValue]);
@@ -45,6 +45,7 @@ const TimeCode = ({ form, value }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         optionFilterProp="children"

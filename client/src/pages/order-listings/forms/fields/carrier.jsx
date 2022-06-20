@@ -43,11 +43,12 @@ const Carrier = ({ form, customer, value, onChange, pageState }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
+        allowClear
         dropdownMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         onChange={onCarrierChange}
-        disabled={(pageState==='create'||pageState==='edit')? false : true}
+        disabled={pageState === 'create' || pageState === 'edit' ? false : true}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectCarrier') : null}
         filterOption={(value, option) =>

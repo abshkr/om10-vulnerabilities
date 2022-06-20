@@ -11,26 +11,26 @@ const ExpiryDateTarget = ({ form, value, all }) => {
   const options = [
     {
       id: 'TANKERS',
-      title: 'Expiry Dates For Tankers'
+      title: 'Expiry Dates For Tankers',
     },
 
     {
       id: 'PERSONNEL',
-      title: 'Expiry Dates For Personnel'
+      title: 'Expiry Dates For Personnel',
     },
 
     {
       id: 'TRANSP_EQUIP',
-      title: 'Expiry Dates For Equipment'
-    }
+      title: 'Expiry Dates For Equipment',
+    },
   ];
 
   const validate = (rule, input) => {
     const filtered = _.filter(all, (item) => {
       return item.edt_target_code === input;
-    })
-    console.log(filtered.length)
-    
+    });
+    console.log(filtered.length);
+
     if (filtered.length >= 10) {
       return Promise.reject(`${t('descriptions.maxExpTarget')}`);
     }
@@ -45,7 +45,7 @@ const ExpiryDateTarget = ({ form, value, all }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        edt_target_code: value.edt_target_code
+        edt_target_code: value.edt_target_code,
       });
     }
   }, [value, setFieldsValue]);
@@ -58,6 +58,7 @@ const ExpiryDateTarget = ({ form, value, all }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         disabled={!!value}
         showSearch
         optionFilterProp="children"

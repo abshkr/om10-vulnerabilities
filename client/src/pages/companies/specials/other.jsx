@@ -192,8 +192,8 @@ const OtherForm = ({ value, form, config }) => {
           <Form.Item name="cmpy_vet" label={t('fields.vetFlag')} {...leftItemLayout}>
             <Select
               dropdownMatchSelectWidth={false}
+              allowClear
               style={{ width: '14vh' }}
-              dropdownMatchSelectWidth={false}
               // onChange={handleVetChange}
             >
               <Select.Option key={-1} value="-1">
@@ -229,11 +229,7 @@ const OtherForm = ({ value, form, config }) => {
       <Row justify="center" gutter="8">
         <Col span={12}>
           <Form.Item name="cmpy_rtn_prompt" label={t('fields.returnLocationCarrier')} {...leftItemLayout}>
-            <Select
-              dropdownMatchSelectWidth={false}
-              style={{ width: '14vh' }}
-              dropdownMatchSelectWidth={false}
-            >
+            <Select dropdownMatchSelectWidth={false} allowClear style={{ width: '14vh' }}>
               <Select.Option key={0} value="0">
                 {t('fields.bayOnly')}
               </Select.Option>

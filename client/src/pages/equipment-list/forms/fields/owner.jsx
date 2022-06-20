@@ -15,7 +15,7 @@ const Owner = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        eqpt_owner: value.eqpt_owner
+        eqpt_owner: value.eqpt_owner,
       });
     }
   }, [value, setFieldsValue]);
@@ -32,6 +32,7 @@ const Owner = ({ form, value }) => {
     <Form.Item name="eqpt_owner" label={t('fields.owner')} rules={[{ required: true, validator: validate }]}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         disabled={!!value}
         showSearch

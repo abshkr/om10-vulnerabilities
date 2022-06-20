@@ -15,7 +15,7 @@ const Name = ({ form, value, company }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
-    const match = _.find(data?.records, value => {
+    const match = _.find(data?.records, (value) => {
       return value.report_cmpycode === company && value.report_file === input;
     });
 
@@ -33,7 +33,7 @@ const Name = ({ form, value, company }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        report_file: value.report_file
+        report_file: value.report_file,
       });
     }
   }, [value, setFieldsValue]);
@@ -41,7 +41,7 @@ const Name = ({ form, value, company }) => {
   useEffect(() => {
     if (!value) {
       setFieldsValue({
-        report_file: undefined
+        report_file: undefined,
       });
     }
   }, [company, setFieldsValue, value]);
@@ -54,6 +54,7 @@ const Name = ({ form, value, company }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         disabled={!!value}
         showSearch
@@ -63,7 +64,7 @@ const Name = ({ form, value, company }) => {
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
-        {options?.records.map(item => (
+        {options?.records.map((item) => (
           <Select.Option key={item.report_file} value={item.report_file}>
             {item.report_name}
           </Select.Option>

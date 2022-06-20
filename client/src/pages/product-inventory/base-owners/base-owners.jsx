@@ -183,6 +183,7 @@ const BaseProductOwners = ({ value, access, config, unit, units }) => {
                 <Descriptions.Item label={t('fields.volumeUnit')} span={1}>
                   <Select
                     dropdownMatchSelectWidth={false}
+                    allowClear
                     key="1"
                     style={{ width: '100%' }}
                     defaultValue={unit}

@@ -50,6 +50,7 @@ const Type = ({ form, value, onChange, onSupplier }) => {
       <Select
         loading={isValidating}
         disabled={!!value}
+        allowClear
         showSearch
         onChange={handleChange}
         optionFilterProp="children"

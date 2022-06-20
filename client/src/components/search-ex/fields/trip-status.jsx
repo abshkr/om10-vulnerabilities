@@ -12,12 +12,10 @@ const StatusSerach = ({ value, onChange }) => {
   const { data: options, isValidating } = useSWR(LOAD_SCHEDULES.STATUS);
 
   return (
-    <Form.Item
-      name="trip_status"
-      label={t('fields.schdStatus')}
-    >
+    <Form.Item name="trip_status" label={t('fields.schdStatus')}>
       <Select
         loading={isValidating}
+        allowClear
         showSearch
         onChange={onChange}
         disabled={!!value}

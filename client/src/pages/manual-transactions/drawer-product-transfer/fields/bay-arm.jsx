@@ -3,7 +3,7 @@ import { Select } from 'antd';
 import _ from 'lodash';
 
 // import api, { MANUAL_TRANSACTIONS } from '../../../../api';
-import { calcArmDensity, adjustProductArms } from '../../../../utils'
+import { calcArmDensity, adjustProductArms } from '../../../../utils';
 
 export default class BayArm extends Component {
   constructor(props) {
@@ -51,7 +51,6 @@ export default class BayArm extends Component {
 
     // console.log('BayArm, onClick', key, index, record, current);
 
-
     /* form.setFieldsValue({
       transfers: current,
     }); */
@@ -69,7 +68,11 @@ export default class BayArm extends Component {
   componentDidMount() {
     const { arms, t } = this.props;
 
-    const armsByProd = adjustProductArms(arms, this.props.data.trsf_prod_cmpy, this.props.data.trsf_prod_code);
+    const armsByProd = adjustProductArms(
+      arms,
+      this.props.data.trsf_prod_cmpy,
+      this.props.data.trsf_prod_code
+    );
     // console.log('BayArms componentDidMount', arms, armsByProd, this.props.data);
 
     this.setState({
@@ -77,15 +80,14 @@ export default class BayArm extends Component {
       values: armsByProd,
     });
 
-    const items = _.filter(armsByProd, (o) => (
-      o.stream_bclass_code !== '6' && String(o.arm_bases) === o.rat_count && o.rat_seq === '1'
-    ));
+    const items = _.filter(
+      armsByProd,
+      (o) => o.stream_bclass_code !== '6' && String(o.arm_bases) === o.rat_count && o.rat_seq === '1'
+    );
     if (items?.length === 0) {
-      this.setState(
-        {
-          value: t('placeholder.noArmAvailable'),
-        },
-      );
+      this.setState({
+        value: t('placeholder.noArmAvailable'),
+      });
     }
 
     /* this.setState({
@@ -114,20 +116,24 @@ export default class BayArm extends Component {
       <div style={{ display: 'flex' }}>
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           value={this.state.value}
           style={{ width: '100%' }}
           loading={isLoading}
           onChange={this.onClick}
           bordered={false}
         >
-          {_.filter(values, (o) => (o.stream_bclass_code!=='6' && String(o.arm_bases)===o.rat_count) && o.rat_seq === '1')?.map((item) => (
+          {_.filter(
+            values,
+            (o) => o.stream_bclass_code !== '6' && String(o.arm_bases) === o.rat_count && o.rat_seq === '1'
+          )?.map((item) => (
             <Select.Option
               key={`${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
               value={`${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
               item={item}
             >
               {/* {`${item.stream_baycode} - ${item.stream_armcode}`} */}
-              {`${item.stream_baycode} - ${'ARM' + item.stream_armcode.substr(4,2)}`}
+              {`${item.stream_baycode} - ${'ARM' + item.stream_armcode.substr(4, 2)}`}
             </Select.Option>
           ))}
         </Select>

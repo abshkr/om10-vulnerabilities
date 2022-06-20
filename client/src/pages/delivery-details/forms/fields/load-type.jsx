@@ -43,9 +43,10 @@ const LoadType = ({ form, value, defValue, pageState }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
-        disabled={(pageState==='create')? true : true}
+        disabled={pageState === 'create' ? true : true}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectTrspType') : null}
         filterOption={(input, option) =>

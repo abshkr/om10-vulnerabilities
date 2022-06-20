@@ -22,7 +22,7 @@ const TimeCode = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        pt_timecd: value.pt_timecd
+        pt_timecd: value.pt_timecd,
       });
     }
   }, [value, setFieldsValue]);
@@ -35,6 +35,7 @@ const TimeCode = ({ form, value }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         optionFilterProp="children"

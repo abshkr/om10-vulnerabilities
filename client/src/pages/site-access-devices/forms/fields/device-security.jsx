@@ -24,7 +24,7 @@ const DeviceSecurity = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        adv_security: value.adv_security
+        adv_security: value.adv_security,
       });
     }
   }, [value, setFieldsValue]);
@@ -37,6 +37,7 @@ const DeviceSecurity = ({ form, value }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         optionFilterProp="children"

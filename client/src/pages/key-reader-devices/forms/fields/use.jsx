@@ -31,6 +31,7 @@ const Use = ({ form, value }) => {
     <Form.Item name="krdc_use" label={t('fields.use')} rules={[{ required: true, validator: validate }]}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         disabled={!!value}

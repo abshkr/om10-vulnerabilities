@@ -22,18 +22,19 @@ const RefSpecTemp = ({ form, value }) => {
 
   useEffect(() => {
     setFieldsValue({
-      base_ref_temp_spec: value ? value.base_ref_temp_spec : '1'
+      base_ref_temp_spec: value ? value.base_ref_temp_spec : '1',
     });
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item 
-      name="base_ref_temp_spec" 
+    <Form.Item
+      name="base_ref_temp_spec"
       label={t('fields.baseRefTempSpec')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         optionFilterProp="children"

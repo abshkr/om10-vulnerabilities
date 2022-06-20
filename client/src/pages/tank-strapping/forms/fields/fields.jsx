@@ -28,6 +28,7 @@ const Fields = ({ form, value }) => {
       <Form.Item name="strap_tankcode" label={t('fields.tank')}>
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           loading={isLoading}
           showSearch
           disabled={!!value}
@@ -38,7 +39,16 @@ const Fields = ({ form, value }) => {
         >
           {tanks?.records.map((item, index) => (
             <Select.Option key={index} value={item.tank_code}>
-              {item.tank_code + ': ' + item.tank_name + '[' + item.tank_base + ' - ' + item.tank_base_name + ' - ' + item.tank_bclass_name + ']'}
+              {item.tank_code +
+                ': ' +
+                item.tank_name +
+                '[' +
+                item.tank_base +
+                ' - ' +
+                item.tank_base_name +
+                ' - ' +
+                item.tank_bclass_name +
+                ']'}
             </Select.Option>
           ))}
         </Select>

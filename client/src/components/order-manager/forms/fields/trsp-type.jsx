@@ -37,6 +37,7 @@ const TransportType = ({ form, value, pageState }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         disabled={true}

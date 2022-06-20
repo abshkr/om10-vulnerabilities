@@ -37,9 +37,10 @@ const TransportType = ({ form, value, pageState }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
-        disabled={(pageState==='create'||pageState==='edit')? false : true}
+        disabled={pageState === 'create' || pageState === 'edit' ? false : true}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectTrspType') : null}
         filterOption={(input, option) =>

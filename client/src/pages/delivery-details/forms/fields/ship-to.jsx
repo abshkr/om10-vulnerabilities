@@ -37,6 +37,7 @@ const ShipTo = ({ form, value, supplier, pageState }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         mode="tags"
         loading={isValidating}
         showSearch

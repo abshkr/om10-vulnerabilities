@@ -57,6 +57,7 @@ const PrinterForm = ({ value, form }) => {
       <Form.Item name="cmpy_bol_vp_name" label={t('fields.defaultDocPrinter')} {...swithLayout}>
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           loading={isValidating}
           style={{ width: '25vw' }}
           // onChange={handleChange}
@@ -72,6 +73,7 @@ const PrinterForm = ({ value, form }) => {
       <Form.Item name="cmpy_ld_rep_vp" label={t('fields.defaultLDPrinter')} {...swithLayout}>
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           loading={isValidating}
           style={{ width: '25vw' }}
           // onChange={handleChange}
@@ -87,6 +89,7 @@ const PrinterForm = ({ value, form }) => {
       <Form.Item name="cmpy_drv_inst_vp" label={t('fields.defaultDLIPrinter')} {...swithLayout}>
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           loading={isValidating}
           style={{ width: '25vw' }}
           // onChange={handleChange}

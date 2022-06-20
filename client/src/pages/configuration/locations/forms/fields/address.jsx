@@ -25,6 +25,7 @@ const Address = ({ form, value }) => {
     <Form.Item name="term_addr" label={t('fields.address')}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         optionFilterProp="children"

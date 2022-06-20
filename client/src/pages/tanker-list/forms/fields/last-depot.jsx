@@ -14,7 +14,7 @@ const LastDepot = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tnkr_last_depot: value.tnkr_last_depot
+        tnkr_last_depot: value.tnkr_last_depot,
       });
     }
   }, [value, setFieldsValue]);
@@ -23,6 +23,7 @@ const LastDepot = ({ form, value }) => {
     <Form.Item name="tnkr_last_depot" label={t('fields.lastDepot')} rules={[{ required: false }]}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         disabled={!!value}
         showSearch

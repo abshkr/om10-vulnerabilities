@@ -251,6 +251,7 @@ const From = ({
           >
             <Select
               dropdownMatchSelectWidth={false}
+              allowClear
               showSearch
               loading={isLoading}
               onChange={onSupplierChange}
@@ -278,6 +279,7 @@ const From = ({
           >
             <Select
               dropdownMatchSelectWidth={false}
+              allowClear
               showSearch
               loading={isLoading}
               onChange={onTankChange}
@@ -306,6 +308,7 @@ const From = ({
           >
             <Select
               dropdownMatchSelectWidth={false}
+              allowClear
               showSearch
               loading={isLoading}
               disabled={IS_DISABLED || !tank}

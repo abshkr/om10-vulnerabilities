@@ -39,6 +39,7 @@ const RearAxleGroups = ({ form, value }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         disabled={false}
         showSearch

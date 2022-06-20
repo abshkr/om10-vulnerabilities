@@ -24,7 +24,7 @@ const NominationSource = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        mv_srctype: value.mv_srctype
+        mv_srctype: value.mv_srctype,
       });
     }
   }, [value, setFieldsValue]);
@@ -37,6 +37,7 @@ const NominationSource = ({ form, value }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         disabled={!!value}
         loading={isValidating}
         showSearch

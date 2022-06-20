@@ -40,6 +40,7 @@ const LockType = ({ form, value, onChange, enableWhenEdit }) => {
     >
       <Select
         loading={isValidating}
+        allowClear
         showSearch
         onChange={onChange}
         disabled={value && !enableWhenEdit}

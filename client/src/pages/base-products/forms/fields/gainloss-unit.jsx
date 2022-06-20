@@ -42,6 +42,7 @@ const GainLossUnit = ({ form, value, tankCount }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         // disabled={value && tankCount > 0}

@@ -39,10 +39,11 @@ const Supplier = ({ form, value, onChange, pageState }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         onChange={onChange}
-        disabled={(pageState==='create')? false : true}
+        disabled={pageState === 'create' ? false : true}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectSupplier') : null}
         filterOption={(value, option) =>

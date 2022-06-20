@@ -24,7 +24,7 @@ const Source = ({ form, value, onChange }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        mtd_src_code: value.mtd_src_code
+        mtd_src_code: value.mtd_src_code,
       });
 
       onChange(value.mtd_src_code);
@@ -39,6 +39,7 @@ const Source = ({ form, value, onChange }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         onChange={onChange}

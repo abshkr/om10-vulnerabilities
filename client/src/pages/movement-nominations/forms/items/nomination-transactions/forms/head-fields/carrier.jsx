@@ -45,6 +45,7 @@ const Carrier = ({ form, value, onChange, carrier, pageState }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         onChange={onCarrierChange}

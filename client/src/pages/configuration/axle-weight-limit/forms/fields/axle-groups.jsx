@@ -40,6 +40,7 @@ const AxleGroups = ({ form, value, counts }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         disabled={!!value}
         showSearch

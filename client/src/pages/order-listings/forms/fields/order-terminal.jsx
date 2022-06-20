@@ -22,21 +22,22 @@ const OrderTerminal = ({ form, value, pageState }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        order_dtrm_code: value.order_dtrm_code
+        order_dtrm_code: value.order_dtrm_code,
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item 
-      name="order_dtrm_code" 
-      label={t('fields.orderDtrmName')} 
+    <Form.Item
+      name="order_dtrm_code"
+      label={t('fields.orderDtrmName')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
-        disabled={(pageState==='create'||pageState==='edit')? false : true}
+        disabled={pageState === 'create' || pageState === 'edit' ? false : true}
         showSearch
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectOrderTerminal') : null}

@@ -22,7 +22,7 @@ const Source = ({ form, value, onChange }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        report_jasper_file: value.report_jasper_file
+        report_jasper_file: value.report_jasper_file,
       });
     }
   }, [value, setFieldsValue]);
@@ -35,6 +35,7 @@ const Source = ({ form, value, onChange }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         disabled={!!value}
         showSearch
@@ -45,7 +46,7 @@ const Source = ({ form, value, onChange }) => {
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
-        {options?.records.map(item => (
+        {options?.records.map((item) => (
           <Select.Option key={item} value={item}>
             {item}
           </Select.Option>

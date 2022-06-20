@@ -24,7 +24,7 @@ const DeviceArea = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        adv_area: value.adv_area
+        adv_area: value.adv_area,
       });
     }
   }, [value, setFieldsValue]);
@@ -37,6 +37,7 @@ const DeviceArea = ({ form, value }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         optionFilterProp="children"

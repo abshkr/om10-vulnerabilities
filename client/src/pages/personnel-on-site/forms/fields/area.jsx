@@ -16,7 +16,7 @@ const Area = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        perl_ara: value.area_name
+        perl_ara: value.area_name,
       });
     }
   }, [value, setFieldsValue]);
@@ -25,6 +25,7 @@ const Area = ({ form, value }) => {
     <Form.Item name="perl_ara" label={t('fields.areaName')}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         optionFilterProp="children"

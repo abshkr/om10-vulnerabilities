@@ -85,12 +85,12 @@ const OnDemandReports = () => {
 
         //If there are CARRIER_CODE or CUST_CODE in filter. Skip first 2 filters
         if (filters) {
-          for (let i = 2; i < filters.length; i ++) {
-            if (filters[i] === "CUST_CODE" || filters[i] === "CUSTOMER_CODE") {
+          for (let i = 2; i < filters.length; i++) {
+            if (filters[i] === 'CUST_CODE' || filters[i] === 'CUSTOMER_CODE') {
               setCustomerFilter(true);
             }
-  
-            if (filters[i] === "CARR_CODE" || filters[i] === "CARRIER_CODE") {
+
+            if (filters[i] === 'CARR_CODE' || filters[i] === 'CARRIER_CODE') {
               setCarrierFilter(true);
             }
           }
@@ -197,6 +197,7 @@ const OnDemandReports = () => {
         >
           <Select
             dropdownMatchSelectWidth={false}
+            allowClear
             loading={isLoading}
             showSearch
             style={{ width: '100%' }}
@@ -221,7 +222,8 @@ const OnDemandReports = () => {
           rules={[{ required: true, message: `${t('validate.select')} ─ ${t('fields.report')}` }]}
         >
           <Select
-            // dropdownMatchSelectWidth={false}
+            dropdownMatchSelectWidth={false}
+            allowClear
             loading={isLoading}
             showSearch
             onChange={onReport}
@@ -241,21 +243,21 @@ const OnDemandReports = () => {
           </Select>
         </Form.Item>
 
-        {(carrierFilter || customerFilter) &&
+        {(carrierFilter || customerFilter) && (
           <Row gutter={[8, 8]}>
-            {carrierFilter &&
+            {carrierFilter && (
               <Col span={12}>
                 <Carrier form={form} />
               </Col>
-            }
+            )}
 
-            {customerFilter &&
+            {customerFilter && (
               <Col span={12}>
                 <Customer form={form} />
               </Col>
-            }
+            )}
           </Row>
-        }
+        )}
 
         <Form.Item
           name="dateRange"

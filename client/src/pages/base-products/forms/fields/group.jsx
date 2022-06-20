@@ -15,7 +15,7 @@ const Group = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        base_prod_group: value.base_prod_group
+        base_prod_group: value.base_prod_group,
       });
     }
   }, [value, setFieldsValue]);
@@ -24,6 +24,7 @@ const Group = ({ form, value }) => {
     <Form.Item name="base_prod_group" label={t('fields.baseProdGroupName')}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         optionFilterProp="children"

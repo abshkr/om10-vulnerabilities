@@ -15,9 +15,9 @@ const MovementType = ({ form, value, onChange, disabled }) => {
 
   const IS_DISABLED = disabled;
 
-  const handleChange = value => {
+  const handleChange = (value) => {
     setFieldsValue({
-      mlitm_reason_code: undefined
+      mlitm_reason_code: undefined,
     });
 
     onChange(value);
@@ -51,6 +51,7 @@ const MovementType = ({ form, value, onChange, disabled }) => {
       >
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           loading={isValidating}
           showSearch
           disabled={IS_DISABLED}
@@ -70,7 +71,7 @@ const MovementType = ({ form, value, onChange, disabled }) => {
       </Form.Item>
 
       <Form.Item name="mlitm_id" noStyle>
-        <Input type="hidden"/>
+        <Input type="hidden" />
       </Form.Item>
     </div>
   );

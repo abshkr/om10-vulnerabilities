@@ -6,7 +6,7 @@ import _ from 'lodash';
 
 import { GATE_PERMISSION } from '../../../../api';
 
-const RuleClass = ({ value, form, onCaseChange}) => {
+const RuleClass = ({ value, form, onCaseChange }) => {
   const { t } = useTranslation();
   const { data: cases, isValidating } = useSWR(GATE_PERMISSION.RULE_CASES);
 
@@ -15,13 +15,13 @@ const RuleClass = ({ value, form, onCaseChange}) => {
   const onChange = (v) => {
     const ruleEtypname = _.find(cases?.records, (item) => {
       return item.case_code === v;
-    })
+    });
     setFieldsValue({
-      rule_casename: ruleEtypname.case_name
-    })
+      rule_casename: ruleEtypname.case_name,
+    });
 
     onCaseChange(v);
-  }
+  };
 
   useEffect(() => {
     if (value) {
@@ -37,6 +37,7 @@ const RuleClass = ({ value, form, onCaseChange}) => {
       <Form.Item name="rule_case" label={t('fields.permissionRuleClass')} rules={[{ required: true }]}>
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           loading={isValidating}
           showSearch
           optionFilterProp="children"

@@ -23,7 +23,7 @@ const Company = ({ form, value, onChange }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        report_cmpycode: value.report_cmpycode
+        report_cmpycode: value.report_cmpycode,
       });
 
       onChange(value.report_cmpycode);
@@ -38,6 +38,7 @@ const Company = ({ form, value, onChange }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         disabled={!!value}
         showSearch
@@ -48,7 +49,7 @@ const Company = ({ form, value, onChange }) => {
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
-        {options?.records.map(item => (
+        {options?.records.map((item) => (
           <Select.Option key={item.cmpy_code} value={item.cmpy_code}>
             {item.cmpy_code + ' - ' + item.cmpy_name}
           </Select.Option>

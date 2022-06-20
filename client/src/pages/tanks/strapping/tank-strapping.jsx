@@ -321,6 +321,7 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
               >
                 <Select
                   dropdownMatchSelectWidth={false}
+                  allowClear
                   loading={isLoading}
                   disabled={true}
                   showSearch
@@ -375,6 +376,7 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
               >
                 <Select
                   dropdownMatchSelectWidth={false}
+                  allowClear
                   loading={isLoading}
                   showSearch
                   onChange={checkTypes}

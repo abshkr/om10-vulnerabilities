@@ -16,10 +16,9 @@ const Supplier = ({ form, value }) => {
   useEffect(() => {
     if (value && value.mv_supplier !== '') {
       setFieldsValue({
-        mv_supplier: value.mv_supplier
+        mv_supplier: value.mv_supplier,
       });
-    }
-    else {
+    } else {
       setFieldsValue({
         mv_supplier: options?.records?.[0].cmpy_code,
       });
@@ -30,6 +29,7 @@ const Supplier = ({ form, value }) => {
     <Form.Item name="mv_supplier" label={t('fields.supplier')}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         optionFilterProp="children"

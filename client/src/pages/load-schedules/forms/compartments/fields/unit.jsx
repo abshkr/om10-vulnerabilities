@@ -39,11 +39,12 @@ export default class Unit extends Component {
 
     return (
       <div style={{ display: 'flex' }}>
-        <Select 
+        <Select
           dropdownMatchSelectWidth={false}
-          value={this.state.value} 
-          style={{ width: '100%' }} 
-          onChange={this.onClick} 
+          allowClear
+          value={this.state.value}
+          style={{ width: '100%' }}
+          onChange={this.onClick}
           bordered={false}
         >
           {values?.map((item) => (

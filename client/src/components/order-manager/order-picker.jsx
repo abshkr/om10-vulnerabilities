@@ -245,6 +245,7 @@ const OrderPicker = ({ params, onClose, modal }) => {
       <div style={{ float: 'left' }}>
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           defaultValue={filterByExpiry ? 'ORDER_EXP_TIME' : 'ORDER_ORD_TIME'}
           onChange={setTimeOption}
           value={timeOption}

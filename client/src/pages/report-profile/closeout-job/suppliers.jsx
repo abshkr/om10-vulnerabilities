@@ -35,6 +35,7 @@ const Supplier = ({ form, param }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         // onChange={onCarrierChange}

@@ -14,7 +14,7 @@ const CurrentDepot = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tnkr_cur_depot: value.tnkr_cur_depot
+        tnkr_cur_depot: value.tnkr_cur_depot,
       });
     }
   }, [value, setFieldsValue]);
@@ -23,6 +23,7 @@ const CurrentDepot = ({ form, value }) => {
     <Form.Item name="tnkr_cur_depot" label={t('fields.currentDepot')} rules={[{ required: false }]}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         disabled={!!value}
         showSearch

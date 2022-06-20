@@ -10,12 +10,12 @@ const CloseOutReportBy = ({ form, value }) => {
   const options = [
     {
       key: t('fields.reportCloseoutByDaterange'), // 'Date Range [Start/End Date]',
-      value: false
+      value: false,
     },
     {
       key: t('fields.reportCloseoutByFoliorange'), // 'Folio Range [Start/End Folio Number]',
-      value: true
-    }
+      value: true,
+    },
   ];
 
   const validate = (rule, input, callback) => {
@@ -29,7 +29,7 @@ const CloseOutReportBy = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        report_closeout_flag2: value.report_closeout_flag2
+        report_closeout_flag2: value.report_closeout_flag2,
       });
     }
   }, [value, setFieldsValue]);
@@ -42,6 +42,7 @@ const CloseOutReportBy = ({ form, value }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         showSearch
         optionFilterProp="children"
         placeholder={t('placeholder.selectCloseOutReportBy')}
@@ -49,7 +50,7 @@ const CloseOutReportBy = ({ form, value }) => {
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
-        {options.map(item => (
+        {options.map((item) => (
           <Select.Option key={item.value} value={item.value}>
             {item.key}
           </Select.Option>

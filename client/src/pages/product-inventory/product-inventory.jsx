@@ -7,7 +7,7 @@ import useSWR from 'swr';
 import jwtDecode from 'jwt-decode';
 
 import { Page, DataTable, Download } from 'components';
-import {TerminalList} from 'components/fields';
+import { TerminalList } from 'components/fields';
 import { STOCK_MANAGEMENT } from 'api';
 import useAuth from 'hooks/use-auth';
 import auth from 'auth';
@@ -36,7 +36,9 @@ const ProductInventory = () => {
   const [terminal, setTerminal] = useState('');
 
   // const { data, revalidate, isValidating } = useSWR(STOCK_MANAGEMENT.PRODUCT_INVENTORY);
-  const { data, revalidate, isValidating } = useSWR(`${STOCK_MANAGEMENT.PRODUCT_INVENTORY}?terminal=${terminal}`);
+  const { data, revalidate, isValidating } = useSWR(
+    `${STOCK_MANAGEMENT.PRODUCT_INVENTORY}?terminal=${terminal}`
+  );
 
   const fields = columns(t, config);
   const payload = transform(data?.records, unit);
@@ -75,12 +77,20 @@ const ProductInventory = () => {
   const modifiers = (
     <>
       {config?.siteUseMultiTerminals && (
-        <TerminalList value={terminal} listOptions={[]}
-        itemCode={'tank_terminal'} itemTitle={'terminal'} itemRequired={false} itemDisabled={false} onChange={setTerminal} />
+        <TerminalList
+          value={terminal}
+          listOptions={[]}
+          itemCode={'tank_terminal'}
+          itemTitle={'terminal'}
+          itemRequired={false}
+          itemDisabled={false}
+          onChange={setTerminal}
+        />
       )}
 
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         key="1"
         style={{ width: 200, marginLeft: 5 }}
         defaultValue={unit}

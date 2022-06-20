@@ -37,6 +37,7 @@ const Supplier = ({ form, value, type, onChange }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         onChange={onChange}
         disabled={!!value || type === '1'}

@@ -22,7 +22,7 @@ const LoadType = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        eqpt_load_type: value.eqpt_load_type
+        eqpt_load_type: value.eqpt_load_type,
       });
     }
   }, [value, setFieldsValue]);
@@ -35,6 +35,7 @@ const LoadType = ({ form, value }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         optionFilterProp="children"

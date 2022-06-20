@@ -271,6 +271,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             >
               <Select
                 dropdownMatchSelectWidth={false}
+                allowClear
                 loading={isLoading}
                 showSearch
                 optionFilterProp="children"
@@ -295,6 +296,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             >
               <Select
                 dropdownMatchSelectWidth={false}
+                allowClear
                 loading={isLoading}
                 showSearch
                 optionFilterProp="children"
@@ -343,6 +345,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
             >
               <Select
                 dropdownMatchSelectWidth={false}
+                allowClear
                 loading={isLoading}
                 showSearch
                 optionFilterProp="children"

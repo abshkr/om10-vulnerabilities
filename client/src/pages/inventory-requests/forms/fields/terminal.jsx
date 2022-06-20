@@ -38,6 +38,7 @@ const Terminal = ({ form, value }) => {
         loading={isValidating}
         showSearch
         dropdownMatchSelectWidth={false}
+        allowClear
         // onChange={onChange}
         // disabled={!!value}
         optionFilterProp="children"

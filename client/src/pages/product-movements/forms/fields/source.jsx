@@ -44,8 +44,7 @@ const Source = ({ form, value, base }) => {
     }
   }, [value, setFieldsValue]);
 
-  return (
-    value ?
+  return value ? (
     <>
       <Col span={6}>
         <Form.Item
@@ -55,6 +54,7 @@ const Source = ({ form, value, base }) => {
         >
           <Select
             dropdownMatchSelectWidth={false}
+            allowClear
             loading={isLoading}
             showSearch
             onChange={setSource}
@@ -83,6 +83,7 @@ const Source = ({ form, value, base }) => {
           {source === '3' ? (
             <Select
               dropdownMatchSelectWidth={false}
+              allowClear
               loading={isLoading}
               showSearch
               disabled={!source}
@@ -93,7 +94,7 @@ const Source = ({ form, value, base }) => {
               }
             >
               {_.filter(tanks?.records, (item) => {
-                return item.tank_base === base
+                return item.tank_base === base;
               }).map((item, index) => (
                 <Select.Option key={index} value={item.tank_code}>
                   {item.tank_code}
@@ -106,7 +107,7 @@ const Source = ({ form, value, base }) => {
         </Form.Item>
       </Col>
     </>
-    :
+  ) : (
     <>
       <Form.Item
         name="pmv_srctype"
@@ -115,6 +116,7 @@ const Source = ({ form, value, base }) => {
       >
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           loading={isLoading}
           showSearch
           onChange={setSource}
@@ -141,6 +143,7 @@ const Source = ({ form, value, base }) => {
         {source === '3' ? (
           <Select
             dropdownMatchSelectWidth={false}
+            allowClear
             loading={isLoading}
             showSearch
             disabled={!source}
@@ -151,7 +154,7 @@ const Source = ({ form, value, base }) => {
             }
           >
             {_.filter(tanks?.records, (item) => {
-              return item.tank_base === base
+              return item.tank_base === base;
             }).map((item, index) => (
               <Select.Option key={index} value={item.tank_code}>
                 {item.tank_code}

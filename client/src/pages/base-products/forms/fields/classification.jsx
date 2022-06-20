@@ -22,14 +22,14 @@ const Classification = ({ form, value, onChange }) => {
     return Promise.resolve();
   };
 
-  const onClassificationChange = value => {
+  const onClassificationChange = (value) => {
     const payload = getClassification(value);
 
     onChange(payload);
   };
 
   const getClassification = useCallback(
-    payload => {
+    (payload) => {
       const filtered = _.find(options?.records, ['bclass_no', String(payload)]);
 
       return filtered;
@@ -42,7 +42,7 @@ const Classification = ({ form, value, onChange }) => {
       const record = String(value.base_cat);
 
       setFieldsValue({
-        base_cat: record
+        base_cat: record,
       });
 
       const payload = getClassification(record);
@@ -59,6 +59,7 @@ const Classification = ({ form, value, onChange }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         onChange={onClassificationChange}

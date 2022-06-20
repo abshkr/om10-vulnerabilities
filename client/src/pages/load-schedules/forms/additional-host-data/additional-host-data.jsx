@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { CloseOutlined, PlusOutlined, QuestionCircleOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Button, Drawer, Tabs, Form, Select, InputNumber, Input, Modal, notification, message, Row, Col } from 'antd';
+import {
+  Button,
+  Drawer,
+  Tabs,
+  Form,
+  Select,
+  InputNumber,
+  Input,
+  Modal,
+  notification,
+  message,
+  Row,
+  Col,
+} from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import useSWR from 'swr';
@@ -239,6 +252,7 @@ const AdditionalHostData = ({ value }) => {
               >
                 <Select
                   dropdownMatchSelectWidth={false}
+                  allowClear
                   loading={isValidating}
                   showSearch
                   onChange={setDorType}
@@ -256,12 +270,10 @@ const AdditionalHostData = ({ value }) => {
                 </Select>
               </Form.Item>
 
-              <Form.Item
-                label={t('fields.additionalHostData')}
-              >
+              <Form.Item label={t('fields.additionalHostData')}>
                 <Row gutter={[2, 2]}>
                   <Col span={3}>
-                    <Input value={dorType} disabled={true}/>
+                    <Input value={dorType} disabled={true} />
                   </Col>
                   <Col span={21}>
                     <Form.Item

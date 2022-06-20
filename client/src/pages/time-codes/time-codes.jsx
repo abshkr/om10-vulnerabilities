@@ -29,7 +29,7 @@ const TimeCodes = () => {
 
   const { data: payload, isValidating } = useSWR(TIME_CODES.READ);
 
-  const [code, setCode] = useState("");
+  const [code, setCode] = useState('');
   const [data, setData] = useState(null);
   const [selected, setSelected] = useState([]);
   const [visible, setVisible] = useState(false);
@@ -116,7 +116,7 @@ const TimeCodes = () => {
 
   useEffect(() => {
     if (payload?.records.length > 0) {
-      if (code === "") {
+      if (code === '') {
         setCode(payload?.records[0].tcd_title);
       }
     }
@@ -240,10 +240,11 @@ const TimeCodes = () => {
 
   const extra = (
     <>
-      <Select 
+      <Select
         dropdownMatchSelectWidth={false}
-        style={{ width: 200 }} 
-        value={code} 
+        allowClear
+        style={{ width: 200 }}
+        value={code}
         onChange={setCode}
       >
         {payload?.records.map((item) => {

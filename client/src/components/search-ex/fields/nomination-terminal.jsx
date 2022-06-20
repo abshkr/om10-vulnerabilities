@@ -12,12 +12,10 @@ const NominationTerminal = ({ value, onChange }) => {
   const { data: options, isValidating } = useSWR(ORDER_LISTINGS.TERMINAL);
 
   return (
-    <Form.Item
-      name="mv_terminal"
-      label={t('fields.terminal')}
-    >
+    <Form.Item name="mv_terminal" label={t('fields.terminal')}>
       <Select
         loading={isValidating}
+        allowClear
         showSearch
         onChange={onChange}
         disabled={!!value}

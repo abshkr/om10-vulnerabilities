@@ -39,6 +39,7 @@ const OrderStatus = ({ form, value, pageState }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         disabled={true}
         showSearch

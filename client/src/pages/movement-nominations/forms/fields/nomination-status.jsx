@@ -26,7 +26,7 @@ const NominationStatus = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        mv_status: value.mv_status
+        mv_status: value.mv_status,
       });
     }
   }, [value, setFieldsValue]);
@@ -39,6 +39,7 @@ const NominationStatus = ({ form, value }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         disabled={true}
         loading={isValidating}
         showSearch

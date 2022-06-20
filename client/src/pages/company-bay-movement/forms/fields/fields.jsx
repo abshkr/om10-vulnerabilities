@@ -50,6 +50,7 @@ const Fields = ({ form, value }) => {
       >
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           loading={isLoading}
           showSearch
           disabled={!!value}
@@ -74,6 +75,7 @@ const Fields = ({ form, value }) => {
       >
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           loading={isLoading}
           showSearch
           disabled={!!value}
@@ -98,6 +100,7 @@ const Fields = ({ form, value }) => {
       >
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           loading={isLoading}
           showSearch
           optionFilterProp="children"

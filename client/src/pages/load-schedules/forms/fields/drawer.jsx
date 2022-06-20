@@ -39,6 +39,7 @@ const Drawer = ({ form, drawer, value, onChange }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         onChange={onChange}

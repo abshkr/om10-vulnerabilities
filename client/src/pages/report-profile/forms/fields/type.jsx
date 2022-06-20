@@ -33,7 +33,7 @@ const Type = ({ form, value, source }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
-    const match = _.find(data?.records, value => {
+    const match = _.find(data?.records, (value) => {
       return value.report_jasper_file === source && value.report_type === input;
     });
 
@@ -51,7 +51,7 @@ const Type = ({ form, value, source }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        report_type: value.report_type
+        report_type: value.report_type,
       });
     }
   }, [value, setFieldsValue]);
@@ -59,7 +59,7 @@ const Type = ({ form, value, source }) => {
   useEffect(() => {
     if (!value) {
       setFieldsValue({
-        report_type: undefined
+        report_type: undefined,
       });
     }
   }, [source, setFieldsValue, value]);
@@ -68,6 +68,7 @@ const Type = ({ form, value, source }) => {
     <Form.Item name="report_type" label={t('fields.type')} rules={[{ required: true, validator: validate }]}>
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         disabled={!!value}
         showSearch
@@ -77,7 +78,7 @@ const Type = ({ form, value, source }) => {
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
-        {options?.records.map(item => (
+        {options?.records.map((item) => (
           <Select.Option key={item.report_type_code} value={item.report_type_code}>
             {item.report_type_name}
           </Select.Option>

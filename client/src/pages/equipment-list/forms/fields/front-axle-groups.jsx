@@ -57,6 +57,7 @@ const FrontAxleGroups = ({ form, value, etype }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         disabled={false}
         showSearch

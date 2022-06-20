@@ -1351,6 +1351,7 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
                   >
                     <Select
                       dropdownMatchSelectWidth={false}
+                      allowClear
                       showSearch
                       // defaultValue={2}
                       disabled={selected?.trsa_approved}
@@ -1716,6 +1717,7 @@ const BaseOwnershipTransactions = ({ baseCode, suppCode, bases, suppliers, value
                   >
                     <Select
                       dropdownMatchSelectWidth={false}
+                      allowClear
                       showSearch
                       disabled={true}
                       // onChange={handleChange}

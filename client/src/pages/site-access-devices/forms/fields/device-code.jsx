@@ -24,7 +24,7 @@ const DeviceCode = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        adv_code: value.adv_code
+        adv_code: value.adv_code,
       });
     }
   }, [value, setFieldsValue]);
@@ -37,6 +37,7 @@ const DeviceCode = ({ form, value }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         disabled={!!value}

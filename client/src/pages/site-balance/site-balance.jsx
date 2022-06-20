@@ -8,7 +8,7 @@ import jwtDecode from 'jwt-decode';
 
 import { useAuth, useConfig } from 'hooks';
 import { Page, DataTable, Download } from 'components';
-import {TerminalList} from 'components/fields';
+import { TerminalList } from 'components/fields';
 import { STOCK_MANAGEMENT } from 'api';
 import auth from 'auth';
 
@@ -52,12 +52,20 @@ const SiteBalance = () => {
   const modifiers = (
     <>
       {config?.siteUseMultiTerminals && (
-        <TerminalList value={terminal} listOptions={[]}
-        itemCode={'tank_terminal'} itemTitle={'terminal'} itemRequired={false} itemDisabled={false} onChange={setTerminal} />
+        <TerminalList
+          value={terminal}
+          listOptions={[]}
+          itemCode={'tank_terminal'}
+          itemTitle={'terminal'}
+          itemRequired={false}
+          itemDisabled={false}
+          onChange={setTerminal}
+        />
       )}
 
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         key="1"
         style={{ width: 200, marginLeft: 5 }}
         defaultValue={unit}

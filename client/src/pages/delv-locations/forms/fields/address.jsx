@@ -43,6 +43,7 @@ const Address = ({ form, value, reload }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         optionFilterProp="children"

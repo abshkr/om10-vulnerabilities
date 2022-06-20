@@ -38,6 +38,7 @@ const BaseProduct = ({ form, value, setBase }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         // loading={isValidating}
         showSearch
         disabled={value}

@@ -37,6 +37,7 @@ const Message = ({ form, value }) => {
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         disabled={value}
         showSearch

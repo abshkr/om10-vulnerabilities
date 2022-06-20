@@ -14,7 +14,7 @@ const Terminal = ({ form, value }) => {
 
   const token = sessionStorage.getItem('token');
   const decoded = jwtDecode(token);
-  const site_code = decoded?.site_code
+  const site_code = decoded?.site_code;
 
   const validate = (rule, input) => {
     if (rule.required) {
@@ -29,10 +29,9 @@ const Terminal = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        tank_terminal: value.tank_terminal
+        tank_terminal: value.tank_terminal,
       });
-    }
-    else {
+    } else {
       setFieldsValue({
         tank_terminal: site_code, // options?.records?.[0].term_code,
       });
@@ -40,13 +39,14 @@ const Terminal = ({ form, value }) => {
   }, [value, site_code, setFieldsValue]);
 
   return (
-    <Form.Item 
-      name="tank_terminal" 
-      label={t('fields.terminal')} 
+    <Form.Item
+      name="tank_terminal"
+      label={t('fields.terminal')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         disabled={false}
         showSearch

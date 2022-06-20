@@ -24,19 +24,20 @@ const CorrectionMethod = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        base_corr_mthd: value.base_corr_mthd
+        base_corr_mthd: value.base_corr_mthd,
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item 
-      name="base_corr_mthd" 
+    <Form.Item
+      name="base_corr_mthd"
       label={t('fields.baseCorrMthd')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select
         dropdownMatchSelectWidth={false}
+        allowClear
         loading={isValidating}
         showSearch
         optionFilterProp="children"
