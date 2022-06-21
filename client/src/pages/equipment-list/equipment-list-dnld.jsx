@@ -27,7 +27,13 @@ import Forms from './forms';
 const EquipmentList = () => {
   const query = useQuery();
   const config = useConfig();
-  const { expiryDateMode, siteUseAxleWeightLimit, siteEqptPaging, siteUseDownloader } = useConfig();
+  const {
+    expiryDateMode,
+    siteUseAxleWeightLimit,
+    siteEnabledCOPS,
+    siteEqptPaging,
+    siteUseDownloader,
+  } = useConfig();
 
   let equipment = query.get('equipment') || '';
 
@@ -88,7 +94,7 @@ const EquipmentList = () => {
 
   const [data, setData] = useState(payload?.records);
   const [fields, setFields] = useState(
-    columns(expiryTypes?.records, t, expiryDateMode, siteUseAxleWeightLimit)
+    columns(expiryTypes?.records, t, expiryDateMode, siteUseAxleWeightLimit, siteEnabledCOPS)
   );
 
   // const [filterValue, setFilterValue] = useState(equipment);
@@ -243,9 +249,9 @@ const EquipmentList = () => {
 
   useEffect(() => {
     if (expiryTypes) {
-      setFields(columns(expiryTypes?.records, t, expiryDateMode, siteUseAxleWeightLimit));
+      setFields(columns(expiryTypes?.records, t, expiryDateMode, siteUseAxleWeightLimit, siteEnabledCOPS));
     }
-  }, [expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit]);
+  }, [expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit, siteEnabledCOPS]);
 
   useEffect(() => {
     if (siteEqptPaging !== undefined) {

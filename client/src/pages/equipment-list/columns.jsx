@@ -1,6 +1,6 @@
 import { EQUIPMENT_TYPES } from 'constants/routes';
 
-const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit) => {
+const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit, siteEnabledCOPS) => {
   const expiryColumns = [];
 
   if (!!expiryColumns) {
@@ -130,6 +130,29 @@ const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit) => {
       suppressSizeToFit: true,
       width: 130,
     },
+
+    {
+      headerName: t('fields.copsGuardMasterUsed'),
+      field: 'eqpt_guard_master_used',
+      sortable: true,
+      filter: 'BooleanFilter',
+      cellRenderer: 'BooleanRenderer',
+      resizable: true,
+      suppressSizeToFit: true,
+      width: 160,
+      hide: !siteEnabledCOPS,
+    },
+    {
+      headerName: t('fields.copsGuardMasterDesc'),
+      field: 'eqpt_guard_master_desc',
+      sortable: true,
+      filter: 'FuzzyFilter',
+      resizable: true,
+      suppressSizeToFit: true,
+      width: 200,
+      hide: true, //!siteEnabledCOPS,
+    },
+
     {
       headerName: t('fields.lastModified'),
       field: 'eqpt_last_modified',

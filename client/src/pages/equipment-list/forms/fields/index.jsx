@@ -20,6 +20,7 @@ import FrontAxleGroups from './front-axle-groups';
 import RearAxleGroups from './rear-axle-groups';
 import SLP from './slp';
 import VIN from './vin';
+import GuardMaster from './guard-master';
 
 export {
   Owner,
@@ -41,5 +42,6 @@ export {
   FrontAxleGroups,
   RearAxleGroups,
   SLP,
-  VIN
+  VIN,
+  GuardMaster,
 };

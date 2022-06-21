@@ -35,6 +35,7 @@ import {
   AxleLimitTypes,
   SLP,
   VIN,
+  GuardMaster,
   // FrontWeightLimit,
   // RearWeightLimit,
   // FrontAxleGroups,
@@ -481,6 +482,8 @@ const FormModal = ({
                 </Col>
               </Row>
             )}
+
+            {config?.siteEnabledCOPS && <GuardMaster form={form} value={value} />}
           </TabPane>
         </Tabs>
       </Form>

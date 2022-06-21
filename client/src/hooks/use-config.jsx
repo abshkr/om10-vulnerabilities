@@ -182,6 +182,7 @@ const useConfig = () => {
     siteRecipeOnPipenode: false,
     siteUseMultiTerminals: false,
     siteFolioTankBaseChange: false,
+    siteEnabledCOPS: false,
     prodmvmnt_to_movement: false,
   });
 
@@ -430,6 +431,7 @@ const useConfig = () => {
         siteRecipeOnPipenode: configurationObject?.SITE_RECIPE_ON_PIPENODE || false,
         siteUseMultiTerminals: configurationObject?.SITE_ALLOW_MULTI_TERMINALS || false,
         siteFolioTankBaseChange: configurationObject?.SITE_FOLIO_TANK_BASE_CHANGE || false,
+        siteEnabledCOPS: configurationObject?.SITE_COPS_ENABLED || false,
         prodmvmnt_to_movement: configurationObject?.PRODUCT_MVMNT_TO_MOVEMENT || false,
       });
 

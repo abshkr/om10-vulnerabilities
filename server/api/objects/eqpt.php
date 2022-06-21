@@ -3,6 +3,7 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once __DIR__ . '/../service/site_service.php';
 include_once __DIR__ . '/expiry_type.php';
 include_once __DIR__ . '/expiry_date.php';
 include_once 'common_class.php';
@@ -16,6 +17,7 @@ class Equipment extends CommonClass
         "ADJ_CMPT_LOCK" => 1,
         "EQP_MUST_TARE_IN" => "Y",
         "EQPT_LOCK" => "Y",
+        "EQPT_GUARD_MASTER_USED" => "Y",
     );
 
     public $NUMBER_FIELDS = array(
@@ -360,6 +362,8 @@ class Equipment extends CommonClass
                 EQPT_AXLE_GROUPS,
                 EQPT_AXLE_WEIGHTS,
                 EQPT_AXLE_BRIEFS,
+                EQPT_GUARD_MASTER_USED,
+                EQPT_GUARD_MASTER_DESC,
                 SLP_ID,
                 VIN_NUMBER,
                 TNKR_COUNT
@@ -977,6 +981,18 @@ class Equipment extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
+        // get flag for COPS
+        $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("SITE_COPS_ENABLED", "N");
+        $cops_flag = ($config_value === 'Y' || $config_value === 'y');
+        $cops_sets = "";
+        if ($cops_flag) { 
+            $cops_sets = "
+                EQPT_GUARD_MASTER_USED = :eqpt_guard_master_used,
+                EQPT_GUARD_MASTER_DESC = :eqpt_guard_master_desc,
+            ";
+        }
+
         $query = "
             UPDATE TRANSP_EQUIP
             SET EQPT_TITLE = :eqpt_title,
@@ -987,6 +1003,7 @@ class Equipment extends CommonClass
                 EQPT_COMMENTS = :eqpt_comments,
                 EQPT_AREA = :eqpt_area,
                 EQPT_LOAD_TYPE = :eqpt_load_type,
+                $cops_sets
                 SLP_ID = :slp_id,
                 VIN_NUMBER = :vin_number,
                 EQPT_LAST_MODIFIED = sysdate
@@ -1001,6 +1018,10 @@ class Equipment extends CommonClass
         oci_bind_by_name($stmt, ':eqpt_area', $this->eqpt_area);
         oci_bind_by_name($stmt, ':eqpt_load_type', $this->eqpt_load_type);
         oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
+        if ($cops_flag) { 
+            oci_bind_by_name($stmt, ':eqpt_guard_master_used', $this->eqpt_guard_master_used);
+            oci_bind_by_name($stmt, ':eqpt_guard_master_desc', $this->eqpt_guard_master_desc);
+        }
         oci_bind_by_name($stmt, ':slp_id', $this->slp_id);
         oci_bind_by_name($stmt, ':vin_number', $this->vin_number);
 
@@ -1238,6 +1259,23 @@ class Equipment extends CommonClass
             $this->eqpt_lock = 'N';
         }
 
+        // get flag for COPS
+        $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("SITE_COPS_ENABLED", "N");
+        $cops_flag = ($config_value === 'Y' || $config_value === 'y');
+        $cops_clns = "";
+        $cops_vals = "";
+        if ($cops_flag) { 
+            $cops_clns = "
+                EQPT_GUARD_MASTER_USED,
+                EQPT_GUARD_MASTER_DESC,
+            ";
+            $cops_vals = "
+                :eqpt_guard_master_used,
+                :eqpt_guard_master_desc,
+            ";
+        }
+
         $query = "
             INSERT INTO TRANSP_EQUIP (
                 EQPT_ID,
@@ -1252,6 +1290,7 @@ class Equipment extends CommonClass
                 EQPT_AREA,
                 EQPT_LOAD_TYPE,
                 EQPT_COMMENTS,
+                $cops_clns
                 EQPT_LAST_MODIFIED,
                 EQPT_LAST_USED)
             VALUES (
@@ -1267,6 +1306,7 @@ class Equipment extends CommonClass
                 :eqpt_area,
                 :eqpt_load_type,
                 :eqpt_comments,
+                $cops_vals
                 SYSDATE,
                 SYSDATE
             )";
@@ -1283,6 +1323,10 @@ class Equipment extends CommonClass
         oci_bind_by_name($stmt, ':eqpt_area', $this->eqpt_area);
         oci_bind_by_name($stmt, ':eqpt_load_type', $this->eqpt_load_type);
         oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
+        if ($cops_flag) { 
+            oci_bind_by_name($stmt, ':eqpt_guard_master_used', $this->eqpt_guard_master_used);
+            oci_bind_by_name($stmt, ':eqpt_guard_master_desc', $this->eqpt_guard_master_desc);
+        }
         // write_log(sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
         //     $this->eqpt_title, $this->eqpt_code, $this->eqpt_owner,
         //     $this->eqpt_lock, $this->eqpt_empty_kg, $this->eqp_must_tare_in,
