@@ -783,6 +783,21 @@ class Tanker extends CommonClass
             $this->tnkr_number = null;
         }
 
+        // get flag for SLP
+        $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("TANKER_SLP_ENABLED", "N");
+        $slp_flag = ($config_value === 'Y' || $config_value === 'y');
+        $slp_clns = "";
+        $slp_vals = "";
+        if ($slp_flag) { 
+            $slp_clns = "
+                SLP_ID,
+            ";
+            $slp_vals = "
+                :slp_id,
+            ";
+        }
+
         $query = "
             INSERT INTO TANKERS (
                 TNKR_CODE,
@@ -805,6 +820,7 @@ class Tanker extends CommonClass
                 STATS,
                 TNKR_MAX_KG,
                 REMARKS,
+                $slp_clns
                 TNKR_NUMBER
             )
             VALUES
@@ -829,6 +845,7 @@ class Tanker extends CommonClass
                 :stats,
                 :tnkr_max_kg,
                 :remarks,
+                $slp_vals
                 :tnkr_number
             )";
         $stmt = oci_parse($this->conn, $query);
@@ -851,6 +868,9 @@ class Tanker extends CommonClass
         oci_bind_by_name($stmt, ':tnkr_owner', $this->tnkr_owner);
         oci_bind_by_name($stmt, ':tnkr_carrier', $this->tnkr_carrier);
         oci_bind_by_name($stmt, ':tnkr_etp', $this->tnkr_etp);
+        if ($slp_flag) { 
+            oci_bind_by_name($stmt, ':slp_id', $this->slp_id);
+        }
         oci_bind_by_name($stmt, ':tnkr_number', $this->tnkr_number);
         oci_bind_by_name($stmt, ':term_code', $term_code);
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
@@ -1225,6 +1245,17 @@ class Tanker extends CommonClass
             $this->tnkr_number = null;
         }
 
+        // get flag for SLP
+        $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("TANKER_SLP_ENABLED", "N");
+        $slp_flag = ($config_value === 'Y' || $config_value === 'y');
+        $slp_sets = "";
+        if ($slp_flag) { 
+            $slp_sets = "
+                SLP_ID = :slp_id,
+            ";
+        }
+
         $query = "
             UPDATE TANKERS
             SET TNKR_LOCK = :tnkr_lock,
@@ -1240,9 +1271,9 @@ class Tanker extends CommonClass
                 TNKR_PIN = :tnkr_pin,
                 TNKR_ARCHIVE = :tnkr_archive,
                 REMARKS = :remarks,
-                TNKR_LAST_MODIFIED = SYSDATE,
+                $slp_sets
                 TNKR_NUMBER = :tnkr_number,
-                SLP_ID = :slp_id
+                TNKR_LAST_MODIFIED = SYSDATE
             WHERE TNKR_CODE = :tnkr_code";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
@@ -1259,7 +1290,9 @@ class Tanker extends CommonClass
         oci_bind_by_name($stmt, ':tnkr_pin', $this->tnkr_pin);
         oci_bind_by_name($stmt, ':tnkr_archive', $this->tnkr_archive);
         oci_bind_by_name($stmt, ':remarks', $this->remarks);
-        oci_bind_by_name($stmt, ':slp_id', $this->slp_id);
+        if ($slp_flag) { 
+            oci_bind_by_name($stmt, ':slp_id', $this->slp_id);
+        }
         oci_bind_by_name($stmt, ':tnkr_number', $this->tnkr_number);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {

@@ -3,6 +3,7 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once __DIR__ . '/../service/site_service.php';
 include_once __DIR__ . '/../objects/expiry_date.php';
 include_once __DIR__ . '/../objects/expiry_type.php';
 include_once 'common_class.php';
@@ -164,6 +165,21 @@ class Personnel extends CommonClass
             $this->per_lock = 'N';
         }
 
+        // get flag for SLP
+        $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("DRIVER_SLP_ENABLED", "N");
+        $slp_flag = ($config_value === 'Y' || $config_value === 'y');
+        $slp_clns = "";
+        $slp_vals = "";
+        if ($slp_flag) { 
+            $slp_clns = "
+                SLP_ID,
+            ";
+            $slp_vals = "
+                :slp_id,
+            ";
+        }
+
         // query to insert record
         //'a1qhH6yu9Tjg.', // encryption of default pw '12345'
         $query = "INSERT INTO PERSONNEL
@@ -181,6 +197,7 @@ class Personnel extends CommonClass
                 PER_LEVEL_NUM,
                 PER_TERMINAL,
                 PER_COMMENTS,
+                $slp_clns
                 PER_PHONE,
                 PER_EMAIL,
                 PER_LAST_MODIFIED)
@@ -198,6 +215,7 @@ class Personnel extends CommonClass
                 :per_level_num,
                 :per_terminal,
                 :per_comments,
+                $slp_vals
                 :per_phone,
                 :per_email,
                 SYSDATE)";
@@ -214,6 +232,9 @@ class Personnel extends CommonClass
         oci_bind_by_name($stmt, ':per_level_num', $this->per_level_num);
         oci_bind_by_name($stmt, ':per_terminal', $this->per_terminal);
         oci_bind_by_name($stmt, ':per_comments', $this->per_comments);
+        if ($slp_flag) { 
+            oci_bind_by_name($stmt, ':slp_id', $this->slp_id);
+        }
         oci_bind_by_name($stmt, ':per_phone', $this->per_phone);
         oci_bind_by_name($stmt, ':per_email', $this->per_email);
 

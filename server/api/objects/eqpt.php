@@ -993,6 +993,28 @@ class Equipment extends CommonClass
             ";
         }
 
+        // get flag for SLP
+        // $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("EQUIP_SLP_ENABLED", "N");
+        $slp_flag = ($config_value === 'Y' || $config_value === 'y');
+        $slp_sets = "";
+        if ($slp_flag) { 
+            $slp_sets = "
+                SLP_ID = :slp_id,
+            ";
+        }
+
+        // get flag for VIN
+        // $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("VIN_NUMBER_ENABLED", "N");
+        $vin_flag = ($config_value === 'Y' || $config_value === 'y');
+        $vin_sets = "";
+        if ($vin_flag) { 
+            $vin_sets = "
+                VIN_NUMBER = :vin_number,
+            ";
+        }
+
         $query = "
             UPDATE TRANSP_EQUIP
             SET EQPT_TITLE = :eqpt_title,
@@ -1004,8 +1026,8 @@ class Equipment extends CommonClass
                 EQPT_AREA = :eqpt_area,
                 EQPT_LOAD_TYPE = :eqpt_load_type,
                 $cops_sets
-                SLP_ID = :slp_id,
-                VIN_NUMBER = :vin_number,
+                $slp_sets
+                $vin_sets
                 EQPT_LAST_MODIFIED = sysdate
             WHERE EQPT_ID = :eqpt_id";
         $stmt = oci_parse($this->conn, $query);
@@ -1022,8 +1044,12 @@ class Equipment extends CommonClass
             oci_bind_by_name($stmt, ':eqpt_guard_master_used', $this->eqpt_guard_master_used);
             oci_bind_by_name($stmt, ':eqpt_guard_master_desc', $this->eqpt_guard_master_desc);
         }
-        oci_bind_by_name($stmt, ':slp_id', $this->slp_id);
-        oci_bind_by_name($stmt, ':vin_number', $this->vin_number);
+        if ($slp_flag) { 
+            oci_bind_by_name($stmt, ':slp_id', $this->slp_id);
+        }
+        if ($vin_flag) { 
+            oci_bind_by_name($stmt, ':vin_number', $this->vin_number);
+        }
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
@@ -1276,6 +1302,36 @@ class Equipment extends CommonClass
             ";
         }
 
+        // get flag for SLP
+        // $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("EQUIP_SLP_ENABLED", "N");
+        $slp_flag = ($config_value === 'Y' || $config_value === 'y');
+        $slp_clns = "";
+        $slp_vals = "";
+        if ($slp_flag) { 
+            $slp_clns = "
+                SLP_ID,
+            ";
+            $slp_vals = "
+                :slp_id,
+            ";
+        }
+
+        // get flag for VIN
+        // $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("VIN_NUMBER_ENABLED", "N");
+        $vin_flag = ($config_value === 'Y' || $config_value === 'y');
+        $vin_clns = "";
+        $vin_vals = "";
+        if ($vin_flag) { 
+            $vin_clns = "
+                VIN_NUMBER,
+            ";
+            $vin_vals = "
+                :vin_number,
+            ";
+        }
+
         $query = "
             INSERT INTO TRANSP_EQUIP (
                 EQPT_ID,
@@ -1291,6 +1347,8 @@ class Equipment extends CommonClass
                 EQPT_LOAD_TYPE,
                 EQPT_COMMENTS,
                 $cops_clns
+                $slp_clns
+                $vin_clns
                 EQPT_LAST_MODIFIED,
                 EQPT_LAST_USED)
             VALUES (
@@ -1307,6 +1365,8 @@ class Equipment extends CommonClass
                 :eqpt_load_type,
                 :eqpt_comments,
                 $cops_vals
+                $slp_vals
+                $vin_vals
                 SYSDATE,
                 SYSDATE
             )";
@@ -1326,6 +1386,12 @@ class Equipment extends CommonClass
         if ($cops_flag) { 
             oci_bind_by_name($stmt, ':eqpt_guard_master_used', $this->eqpt_guard_master_used);
             oci_bind_by_name($stmt, ':eqpt_guard_master_desc', $this->eqpt_guard_master_desc);
+        }
+        if ($slp_flag) { 
+            oci_bind_by_name($stmt, ':slp_id', $this->slp_id);
+        }
+        if ($vin_flag) { 
+            oci_bind_by_name($stmt, ':vin_number', $this->vin_number);
         }
         // write_log(sprintf("%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s",
         //     $this->eqpt_title, $this->eqpt_code, $this->eqpt_owner,
