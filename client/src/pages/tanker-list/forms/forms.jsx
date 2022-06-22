@@ -660,7 +660,7 @@ const FormModal = ({
             </Row>
 
             <Row gutter={[8, 2]}>
-              <Col span={8}>{tanker_slp_enabled && <SLP form={form} value={value} />}</Col>
+              <Col span={8}>{tanker_slp_enabled && <SLP form={form} value={value} config={config} />}</Col>
               <Col span={16}>
                 <Locks form={form} value={value} />
               </Col>

@@ -396,12 +396,12 @@ const FormModal = ({
               <Row gutter={[8, 2]}>
                 {config?.equip_slp_enabled && (
                   <Col span={8}>
-                    <SLP form={form} value={value} />
+                    <SLP form={form} value={value} config={config} />
                   </Col>
                 )}
                 {config?.vin_number_enabled && (
                   <Col span={8}>
-                    <VIN form={form} value={value} />
+                    <VIN form={form} value={value} config={config} />
                   </Col>
                 )}
               </Row>

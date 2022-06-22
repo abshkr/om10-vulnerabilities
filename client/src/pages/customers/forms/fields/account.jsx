@@ -61,7 +61,8 @@ const Account = ({ form, value, config }) => {
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.custAccount')}`);
     }
-    if (input && input.length > config?.maxLengthCustAcct) {
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > config?.maxLengthCustAcct) {
       return Promise.reject(
         `${t('placeholder.maxCharacters')}: ${config?.maxLengthCustAcct} ─ ${t('descriptions.maxCharacters')}`
       );

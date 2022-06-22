@@ -3,7 +3,7 @@ import { Form, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { REGEX } from '../../../../constants';
 
-const SLP = ({ form, value }) => {
+const SLP = ({ form, value, config }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -11,18 +11,21 @@ const SLP = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        vin_number: value.vin_number
+        vin_number: value.vin_number,
       });
     }
   }, [value, setFieldsValue]);
 
   const validate = (rule, input) => {
-    if (input && input.length > 40) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > config?.maxLengthSLP) {
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${config?.maxLengthSLP} ─ ${t('descriptions.maxCharacters')}`
+      );
     }
 
     const regex = new RegExp(REGEX.ALPHANUMERIC);
-    if (!regex.exec(input)) {
+    if (input && input.length > 0 && !regex.exec(input)) {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('descriptions.mustBeAlphaNumeric')}`);
     }
 

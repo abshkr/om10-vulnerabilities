@@ -392,7 +392,7 @@ const FormModal = ({
               </Col>
               {config?.driver_slp_enabled && (
                 <Col span={8}>
-                  <SLP form={form} value={value} />
+                  <SLP form={form} value={value} config={config} />
                 </Col>
               )}
             </Row>

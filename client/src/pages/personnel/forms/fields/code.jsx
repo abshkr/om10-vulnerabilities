@@ -45,7 +45,7 @@ const Code = ({ form, value, config }) => {
     const regex = new RegExp(REGEX.ALPHANUMERIC_DOT);
     const validated = regex.exec(input);
 
-    if (!validated) {
+    if (input && input.length > 0 && !validated) {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextAlphaNumericDot')}`);
     }
 

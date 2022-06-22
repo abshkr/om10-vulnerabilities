@@ -14,7 +14,8 @@ const OrderRefCode = ({ form, value, pageState, config }) => {
       }
     }
 
-    if (input && input.length > config?.maxLengthOrderRefCode) {
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > config?.maxLengthOrderRefCode) {
       return Promise.reject(
         `${t('placeholder.maxCharacters')}: ${config?.maxLengthOrderRefCode} ─ ${t(
           'descriptions.maxCharacters'

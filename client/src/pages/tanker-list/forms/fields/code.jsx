@@ -39,7 +39,7 @@ const Code = ({ form, value, tankers, config }) => {
     const regex = new RegExp(REGEX.DOCUMENT);
     const validated = regex.exec(input);
 
-    if (!validated) {
+    if (input && input.length > 0 && !validated) {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextDocument')}`);
     }
 

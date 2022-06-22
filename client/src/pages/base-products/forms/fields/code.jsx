@@ -38,7 +38,7 @@ const Code = ({ form, value, config }) => {
     const regex = new RegExp(REGEX.ALPHANUMERIC);
     const validated = regex.exec(input);
 
-    if (!validated) {
+    if (input && input.length > 0 && !validated) {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('descriptions.mustBeAlphaNumeric')}`);
     }
 
@@ -50,7 +50,8 @@ const Code = ({ form, value, config }) => {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.baseProdCode')}`);
     }
 
-    if (input && input.length > config?.maxLengthBaseCode) {
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > config?.maxLengthBaseCode) {
       return Promise.reject(
         `${t('placeholder.maxCharacters')}: ${config?.maxLengthBaseCode} ─ ${t('descriptions.maxCharacters')}`
       );
