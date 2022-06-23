@@ -868,15 +868,17 @@ class IDAssignment extends CommonClass
     {
         $journal = new Journal($this->conn, false);
 
-        $module = "ID Assignment";
-        $record = sprintf("No:%s, issuer:%s", $this->kya_key_no, $this->kya_key_issuer);
+        // $module = "ID Assignment";
+        // $record = sprintf("No:%s, issuer:%s", $this->kya_key_no, $this->kya_key_issuer);
+        $module = "ACCESS_KEYS";
+        $record = sprintf("kya_key_no:%s, kya_key_issuer:%s", $this->kya_key_no, $this->kya_key_issuer);
 
         $curr_psn = Utilities::getCurrPsn();
         $this->key_history("MODIFIED", "BEFORE");
 
         $query = "
             SELECT *
-            FROM GUI_ACCESS_KEYS
+            FROM ACCESS_KEYS
             WHERE KYA_KEY_ISSUER = :kya_key_issuer AND KYA_KEY_NO = :kya_key_no";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':kya_key_no', $this->kya_key_no);
@@ -1010,7 +1012,7 @@ class IDAssignment extends CommonClass
 
         $query = "
             SELECT *
-            FROM GUI_ACCESS_KEYS
+            FROM ACCESS_KEYS
             WHERE KYA_KEY_ISSUER = :kya_key_issuer AND KYA_KEY_NO = :kya_key_no";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':kya_key_no', $this->kya_key_no);
@@ -1022,7 +1024,7 @@ class IDAssignment extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
-        $module = "GUI_ACCESS_KEYS";
+        $module = "ACCESS_KEYS";
         $record = sprintf("kya_key_no:%s", $this->kya_key_no);
         if (!$journal->updateChanges($row, $row2, $module, $record)) {
             oci_rollback($this->conn);
@@ -1219,7 +1221,7 @@ class IDAssignment extends CommonClass
         // use kya_txt as a key to find a tag record
         $query = "
             SELECT *
-            FROM GUI_ACCESS_KEYS
+            FROM ACCESS_KEYS
             WHERE KYA_TXT = :kya_txt and ROWNUM=1
         ";
         $stmt = oci_parse($this->conn, $query);
@@ -1285,7 +1287,7 @@ class IDAssignment extends CommonClass
 
         $query = "
             SELECT *
-            FROM GUI_ACCESS_KEYS
+            FROM ACCESS_KEYS
             WHERE KYA_KEY_ISSUER = :kya_key_issuer AND KYA_KEY_NO = :kya_key_no";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':kya_key_no', $this->kya_key_no);
@@ -1297,7 +1299,7 @@ class IDAssignment extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
-        $module = "GUI_ACCESS_KEYS";
+        $module = "ACCESS_KEYS";
         $record = sprintf("kya_key_no:%s", $this->kya_key_no);
         if (!$journal->updateChanges($row, $row2, $module, $record)) {
             oci_rollback($this->conn);
