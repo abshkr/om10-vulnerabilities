@@ -409,10 +409,10 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
                 <div>
                   <Row gutter={[8, 3]}>
                     <Col span={12}>
-                      <DrawerField form={form} value={value} />
+                      <DrawerField form={form} value={value} config={config} />
                     </Col>
                     <Col span={12}>
-                      <Supplier form={form} value={value} />
+                      <Supplier form={form} value={value} config={config} />
                     </Col>
                   </Row>
                 </div>

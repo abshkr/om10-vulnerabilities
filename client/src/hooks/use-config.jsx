@@ -184,6 +184,7 @@ const useConfig = () => {
     siteUseMultiTerminals: false,
     siteFolioTankBaseChange: false,
     siteEnabledCOPS: false,
+    siteAllowAnySuppDrawTag: false,
     prodmvmnt_to_movement: false,
   });
 
@@ -434,6 +435,7 @@ const useConfig = () => {
         siteUseMultiTerminals: configurationObject?.SITE_ALLOW_MULTI_TERMINALS || false,
         siteFolioTankBaseChange: configurationObject?.SITE_FOLIO_TANK_BASE_CHANGE || false,
         siteEnabledCOPS: configurationObject?.SITE_COPS_ENABLED || false,
+        siteAllowAnySuppDrawTag: configurationObject?.SITE_ALLOW_ANY_SUPPDRAW_TAG || false,
         prodmvmnt_to_movement: configurationObject?.PRODUCT_MVMNT_TO_MOVEMENT || false,
       });
 

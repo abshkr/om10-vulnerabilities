@@ -6,7 +6,7 @@ import { Form, Select } from 'antd';
 
 import { ID_ASSIGNMENT } from '../../../../api';
 
-const Drawer = ({ form, value }) => {
+const Drawer = ({ form, value, config }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -42,6 +42,11 @@ const Drawer = ({ form, value }) => {
           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
+        {config?.siteAllowAnySuppDrawTag && (
+          <Select.Option key={options?.records?.length + 1} value={'ANY'}>
+            {'ANY - ALL'}
+          </Select.Option>
+        )}
         {options?.records.map((item, index) => (
           <Select.Option key={index} value={item.cmpy_code}>
             {item.cmpy_desc}
