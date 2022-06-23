@@ -185,6 +185,7 @@ const useConfig = () => {
     siteFolioTankBaseChange: false,
     siteEnabledCOPS: false,
     siteAllowAnySuppDrawTag: false,
+    siteUniqueTripOrdNum: false,
     prodmvmnt_to_movement: false,
   });
 
@@ -436,6 +437,7 @@ const useConfig = () => {
         siteFolioTankBaseChange: configurationObject?.SITE_FOLIO_TANK_BASE_CHANGE || false,
         siteEnabledCOPS: configurationObject?.SITE_COPS_ENABLED || false,
         siteAllowAnySuppDrawTag: configurationObject?.SITE_ALLOW_ANY_SUPPDRAW_TAG || false,
+        siteUniqueTripOrdNum: configurationObject?.SITE_UNIQUE_TRIP_OO_NUM || false,
         prodmvmnt_to_movement: configurationObject?.PRODUCT_MVMNT_TO_MOVEMENT || false,
       });
 

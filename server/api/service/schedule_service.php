@@ -35,6 +35,24 @@ class ScheduleService
         return ($row['CN'] > 0);
     }
 
+    public function is_trip_used_by_any_supplier($trip)
+    {
+        $query = "
+            SELECT COUNT(*) CN
+            FROM SCHEDULE
+            WHERE SHLS_TRIP_NO = :trip";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':trip', $trip);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        return ($row['CN'] > 0);
+    }
+
     public function shls_drawer($trip, $supplier)
     {
         $query = "

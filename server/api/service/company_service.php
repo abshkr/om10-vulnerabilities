@@ -3,6 +3,7 @@
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/order_service.php';
 include_once __DIR__ . '/schedule_service.php';
+include_once __DIR__ . '/site_service.php';
 
 class CompanyService
 {
@@ -19,6 +20,18 @@ class CompanyService
         }
     }
 
+    public function is_trip_oo_used($num)
+    {
+        $trip_service = new ScheduleService($this->conn, $auto_commit = false);
+        $trip_used = $trip_service->is_trip_used_by_any_supplier($num);
+
+        $order_service = new OrderService($this->conn, $order_no = 0, $auto_commit = false);
+        $order_used = $order_service->is_cust_order_used($num);
+
+        $used = $trip_used || $order_used;
+        return $used;
+    }
+
     public function next_cust_ordno()
     {
         $order_range = $this->get_order_range();
@@ -26,9 +39,18 @@ class CompanyService
             return 0;
         }
 
+        // get the site setting for unique triporder number
+        $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("SITE_UNIQUE_TRIP_OO_NUM", "N");
+        $unique_flag = ($config_value === 'Y' || $config_value === 'y');
+
         $order_start = $order_range['CMPY_ORD_STRT'];
         $order_end = $order_range['CMPY_ORD_END'];
         $last_order = $order_range['CMPY_ORD_LAST'];
+        if ($unique_flag && $order_end < 999999999) {
+            // may need a big end number
+            $order_end = 999999999;
+        }
 
         if ($order_end <= $order_start) {
             write_log(sprintf("Invalid open order range. start:%d, end:%d, current:%d", $order_start, $order_end, $last_order),
@@ -69,9 +91,16 @@ class CompanyService
                 return 0;
             }
 
-            $order_service = new OrderService($this->conn, $order_no = 0, $auto_commit = false);
-            if (!$order_service->is_cust_order_used($new_order)) {
-                return $new_order;
+            if ($unique_flag) {
+                $used = $this->is_trip_oo_used($new_order);
+                if (!$used) {
+                    return $new_order;
+                }
+            } else {
+                $order_service = new OrderService($this->conn, $order_no = 0, $auto_commit = false);
+                if (!$order_service->is_cust_order_used($new_order)) {
+                    return $new_order;
+                }
             }
 
             $new_order += 1;
@@ -123,9 +152,18 @@ class CompanyService
             return 0;
         }
 
+        // get the site setting for unique triporder number
+        $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("SITE_UNIQUE_TRIP_OO_NUM", "N");
+        $unique_flag = ($config_value === 'Y' || $config_value === 'y');
+
         $order_start = $order_range['CMPY_TRIP_STRT'];
         $order_end = $order_range['CMPY_TRIP_END'];
         $last_order = $order_range['CMPY_TRIP_LAST'];
+        if ($unique_flag && $order_end < 999999999) {
+            // may need a big end number
+            $order_end = 999999999;
+        }
 
         if ($order_end <= $order_start) {
             write_log(sprintf("Invalid trip range. start:%d, end:%d, current:%d", $order_start, $order_end, $last_order),
@@ -166,9 +204,16 @@ class CompanyService
                 return 0;
             }
 
-            $order_service = new ScheduleService($this->conn, $auto_commit = false);
-            if (!$order_service->is_trip_used($new_order, $this->cmpy_code)) {
-                return $new_order;
+            if ($unique_flag) {
+                $used = $this->is_trip_oo_used($new_order);
+                if (!$used) {
+                    return $new_order;
+                }
+            } else {
+                $order_service = new ScheduleService($this->conn, $auto_commit = false);
+                if (!$order_service->is_trip_used($new_order, $this->cmpy_code)) {
+                    return $new_order;
+                }
             }
 
             $new_order += 1;
