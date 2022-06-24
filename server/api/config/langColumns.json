@@ -542,6 +542,16 @@
       "AQ_STATUS": "Aq Status",
       "AQ_DATE": "Aq Date"
     },
+    "ATG_FIELDS": {
+      "ATG_FIELD_CODE": "Field Code",
+      "ATG_FIELD_NAME": "Field Name",
+      "ATG_FIELD_LABEL": "Field Label",
+      "ATG_FIELD_TYPE": "Field Data Type",
+      "ATG_FIELD_ACTIVE": "Tank ATG Editable",
+      "ATG_FIELD_CREATED": "Created Time",
+      "ATG_FIELD_UPDATED": "Modified At",
+      "ATG_FIELD_USER": "Modified By"
+    },
     "AUDIT_CATEGORY": {
       "AC_CATEGORY_ID": "Ac Category Id",
       "AC_CATEGORY_DESC": "Ac Category Desc"
@@ -4381,6 +4391,8 @@
       "TANK_AIR_KG": "Weight In Air",
       "TANK_VCF": "VCF",
       "TANK_DENS_MODE": "Enable Theoretical Density",
+      "TANK_SAFE_CAPACITY": "Tank Safe Capacity",
+      "TANK_FLOW_RATE": "Tank Flow Rate",
       "TANK_SG": "Tank Specific Gravity"
     },
     "TANKSWITCH": {
@@ -4391,6 +4403,15 @@
       "TSWMONTK_TANKDEPO": "Tswmontk Tankdepo",
       "TSWSWTO_TANKCODE": "Tswswto Tankcode",
       "TSWSWTO_TANKDEPO": "Tswswto Tankdepo"
+    },
+    "TANK_ATG_FIELDS": {
+      "ATG_FIELD_TANK": "Tank",
+      "ATG_FIELD_TERMINAL": "Terminal",
+      "ATG_FIELD_CODE": "Field Code",
+      "ATG_FIELD_AUTO": "ATG Auto Mode",
+      "ATG_FIELD_CREATED": "Created Time",
+      "ATG_FIELD_UPDATED": "Modified At",
+      "ATG_FIELD_USER": "Modified By"
     },
     "TANK_BATCHES": {
       "TANK_BATCH_CODE": "Tank Batch Number",
@@ -5509,6 +5530,16 @@
       "AQ_LOADED_QTY": "Aq Loaded Qty",
       "AQ_STATUS": "Aq Status",
       "AQ_DATE": "Aq Date"
+    },
+    "ATG_FIELDS": {
+      "ATG_FIELD_CODE": "字段代码",
+      "ATG_FIELD_NAME": "字段名称",
+      "ATG_FIELD_LABEL": "字段标签",
+      "ATG_FIELD_TYPE": "字段数据类型",
+      "ATG_FIELD_ACTIVE": "油罐ATG可管理",
+      "ATG_FIELD_CREATED": "创建时间",
+      "ATG_FIELD_UPDATED": "修改时间",
+      "ATG_FIELD_USER": "修改者"
     },
     "AUDIT_CATEGORY": {
       "AC_CATEGORY_ID": "审计分类编号",
@@ -9360,6 +9391,15 @@
       "TSWSWTO_TANKCODE": "切换油罐",
       "TSWSWTO_TANKDEPO": "切换油库"
     },
+    "TANK_ATG_FIELDS": {
+      "ATG_FIELD_TANK": "油罐",
+      "ATG_FIELD_TERMINAL": "油库",
+      "ATG_FIELD_CODE": "字段代码",
+      "ATG_FIELD_AUTO": "ATG自动模式",
+      "ATG_FIELD_CREATED": "创建时间",
+      "ATG_FIELD_UPDATED": "修改时间",
+      "ATG_FIELD_USER": "修改者"
+    },
     "TANK_BATCHES": {
       "TANK_BATCH_CODE": "油罐批次编号",
       "TANK_BATCH_TIME": "油罐批次时间",
@@ -9377,6 +9417,8 @@
       "TANK_VISCOSITY": "油罐粘度",
       "TANK_ROOF_WEIGHT": "内部浮板重量",
       "TANK_DENS_MODE": "启用理论密度",
+      "TANK_SAFE_CAPACITY": "油罐安全容量",
+      "TANK_FLOW_RATE": "油罐流量",
       "TANK_SG": "油罐比重"
     },
     "TANK_HISTORY": {

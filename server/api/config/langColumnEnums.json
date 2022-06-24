@@ -544,6 +544,16 @@
     "AQ_STATUS": "NA",
     "AQ_DATE": "NA"
   },
+  "ATG_FIELDS": {
+    "ATG_FIELD_CODE": "NA",
+    "ATG_FIELD_NAME": "NA",
+    "ATG_FIELD_LABEL": "NA",
+    "ATG_FIELD_TYPE": "NA",
+    "ATG_FIELD_ACTIVE": "NA",
+    "ATG_FIELD_CREATED": "NA",
+    "ATG_FIELD_UPDATED": "NA",
+    "ATG_FIELD_USER": "NA"
+  },
   "AUDIT_CATEGORY": {
     "AC_CATEGORY_ID": "NA",
     "AC_CATEGORY_DESC": "NA"
@@ -4406,6 +4416,8 @@
     "TANK_AIR_KG": "NA",
     "TANK_VCF": "NA",
     "TANK_DENS_MODE": "NA",
+    "TANK_SAFE_CAPACITY": "NA",
+    "TANK_FLOW_RATE": "NA",
     "TANK_SG": "NA"
   },
   "TANKSWITCH": {
@@ -4416,6 +4428,15 @@
     "TSWMONTK_TANKDEPO": "NA",
     "TSWSWTO_TANKCODE": "NA",
     "TSWSWTO_TANKDEPO": "NA"
+  },
+  "TANK_ATG_FIELDS": {
+    "ATG_FIELD_TANK": "NA",
+    "ATG_FIELD_TERMINAL": "NA",
+    "ATG_FIELD_CODE": "NA",
+    "ATG_FIELD_AUTO": "NA",
+    "ATG_FIELD_CREATED": "NA",
+    "ATG_FIELD_UPDATED": "NA",
+    "ATG_FIELD_USER": "NA"
   },
   "TANK_BATCHES": {
     "TANK_BATCH_CODE": "NA",

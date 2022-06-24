@@ -24,6 +24,7 @@ import TankStrapping from '../prod-strapping';
 import TankAdaptiveFlowControl from '../afc';
 import TankBatches from '../batches';
 import TankOwners from '../owners';
+import TankAtgFields from '../tank-atg-fields';
 
 const TabPane = Tabs.TabPane;
 
@@ -932,7 +933,8 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
               tab === '5' ||
               tab === '6' ||
               tab === '7' ||
-              tab === '8'
+              tab === '8' ||
+              tab === '9'
             }
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
@@ -1053,6 +1055,19 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
           {config?.siteUseProdOwnership && config?.siteProdOwnershipLevel === 'TANK' && (
             <TabPane key="8" tab={t('tabColumns.tankOwners')}>
               <TankOwners
+                terminal={value?.tank_terminal}
+                code={value?.tank_code}
+                tanks={tanks}
+                access={access}
+                value={value}
+                config={config}
+              />
+            </TabPane>
+          )}
+
+          {config?.siteAtgFieldsEditable && (
+            <TabPane key="9" tab={t('tabColumns.tankAtgFields')}>
+              <TankAtgFields
                 terminal={value?.tank_terminal}
                 code={value?.tank_code}
                 tanks={tanks}

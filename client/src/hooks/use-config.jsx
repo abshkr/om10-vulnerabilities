@@ -186,6 +186,7 @@ const useConfig = () => {
     siteEnabledCOPS: false,
     siteAllowAnySuppDrawTag: false,
     siteUniqueTripOrdNum: false,
+    siteAtgFieldsEditable: false,
     prodmvmnt_to_movement: false,
   });
 
@@ -438,6 +439,7 @@ const useConfig = () => {
         siteEnabledCOPS: configurationObject?.SITE_COPS_ENABLED || false,
         siteAllowAnySuppDrawTag: configurationObject?.SITE_ALLOW_ANY_SUPPDRAW_TAG || false,
         siteUniqueTripOrdNum: configurationObject?.SITE_UNIQUE_TRIP_OO_NUM || false,
+        siteAtgFieldsEditable: configurationObject?.SITE_ATG_FIELDS_EDITABLE || false,
         prodmvmnt_to_movement: configurationObject?.PRODUCT_MVMNT_TO_MOVEMENT || false,
       });
 

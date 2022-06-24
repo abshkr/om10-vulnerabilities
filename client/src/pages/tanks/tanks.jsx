@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { SyncOutlined, SwapOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import {
+  SyncOutlined,
+  SwapOutlined,
+  QuestionCircleOutlined,
+  EyeOutlined,
+  CloseOutlined,
+} from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { Button, Tabs, Modal, Card } from 'antd';
+import { Button, Tabs, Modal, Card, Drawer } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
+import jwtDecode from 'jwt-decode';
 
 import { useLocation } from 'react-router-dom';
 
@@ -18,6 +25,8 @@ import TankStrapping from './prod-strapping';
 import TankAdaptiveFlowControl from './afc';
 import TankBatches from './batches';
 import TankOwners from './owners';
+import AtgFields from './atg-fields';
+import TankAtgFields from './tank-atg-fields';
 import Overview from './overview';
 import Gauging from './gauging';
 import Details from './details';
@@ -38,11 +47,16 @@ const Tanks = () => {
   const access = useAuth('M_TANKSTATUS');
   const config = useConfig();
 
+  const token = sessionStorage.getItem('token');
+  const decoded = jwtDecode(token);
+  const user_code = decoded?.per_code;
+
   const [selected, setSelected] = useState(null);
   const [payload, setPayload] = useState([]);
   const [visible, setVisible] = useState(false);
   const [listSelected, setlistSelected] = useState(null);
   const [currTank, setCurrTank] = useState(null);
+  const [atgFieldOpen, setAtgFieldOpen] = useState(false);
 
   const [mode, setMode] = useState('1');
 
@@ -95,6 +109,12 @@ const Tanks = () => {
 
   const modifiers = (
     <>
+      {config?.siteAtgFieldsEditable && user_code === '9999' && (
+        <Button type="primary" icon={<EyeOutlined />} disabled={false} onClick={() => setAtgFieldOpen(true)}>
+          {t('tabColumns.atgFields')}
+        </Button>
+      )}
+
       <Button type="primary" onClick={onViewChange} loading={isLoading} icon={<SwapOutlined />}>
         {simple ? t('operations.list') : t('operations.simple')}
       </Button>
@@ -249,6 +269,19 @@ const Tanks = () => {
                 />
               </TabPane>
             )}
+
+            {config?.siteAtgFieldsEditable && (
+              <TabPane key="11" tab={t('tabColumns.tankAtgFields')}>
+                <TankAtgFields
+                  terminal={selected?.tank_terminal}
+                  code={selected?.tank_code}
+                  tanks={read?.records}
+                  access={access}
+                  value={selected}
+                  config={config}
+                />
+              </TabPane>
+            )}
           </Tabs>
         </ListView>
       ) : (
@@ -262,6 +295,36 @@ const Tanks = () => {
           config={config}
           isLoading={isLoading}
         />
+      )}
+      {atgFieldOpen && (
+        <Drawer
+          bodyStyle={{ paddingTop: 5 }}
+          onClose={() => setAtgFieldOpen(false)}
+          maskClosable={false}
+          destroyOnClose={true}
+          mask={false}
+          placement="right"
+          width={'60vw'}
+          visible={atgFieldOpen}
+          footer={
+            <>
+              <Button
+                htmlType="button"
+                icon={<CloseOutlined />}
+                style={{ float: 'right' }}
+                onClick={() => setAtgFieldOpen(false)}
+              >
+                {t('operations.cancel')}
+              </Button>
+            </>
+          }
+        >
+          <Tabs defaultActiveKey="1">
+            <TabPane tab={t('tabColumns.atgFields')} key="1">
+              <AtgFields access={access} config={config} />
+            </TabPane>
+          </Tabs>
+        </Drawer>
       )}
     </Page>
   );

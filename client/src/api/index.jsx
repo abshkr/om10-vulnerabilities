@@ -72,6 +72,8 @@ import * as TANK_OWNERS from './tank-owners';
 import * as BASE_OWNERS from './base-owners';
 import * as BASE_OWNER_TRANSACTIONS from './base-owner-transactions';
 import * as TERMINAL_GROUPS from './terminal-groups';
+import * as ATG_FIELDS from './atg-fields';
+import * as TANK_ATG_FIELDS from './tank-atg-fields';
 
 export {
   AUTH,
@@ -146,6 +148,8 @@ export {
   BASE_OWNERS,
   BASE_OWNER_TRANSACTIONS,
   TERMINAL_GROUPS,
+  ATG_FIELDS,
+  TANK_ATG_FIELDS,
 };
 
 export default api;
