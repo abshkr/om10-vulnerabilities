@@ -106,11 +106,16 @@ class OndemandReport extends CommonClass
         if (!isset($this->customer)) {
             $this->customer = "";
         }
+
+        if (!isset($this->terminal)) {
+            $this->terminal = "";
+        }
         
         $query_string = "output=" . $this->output . 
             "&company=" . rawurlencode(strip_tags($this->company)) .
             "&customer=" . rawurlencode(strip_tags($this->customer)) .
             "&carrier=" . rawurlencode(strip_tags($this->carrier)) .
+            "&terminal=" . rawurlencode(strip_tags($this->terminal)) .
             "&report=" . rawurlencode(strip_tags($this->report));
         if (isset($this->start_date)) {
             $query_string = $query_string . "&startdate=" . rawurlencode(strip_tags($this->start_date));
@@ -251,6 +256,24 @@ class OndemandReport extends CommonClass
     {
         $serv = new CompanyService($this->conn);
         return $serv->customers($plus_any = true);
+    }
+
+    // get all drawers
+    public function terminals()
+    {
+        $query = "
+            SELECT TERM_CODE, TERM_NAME
+                TERM_NAME,
+                TERM_CODE||' - '||TERM_NAME AS TERM_DESC
+            FROM
+                TERMINAL
+            ORDER BY TERM_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            return null;
+        }
     }
 
     // get all reports of supplier

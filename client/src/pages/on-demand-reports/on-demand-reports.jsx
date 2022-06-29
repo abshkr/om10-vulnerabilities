@@ -13,7 +13,7 @@ import api, { ON_DEMAND_REPORTS } from 'api';
 import { SETTINGS } from '../../constants';
 import columns from './columns';
 import auth from '../../auth';
-import { Carrier, Customer } from './fields';
+import { Carrier, Customer, Terminal } from './fields';
 
 const OnDemandReports = () => {
   const { t } = useTranslation();
@@ -27,6 +27,7 @@ const OnDemandReports = () => {
   const [usefolioRange, setUseFolio] = useState(false);
   const [carrierFilter, setCarrierFilter] = useState(false);
   const [customerFilter, setCustomerFilter] = useState(false);
+  const [terminalFilter, setTerminalFilter] = useState(false);
   const [closeouts, setCloseouts] = useState([]);
   const [fromDatePicker, setFromDatePicker] = useState(true);
 
@@ -73,6 +74,7 @@ const OnDemandReports = () => {
     setUseFolio(find?.folio_number_parameters);
     setCustomerFilter(false);
     setCarrierFilter(false);
+    setTerminalFilter(false);
 
     api
       .get(ON_DEMAND_REPORTS.FILTERS, {
@@ -82,16 +84,21 @@ const OnDemandReports = () => {
       })
       .then((res) => {
         const filters = res.data.records;
-
+        
         //If there are CARRIER_CODE or CUST_CODE in filter. Skip first 2 filters
         if (filters) {
-          for (let i = 2; i < filters.length; i++) {
+          for (let i = 0; i < filters.length; i++) {
             if (filters[i] === 'CUST_CODE' || filters[i] === 'CUSTOMER_CODE') {
               setCustomerFilter(true);
             }
 
             if (filters[i] === 'CARR_CODE' || filters[i] === 'CARRIER_CODE') {
               setCarrierFilter(true);
+            }
+
+            if (filters[i] === 'TERMINAL') {
+              console.log('setTerminalFilter true')
+              setTerminalFilter(true);
             }
           }
         }
@@ -243,17 +250,23 @@ const OnDemandReports = () => {
           </Select>
         </Form.Item>
 
-        {(carrierFilter || customerFilter) && (
+        {(carrierFilter || customerFilter || terminalFilter) && (
           <Row gutter={[8, 8]}>
             {carrierFilter && (
-              <Col span={12}>
+              <Col span={8}>
                 <Carrier form={form} />
               </Col>
             )}
 
             {customerFilter && (
-              <Col span={12}>
+              <Col span={8}>
                 <Customer form={form} />
+              </Col>
+            )}
+
+            {terminalFilter && (
+              <Col span={8}>
+                <Terminal form={form} />
               </Col>
             )}
           </Row>
