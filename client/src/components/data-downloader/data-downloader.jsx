@@ -212,7 +212,7 @@ const DataDownloader = ({
       >
         {[100, 150, 200, 250, 500, 750, 1000, 1500, 2000].map((item, index) => (
           <Select.Option key={index} value={item}>
-            {item + t('units.perPage')}
+            {item + t('units.perBatch')}
           </Select.Option>
         ))}
       </Select>

@@ -2864,6 +2864,7 @@
     "massKG": "KG",
     "mm": "mm",
     "null": "",
+    "perBatch": " / batch",
     "perPage": " / page",
     "obsLitre": "Obs Litre",
     "pound": "Pound",
