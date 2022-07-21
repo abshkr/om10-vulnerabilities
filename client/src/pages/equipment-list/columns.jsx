@@ -143,6 +143,16 @@ const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit, siteEna
       hide: !siteEnabledCOPS,
     },
     {
+      headerName: t('fields.copsGuardMasterID'),
+      field: 'eqpt_guard_master_id',
+      sortable: true,
+      filter: 'FuzzyFilter',
+      resizable: true,
+      suppressSizeToFit: true,
+      width: 100,
+      hide: !siteEnabledCOPS,
+    },
+    {
       headerName: t('fields.copsGuardMasterDesc'),
       field: 'eqpt_guard_master_desc',
       sortable: true,

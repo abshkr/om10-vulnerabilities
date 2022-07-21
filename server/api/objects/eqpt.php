@@ -364,6 +364,7 @@ class Equipment extends CommonClass
                 EQPT_AXLE_BRIEFS,
                 EQPT_GUARD_MASTER_USED,
                 EQPT_GUARD_MASTER_DESC,
+                EQPT_GUARD_MASTER_ID,
                 SLP_ID,
                 VIN_NUMBER,
                 TNKR_COUNT
@@ -990,6 +991,7 @@ class Equipment extends CommonClass
             $cops_sets = "
                 EQPT_GUARD_MASTER_USED = :eqpt_guard_master_used,
                 EQPT_GUARD_MASTER_DESC = :eqpt_guard_master_desc,
+                EQPT_GUARD_MASTER_ID = :eqpt_guard_master_id,
             ";
         }
 
@@ -1043,6 +1045,7 @@ class Equipment extends CommonClass
         if ($cops_flag) { 
             oci_bind_by_name($stmt, ':eqpt_guard_master_used', $this->eqpt_guard_master_used);
             oci_bind_by_name($stmt, ':eqpt_guard_master_desc', $this->eqpt_guard_master_desc);
+            oci_bind_by_name($stmt, ':eqpt_guard_master_id', $this->eqpt_guard_master_id);
         }
         if ($slp_flag) { 
             oci_bind_by_name($stmt, ':slp_id', $this->slp_id);
@@ -1295,10 +1298,12 @@ class Equipment extends CommonClass
             $cops_clns = "
                 EQPT_GUARD_MASTER_USED,
                 EQPT_GUARD_MASTER_DESC,
+                EQPT_GUARD_MASTER_ID,
             ";
             $cops_vals = "
                 :eqpt_guard_master_used,
                 :eqpt_guard_master_desc,
+                :eqpt_guard_master_id,
             ";
         }
 
@@ -1386,6 +1391,7 @@ class Equipment extends CommonClass
         if ($cops_flag) { 
             oci_bind_by_name($stmt, ':eqpt_guard_master_used', $this->eqpt_guard_master_used);
             oci_bind_by_name($stmt, ':eqpt_guard_master_desc', $this->eqpt_guard_master_desc);
+            oci_bind_by_name($stmt, ':eqpt_guard_master_id', $this->eqpt_guard_master_id);
         }
         if ($slp_flag) { 
             oci_bind_by_name($stmt, ':slp_id', $this->slp_id);
