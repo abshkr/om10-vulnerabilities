@@ -57,7 +57,7 @@ const Period = ({ form, value, lockType, enableWhenEdit }) => {
       >
         {options?.records.map((item, index) => (
           <Select.Option key={index} value={item.alloc_period_id}>
-            {item.alloc_period_name || ' '}
+            {String(item.alloc_period_id) === '0' ? t('fields.noPeriod') : item.alloc_period_name}
           </Select.Option>
         ))}
       </Select>

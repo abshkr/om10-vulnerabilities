@@ -4784,8 +4784,9 @@
       "EQPT_AREA": "Equipment Area",
       "EQPT_LOAD_TYPE": "Equipment Load Type",
       "EQPT_COMMENTS": "Equipment Comments",
-      "EQPT_GUARD_MASTER_USED": "Guard Master Used",
-      "EQPT_GUARD_MASTER_DESC": "Guard Master Details",
+      "EQPT_GUARD_MASTER_USED": "Guardmaster Used",
+      "EQPT_GUARD_MASTER_DESC": "Guardmaster Details",
+      "EQPT_GUARD_MASTER_ID": "Guardmaster Equipment ID",
       "FRONT_WEIGH_LIMIT": "Front Axle Weight Limit",
       "REAR_WEIGH_LIMIT": "Rear Axle Weight Limit"
     },
@@ -9773,8 +9774,9 @@
       "EQPT_AREA": "区域",
       "EQPT_LOAD_TYPE": "装载方式",
       "EQPT_COMMENTS": "备注",
-      "EQPT_GUARD_MASTER_USED": "Guard Master启用",
-      "EQPT_GUARD_MASTER_DESC": "Guard Master详情",
+      "EQPT_GUARD_MASTER_USED": "Guardmaster启用",
+      "EQPT_GUARD_MASTER_DESC": "Guardmaster详情",
+      "EQPT_GUARD_MASTER_ID": "Guardmaster运输设备ID",
       "FRONT_WEIGH_LIMIT": "前端车轴承重上限",
       "REAR_WEIGH_LIMIT": "后端车轴承重上限"
     },

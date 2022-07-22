@@ -222,13 +222,18 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
 
             notification.success({
               message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-              description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.createSuccess'),
+              description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
             });
           })
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
-                message: error.type,
+                message:
+                  error.code === 500
+                    ? IS_CREATING
+                      ? t('messages.createFailed')
+                      : t('messages.updateFailed')
+                    : error.type,
                 description: error.message,
               });
             });
@@ -259,7 +264,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
-                message: error.type,
+                message: error.code === 500 ? t('messages.deleteFailed') : error.type,
                 description: error.message,
               });
             });
@@ -558,7 +563,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
               .catch((errors) => {
                 _.forEach(errors.response.data.errors, (error) => {
                   notification.error({
-                    message: error.type,
+                    message: error.code === 500 ? t('messages.createFailed') : error.type,
                     description: error.message,
                   });
                 });
@@ -574,7 +579,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
               .catch((errors) => {
                 _.forEach(errors.response.data.errors, (error) => {
                   notification.error({
-                    message: error.type,
+                    message: error.code === 500 ? t('messages.updateFailed') : error.type,
                     description: error.message,
                   });
                 });
@@ -595,7 +600,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
             .catch((errors) => {
               _.forEach(errors.response.data.errors, (error) => {
                 notification.error({
-                  message: error.type,
+                  message: error.code === 500 ? t('messages.submitFailed') : error.type,
                   description: error.message,
                 });
               });
@@ -625,14 +630,14 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
             onComplete(value?.mlitm_id);
 
             notification.success({
-              message: t('messages.movementReverseSuccess'),
-              description: `${t('descriptions.movementReverseSuccess')}`,
+              message: t('messages.reverseSuccessSPM'),
+              description: `${t('descriptions.reverseSuccessSPM')}`,
             });
           })
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
-                message: error.type,
+                message: error.code === 500 ? t('messages.reverseFailedSPM') : error.type,
                 description: error.message,
               });
             });

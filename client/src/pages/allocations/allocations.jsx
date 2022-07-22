@@ -112,6 +112,25 @@ const Allocations = ({ popup, params }) => {
   const page = t('pageMenu.companies');
   const name = t('pageNames.allocations');
 
+  const transform = (data) => {
+    const payload = [];
+
+    if (data) {
+      for (let index = 0; index < data.length; index++) {
+        const element = data[index];
+        element.alloc_periodname =
+          String(element.alloc_period) === '0' ? t('fields.noPeriod') : element.alloc_periodname;
+        element.alloc_perioddesc =
+          String(element.alloc_period) === '0'
+            ? `${element.alloc_period} - ${t('fields.noPeriod')}`
+            : element.alloc_perioddesc;
+        payload.push(element);
+      }
+    }
+
+    return payload;
+  };
+
   useEffect(() => {
     if (popup && params) {
       setAlloctype(params?.alloc_type);
@@ -121,7 +140,7 @@ const Allocations = ({ popup, params }) => {
 
   useEffect(() => {
     if (payload?.records) {
-      setData(payload?.records);
+      setData(transform(payload?.records));
       // setLoading(false);
       payload.records = null;
     }
