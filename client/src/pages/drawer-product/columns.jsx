@@ -387,6 +387,47 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
     width: 130,
   },
+
+  {
+    headerName: t('fields.copsGuardMasterProdCode'),
+    field: 'prod_guardmaster_code',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    suppressSizeToFit: true,
+    width: 240,
+    hide: !config.siteEnabledCOPS,
+  },
+  {
+    headerName: t('fields.copsGuardMasterProdQualityID'),
+    field: 'prod_guardmaster_quality',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    suppressSizeToFit: true,
+    width: 100,
+    hide: !config.siteEnabledCOPS,
+  },
+  {
+    headerName: t('fields.copsGuardMasterProdQualityCode'),
+    field: 'prod_guardmaster_qltycode',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    suppressSizeToFit: true,
+    width: 100,
+    hide: !config.siteEnabledCOPS,
+  },
+  {
+    headerName: t('fields.copsGuardMasterProdQuality'),
+    field: 'prod_guardmaster_qltyname',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    suppressSizeToFit: true,
+    width: 250,
+    hide: !config.siteEnabledCOPS,
+  },
 ];
 
 export default columns;

@@ -114,6 +114,11 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
         config_key: 'AXLE_REQUIRED',
         config_value: values.axle_needed ? 'Y' : 'N',
       },
+      {
+        cmpy_code: value.cmpy_code,
+        config_key: 'CMPY_GUARDMASTER_PRODUCT_FLAG',
+        config_value: values.cmpy_guardmaster_product_flag ? 'Y' : 'N',
+      },
     ];
 
     if (

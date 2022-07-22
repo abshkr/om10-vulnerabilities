@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import useSWR from 'swr';
 
 import {
   EditOutlined,
@@ -29,7 +30,7 @@ import { fetcher } from 'utils';
 import jwtDecode from 'jwt-decode';
 
 import _ from 'lodash';
-import api, { DRAWER_PRODUCTS } from '../../../api';
+import api, { DRAWER_PRODUCTS, COMPANIES } from '../../../api';
 import GenericForm from '../generics/forms';
 
 import {
@@ -48,6 +49,7 @@ import columns from './columns';
 import BaseProductForm from './base-form';
 import HotLitresForm from './hot-litres';
 import LinkedDrawerProducts from './linked-drawer-products';
+import GuardmasterProduct from './guardmaster-product';
 
 const TabPane = Tabs.TabPane;
 
@@ -80,7 +82,12 @@ const DrawerForm = ({
   const [baseLoading, setBaseLoading] = useState(true);
   const [genericFlag, setGenericFlag] = useState(false);
 
+  const [drawerCode, setDrawerCode] = useState(value?.prod_cmpycode);
+  const [guardmasterFlag, setGuardmasterFlag] = useState(false);
+
   const { resetFields, setFieldsValue } = form;
+
+  const { data: companyConfig } = useSWR(`${COMPANIES.CONFIG}?cmpy_code=${drawerCode}`);
 
   const fields = columns(t, config, form, pipenodeBases, user_code);
 
@@ -647,6 +654,15 @@ const DrawerForm = ({
     adjustBlendFlag(bases);
   }, [bases]); //, adjustHotTempCheckFlag, setFieldsValue]);
 
+  useEffect(() => {
+    console.log('companyConfig!.......', companyConfig);
+    if (companyConfig) {
+      const item = _.find(companyConfig?.records, (o) => o?.config_key === 'CMPY_GUARDMASTER_PRODUCT_FLAG');
+      const flag = !item ? false : item?.config_value === 'Y' ? true : false;
+      setGuardmasterFlag(flag);
+    }
+  }, [companyConfig]);
+
   const layout = {
     labelCol: {
       span: 6,
@@ -722,7 +738,7 @@ const DrawerForm = ({
           <TabPane tab={t('tabColumns.general')} key="1">
             <Row gutter={[8, 2]}>
               <Col span={8}>
-                <DrawerCompany form={form} value={value} />
+                <DrawerCompany form={form} value={value} onChange={setDrawerCode} />
               </Col>
               <Col span={8}>
                 <ProductCode form={form} value={value} config={config} />
@@ -794,6 +810,10 @@ const DrawerForm = ({
                 </Form.Item>
               </Col>
             </Row>
+
+            {config?.siteEnabledCOPS && (
+              <GuardmasterProduct form={form} value={value} flag={guardmasterFlag} />
+            )}
 
             {/* <Row gutter={[8, 2]}>
               <Col span={8}>

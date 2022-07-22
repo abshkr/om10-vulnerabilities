@@ -3372,6 +3372,9 @@
       "PROD_2ND_PRODUCT": "Product 2nd Product",
       "PROD_DESC": "Product Description",
       "PROD_IMAGE": "Product Image",
+      "PROD_IS_LOCKED": "Product Is Locked",
+      "PROD_GUARDMASTER_CODE": "Guardmaster Product Code",
+      "PROD_GUARDMASTER_QUALITY": "Guardmaster Product Quality",
       "PROD_DG": "Product Dangerous Goods"
     },
     "PRODUCT_BATCH": {
@@ -8362,6 +8365,9 @@
       "PROD_2ND_PRODUCT": "关联调配油品",
       "PROD_DESC": "油品描述",
       "PROD_IMAGE": "油品图像",
+      "PROD_IS_LOCKED": "油品锁定标记",
+      "PROD_GUARDMASTER_CODE": "Guardmaster调配油品代码",
+      "PROD_GUARDMASTER_QUALITY": "Guardmaster调配油品品质",
       "PROD_DG": "高危品描述"
     },
     "PRODUCT_BATCH": {

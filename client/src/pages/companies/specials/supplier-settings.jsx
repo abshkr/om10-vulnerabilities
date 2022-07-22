@@ -12,7 +12,7 @@ import { generateMaxInt } from '../../../utils';
 
 const SupplierForm = ({ value, form, config }) => {
   const { data: payload } = useSWR(`${COMPANIES.CONFIG}?cmpy_code=${value?.cmpy_code}`);
-  const { externalBlendAllowed, maxLengthTripNum } = config;
+  const { externalBlendAllowed, maxLengthTripNum, siteEnabledCOPS } = config;
 
   const { t } = useTranslation();
   const { resetFields, setFieldsValue, getFieldDecorator } = form;
@@ -39,6 +39,7 @@ const SupplierForm = ({ value, form, config }) => {
   const [axle_needed, setAlxeNeeded] = useState(false);
   const [weightTolerance, setWeightTol] = useState(0);
   const [drawers, setDrawers] = useState([]);
+  const [cmpy_guardmaster_product_flag, setCmpyGuardmasterProductFlag] = useState(false);
 
   const IS_CREATING = !value;
 
@@ -181,6 +182,13 @@ const SupplierForm = ({ value, form, config }) => {
     });
   };
 
+  const onGuardmasterProductFlag = (v) => {
+    setCmpyGuardmasterProductFlag(v);
+    setFieldsValue({
+      cmpy_guardmaster_product_flag: v,
+    });
+  };
+
   useEffect(() => {
     if (value) {
       setFieldsValue({
@@ -245,6 +253,10 @@ const SupplierForm = ({ value, form, config }) => {
       const secondDrawerConfig = _.find(payload?.records, (item) => {
         return item.config_key === 'CMPY_2ND_DRAWER';
       });
+      const guardmasterProductConfig = _.find(payload?.records, (item) => {
+        return item.config_key === 'CMPY_GUARDMASTER_PRODUCT_FLAG';
+      });
+
       setFieldsValue({
         auto_complete_non_preschd_loads:
           autoNonSchduleConfig && autoNonSchduleConfig.config_value === 'Y' ? true : false,
@@ -258,6 +270,8 @@ const SupplierForm = ({ value, form, config }) => {
         cmpy_2nd_drawer_flag: cmpy2ndDrawerConfig && cmpy2ndDrawerConfig.config_value === 'Y' ? true : false,
         axle_needed: axleConfig && axleConfig.config_value === 'Y' ? true : false,
         cmpy_2nd_drawer: secondDrawerConfig?.config_value,
+        cmpy_guardmaster_product_flag:
+          guardmasterProductConfig && guardmasterProductConfig.config_value === 'Y' ? true : false,
       });
       setAutoNonSchedule(autoNonSchduleConfig && autoNonSchduleConfig.config_value === 'Y' ? true : false);
       setSafefillCheck(safefillConfig && safefillConfig.config_value === 'Y' ? true : false);
@@ -269,6 +283,9 @@ const SupplierForm = ({ value, form, config }) => {
       setWeightTol(weightTolConfig?.config_value);
       setCmpy2ndDrawerFlag(cmpy2ndDrawerConfig && cmpy2ndDrawerConfig.config_value === 'Y' ? true : false);
       setAlxeNeeded(axleConfig && axleConfig.config_value === 'Y' ? true : false);
+      setCmpyGuardmasterProductFlag(
+        guardmasterProductConfig && guardmasterProductConfig.config_value === 'Y' ? true : false
+      );
     }
   }, [value, setFieldsValue, payload, resetFields]);
 
@@ -646,6 +663,26 @@ const SupplierForm = ({ value, form, config }) => {
             </Form.Item>
           )}
         </Col>
+      </Row>
+
+      <Row justify="center">
+        <Col span={12}>
+          {siteEnabledCOPS && (
+            <Form.Item
+              name="cmpy_guardmaster_product_flag"
+              label={t('fields.copsGuardMasterProdFlag')}
+              {...leftItemLayout}
+            >
+              <Switch
+                checkedChildren={t('operations.yes')}
+                unCheckedChildren={t('operations.no')}
+                checked={cmpy_guardmaster_product_flag}
+                onChange={onGuardmasterProductFlag}
+              />
+            </Form.Item>
+          )}
+        </Col>
+        <Col span={12}></Col>
       </Row>
     </div>
   );

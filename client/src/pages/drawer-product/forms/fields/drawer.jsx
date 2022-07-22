@@ -5,7 +5,7 @@ import useSWR from 'swr';
 
 import { DRAWER_PRODUCTS } from 'api';
 
-const DrawerCompany = ({ form, value }) => {
+const DrawerCompany = ({ form, value, onChange }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
@@ -24,6 +24,7 @@ const DrawerCompany = ({ form, value }) => {
     setFieldsValue({
       prod_cmpycode: value,
     });
+    onChange(value);
   };
 
   useEffect(() => {
@@ -31,6 +32,7 @@ const DrawerCompany = ({ form, value }) => {
       setFieldsValue({
         prod_cmpycode: value.prod_cmpycode,
       });
+      onChange(value.prod_cmpycode);
     }
   }, [value, setFieldsValue]);
 
