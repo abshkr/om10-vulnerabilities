@@ -556,6 +556,8 @@ const DrawerForm = ({
       }
 
       values.prod_is_blend = adjustBlendFlag(values?.bases);
+      values.prod_guardmaster_quality =
+        values?.prod_guardmaster_quality === undefined ? '' : values?.prod_guardmaster_quality;
 
       Modal.confirm({
         title: IS_CREATING ? t('prompts.create') : t('prompts.update'),

@@ -74,7 +74,7 @@ const GuardmasterProduct = ({ value, form, flag }) => {
               showSearch
               allowClear
               optionFilterProp="children"
-              placeholder={!value ? t('placeholder.selectDrawer') : null}
+              placeholder={!value ? t('placeholder.selectProductQuality') : null}
               filterOption={(input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
