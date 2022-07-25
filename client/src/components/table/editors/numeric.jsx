@@ -88,24 +88,42 @@ export default class NumericEditor extends Component {
   isCancelBeforeStart() {
     const { data } = this.props;
     // console.log('in NumericEditor isCancelBeforeStart', this.cancelBeforeStart, data);
-    return this.cancelBeforeStart || (data?.editable!==undefined && !data?.editable);
+    return this.cancelBeforeStart || (data?.editable !== undefined && !data?.editable);
   }
 
   isCancelAfterEnd() {
+    const { data, colDef, ranges, t } = this.props;
+
+    let inputTxt = String(this.state.value);
+    if (inputTxt !== undefined && inputTxt !== inputTxt?.trimLeft()) {
+      notification.error({
+        message: `${colDef.headerName}${t('validate.dataTypeNumber')}!`,
+        description: `${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`,
+      });
+      return true;
+    }
+    if (inputTxt !== undefined && inputTxt !== inputTxt?.trimRight()) {
+      notification.error({
+        message: `${colDef.headerName}${t('validate.dataTypeNumber')}!`,
+        description: `${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`,
+      });
+      return true;
+    }
+
     const value = _.toNumber(this.state.value);
     const valid = !_.isNaN(value);
-    const { data, colDef, ranges, t } = this.props;
     // console.log('NumericEditor - isCancelAfterEnd', colDef, data, ranges);
+    // console.log('...........space......', _.isNaN('    '), isNaN('          '), _.isFinite('    '));
 
     if (valid) {
       //const { options } = colDef;
-      // ag-grid: invalid colDef property 'options' 
+      // ag-grid: invalid colDef property 'options'
       const options = !ranges ? colDef?.options : ranges;
 
       // const min = data[options?.min];
       // const max = data[options?.max];
-      let min=undefined;
-      let max=undefined;
+      let min = undefined;
+      let max = undefined;
       if (options !== undefined) {
         if (_.isNumber(options?.min)) {
           min = options?.min;
@@ -133,7 +151,7 @@ export default class NumericEditor extends Component {
           description: `${t('descriptions.pleaseKeepValueRange')}${min} ⟶ ${max}`,
         });
       }
-      
+
       return payload;
     } else {
       notification.error({

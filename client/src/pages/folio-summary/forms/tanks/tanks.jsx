@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 
 import _ from 'lodash';
-import { Modal, notification } from 'antd';
+import { Card, Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import api, { FOLIO_SUMMARY } from '../../../../api';
 import { DataTable } from '../../../../components';
@@ -37,7 +37,83 @@ const Tanks = ({ id, enabled, saveToFolioTrigger, saveToTanksTrigger, calculateT
     });
   }, [id]);
 
+  const onItemValidation = (items) => {
+    const errors = [];
+
+    // check the tank items
+    for (let tidx = 0; tidx < items?.length; tidx++) {
+      const item = items?.[tidx];
+
+      // The close_amb_tot, close_std_tot, close_mass_tot must be filled
+      if ((item.close_amb_tot !== 0 && !item.close_amb_tot) || String(item.close_amb_tot).trim() === '') {
+        errors.push({
+          field: `${t('validate.set')} ─ ${t(config?.siteLabelUser + 'fields.closingAmbient')} (${t(
+            'units.ltr'
+          )})`,
+          message: `${item.tank_code}: ${item.tank_basecode} - ${item.tank_basename} [${item.bclass_desc}]`,
+          key: `${'close_amb_tot'}${tidx}`,
+          //line: item.trsf_cmpt_no,
+        });
+      }
+
+      if ((item.close_std_tot !== 0 && !item.close_std_tot) || String(item.close_std_tot).trim() === '') {
+        errors.push({
+          field: `${t(config?.siteLabelUser + 'fields.closingCorrected')} (${t('units.ltr')})`,
+          message: `${item.tank_code}: ${item.tank_basecode} - ${item.tank_basename} [${item.bclass_desc}]`,
+          key: `${'close_std_tot'}${tidx}`,
+          //line: item.trsf_cmpt_no,
+        });
+      }
+
+      if ((item.close_mass_tot !== 0 && !item.close_mass_tot) || String(item.close_mass_tot).trim() === '') {
+        errors.push({
+          field: `${t(config?.siteLabelUser + 'fields.closingMass')} (${t('units.kg')})`,
+          message: `${item.tank_code}: ${item.tank_basecode} - ${item.tank_basename} [${item.bclass_desc}]`,
+          key: `${'close_mass_tot'}${tidx}`,
+          //line: item.trsf_cmpt_no,
+        });
+      }
+    }
+
+    if (errors.length > 0) {
+      const lines = (
+        <>
+          {errors?.map((error, index) => (
+            <Card key={error.key} size="small" title={error.field}>
+              {error.message}
+            </Card>
+          ))}
+        </>
+      );
+
+      notification.error({
+        message: t('validate.lineItemValidation'),
+        description: lines,
+        // duration: 0,
+        style: {
+          height: errors.length > 5 ? '500px' : `${errors.length * 80 + 100}px`,
+          width: '30vw',
+          overflowY: 'scroll',
+        },
+      });
+      /* _.forEach(errors, (error) => {
+        notification.error({
+          message: error.field,
+          description: error.message,
+          key: error.key,
+        });
+      }); */
+    }
+
+    return errors;
+  };
+
   const saveToFolio = () => {
+    const errors = onItemValidation(data);
+    if (errors.length > 0) {
+      return;
+    }
+
     Modal.confirm({
       title: t('prompts.save'),
       okText: t('operations.yes'),
@@ -149,6 +225,11 @@ const Tanks = ({ id, enabled, saveToFolioTrigger, saveToTanksTrigger, calculateT
   };
 
   const saveToTanks = () => {
+    const errors = onItemValidation(data);
+    if (errors.length > 0) {
+      return;
+    }
+
     Modal.confirm({
       title: t('prompts.save'),
       okText: t('operations.yes'),
