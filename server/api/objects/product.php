@@ -46,6 +46,7 @@ class Product extends CommonClass
         "PITEM_HOT_CHECK" => 1,
         "PROD_IS_COMPLIANT" => 1,
         "PROD_IS_LOCKED" => 1,
+        "PROD_IS_BLEND" => "Y",
     );
     
     //Because base cannot be too many, do not do limit
