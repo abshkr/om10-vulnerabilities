@@ -390,6 +390,17 @@ class SpecialMovement extends CommonClass
             return;
         }
 
+        $query = "UPDATE MOV_LOAD_ITEMS SET MLITM_DTIM_POSTED = SYSDATE WHERE MLITM_ID = :mlitm_id";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':mlitm_id', $this->mlitm_id);
+        if (!oci_execute($stmt)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(500, response("__INTERNAL_ERROR__", "Internal Error: " . $e['message']));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        };
+
         //SCRIPT_NAME: /cgi-bin/en/spcl_mvment.cgi (HOST message thingy) REQUEST: user_id=9999&spclmnt_no=2698
         $query_string = "user_id=" . rawurlencode(strip_tags(Utilities::getCurrPsn())) . 
             "&spclmnt_no=" . rawurlencode(strip_tags($this->mlitm_id));
