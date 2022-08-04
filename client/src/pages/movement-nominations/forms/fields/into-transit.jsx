@@ -75,10 +75,10 @@ const IntoTransitFields = ({ form, value, receiptCount, receiptTotal, receiptUni
       const receiptExpected = getFieldValue('mv_receipt_expected');
       const glValue = receiptTotal - receiptExpected;
       setFieldsValue({
-        // mv_receipt_total: _.round(receiptTotal, 0),
-        // mv_into_transit_gl: _.round(glValue, 0),
-        mv_receipt_total: receiptTotal,
-        mv_into_transit_gl: glValue,
+        mv_receipt_total: _.round(receiptTotal, 0),
+        mv_into_transit_gl: _.round(glValue, 0),
+        // mv_receipt_total: receiptTotal,
+        // mv_into_transit_gl: glValue,
         mv_into_transit_gl_percent: receiptExpected > 0 ? _.round((glValue / receiptExpected) * 100, 4) : 0,
       });
     }
