@@ -44,6 +44,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
   const [carrier, setCarrier] = useState(null);
   const [receiptCount, setReceiptCount] = useState(0);
   const [receiptTotal, setReceiptTotal] = useState(0.000001);
+  const [receiptUnit, setReceiptUnit] = useState(undefined);
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -421,6 +422,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
                 value={value}
                 receiptCount={receiptCount}
                 receiptTotal={receiptTotal}
+                receiptUnit={receiptUnit}
               />
             )}
 
@@ -443,6 +445,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
               cbFunction={onComplete}
               setReceiptCount={setReceiptCount}
               setReceiptTotal={setReceiptTotal}
+              setReceiptUnit={setReceiptUnit}
             />
           </TabPane>
           {/* <TabPane tab={t('tabColumns.items')} forceRender={true} key="2">

@@ -1,11 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { Form, Input, Row, Col } from 'antd';
 import _ from 'lodash';
+import useSWR from 'swr';
+import api, { ORDER_LISTINGS } from '../../../../api';
 
-const IntoTransitFields = ({ form, value, receiptCount, receiptTotal }) => {
+const IntoTransitFields = ({ form, value, receiptCount, receiptTotal, receiptUnit }) => {
   const { t } = useTranslation();
+
+  const [unitName, setUnitName] = useState(undefined);
+
+  const { data: units } = useSWR(ORDER_LISTINGS.UNIT_TYPES);
 
   const { setFieldsValue, getFieldValue, getFieldsValue } = form;
 
@@ -69,12 +75,22 @@ const IntoTransitFields = ({ form, value, receiptCount, receiptTotal }) => {
       const receiptExpected = getFieldValue('mv_receipt_expected');
       const glValue = receiptTotal - receiptExpected;
       setFieldsValue({
+        // mv_receipt_total: _.round(receiptTotal, 0),
+        // mv_into_transit_gl: _.round(glValue, 0),
         mv_receipt_total: receiptTotal,
         mv_into_transit_gl: glValue,
         mv_into_transit_gl_percent: receiptExpected > 0 ? _.round((glValue / receiptExpected) * 100, 4) : 0,
       });
     }
   }, [receiptTotal, setFieldsValue]);
+
+  useEffect(() => {
+    if (units && receiptUnit !== undefined) {
+      const item = units?.records?.find((o) => o?.unit_id === String(receiptUnit));
+      const name = !item ? '' : item?.description;
+      setUnitName(name);
+    }
+  }, [receiptUnit, units]);
 
   return (
     <Row gutter={[8, 3]}>
@@ -112,6 +128,7 @@ const IntoTransitFields = ({ form, value, receiptCount, receiptTotal }) => {
             disabled={true}
             // placeholder={t('placeholder.setNomQtyReceiptExpected')}
             style={{ width: '100%' }}
+            addonAfter={unitName}
           />
         </Form.Item>
       </Col>

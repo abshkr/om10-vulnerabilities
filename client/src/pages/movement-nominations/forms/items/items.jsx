@@ -18,17 +18,28 @@ import TransactionList from './transaction-list';
 import NominationTransactions from './nomination-transactions';
 
 import { DataTable } from '../../../../components';
-import api, { MOVEMENT_NOMIATIONS } from '../../../../api';
+import api, { MOVEMENT_NOMIATIONS, BASE_PRODUCTS } from '../../../../api';
 
 import useColumns from './columns';
 
-const Items = ({ setTableAPIContext, value, config, cbFunction, setReceiptCount, setReceiptTotal }) => {
+const Items = ({
+  setTableAPIContext,
+  value,
+  config,
+  cbFunction,
+  setReceiptCount,
+  setReceiptTotal,
+  setReceiptUnit,
+}) => {
   const { t } = useTranslation();
 
   const url = value ? `${MOVEMENT_NOMIATIONS.ITEMS}?mv_id=${value?.mv_id}` : null;
 
   const { data: payload, revalidate } = useSWR(url, { revalidateOnFocus: false });
   const { data: nomItemStatus, isValidating } = useSWR(MOVEMENT_NOMIATIONS.STATUS);
+  const { data: bases } = useSWR(BASE_PRODUCTS.READ);
+  const urlTran = value ? `${MOVEMENT_NOMIATIONS.TRANSACTIONS}?mv_id=${value?.mv_id}&mv_all=${'ALL'}` : null;
+  const { data: allTransactions } = useSWR(urlTran, { revalidateOnFocus: false });
 
   const [data, setData] = useState([]);
   const [selected, setSelected] = useState([]);
@@ -185,6 +196,68 @@ const Items = ({ setTableAPIContext, value, config, cbFunction, setReceiptCount,
           editLineItem: false,
         };
     }
+  };
+
+  const getNominationItemTransactions = async (item) => {
+    const results = await api.get(
+      `${MOVEMENT_NOMIATIONS.TRANSACTIONS}?mv_id=${item?.mvitm_move_id}&line_id=${item?.mvitm_line_id}`
+    );
+
+    return results?.data;
+  };
+
+  const getNominationItemReceipts = (transactions, bases) => {
+    const result = {
+      base: undefined,
+      unit: undefined,
+      amb: 0,
+      std: 0,
+      mass: 0,
+    };
+    for (let i = 0; i < transactions?.length; i++) {
+      const tran = transactions?.[i];
+      const transfers = tran?.transfers;
+      for (let j = 0; j < transfers?.length; j++) {
+        const trsf = transfers?.[j];
+        const tranbases = trsf?.base_prods;
+        for (let k = 0; k < tranbases?.length; k++) {
+          const trsb = tranbases?.[k];
+          if (result.base === undefined) {
+            result.base = trsb?.base_code;
+            // get its unit
+            const item = _.find(bases, (o) => o?.base_code === trsb?.base_code);
+            if (!item) {
+              result.unit = 11;
+            } else {
+              let unitId = 11;
+              if (item?.base_stock_unit === '0') {
+                // volume unit
+                if (config?.siteOwnershipVolumeMode === 'GOV') {
+                  unitId = 5;
+                }
+                if (config?.siteOwnershipVolumeMode === 'GSV') {
+                  unitId = 11;
+                }
+              }
+              if (item?.base_stock_unit === '1') {
+                // volume unit
+                if (config?.siteOwnershipMassMode === 'WiV') {
+                  unitId = 17; // 35;
+                }
+                if (config?.siteOwnershipMassMode === 'WiA') {
+                  unitId = 17; // 36;
+                }
+              }
+              result.unit = unitId;
+            }
+          }
+          result.amb += _.toNumber(trsb?.trsb_avl);
+          result.std += _.toNumber(trsb?.trsb_cvl);
+          result.mass += _.toNumber(trsb?.trsb_kg);
+        }
+      }
+    }
+    return result;
   };
 
   const getNominationItem = async (key, item) => {
@@ -508,21 +581,41 @@ const Items = ({ setTableAPIContext, value, config, cbFunction, setReceiptCount,
       setData(payload?.records);
       // get the coumts of receipt items
       // get the total receipt volumes
-      let receiptTotal = 0;
+      // let receiptTotal = 0;
       let receiptCount = 0;
+      // let receiptUnit = undefined;
       _.forEach(payload?.records, (o) => {
         if (o?.mvitm_type === 0) {
           receiptCount += 1;
-          receiptTotal += !o?.mvitm_qty_move ? 0 : _.toNumber(o?.mvitm_qty_move);
+          // receiptTotal += !o?.mvitm_qty_move ? 0 : _.toNumber(o?.mvitm_qty_move);
+          // receiptUnit = _.toNumber(o?.mvitm_prod_unit);
         }
       });
       // console.log('..................I am here 1a', receiptCount, receiptTotal);
       setReceiptCount(receiptCount);
-      setReceiptTotal(receiptTotal);
+      // setReceiptTotal(receiptTotal);
+      // setReceiptUnit(receiptUnit);
     }
 
     setSize(payload?.records?.length || 0);
   }, [payload, setData]);
+
+  useEffect(() => {
+    if (allTransactions?.records && bases?.records) {
+      // console.log('..................I am here 1', payload?.records);
+      // get the total receipt volumes
+      let receiptTotal = 0;
+      let receiptUnit = undefined;
+      const result = getNominationItemReceipts(allTransactions?.records, bases?.records);
+      if (receiptUnit === undefined) {
+        receiptUnit = result.unit;
+      }
+      receiptTotal = receiptUnit === 11 ? result.std : receiptUnit === 17 ? result.mass : result.amb;
+      // console.log('..................I am here 1a', receiptCount, receiptTotal);
+      setReceiptTotal(receiptTotal);
+      setReceiptUnit(receiptUnit);
+    }
+  }, [allTransactions, bases]);
 
   useEffect(() => {
     if (tableAPI) {
