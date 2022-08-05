@@ -14,11 +14,20 @@ import _ from 'lodash';
 
 import api, { SITE_CONFIGURATION } from 'api';
 
-import { Code, Name, Contact, Address } from './fields';
+import {
+  Code,
+  Name,
+  Contact,
+  Address,
+  PidxIdentifier,
+  PidxOwner,
+  PidxLocationType,
+  PidxLocationIdentifier,
+} from './fields';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const FormModal = ({ value, visible, handleFormState, access, config }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -157,6 +166,10 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
             <Name form={form} value={value} />
             <Contact form={form} value={value} />
             <Address form={form} value={value} />
+            {config?.siteEnabledPIDX && <PidxIdentifier form={form} value={value} />}
+            {config?.siteEnabledPIDX && <PidxOwner form={form} value={value} />}
+            {config?.siteEnabledPIDX && <PidxLocationType form={form} value={value} />}
+            {config?.siteEnabledPIDX && <PidxLocationIdentifier form={form} value={value} />}
           </TabPane>
         </Tabs>
       </Form>
