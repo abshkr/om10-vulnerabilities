@@ -37,6 +37,8 @@ import Logo from './logo';
 import useSWR from 'swr';
 import _ from 'lodash';
 
+import { PidxCarrier, PidxSupplier, PidxDrawer, PidxCustomer } from './fields';
+
 // import { getChildrenFromTxt } from '../../../utils';
 
 const TabPane = Tabs.TabPane;
@@ -761,6 +763,22 @@ const FormModal = ({
               </Row>
             </Card>
             <Logo value={value} form={form} />
+            {config?.siteEnabledPIDX && (
+              <Row gutter={[8, 10]}>
+                <Col span={8}>
+                  <PidxCarrier form={form} value={value} flag={carrier} />
+                </Col>
+                <Col span={4}>
+                  <PidxSupplier form={form} value={value} flag={supplier} />
+                </Col>
+                <Col span={4}>
+                  <PidxDrawer form={form} value={value} flag={drawer} />
+                </Col>
+                <Col span={8}>
+                  <PidxCustomer form={form} value={value} flag={customer} />
+                </Col>
+              </Row>
+            )}
           </TabPane>
         </Tabs>
       </Form>

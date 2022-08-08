@@ -992,7 +992,12 @@
       "CMPY_SCHD_ARCHIVE": "Archive Schedules",
       "CMPY_MOVEMENTS_REV": "Reverse Movements",
       "CMPY_REPORT_RECEIVERS": "Closeout report recepient email address",
-      "CMPY_ADDR": "Company Address"
+      "CMPY_ADDR": "Company Address",
+      "CMPY_LOGO": "Logo",
+      "CMPY_PIDX_CARRIER": "Standard Carrier Alpha Code",
+      "CMPY_PIDX_SUPPLIER": "Seller ID",
+      "CMPY_PIDX_DRAWER": "Final Shipper ID",
+      "CMPY_PIDX_CUSTOMER": "Consignee Number"
     },
     "COMPANY_CONFIG": {
       "CMPY_CODE": "Company Code",
@@ -5989,7 +5994,12 @@
       "CMPY_SCHD_ARCHIVE": "提单归档",
       "CMPY_MOVEMENTS_REV": "逆转大宗货单",
       "CMPY_REPORT_RECEIVERS": "盘点报表电子邮件接收地址",
-      "CMPY_ADDR": "公司地址"
+      "CMPY_ADDR": "公司地址",
+      "CMPY_LOGO": "图标",
+      "CMPY_PIDX_CARRIER": "承运人标准数字编码",
+      "CMPY_PIDX_SUPPLIER": "卖家编号",
+      "CMPY_PIDX_DRAWER": "最终发货人编号",
+      "CMPY_PIDX_CUSTOMER": "收货人编号"
     },
     "COMPANY_CONFIG": {
       "CMPY_CODE": "公司代码",
