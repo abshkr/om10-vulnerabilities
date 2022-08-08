@@ -4507,7 +4507,11 @@
     "TERM_ADDR": "NA",
     "TERM_CONTACT": "NA",
     "TERM_REMSITE": "NA",
-    "TERM_COMMS_AVAIL": "NA"
+    "TERM_COMMS_AVAIL": "NA",
+    "TERM_PIDX_ID": "NA",
+    "TERM_PIDX_OWNER": "NA",
+    "TERM_PIDX_LOCID_TYPE": "NA",
+    "TERM_PIDX_LOCID": "NA"
   },
   "TERMINAL_GROUPS": {
     "TRMGRP_CODE": "NA",

@@ -4488,7 +4488,11 @@
       "TERM_ADDR": "Terminal Address",
       "TERM_CONTACT": "Terminal Contact",
       "TERM_REMSITE": "Terminal Remsite",
-      "TERM_COMMS_AVAIL": "Terminal Comms Avail"
+      "TERM_COMMS_AVAIL": "Terminal Comms Avail",
+      "TERM_PIDX_ID": "PIDX Terminal Identifier",
+      "TERM_PIDX_OWNER": "PIDX Terminal Owner",
+      "TERM_PIDX_LOCID_TYPE": "Location Identifier Type",
+      "TERM_PIDX_LOCID": "Location Identifier"
     },
     "TERMINAL_GROUPS": {
       "TRMGRP_CODE": "Terminal Group Code",
@@ -9481,7 +9485,11 @@
       "TERM_ADDR": "油库地址",
       "TERM_CONTACT": "油库联系方式",
       "TERM_REMSITE": "远程油库标记",
-      "TERM_COMMS_AVAIL": "油库通讯可行性"
+      "TERM_COMMS_AVAIL": "油库通讯可行性",
+      "TERM_PIDX_ID": "PIDX油库标识符",
+      "TERM_PIDX_OWNER": "PIDX油库业主",
+      "TERM_PIDX_LOCID_TYPE": "PIDX地点标识符类型",
+      "TERM_PIDX_LOCID": "PIDX地点标识符"
     },
     "TERMINAL_GROUPS": {
       "TRMGRP_CODE": "油库组代码",
