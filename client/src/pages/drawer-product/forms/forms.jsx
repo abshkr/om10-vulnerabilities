@@ -42,6 +42,7 @@ import {
   Hazchem,
   Generic,
   DangerousGoods,
+  PidxCode,
 } from './fields';
 
 import { DataTable, FormModal } from '../../../components';
@@ -813,9 +814,18 @@ const DrawerForm = ({
               </Col>
             </Row>
 
-            {config?.siteEnabledCOPS && (
-              <GuardmasterProduct form={form} value={value} flag={guardmasterFlag} />
-            )}
+            <Row gutter={[8, 2]}>
+              {config?.siteEnabledCOPS && (
+                <Col span={config?.siteEnabledPIDX ? 16 : 24}>
+                  <GuardmasterProduct form={form} value={value} flag={guardmasterFlag} />
+                </Col>
+              )}
+              {config?.siteEnabledPIDX && (
+                <Col span={config?.siteEnabledCOPS ? 8 : 24}>
+                  <PidxCode form={form} value={value} />
+                </Col>
+              )}
+            </Row>
 
             {/* <Row gutter={[8, 2]}>
               <Col span={8}>

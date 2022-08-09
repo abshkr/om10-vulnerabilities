@@ -1604,6 +1604,7 @@
     "prodImage": "Product Image",
     "prodMovDens": "Density (kg/m³)",
 
+    "prodPidxCode": "PIDX Product Code",
     "prodCode": "Product Code",
     "prodCmpycode": "Drawer Code",
     "prodCmpyname": "Drawer",

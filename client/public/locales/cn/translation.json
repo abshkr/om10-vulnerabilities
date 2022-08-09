@@ -1604,6 +1604,7 @@
     "prodImage": "油品图像",
     "prodMovDens": "油品密度 (kg/m³)",
 
+    "prodPidxCode": "PIDX油品代码",
     "prodCode": "油品代码",
     "prodCmpycode": "油品调配公司代码",
     "prodCmpyname": "油品调配公司",
