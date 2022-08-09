@@ -607,6 +607,7 @@
     "BASE_PRODS": {
       "BASE_CODE": "Base Code",
       "BASE_NAME": "Base Name",
+      "BASE_PIDX_CODE": "PIDX Base Code",
       "BASE_PROD_GROUP": "Base Product Group",
       "BASE_CAT": "Base Cat",
       "BASE_RPT_TUNT": "Base Rpt Tunt",
@@ -5610,6 +5611,7 @@
     "BASE_PRODS": {
       "BASE_CODE": "基础油品代码",
       "BASE_NAME": "基础油品名称",
+      "BASE_PIDX_CODE": "PIDX基础油品代码",
       "BASE_PROD_GROUP": "基础油品分组",
       "BASE_CAT": "基础油品类别",
       "BASE_RPT_TUNT": "报表温度单位",

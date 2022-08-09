@@ -42,6 +42,7 @@ import {
   HotTempFlag,
   AdaptiveFlowControlFlag,
   AdaptiveFlowControlPriority,
+  PidxCode,
 } from './fields';
 
 import api, { BASE_PRODUCTS, ADAPTIVE_FLOW_CONTROL, BASE_OWNERS } from '../../../api';
@@ -328,12 +329,22 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
           <TabPane tab={t('tabColumns.general')} key="1">
             <Code form={form} value={value} config={config} />
             <Name form={form} value={value} />
-            <Classification
-              form={form}
-              value={value}
-              onChange={setClassification}
-              classification={classification}
-            />
+
+            <Row gutter={[12, 4]}>
+              <Col span={config?.siteEnabledPIDX ? 12 : 24}>
+                <Classification
+                  form={form}
+                  value={value}
+                  onChange={setClassification}
+                  classification={classification}
+                />
+              </Col>
+              {config?.siteEnabledPIDX && (
+                <Col span={12}>
+                  <PidxCode form={form} value={value} />
+                </Col>
+              )}
+            </Row>
 
             {manageBaseProductDensityRange && (
               <DensityRange form={form} value={value} classification={classification} config={config} />

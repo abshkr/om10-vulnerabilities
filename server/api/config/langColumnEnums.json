@@ -617,6 +617,7 @@
   "BASE_PRODS": {
     "BASE_CODE": "NA",
     "BASE_NAME": "NA",
+    "BASE_PIDX_CODE": "NA",
     "BASE_PROD_GROUP": "NA",
     "BASE_CAT": "BCLASS_DESC",
     "BASE_RPT_TUNT": "NA",

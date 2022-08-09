@@ -374,6 +374,7 @@ const DrawerForm = ({
           selected.pitem_hot_main = values.pitem_hot_main;
 
           selected.pitem_base_name = values.pitem_base_name;
+          selected.pitem_pidx_code = values.pitem_pidx_code;
           selected.pitem_bclass_name = values.pitem_bclass_name;
 
           selected.pitem_base_class = values.pitem_base_class;
@@ -433,6 +434,7 @@ const DrawerForm = ({
         pitem_ratio_percent_ppm: values.pitem_ratio_percent_ppm,
         pitem_hot_main: values.pitem_hot_main,
         pitem_base_name: values.pitem_base_name,
+        pitem_pidx_code: values.pitem_pidx_code,
         pitem_bclass_name: values.pitem_bclass_name,
         pitem_base_class: values.pitem_base_class,
         pitem_adtv_flag: values.pitem_adtv_flag,

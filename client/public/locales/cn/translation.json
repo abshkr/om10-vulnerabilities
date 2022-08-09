@@ -616,6 +616,7 @@
     "baseOwnerTransComments": "所有权交易备注",
     "baseOwnerTransApproved": "所有权交易已批准",
     "baseOwnerTransReversed": "所有权交易已逆转",
+    "basePidxCode": "PIDX基础油品代码",
     "baseProduct": "基础油品",
     "baseProductCode": "基础油品代码",
     "baseProductName": "基础油品名称",

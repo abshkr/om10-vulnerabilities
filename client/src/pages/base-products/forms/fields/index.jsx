@@ -13,6 +13,7 @@ import RefSpecTemp from './ref-temp-spec';
 import HotTempFlag from './hot-temp-flag';
 import AdaptiveFlowControlFlag from './afc-flag';
 import AdaptiveFlowControlPriority from './afc-priority';
+import PidxCode from './pidx-code';
 
 export {
   Code,
@@ -30,4 +31,5 @@ export {
   HotTempFlag,
   AdaptiveFlowControlFlag,
   AdaptiveFlowControlPriority,
+  PidxCode,
 };

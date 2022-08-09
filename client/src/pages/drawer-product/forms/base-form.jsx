@@ -80,6 +80,7 @@ const FormModal = ({ value, handleBaseCallBack, config, tableBases }) => {
       return item.base_code === values.pitem_base_code;
     });
     values.pitem_base_name = baseItem.base_name;
+    values.pitem_pidx_code = baseItem.base_pidx_code;
     values.pitem_bclass_name = baseItem.bclass_desc;
 
     values.pitem_base_class = baseItem.bclass_no;

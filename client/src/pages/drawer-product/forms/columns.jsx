@@ -35,7 +35,7 @@ const columns = (t, config, form, pipenodeBases, user_code) => [
     resizable: true,
     suppressSizeToFit: true,
     width: 80,
-    hide: (config?.siteRecipeOnPercent && user_code !== '9999'),
+    hide: config?.siteRecipeOnPercent && user_code !== '9999',
   },
   {
     headerName: t('fields.pitemRatioAsPercent'),
@@ -300,6 +300,17 @@ const columns = (t, config, form, pipenodeBases, user_code) => [
     resizable: true,
     suppressSizeToFit: true,
     width: 130,
+  },
+
+  {
+    headerName: t('fields.basePidxCode'),
+    field: 'pitem_pidx_code',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
+    hide: !config?.siteEnabledPIDX,
+    width: 160,
+    suppressSizeToFit: true,
   },
 ];
 
