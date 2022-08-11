@@ -88,7 +88,7 @@ class TankService
         return $nr;
     }
 
-    public function tank_proddata()
+    public function tank_proddata($move_time=null)
     {
         $flag = $this->is_multi_folio_tank_base();
         $query = "
@@ -145,9 +145,13 @@ class TankService
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
         if ($flag) {
-            $closeout_nr = $this->get_folios_by_date($this->move_time, $this->move_time);
+            // write_log(sprintf("%s::%s() LOGGGG".$flag.$move_time, __CLASS__, __FUNCTION__),   __FILE__, __LINE__);
+
+            $closeout_nr = $this->get_folios_by_date($move_time, $move_time);
+
+            // write_log(sprintf("%s::%s() LOGGGG".$closeout_nr, __CLASS__, __FUNCTION__),   __FILE__, __LINE__);
             oci_bind_by_name($stmt, ':closeout_nr', $closeout_nr);
-            // oci_bind_by_name($stmt, ':move_time', $this->move_time);
+            // oci_bind_by_name($stmt, ':move_time', $move_time);
         }
         
         if (oci_execute($stmt)) {

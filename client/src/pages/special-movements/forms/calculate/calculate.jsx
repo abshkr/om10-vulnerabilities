@@ -60,6 +60,7 @@ const Calculate = ({
       .then((response) => {
         if (response?.data?.records?.length > 0) {
           let productList = response.data.records;
+          console.log('...............tankproddata before', productList);
           if (config?.siteFolioTankBaseChange) {
             productList = response?.data?.records?.filter(
               (o) =>
@@ -69,7 +70,7 @@ const Calculate = ({
           }
 
           const prod = productList?.[0];
-          console.log('...............tankproddata', prod, productList);
+          console.log('...............tankproddata after', prod, productList);
           setFieldsValue({
             mlitm_dens_cor: prod?.tank_density,
           });

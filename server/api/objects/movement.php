@@ -195,7 +195,7 @@ class Movement extends CommonClass
     public function tank_proddata()
     {
         $serv = new TankService($this->conn, $this->tank_code);
-        return $serv->tank_proddata();
+        return $serv->tank_proddata($this->move_time);
     }
 
     public function tanks_by_drawprod()
