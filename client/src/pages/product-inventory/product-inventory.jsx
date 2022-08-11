@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { SyncOutlined, CloseOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +28,7 @@ const ProductInventory = () => {
   const [unit, setUnit] = useState('Litres');
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [payload, setPayload] = useState([]);
 
   const token = sessionStorage.getItem('token');
   const decoded = jwtDecode(token);
@@ -35,13 +36,17 @@ const ProductInventory = () => {
   // const [terminal, setTerminal] = useState(site_code);
   const [terminal, setTerminal] = useState('');
 
-  // const { data, revalidate, isValidating } = useSWR(STOCK_MANAGEMENT.PRODUCT_INVENTORY);
-  const { data, revalidate, isValidating } = useSWR(
+  const { data: payloadBases, revalidate: revalidateBases, isValidating: isValidatingBases } = useSWR(
     `${STOCK_MANAGEMENT.PRODUCT_INVENTORY}?terminal=${terminal}`
   );
 
+  const { data: payloadTanks, revalidate: revalidateTanks, isValidating: isValidatingTanks } = useSWR(
+    `${STOCK_MANAGEMENT.TANK_INVENTORY}?terminal=${terminal}`
+  );
+
   const fields = columns(t, config);
-  const payload = transform(data?.records, unit);
+  const isLoading = isValidatingBases && isValidatingTanks;
+  // const payload = transform(data?.records, unit);
 
   // const units = ['Litres', 'Cubic Metre', 'Imperial Gallon', 'U.S Gallon', 'Imperial Barrel', 'U.S Barrel'];
   const units = [
@@ -74,6 +79,23 @@ const ProductInventory = () => {
     }
   };
 
+  const refresh = () => {
+    if (revalidateBases) {
+      revalidateBases();
+    }
+    if (revalidateTanks) {
+      revalidateTanks();
+    }
+  };
+
+  useEffect(() => {
+    if (payloadBases && payloadTanks) {
+      const records = transform(payloadBases?.records, payloadTanks?.records, unit);
+
+      setPayload(records);
+    }
+  }, [payloadBases, payloadTanks, unit]);
+
   const modifiers = (
     <>
       {config?.siteUseMultiTerminals && (
@@ -105,11 +127,11 @@ const ProductInventory = () => {
         })}
       </Select>
 
-      <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isValidating}>
+      <Button icon={<SyncOutlined />} onClick={() => refresh()} loading={isLoading}>
         {t('operations.refresh')}
       </Button>
 
-      <Download data={payload} isLoading={isValidating} columns={fields} />
+      <Download data={payload} isLoading={isLoading} columns={fields} />
     </>
   );
 
@@ -124,7 +146,7 @@ const ProductInventory = () => {
       <DataTable
         columns={fields}
         data={payload}
-        isLoading={isValidating}
+        isLoading={isLoading}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />

@@ -98,6 +98,19 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
     width: 170,
   },
+  {
+    headerName: t('fields.usableVolume2'),
+    field: 'usablevol2',
+    sortable: true,
+    resizable: true,
+    hide: true,
+    cellRenderer: 'SeperatorRenderer',
+    cellRendererParams: {
+      type: String(config?.decimal_thousand_separator),
+    },
+    suppressSizeToFit: true,
+    width: 170,
+  },
 ];
 
 export default columns;

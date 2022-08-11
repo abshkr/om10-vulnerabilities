@@ -35,6 +35,7 @@ class TankInv extends CommonClass
                 TERMINAL.TERM_CODE || ' - ' || TERMINAL.TERM_NAME  AS TANK_SITENAME,
                 TANKS.TANK_CODE                                    AS TANK_CODE,
                 TANKS.TANK_LOCATION                                AS TANK_LOCATION,
+                BASE_PRODS.BASE_CODE                               AS BASE_CODE,
                 BASE_PRODS.BASE_NAME                               AS BASE_NAME,
                 TANKS.TANK_WATER_LVL                               AS TANK_WATER_LVL,
                 TANKS.TANK_WATER                                   AS TANK_WATER,
