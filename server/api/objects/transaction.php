@@ -223,7 +223,207 @@ class Transaction extends CommonClass
         }
     }
 
+
+    public function pagination_count()
+    {
+        $query = "
+            SELECT COUNT(*) CN
+            FROM " . $this->VIEW_NAME . "
+            WHERE 1=1
+        ";
+
+        if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1') {
+            $query .= "
+                AND TRSA_ST_DMY > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')
+            ";
+        }
+        if (isset($this->end_date) && $this->end_date != -1 && $this->end_date != '-1') {
+            $query .= "
+                AND TRSA_ST_DMY < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS')
+            ";
+        }
+
+        if (isset($this->trsa_terminal) && $this->trsa_terminal != '') {
+           $query = $query . " AND TRSA_TERMINAL = :trsa_terminal";
+        }
+
+        if (isset($this->trsa_id) && $this->trsa_id != '') {
+            $query = $query . " AND TRSA_ID LIKE '%'||:trsa_id||'%' ";
+        }
+
+        if (isset($this->trsa_trip) && $this->trsa_trip != '') {
+            $query = $query . " AND TRSA_TRIP LIKE '%'||:trsa_trip||'%' ";
+        }
+
+        if (isset($this->trsa_tanker) && $this->trsa_tanker != '') {
+            $query = $query . " AND UPPER(TRSA_TANKER) LIKE '%'||UPPER(:trsa_tanker)||'%' ";
+        }
+
+        if (isset($this->load_id) && $this->load_id != '') {
+            $query = $query . " AND LOAD_ID LIKE '%'||:load_id||'%' ";
+        }
+
+        if (isset($this->trsa_supplier) && $this->trsa_supplier != '') {
+           $query = $query . " AND TRSA_SUPPLIER = :trsa_supplier";
+        }
+
+        if (isset($this->trsa_carrier) && $this->trsa_carrier != '') {
+           $query = $query . " AND TRSA_CARRIER = :trsa_carrier";
+        }
+        
+        $stmt = oci_parse($this->conn, $query);
+
+        if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1') {
+            oci_bind_by_name($stmt, ':start_date', $this->start_date);
+        }
+        if (isset($this->end_date) && $this->end_date != -1 && $this->end_date != '-1') {
+            oci_bind_by_name($stmt, ':end_date', $this->end_date);
+        }
+
+        if (isset($this->trsa_terminal) && $this->trsa_terminal != '') {
+            oci_bind_by_name($stmt, ':trsa_terminal', $this->trsa_terminal);
+        }
+        
+        if (isset($this->trsa_id) && $this->trsa_id != '') {
+            oci_bind_by_name($stmt, ':trsa_id', $this->trsa_id);
+        }
+        
+        if (isset($this->trsa_trip) && $this->trsa_trip != '') {
+            oci_bind_by_name($stmt, ':trsa_trip', $this->trsa_trip);
+        }
+
+        if (isset($this->trsa_tanker) && $this->trsa_tanker != '') {
+            oci_bind_by_name($stmt, ':trsa_tanker', $this->trsa_tanker);
+        }
+
+        if (isset($this->load_id) && $this->load_id != '') {
+            oci_bind_by_name($stmt, ':load_id', $this->load_id);
+        }
+
+        if (isset($this->trsa_supplier) && $this->trsa_supplier != '') {
+            oci_bind_by_name($stmt, ':trsa_supplier', $this->trsa_supplier);
+         }
+ 
+         if (isset($this->trsa_carrier) && $this->trsa_carrier != '') {
+            oci_bind_by_name($stmt, ':trsa_carrier', $this->trsa_carrier);
+         }
+         
+        if (oci_execute($stmt, $this->commit_mode)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            return (int) $row['CN'];
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return 0;
+        }
+    }
+
     public function read()
+    {
+        $query = "
+            SELECT * FROM " . $this->VIEW_NAME . "
+            WHERE 1 = 1
+        ";
+
+        if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1') {
+            $query .= "
+                AND TRSA_ST_DMY > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')
+            ";
+        }
+        if (isset($this->end_date) && $this->end_date != -1 && $this->end_date != '-1') {
+            $query .= "
+                AND TRSA_ST_DMY < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS')
+            ";
+        }
+
+        if (isset($this->trsa_terminal) && $this->trsa_terminal != '') {
+           $query = $query . " AND TRSA_TERMINAL = :trsa_terminal";
+        }
+
+        if (isset($this->trsa_id) && $this->trsa_id != '') {
+            $query = $query . " AND TRSA_ID LIKE '%'||:trsa_id||'%' ";
+        }
+
+        if (isset($this->trsa_trip) && $this->trsa_trip != '') {
+            $query = $query . " AND TRSA_TRIP LIKE '%'||:trsa_trip||'%' ";
+        }
+
+        if (isset($this->trsa_tanker) && $this->trsa_tanker != '') {
+            $query = $query . " AND UPPER(TRSA_TANKER) LIKE '%'||UPPER(:trsa_tanker)||'%' ";
+        }
+
+        if (isset($this->load_id) && $this->load_id != '') {
+            $query = $query . " AND LOAD_ID LIKE '%'||:load_id||'%' ";
+        }
+
+        if (isset($this->trsa_supplier) && $this->trsa_supplier != '') {
+           $query = $query . " AND TRSA_SUPPLIER = :trsa_supplier";
+        }
+
+        if (isset($this->trsa_carrier) && $this->trsa_carrier != '') {
+           $query = $query . " AND TRSA_CARRIER = :trsa_carrier";
+        }
+
+        $query .= "
+            ORDER BY TRSA_ST_DMY DESC
+        ";
+
+
+        if (isset($this->pgflag) && $this->pgflag==='Y') {
+           $query = $this->pagination_query($query);
+        }
+
+        $stmt = oci_parse($this->conn, $query);
+
+        if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1') {
+            oci_bind_by_name($stmt, ':start_date', $this->start_date);
+        }
+        if (isset($this->end_date) && $this->end_date != -1 && $this->end_date != '-1') {
+            oci_bind_by_name($stmt, ':end_date', $this->end_date);
+        }
+
+        if (isset($this->trsa_terminal) && $this->trsa_terminal != '') {
+            oci_bind_by_name($stmt, ':trsa_terminal', $this->trsa_terminal);
+        }
+        
+        if (isset($this->trsa_id) && $this->trsa_id != '') {
+            oci_bind_by_name($stmt, ':trsa_id', $this->trsa_id);
+        }
+        
+        if (isset($this->trsa_trip) && $this->trsa_trip != '') {
+            oci_bind_by_name($stmt, ':trsa_trip', $this->trsa_trip);
+        }
+
+        if (isset($this->trsa_tanker) && $this->trsa_tanker != '') {
+            oci_bind_by_name($stmt, ':trsa_tanker', $this->trsa_tanker);
+        }
+
+        if (isset($this->load_id) && $this->load_id != '') {
+            oci_bind_by_name($stmt, ':load_id', $this->load_id);
+        }
+
+        if (isset($this->trsa_supplier) && $this->trsa_supplier != '') {
+           oci_bind_by_name($stmt, ':trsa_supplier', $this->trsa_supplier);
+        }
+
+        if (isset($this->trsa_carrier) && $this->trsa_carrier != '') {
+           oci_bind_by_name($stmt, ':trsa_carrier', $this->trsa_carrier);
+        }
+        
+        if (isset($this->pgflag) && $this->pgflag==='Y') {
+           $this->pagination_binds($stmt);
+        }
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function read_all()
     {
         $query = "
             SELECT * FROM " . $this->VIEW_NAME . "
