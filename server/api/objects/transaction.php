@@ -247,6 +247,10 @@ class Transaction extends CommonClass
            $query = $query . " AND TRSA_TERMINAL = :trsa_terminal";
         }
 
+        if (isset($this->trsa_bay) && $this->trsa_bay != '') {
+            $query = $query . " AND TRSA_BAY_CD = :trsa_bay";
+        }
+ 
         if (isset($this->trsa_id) && $this->trsa_id != '') {
             $query = $query . " AND TRSA_ID LIKE '%'||:trsa_id||'%' ";
         }
@@ -282,6 +286,10 @@ class Transaction extends CommonClass
 
         if (isset($this->trsa_terminal) && $this->trsa_terminal != '') {
             oci_bind_by_name($stmt, ':trsa_terminal', $this->trsa_terminal);
+        }
+
+        if (isset($this->trsa_bay) && $this->trsa_bay != '') {
+            oci_bind_by_name($stmt, ':trsa_bay', $this->trsa_bay);
         }
         
         if (isset($this->trsa_id) && $this->trsa_id != '') {
@@ -340,6 +348,10 @@ class Transaction extends CommonClass
            $query = $query . " AND TRSA_TERMINAL = :trsa_terminal";
         }
 
+        if (isset($this->trsa_bay) && $this->trsa_bay != '') {
+            $query = $query . " AND TRSA_BAY_CD = :trsa_bay";
+        }
+
         if (isset($this->trsa_id) && $this->trsa_id != '') {
             $query = $query . " AND TRSA_ID LIKE '%'||:trsa_id||'%' ";
         }
@@ -384,6 +396,10 @@ class Transaction extends CommonClass
 
         if (isset($this->trsa_terminal) && $this->trsa_terminal != '') {
             oci_bind_by_name($stmt, ':trsa_terminal', $this->trsa_terminal);
+        }
+
+        if (isset($this->trsa_bay) && $this->trsa_bay != '') {
+            oci_bind_by_name($stmt, ':trsa_bay', $this->trsa_bay);
         }
         
         if (isset($this->trsa_id) && $this->trsa_id != '') {
@@ -478,6 +494,21 @@ class Transaction extends CommonClass
             oci_bind_by_name($stmt, ':end_date', $this->end_date);
         }
         
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function bays()
+    {
+        $query = "SELECT BA_CODE 
+            FROM BAY_AREA
+            ORDER BY BA_CODE";
+        $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
         } else {

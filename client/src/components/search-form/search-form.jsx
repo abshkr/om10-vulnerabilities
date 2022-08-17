@@ -45,6 +45,7 @@ import {
   TnkrOwner,
   TnkrEtyp,
   TnkrFlags,
+  BayList,
 } from './fields';
 
 const SearchForm = ({ onSearch, fields, initValues, modal, rangeRequired, timeRequired }) => {
@@ -120,13 +121,14 @@ const SearchForm = ({ onSearch, fields, initValues, modal, rangeRequired, timeRe
       initialValues={formValues}
     >
       {fields?.terminal && <Terminal />}
+      {fields?.bay_code && <BayList />}
       {fields?.mv_key && <NominationKey />}
       {fields?.shls_trip_no && <Trip />}
+      {fields?.supplier_code && <Supplier />}
       {fields?.mlitm_prodcmpy && <PlantSupplier />}
       {fields?.mlitm_id && <MovementID />}
       {fields?.load_id && <LoadID />}
       {fields?.trsa_id && <TrsaID />}
-      {fields?.supplier_code && <Supplier />}
       {fields?.carrier_code && <Carrier onChange={setCarrier} />}
       {fields?.tnkr_code && <Tanker carrier={carrier} />}
       {fields?.trip_status && <TripStatus />}

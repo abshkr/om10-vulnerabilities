@@ -58,6 +58,7 @@ const TransactionList = () => {
   const [useSearch, setUseSearch] = useState(false);
 
   const [trsaTerminal, setTrsaTerminal] = useState('');
+  const [trsaBay, setTrsaBay] = useState('');
   const [trsaTrip, setTrsaTrip] = useState('');
   const [trsaSupplier, setTrsaSupplier] = useState('');
   const [trsaCarrier, setTrsaCarrier] = useState('');
@@ -112,7 +113,7 @@ const TransactionList = () => {
       !start ? '-1' : start
     }&end_date=${
       !end ? '-1' : end
-    }&trsa_terminal=${trsaTerminal}&trsa_trip=${trsaTrip}&trsa_supplier=${trsaSupplier}&trsa_carrier=${trsaCarrier}&trsa_tanker=${trsaTanker}&trsa_id=${trsaId}&load_id=${trsaLoad}`;
+    }&trsa_terminal=${trsaTerminal}&trsa_bay=${trsaBay}&trsa_trip=${trsaTrip}&trsa_supplier=${trsaSupplier}&trsa_carrier=${trsaCarrier}&trsa_tanker=${trsaTanker}&trsa_id=${trsaId}&load_id=${trsaLoad}`;
     setMainUrl(tempUrl);
 
     setPage(1);
@@ -135,7 +136,7 @@ const TransactionList = () => {
     // revalidate();
     const tempUrl = `${TRANSACTION_LIST.READ}?pgflag=${
       pagingFlag ? 'Y' : 'N'
-    }&start_date=${start}&end_date=${end}&trsa_terminal=${trsaTerminal}&trsa_trip=${trsaTrip}&trsa_supplier=${trsaSupplier}&trsa_carrier=${trsaCarrier}&trsa_tanker=${trsaTanker}&trsa_id=${trsaId}&load_id=${trsaLoad}`;
+    }&start_date=${start}&end_date=${end}&trsa_terminal=${trsaTerminal}&trsa_bay=${trsaBay}&trsa_trip=${trsaTrip}&trsa_supplier=${trsaSupplier}&trsa_carrier=${trsaCarrier}&trsa_tanker=${trsaTanker}&trsa_id=${trsaId}&load_id=${trsaLoad}`;
     setMainUrl(tempUrl);
     setPage(1);
     setRunUrlFlag(!pagingFlag);
@@ -157,6 +158,7 @@ const TransactionList = () => {
     setUseSearch(false);
 
     setTrsaTerminal('');
+    setTrsaBay('');
     setTrsaTrip('');
     setTrsaSupplier('');
     setTrsaCarrier('');
@@ -164,13 +166,13 @@ const TransactionList = () => {
     setTrsaId('');
     setTrsaLoad('');
     /* // const tempUrl = (
-    //   `${TRANSACTION_LIST.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${!start?'-1':start}&end_date=${!end?'-1':end}&trsa_terminal=${trsaTerminal}&trsa_trip=${trsaTrip}&trsa_supplier=${trsaSupplier}&trsa_carrier=${trsaCarrier}&trsa_tanker=${trsaTanker}&trsa_id=${trsaId}&load_id=${trsaLoad}`
+    //   `${TRANSACTION_LIST.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${!start?'-1':start}&end_date=${!end?'-1':end}&trsa_terminal=${trsaTerminal}&trsa_bay=${trsaBay}&trsa_trip=${trsaTrip}&trsa_supplier=${trsaSupplier}&trsa_carrier=${trsaCarrier}&trsa_tanker=${trsaTanker}&trsa_id=${trsaId}&load_id=${trsaLoad}`
     // );
     const tempUrl = `${TRANSACTION_LIST.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${
       !start ? '-1' : start
     }&end_date=${
       !end ? '-1' : end
-    }&trsa_terminal=${''}&trsa_trip=${''}&trsa_supplier=${''}&trsa_carrier=${''}&trsa_tanker=${''}&trsa_id=${''}&load_id=${''}`;
+    }&trsa_terminal=${''}&trsa_bay=${''}&trsa_trip=${''}&trsa_supplier=${''}&trsa_carrier=${''}&trsa_tanker=${''}&trsa_id=${''}&load_id=${''}`;
     setMainUrl(tempUrl);
 
     setPage(1);
@@ -196,6 +198,7 @@ const TransactionList = () => {
     setSearching(true);
 
     setTrsaTerminal(!values?.terminal ? '' : values?.terminal);
+    setTrsaBay(!values?.bay_code ? '' : values?.bay_code);
     setTrsaTrip(!values?.shls_trip_no ? '' : values?.shls_trip_no);
     setTrsaSupplier(!values?.supplier_code ? '' : values?.supplier_code);
     setTrsaCarrier(!values?.carrier_code ? '' : values?.carrier_code);
@@ -208,6 +211,7 @@ const TransactionList = () => {
     setUseSearch(true);
 
     const trsaTerminal = !values?.terminal ? '' : values?.terminal;
+    const trsaBay = !values?.bay_code ? '' : values?.bay_code;
     const trsaTrip = !values?.shls_trip_no ? '' : values?.shls_trip_no;
     const trsaSupplier = !values?.supplier_code ? '' : values?.supplier_code;
     const trsaCarrier = !values?.carrier_code ? '' : values?.carrier_code;
@@ -222,7 +226,7 @@ const TransactionList = () => {
     // );
     const tempUrl = `${TRANSACTION_LIST.READ}?pgflag=${
       pagingFlag ? 'Y' : 'N'
-    }&start_date=${startTimeSearch}&end_date=${endTimeSearch}&trsa_terminal=${trsaTerminal}&trsa_trip=${trsaTrip}&trsa_supplier=${trsaSupplier}&trsa_carrier=${trsaCarrier}&trsa_tanker=${trsaTanker}&trsa_id=${trsaId}&load_id=${trsaLoad}`;
+    }&start_date=${startTimeSearch}&end_date=${endTimeSearch}&trsa_terminal=${trsaTerminal}&trsa_bay=${trsaBay}&trsa_trip=${trsaTrip}&trsa_supplier=${trsaSupplier}&trsa_carrier=${trsaCarrier}&trsa_tanker=${trsaTanker}&trsa_id=${trsaId}&load_id=${trsaLoad}`;
     setMainUrl(tempUrl);
 
     setPage(1);
@@ -292,15 +296,17 @@ const TransactionList = () => {
             t('operations.search'),
             {
               terminal: true,
-              supplier_code: false, // true,
+              bay_code: true,
+              supplier_code: true,
               shls_trip_no: true,
               trsa_id: true,
               load_id: true,
-              carrier_code: false, // true,
+              carrier_code: true,
               tnkr_code: true,
             },
             {
               terminal: trsaTerminal,
+              bay_code: trsaBay,
               supplier_code: trsaSupplier,
               shls_trip_no: trsaTrip,
               trsa_id: trsaId,

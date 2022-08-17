@@ -34,6 +34,7 @@ import TnkrCarrier from './tnkr-carrier';
 import TnkrOwner from './tnkr-owner';
 import TnkrEtyp from './tnkr-etyp';
 import TnkrFlags from './tnkr-flags';
+import BayList from './bay';
 
 export {
   DateRange,
@@ -72,4 +73,5 @@ export {
   TnkrOwner,
   TnkrEtyp,
   TnkrFlags,
+  BayList,
 };
