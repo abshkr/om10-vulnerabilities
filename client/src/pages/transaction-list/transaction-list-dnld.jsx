@@ -261,7 +261,7 @@ const TransactionList = () => {
       />
       <DateTimeRangePicker
         handleChange={setRange}
-        rangeSetting={config?.scheduleDateRange}
+        rangeSetting={config?.transactionsDateRange}
         refreshed={refreshed}
         setRefreshed={setRefreshed}
         disabled={false}

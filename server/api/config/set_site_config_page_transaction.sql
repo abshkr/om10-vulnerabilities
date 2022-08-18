@@ -1,5 +1,5 @@
 /*
-    define the SITE_PAGINATION_TRSA_LIST to determine wheter pagination is required for transaction list
+    define the SITE_PAGINATION_TRSA_LIST to determine whether pagination is required for transaction list
     Y: enable the pagination for transaction list.
     N: disable the pagination for transaction list.
 */
