@@ -33,7 +33,7 @@ const GuardmasterProduct = ({ value, form, flag }) => {
     const validated = regex.exec(input);
 
     if (input && input.length > 0 && !validated) {
-      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextAlphaNumeric')}`);
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextAlphaNumericNoSpace')}`);
     }
 
     const len = new TextEncoder().encode(input).length;

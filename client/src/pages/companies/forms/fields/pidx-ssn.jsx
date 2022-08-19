@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
 import { REGEX } from '../../../../constants';
 
-const PidxCode = ({ form, value }) => {
+const PidxSsn = ({ form, value, flag, onChange }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -12,7 +12,7 @@ const PidxCode = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        base_pidx_code: value.base_pidx_code,
+        cmpy_pidx_ssn: value.cmpy_pidx_ssn,
       });
     }
   }, [value, setFieldsValue]);
@@ -25,16 +25,16 @@ const PidxCode = ({ form, value }) => {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
     }
 
-    const regex = new RegExp(REGEX.ALPHANUMERIC_NOSPACE);
+    const regex = new RegExp(REGEX.SSN);
     const validated = regex.exec(input);
 
     if (input && input.length > 0 && !validated) {
-      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextAlphaNumericNoSpace')}`);
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextSsn')}`);
     }
 
     const len = new TextEncoder().encode(input).length;
-    if (input && len > 12) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: 12 ─ ${t('descriptions.maxCharacters')}`);
+    if (input && len > 9) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 9 ─ ${t('descriptions.maxCharacters')}`);
     }
 
     return Promise.resolve();
@@ -42,13 +42,13 @@ const PidxCode = ({ form, value }) => {
 
   return (
     <Form.Item
-      name="base_pidx_code"
-      label={t('fields.basePidxCode')}
+      name="cmpy_pidx_ssn"
+      label={t('fields.cmpyPidxSsn')}
       rules={[{ required: false, validator: validate }]}
     >
-      <Input />
+      <Input disabled={!flag} onChange={onChange} />
     </Form.Item>
   );
 };
 
-export default PidxCode;
+export default PidxSsn;

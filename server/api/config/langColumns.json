@@ -996,6 +996,9 @@
       "CMPY_ADDR": "Company Address",
       "CMPY_LOGO": "Logo",
       "CMPY_PIDX_CARRIER": "Standard Carrier Alpha Code",
+      "CMPY_PIDX_FEIN": "Federal Employer Identification Number (FEIN)",
+      "CMPY_PIDX_SSN": "Social Security Number (SSN)",
+      "CMPY_PIDX_CARRIER_FEIN": "Carrier FEIN",
       "CMPY_PIDX_SUPPLIER": "Seller ID",
       "CMPY_PIDX_DRAWER": "Final Shipper ID",
       "CMPY_PIDX_CUSTOMER": "Consignee Number"
@@ -5999,7 +6002,10 @@
       "CMPY_REPORT_RECEIVERS": "盘点报表电子邮件接收地址",
       "CMPY_ADDR": "公司地址",
       "CMPY_LOGO": "图标",
-      "CMPY_PIDX_CARRIER": "承运人标准数字编码",
+      "CMPY_PIDX_CARRIER": "承运商标准数字编码",
+      "CMPY_PIDX_FEIN": "联邦雇主标识号码(FEIN)",
+      "CMPY_PIDX_SSN": "社会安全号码(SSN)",
+      "CMPY_PIDX_CARRIER_FEIN": "承运商FEIN",
       "CMPY_PIDX_SUPPLIER": "卖家编号",
       "CMPY_PIDX_DRAWER": "最终发货人编号",
       "CMPY_PIDX_CUSTOMER": "收货人编号"

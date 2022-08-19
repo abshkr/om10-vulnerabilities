@@ -24,7 +24,16 @@ export const ALPHANUMERIC_MULTILINGUAL = /^[\u0001-\ufffd]+$/;
 export const ALPHANUMERIC_HOSTCOMM = /^([^\>\`\'\&\<])*$/;
 
 export const COLOR_VALUE = /^#([0-9a-fA-F]{6})$/;
-export const BAYCODE = /^BAY +[0-9]+$/;
+
+//export const BAYCODE = /^BAY[0-9]+$/;
+//export const BAYCODE = /^BAY[0-9][0-9][A-Z0-9]$/;
+export const BAYCODE = /^BAY[A-Za-z0-9]+$/;
+export const ARMCODE = /^A[0-9]+$/;
+export const FEIN = /^([0-9]{9})+$/;
+export const SSN = /^([0-9]{9})+$/;
+// export const CFEIN = /^([0-9]{9})([FSU]{1})+$/;
+export const CFEIN = /^((([0-9]{9})([FS]{1}))|(([0]{9})([U]{1})))+$/;
+
 export const CURRENCY = /^[0-9]+(\.[0-9]{1,2})?$/;
 // export const DOCUMENT = /^([^\\x00-\\xff]|[\\x00-\\xff])*$/;
 export const DOCUMENT = /^([^\x00-\xff]|[\x00-\xff])*$/;

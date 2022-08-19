@@ -37,7 +37,15 @@ import Logo from './logo';
 import useSWR from 'swr';
 import _ from 'lodash';
 
-import { PidxCarrier, PidxSupplier, PidxDrawer, PidxCustomer } from './fields';
+import {
+  PidxCarrier,
+  PidxSupplier,
+  PidxDrawer,
+  PidxCustomer,
+  PidxFein,
+  PidxSsn,
+  PidxCarrierFein,
+} from './fields';
 
 // import { getChildrenFromTxt } from '../../../utils';
 
@@ -73,6 +81,70 @@ const FormModal = ({
   const IS_CREATING = !value;
 
   const removeWhiteSpaceFrontBack = (s) => s.trim().split(/ +/).join(' ');
+
+  const adjustFeinFields = (source) => {
+    const fein = form.getFieldValue('cmpy_pidx_fein');
+    const ssn = form.getFieldValue('cmpy_pidx_ssn');
+    const cfein = form.getFieldValue('cmpy_pidx_carrier_fein');
+
+    const regexFEIN = new RegExp(REGEX.FEIN);
+    const validFEIN = regexFEIN.exec(fein);
+    const regexSSN = new RegExp(REGEX.SSN);
+    const validSSN = regexSSN.exec(ssn);
+    const regexCFEIN = new RegExp(REGEX.CFEIN);
+    const validCFEIN = regexCFEIN.exec(cfein);
+
+    if (source === 'cmpy_pidx_carrier_fein') {
+      if (validCFEIN) {
+        if (cfein === '000000000U') {
+          form.setFieldsValue({
+            cmpy_pidx_fein: '',
+            cmpy_pidx_ssn: '',
+          });
+        }
+        if (cfein.charAt(9) === 'F') {
+          form.setFieldsValue({
+            cmpy_pidx_fein: cfein.substring(0, 9),
+            cmpy_pidx_ssn: '',
+          });
+        }
+        if (cfein.charAt(9) === 'S') {
+          form.setFieldsValue({
+            cmpy_pidx_fein: '',
+            cmpy_pidx_ssn: cfein.substring(0, 9),
+          });
+        }
+      }
+    }
+
+    if (source === 'cmpy_pidx_fein' || source === 'cmpy_pidx_ssn') {
+      if (validFEIN) {
+        form.setFieldsValue({
+          cmpy_pidx_carrier_fein: fein + 'F',
+        });
+      } else if (validSSN) {
+        form.setFieldsValue({
+          cmpy_pidx_carrier_fein: ssn + 'S',
+        });
+      } else {
+        form.setFieldsValue({
+          cmpy_pidx_carrier_fein: '000000000U',
+        });
+      }
+    }
+  };
+
+  const onFeinChanged = (v) => {
+    adjustFeinFields('cmpy_pidx_fein');
+  };
+
+  const onSsnChanged = (v) => {
+    adjustFeinFields('cmpy_pidx_ssn');
+  };
+
+  const onCarrierFeinChanged = (v) => {
+    adjustFeinFields('cmpy_pidx_carrier_fein');
+  };
 
   const checkCompany = async (code) => {
     const values = {
@@ -561,7 +633,7 @@ const FormModal = ({
       destroyOnClose={true}
       mask={config?.siteFormCloseAlert ? true : IS_CREATING}
       placement="right"
-      width="48vw"
+      width="60vw"
       visible={visible}
       footer={
         <>
@@ -627,7 +699,7 @@ const FormModal = ({
     >
       <Form layout="vertical" form={form} scrollToFirstError>
         <Tabs defaultActiveKey="1">
-          <TabPane tab={t('tabColumns.general')} key="1" style={{ height: '80vh' }}>
+          <TabPane tab={t('tabColumns.general')} key="1">
             <Form.Item
               name="cmpy_code"
               label={t('fields.companyCode')}
@@ -696,73 +768,79 @@ const FormModal = ({
                 ))}
               </Select>
             </Form.Item>
-            <Card size="small" title={t('fields.companyType')}>
-              <Row gutter={[8, 10]}>
-                <Col span={6}>
-                  <Form.Item name="site_manager" noStyle>
-                    <Checkbox
-                      checked={site_manager && !IS_CREATING}
-                      disabled={true}
-                      onChange={onManagerChange}
-                    >
-                      {t('fields.siteManager')}
-                    </Checkbox>
-                  </Form.Item>
-                </Col>
-                <Col span={6}>
-                  <Form.Item name="supplier" noStyle>
-                    <Checkbox checked={supplier} onChange={onSupplierChange}>
-                      {t('fields.schdSupplier')}
-                    </Checkbox>
-                  </Form.Item>
-                </Col>
-                <Col span={6}>
-                  <Form.Item name="carrier" noStyle>
-                    <Checkbox checked={carrier} onChange={onCarrierChange}>
-                      {t('fields.schdCarrier')}
-                    </Checkbox>
-                  </Form.Item>
-                </Col>
-                <Col span={6}>
-                  <Form.Item name="customer" noStyle>
-                    <Checkbox checked={customer} onChange={onCustomerChange}>
-                      {t('fields.customer')}
-                    </Checkbox>
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Row gutter={[8, 10]}>
-                <Col span={6}>
-                  <Form.Item name="drawer" noStyle>
-                    <Checkbox checked={drawer} onChange={onDrawerChange}>
-                      {t('fields.drawer')}
-                    </Checkbox>
-                  </Form.Item>
-                </Col>
-                <Col span={6}>
-                  <Form.Item name="issuer" noStyle>
-                    <Checkbox checked={issuer} onChange={onIssuerChange}>
-                      {t('fields.issuer')}
-                    </Checkbox>
-                  </Form.Item>
-                </Col>
-                <Col span={6}>
-                  <Form.Item name="employer" noStyle>
-                    <Checkbox checked={employer} onChange={onEmployerChange}>
-                      {t('fields.employer')}
-                    </Checkbox>
-                  </Form.Item>
-                </Col>
-                <Col span={6}>
-                  <Form.Item name="host" noStyle>
-                    <Checkbox checked={host} onChange={onHostChange}>
-                      {t('fields.host')}
-                    </Checkbox>
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Card>
-            <Logo value={value} form={form} />
+            <Row gutter={[10, 10]}>
+              <Col span={21}>
+                <Card size="small" title={t('fields.companyType')}>
+                  <Row gutter={[8, 10]}>
+                    <Col span={6}>
+                      <Form.Item name="site_manager" noStyle>
+                        <Checkbox
+                          checked={site_manager && !IS_CREATING}
+                          disabled={true}
+                          onChange={onManagerChange}
+                        >
+                          {t('fields.siteManager')}
+                        </Checkbox>
+                      </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                      <Form.Item name="supplier" noStyle>
+                        <Checkbox checked={supplier} onChange={onSupplierChange}>
+                          {t('fields.schdSupplier')}
+                        </Checkbox>
+                      </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                      <Form.Item name="carrier" noStyle>
+                        <Checkbox checked={carrier} onChange={onCarrierChange}>
+                          {t('fields.schdCarrier')}
+                        </Checkbox>
+                      </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                      <Form.Item name="customer" noStyle>
+                        <Checkbox checked={customer} onChange={onCustomerChange}>
+                          {t('fields.customer')}
+                        </Checkbox>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row gutter={[8, 10]}>
+                    <Col span={6}>
+                      <Form.Item name="drawer" noStyle>
+                        <Checkbox checked={drawer} onChange={onDrawerChange}>
+                          {t('fields.drawer')}
+                        </Checkbox>
+                      </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                      <Form.Item name="issuer" noStyle>
+                        <Checkbox checked={issuer} onChange={onIssuerChange}>
+                          {t('fields.issuer')}
+                        </Checkbox>
+                      </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                      <Form.Item name="employer" noStyle>
+                        <Checkbox checked={employer} onChange={onEmployerChange}>
+                          {t('fields.employer')}
+                        </Checkbox>
+                      </Form.Item>
+                    </Col>
+                    <Col span={6}>
+                      <Form.Item name="host" noStyle>
+                        <Checkbox checked={host} onChange={onHostChange}>
+                          {t('fields.host')}
+                        </Checkbox>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                </Card>
+              </Col>
+              <Col span={3} style={{ float: 'right' }}>
+                <Logo value={value} form={form} />
+              </Col>
+            </Row>
             {config?.siteEnabledPIDX && (
               <Row gutter={[8, 10]}>
                 <Col span={8}>
@@ -776,6 +854,19 @@ const FormModal = ({
                 </Col>
                 <Col span={8}>
                   <PidxCustomer form={form} value={value} flag={customer} />
+                </Col>
+              </Row>
+            )}
+            {config?.siteEnabledPIDX && (
+              <Row gutter={[8, 10]}>
+                <Col span={8}>
+                  <PidxFein form={form} value={value} flag={carrier} onChange={onFeinChanged} />
+                </Col>
+                <Col span={8}>
+                  <PidxSsn form={form} value={value} flag={carrier} onChange={onSsnChanged} />
+                </Col>
+                <Col span={8}>
+                  <PidxCarrierFein form={form} value={value} flag={carrier} onChange={onCarrierFeinChanged} />
                 </Col>
               </Row>
             )}

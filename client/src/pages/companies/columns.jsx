@@ -139,6 +139,16 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
+    headerName: t('fields.cmpyPidxCarrierFein'),
+    field: 'cmpy_pidx_carrier_fein',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
+    hide: !config?.siteEnabledPIDX,
+    width: 150,
+    suppressSizeToFit: true,
+  },
+  {
     headerName: t('fields.cmpyPidxSupplier'),
     field: 'cmpy_pidx_supplier',
     sortable: true,
