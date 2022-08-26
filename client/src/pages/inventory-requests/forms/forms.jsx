@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
   EditOutlined,
@@ -8,9 +8,11 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
+import { Form, Button, Tabs, Modal, notification, Drawer, Card, Space } from 'antd';
 import { useTranslation } from 'react-i18next';
+import useSWR from 'swr';
 import { mutate } from 'swr';
+import moment from 'moment';
 import _ from 'lodash';
 
 import { Type, Period, InventoryDate, SelectAllTanks, Terminal } from './fields';
@@ -19,23 +21,79 @@ import { SETTINGS } from '../../../constants';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, config }) => {
+const FormModal = ({ value, visible, handleFormState, access, config, refresh }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
 
+  const [requestType, setRequestType] = useState(value?.tkrq_type);
+  const [periodType, setPeriodType] = useState(value?.tkrq_period);
+  const [terminal, setTerminal] = useState(value?.tkrq_depot);
+
+  const { data: tank_counts } = useSWR(`${INVENTORY_REQUESTS.COUNT_TANKS}?terminal=${terminal}`);
+
   const IS_CREATING = !value;
 
-  const onComplete = () => {
+  const onFormClosed = () => {
+    setRequestType(undefined);
+    setPeriodType(undefined);
+    setTerminal(undefined);
+    resetFields();
     handleFormState(false, null);
-    mutate(INVENTORY_REQUESTS.READ);
+  };
+
+  const onExitClicked = () => {
+    if (!config?.siteFormCloseAlert) {
+      onFormClosed();
+      return;
+    }
+
+    Modal.confirm({
+      title: t('prompts.cancel'),
+      okText: t('operations.leave'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.stay'),
+      content: (
+        <Card
+          style={{ marginTop: 15, padding: 5, marginBottom: 15 }}
+          size="small"
+          title={t('validate.warning')}
+        >
+          {t('descriptions.cancelWarning')}
+        </Card>
+      ),
+      centered: true,
+      onOk: () => {
+        onFormClosed();
+      },
+    });
+  };
+
+  const onComplete = () => {
+    setRequestType(undefined);
+    setPeriodType(undefined);
+    setTerminal(undefined);
+    handleFormState(false, null);
+    // mutate(INVENTORY_REQUESTS.READ);
+    if (refresh) {
+      refresh();
+    }
   };
 
   const onFinish = async () => {
     const values = await form.validateFields();
 
+    if (values.tkrq_period === '0') {
+      if (values?.tkrq_due < moment().add(10, 'minutes')) {
+        values.tkrq_due = moment().add(10, 'minutes');
+      }
+    }
+
     values.tkrq_due = values?.tkrq_due?.format(SETTINGS.DATE_TIME_FORMAT);
     values.tkrq_key = IS_CREATING ? values?.tkrq_due : value?.tkrq_key;
+    values.tkrq_first = values?.tkrq_due;
+    values.tkrq_allflag = !values?.tkrq_allflag ? false : values?.tkrq_allflag;
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
@@ -102,6 +160,11 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
   useEffect(() => {
     if (!value && !visible) {
       resetFields();
+    } else {
+      console.log('...................here it is again...', value);
+      setRequestType(value?.tkrq_type);
+      setPeriodType(value?.tkrq_period);
+      setTerminal(value?.tkrq_depot);
     }
   }, [value, visible]);
 
@@ -109,7 +172,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
       forceRender
-      onClose={() => handleFormState(false, null)}
+      onClose={onExitClicked}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
       mask={IS_CREATING}
@@ -122,7 +185,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
             htmlType="button"
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
-            onClick={() => handleFormState(false, null)}
+            onClick={onExitClicked}
           >
             {t('operations.cancel')}
           </Button>
@@ -133,7 +196,10 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
             htmlType="submit"
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate}
+            disabled={
+              (IS_CREATING ? !access?.canCreate : !access?.canUpdate) ||
+              (terminal !== undefined && tank_counts?.records?.[0]?.cnt === '0')
+            }
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -155,11 +221,18 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
       <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1" style={{ height: '80vh' }}>
           <TabPane tab={t('tabColumns.general')} key="1">
-            <Terminal form={form} value={value} />
-            <Type form={form} value={value} />
-            <Period form={form} value={value} />
-            <InventoryDate form={form} value={value} config={config} />
-            <SelectAllTanks form={form} value={value} />
+            <Terminal
+              form={form}
+              value={value}
+              terminal={terminal}
+              onChange={setTerminal}
+              counts={tank_counts?.records?.[0]?.cnt}
+            />
+            <Type form={form} value={value} type={requestType} onChange={setRequestType} />
+            <Period form={form} value={value} onChange={setPeriodType} />
+            <InventoryDate form={form} value={value} config={config} period={periodType} />
+            <div style={{ margin: 20 }}></div>
+            <SelectAllTanks form={form} value={value} type={requestType} />
           </TabPane>
         </Tabs>
       </Form>
