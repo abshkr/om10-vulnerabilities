@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
-import { Form, Select } from 'antd';
+import { Form, Select, Tag } from 'antd';
 
 import { SITE_CONFIGURATION } from 'api';
 
-const Terminal = ({ form, value }) => {
+const Terminal = ({ form, value, terminal, onChange, counts }) => {
   const { t } = useTranslation();
   const { setFieldsValue } = form;
 
@@ -25,13 +25,27 @@ const Terminal = ({ form, value }) => {
       setFieldsValue({
         tkrq_depot: value.tkrq_depot,
       });
+      onChange(value.tkrq_depot);
     }
   }, [value]);
 
   return (
     <Form.Item
       name="tkrq_depot"
-      label={t('fields.terminal')}
+      label={
+        terminal !== undefined ? (
+          <>
+            {t('fields.terminal')} &nbsp;&nbsp;&nbsp;
+            <Tag color={counts > 0 ? 'green' : 'red'}>
+              {counts > 0
+                ? t('descriptions.terminalHasTanks', { value: counts })
+                : t('descriptions.terminalHasNoTanks')}
+            </Tag>
+          </>
+        ) : (
+          t('fields.terminal')
+        )
+      }
       rules={[{ required: true, validator: validate }]}
     >
       <Select
@@ -39,7 +53,7 @@ const Terminal = ({ form, value }) => {
         showSearch
         dropdownMatchSelectWidth={false}
         allowClear
-        // onChange={onChange}
+        onChange={onChange}
         // disabled={!!value}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectTerminal') : null}

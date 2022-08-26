@@ -6,7 +6,7 @@ import { Form, Select } from 'antd';
 
 import { INVENTORY_REQUESTS } from '../../../../api';
 
-const Period = ({ form, value }) => {
+const Period = ({ form, value, onChange }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -40,6 +40,7 @@ const Period = ({ form, value }) => {
         allowClear
         loading={isValidating}
         showSearch
+        onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectPeriod') : null}
         filterOption={(input, option) =>
