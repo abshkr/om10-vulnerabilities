@@ -42,10 +42,16 @@ const InventoryDate = ({ form, value, config, period }) => {
       });
       setDateTime(value.tkrq_due === '' ? null : moment(value.tkrq_due, SETTINGS.DATE_TIME_FORMAT));
     } else {
+      const sessTime = sessionStorage.getItem('serverDateTime');
+      let currTime = moment();
+      if (sessTime) {
+        currTime = moment(sessTime, SETTINGS.DATE_TIME_FORMAT);
+      }
+      // currTime = moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT);
       setFieldsValue({
-        tkrq_due: moment(),
+        tkrq_due: currTime,
       });
-      setDateTime(moment());
+      setDateTime(currTime);
     }
   }, [value, setFieldsValue]);
 
