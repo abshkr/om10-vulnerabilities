@@ -79,7 +79,7 @@ class AtgField extends CommonClass
     public function get_fields()
     {
         $query = "
-            SELECT * FROM USER_TAB_COLUMNS WHERE TABLE_NAME='TANKS'
+            SELECT COLUMN_NAME, DATA_TYPE FROM USER_TAB_COLUMNS WHERE TABLE_NAME='TANKS'
         ";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
