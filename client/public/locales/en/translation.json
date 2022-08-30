@@ -303,6 +303,8 @@
     "switchTankWarning": "Please note: you may have changed data in this tank, and you will lose the changes if you switch to another tank without saving.",
     "submitSuccess4SPM": "You have made a tank to tank transfer for the base product changes in the tank.",
     "submitSuccess4FOLIO": "You have created folio tank records for the base product changes in the tank.",
+    "sysWideOrderNumUsed": "The customer order number {{value}} has been used by other schedule or open orders",
+    "sysWideTripNumUsed": "The trip number {{value}} has been used by other schedule or open orders",
     "tankDensityRestoreSuccess": "You have got the tank densities successfully",
     "tankLevelCannotNegative": "Tank level cannot be negative",
     "tankLevelInLine": "The tank level in line ",

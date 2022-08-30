@@ -931,4 +931,20 @@ class Company extends CommonClass
             return;
         }
     }
+
+    public function check_trip_order_num()
+    {
+        $cmpy_service = new CompanyService($this->conn);
+        $is_valid = !$cmpy_service->is_trip_oo_used($this->trip_order_num);
+        $result = array();
+        $result["records"] = array();
+        $item = array(
+            "is_valid" => $is_valid,
+        );
+
+        array_push($result["records"], $item);
+
+        http_response_code(200);
+        echo json_encode($result, JSON_PRETTY_PRINT);
+    }
 }

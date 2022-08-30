@@ -303,6 +303,8 @@
     "switchTankWarning": "请注意：您可能已经修改了当前油罐的数据，如果您不保存就切换到其它油罐，所有修改将会丢失。",
     "submitSuccess4SPM": "您已经为油罐基础油品的更改成功执行了油罐之间的油品转移操作。",
     "submitSuccess4FOLIO": "您已经为油罐基础油品的更改成功创建了盘点历史记录。",
+    "sysWideOrderNumUsed": "客户订单号{{value}}已经被其它提单或客户订单用过",
+    "sysWideTripNumUsed": "提单号{{value}}已经被其它提单或客户订单用过",
     "tankDensityRestoreSuccess": "您已成功获取了油罐的密度",
     "tankLevelCannotNegative": "油罐液位不能为负数",
     "tankLevelInLine": "油罐液位 - 行号：",

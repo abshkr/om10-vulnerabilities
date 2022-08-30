@@ -41,7 +41,7 @@ import {
 
 import { DataTable, SelectInput, PartnershipManager } from '../../../components';
 import { SETTINGS } from '../../../constants';
-import api, { ORDER_LISTINGS, LOAD_SCHEDULES } from 'api';
+import api, { ORDER_LISTINGS, LOAD_SCHEDULES, COMPANIES } from 'api';
 import columns from './columns';
 import Period from './item-periods';
 import OrderTrips from './order-trips';
@@ -140,6 +140,16 @@ const FormModal = ({
   const decoded = jwtDecode(token);
   const user_code = decoded?.per_code;
   const site_code = decoded?.site_code;
+
+  const isOrderNumberUsed = async (order) => {
+    const results = await api.get(`${COMPANIES.CHECK_TRIPORD_NUM}?trip_order_num=${order}`);
+    console.log('.....................isOrderNumberUsed', results);
+
+    // const valid = _.toNumber(results?.data?.records?.[0]?.is_valid) > 0;
+    const valid = results?.data?.records?.[0]?.is_valid;
+
+    return !valid;
+  };
 
   const doTabChanges = (tabPaneKey) => {
     setTabKey(tabPaneKey);
@@ -288,6 +298,18 @@ const FormModal = ({
   const onFinish = async () => {
     const values = await validateFields();
     // console.log('order items', values);
+
+    // check if the number is unique in all trip and order numbers when site config is on
+    if (IS_CREATING && config?.siteUniqueTripOrdNum) {
+      const isUsed = await isOrderNumberUsed(values?.order_cust_no);
+      if (isUsed) {
+        notification.warning({
+          message: t('messages.validationFailed'),
+          description: t('descriptions.sysWideOrderNumUsed', { value: values?.order_cust_no }),
+        });
+        return;
+      }
+    }
 
     const gridItems = [];
     tableAPI.forEachNodeAfterFilterAndSort((rowNode, index) => {
