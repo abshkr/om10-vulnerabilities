@@ -607,6 +607,7 @@
     "BASE_PRODS": {
       "BASE_CODE": "Base Code",
       "BASE_NAME": "Base Name",
+      "BASE_PIDX_CODE": "PIDX Base Code",
       "BASE_PROD_GROUP": "Base Product Group",
       "BASE_CAT": "Base Cat",
       "BASE_RPT_TUNT": "Base Rpt Tunt",
@@ -992,7 +993,15 @@
       "CMPY_SCHD_ARCHIVE": "Archive Schedules",
       "CMPY_MOVEMENTS_REV": "Reverse Movements",
       "CMPY_REPORT_RECEIVERS": "Closeout report recepient email address",
-      "CMPY_ADDR": "Company Address"
+      "CMPY_ADDR": "Company Address",
+      "CMPY_LOGO": "Logo",
+      "CMPY_PIDX_CARRIER": "Standard Carrier Alpha Code",
+      "CMPY_PIDX_FEIN": "Federal Employer Identification Number (FEIN)",
+      "CMPY_PIDX_SSN": "Social Security Number (SSN)",
+      "CMPY_PIDX_CARRIER_FEIN": "Carrier FEIN",
+      "CMPY_PIDX_SUPPLIER": "Seller ID",
+      "CMPY_PIDX_DRAWER": "Final Shipper ID",
+      "CMPY_PIDX_CUSTOMER": "Consignee Number"
     },
     "COMPANY_CONFIG": {
       "CMPY_CODE": "Company Code",
@@ -3375,6 +3384,7 @@
       "PROD_IS_LOCKED": "Product Is Locked",
       "PROD_GUARDMASTER_CODE": "Guardmaster Product Code",
       "PROD_GUARDMASTER_QUALITY": "Guardmaster Product Quality",
+      "PROD_PIDX_CODE": "PIDX Product Code",
       "PROD_DG": "Product Dangerous Goods"
     },
     "PRODUCT_BATCH": {
@@ -4488,7 +4498,11 @@
       "TERM_ADDR": "Terminal Address",
       "TERM_CONTACT": "Terminal Contact",
       "TERM_REMSITE": "Terminal Remsite",
-      "TERM_COMMS_AVAIL": "Terminal Comms Avail"
+      "TERM_COMMS_AVAIL": "Terminal Comms Avail",
+      "TERM_PIDX_ID": "PIDX Terminal Identifier",
+      "TERM_PIDX_OWNER": "PIDX Terminal Owner",
+      "TERM_PIDX_LOCID_TYPE": "Location Identifier Type",
+      "TERM_PIDX_LOCID": "Location Identifier"
     },
     "TERMINAL_GROUPS": {
       "TRMGRP_CODE": "Terminal Group Code",
@@ -5600,6 +5614,7 @@
     "BASE_PRODS": {
       "BASE_CODE": "基础油品代码",
       "BASE_NAME": "基础油品名称",
+      "BASE_PIDX_CODE": "PIDX基础油品代码",
       "BASE_PROD_GROUP": "基础油品分组",
       "BASE_CAT": "基础油品类别",
       "BASE_RPT_TUNT": "报表温度单位",
@@ -5985,7 +6000,15 @@
       "CMPY_SCHD_ARCHIVE": "提单归档",
       "CMPY_MOVEMENTS_REV": "逆转大宗货单",
       "CMPY_REPORT_RECEIVERS": "盘点报表电子邮件接收地址",
-      "CMPY_ADDR": "公司地址"
+      "CMPY_ADDR": "公司地址",
+      "CMPY_LOGO": "图标",
+      "CMPY_PIDX_CARRIER": "承运商标准数字编码",
+      "CMPY_PIDX_FEIN": "联邦雇主标识号码(FEIN)",
+      "CMPY_PIDX_SSN": "社会安全号码(SSN)",
+      "CMPY_PIDX_CARRIER_FEIN": "承运商FEIN",
+      "CMPY_PIDX_SUPPLIER": "卖家编号",
+      "CMPY_PIDX_DRAWER": "最终发货人编号",
+      "CMPY_PIDX_CUSTOMER": "收货人编号"
     },
     "COMPANY_CONFIG": {
       "CMPY_CODE": "公司代码",
@@ -8368,6 +8391,7 @@
       "PROD_IS_LOCKED": "油品锁定标记",
       "PROD_GUARDMASTER_CODE": "Guardmaster调配油品代码",
       "PROD_GUARDMASTER_QUALITY": "Guardmaster调配油品品质",
+      "PROD_PIDX_CODE": "PIDX油品代码",
       "PROD_DG": "高危品描述"
     },
     "PRODUCT_BATCH": {
@@ -9481,7 +9505,11 @@
       "TERM_ADDR": "油库地址",
       "TERM_CONTACT": "油库联系方式",
       "TERM_REMSITE": "远程油库标记",
-      "TERM_COMMS_AVAIL": "油库通讯可行性"
+      "TERM_COMMS_AVAIL": "油库通讯可行性",
+      "TERM_PIDX_ID": "PIDX油库标识符",
+      "TERM_PIDX_OWNER": "PIDX油库业主",
+      "TERM_PIDX_LOCID_TYPE": "PIDX地点标识符类型",
+      "TERM_PIDX_LOCID": "PIDX地点标识符"
     },
     "TERMINAL_GROUPS": {
       "TRMGRP_CODE": "油库组代码",

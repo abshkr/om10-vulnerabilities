@@ -9,11 +9,11 @@ import columns from './columns';
 
 import AssetForm from './forms/asset-forms';
 
-const Assets = ({access, tabFlag}) => {
+const Assets = ({ access, tabFlag }) => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [filterValue, setFilterValue] = useState('');
-  
+
   const { t } = useTranslation();
 
   // the variable tabFlag does nothing but trigger the reload of product assets
@@ -41,11 +41,12 @@ const Assets = ({access, tabFlag}) => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         //   autoColWidth
         filterValue={filterValue}
+        height={'310px'}
       />
-      <AssetForm 
-        value={selected} 
-        visible={visible} 
-        handleFormState={handleFormState} 
+      <AssetForm
+        value={selected}
+        visible={visible}
+        handleFormState={handleFormState}
         access={access}
         setFilterValue={setFilterValue}
       />

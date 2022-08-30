@@ -35,6 +35,7 @@ class TankInv extends CommonClass
                 TERMINAL.TERM_CODE || ' - ' || TERMINAL.TERM_NAME  AS TANK_SITENAME,
                 TANKS.TANK_CODE                                    AS TANK_CODE,
                 TANKS.TANK_LOCATION                                AS TANK_LOCATION,
+                BASE_PRODS.BASE_CODE                               AS BASE_CODE,
                 BASE_PRODS.BASE_NAME                               AS BASE_NAME,
                 TANKS.TANK_WATER_LVL                               AS TANK_WATER_LVL,
                 TANKS.TANK_WATER                                   AS TANK_WATER,
@@ -72,10 +73,10 @@ class TankInv extends CommonClass
             oci_bind_by_name($stmt, ':term_code', $this->terminal);
         }
         if (oci_execute($stmt, $this->commit_mode)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return $stmt;
         } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
     }

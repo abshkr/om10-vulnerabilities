@@ -81,7 +81,7 @@ const To = ({
   }, []);
 
   const getProducts = useCallback(
-    (suppCode, tankCode, fromTank) => {
+    (suppCode, tankCode, callByTank, callByTime = false) => {
       setLoading(true);
 
       // get the time
@@ -123,12 +123,29 @@ const To = ({
           setLoading(false);
 
           // const prodSelected = getFieldValue('mlitm_prodcode_to');
-          if (productList.length > 0 && fromTank) {
+          if (productList.length > 0 && callByTank && !callByTime) {
             // setProduct(productList?.[0]?.tank_base);
             setProduct(productList?.[0]?.prod_code);
             setFieldsValue({
               // mlitm_prodcode_to: productList?.[0]?.tank_base,
               mlitm_prodcode_to: productList?.[0]?.prod_code,
+            });
+          } else {
+            if (!value || callByTime) {
+              // either callByTank is FALSE or productList.length is ZERO
+              setProduct(undefined);
+              setFieldsValue({
+                // mlitm_prodcode_to: productList?.[0]?.tank_base,
+                mlitm_prodcode_to: undefined,
+              });
+            }
+          }
+          if (productList.length === 0 && callByTank) {
+            // either callByTank is FALSE or productList.length is ZERO
+            setProduct(undefined);
+            setFieldsValue({
+              // mlitm_prodcode_to: productList?.[0]?.tank_base,
+              mlitm_prodcode_to: undefined,
             });
           }
         })
@@ -211,9 +228,10 @@ const To = ({
 
   useEffect(() => {
     if (supplier && tank) {
-      getProducts(supplier, tank, false);
+      getProducts(supplier, tank, false, true);
     }
-  }, [spmTime, supplier, tank]);
+    // }, [spmTime, supplier, tank]);
+  }, [spmTime]);
 
   const validate = (rule, value) => {
     if (rule.required === false) {

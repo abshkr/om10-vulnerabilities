@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   EditOutlined,
   PlusOutlined,
@@ -11,13 +11,12 @@ import { Form, Button, Tabs, Modal, notification, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 
-import {TerminalGroupsPopup} from '../../terminal-groups';
+import { TerminalGroupsPopup } from '../../terminal-groups';
 import Forms from './forms';
 import { DataTable } from 'components';
 import columns from './columns';
 import { SITE_CONFIGURATION } from 'api';
 import { useConfig } from '../../../hooks';
-
 
 const Locations = ({ handleFormState, visible, selected, access }) => {
   const config = useConfig();
@@ -27,7 +26,7 @@ const Locations = ({ handleFormState, visible, selected, access }) => {
 
   const { t } = useTranslation();
 
-  const fields = columns(t);
+  const fields = columns(t, config);
   const data = payload?.records;
 
   return (
@@ -42,19 +41,26 @@ const Locations = ({ handleFormState, visible, selected, access }) => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         extra={
           config?.siteUseMultiTerminals && (
-          <Button
-            type="primary"
-            icon={<EyeOutlined />}
-            onClick={() => setVisibleGroup(true)}
-            loading={isValidating}
-          >
-            {t('pageNames.terminalGroups')}
-          </Button>
-        )}
+            <Button
+              type="primary"
+              icon={<EyeOutlined />}
+              onClick={() => setVisibleGroup(true)}
+              loading={isValidating}
+            >
+              {t('pageNames.terminalGroups')}
+            </Button>
+          )
+        }
       />
 
       {visible && (
-        <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
+        <Forms
+          value={selected}
+          visible={visible}
+          handleFormState={handleFormState}
+          access={access}
+          config={config}
+        />
       )}
 
       <Drawer
@@ -81,12 +87,8 @@ const Locations = ({ handleFormState, visible, selected, access }) => {
           </>
         }
       >
-        {visibleGroup && (
-          <TerminalGroupsPopup access={access} popup={true}/>
-        )}
-        
+        {visibleGroup && <TerminalGroupsPopup access={access} popup={true} />}
       </Drawer>
-
     </div>
   );
 };

@@ -690,7 +690,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
               htmlType="button"
               onClick={onReverse}
               icon={<ReloadOutlined />}
-              disabled={!access?.canUpdate || value?.mlitm_status !== '5'}
+              disabled={
+                !access?.canUpdate ||
+                value?.mlitm_status !== '5' ||
+                (value?.mlitm_type === '2' && value?.mlitm_reason_code === '0')
+              }
             >
               {t('operations.reverse')}
             </Button>

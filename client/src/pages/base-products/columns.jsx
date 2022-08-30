@@ -259,6 +259,17 @@ const columns = (t, config) => [
     width: 240,
     suppressSizeToFit: true,
   },
+
+  {
+    headerName: t('fields.basePidxCode'),
+    field: 'base_pidx_code',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
+    hide: !config?.siteEnabledPIDX,
+    width: 160,
+    suppressSizeToFit: true,
+  },
 ];
 
 export default columns;

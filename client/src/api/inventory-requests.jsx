@@ -6,5 +6,8 @@ export const CREATE = '/api/pages/inv_request/create.php';
 export const UPDATE = '/api/pages/inv_request/update.php';
 export const DELETE = '/api/pages/inv_request/delete.php';
 
+export const COUNT_TANKS = '/api/pages/inv_request/count_tanks.php';
 export const TANKS = '/api/pages/inv_request/tanks.php';
-export const UPDATE_TANKS = '/api/pages/tank/update.php';
+// export const UPDATE_TANKS = '/api/pages/tank/update.php';
+export const UPDATE_TANK = '/api/pages/inv_request/update_tank.php';
+export const UPDATE_TANKS = '/api/pages/inv_request/update_tanks.php';

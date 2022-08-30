@@ -1,13 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
-import { Form, Select } from 'antd';
+import { Form, Select, Tag } from 'antd';
 
 import { INVENTORY_REQUESTS } from '../../../../api';
 
-const Type = ({ form, value }) => {
+const Type = ({ form, value, type, onChange }) => {
   const { t } = useTranslation();
+  // const [type, setType] = useState(value?.tkrq_type);
 
   const { setFieldsValue } = form;
 
@@ -26,16 +27,33 @@ const Type = ({ form, value }) => {
       setFieldsValue({
         tkrq_type: value.tkrq_type,
       });
+      onChange(value.tkrq_type);
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item name="tkrq_type" label={t('fields.type')} rules={[{ required: true, validator: validate }]}>
+    <Form.Item
+      name="tkrq_type"
+      label={
+        type !== undefined ? (
+          <>
+            {t('fields.type')} &nbsp;&nbsp;&nbsp;
+            <Tag color={'blue'}>
+              {type === '0' ? t('descriptions.requestInformational') : t('descriptions.requestOfficial')}
+            </Tag>
+          </>
+        ) : (
+          t('fields.type')
+        )
+      }
+      rules={[{ required: true, validator: validate }]}
+    >
       <Select
         dropdownMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch
+        onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectType') : null}
         filterOption={(input, option) =>

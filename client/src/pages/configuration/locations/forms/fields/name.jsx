@@ -17,7 +17,8 @@ const Name = ({ form, value }) => {
   }, [value, setFieldsValue]);
 
   const validate = (rule, input) => {
-    if (input && input.length > 49) {
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 49) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 49 ─ ${t('descriptions.maxCharacters')}`);
     }
 

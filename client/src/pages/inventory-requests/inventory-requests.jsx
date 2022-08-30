@@ -4,6 +4,8 @@ import _ from 'lodash';
 import useSWR, { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Button, Tabs, notification, Modal } from 'antd';
+import jwtDecode from 'jwt-decode';
+import moment from 'moment';
 
 import {
   SyncOutlined,
@@ -14,6 +16,7 @@ import {
 } from '@ant-design/icons';
 
 import { Page, DataTable, Download } from '../../components';
+import { TerminalList } from 'components/fields';
 import api, { INVENTORY_REQUESTS } from '../../api';
 import tankColumns from './tank-columns';
 import generator from './generator';
@@ -31,10 +34,20 @@ const InventoryRequests = () => {
   const [invSelected, setInvSelected] = useState(null);
   const [requestsData, setRequestsData] = useState(null);
 
+  const token = sessionStorage.getItem('token');
+  const decoded = jwtDecode(token);
+  const site_code = decoded?.site_code;
+  // const [terminal, setTerminal] = useState(site_code);
+  const [terminal, setTerminal] = useState('');
+
   const access = useAuth('M_INVENTORYREQUEST');
 
-  const { data: requests, isValidating: requestsLoading, revalidate } = useSWR(INVENTORY_REQUESTS.READ);
-  const { data: tanks, isValidating: tanksLoading } = useSWR(INVENTORY_REQUESTS.TANKS);
+  const { data: requests, isValidating: requestsLoading, revalidate } = useSWR(
+    `${INVENTORY_REQUESTS.READ}?terminal=${terminal}`
+  );
+  const { data: tanks, revalidate: revalidateTanks, isValidating: tanksLoading } = useSWR(
+    `${INVENTORY_REQUESTS.TANKS}?terminal=${terminal}`
+  );
 
   const [selected, setSelected] = useState([]);
   const [tableAPI, setTableAPI] = useState(null);
@@ -49,14 +62,26 @@ const InventoryRequests = () => {
   const CAN_SET_REQUIRED = tab === '2';
   const IS_REQUIRED = selected.length > 0 && selected[0]?.tank_inv_needed;
 
-  const onTankUpdate = () => {
-    const value = {
-      ...selected[0],
-      tank_inv_needed: !IS_REQUIRED,
-    };
+  const onTankUpdate = (field) => {
+    const value = {};
+    value.tank_code = selected[0]?.tank_code;
+    value.tank_terminal = selected[0]?.tank_terminal;
+    if (field === 'tank_inv_needed') {
+      value.tank_inv_needed = !selected[0]?.tank_inv_needed;
+    } else if (field === 'tank_adhoc_ivrq') {
+      value.tank_adhoc_ivrq = !selected[0]?.tank_adhoc_ivrq;
+    } else {
+      value.tank_inv_needed = selected[0]?.tank_inv_needed;
+      value.tank_adhoc_ivrq = selected[0]?.tank_adhoc_ivrq;
+    }
 
     Modal.confirm({
-      title: t('prompts.update'),
+      title:
+        field === 'tank_inv_needed'
+          ? t('prompts.toggleRequired')
+          : field === 'tank_adhoc_ivrq'
+          ? t('prompts.toggleAdhoc')
+          : t('prompts.update'),
       okText: t('operations.update'),
       okType: 'primary',
       icon: <QuestionCircleOutlined />,
@@ -64,9 +89,12 @@ const InventoryRequests = () => {
       centered: true,
       onOk: async () => {
         await api
-          .post(INVENTORY_REQUESTS.UPDATE_TANKS, value)
+          .post(INVENTORY_REQUESTS.UPDATE_TANK, value)
           .then(() => {
-            mutate(INVENTORY_REQUESTS.TANKS);
+            if (revalidateTanks) {
+              revalidateTanks();
+            }
+            // mutate(INVENTORY_REQUESTS.TANKS);
 
             notification.success({
               message: t('messages.updateSuccess'),
@@ -85,6 +113,79 @@ const InventoryRequests = () => {
     });
   };
 
+  const onTankUpdateRequired = () => {
+    onTankUpdate('tank_inv_needed');
+  };
+
+  const onTankUpdateAdhoc = () => {
+    onTankUpdate('tank_adhoc_ivrq');
+  };
+
+  const onTankUpdateAll = (field) => {
+    const values = [];
+
+    for (let i = 0; i < tanks?.records?.length; i++) {
+      const item = tanks?.records?.[i];
+      const value = {};
+      value.tank_code = item?.tank_code;
+      value.tank_terminal = item?.tank_terminal;
+      if (field === 'tank_inv_needed') {
+        value.tank_inv_needed = !item?.tank_inv_needed;
+      } else if (field === 'tank_adhoc_ivrq') {
+        value.tank_adhoc_ivrq = !item?.tank_adhoc_ivrq;
+      } else {
+        value.tank_inv_needed = item?.tank_inv_needed;
+        value.tank_adhoc_ivrq = item?.tank_adhoc_ivrq;
+      }
+      values.push(value);
+    }
+
+    Modal.confirm({
+      title:
+        field === 'tank_inv_needed'
+          ? t('prompts.toggleAllRequired')
+          : field === 'tank_adhoc_ivrq'
+          ? t('prompts.toggleAllAdhoc')
+          : t('prompts.update'),
+      okText: t('operations.update'),
+      okType: 'primary',
+      icon: <QuestionCircleOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await api
+          .post(INVENTORY_REQUESTS.UPDATE_TANKS, values)
+          .then(() => {
+            if (revalidateTanks) {
+              revalidateTanks();
+            }
+            // mutate(INVENTORY_REQUESTS.TANKS);
+
+            notification.success({
+              message: t('messages.updateSuccess'),
+              description: t('descriptions.updateSuccess'),
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
+              });
+            });
+          });
+      },
+    });
+  };
+
+  const onTankUpdateAllRequired = () => {
+    onTankUpdateAll('tank_inv_needed');
+  };
+
+  const onTankUpdateAllAdhoc = () => {
+    onTankUpdateAll('tank_adhoc_ivrq');
+  };
+
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
     setInvSelected(value);
@@ -92,6 +193,18 @@ const InventoryRequests = () => {
 
   const modifiers = (
     <>
+      {config?.siteUseMultiTerminals && (
+        <TerminalList
+          value={terminal}
+          listOptions={[]}
+          itemCode={'tank_terminal'}
+          itemTitle={'terminal'}
+          itemRequired={false}
+          itemDisabled={false}
+          onChange={setTerminal}
+        />
+      )}
+
       <Button icon={<SyncOutlined />} onClick={() => revalidate()} loading={isLoading}>
         {t('operations.refresh')}
       </Button>
@@ -113,7 +226,7 @@ const InventoryRequests = () => {
         </Button>
       )}
 
-      {CAN_SET_REQUIRED && (
+      {/* CAN_SET_REQUIRED && (
         <Button
           type="primary"
           disabled={selected.length === 0}
@@ -123,8 +236,56 @@ const InventoryRequests = () => {
         >
           {IS_REQUIRED ? t('operations.notRequired') : t('operations.required')}
         </Button>
-      )}
+      ) */}
     </>
+  );
+
+  const tabActions = (
+    <div style={{ display: 'flex' }}>
+      <Button
+        type="primary"
+        disabled={selected.length === 0}
+        // icon={IS_REQUIRED ? <CloseOutlined /> : <CheckOutlined />}
+        style={{ marginLeft: '10px' }}
+        onClick={onTankUpdateRequired}
+        loading={isLoading}
+      >
+        {t('operations.toggleRequired')}
+      </Button>
+
+      <Button
+        type="primary"
+        disabled={selected.length === 0}
+        // icon={IS_REQUIRED ? <CloseOutlined /> : <CheckOutlined />}
+        style={{ marginLeft: '10px' }}
+        onClick={onTankUpdateAdhoc}
+        loading={isLoading}
+      >
+        {t('operations.toggleAdhoc')}
+      </Button>
+
+      <Button
+        type="primary"
+        disabled={selected.length > 0}
+        // icon={IS_REQUIRED ? <CloseOutlined /> : <CheckOutlined />}
+        style={{ marginLeft: '10px' }}
+        onClick={onTankUpdateAllRequired}
+        loading={isLoading}
+      >
+        {t('operations.toggleAllRequired')}
+      </Button>
+
+      <Button
+        type="primary"
+        disabled={selected.length > 0}
+        // icon={IS_REQUIRED ? <CloseOutlined /> : <CheckOutlined />}
+        style={{ marginLeft: '10px' }}
+        onClick={onTankUpdateAllAdhoc}
+        loading={isLoading}
+      >
+        {t('operations.toggleAllAdhoc')}
+      </Button>
+    </div>
   );
 
   useEffect(() => {
@@ -162,7 +323,12 @@ const InventoryRequests = () => {
       avatar="inventoryRequests"
       access={access}
     >
-      <Tabs defaultActiveKey={tab} animated={false} onChange={setTab}>
+      <Tabs
+        defaultActiveKey={tab}
+        animated={false}
+        onChange={setTab}
+        tabBarExtraContent={tab === '2' ? tabActions : undefined}
+      >
         <TabPane tab={t('tabColumns.requests')} key="1">
           <DataTable
             columns={fields}
@@ -172,12 +338,13 @@ const InventoryRequests = () => {
             onClick={(payload) => handleFormState(true, payload)}
             handleSelect={(payload) => handleFormState(true, payload[0])}
           />
-          <Forms 
-            value={invSelected} 
-            visible={visible} 
-            handleFormState={handleFormState} 
-            access={access} 
+          <Forms
+            value={invSelected}
+            visible={visible}
+            handleFormState={handleFormState}
+            access={access}
             config={config}
+            refresh={revalidate}
           />
         </TabPane>
         <TabPane tab={t('tabColumns.tankSelection')} key="2">

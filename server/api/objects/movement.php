@@ -195,7 +195,7 @@ class Movement extends CommonClass
     public function tank_proddata()
     {
         $serv = new TankService($this->conn, $this->tank_code);
-        return $serv->tank_proddata();
+        return $serv->tank_proddata($this->move_time);
     }
 
     public function tanks_by_drawprod()
@@ -2529,7 +2529,7 @@ class Movement extends CommonClass
         }
     }
 
-    public function transactions()
+    public function transactions_old()
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
@@ -2548,6 +2548,65 @@ class Movement extends CommonClass
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':move_id', $this->mv_id); 
             oci_bind_by_name($stmt, ':line_id', $this->line_id); 
+        } else {
+            $query = "
+                SELECT GUI_TRANSACTIONS.*, 
+                    DECODE(TRSA_REVERSE_FLAG, 1, TRSA_REVERSE, NULL) TRSA_REVERSE_EX,
+                    DECODE(TRSA_REVERSE_FLAG, 1, 'Reversal', 2, 'Repost', NULL) TRSA_REVERSE_DESC
+                FROM GUI_TRANSACTIONS 
+                WHERE TRSA_TRIP = :trip_no
+                    AND TRSA_SUPPLIER = :supplier
+                ORDER BY TRSA_ID";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':trip_no', $this->trip_no); 
+            oci_bind_by_name($stmt, ':supplier', $this->supplier); 
+        }
+        
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function transactions()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        if (isset($this->mv_id)) {
+            if (isset($this->mv_all)) {
+                $query = "
+                    SELECT GUI_TRANSACTIONS.*, 
+                        DECODE(TRSA_REVERSE_FLAG, 1, TRSA_REVERSE, NULL) TRSA_REVERSE_EX,
+                        DECODE(TRSA_REVERSE_FLAG, 1, 'Reversal', 2, 'Repost', NULL) TRSA_REVERSE_DESC
+                    FROM GUI_TRANSACTIONS 
+                    WHERE (TRSA_TRIP, TRSA_SUPPLIER) IN 
+                        (SELECT MS.MS_SHLSTRIP, MS.MS_SHLSSUPP FROM MOV_SCHEDULES MS, MOV_SCHD_ITEMS MI, MOVEMENT_ITEMS NI 
+                        WHERE MS.MS_SHLSTRIP = MI.MSITM_SHLSTRIP AND MS.MS_SHLSSUPP = MI.MSITM_SHLSSUPP 
+                            AND MI.MSITM_MOVEID = NI.MVITM_MOVE_ID AND MI.MSITM_MOVITEM = NI.MVITM_LINE_ID AND NI.MVITM_TYPE = 0
+                            AND MI.MSITM_MOVEID = :move_id ) 
+                    ORDER BY TRSA_ID";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':move_id', $this->mv_id); 
+                // oci_bind_by_name($stmt, ':line_id', $this->line_id); 
+            } else {
+                $query = "
+                    SELECT GUI_TRANSACTIONS.*, 
+                        DECODE(TRSA_REVERSE_FLAG, 1, TRSA_REVERSE, NULL) TRSA_REVERSE_EX,
+                        DECODE(TRSA_REVERSE_FLAG, 1, 'Reversal', 2, 'Repost', NULL) TRSA_REVERSE_DESC
+                    FROM GUI_TRANSACTIONS 
+                    WHERE (TRSA_TRIP, TRSA_SUPPLIER) IN 
+                        (SELECT MS.MS_SHLSTRIP, MS.MS_SHLSSUPP FROM MOV_SCHEDULES MS, MOV_SCHD_ITEMS MI 
+                        WHERE MS.MS_SHLSTRIP = MI.MSITM_SHLSTRIP AND MS.MS_SHLSSUPP = MI.MSITM_SHLSSUPP 
+                            AND MI.MSITM_MOVEID = :move_id AND MI.MSITM_MOVITEM = :line_id) 
+                    ORDER BY TRSA_ID";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':move_id', $this->mv_id); 
+                oci_bind_by_name($stmt, ':line_id', $this->line_id); 
+            }
         } else {
             $query = "
                 SELECT GUI_TRANSACTIONS.*, 

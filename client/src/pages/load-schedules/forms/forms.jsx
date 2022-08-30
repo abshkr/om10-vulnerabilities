@@ -62,7 +62,7 @@ import {
 
 import { SelectInput, PartnershipManager } from '../../../components';
 import { SETTINGS } from '../../../constants';
-import { LOAD_SCHEDULES, SITE_CONFIGURATION, TANKER_LIST, ORDER_LISTINGS } from '../../../api';
+import { LOAD_SCHEDULES, SITE_CONFIGURATION, TANKER_LIST, ORDER_LISTINGS, COMPANIES } from '../../../api';
 
 import { useConfig } from '../../../hooks';
 
@@ -338,6 +338,16 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     return units;
   };
 
+  const isTripNumberUsed = async (trip) => {
+    const results = await api.get(`${COMPANIES.CHECK_TRIPORD_NUM}?trip_order_num=${trip}`);
+    console.log('.....................isTripNumberUsed', results);
+
+    // const valid = _.toNumber(results?.data?.records?.[0]?.is_valid) > 0;
+    const valid = results?.data?.records?.[0]?.is_valid;
+
+    return !valid;
+  };
+
   const isOrderValid = async (order, supp) => {
     const results = await api.get(`${ORDER_LISTINGS.VALIDATE_ORDER}?order_cust_no=${order}&supplier=${supp}`);
     console.log('.....................isOrderValid', results);
@@ -495,6 +505,19 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
 
   const onFinish = async () => {
     const record = await form.validateFields();
+
+    // check if the number is unique in all trip and order numbers when site config is on
+    if (IS_CREATING && config?.siteUniqueTripOrdNum) {
+      const isUsed = await isTripNumberUsed(record?.shls_trip_no);
+      if (isUsed) {
+        notification.warning({
+          message: t('messages.validationFailed'),
+          description: t('descriptions.sysWideTripNumUsed', { value: record?.shls_trip_no }),
+        });
+        return;
+      }
+    }
+
     const cmptUnits = await getTankerCompartments(record?.tnkr_code);
     let errors = [];
     if (record?.shls_ld_type === '3' /* Preorder*/) {

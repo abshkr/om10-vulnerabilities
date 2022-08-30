@@ -54,6 +54,14 @@ const columns = (t) => {
       sortable: true,
       resizable: true,
       filter: 'MultiFilter',
+      hide: true,
+    },
+    {
+      headerName: t('fields.depot'),
+      field: 'tkrq_depotname',
+      sortable: true,
+      resizable: true,
+      filter: 'MultiFilter',
     },
     {
       headerName: t('fields.all'),

@@ -416,7 +416,7 @@ const columns = (t, config) => [
     resizable: true,
     suppressSizeToFit: true,
     width: 100,
-    hide: !config.siteEnabledCOPS,
+    hide: true, // !config.siteEnabledCOPS,
   },
   {
     headerName: t('fields.copsGuardMasterProdQuality'),
@@ -427,6 +427,17 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
     width: 250,
     hide: !config.siteEnabledCOPS,
+  },
+
+  {
+    headerName: t('fields.prodPidxCode'),
+    field: 'prod_pidx_code',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
+    hide: !config?.siteEnabledPIDX,
+    width: 200,
+    suppressSizeToFit: true,
   },
 ];
 

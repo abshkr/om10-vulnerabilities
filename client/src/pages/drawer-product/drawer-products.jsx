@@ -174,6 +174,8 @@ const DrawerProduct = () => {
             }}
             autoColWidth
             filterValue={filterValue}
+            height={'310px'}
+            // parentHeight={'65vh'}
           />
           {visible && (
             <Forms
