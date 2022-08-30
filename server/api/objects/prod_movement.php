@@ -1039,6 +1039,17 @@ class ProdMovement extends CommonClass
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 return false;
             }
+
+            $query = "UPDATE MOVEMENT_ITEMS SET MVITM_KEY = :mv_key
+                WHERE MVITM_MOVE_ID = (SELECT PMV_MV_ID FROM PRODUCT_MVMNTS WHERE PMV_NUMBER = :pmv_number)";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
+            oci_bind_by_name($stmt, ':mv_key', $this->mv_key);
+            if (!oci_execute($stmt, $this->commit_mode)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
         }
 
         if (isset($this->mv_number)) {
