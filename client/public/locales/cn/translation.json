@@ -744,6 +744,8 @@
     "cmpyPidxFein": "联邦雇主标识号码(FEIN)",
     "cmpyPidxSsn": "社会安全号码(SSN)",
     "cmpyPidxCarrierFein": "承运商FEIN",
+    "cmpyPidxRtlAuthorizeLoad": "公司运货权需要授权",
+    "cmpyPidxRtlBolSend": "公式的电子发油账单将在发油结束之后被发送",
     "compartment": "油仓",
     "compartmentNumber": "油仓号",
     "compartments": "油仓数目",

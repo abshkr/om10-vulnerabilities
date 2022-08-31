@@ -12,7 +12,7 @@ import { generateMaxInt } from '../../../utils';
 
 const SupplierForm = ({ value, form, config }) => {
   const { data: payload } = useSWR(`${COMPANIES.CONFIG}?cmpy_code=${value?.cmpy_code}`);
-  const { externalBlendAllowed, maxLengthTripNum, siteEnabledCOPS } = config;
+  const { externalBlendAllowed, maxLengthTripNum, siteEnabledCOPS, siteEnabledPIDX } = config;
 
   const { t } = useTranslation();
   const { resetFields, setFieldsValue, getFieldDecorator } = form;
@@ -40,6 +40,8 @@ const SupplierForm = ({ value, form, config }) => {
   const [weightTolerance, setWeightTol] = useState(0);
   const [drawers, setDrawers] = useState([]);
   const [cmpy_guardmaster_product_flag, setCmpyGuardmasterProductFlag] = useState(false);
+  const [cmpy_rtl_authorize_load, setCmpyRtlAuthorizeLoad] = useState(false);
+  const [cmpy_rtl_bol_send, setCmpyRtlBolSend] = useState(false);
 
   const IS_CREATING = !value;
 
@@ -189,6 +191,20 @@ const SupplierForm = ({ value, form, config }) => {
     });
   };
 
+  const onRtlAuthorizeLoad = (v) => {
+    setCmpyRtlAuthorizeLoad(v);
+    setFieldsValue({
+      cmpy_rtl_authorize_load: v,
+    });
+  };
+
+  const onRtlBolSend = (v) => {
+    setCmpyRtlBolSend(v);
+    setFieldsValue({
+      cmpy_rtl_bol_send: v,
+    });
+  };
+
   useEffect(() => {
     if (value) {
       setFieldsValue({
@@ -256,6 +272,12 @@ const SupplierForm = ({ value, form, config }) => {
       const guardmasterProductConfig = _.find(payload?.records, (item) => {
         return item.config_key === 'CMPY_GUARDMASTER_PRODUCT_FLAG';
       });
+      const rtlAuthorizeLoadConfig = _.find(payload?.records, (item) => {
+        return item.config_key === 'CMPY_RTL_AUTHORIZE_LOAD';
+      });
+      const rtlBolSendConfig = _.find(payload?.records, (item) => {
+        return item.config_key === 'CMPY_RTL_BOL_SEND';
+      });
 
       setFieldsValue({
         auto_complete_non_preschd_loads:
@@ -272,6 +294,9 @@ const SupplierForm = ({ value, form, config }) => {
         cmpy_2nd_drawer: secondDrawerConfig?.config_value,
         cmpy_guardmaster_product_flag:
           guardmasterProductConfig && guardmasterProductConfig.config_value === 'Y' ? true : false,
+        cmpy_rtl_authorize_load:
+          rtlAuthorizeLoadConfig && rtlAuthorizeLoadConfig.config_value === 'Y' ? true : false,
+        cmpy_rtl_bol_send: rtlBolSendConfig && rtlBolSendConfig.config_value === 'Y' ? true : false,
       });
       setAutoNonSchedule(autoNonSchduleConfig && autoNonSchduleConfig.config_value === 'Y' ? true : false);
       setSafefillCheck(safefillConfig && safefillConfig.config_value === 'Y' ? true : false);
@@ -286,6 +311,10 @@ const SupplierForm = ({ value, form, config }) => {
       setCmpyGuardmasterProductFlag(
         guardmasterProductConfig && guardmasterProductConfig.config_value === 'Y' ? true : false
       );
+      setCmpyRtlAuthorizeLoad(
+        rtlAuthorizeLoadConfig && rtlAuthorizeLoadConfig.config_value === 'Y' ? true : false
+      );
+      setCmpyRtlBolSend(rtlBolSendConfig && rtlBolSendConfig.config_value === 'Y' ? true : false);
     }
   }, [value, setFieldsValue, payload, resetFields]);
 
@@ -660,6 +689,37 @@ const SupplierForm = ({ value, form, config }) => {
                   </Select.Option>
                 ))}
               </Select>
+            </Form.Item>
+          )}
+        </Col>
+      </Row>
+
+      <Row justify="center">
+        <Col span={12}>
+          {siteEnabledPIDX && (
+            <Form.Item
+              name="cmpy_rtl_authorize_load"
+              label={t('fields.cmpyPidxRtlAuthorizeLoad')}
+              {...leftItemLayout}
+            >
+              <Switch
+                checkedChildren={t('operations.yes')}
+                unCheckedChildren={t('operations.no')}
+                checked={cmpy_rtl_authorize_load}
+                onChange={onRtlAuthorizeLoad}
+              />
+            </Form.Item>
+          )}
+        </Col>
+        <Col span={12}>
+          {siteEnabledPIDX && (
+            <Form.Item name="cmpy_rtl_bol_send" label={t('fields.cmpyPidxRtlBolSend')} {...rightItemLayout}>
+              <Switch
+                checkedChildren={t('operations.yes')}
+                unCheckedChildren={t('operations.no')}
+                checked={cmpy_rtl_bol_send}
+                onChange={onRtlBolSend}
+              />
             </Form.Item>
           )}
         </Col>

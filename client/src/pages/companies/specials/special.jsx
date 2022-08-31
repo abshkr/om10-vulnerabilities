@@ -119,6 +119,16 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
         config_key: 'CMPY_GUARDMASTER_PRODUCT_FLAG',
         config_value: values.cmpy_guardmaster_product_flag ? 'Y' : 'N',
       },
+      {
+        cmpy_code: value.cmpy_code,
+        config_key: 'CMPY_RTL_AUTHORIZE_LOAD',
+        config_value: values.cmpy_rtl_authorize_load ? 'Y' : 'N',
+      },
+      {
+        cmpy_code: value.cmpy_code,
+        config_key: 'CMPY_RTL_BOL_SEND',
+        config_value: values.cmpy_rtl_bol_send ? 'Y' : 'N',
+      },
     ];
 
     if (
@@ -172,7 +182,7 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
       <Form form={form} onFinish={onFinish} scrollToFirstError>
         <Tabs defaultActiveKey="1">
           {value?.supplier && (
-            <TabPane tab={t('tabColumns.supplierSettings')} key="1" style={{ height: '65vh' }}>
+            <TabPane tab={t('tabColumns.supplierSettings')} key="1">
               <SupplierForm value={value} form={form} config={config}></SupplierForm>
             </TabPane>
           )}
