@@ -1634,7 +1634,8 @@ class Schedule extends CommonClass
                     6, 'Y',
                     'N'
                 ) UNLOAD,
-                scust.CMPY_NAME     AS SHLS_CUST_NAME,
+                ccmp.CMPY_CODE     AS SHLS_CUST_CMPYCODE,
+                ccmp.CMPY_NAME     AS SHLS_CUST_CMPYNAME,
                 SHL_SOURCE_TYPES.SOURCE_TYPE_NAME as SHLS_SRCTYPE_DESC,
                 DECODE(SHLS_SRCTYPE, 
                     1, 'Manually Created',
@@ -1643,9 +1644,10 @@ class Schedule extends CommonClass
                     4, 'Standalone or Special',
                     'Unknown'
                 ) SHLS_SRCTYPE_DESC2 
-            FROM " . $this->VIEW_NAME . ", SHL_SOURCE_TYPES, COMPANYS scust
+            FROM " . $this->VIEW_NAME . ", SHL_SOURCE_TYPES, CUSTOMER cust, COMPANYS ccmp
             WHERE SHLS_SRCTYPE = SHL_SOURCE_TYPES.SOURCE_TYPE_ID
-                AND SHLS_CUST = scust.CMPY_CODE(+)
+                AND SHLS_CUST = cust.CUST_ACCT(+)
+                AND cust.CUST_CODE = ccmp.CMPY_CODE(+)
         ";
 
         if (isset($this->shls_trip_no) && $this->shls_trip_no != '') {
