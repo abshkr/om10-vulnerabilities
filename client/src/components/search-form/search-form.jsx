@@ -15,6 +15,7 @@ import {
   Supplier,
   Carrier,
   TripStatus,
+  TrsaStatus,
   Tanker,
   Trip,
   TrsaID,
@@ -120,6 +121,7 @@ const SearchForm = ({ onSearch, fields, initValues, modal, rangeRequired, timeRe
       style={{ marginTop: '1rem' }}
       initialValues={formValues}
     >
+      {fields?.trsa_status && <TrsaStatus />}
       {fields?.terminal && <Terminal />}
       {fields?.bay_code && <BayList />}
       {fields?.mv_key && <NominationKey />}

@@ -3,6 +3,7 @@ import LoadID from './load-id';
 import Supplier from './supplier';
 import Carrier from './carrier';
 import TripStatus from './trip-status';
+import TrsaStatus from './trsa-status';
 import Tanker from './tanker';
 import Trip from './trip-number';
 import TrsaID from './trsa-id';
@@ -42,6 +43,7 @@ export {
   Supplier,
   Carrier,
   TripStatus,
+  TrsaStatus,
   Tanker,
   Trip,
   TrsaID,

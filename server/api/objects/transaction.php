@@ -243,8 +243,17 @@ class Transaction extends CommonClass
             ";
         }
 
+        if (isset($this->trsa_status) && $this->trsa_status != '') {
+            if ($this->trsa_status == 'A') {
+                $query = $query . " AND TRSA_ED_DMY IS NULL";
+            }
+            if ($this->trsa_status == 'E') {
+                $query = $query . " AND TRSA_ED_DMY IS NOT NULL";
+            }
+        }
+
         if (isset($this->trsa_terminal) && $this->trsa_terminal != '') {
-           $query = $query . " AND TRSA_TERMINAL = :trsa_terminal";
+            $query = $query . " AND TRSA_TERMINAL = :trsa_terminal";
         }
 
         if (isset($this->trsa_bay) && $this->trsa_bay != '') {
@@ -344,8 +353,17 @@ class Transaction extends CommonClass
             ";
         }
 
+        if (isset($this->trsa_status) && $this->trsa_status != '') {
+            if ($this->trsa_status == 'A') {
+                $query = $query . " AND TRSA_ED_DMY IS NULL";
+            }
+            if ($this->trsa_status == 'E') {
+                $query = $query . " AND TRSA_ED_DMY IS NOT NULL";
+            }
+        }
+
         if (isset($this->trsa_terminal) && $this->trsa_terminal != '') {
-           $query = $query . " AND TRSA_TERMINAL = :trsa_terminal";
+            $query = $query . " AND TRSA_TERMINAL = :trsa_terminal";
         }
 
         if (isset($this->trsa_bay) && $this->trsa_bay != '') {
