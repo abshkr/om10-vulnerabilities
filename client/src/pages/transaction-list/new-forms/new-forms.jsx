@@ -75,10 +75,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, config }) => 
         setLoading(true);
         await api
           .post(TRANSACTION_LIST.CANCEL_TRANSACTION, {
-            trsa_id: value.trsa_id,
+            trsa_id: value?.trsa_id,
           })
           .then((response) => {
-            onComplete(value.trsa_id);
+            onComplete(value?.trsa_id);
             notification.success({
               message: t('messages.closeSuccess'),
               description: t('descriptions.closeSuccess'),
@@ -128,7 +128,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, config }) => 
             icon={<WarningOutlined />}
             style={{ marginRight: 5, float: 'right' }}
             onClick={onClose}
-            disabled={value.trsa_ed_dmy !== '' || !access.canUpdate}
+            disabled={value?.trsa_ed_dmy !== '' || !access.canUpdate}
             loading={isLoading}
           >
             {t('operations.closeTransaction')}
