@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
 import useSWR from 'swr';
-import api, { ORDER_LISTINGS } from '../../../../api';
+import api, { ORDER_LISTINGS, COMPANIES } from '../../../../api';
 import { validatorStatus } from 'utils';
 
-const OrderCustNo = ({ form, value, supplier, pageState, digits }) => {
+const OrderCustNo = ({ form, value, supplier, pageState, digits, config }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue, validateFields } = form;
@@ -14,7 +14,9 @@ const OrderCustNo = ({ form, value, supplier, pageState, digits }) => {
   const [existed, setExisted] = useState(false);
 
   const { data, isValidating, revalidate } = useSWR(
-    `${ORDER_LISTINGS.CHECK_CUST_ORDER}?order_cust_no=${custOrder}`,
+    config?.siteUniqueTripOrdNum
+      ? `${COMPANIES.CHECK_TRIPORD_NUM}?trip_order_num=${custOrder}`
+      : `${ORDER_LISTINGS.CHECK_CUST_ORDER}?order_cust_no=${custOrder}`,
     {
       refreshInterval: 0,
     }
@@ -24,16 +26,18 @@ const OrderCustNo = ({ form, value, supplier, pageState, digits }) => {
     setExisted(false);
     setCustOrder(v);
     revalidate();
-  }
+  };
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.orderCustNo')}`);
     }
-    
+
     const len = new TextEncoder().encode(input).length;
     if (input && len > digits) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: ${digits} ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${digits} ─ ${t('descriptions.maxCharacters')}`
+      );
     }
 
     if (existed && !value) {
@@ -67,7 +71,7 @@ const OrderCustNo = ({ form, value, supplier, pageState, digits }) => {
 
   useEffect(() => {
     if (data) {
-      setExisted(!(data?.records[0]?.is_valid));
+      setExisted(!data?.records[0]?.is_valid);
     }
   }, [data]);
 
@@ -80,18 +84,18 @@ const OrderCustNo = ({ form, value, supplier, pageState, digits }) => {
   const status = validatorStatus(isValidating, existed);
 
   return (
-    <Form.Item 
-      name="order_cust_no" 
+    <Form.Item
+      name="order_cust_no"
       label={t('fields.orderCustNo')}
       rules={[{ required: true, validator: validate }]}
       hasFeedback
       validateStatus={custOrder ? status : null}
       shouldUpdate
     >
-      <InputNumber 
-        style={{ width: '100%' }} 
-        //disabled={!supplier} 
-        disabled={(pageState==='create'&&!!supplier)? false : true}
+      <InputNumber
+        style={{ width: '100%' }}
+        //disabled={!supplier}
+        disabled={pageState === 'create' && !!supplier ? false : true}
         onChange={onChange}
       />
     </Form.Item>

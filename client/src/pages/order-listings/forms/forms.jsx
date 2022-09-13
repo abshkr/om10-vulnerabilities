@@ -683,6 +683,7 @@ const FormModal = ({
                   supplier={supplier}
                   pageState={pageState}
                   digits={config?.maxLengthOrderNum}
+                  config={config}
                 />
               </Col>
 
