@@ -65,6 +65,7 @@ import { SETTINGS } from '../../../constants';
 import { LOAD_SCHEDULES, SITE_CONFIGURATION, TANKER_LIST, ORDER_LISTINGS, COMPANIES } from '../../../api';
 
 import { useConfig } from '../../../hooks';
+import { validatorStatus } from '../../../utils';
 
 import Products from './products';
 import LoadReport from './load-report';
@@ -147,6 +148,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
   const [supermode, setSupermode] = useState(false);
   const [dcsmode, setDcsmode] = useState(false);
 
+  // for uniqueness validation
+  const [suppTrip, setSuppTrip] = useState(0);
+  const [existed, setExisted] = useState(false);
+
   /*
     1	F	NEW SCHEDULE
     2	S	SPECED
@@ -197,13 +202,26 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     refreshInterval: 0,
   });
 
-  const { resetFields, setFieldsValue } = form;
+  const { data: validTrips, isValidating, revalidate } = useSWR(
+    config?.siteUniqueTripOrdNum
+      ? `${COMPANIES.CHECK_TRIPORD_NUM}?trip_order_num=${suppTrip}`
+      : `${LOAD_SCHEDULES.CHECK_SUPPLIER_TRIP}?shls_trip_no=${suppTrip}&supplier_code=${supplier}`,
+    {
+      refreshInterval: 0,
+    }
+  );
+
+  const { resetFields, setFieldsValue, validateFields } = form;
 
   const validateTripNumber = (rule, input) => {
     if (rule.required) {
       if (input === '' || !input) {
         return Promise.reject(`${t('validate.set')} ─ ${t('fields.tripNumber')}`);
       }
+    }
+
+    if (existed && IS_CREATING) {
+      return Promise.reject(`${t('descriptions.alreadyExists')}`);
     }
 
     const len = new TextEncoder().encode(input).length;
@@ -214,6 +232,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     }
 
     return Promise.resolve();
+  };
+
+  const onChangeTripNumber = (v) => {
+    setExisted(false);
+    setSuppTrip(v);
+    revalidate();
   };
 
   const onFormClosed = () => {
@@ -301,6 +325,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
         })
         .then((res) => {
           const trip = res.data?.records[0]?.next_trip_no;
+          setSuppTrip(trip);
 
           setFieldsValue({
             shls_trip_no: trip,
@@ -1109,6 +1134,20 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     }
   }, [trips]);
 
+  useEffect(() => {
+    if (validTrips) {
+      setExisted(!validTrips?.records[0]?.is_valid);
+    }
+  }, [validTrips]);
+
+  useEffect(() => {
+    if (suppTrip) {
+      validateFields(['shls_trip_no']);
+    }
+  }, [existed, suppTrip]);
+
+  const status = validatorStatus(isValidating, existed);
+
   // const MASK_CLOSE_FLAG = config?.siteFormCloseAlert ? false : IS_CREATING;
   // const MASK_FLAG = config?.siteFormCloseAlert ? true : (IS_CREATING || tab === '8' || tab === '9');
   return (
@@ -1515,8 +1554,16 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
                   name="shls_trip_no"
                   label={t('fields.tripNumber')}
                   rules={[{ required: true, validator: validateTripNumber }]}
+                  hasFeedback
+                  validateStatus={suppTrip ? status : null}
+                  shouldUpdate
                 >
-                  <InputNumber min={1} style={{ width: '100%' }} disabled={!supplier || !!value} />
+                  <InputNumber
+                    min={1}
+                    style={{ width: '100%' }}
+                    disabled={!supplier || !!value}
+                    onChange={onChangeTripNumber}
+                  />
                 </Form.Item>
               </Col>
 

@@ -10,6 +10,7 @@ include_once __DIR__ . '/../service/site_service.php';
 include_once __DIR__ . '/../service/partnership_service.php';
 include_once __DIR__ . '/../service/manual_trans_service.php';
 include_once __DIR__ . '/../service/enum_service.php';
+include_once __DIR__ . '/../service/schedule_service.php';
 include_once 'common_class.php';
 
 //Old PHP: LoadSchedules.class.php
@@ -2348,5 +2349,21 @@ class Schedule extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             return null;
         }
+    }
+
+    public function check_supplier_trip()
+    {
+        $trip_service = new ScheduleService($this->conn, $auto_commit = false);
+        $is_valid = !$trip_service->is_trip_used($this->shls_trip_no, $this->supplier_code);
+        $result = array();
+        $result["records"] = array();
+        $item = array(
+            "is_valid" => $is_valid,
+        );
+
+        array_push($result["records"], $item);
+
+        http_response_code(200);
+        echo json_encode($result, JSON_PRETTY_PRINT);
     }
 }
