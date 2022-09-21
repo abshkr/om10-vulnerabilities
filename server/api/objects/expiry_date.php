@@ -105,81 +105,6 @@ class ExpiryDate extends CommonClass
             }
         }
 
-        //Also update PERSONNEL, TANKERS, TRANSP_EQUIP table to make it consistent
-        if ($this->edt_target_code === "TRANSP_EQUIP") {
-            $eqpt_exp_d1_dmy = isset($expiry_dates["EQPT_EXPIRY_DATE_1"]) ? 
-                $expiry_dates["EQPT_EXPIRY_DATE_1"]->ed_exp_date : null;
-            $eqpt_exp_d2_dmy = isset($expiry_dates["EQPT_EXPIRY_DATE_2"]) ? 
-                $expiry_dates["EQPT_EXPIRY_DATE_2"]->ed_exp_date : null;
-            $eqpt_exp_d3_dmy = isset($expiry_dates["EQPT_EXPIRY_DATE_3"]) ? 
-                $expiry_dates["EQPT_EXPIRY_DATE_3"]->ed_exp_date : null;
-            $query = "
-                UPDATE TRANSP_EQUIP
-                SET EQPT_EXP_D1_DMY = :eqpt_exp_d1_dmy,
-                    EQPT_EXP_D2_DMY = :eqpt_exp_d2_dmy,
-                    EQPT_EXP_D3_DMY = :eqpt_exp_d3_dmy
-                WHERE EQPT_ID = :ed_object_id";
-            $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':eqpt_exp_d1_dmy', $eqpt_exp_d1_dmy);
-            oci_bind_by_name($stmt, ':eqpt_exp_d2_dmy', $eqpt_exp_d2_dmy);
-            oci_bind_by_name($stmt, ':eqpt_exp_d3_dmy', $eqpt_exp_d3_dmy);
-            oci_bind_by_name($stmt, ':ed_object_id', $this->ed_object_id);
-            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-                $e = oci_error($stmt);
-                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-                oci_rollback($this->conn);
-                return false;
-            }
-        } else if ($this->edt_target_code === "PERSONNEL") {
-            $per_exp_d1_dmy = isset($expiry_dates["PSNL_EXPIRY_DATE_1"]) ? 
-                $expiry_dates["PSNL_EXPIRY_DATE_1"]->ed_exp_date : null;
-            $per_exp_d2_dmy = isset($expiry_dates["PSNL_EXPIRY_DATE_2"]) ? 
-                $expiry_dates["PSNL_EXPIRY_DATE_2"]->ed_exp_date : null;
-            $per_exp_d3_dmy = isset($expiry_dates["PSNL_EXPIRY_DATE_3"]) ? 
-                $expiry_dates["PSNL_EXPIRY_DATE_3"]->ed_exp_date : null;
-            $query = "
-                UPDATE PERSONNEL
-                SET PER_EXP_D1_DMY = :per_exp_d1_dmy,
-                    PER_EXP_D2_DMY = :per_exp_d2_dmy,
-                    PER_EXP_D3_DMY = :per_exp_d3_dmy
-                WHERE PER_CODE = :ed_object_id";
-            $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':per_exp_d1_dmy', $per_exp_d1_dmy);
-            oci_bind_by_name($stmt, ':per_exp_d2_dmy', $per_exp_d2_dmy);
-            oci_bind_by_name($stmt, ':per_exp_d3_dmy', $per_exp_d3_dmy);
-            oci_bind_by_name($stmt, ':ed_object_id', $this->ed_object_id);
-            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-                $e = oci_error($stmt);
-                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-                oci_rollback($this->conn);
-                return false;
-            }
-        } else if ($this->edt_target_code === "TANKERS") {
-            $tnkr_lic_exp = isset($expiry_dates["TNKR_EXPIRY_DATE_1"]) ? 
-                $expiry_dates["TNKR_EXPIRY_DATE_1"]->ed_exp_date : null;
-            $tnkr_dglic_exp = isset($expiry_dates["TNKR_EXPIRY_DATE_2"]) ? 
-                $expiry_dates["TNKR_EXPIRY_DATE_2"]->ed_exp_date : null;
-            $tnkr_ins_exp = isset($expiry_dates["TNKR_EXPIRY_DATE_3"]) ? 
-                $expiry_dates["TNKR_EXPIRY_DATE_3"]->ed_exp_date : null;
-            $query = "
-                UPDATE TANKERS
-                SET TNKR_LIC_EXP = :tnkr_lic_exp,
-                    TNKR_DGLIC_EXP = :tnkr_dglic_exp,
-                    TNKR_INS_EXP = :tnkr_ins_exp
-                WHERE TNKR_CODE = :ed_object_id";
-            $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':tnkr_lic_exp', $tnkr_lic_exp);
-            oci_bind_by_name($stmt, ':tnkr_dglic_exp', $tnkr_dglic_exp);
-            oci_bind_by_name($stmt, ':tnkr_ins_exp', $tnkr_ins_exp);
-            oci_bind_by_name($stmt, ':ed_object_id', $this->ed_object_id);
-            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
-                $e = oci_error($stmt);
-                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-                oci_rollback($this->conn);
-                return false;
-            }
-        }
-
         if ($this->delete($expiry_dates) != true) {
             write_log("Failed to delete before insert", __FILE__, __LINE__);
             return false;
@@ -305,6 +230,81 @@ class ExpiryDate extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             oci_rollback($this->conn);
             return false;
+        }
+
+        //Also update PERSONNEL, TANKERS, TRANSP_EQUIP table to make it consistent
+        if ($this->edt_target_code === "TRANSP_EQUIP") {
+            $eqpt_exp_d1_dmy = isset($expiry_dates["EQPT_EXPIRY_DATE_1"]) ? 
+                $expiry_dates["EQPT_EXPIRY_DATE_1"]->ed_exp_date : null;
+            $eqpt_exp_d2_dmy = isset($expiry_dates["EQPT_EXPIRY_DATE_2"]) ? 
+                $expiry_dates["EQPT_EXPIRY_DATE_2"]->ed_exp_date : null;
+            $eqpt_exp_d3_dmy = isset($expiry_dates["EQPT_EXPIRY_DATE_3"]) ? 
+                $expiry_dates["EQPT_EXPIRY_DATE_3"]->ed_exp_date : null;
+            $query = "
+                UPDATE TRANSP_EQUIP
+                SET EQPT_EXP_D1_DMY = :eqpt_exp_d1_dmy,
+                    EQPT_EXP_D2_DMY = :eqpt_exp_d2_dmy,
+                    EQPT_EXP_D3_DMY = :eqpt_exp_d3_dmy
+                WHERE EQPT_ID = :ed_object_id";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':eqpt_exp_d1_dmy', $eqpt_exp_d1_dmy);
+            oci_bind_by_name($stmt, ':eqpt_exp_d2_dmy', $eqpt_exp_d2_dmy);
+            oci_bind_by_name($stmt, ':eqpt_exp_d3_dmy', $eqpt_exp_d3_dmy);
+            oci_bind_by_name($stmt, ':ed_object_id', $this->ed_object_id);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return false;
+            }
+        } else if ($this->edt_target_code === "PERSONNEL") {
+            $per_exp_d1_dmy = isset($expiry_dates["PSNL_EXPIRY_DATE_1"]) ? 
+                $expiry_dates["PSNL_EXPIRY_DATE_1"]->ed_exp_date : null;
+            $per_exp_d2_dmy = isset($expiry_dates["PSNL_EXPIRY_DATE_2"]) ? 
+                $expiry_dates["PSNL_EXPIRY_DATE_2"]->ed_exp_date : null;
+            $per_exp_d3_dmy = isset($expiry_dates["PSNL_EXPIRY_DATE_3"]) ? 
+                $expiry_dates["PSNL_EXPIRY_DATE_3"]->ed_exp_date : null;
+            $query = "
+                UPDATE PERSONNEL
+                SET PER_EXP_D1_DMY = :per_exp_d1_dmy,
+                    PER_EXP_D2_DMY = :per_exp_d2_dmy,
+                    PER_EXP_D3_DMY = :per_exp_d3_dmy
+                WHERE PER_CODE = :ed_object_id";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':per_exp_d1_dmy', $per_exp_d1_dmy);
+            oci_bind_by_name($stmt, ':per_exp_d2_dmy', $per_exp_d2_dmy);
+            oci_bind_by_name($stmt, ':per_exp_d3_dmy', $per_exp_d3_dmy);
+            oci_bind_by_name($stmt, ':ed_object_id', $this->ed_object_id);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return false;
+            }
+        } else if ($this->edt_target_code === "TANKERS") {
+            $tnkr_lic_exp = isset($expiry_dates["TNKR_EXPIRY_DATE_1"]) ? 
+                $expiry_dates["TNKR_EXPIRY_DATE_1"]->ed_exp_date : null;
+            $tnkr_dglic_exp = isset($expiry_dates["TNKR_EXPIRY_DATE_2"]) ? 
+                $expiry_dates["TNKR_EXPIRY_DATE_2"]->ed_exp_date : null;
+            $tnkr_ins_exp = isset($expiry_dates["TNKR_EXPIRY_DATE_3"]) ? 
+                $expiry_dates["TNKR_EXPIRY_DATE_3"]->ed_exp_date : null;
+            $query = "
+                UPDATE TANKERS
+                SET TNKR_LIC_EXP = :tnkr_lic_exp,
+                    TNKR_DGLIC_EXP = :tnkr_dglic_exp,
+                    TNKR_INS_EXP = :tnkr_ins_exp
+                WHERE TNKR_CODE = :ed_object_id";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':tnkr_lic_exp', $tnkr_lic_exp);
+            oci_bind_by_name($stmt, ':tnkr_dglic_exp', $tnkr_dglic_exp);
+            oci_bind_by_name($stmt, ':tnkr_ins_exp', $tnkr_ins_exp);
+            oci_bind_by_name($stmt, ':ed_object_id', $this->ed_object_id);
+            if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return false;
+            }
         }
 
         return true;
