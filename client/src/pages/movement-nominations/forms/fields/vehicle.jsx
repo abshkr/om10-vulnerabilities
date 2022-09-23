@@ -31,7 +31,7 @@ const Vehicle = ({ form, value, carrier }) => {
         optionFilterProp="children"
         placeholder={t('placeholder.selectVehicle')}
         filterOption={(input, option) =>
-          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          String(option.props.children).toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
         {options?.records.map((item, index) => (

@@ -55,7 +55,7 @@ const Tanker = ({ form, value, carrier, onChange, pageState }) => {
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectTanker') : null}
         filterOption={(value, option) =>
-          option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
+          String(option.props.children).toLowerCase().indexOf(value.toLowerCase()) >= 0
         }
       >
         {options?.records.map((item, index) => (
