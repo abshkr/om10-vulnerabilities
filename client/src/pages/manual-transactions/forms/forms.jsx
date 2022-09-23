@@ -718,7 +718,7 @@ const Forms = ({
               optionFilterProp="children"
               placeholder={t('placeholder.selectTanker')}
               filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                String(option.props.children).toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
             >
               {tankers?.records?.map((item, index) => (
