@@ -69,6 +69,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
   const [flagTankUpdated, setFlagTankUpdated] = useState(0);
   const [flagSpmTransfer, setFlagSpmTransfer] = useState(0);
   const [flagFolioTank, setFlagFolioTank] = useState(0);
+  const [groupActiveTank, setGroupActiveTank] = useState(undefined);
 
   const { data: baseItem } = useSWR(`${BASE_PRODUCTS.READ}?base_code=${product}`);
   const { data: baseItemOld } = useSWR(`${BASE_PRODUCTS.READ}?base_code=${value?.tank_base}`);
@@ -333,6 +334,31 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
   const onFinish = async () => {
     const values = await form.validateFields();
 
+    if (!IS_CREATING && values?.tank_base !== value?.tank_base) {
+      // find if tank is an active one in a group
+      const tankActiveGroup = tankGroups?.records?.find(
+        (o) => o?.tgr_tanklist.indexOf(value?.tank_code) >= 0 && o?.tgr_tankcode === value?.tank_code
+      );
+      // console.log('............', tankGroup, tankGroups);
+      if (tankActiveGroup) {
+        // active tank in a group, show error and quit
+        notification.success({
+          message: t('messages.updateFailed'),
+          description: (
+            <Tag color={'red'}>
+              <div style={{ wordWrap: 'break-word', whiteSpace: 'normal', fontWeight: 'bold', color: 'red' }}>
+                {t('descriptions.spmOnTankBaseChangeGroupActive', {
+                  TANK: value?.tank_code,
+                  TKGRP: tankActiveGroup?.tgr_name,
+                })}
+              </div>
+            </Tag>
+          ),
+        });
+        return;
+      }
+    }
+
     let lines2 = null;
     if (config?.siteFolioTankBaseChange && !IS_CREATING && values?.tank_density !== value?.tank_density) {
       lines2 = (
@@ -558,6 +584,15 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
   }, [value, visible]);
 
   useEffect(() => {
+    if (value && tankGroups) {
+      const tankActiveGroup = tankGroups?.records?.find(
+        (o) => o?.tgr_tanklist.indexOf(value?.tank_code) >= 0 && o?.tgr_tankcode === value?.tank_code
+      );
+      setGroupActiveTank(tankActiveGroup);
+    }
+  }, [value, tankGroups]);
+
+  useEffect(() => {
     if (flagTankUpdated !== 0 && flagSpmTransfer !== 0 && flagFolioTank !== 0) {
       onComplete(value?.tank_code);
 
@@ -626,7 +661,19 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             <Terminal form={form} value={value} />
             <Code form={form} value={value} config={config} />
             <Name form={form} value={value} />
-            <Product form={form} value={value} onChange={setProduct} />
+            {groupActiveTank && (
+              <Tag color={'red'}>
+                <div
+                  style={{ wordWrap: 'break-word', whiteSpace: 'normal', fontWeight: 'bold', color: 'red' }}
+                >
+                  {t('descriptions.spmOnTankBaseChangeGroupActive', {
+                    TANK: value?.tank_code,
+                    TKGRP: groupActiveTank?.tgr_name,
+                  })}
+                </div>
+              </Tag>
+            )}
+            <Product form={form} value={value} onChange={setProduct} disabled={!!groupActiveTank} />
             {config?.siteFolioTankBaseChange && !IS_CREATING && product !== value?.tank_base && (
               <Tag color={'red'}>
                 <div

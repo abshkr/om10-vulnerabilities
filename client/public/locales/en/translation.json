@@ -291,6 +291,7 @@
     "spmOnTankBaseChangeOwnershipEnough": "Note: The FROM supplier [{{FROM_SUPPLIER}}] has enough ownership for the FROM tank base product [{{FROM_BASE}}] (Owner Stock: {{OWNER_STOCK}}, Tank Stock: {{TANK_STOCK}}).",
     "spmOnTankBaseChangeOwnershipNotEnough": "Warning: The FROM supplier [{{FROM_SUPPLIER}}] does not have enough ownership for the FROM tank base product [{{FROM_BASE}}] (Owner Stock: {{OWNER_STOCK}}, Tank Stock: {{TANK_STOCK}}).",
     "spmOnTankBaseChangeGroup": "Note: This tank {{TANK}} will be removed from the tank group {{TKGRP}} automatically. Later you need add it back to the proper tank group manually.",
+    "spmOnTankBaseChangeGroupActive": "This tank {{TANK}} is ACTIVE in the tank group {{TKGRP}} so its base product can not be changed. Please deactivate the tank in tank group first.",
     "startFailed": "Failed to start the process",
     "startSuccess": "You have started the process",
     "strapDataNotFound": "Strapping data not found for tank",

@@ -5,7 +5,7 @@ import useSWR from 'swr';
 
 import { TANKS } from '../../../../api';
 
-const Product = ({ form, value, onChange }) => {
+const Product = ({ form, value, onChange, disabled }) => {
   const { t } = useTranslation();
   const { data: options, isValidating } = useSWR(TANKS.BASE_LIST);
 
@@ -41,6 +41,7 @@ const Product = ({ form, value, onChange }) => {
         loading={isValidating}
         showSearch
         onChange={onChange}
+        disabled={disabled}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectBaseProduct') : null}
         filterOption={(input, option) =>

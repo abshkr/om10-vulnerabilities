@@ -291,6 +291,7 @@
     "spmOnTankBaseChangeOwnershipEnough": "起源供应商[{{FROM_SUPPLIER}}]拥有足够的起源基础油品[{{FROM_BASE}}]的所有权库存 (所有权库存: {{OWNER_STOCK}}, 油罐库存: {{TANK_STOCK}})。",
     "spmOnTankBaseChangeOwnershipNotEnough": "警告: 起源供应商[{{FROM_SUPPLIER}}]没有足够的起源基础油品[{{FROM_BASE}}]的所有权库存 (所有权库存: {{OWNER_STOCK}}, 油罐库存: {{TANK_STOCK}})。",
     "spmOnTankBaseChangeGroup": "警告: 当前油罐{{TANK}}将会从油罐组{{TKGRP}}移除。之后您需要手工操作将其加回合适的油罐组。",
+    "spmOnTankBaseChangeGroupActive": "当前油罐{{TANK}}在油罐组{{TKGRP}}中处以活跃状态，因此其基础油品不可修改！请先将其活跃状态从所属油罐组去除。",
     "startFailed": "进程开始失败",
     "startSuccess": "您已成功开始了进程",
     "strapDataNotFound": "此油罐尚无校正容积数据",
