@@ -92,8 +92,8 @@ const Tanker = ({ form, value, owner, carrier, setTnkrNumber }) => {
             disabled={item.tnkr_lock === 'Y' || item.tnkr_archive === 'Y'}
           >
             {item.tnkr_desc}
-            {item.tnkr_lock === 'Y' && <LockOutlined style={{ color: 'red' }} />}
-            {item.tnkr_archive === 'Y' && <PaperClipOutlined style={{ color: 'red' }} />}
+            {item.tnkr_lock === 'Y' ? <LockOutlined style={{ color: 'red' }} /> : ''}
+            {item.tnkr_archive === 'Y' ? <PaperClipOutlined style={{ color: 'red' }} /> : ''}
           </Select.Option>
         ))}
       </Select>
