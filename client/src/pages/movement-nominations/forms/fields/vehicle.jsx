@@ -41,8 +41,8 @@ const Vehicle = ({ form, value, carrier }) => {
             disabled={item.tnkr_lock === 'Y' || item.tnkr_archive === 'Y'}
           >
             {item.tnkr_code + (!item.tnkr_name ? '' : ' - ' + item.tnkr_name)}
-            {item.tnkr_lock === 'Y' && <LockOutlined style={{ color: 'red' }} />}
-            {item.tnkr_archive === 'Y' && <PaperClipOutlined style={{ color: 'red' }} />}
+            {item.tnkr_lock === 'Y' ? <LockOutlined style={{ color: 'red' }} /> : ''}
+            {item.tnkr_archive === 'Y' ? <PaperClipOutlined style={{ color: 'red' }} /> : ''}
           </Select.Option>
         ))}
       </Select>

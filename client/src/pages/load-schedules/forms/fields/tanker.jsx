@@ -108,6 +108,9 @@ const Tanker = ({ form, value, carrier, onChange, activeTrips }) => {
             filterOption={(value, option) =>
               String(option.props.children).toLowerCase().indexOf(value.toLowerCase()) >= 0
             }
+            // filterOption={(value, option) =>
+            //   console.log(String(option.props.children))
+            // }
           >
             {options?.records.map((item, index) => (
               <Select.Option
@@ -116,8 +119,8 @@ const Tanker = ({ form, value, carrier, onChange, activeTrips }) => {
                 disabled={item.tnkr_lock === 'Y' || item.tnkr_archive === 'Y'}
               >
                 {`${item.tnkr_code}${item.tnkr_name && ' - ' + item.tnkr_name}`}
-                {item.tnkr_lock === 'Y' && <LockOutlined style={{ color: 'red' }} />}
-                {item.tnkr_archive === 'Y' && <PaperClipOutlined style={{ color: 'red' }} />}
+                {item.tnkr_lock === 'Y' ? <LockOutlined style={{ color: 'red' }} /> : ''}
+                {item.tnkr_archive === 'Y' ? <PaperClipOutlined style={{ color: 'red' }} /> : ''}
               </Select.Option>
             ))}
           </Select>
