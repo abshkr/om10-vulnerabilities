@@ -10,6 +10,7 @@ class AllocationPeriod extends CommonClass
 {
     protected $TABLE_NAME = 'ALL_CHILD';
     protected $VIEW_NAME = 'GUI_ALLOCATION_PERIODS';
+    protected $primary_keys = array("alch_alp_all_index", "alch_alp_all_atky_at_type", "alch_alp_all_atky_at_cmpy", "alch_alp_all_prod_prodcode", "alch_alp_all_prod_prodcmpy", "all_child_p_no");
     protected $view_keys = array("aiprd_seq", "aiprd_type", "aiprd_cmpycode", "aiprd_prodcode", "aiprd_suppcode", "aiprd_index");
     
     protected $table_view_map = array(
