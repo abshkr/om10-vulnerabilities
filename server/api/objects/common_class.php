@@ -562,12 +562,20 @@ class CommonClass
             return false;
         }
 
+        $view_table_map2 = array();
+        if (isset($this->table_view_map)) {
+            $view_table_map2 = array_flip($this->table_view_map);
+        }
         $module = $this->VIEW_NAME;
         $record = $jnl_data[2];
         foreach ($this as $key => $value) {
+            $keyjnl = $key;
+            if (array_key_exists(strtoupper($key), $view_table_map2)) {
+                $keyjnl = $view_table_map2[strtoupper($key)];
+            }
             if (array_key_exists(strtoupper($key), $row) && $value != $row[strtoupper($key)] &&
                 !$journal->valueChange(
-                    $module, $record, strtoupper($key), $row[strtoupper($key)], $value)) {
+                    $module, $record, strtoupper($keyjnl), $row[strtoupper($key)], $value)) {
                 oci_rollback($this->conn);
                 return false;
             }
