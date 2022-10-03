@@ -8,8 +8,10 @@ const Tarrif = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
-    if (input === '' || (input!==0 && !input)) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.delvTarrif')}`);
+    if (rule.required) {
+      if (input === '' || (input !== 0 && !input)) {
+        return Promise.reject(`${t('validate.set')} ─ ${t('fields.delvTarrif')}`);
+      }
     }
 
     if (input && input.length > 9) {
@@ -22,16 +24,16 @@ const Tarrif = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        delv_tarrif: value.delv_tarrif
+        delv_tarrif: value.delv_tarrif || 0,
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item 
-      name="delv_tarrif" 
-      label={t('fields.delvTarrif')} 
-      rules={[{ required: true, validator:validate }]}
+    <Form.Item
+      name="delv_tarrif"
+      label={t('fields.delvTarrif')}
+      rules={[{ required: false, validator: validate }]}
     >
       <InputNumber style={{ width: '100%' }} />
     </Form.Item>

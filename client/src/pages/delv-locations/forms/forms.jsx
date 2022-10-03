@@ -145,6 +145,8 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, cu
 
   const onFinish = async () => {
     const values = await form.validateFields();
+    // console.log('.................delv loc values: ', values);
+    values.delv_etyp_id = values.delv_etyp_id === undefined ? null : values.delv_etyp_id;
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
