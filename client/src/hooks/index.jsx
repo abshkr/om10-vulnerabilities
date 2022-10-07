@@ -7,5 +7,17 @@ import usePrevious from './use-previous';
 import useQuery from './use-query';
 import usePagination from './use-pagination';
 import useMode from './use-mode';
+import usePageColumns from './use-page-columns';
 
-export { useIdle, useAuth, useAudio, useConfig, useTime, usePrevious, useQuery, usePagination, useMode };
+export {
+  useIdle,
+  useAuth,
+  useAudio,
+  useConfig,
+  useTime,
+  usePrevious,
+  useQuery,
+  usePagination,
+  useMode,
+  usePageColumns,
+};

@@ -19,7 +19,7 @@ import {
 } from '../../components';
 import { LOAD_SCHEDULES, SITE_CONFIGURATION } from '../../api';
 import { SETTINGS } from '../../constants';
-import { useAuth, useConfig } from 'hooks';
+import { useAuth, useConfig, usePageColumns } from 'hooks';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
@@ -28,11 +28,15 @@ import SourceRender from './source-render';
 import ConvertTraceRender from './convert-trace-render';
 import _ from 'lodash';
 import usePagination from 'hooks/use-pagination';
+import { updateUserPageColumns } from 'utils';
 
 const LoadSchedules = () => {
   const config = useConfig();
   const { siteSchdPaging, siteUseDownloader } = config;
 
+  const { pageColumns } = usePageColumns('M_LOADSCHEDULES');
+
+  const [fields, setFields] = useState([]);
   const [pagingFlag, setPagingFlag] = useState(undefined);
   const [isSearching, setSearching] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -77,7 +81,7 @@ const LoadSchedules = () => {
 
   const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
 
-  const fields = columns(false, t, config);
+  // const fields = columns(false, t, config);
 
   const components = {
     SourceRender,
@@ -277,6 +281,30 @@ const LoadSchedules = () => {
     }
   }, [siteSchdPaging]);
 
+  useEffect(() => {
+    // get the original columns
+    const values = columns(false, t, config);
+    if (pageColumns?.length === 0) {
+      // no settings, no sequence adjustment
+      setFields(values);
+    } else {
+      // found the settings, re-organize the sequence of columns
+      const newValues = [];
+      _.forEach(pageColumns, (o) => {
+        const item = _.find(values, (v) => v?.field === o?.column_code);
+        if (item) {
+          newValues.push(item);
+        }
+      });
+      setFields(newValues);
+    }
+  }, [t, config, pageColumns]);
+
+  const handleColumnMovement = (columnAPI) => {
+    console.log('.............moved', columnAPI);
+    updateUserPageColumns(t, columnAPI, pageColumns, 'M_LOADSCHEDULES');
+  };
+
   const modifiers = (
     <>
       <Switch
@@ -370,6 +398,7 @@ const LoadSchedules = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         autoColWidth
         clearFilterPlus={revalidate}
+        handleColumnMovement={handleColumnMovement}
       />
       <div
         style={{

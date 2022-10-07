@@ -689,7 +689,9 @@ class Utilities
         return $num;
     }
 
-    public static function create($class, $method = 'create')
+    //If $itemData is set, it means it is called from createArray(), so
+    //do not echo if it success, just return true or false.
+    public static function create($class, $method = 'create', $itemData = null)
     {
         write_log(sprintf("%s::%s() START, class:%s, method:%s",
             __CLASS__, __FUNCTION__, $class, $method),
@@ -720,8 +722,14 @@ class Utilities
         $desc = (isset($object->desc) ? $object->desc : $class);
 
         // get posted data
-        $data = json_decode(file_get_contents("php://input"));
+        if (isset($itemData)) {
+            $data = $itemData;
+        } else {
+            $data = json_decode(file_get_contents("php://input"));
+        }
+
         // write_log(json_encode($data), __FILE__, __LINE__);
+
         if ($data) {
             foreach ($data as $key => $value) {
                 $object->$key = $value;
@@ -752,11 +760,15 @@ class Utilities
                 $object->mandatory_fields_check();
             }
         } catch (NullableException $e) {
-            write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
-            // $error = new EchoSchema(400, sprintf("Caught exception: %s", $e->getMessage()));
-            $error = new EchoSchema(400, response("__GENERAL_EXCEPTION__", sprintf("Caught exception: %s", $e->getMessage())));
-            echo json_encode($error, JSON_PRETTY_PRINT);
-            return;
+            if (!isset($itemData)) {
+                write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
+                // $error = new EchoSchema(400, sprintf("Caught exception: %s", $e->getMessage()));
+                $error = new EchoSchema(400, response("__GENERAL_EXCEPTION__", sprintf("Caught exception: %s", $e->getMessage())));
+                echo json_encode($error, JSON_PRETTY_PRINT);
+                return;
+            }
+
+            return false;
         }
 
         if ($object->check_exists && method_exists($object, "check_existence")) {
@@ -771,15 +783,41 @@ class Utilities
             
         try {
             if ($object->$method()) {
-                echo '{';
-                echo '"message": "' . $desc . ' created."';
-                echo '}';
+                if (!isset($itemData)) {
+                    echo '{';
+                    echo '"message": "' . $desc . ' created."';
+                    echo '}';
+                    /*
+                    http_response_code(200);
+                    echo '{';
+                    if (method_exists($object, 'primiary_key_str')) {
+                        if (strlen($object->primiary_key_str()) > 0) {
+                            // echo '"message": "' . $desc . ' (' . $object->primiary_key_str() . ') created. "';
+                            echo '"message": "' . response("__CREATE_SUCCEEDED__", 
+                                sprintf("%s (%s) created", $desc, $object->primiary_key_str())) . '"';
+                        } else {
+                            echo '"message": "' . response("__CREATE_SUCCEEDED__", $desc . ' created') . '"';
+                        }
+                        
+                    } else {
+                        // echo '"message": "' . $desc . ' created. "';
+                        echo '"message": "' . response("__CREATE_SUCCEEDED__", $desc . ' created') . '"';
+                    }
+                    echo '}';
+                    */
+                    return;
+                }
+                return true;
             } else {
-                // $error = new EchoSchema(500, 
-                // sprintf("Unable to create %s . Check logs/php_rest_*.log file for details.", $desc));
-                $error = new EchoSchema(500, response("__CREATE_FAILED__", 
-                    sprintf("Unable to create %s . Internal server error.", $desc)));
-                echo json_encode($error, JSON_PRETTY_PRINT);
+                if (!isset($itemData)) {
+                    // $error = new EchoSchema(500, 
+                    // sprintf("Unable to create %s . Check logs/php_rest_*.log file for details.", $desc));
+                    $error = new EchoSchema(500, response("__CREATE_FAILED__", 
+                        sprintf("Unable to create %s . Internal server error.", $desc)));
+                    echo json_encode($error, JSON_PRETTY_PRINT);
+                    return;
+                }
+                return false;
             }
         } catch (DatabaseException $e) {
             if (!isset($itemData)) {
@@ -790,9 +828,13 @@ class Utilities
             }
             return false;
         } catch (IncompleteParameterException $e) {
-            // $error = new EchoSchema(400, "Bad Request: " . $e->getMessage());
-            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__", "Bad Request: " . $e->getMessage()));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            if (!isset($itemData)) {
+                // $error = new EchoSchema(400, "Bad Request: " . $e->getMessage());
+                $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__", "Bad Request: " . $e->getMessage()));
+                echo json_encode($error, JSON_PRETTY_PRINT);
+                return;
+            }
+            return false;
         }
     }
 
@@ -905,7 +947,7 @@ class Utilities
         //Get data from POST
         $data = json_decode(file_get_contents("php://input"));
         foreach ($data as $item) {
-            if (self::create($class, $method) === false) {
+            if (self::create($class, $method, $item) === false) {
                 $error = new EchoSchema(500, response("__CREATE_FAILED__"));
                 echo json_encode($error, JSON_PRETTY_PRINT);
                 return;

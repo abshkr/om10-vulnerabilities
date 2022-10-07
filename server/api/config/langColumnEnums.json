@@ -4904,6 +4904,25 @@
     "RECORD_SWITCH": "NA",
     "RECORD_ORDER": "NA"
   },
+  "URBAC_USER_COLUMNS": {
+    "COLUMN_USER": "NA",
+    "COLUMN_SITE": "NA",
+    "COLUMN_PAGE": "NA",
+    "COLUMN_CODE": "NA",
+    "COLUMN_TITLE": "NA",
+    "COLUMN_VISIBLE": "NA",
+    "COLUMN_ORDER": "NA",
+    "COLUMN_PINNED": "NA",
+    "COLUMN_TYPE": "NA",
+    "COLUMN_FILTER": "NA",
+    "COLUMN_EDITOR": "NA",
+    "COLUMN_RENDER": "NA",
+    "COLUMN_STYLE": "NA",
+    "COLUMN_EDITABLE": "NA",
+    "COLUMN_SORTABLE": "NA",
+    "COLUMN_RESIZABLE": "NA",
+    "COLUMN_WIDTH": "NA"
+  },
   "URBAC_ROLE_DOMAINS_PRIVILEGES": {
     "ROLE_DMN_PRVLG_ID": "NA",
     "ROLE_ID": "NA",

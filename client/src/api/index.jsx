@@ -71,6 +71,7 @@ import * as TANK_OWNERS from './tank-owners';
 import * as BASE_OWNERS from './base-owners';
 import * as BASE_OWNER_TRANSACTIONS from './base-owner-transactions';
 import * as TERMINAL_GROUPS from './terminal-groups';
+import * as USER_COLUMNS from './user-columns';
 
 export {
   AUTH,
@@ -144,6 +145,7 @@ export {
   BASE_OWNERS,
   BASE_OWNER_TRANSACTIONS,
   TERMINAL_GROUPS,
+  USER_COLUMNS,
 };
 
 export default api;
