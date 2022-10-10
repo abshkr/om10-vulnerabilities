@@ -87,7 +87,7 @@ const FormModal = ({
 
   // console.log('value', value);
 
-  const { data: units } = useSWR(NOMINATION_TRANSACTIONS.UNIT_TYPES);
+  // const { data: units } = useSWR(NOMINATION_TRANSACTIONS.UNIT_TYPES);
   const { data: products } = useSWR(MOVEMENT_NOMIATIONS.NOM_PRODUCTS, { revalidateOnFocus: false });
 
   const { t } = useTranslation();
