@@ -1349,4 +1349,61 @@ class Personnel extends CommonClass
         oci_commit($this->conn);
         return true;
     }
+
+    // check if the personnel has been used by tags
+    //    ACCESS_KEYS	7	KYA_PSN
+    public function check_personnel_tags()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM ACCESS_KEYS WHERE KYA_PSN=:psnl_code
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':psnl_code', $this->psnl_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    // check if the personnel has been used by loads
+    //    LOADS	    2	LOAD_OPER
+    public function check_personnel_loads()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM LOADS WHERE LOAD_OPER=:psnl_code
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':psnl_code', $this->psnl_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    // check if the personnel has been used by schedules
+    //    SCHEDULE	14	SHL_PRELOADER
+    //    SCHEDULE	25	SHLS_DRIVER
+	//    SCHEDULE  48  OPERATOR
+    public function check_personnel_trips()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM SCHEDULE 
+			WHERE SHL_PRELOADER=:psnl_code OR SHLS_DRIVER=:psnl_code OR OPERATOR=:psnl_code
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':psnl_code', $this->psnl_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
 }

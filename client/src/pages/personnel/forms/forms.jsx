@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Button, Tabs, notification, Modal, Drawer, Row, Col, Divider, Card } from 'antd';
+import { Form, Button, Tabs, notification, Modal, Drawer, Row, Col, Divider, Card, Tag, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
@@ -53,11 +53,34 @@ const FormModal = ({
 }) => {
   const [passwordResetVisible, setPasswordResetVisible] = useState(false);
   const [areaVisible, setAreaVisible] = useState(false);
+  const [tagCount, setTagCount] = useState(0);
+  const [loadCount, setLoadCount] = useState(0);
+  const [tripCount, setTripCount] = useState(0);
+
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
 
   const { data: payload } = useSWR(PERSONNEL.READ);
+
+  const { data: tags } = useSWR(
+    value?.per_code ? `${PERSONNEL.CHECK_PERSONNEL_TAGS}?psnl_code=${value?.per_code}` : null,
+    {
+      refreshInterval: 0,
+    }
+  );
+  const { data: loads } = useSWR(
+    value?.per_code ? `${PERSONNEL.CHECK_PERSONNEL_LOADS}?psnl_code=${value?.per_code}` : null,
+    {
+      refreshInterval: 0,
+    }
+  );
+  const { data: trips } = useSWR(
+    value?.per_code ? `${PERSONNEL.CHECK_PERSONNEL_TRIPS}?psnl_code=${value?.per_code}` : null,
+    {
+      refreshInterval: 0,
+    }
+  );
 
   const fields = columns(t);
 
@@ -233,6 +256,24 @@ const FormModal = ({
     }
   }, [value, visible]);
 
+  useEffect(() => {
+    if (tags) {
+      setTagCount(tags?.records?.[0]?.cnt);
+    }
+  }, [tags]);
+
+  useEffect(() => {
+    if (loads) {
+      setLoadCount(loads?.records?.[0]?.cnt);
+    }
+  }, [loads]);
+
+  useEffect(() => {
+    if (trips) {
+      setTripCount(trips?.records?.[0]?.cnt);
+    }
+  }, [trips]);
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -242,7 +283,7 @@ const FormModal = ({
       destroyOnClose={true}
       mask={config?.siteFormCloseAlert ? true : IS_CREATING}
       placement="right"
-      width="60vw"
+      width="80vw"
       visible={visible}
       footer={
         <>
@@ -272,10 +313,30 @@ const FormModal = ({
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={!access?.canDelete}
+              disabled={!access?.canDelete || tagCount > 0 || loadCount > 0 || tripCount > 0}
             >
               {t('operations.delete')}
             </Button>
+          )}
+
+          {!IS_CREATING && (
+            <div style={{ float: 'right', marginRight: 5 }}>
+              <Tooltip placement="topRight" title={t('descriptions.countPersonnelTags')}>
+                <Tag color={tagCount > 0 ? 'red' : 'green'}>
+                  {t('fields.countPersonnelTags') + ': ' + tagCount}
+                </Tag>
+              </Tooltip>
+              <Tooltip placement="topRight" title={t('descriptions.countPersonnelLoads')}>
+                <Tag color={loadCount > 0 ? 'red' : 'green'}>
+                  {t('fields.countPersonnelLoads') + ': ' + loadCount}
+                </Tag>
+              </Tooltip>
+              <Tooltip placement="topRight" title={t('descriptions.countPersonnelTrips')}>
+                <Tag color={tripCount > 0 ? 'red' : 'green'}>
+                  {t('fields.countPersonnelTrips') + ': ' + tripCount}
+                </Tag>
+              </Tooltip>
+            </div>
           )}
 
           {!IS_CREATING && value?.user_status_flag === '2' && (
@@ -360,48 +421,47 @@ const FormModal = ({
         <Tabs defaultActiveKey="1" animated={false}>
           <TabPane tab={t('tabColumns.general')} forceRender={true} key="1">
             <Row gutter={[8, 2]}>
-              <Col span={8}>
+              <Col span={6}>
                 <Employer form={form} value={value} />
               </Col>
-              <Col span={8}>
+              <Col span={6}>
                 <Code form={form} value={value} config={config} />
               </Col>
-              <Col span={8}>
+              <Col span={6}>
                 <Name form={form} value={value} />
               </Col>
-            </Row>
-
-            <Row gutter={[8, 2]}>
-              <Col span={8}>
+              <Col span={6}>
                 <Role form={form} value={value} />
               </Col>
-              <Col span={8}>
+            </Row>
+
+            <Row gutter={[8, 2]}>
+              <Col span={6}>
                 <TimeCode form={form} value={value} />
               </Col>
-              <Col span={8}>
+              <Col span={6}>
                 <Department form={form} value={value} />
+              </Col>
+              <Col span={6}>
+                <DriverLicence form={form} value={value} />
+              </Col>
+              <Col span={6}>
+                <Phone form={form} value={value} isMandatory={config.site2FAMethod === 'SMS'} />
               </Col>
             </Row>
 
             <Row gutter={[8, 2]}>
-              <Col span={8}>
-                <Email form={form} value={value} />
-              </Col>
-              <Col span={8}>
-                <DriverLicence form={form} value={value} />
-              </Col>
               {config?.driver_slp_enabled && (
                 <Col span={8}>
                   <SLP form={form} value={value} />
                 </Col>
               )}
-            </Row>
-
-            <Row gutter={[8, 2]}>
-              <Col span={8}>
-                <Phone form={form} value={value} isMandatory={config.site2FAMethod === 'SMS'} />
+              <Col span={config?.driver_slp_enabled ? 16 : 24}>
+                <Email form={form} value={value} />
               </Col>
             </Row>
+
+            <Row gutter={[8, 2]}></Row>
 
             <Row gutter={[8, 2]}>
               <Col span={6}>

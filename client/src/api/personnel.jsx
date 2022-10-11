@@ -15,3 +15,7 @@ export const AREA_ACCESS = '/api/pages/personnel/area_accesses.php';
 export const EXPIRY_TYPES = '/api/pages/personnel/expiry_types.php';
 export const AREAS = '/api/pages/personnel/areas.php';
 export const USER_STATUS = '/api/pages/personnel/user_status.php';
+
+export const CHECK_PERSONNEL_TAGS = '/api/pages/personnel/check_personnel_tags.php';
+export const CHECK_PERSONNEL_LOADS = '/api/pages/personnel/check_personnel_loads.php';
+export const CHECK_PERSONNEL_TRIPS = '/api/pages/personnel/check_personnel_trips.php';
