@@ -98,7 +98,7 @@ const columns = (IS_NOMINATION, t, config) => [
     suppressSizeToFit: true,
   },
 
-  {
+  /* {
     headerName: t('fields.tanker'),
     field: 'tnkr_code',
     sortable: true,
@@ -106,7 +106,7 @@ const columns = (IS_NOMINATION, t, config) => [
     hide: IS_NOMINATION,
     width: 120,
     suppressSizeToFit: true,
-  },
+  }, */
   {
     headerName: t('fields.tankerName'),
     field: 'tnkr_name',
