@@ -23,10 +23,14 @@ const Email = ({ form, value }) => {
       return Promise.reject(`${t('placeholder.incorrectFormat')} ─ ${t('placeholder.emailInvalid')}`);
     } */
 
+    if (input === undefined || input === null || input === '') {
+      return Promise.resolve();
+    }
+
     const regEx = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
-    const result = input.replace(/\s/g, '').split(/:|;/);
-    for (let i = 0; i < result.length; i++) {
-      if (!regEx.test(result[i])) {
+    const result = input?.replace(/\s/g, '').split(/:|;/);
+    for (let i = 0; i < result?.length; i++) {
+      if (!regEx.test(result?.[i])) {
         return Promise.reject(`${t('placeholder.incorrectFormat')} ─ ${t('placeholder.emailInvalid')}`);
       }
     }
