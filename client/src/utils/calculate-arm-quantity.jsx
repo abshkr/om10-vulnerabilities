@@ -14,6 +14,9 @@ const calcArmQuantity = async (armcode, arms, amount, type, temperature) => {
     qty_amb: type === 'LT' ? amount : 0,
     qty_cor: type === 'L15' ? amount : 0,
     load_kg: type === 'KG' ? amount : 0,
+    qty_amb_real: type === 'LT' ? amount : 0,
+    qty_cor_real: type === 'L15' ? amount : 0,
+    load_kg_real: type === 'KG' ? amount : 0,
     bases: [],
     result: true,
   };
@@ -37,6 +40,9 @@ const calcArmQuantity = async (armcode, arms, amount, type, temperature) => {
       base.qty_amb = type === 'LT' ? base_qty : 0;
       base.qty_cor = type === 'L15' ? base_qty : 0;
       base.load_kg = type === 'KG' ? base_qty : 0;
+      base.qty_amb_real = type === 'LT' ? base_qty : 0;
+      base.qty_cor_real = type === 'L15' ? base_qty : 0;
+      base.load_kg_real = type === 'KG' ? base_qty : 0;
 
       const newbase = await calcBaseQuantity(base, type);
       // there will be base_vcf in return object newbase
@@ -53,17 +59,26 @@ const calcArmQuantity = async (armcode, arms, amount, type, temperature) => {
       transfer.qty_amb = _.toNumber(transfer.qty_amb) + (type !== 'LT' ? base.qty_amb : 0);
       transfer.qty_cor = _.toNumber(transfer.qty_cor) + (type !== 'L15' ? base.qty_cor : 0);
       transfer.load_kg = _.toNumber(transfer.load_kg) + (type !== 'KG' ? base.load_kg : 0);
+      transfer.qty_amb_real = _.toNumber(transfer.qty_amb_real) + (type !== 'LT' ? base.qty_amb_real : 0);
+      transfer.qty_cor_real = _.toNumber(transfer.qty_cor_real) + (type !== 'L15' ? base.qty_cor_real : 0);
+      transfer.load_kg_real = _.toNumber(transfer.load_kg_real) + (type !== 'KG' ? base.load_kg_real : 0);
     } else {
       transfer.qty_amb = type === 'LT' ? amount : 0;
       transfer.qty_cor = type === 'L15' ? amount : 0;
       transfer.load_kg = type === 'KG' ? amount : 0;
+      transfer.qty_amb_real = type === 'LT' ? amount : 0;
+      transfer.qty_cor_real = type === 'L15' ? amount : 0;
+      transfer.load_kg_real = type === 'KG' ? amount : 0;
       transfer.message = base.message;
       transfer.result = base.result;
       break;
     }
   }
   transfer.prod_vcf =
-    _.toNumber(transfer.qty_amb) <= 0 ? 0 : _.toNumber(transfer.qty_cor) / _.toNumber(transfer.qty_amb);
+    _.toNumber(transfer.qty_amb_real) <= 0
+      ? 0
+      : _.toNumber(transfer.qty_cor_real) / _.toNumber(transfer.qty_amb_real);
+  // _.toNumber(transfer.qty_amb) <= 0 ? 0 : _.toNumber(transfer.qty_cor) / _.toNumber(transfer.qty_amb);
 
   return transfer;
 };

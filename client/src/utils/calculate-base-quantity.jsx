@@ -33,14 +33,26 @@ const calcBaseQuantity = async (base, type) => {
     if (type === 'LT') {
       base.qty_cor = _.toNumber(response?.data?.real_litre15);
       base.load_kg = _.toNumber(response?.data?.real_kg);
+      // vcf = cor / amb => cor = amb * vcf
+      base.qty_cor_real = _.toNumber(response?.data?.real_litre) * _.toNumber(response?.data?.real_cvf);
+      // kg = dens * cor
+      base.load_kg_real = base?.qty_cor_real * base?.base_dens;
     }
     if (type === 'L15') {
       base.qty_amb = _.toNumber(response?.data?.real_litre);
       base.load_kg = _.toNumber(response?.data?.real_kg);
+      // vcf = cor / amb => amb = cor / vcf
+      base.qty_amb_real = _.toNumber(response?.data?.real_litre15) / _.toNumber(response?.data?.real_cvf);
+      // kg = dens * cor
+      base.load_kg_real = base?.qty_cor_real * base?.base_dens;
     }
     if (type === 'KG') {
       base.qty_amb = _.toNumber(response?.data?.real_litre);
       base.qty_cor = _.toNumber(response?.data?.real_litre15);
+      // kg = dens * cor => cor = kg / dens
+      base.qty_cor_real = _.toNumber(response?.data?.real_kg) / base?.base_dens;
+      // vcf = cor / amb => amb = cor / vcf
+      base.qty_amb_real = base?.qty_cor_real / _.toNumber(response?.data?.real_cvf);
     }
   }
   console.log('----------Utils: calcBaseQuantity', type, base);
