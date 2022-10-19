@@ -4933,6 +4933,25 @@
       "RECORD_SWITCH": "Record Switch",
       "RECORD_ORDER": "Record Order"
     },
+    "URBAC_USER_COLUMNS": {
+      "COLUMN_USER": "User",
+      "COLUMN_SITE": "Site",
+      "COLUMN_PAGE": "Page",
+      "COLUMN_CODE": "Column Code",
+      "COLUMN_TITLE": "Column Title",
+      "COLUMN_VISIBLE": "Visible",
+      "COLUMN_ORDER": "Column Order",
+      "COLUMN_PINNED": "Column Pinned",
+      "COLUMN_TYPE": "Data Type",
+      "COLUMN_FILTER": "Column Filter",
+      "COLUMN_EDITOR": "Column Editor",
+      "COLUMN_RENDER": "Column Renderer",
+      "COLUMN_STYLE": "Column Style",
+      "COLUMN_EDITABLE": "Editable",
+      "COLUMN_SORTABLE": "Sortable",
+      "COLUMN_RESIZABLE": "Resizable",
+      "COLUMN_WIDTH": "Column Width"
+    },
     "URBAC_ROLE_DOMAINS_PRIVILEGES": {
       "ROLE_DMN_PRVLG_ID": "Role Access Privilege Id",
       "ROLE_ID": "Role Id",
@@ -9939,6 +9958,25 @@
       "DELETE_CHECK": "用户删除检查",
       "RECORD_SWITCH": "角色记录开关",
       "RECORD_ORDER": "角色记录顺序"
+    },
+    "URBAC_USER_COLUMNS": {
+      "COLUMN_USER": "用户代码",
+      "COLUMN_SITE": "油库代码",
+      "COLUMN_PAGE": "屏幕页面",
+      "COLUMN_CODE": "表列代码",
+      "COLUMN_TITLE": "表列标题",
+      "COLUMN_VISIBLE": "可见标记",
+      "COLUMN_ORDER": "表列顺序",
+      "COLUMN_PINNED": "位置固定",
+      "COLUMN_TYPE": "数据类型",
+      "COLUMN_FILTER": "表列过滤器",
+      "COLUMN_EDITOR": "表列编辑器",
+      "COLUMN_RENDER": "表列渲染器",
+      "COLUMN_STYLE": "表列风格",
+      "COLUMN_EDITABLE": "可编辑标记",
+      "COLUMN_SORTABLE": "可排序标记",
+      "COLUMN_RESIZABLE": "列宽可调标记",
+      "COLUMN_WIDTH": "表列宽度"
     },
     "URBAC_ROLE_DOMAINS_PRIVILEGES": {
       "ROLE_DMN_PRVLG_ID": "角色访问权限编号",

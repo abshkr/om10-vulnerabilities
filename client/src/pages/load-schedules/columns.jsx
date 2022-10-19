@@ -93,7 +93,7 @@ const columns = (IS_NOMINATION, t, config) => [
     width: 120,
     suppressSizeToFit: true,
   },
-  {
+  /* {
     headerName: t('fields.vehicle'),
     field: 'tnkr_code',
     filter: 'FuzzyFilter',
@@ -102,7 +102,7 @@ const columns = (IS_NOMINATION, t, config) => [
     hide: !IS_NOMINATION,
     width: 130,
     suppressSizeToFit: true,
-  },
+  }, */
 
   {
     headerName: t('fields.tankerCode'),

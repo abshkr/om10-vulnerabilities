@@ -226,6 +226,38 @@ const data = [
     ),
   },
   {
+    title: `Release Notes (10.4.1a) - 19/10/2022`,
+    content: (
+      <>
+        <>
+          <p>OM5K-10676 - <a href="https://dev.diamondkey.com/browse/OM5K-10676">https://dev.diamondkey.com/browse/OM5K-10676</a></p>
+          <p>OM5K-10677 - <a href="https://dev.diamondkey.com/browse/OM5K-10677">https://dev.diamondkey.com/browse/OM5K-10677</a></p>
+	      </>
+      </>
+    ),
+  },
+  {
+    title: `Release Notes (10.4.1) - 14/10/2022`,
+    content: (
+      <>
+        <>
+          <p>OM5K-10662 - <a href="https://dev.diamondkey.com/browse/OM5K-10662">https://dev.diamondkey.com/browse/OM5K-10662</a></p>
+          <p>OM5K-10654 - <a href="https://dev.diamondkey.com/browse/OM5K-10654">https://dev.diamondkey.com/browse/OM5K-10654</a></p>
+          <p>OM5K-10653 - <a href="https://dev.diamondkey.com/browse/OM5K-10653">https://dev.diamondkey.com/browse/OM5K-10653</a></p>
+          <p>OM5K-10652 - <a href="https://dev.diamondkey.com/browse/OM5K-10652">https://dev.diamondkey.com/browse/OM5K-10652</a></p>
+          <p>OM5K-10647 - <a href="https://dev.diamondkey.com/browse/OM5K-10647">https://dev.diamondkey.com/browse/OM5K-10647</a></p>
+          <p>OM5K-10636 - <a href="https://dev.diamondkey.com/browse/OM5K-10636">https://dev.diamondkey.com/browse/OM5K-10636</a></p>
+          <p>OM5K-10457 - <a href="https://dev.diamondkey.com/browse/OM5K-10457">https://dev.diamondkey.com/browse/OM5K-10457</a></p>
+          <p>OM5K-10384 - <a href="https://dev.diamondkey.com/browse/OM5K-10384">https://dev.diamondkey.com/browse/OM5K-10384</a></p>
+          <p>OM5K-10347 - <a href="https://dev.diamondkey.com/browse/OM5K-10347">https://dev.diamondkey.com/browse/OM5K-10347</a></p>
+          <p>OM5K-10330 - <a href="https://dev.diamondkey.com/browse/OM5K-10330">https://dev.diamondkey.com/browse/OM5K-10330</a></p>
+          <p>OM5K-10297 - <a href="https://dev.diamondkey.com/browse/OM5K-10297">https://dev.diamondkey.com/browse/OM5K-10297</a></p>
+          <p>OM5K-10554 - <a href="https://dev.diamondkey.com/browse/OM5K-10554">https://dev.diamondkey.com/browse/OM5K-10554</a></p>
+	      </>
+      </>
+    ),
+  },
+  {
     title: `Release Notes (10.4.0) - 30/05/2022`,
     content: (
       <>

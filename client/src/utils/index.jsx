@@ -37,6 +37,7 @@ import getChildrenFromTxt from './get-children-from-txt';
 import decimalThousandSeparator from './decimal-thousand-separator';
 import generateMaxInt from './generate-maxint';
 import castNumber from './cast-number';
+import updateUserPageColumns from './update-page-columns';
 
 export {
   search,
@@ -80,4 +81,5 @@ export {
   decimalThousandSeparator,
   generateMaxInt,
   castNumber,
+  updateUserPageColumns,
 };

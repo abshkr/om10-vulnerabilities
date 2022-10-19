@@ -8,9 +8,11 @@ const TripTime = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
-    console.log("rule", rule.required);
-    if (input === '' || (input!==0 && !input)) {
-      return Promise.reject(`${t('validate.set')} ─ ${t('fields.delvTripTime')}`);
+    // console.log("rule", rule.required);
+    if (rule.required) {
+      if (input === '' || (input !== 0 && !input)) {
+        return Promise.reject(`${t('validate.set')} ─ ${t('fields.delvTripTime')}`);
+      }
     }
 
     if (input && input.length > 9) {
@@ -23,16 +25,16 @@ const TripTime = ({ form, value }) => {
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        delv_trip_time: value.delv_trip_time
+        delv_trip_time: value.delv_trip_time || 0,
       });
     }
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item 
-      name="delv_trip_time" 
-      label={t('fields.delvTripTime')} 
-      rules={[{ required: true, validator: validate }]}
+    <Form.Item
+      name="delv_trip_time"
+      label={t('fields.delvTripTime')}
+      rules={[{ required: false, validator: validate }]}
     >
       <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
     </Form.Item>

@@ -42,8 +42,10 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
+        // the button "Update" could never be enabled, so UPDATE API is never called
+        // safe to change it to CREATE for compiling purpose
         await api
-          .post(IS_CREATING ? KEY_READER_DEVICES.CREATE : KEY_READER_DEVICES.UPDATE, values)
+          .post(IS_CREATING ? KEY_READER_DEVICES.CREATE : KEY_READER_DEVICES.CREATE, values)
           .then(() => {
             onComplete();
 

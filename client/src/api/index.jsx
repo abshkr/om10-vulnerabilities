@@ -74,6 +74,7 @@ import * as BASE_OWNER_TRANSACTIONS from './base-owner-transactions';
 import * as TERMINAL_GROUPS from './terminal-groups';
 import * as ATG_FIELDS from './atg-fields';
 import * as TANK_ATG_FIELDS from './tank-atg-fields';
+import * as USER_COLUMNS from './user-columns';
 
 export {
   AUTH,
@@ -150,6 +151,7 @@ export {
   TERMINAL_GROUPS,
   ATG_FIELDS,
   TANK_ATG_FIELDS,
+  USER_COLUMNS,
 };
 
 export default api;

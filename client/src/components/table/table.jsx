@@ -37,7 +37,7 @@ import {
   LegacyExpDateRenderer,
   TagListRenderer,
   PpmPercentageRenderer,
-  RatioPercentageRenderer
+  RatioPercentageRenderer,
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -100,7 +100,7 @@ const defaultComponents = {
   LegacyExpDateRenderer,
   TagListRenderer,
   PpmPercentageRenderer,
-  RatioPercentageRenderer
+  RatioPercentageRenderer,
 };
 
 const defaultColumnDef = {};
@@ -133,6 +133,7 @@ const Table = ({
   rowEditingStopped,
   clearFilterPlus,
   onSortChanged,
+  handleColumnMovement,
 }) => {
   const { t } = useTranslation();
   const { windowWidth } = useWindowSize();
@@ -141,6 +142,10 @@ const Table = ({
   const [value, setValue] = useState(filterValue);
   const [api, setAPI] = useState('');
   const [tableColumns, setTableColumns] = useState(columns);
+  const [dragStarted, setDragStarted] = useState(false);
+  const [dragStopped, setDragStopped] = useState(false);
+  const [columnMoved, setColumnMoved] = useState(false);
+  const [columnAPI, setColumnAPI] = useState('');
 
   const overlayNoRowsText =
     '<span style="padding: 10px; font-size: 16px">' + t('descriptions.noRowsToShow') + '</span>';
@@ -151,6 +156,18 @@ const Table = ({
     api.deselectAll();
   }
 
+  const onDragStarted = (e) => {
+    setDragStarted(true);
+  };
+
+  const onDragStopped = (e) => {
+    setDragStopped(true);
+  };
+
+  const onColumnMoved = (e) => {
+    setColumnMoved(true);
+  };
+
   const handleMultipleSelection = () => {
     if (handleSelect) {
       const payload = api.getSelectedRows();
@@ -160,6 +177,7 @@ const Table = ({
 
   const handleGridReady = (params) => {
     setAPI(params.api);
+    setColumnAPI(params.columnApi);
 
     if (apiContext) {
       apiContext(params.api);
@@ -190,6 +208,18 @@ const Table = ({
 
     params.columnApi.autoSizeColumns(allColumnIds, skipHeader);
   };
+
+  useEffect(() => {
+    if (dragStarted && dragStopped && columnMoved) {
+      if (handleColumnMovement && columnAPI) {
+        handleColumnMovement(columnAPI);
+      }
+
+      setDragStarted(false);
+      setDragStopped(false);
+      setColumnMoved(false);
+    }
+  }, [dragStarted, dragStopped, columnMoved, handleColumnMovement, columnAPI]);
 
   useEffect(() => {
     const query = value === '' ? undefined : value;
@@ -348,6 +378,9 @@ const Table = ({
                   singleClickEdit={true}
                   editType={editType === 'fullRow' ? 'fullRow' : ''}
                   onRowEditingStopped={rowEditingStopped}
+                  onColumnMoved={onColumnMoved}
+                  onDragStarted={onDragStarted}
+                  onDragStopped={onDragStopped}
                 />
               </div>
             </div>
