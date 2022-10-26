@@ -3,6 +3,8 @@ import Drawer from './drawer';
 import Customer from './customer';
 import Carrier from './carrier';
 import Tanker from './tanker';
+import Employer from './employer';
+import Driver from './driver';
 import Priority from './priority';
 import Shift from './shift';
 import HostData from './host-data';
@@ -23,6 +25,8 @@ export {
   Customer,
   Carrier,
   Tanker,
+  Employer,
+  Driver,
   Priority,
   Shift,
   HostData,
@@ -35,5 +39,5 @@ export {
   EndWeight,
   StartWeight,
   DiffWeight,
-  Isotainer
+  Isotainer,
 };

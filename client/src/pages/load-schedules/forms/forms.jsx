@@ -45,6 +45,8 @@ import {
   Customer,
   Carrier,
   Tanker,
+  Employer,
+  Driver,
   Priority,
   Shift,
   HostData,
@@ -135,6 +137,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
   const [drawer, setDrawer] = useState(undefined);
   const [customer, setCustomer] = useState(undefined);
   const [carrier, setCarrier] = useState(undefined);
+  const [employer, setEmployer] = useState(undefined);
   const [tanker, setTanker] = useState(undefined);
   const [redoBOL, setRedoBOL] = useState(0);
   const [exportBOL, setExportBOL] = useState(0);
@@ -1107,6 +1110,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
       setDrawer(undefined);
       setCarrier(undefined);
       setTanker(undefined);
+      setEmployer(undefined);
 
       resetFields();
 
@@ -1490,6 +1494,23 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
                 />
               </Col>
             </Row>
+
+            {config?.siteTripResetDriver && (
+              <Row gutter={[8, 8]}>
+                <Col span={12}>
+                  <Employer
+                    form={form}
+                    value={value}
+                    onChange={setEmployer}
+                    enabled={value?.status === 'F'}
+                  />
+                </Col>
+
+                <Col span={12}>
+                  <Driver form={form} value={value} employer={employer} enabled={value?.status === 'F'} />
+                </Col>
+              </Row>
+            )}
 
             <Row gutter={[8, 8]}>
               <Dates form={form} value={value} expiry={expHour} />

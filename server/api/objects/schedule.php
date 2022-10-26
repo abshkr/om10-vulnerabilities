@@ -35,7 +35,8 @@ class Schedule extends CommonClass
     );
 
     protected $table_view_map = array(
-        "SHLS_SUPP" => "SUPPLIER_CODE"
+        "SHLS_SUPP" => "SUPPLIER_CODE",
+        // "SHLS_DRIVER" => "DRIVER"
     );
 
     //All the fields that should be treated as BOOLEAN in JSON
@@ -91,6 +92,28 @@ class Schedule extends CommonClass
     {
         $company_service = new TankerService($this->conn);
         return $company_service->tankers_by_carrier($this->tnkr_carrier);
+    }
+
+    public function drivers()
+    {
+        $query = "
+            SELECT 
+                PER_CODE,
+                PER_NAME
+            FROM PERSONNEL
+            WHERE PER_AUTH IN (7, 8, 9) 
+                AND PER_CMPY = :per_cmpy
+                AND PER_CODE != '8888'
+            ORDER BY PER_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':per_cmpy', $this->employer);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
     }
 
     public function next_trip_no()
@@ -879,6 +902,30 @@ class Schedule extends CommonClass
         return;
     }
 
+    private function update_driver() 
+    {
+        if (!isset($this->driver)) {
+            return;
+        }
+
+        $query = "
+            UPDATE SCHEDULE 
+            SET SHLS_DRIVER = :drv_code 
+            WHERE SHLS_TRIP_NO = :trip and SHLS_SUPP = :supplier";
+        $stmt = oci_parse($this->conn, $query);
+        // oci_bind_by_name($stmt, ':default', $default);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier_code);
+        oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+        oci_bind_by_name($stmt, ':drv_code', $this->driver);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            throw new DatabaseException($e['message']);;
+        }
+
+        return;
+    }
+
     private function clean_up_zero_products()
     {
         $query = "DELETE FROM SPECPROD
@@ -1132,6 +1179,7 @@ class Schedule extends CommonClass
         $this->update_isotainer();
         $this->update_sold_to_ship_to();
         $this->update_load_security_info();
+        $this->update_driver();
 
         return true;
     }
