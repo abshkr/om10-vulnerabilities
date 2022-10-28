@@ -125,6 +125,7 @@
     "exceedMaxNumber": "Value exceeds the max number",
     "exceptionRules": "Exception Rules (List of events whereby Closeout will not run)",
     "expiryDateTable": "Apply the Expiry Dates to the following records",
+    "fasttrackNote": "The following URL points to the FastTrack system on your site. You can change it at any time. If you click the button \"Yes\", the system will save the URL if it has been changed, close the previous opened TAB and open the URL in the adjacent new TAB. You will enter the FastTrack automatically without authentication required.",
     "flowContribution": "Flow Contribution",
     "fromProductNotBase": "Scheduled from-product is made of multiple base products.",
     "frozenFoliosToAutoClose": "There are still frozen folios, please close them manually prior to setting autoclose.",

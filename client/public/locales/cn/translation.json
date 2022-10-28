@@ -125,6 +125,7 @@
     "exceedMaxNumber": "数值超过最大允许值",
     "exceptionRules": "盘点例外规则 (决定何时无需运行盘点):",
     "expiryDateTable": "把有效日期应用到以下记录",
+    "fasttrackNote": "下述网址指向油库的FastTrack系统。您任何时候都可以修改此网址。如果点击按钮“是”，系统将保存修改后的网址、关闭之前打开的网页并在邻近的TAB中打开新网页，您将会自动登录进入FastTrack系统。",
     "flowContribution": "流量贡献",
     "fromProductNotBase": "计划提取的油品不是单一基础油品，而是由多种基础油品组成。",
     "frozenFoliosToAutoClose": "发现冻结的预盘记录，请先手动终止这些数据然后才可以启动自动终止功能。",

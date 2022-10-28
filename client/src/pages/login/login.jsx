@@ -207,6 +207,9 @@ const Login = ({ handleLogin, auth }) => {
 
   const handleSubmit = (values) => {
     setLoading(true);
+    sessionStorage.setItem('user', values?.code);
+    sessionStorage.setItem('password', values?.password);
+    sessionStorage.setItem('language', values?.language);
 
     handleLogin(values, (response, dispatch) => {
       if (response?.data?.token) {
