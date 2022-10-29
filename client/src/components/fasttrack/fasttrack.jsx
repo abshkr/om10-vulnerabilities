@@ -46,8 +46,8 @@ const FastTrack = () => {
       });
     } else {
       const omegaLoginCode = sessionStorage.getItem('user');
-      // const omegaLoginPass = sessionStorage.getItem('password');
-      const omegaLoginPass = 'Om5000';
+      const omegaLoginPass = sessionStorage.getItem('password');
+      // const omegaLoginPass = 'Om5000';
       const omegaLoginLang = sessionStorage.getItem('language');
       console.log('..........loginObject', omegaLoginCode, omegaLoginPass, omegaLoginLang);
       const payload = hash(omegaLoginLang, omegaLoginCode, omegaLoginPass);
