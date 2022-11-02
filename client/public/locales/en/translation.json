@@ -71,6 +71,7 @@
     "complexityMedium": "Medium (Upper, Lower and Numeric)",
     "complexitySimple": "Simple (Alpha and Numeric)",
     "configNumberRanges": "The minimum and maximum values limited for this numeric configuration. The blank value is allowed.",
+    "configNumberRangesRequired": "The minimum and maximum values limited for this numeric configuration.",
     "convertCmptProdQtyMatch": "The total quantities of all compartments should match with that of all products.",
     "convertFailed": "Failed to convert the record",
     "convertFailedSchedule": "Failed to convert the schedule from pre-order to pre-schedule",

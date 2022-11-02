@@ -297,55 +297,80 @@ const FormSwitch = ({ config, onChange }) => {
 
     case 'HOT_LITRE_SFL_FACTOR':
       return (
-        <InputNumber
-          min={0}
-          max={1}
-          step={0.1}
-          onChange={(value) => onChange(config, value)}
-          value={config.config_value}
-        />
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'0 - 1'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={1}
+            step={0.1}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
       );
 
     case 'SAFEFILL_TOLERANCE_PERCENT':
       return (
-        <InputNumber
-          min={0}
-          max={100}
-          onChange={(value) => onChange(config, value)}
-          value={config.config_value}
-        />
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'0 - 100'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={100}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
       );
 
     case 'SAFEFILL_TOLERANCE_QTY':
       return (
-        <InputNumber
-          min={0}
-          max={10000}
-          onChange={(value) => onChange(config, value)}
-          value={config.config_value}
-        />
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'0 - 10000'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={10000}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
       );
 
-    case ('SITE_LD_RETNPRD', 'SITE_LD_RETNPRD_NEW_MOV', 'SITE_LD_RETNPRD_USED_MOV'):
+    /* case ('SITE_LD_RETNPRD', 'SITE_LD_RETNPRD_NEW_MOV', 'SITE_LD_RETNPRD_USED_MOV'):
       return (
+        <>
+        <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+          <Tag color={'red'}>{'60 - 1830'}</Tag>
+        </Tooltip>
         <InputNumber
           min={60}
           max={1830}
           onChange={(value) => onChange(config, value)}
           value={config.config_value}
         />
+        </>
       );
 
     case 'SITE_EXP_MONTHS':
       return (
+        <>
+        <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+          <Tag color={'red'}>{'0 - 12'}</Tag>
+        </Tooltip>
         <InputNumber
           min={0}
           max={12}
           onChange={(value) => onChange(config, value)}
           value={config.config_value}
         />
+        </>
       );
-
+ */
     case 'DRIVER_PIN_AUTO_EXPIRE':
       return (
         <>
@@ -378,52 +403,77 @@ const FormSwitch = ({ config, onChange }) => {
 
     case 'SITE_LD_RETNPRD':
       return (
-        <InputNumber
-          min={60}
-          max={1830}
-          onChange={(value) => onChange(config, value)}
-          value={config.config_value}
-        />
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'60 - 1830'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={60}
+            max={1830}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
       );
 
     case 'SITE_EXP_MONTHS':
       return (
-        <InputNumber
-          min={0}
-          max={12}
-          onChange={(value) => onChange(config, value)}
-          value={config.config_value}
-        />
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'0 - 12'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={12}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
       );
 
     case 'SITE_LD_RETN_NEWLDS':
       return (
-        <InputNumber
-          min={1}
-          max={365}
-          onChange={(value) => onChange(config, value)}
-          value={config.config_value}
-        />
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'1 - 365'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={1}
+            max={365}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
       );
 
     case 'SITE_LD_RETNPRD_NEW_MOV':
       return (
-        <InputNumber
-          min={60}
-          max={1830}
-          onChange={(value) => onChange(config, value)}
-          value={config.config_value}
-        />
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'60 - 1830'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={60}
+            max={1830}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
       );
 
     case 'SITE_LD_RETNPRD_USED_MOV':
       return (
-        <InputNumber
-          min={60}
-          max={1830}
-          onChange={(value) => onChange(config, value)}
-          value={config.config_value}
-        />
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'60 - 1830'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={60}
+            max={1830}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
       );
 
     case 'SITE_DATETIME_FORMAT':

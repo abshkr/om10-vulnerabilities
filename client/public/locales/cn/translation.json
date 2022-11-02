@@ -71,6 +71,7 @@
     "complexityMedium": "中等(字符大小写与数字)",
     "complexitySimple": "简单(字符数字)",
     "configNumberRanges": "此项油库参数允许的最小值与最大值，允许为空。",
+    "configNumberRangesRequired": "此项油库参数允许的最小值与最大值。",
     "convertCmptProdQtyMatch": "提单油仓总油量应该和其油品总油量相匹配。",
     "convertFailed": "转换记录的操作失败",
     "convertFailedSchedule": "将油品提单转换成油仓提单的操作失败",
