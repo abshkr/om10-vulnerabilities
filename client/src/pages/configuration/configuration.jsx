@@ -14,6 +14,8 @@ import {
   Select,
   Input,
   Divider,
+  Tag,
+  Tooltip,
 } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
@@ -136,102 +138,152 @@ const FormSwitch = ({ config, onChange }) => {
 
     case 'URBAC_PWD_LEN_MIN':
       return (
-        <InputNumber
-          min={0}
-          max={40}
-          onChange={(value) => onChange(config, value)}
-          value={isNegativeNumber(config.config_key, config.config_value)}
-        />
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRanges')}>
+            <Tag color={'red'}>{'0 - 40'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={40}
+            onChange={(value) => onChange(config, value)}
+            value={isNegativeNumber(config.config_key, config.config_value)}
+          />
+        </>
       );
 
     case 'URBAC_PWD_LEN_MAX':
       return (
-        <InputNumber
-          min={0}
-          max={40}
-          onChange={(value) => onChange(config, value)}
-          value={isNegativeNumber(config.config_key, config.config_value)}
-        />
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRanges')}>
+            <Tag color={'red'}>{'0 - 40'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={40}
+            onChange={(value) => onChange(config, value)}
+            value={isNegativeNumber(config.config_key, config.config_value)}
+          />
+        </>
       );
 
     case 'URBAC_PWD_AUTO_LOCK':
       return (
-        <InputNumber
-          min={0}
-          max={99}
-          onChange={(value) => onChange(config, value)}
-          value={isNegativeNumber(config.config_key, config.config_value)}
-        />
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRanges')}>
+            <Tag color={'red'}>{'0 - 99'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={99}
+            onChange={(value) => onChange(config, value)}
+            value={isNegativeNumber(config.config_key, config.config_value)}
+          />
+        </>
       );
 
     case 'URBAC_PWD_AUTO_EXPIRE':
       return (
-        <InputNumber
-          min={0}
-          max={365}
-          onChange={(value) => onChange(config, value)}
-          value={isNegativeNumber(config.config_key, config.config_value)}
-        />
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRanges')}>
+            <Tag color={'red'}>{'0 - 365'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={365}
+            onChange={(value) => onChange(config, value)}
+            value={isNegativeNumber(config.config_key, config.config_value)}
+          />
+        </>
       );
 
     case 'URBAC_PWD_UPD_INTERVAL':
       return (
-        <InputNumber
-          min={0}
-          max={365}
-          onChange={(value) => onChange(config, value)}
-          value={isNegativeNumber(config.config_key, config.config_value)}
-        />
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRanges')}>
+            <Tag color={'red'}>{'0 - 365'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={365}
+            onChange={(value) => onChange(config, value)}
+            value={isNegativeNumber(config.config_key, config.config_value)}
+          />
+        </>
       );
 
     case 'URBAC_PWD_REUSE':
       return (
-        <InputNumber
-          min={0}
-          max={99}
-          onChange={(value) => onChange(config, value)}
-          value={isNegativeNumber(config.config_key, config.config_value)}
-        />
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRanges')}>
+            <Tag color={'red'}>{'0 - 99'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={99}
+            onChange={(value) => onChange(config, value)}
+            value={isNegativeNumber(config.config_key, config.config_value)}
+          />
+        </>
       );
 
     case 'URBAC_AUTO_LOGOFF':
       return (
-        <InputNumber
-          min={0}
-          max={2000}
-          onChange={(value) => onChange(config, value)}
-          value={isNegativeNumber(config.config_key, config.config_value)}
-        />
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRanges')}>
+            <Tag color={'red'}>{'0 - 2000'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={2000}
+            onChange={(value) => onChange(config, value)}
+            value={isNegativeNumber(config.config_key, config.config_value)}
+          />
+        </>
       );
 
     case 'URBAC_SESSION_PER_USER':
       return (
-        <InputNumber
-          min={0}
-          max={99}
-          onChange={(value) => onChange(config, value)}
-          value={isNegativeNumber(config.config_key, config.config_value)}
-        />
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRanges')}>
+            <Tag color={'red'}>{'0 - 99'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={99}
+            onChange={(value) => onChange(config, value)}
+            value={isNegativeNumber(config.config_key, config.config_value)}
+          />
+        </>
       );
 
     case 'URBAC_USER_AUTO_LOCK':
       return (
-        <InputNumber
-          min={0}
-          max={365}
-          onChange={(value) => onChange(config, value)}
-          value={isNegativeNumber(config.config_key, config.config_value)}
-        />
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRanges')}>
+            <Tag color={'red'}>{'0 - 365'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={365}
+            onChange={(value) => onChange(config, value)}
+            value={isNegativeNumber(config.config_key, config.config_value)}
+          />
+        </>
       );
 
     case 'URBAC_USER_AUTO_DELETE':
       return (
-        <InputNumber
-          min={0}
-          max={365}
-          onChange={(value) => onChange(config, value)}
-          value={isNegativeNumber(config.config_key, config.config_value)}
-        />
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRanges')}>
+            <Tag color={'red'}>{'0 - 365'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={365}
+            onChange={(value) => onChange(config, value)}
+            value={isNegativeNumber(config.config_key, config.config_value)}
+          />
+        </>
       );
 
     case 'SITE_2FA_DOMAINS':
@@ -296,22 +348,32 @@ const FormSwitch = ({ config, onChange }) => {
 
     case 'DRIVER_PIN_AUTO_EXPIRE':
       return (
-        <InputNumber
-          min={0}
-          max={365}
-          onChange={(value) => onChange(config, value)}
-          value={isNegativeNumber(config.config_key, config.config_value)}
-        />
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRanges')}>
+            <Tag color={'red'}>{'0 - 365'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={365}
+            onChange={(value) => onChange(config, value)}
+            value={isNegativeNumber(config.config_key, config.config_value)}
+          />
+        </>
       );
 
     case 'DRIVER_PIN_AUTO_LOCK':
       return (
-        <InputNumber
-          min={0}
-          max={99}
-          onChange={(value) => onChange(config, value)}
-          value={isNegativeNumber(config.config_key, config.config_value)}
-        />
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRanges')}>
+            <Tag color={'red'}>{'0 - 99'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={99}
+            onChange={(value) => onChange(config, value)}
+            value={isNegativeNumber(config.config_key, config.config_value)}
+          />
+        </>
       );
 
     case 'SITE_LD_RETNPRD':
