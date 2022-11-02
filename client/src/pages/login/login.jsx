@@ -64,6 +64,20 @@ const Login = ({ handleLogin, auth }) => {
     sessionStorage.setItem('password', document.getElementById('password')?.value);
   };
 
+  const getErrorMessage = (code) => {
+    let desc = '';
+    if (code === '30000') {
+      desc = t('descriptions.loginFailureDatabase');
+    }
+    if (code === '30001') {
+      desc = t('descriptions.loginFailurePassword');
+    }
+    if (code === '30003') {
+      desc = t('descriptions.loginFailureUsercode');
+    }
+    return desc;
+  };
+
   const onChangePassword = (ret) => {
     if (ret.ret_code === 'cancel') {
       history.push(ROUTES.LOG_OUT);
@@ -278,7 +292,7 @@ const Login = ({ handleLogin, auth }) => {
         notification.error({
           placement: 'bottomRight',
           message: t('messages.loginFailed'),
-          description: _.capitalize(response.data.msg_desc),
+          description: getErrorMessage(response.data.msg_code), // _.capitalize(response.data.msg_desc),
           icon: <FrownOutlined style={{ color: '#ec6e68' }} />,
         });
       }
