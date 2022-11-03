@@ -635,6 +635,120 @@ class BaseOwnerTrans extends CommonClass
         return true;
     }
 
+    protected function post_update()
+    {
+        write_log("post_update START", __FILE__, __LINE__);
+
+        //If it is a reversal and this transaction is in a fronzen folio, update all CLOSEOUT_PRODOWNSHIP
+        if ($this->trsa_reversed) {
+            $query = "
+                SELECT NVL(STATUS, 0) STATUS, NVL(CLOSEOUT_NR, 99999) CLOSEOUT_NR 
+                FROM CLOSEOUTS 
+                WHERE CLOSEOUT_DATE > (SELECT TRSA_TIME_APPROVED FROM PRODOWNSHIP_TRANSACT WHERE OWNSHIP_TRSA_NO = :trsa_no) 
+                    AND PREV_CLOSEOUT_DATE <= (SELECT TRSA_TIME_APPROVED FROM PRODOWNSHIP_TRANSACT WHERE OWNSHIP_TRSA_NO = :trsa_no)
+            ";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':trsa_no', $this->ownship_trsa_no);
+
+            if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            } else {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            }
+
+            if ($row['STATUS'] == null || $row['CLOSEOUT_NR'] == null) {
+                write_log("No suitable folio found", __FILE__, __LINE__);
+                return;
+            }
+
+            //1 - Fronzen.
+            if ($row['STATUS'] != 1) {
+                write_log(sprintf("Target folio %s, status %s, do not update CLOSEOUT_PRODOWNSHIP", 
+                    $row['CLOSEOUT_NR'], $row['STATUS']), __FILE__, __LINE__);
+                return;
+            }
+            
+            write_log(sprintf("Target folio %s, status %s", $row['CLOSEOUT_NR'], $row['STATUS']), __FILE__, __LINE__);
+
+            //From company 
+            $query = "
+                UPDATE CLOSEOUT_PRODOWNSHIP
+                SET CLOSE_QTY = CLOSE_QTY + :changed,
+                    FREEZE_QTY = FREEZE_QTY + :changed
+                WHERE CLOSEOUT_NR = :folio_nr 
+                    AND CMPY_CODE = :cmpy_code
+                    AND BASE_CODE = :base_code";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':changed', $this->qty);
+            oci_bind_by_name($stmt, ':folio_nr', $row['CLOSEOUT_NR']);
+            oci_bind_by_name($stmt, ':cmpy_code', $this->supp_cmpy);
+            oci_bind_by_name($stmt, ':base_code', $this->base_prod_code);
+            if (!oci_execute($stmt)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+
+            $query = "
+                UPDATE CLOSEOUT_PRODOWNSHIP
+                SET OPEN_QTY = OPEN_QTY + :changed,
+                    CLOSE_QTY = CLOSE_QTY + :changed,
+                    FREEZE_QTY = FREEZE_QTY + :changed
+                WHERE CLOSEOUT_NR > :folio_nr 
+                    AND CMPY_CODE = :cmpy_code
+                    AND BASE_CODE = :base_code";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':changed', $this->qty);
+            oci_bind_by_name($stmt, ':folio_nr', $row['CLOSEOUT_NR']);
+            oci_bind_by_name($stmt, ':cmpy_code', $this->supp_cmpy);
+            oci_bind_by_name($stmt, ':base_code', $this->base_prod_code);
+            if (!oci_execute($stmt)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+
+            //To company 
+            $query = "
+                UPDATE CLOSEOUT_PRODOWNSHIP
+                SET CLOSE_QTY = CLOSE_QTY - :changed,
+                    FREEZE_QTY = FREEZE_QTY - :changed
+                WHERE CLOSEOUT_NR = :folio_nr 
+                    AND CMPY_CODE = :cmpy_code
+                    AND BASE_CODE = :base_code";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':changed', $this->qty);
+            oci_bind_by_name($stmt, ':folio_nr', $row['CLOSEOUT_NR']);
+            oci_bind_by_name($stmt, ':cmpy_code', $this->supp_cmpy_to);
+            oci_bind_by_name($stmt, ':base_code', $this->base_prod_code);
+            if (!oci_execute($stmt)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+
+            $query = "
+                UPDATE CLOSEOUT_PRODOWNSHIP
+                SET OPEN_QTY = OPEN_QTY - :changed,
+                    CLOSE_QTY = CLOSE_QTY - :changed,
+                    FREEZE_QTY = FREEZE_QTY - :changed
+                WHERE CLOSEOUT_NR > :folio_nr 
+                    AND CMPY_CODE = :cmpy_code
+                    AND BASE_CODE = :base_code";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':changed', $this->qty);
+            oci_bind_by_name($stmt, ':folio_nr', $row['CLOSEOUT_NR']);
+            oci_bind_by_name($stmt, ':cmpy_code', $this->supp_cmpy_to);
+            oci_bind_by_name($stmt, ':base_code', $this->base_prod_code);
+            if (!oci_execute($stmt)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                return false;
+            }
+        }
+    }
+
 /*
     protected function get_percentages()
     {
