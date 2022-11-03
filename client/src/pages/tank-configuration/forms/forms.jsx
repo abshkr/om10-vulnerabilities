@@ -49,6 +49,7 @@ import api, {
   SITE_CONFIGURATION,
 } from '../../../api';
 import { SETTINGS } from '../../../constants';
+import { calcWiA } from '../../../utils';
 
 import TankAdaptiveFlowControl from '../../tanks/afc';
 
@@ -205,16 +206,12 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       values.mlitm_qty_cor = value?.tank_cor_vol;
       values.mlitm_qty_kg = value?.tank_liquid_kg;
 
-      // WiA = WiV - GSV x 0.0011
-      const WiV = value?.tank_liquid_kg;
-      const GSV = value?.tank_cor_vol;
-      const AIR = config?.airBuoyancyFactor;
-      let WiA = undefined;
-      if (!WiV || !GSV) {
-        WiA = undefined;
-      } else {
-        WiA = _.round(_.toNumber(WiV) - _.toNumber(GSV) * AIR, config?.precisionMass);
-      }
+      let WiA = calcWiA(
+        value?.tank_liquid_kg,
+        value?.tank_cor_vol,
+        value?.tank_density,
+        config?.airBuoyancyFactor
+      );
       values.mlitm_air_kg = WiA;
       values.mlitm_dens_cor = value?.tank_density;
       values.mlitm_temp_amb = value?.tank_temp;

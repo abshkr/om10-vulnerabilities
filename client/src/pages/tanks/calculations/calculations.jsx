@@ -8,7 +8,7 @@ import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
 
 import Calculation from '../forms/fields/calculation';
-import { VCFManager, getDensityRange, getQtyByLevel } from '../../../utils';
+import { VCFManager, getDensityRange, getQtyByLevel, calcWiA } from '../../../utils';
 import api, { TANKS, TANK_STATUS } from '../../../api';
 
 const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
@@ -352,9 +352,15 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
                 description: response?.data?.MSG_CODE + ': ' + response?.data?.MSG_DESC,
               });
             } else {
-              const WIA =
-                _.toNumber(response?.data?.REAL_KG) -
-                _.toNumber(response?.data?.REAL_LITRE15) * config?.airBuoyancyFactor;
+              // const WIA =
+              //   _.toNumber(response?.data?.REAL_KG) -
+              //   _.toNumber(response?.data?.REAL_LITRE15) * config?.airBuoyancyFactor;
+              const WIA = calcWiA(
+                response?.data?.REAL_KG,
+                response?.data?.REAL_LITRE15,
+                values?.tank_density,
+                config?.airBuoyancyFactor
+              );
               setFieldsValue({
                 tank_amb_vol: _.round(
                   response?.data?.REAL_LITRE,
@@ -485,9 +491,10 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
       centered: true,
       onOk: async () => {
         // get the water volume from water level
-        const waterVol = _.toNumber(payload?.tank_water_lvl) === 0 
-          ? 0
-          : await getQtyByLevel(selected?.tank_code, _.toNumber(payload?.tank_water_lvl));
+        const waterVol =
+          _.toNumber(payload?.tank_water_lvl) === 0
+            ? 0
+            : await getQtyByLevel(selected?.tank_code, _.toNumber(payload?.tank_water_lvl));
         // get the total volume from prod level
         const totalVol = await getQtyByLevel(selected?.tank_code, _.toNumber(payload?.tank_prod_lvl));
         // get the ambient volume
@@ -515,9 +522,15 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
                 description: response?.data?.MSG_CODE + ': ' + response?.data?.MSG_DESC,
               });
             } else {
-              const WIA =
-                _.toNumber(response?.data?.REAL_KG) -
-                _.toNumber(response?.data?.REAL_LITRE15) * config?.airBuoyancyFactor;
+              // const WIA =
+              //   _.toNumber(response?.data?.REAL_KG) -
+              //   _.toNumber(response?.data?.REAL_LITRE15) * config?.airBuoyancyFactor;
+              const WIA = calcWiA(
+                response?.data?.REAL_KG,
+                response?.data?.REAL_LITRE15,
+                values?.tank_density,
+                config?.airBuoyancyFactor
+              );
               setFieldsValue({
                 tank_amb_vol: _.round(
                   response?.data?.REAL_LITRE,
@@ -701,9 +714,15 @@ const Calculations = ({ selected, access, isLoading, config, setSelected }) => {
                 description: response?.data?.MSG_CODE + ': ' + response?.data?.MSG_DESC,
               });
             } else {
-              const WIA =
-                _.toNumber(response?.data?.REAL_KG) -
-                _.toNumber(response?.data?.REAL_LITRE15) * config?.airBuoyancyFactor;
+              // const WIA =
+              //   _.toNumber(response?.data?.REAL_KG) -
+              //   _.toNumber(response?.data?.REAL_LITRE15) * config?.airBuoyancyFactor;
+              const WIA = calcWiA(
+                response?.data?.REAL_KG,
+                response?.data?.REAL_LITRE15,
+                values?.tank_density,
+                config?.airBuoyancyFactor
+              );
               setFieldsValue({
                 tank_amb_vol: _.round(
                   response?.data?.REAL_LITRE,

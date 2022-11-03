@@ -2,24 +2,20 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber } from 'antd';
 import _ from 'lodash';
-import { validateField } from '../../../../../../../utils';
+import { validateField, calcWiA } from '../../../../../../../utils';
 
-const AirMass = ({ form, value, pageState, config, wiv, gsv }) => {
+const AirMass = ({ form, value, pageState, config, wiv, gsv, dstd }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
 
-  const getWiA = (value, factor) => {
+  const getWiA = (mass, std, dens) => {
     // WiA = WiV - GSV x 0.0011
-    const WiV = value?.mlitm_qty_kg;
-    const GSV = value?.mlitm_qty_cor;
-    const AIR = !factor ? 0.0011 : factor;
-    let WiA = undefined;
-    if (!WiV || !GSV) {
-      WiA = '';
-    } else {
-      WiA = _.toNumber(WiV) - _.toNumber(GSV) * AIR;
-    }
+    let WiV = mass;
+    let GSV = std;
+    let Dstd = dens;
+
+    let WiA = calcWiA(WiV, GSV, Dstd, config?.airBuoyancyFactor);
 
     return WiA;
   };
@@ -35,9 +31,9 @@ const AirMass = ({ form, value, pageState, config, wiv, gsv }) => {
   }, [value, setFieldsValue]); */
 
   useEffect(() => {
-    const WiA = _.toNumber(wiv) - _.toNumber(gsv) * config?.airBuoyancyFactor;
+    const WiA = getWiA(wiv, gsv, dstd);
     setFieldsValue({ mlitm_air_kg: _.isNaN(WiA) ? '' : WiA });
-  }, [wiv, gsv, setFieldsValue]);
+  }, [wiv, gsv, dstd, setFieldsValue]);
 
   return (
     <Form.Item

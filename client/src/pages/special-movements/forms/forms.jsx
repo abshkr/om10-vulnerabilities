@@ -23,6 +23,7 @@ import { MovementType, ReasonCode, MovementTime, Comments, To, From } from './fi
 import { SPECIAL_MOVEMENTS, TANKS } from '../../../api';
 import Calculate from './calculate';
 import { SETTINGS } from '../../../constants';
+import { calcWiA } from '../../../utils';
 
 const TabPane = Tabs.TabPane;
 
@@ -415,9 +416,15 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
                   description: errmsg,
                 });
               } else {
-                const WIA =
-                  _.toNumber(response?.data?.real_kg) -
-                  _.toNumber(response?.data?.real_litre15) * config?.airBuoyancyFactor;
+                // const WIA =
+                //   _.toNumber(response?.data?.real_kg) -
+                //   _.toNumber(response?.data?.real_litre15) * config?.airBuoyancyFactor;
+                const WIA = calcWiA(
+                  response?.data?.real_kg,
+                  response?.data?.real_litre15,
+                  values.mlitm_dens_cor,
+                  config?.airBuoyancyFactor
+                );
                 setFieldsValue({
                   mlitm_qty_amb: response?.data?.real_litre,
                   mlitm_qty_cor: response?.data?.real_litre15,

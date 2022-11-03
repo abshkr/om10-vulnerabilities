@@ -55,7 +55,7 @@ import { SETTINGS } from '../../../../../../constants';
 import api, { NOMINATION_TRANSACTIONS, MOVEMENT_NOMIATIONS, TANKS } from '../../../../../../api';
 import BaseDetails from './base-details/base-details';
 import MeterDetails from './meter-details/meter-details';
-import { calcArmQuantity } from '../../../../../../utils';
+import { calcArmQuantity, calcWiA } from '../../../../../../utils';
 
 const TabPane = Tabs.TabPane;
 
@@ -108,6 +108,7 @@ const FormModal = ({
   const [productArms, setProductArms] = useState(undefined);
 
   const [temperature, setTemperature] = useState(null);
+  const [density, setDensity] = useState(null);
   const [ambient, setAmbient] = useState(null);
   const [corrected, setCorrected] = useState(null);
   const [mass, setMass] = useState(null);
@@ -566,9 +567,15 @@ const FormModal = ({
               description: errmsg,
             });
           } else {
-            const WIA =
-              _.toNumber(response?.data?.real_kg) -
-              _.toNumber(response?.data?.real_litre15) * config?.airBuoyancyFactor;
+            // const WIA =
+            //   _.toNumber(response?.data?.real_kg) -
+            //   _.toNumber(response?.data?.real_litre15) * config?.airBuoyancyFactor;
+            const WIA = calcWiA(
+              response?.data?.real_kg,
+              response?.data?.real_litre15,
+              values?.mlitm_dens_cor,
+              config?.airBuoyancyFactor
+            );
             form.setFieldsValue({
               mlitm_qty_amb: response?.data?.real_litre,
               mlitm_qty_cor: response?.data?.real_litre15,
@@ -624,7 +631,13 @@ const FormModal = ({
           description: errmsg,
         });
       } else {
-        const WIA = _.toNumber(response?.load_kg) - _.toNumber(response?.qty_cor) * config?.airBuoyancyFactor;
+        // const WIA = _.toNumber(response?.load_kg) - _.toNumber(response?.qty_cor) * config?.airBuoyancyFactor;
+        const WIA = calcWiA(
+          response?.load_kg,
+          response?.qty_cor,
+          values?.mlitm_dens_cor,
+          config?.airBuoyancyFactor
+        );
         form.setFieldsValue({
           mlitm_qty_amb: response?.qty_amb,
           mlitm_qty_cor: response?.qty_cor,
@@ -1064,6 +1077,7 @@ const FormModal = ({
                         config={config}
                         wiv={mass}
                         gsv={corrected}
+                        dstd={density}
                       />
                     </Col>
                   )}
@@ -1090,6 +1104,7 @@ const FormModal = ({
                       arm={arm}
                       pageState={pageState}
                       config={config}
+                      setValue={setDensity}
                     />
                   </Col>
                 </Row>

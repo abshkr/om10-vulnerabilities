@@ -38,6 +38,7 @@ import decimalThousandSeparator from './decimal-thousand-separator';
 import generateMaxInt from './generate-maxint';
 import castNumber from './cast-number';
 import updateUserPageColumns from './update-page-columns';
+import calcWiA from './calc-mass-in-air';
 
 export {
   search,
@@ -82,4 +83,5 @@ export {
   generateMaxInt,
   castNumber,
   updateUserPageColumns,
+  calcWiA,
 };

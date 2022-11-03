@@ -9,7 +9,7 @@ import moment from 'moment';
 import { SETTINGS } from '../../../../constants';
 
 import { SPECIAL_MOVEMENTS } from 'api';
-import { getDensityRange } from 'utils';
+import { getDensityRange, calcWiA } from 'utils';
 
 const Calculate = ({
   form,
@@ -223,21 +223,17 @@ const Calculate = ({
     // WiA = WiV - GSV x 0.0011
     let WiV = getFieldValue('mlitm_qty_kg');
     let GSV = getFieldValue('mlitm_qty_cor');
+    let Dstd = getFieldValue('mlitm_dens_cor');
     if (fromDatabase) {
       WiV = value?.mlitm_qty_kg;
       GSV = value?.mlitm_qty_cor;
+      Dstd = value?.mlitm_dens_cor;
     }
 
-    const AIR = config?.airBuoyancyFactor;
-    let WiA = undefined;
-    if (!WiV || !GSV) {
-      WiA = '';
-    } else {
-      WiA = _.toNumber(WiV) - _.toNumber(GSV) * AIR;
-    }
+    let WiA = calcWiA(WiV, GSV, Dstd, config?.airBuoyancyFactor);
 
     setFieldsValue({
-      mlitm_air_kg: WiA,
+      mlitm_air_kg: _.isNaN(WiA) ? '' : WiA,
     });
   };
 
@@ -264,6 +260,7 @@ const Calculate = ({
   const handleDensityChange = (value) => {
     const decimals = _.toString(value).split('.')[1]?.length;
     setDensDecimals(decimals);
+    setWiA(false);
   };
 
   const handleTemperatureChange = (value) => {

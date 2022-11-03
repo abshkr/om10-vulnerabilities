@@ -4,7 +4,7 @@ import { Form, InputNumber } from 'antd';
 import _ from 'lodash';
 import { calcArmDensity, getDensityRange, validateField } from '../../../../../../../utils';
 
-const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
+const StdDensity = ({ form, value, tank, arm, pageState, config, setValue }) => {
   const [minDens, setMinDens] = useState(config.minDensity);
   const [maxDens, setMaxDens] = useState(config.maxDensity);
 
@@ -42,8 +42,10 @@ const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
       setFieldsValue({
         mlitm_dens_cor: value.mlitm_dens_cor,
       });
+
+      setValue(value.mlitm_dens_cor);
     }
-  }, [value, setFieldsValue]);
+  }, [value, setFieldsValue, setValue]);
 
   useEffect(() => {
     // console.log('validateFields([mlitm_dens_cor]);');
@@ -68,6 +70,7 @@ const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
       });
       setMinDens(densRange.min);
       setMaxDens(densRange.max);
+      setValue(tank?.[0]?.tank_density);
 
       /* if (!tank?.[0]?.base_dens_lo) {
         setMinDens(tank?.[0]?.bclass_dens_lo);
@@ -97,6 +100,7 @@ const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
           // setMaxDens(tank?.[0]?.bclass_dens_hi);
           setMinDens(config.minDensity);
           setMaxDens(config.maxDensity);
+          setValue(arm?.[0]?.stream_tankden);
         } else {
           const armDens = calcArmDensity(arm?.[0]?.stream_armcode, arm);
           setFieldsValue({
@@ -106,6 +110,7 @@ const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
           // setMaxDens(tank?.[0]?.bclass_dens_hi);
           setMinDens(config.minDensity);
           setMaxDens(config.maxDensity);
+          setValue(armDens);
         }
       } else {
         setFieldsValue({
@@ -113,12 +118,13 @@ const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
         });
         setMinDens(config.minDensity);
         setMaxDens(config.maxDensity);
+        setValue(null);
       }
     }
 
     // console.log('validateFields([mlitm_dens_cor]);222');
     validateFields(['mlitm_dens_cor']);
-  }, [tank, arm, config, setFieldsValue, setMinDens, setMaxDens, validateFields]);
+  }, [tank, arm, config, setFieldsValue, setMinDens, setMaxDens, validateFields, setValue]);
 
   return (
     <Form.Item
@@ -156,6 +162,7 @@ const StdDensity = ({ form, value, tank, arm, pageState, config }) => {
         // min={_.toNumber(minDens)}
         // max={_.toNumber(maxDens)}
         precision={config.precisionDensity}
+        onChange={setValue}
         //step={0.01}
       />
     </Form.Item>

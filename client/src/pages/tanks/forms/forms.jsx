@@ -17,7 +17,7 @@ import _ from 'lodash';
 import { Gauging, General, Calculation, Levels } from './fields';
 
 import { TANKS, TANK_STATUS } from '../../../api';
-import { VCFManager, getDensityRange, getQtyByLevel } from '../../../utils';
+import { VCFManager, getDensityRange, getQtyByLevel, calcWiA } from '../../../utils';
 
 // import TankStrapping from '../strapping';
 import TankStrapping from '../prod-strapping';
@@ -454,9 +454,15 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
                 description: response?.data?.MSG_CODE + ': ' + response?.data?.MSG_DESC,
               });
             } else {
-              const WIA =
-                _.toNumber(response?.data?.REAL_KG) -
-                _.toNumber(response?.data?.REAL_LITRE15) * config?.airBuoyancyFactor;
+              // const WIA =
+              //   _.toNumber(response?.data?.REAL_KG) -
+              //   _.toNumber(response?.data?.REAL_LITRE15) * config?.airBuoyancyFactor;
+              const WIA = calcWiA(
+                response?.data?.REAL_KG,
+                response?.data?.REAL_LITRE15,
+                values?.tank_density,
+                config?.airBuoyancyFactor
+              );
               setFieldsValue({
                 tank_amb_vol: _.round(
                   response?.data?.REAL_LITRE,
@@ -618,9 +624,15 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
                 description: response?.data?.MSG_CODE + ': ' + response?.data?.MSG_DESC,
               });
             } else {
-              const WIA =
-                _.toNumber(response?.data?.REAL_KG) -
-                _.toNumber(response?.data?.REAL_LITRE15) * config?.airBuoyancyFactor;
+              // const WIA =
+              //   _.toNumber(response?.data?.REAL_KG) -
+              //   _.toNumber(response?.data?.REAL_LITRE15) * config?.airBuoyancyFactor;
+              const WIA = calcWiA(
+                response?.data?.REAL_KG,
+                response?.data?.REAL_LITRE15,
+                values?.tank_density,
+                config?.airBuoyancyFactor
+              );
               setFieldsValue({
                 tank_amb_vol: _.round(
                   response?.data?.REAL_LITRE,
@@ -804,9 +816,15 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
                 description: response?.data?.MSG_CODE + ': ' + response?.data?.MSG_DESC,
               });
             } else {
-              const WIA =
-                _.toNumber(response?.data?.REAL_KG) -
-                _.toNumber(response?.data?.REAL_LITRE15) * config?.airBuoyancyFactor;
+              // const WIA =
+              //   _.toNumber(response?.data?.REAL_KG) -
+              //   _.toNumber(response?.data?.REAL_LITRE15) * config?.airBuoyancyFactor;
+              const WIA = calcWiA(
+                response?.data?.REAL_KG,
+                response?.data?.REAL_LITRE15,
+                values?.tank_density,
+                config?.airBuoyancyFactor
+              );
               setFieldsValue({
                 tank_amb_vol: _.round(
                   response?.data?.REAL_LITRE,
