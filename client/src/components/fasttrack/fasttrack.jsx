@@ -15,7 +15,8 @@ const FastTrack = () => {
 
   const token = sessionStorage.getItem('token');
   const decoded = jwtDecode(token);
-  const FASTTRACK_ENABLED = decoded?.per_code === '9999' && config?.fasttrackEnabled;
+  // const FASTTRACK_ENABLED = decoded?.per_code === '9999' && config?.fasttrackEnabled;
+  const FASTTRACK_ENABLED = config?.fasttrackEnabled;
 
   const pageURL = useRef(undefined);
   let win = undefined;
