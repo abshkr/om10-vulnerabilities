@@ -137,6 +137,10 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     try {
       const values = await form.validateFields();
 
+      // now optional dropdown lists can be unselected and have the value of "undefined".
+      // need to send blank string when it is undefined
+      values.base_prod_group = !values?.base_prod_group ? '' : values?.base_prod_group;
+
       // added in OM5K-8358 and removed in OM5K-9497
       /* if (values?.afc_priority === undefined) {
         values.afc_priority = '';

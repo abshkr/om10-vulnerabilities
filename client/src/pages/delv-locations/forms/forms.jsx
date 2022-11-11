@@ -147,6 +147,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, cu
     const values = await form.validateFields();
     // console.log('.................delv loc values: ', values);
     values.delv_etyp_id = values.delv_etyp_id === undefined ? null : values.delv_etyp_id;
+    values.delv_prf_code = values.delv_prf_code === undefined ? '' : values.delv_prf_code;
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),

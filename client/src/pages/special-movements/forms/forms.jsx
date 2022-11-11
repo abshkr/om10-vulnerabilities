@@ -216,6 +216,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
           });
         }
 
+        // now optional dropdown lists can be unselected and have the value of "undefined".
+        // need to send blank string when it is undefined
+        values.mlitm_unit_rpt = !values?.mlitm_unit_rpt ? '' : values?.mlitm_unit_rpt;
+
         await api
           .post(IS_CREATING ? SPECIAL_MOVEMENTS.CREATE : SPECIAL_MOVEMENTS.UPDATE, values)
           .then(() => {
@@ -554,6 +558,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
             values.mlitm_tankcode_to = '';
             values.mlitm_prodcode_to = '';
           }
+
+          // now optional dropdown lists can be unselected and have the value of "undefined".
+          // need to send blank string when it is undefined
+          values.mlitm_unit_rpt = !values?.mlitm_unit_rpt ? '' : values?.mlitm_unit_rpt;
 
           if (IS_CREATING) {
             await api.get(`${SPECIAL_MOVEMENTS.NEXT_ID}`).then((response) => {

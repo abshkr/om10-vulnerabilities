@@ -14,7 +14,7 @@ const Usage = ({ form, value, company }) => {
   const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
-    if (input === '' && !value) {
+    if (input === '' || !input) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.usage')}`);
     }
 

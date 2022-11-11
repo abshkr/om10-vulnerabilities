@@ -656,6 +656,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
       shls_exp2: !record?.shls_exp2 ? '' : record?.shls_exp2?.format(SETTINGS.DATE_TIME_FORMAT),
     };
 
+    // now optional dropdown lists can be unselected and have the value of "undefined".
+    // need to send blank string when it is undefined
+    values.driver = !values?.driver ? '' : values?.driver;
+
     let lines = null;
     if (errors.length > 0) {
       lines = (

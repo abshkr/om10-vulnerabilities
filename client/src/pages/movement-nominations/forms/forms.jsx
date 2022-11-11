@@ -236,6 +236,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
         values.mv_id = value.mv_id;
       }
 
+      // now optional dropdown lists can be unselected and have the value of "undefined".
+      // need to send blank string when it is undefined
+      values.mv_supplier = !values?.mv_supplier ? '' : values?.mv_supplier;
+      values.mv_carrier = !values?.mv_carrier ? '' : values?.mv_carrier;
+      values.mv_vehicle = !values?.mv_vehicle ? '' : values?.mv_vehicle;
+
       Modal.confirm({
         title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
         okText: IS_CREATING ? t('operations.create') : t('operations.update'),

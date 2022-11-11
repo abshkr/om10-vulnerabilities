@@ -39,6 +39,10 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
   const onFinish = async () => {
     const values = await form.validateFields();
 
+    // now optional dropdown lists can be unselected and have the value of "undefined".
+    // need to send blank string when it is undefined
+    values.prntr_area = !values?.prntr_area ? '' : values?.prntr_area;
+
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),

@@ -169,6 +169,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
 
     values.allocs = allocs;
 
+    // now optional dropdown lists can be unselected and have the value of "undefined".
+    // need to send blank string when it is undefined
+    values.alloc_period = !values?.alloc_period ? '' : values?.alloc_period;
+
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),

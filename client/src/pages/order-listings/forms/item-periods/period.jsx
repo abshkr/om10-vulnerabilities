@@ -57,6 +57,7 @@ const PeriodForm = ({ value, units, parent, revalidate, data, form }) => {
       oprd_prod_cmpy: parent?.oitem_prod_cmpy,
       //oprd_prod_unit: parent?.oitem_prod_unit,
       ...values,
+      oprd_prod_unit: !values?.oprd_prod_unit ? 5 : values?.oprd_prod_unit,
       oprd_period_start: values.oprd_period_start?.format(SETTINGS.DATE_TIME_FORMAT),
       oprd_period_end: values.oprd_period_end?.format(SETTINGS.DATE_TIME_FORMAT),
     };
