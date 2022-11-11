@@ -354,6 +354,11 @@ const FormModal = ({
       values.order_psnl_code = user_code;
     }
 
+    // now carrier and delivery location can be unselected and have the value of "undefined".
+    // need to send blank string when it is undefined
+    values.order_carr_code = !values?.order_carr_code ? '' : values?.order_carr_code;
+    values.order_dloc_code = !values?.order_dloc_code ? '' : values?.order_dloc_code;
+
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
