@@ -566,6 +566,7 @@ const DrawerForm = ({
       // need to send blank string when it is undefined
       values.prod_group = !values?.prod_group ? '' : values?.prod_group;
       values.prod_hazid = !values?.prod_hazid ? '' : values?.prod_hazid;
+      values.dg_link_id = !values?.dg_link_id ? '' : values?.dg_link_id;
 
       Modal.confirm({
         title: IS_CREATING ? t('prompts.create') : t('prompts.update'),

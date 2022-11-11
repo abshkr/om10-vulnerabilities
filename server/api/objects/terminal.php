@@ -11,7 +11,7 @@ class Terminal extends CommonClass
 
     public function read()
     {
-        $query = "SELECT TERMINAL.*, TERMINAL.TERM_ADDR || ' [' || NVL(DL.DB_ADDR_TEXT, ' ') || ']' ADDRESS_TEXT,
+        $query = "SELECT TERMINAL.*, DECODE(TERMINAL.TERM_ADDR, NULL, '', TERMINAL.TERM_ADDR || ' [' || NVL(DL.DB_ADDR_TEXT, ' ') || ']') ADDRESS_TEXT,
                 TERM_CODE || ' - ' || TERM_NAME TERM_DESC
             FROM TERMINAL,
             (
