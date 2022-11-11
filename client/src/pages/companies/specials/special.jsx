@@ -143,6 +143,14 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
       values.company_configs.push(bolText);
     }
 
+    // now optional dropdown lists can be unselected and have the value of "undefined".
+    // need to send blank string when it is undefined
+    values.cmpy_bol_vp_name = !values?.cmpy_bol_vp_name ? '' : values?.cmpy_bol_vp_name;
+    values.cmpy_ld_rep_vp = !values?.cmpy_ld_rep_vp ? '' : values?.cmpy_ld_rep_vp;
+    values.cmpy_drv_inst_vp = !values?.cmpy_drv_inst_vp ? '' : values?.cmpy_drv_inst_vp;
+    values.cmpy_vet = !values?.cmpy_vet ? '' : values?.cmpy_vet;
+    values.cmpy_rtn_prompt = !values?.cmpy_rtn_prompt ? '' : values?.cmpy_rtn_prompt;
+
     Modal.confirm({
       title: t('prompts.update'),
       okText: t('operations.update'),
