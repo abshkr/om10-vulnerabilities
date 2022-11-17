@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from 'react';
 
-import { Card, Button, Drawer, Modal, Form, Tabs, Input, Select, notification, Row, Col } from 'antd';
+import {
+  Card,
+  Button,
+  Drawer,
+  Modal,
+  Form,
+  Tabs,
+  Input,
+  Select,
+  notification,
+  Row,
+  Col,
+  Popover,
+  Tag,
+} from 'antd';
 
 import {
   EditOutlined,
@@ -9,16 +23,19 @@ import {
   QuestionCircleOutlined,
   DeleteOutlined,
   SyncOutlined,
+  CloseCircleOutlined,
 } from '@ant-design/icons';
 
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import { DataTable, Download } from '../../../components';
 import api, { TANK_STRAPPING } from '../../../api';
 import columns from './columns';
 import StrapImportManager from './import';
+import checkLevelVolumes from './check-level-volumes';
 
 const { TabPane } = Tabs;
 
@@ -34,6 +51,8 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [errors, setErrors] = useState([]);
+  const [lines, setLines] = useState(undefined);
 
   const IS_CREATING = !selected;
 
@@ -150,9 +169,17 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
 
   const modifiers = (
     <>
+      {errors?.length > 0 && (
+        <Popover placement="topRight" title={t('fields.errors')} content={lines} height={100}>
+          <Tag icon={<CloseCircleOutlined />} color="error">
+            {t('fields.errors') + ': ' + String(errors?.length)}
+          </Tag>
+        </Popover>
+      )}
+
       <Button
         icon={<SyncOutlined />}
-        onClick={() => revalidate()}
+        onClick={() => mutate(url)}
         loading={code && isValidating}
         disabled={!code || isValidating}
       >
@@ -207,6 +234,45 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
     } else {
     }
   }, [resetFields, selected]);
+
+  useEffect(() => {
+    if (data?.records) {
+      const list = checkLevelVolumes(data?.records, t);
+      setErrors(list);
+      // console.log(data?.records, errors);
+      setLines(undefined);
+      if (list.length > 0) {
+        const lines = (
+          <Scrollbars
+            style={{
+              border: '1px solid black',
+              // height: list.length > 5 ? '435px' : `${list.length * 87}px`,
+              width: '55vw',
+              marginTop: 5,
+              marginRight: 5,
+              marginBottom: 5,
+              padding: 5,
+            }}
+            autoHeight
+            autoHeightMin={0}
+            autoHeightMax={445}
+            thumbSize={300}
+            thumbMinSize={100}
+            //width={30}
+          >
+            <>
+              {list?.map((error, index) => (
+                <Card key={error.key} size="small" title={error.field}>
+                  {error.message}
+                </Card>
+              ))}
+            </>
+          </Scrollbars>
+        );
+        setLines(lines);
+      }
+    }
+  }, [data]);
 
   return (
     <>
