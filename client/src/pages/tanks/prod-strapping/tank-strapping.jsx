@@ -14,6 +14,7 @@ import {
   Col,
   Popover,
   Tag,
+  List,
 } from 'antd';
 
 import {
@@ -34,6 +35,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import { DataTable, Download } from '../../../components';
 import api, { TANK_STRAPPING } from '../../../api';
 import columns from './columns';
+import errorColumns from './error-columns';
 import StrapImportManager from './import';
 import checkLevelVolumes from './check-level-volumes';
 
@@ -170,7 +172,7 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
   const modifiers = (
     <>
       {errors?.length > 0 && (
-        <Popover placement="topRight" title={t('fields.errors')} content={lines} height={100}>
+        <Popover placement={'bottom'} title={t('fields.errors')} content={lines} height={100}>
           <Tag icon={<CloseCircleOutlined />} color="error">
             {t('fields.errors') + ': ' + String(errors?.length)}
           </Tag>
@@ -242,7 +244,7 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
       // console.log(data?.records, errors);
       setLines(undefined);
       if (list.length > 0) {
-        const lines = (
+        /* const lines = (
           <Scrollbars
             style={{
               border: '1px solid black',
@@ -269,7 +271,50 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
             </>
           </Scrollbars>
         );
-        setLines(lines);
+        setLines(lines); */
+
+        const listlines = (
+          <Scrollbars
+            style={{
+              border: '1px solid black',
+              // height: list.length > 5 ? '435px' : `${list.length * 87}px`,
+              width: '55vw',
+              marginTop: 5,
+              marginRight: 5,
+              marginBottom: 5,
+              padding: 5,
+            }}
+            autoHeight
+            autoHeightMin={0}
+            autoHeightMax={445}
+            thumbSize={100}
+            //thumbMinSize={100}
+          >
+            <List
+              style={{ width: '100%' }}
+              itemLayout="horizontal"
+              dataSource={list}
+              size="small"
+              renderItem={(item) => (
+                <List.Item>
+                  <List.Item.Meta title={item.field} description={item.message} />
+                </List.Item>
+              )}
+            />
+          </Scrollbars>
+        );
+        setLines(listlines);
+
+        /* const table = (
+          <DataTable
+            columns={errorColumns(t)}
+            data={list}
+            parentHeight="200px"
+            minimal
+            style={{width: 500}}
+          />
+        );
+        setLines(table); */
       }
     }
   }, [data]);
