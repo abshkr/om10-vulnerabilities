@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, notification } from 'antd';
 
-const checkLevelVolumes = (items, t) => {
+const checkLevelVolumes = (t, items, rate = 10) => {
   const errors = [];
 
   if (!items || items?.length < 2) {
@@ -11,6 +11,8 @@ const checkLevelVolumes = (items, t) => {
   // check the tank items
   let item1 = undefined;
   let item2 = undefined;
+  let avgCnt = 0;
+  let avgSum = 0;
   for (let tidx = 0; tidx < items?.length; tidx++) {
     if (tidx === 0) {
       continue;
@@ -20,6 +22,7 @@ const checkLevelVolumes = (items, t) => {
     const diffLevel = item2?.strap_height - item1?.strap_height;
     const diffVolume = item2?.strap_volume - item1?.strap_volume;
 
+    // check the negative increment
     if (diffLevel > 0 && diffVolume <= 0) {
       errors.push({
         field: `${t('descriptions.strapVolumeWrongTitle', {
@@ -33,7 +36,7 @@ const checkLevelVolumes = (items, t) => {
           VOLUME2: item2?.strap_volume,
         })}`,
         key: `${'strap_volume'}${tidx}`,
-        //line: item.trsf_cmpt_no,
+        line: item2.strap_height,
       });
     }
 
@@ -50,8 +53,35 @@ const checkLevelVolumes = (items, t) => {
           VOLUME2: item1?.strap_volume,
         })}`,
         key: `${'strap_volume'}${tidx}`,
-        //line: item.trsf_cmpt_no,
+        line: item2.strap_height,
       });
+    }
+
+    // check the abrupt change of increment
+    if ((diffLevel > 0 && diffVolume > 0) || (diffLevel < 0 && diffVolume < 0)) {
+      const deltaVol = diffVolume / diffLevel;
+      const deltaAvg = avgCnt > 0 ? (avgSum / avgCnt) * rate : 0;
+      if (deltaAvg > 0 && deltaVol > deltaAvg) {
+        // abnormal, give warning
+        errors.push({
+          field: `${t('descriptions.strapVolumeAbruptTitle', {
+            VOLUME: diffVolume > 0 ? item2?.strap_volume : item1?.strap_volume,
+            LEVEL: diffLevel > 0 ? item2?.strap_height : item1?.strap_height,
+          })}`,
+          message: `${t('descriptions.strapVolumeAbruptError', {
+            LEVEL1: diffLevel > 0 ? item1?.strap_height : item2?.strap_height,
+            LEVEL2: diffLevel > 0 ? item2?.strap_height : item1?.strap_height,
+            VOLUME1: diffVolume > 0 ? item1?.strap_volume : item2?.strap_volume,
+            VOLUME2: diffVolume > 0 ? item2?.strap_volume : item1?.strap_volume,
+          })}`,
+          key: `${'strap_volume'}${tidx}`,
+          line: item2.strap_height,
+        });
+      } else {
+        // normal, add this delta to avgSum
+        avgCnt += 1;
+        avgSum += deltaVol;
+      }
     }
   }
 

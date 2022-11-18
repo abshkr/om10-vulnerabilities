@@ -13,8 +13,10 @@ import {
   Row,
   Col,
   Popover,
+  Tooltip,
   Tag,
   List,
+  InputNumber,
 } from 'antd';
 
 import {
@@ -55,6 +57,7 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
   const [selected, setSelected] = useState(null);
   const [errors, setErrors] = useState([]);
   const [lines, setLines] = useState(undefined);
+  const [maxRate, setMaxRate] = useState(10);
 
   const IS_CREATING = !selected;
 
@@ -179,6 +182,10 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
         </Popover>
       )}
 
+      <Tooltip placement="topRight" title={t('descriptions.strapVolumeMaxChangeRate')}>
+        <InputNumber defaultValue={maxRate} onChange={setMaxRate} style={{ width: 60 }} min={2} />
+      </Tooltip>
+
       <Button
         icon={<SyncOutlined />}
         onClick={() => mutate(url)}
@@ -238,10 +245,11 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
   }, [resetFields, selected]);
 
   useEffect(() => {
+    // console.log('max rate', maxRate);
     if (data?.records) {
-      const list = checkLevelVolumes(data?.records, t);
+      const list = checkLevelVolumes(t, data?.records, maxRate);
       setErrors(list);
-      // console.log(data?.records, errors);
+      // console.log(data?.records, list, maxRate);
       setLines(undefined);
       if (list.length > 0) {
         /* const lines = (
@@ -317,7 +325,7 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
         setLines(table); */
       }
     }
-  }, [data]);
+  }, [data, maxRate]);
 
   return (
     <>
