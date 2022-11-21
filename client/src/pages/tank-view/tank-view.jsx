@@ -87,7 +87,7 @@ const TankView = () => {
   const page = t('pageMenu.modules');
   const name = t('pageNames.tankView');
 
-  console.log(tanks);
+  // console.log(tanks);
 
   return (
     <Page access={access} page={page} name={name} transparent>
@@ -125,6 +125,7 @@ const TankView = () => {
         value={selected}
         access={access}
         config={config}
+        tanks={tanks}
       />
 
       <TankViewContainer>

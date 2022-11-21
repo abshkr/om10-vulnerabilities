@@ -26,7 +26,7 @@ import { getQtyByLevel } from '../../../utils';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, config }) => {
+const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, config, tanks }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -35,6 +35,7 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, 
   const { resetFields } = form;
 
   const [product, setProduct] = useState(undefined);
+  const [liveValue, setLiveValue] = useState(value);
 
   const onFormClosed = () => {
     setProduct(undefined);
@@ -157,6 +158,19 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, 
     }
   }, [resetFields, value, visible]);
 
+  useEffect(() => {
+    if (value && tanks) {
+      const item = _.find(
+        tanks,
+        (o) => o?.tank_code === value?.tank_code && o?.tank_terminal === value?.tank_terminal
+      );
+      console.log('...................', item);
+      if (item) {
+        setLiveValue(item);
+      }
+    }
+  }, [tanks, value]);
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -195,7 +209,7 @@ const FormModal = ({ value, visible, handleFormState, access, handleRevalidate, 
         <Tabs defaultActiveKey={IS_CREATING ? '2' : '1'}>
           <TabPane tab={t('tabColumns.general')} key="1" disabled={IS_CREATING}>
             <GeneralContainer>
-              <Tank item={value} />
+              <Tank item={liveValue} />
 
               <div style={{ marginTop: 15 }}>
                 <Levels form={form} value={value} />
