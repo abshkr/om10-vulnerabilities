@@ -183,7 +183,12 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
       )}
 
       <Tooltip placement="topRight" title={t('descriptions.strapVolumeMaxChangeRate')}>
-        <InputNumber defaultValue={maxRate} onChange={setMaxRate} style={{ width: 60 }} min={2} />
+        <InputNumber
+          defaultValue={maxRate}
+          onPressEnter={(e) => setMaxRate(e.target.value)}
+          style={{ width: 60 }}
+          min={2}
+        />
       </Tooltip>
 
       <Button

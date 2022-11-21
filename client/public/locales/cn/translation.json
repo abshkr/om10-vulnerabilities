@@ -311,7 +311,7 @@
     "strapTypeWrongLine": "校正容积数据类型错误，行号：",
     "strapVolumeAbruptTitle": "位于液位{{LEVEL}}处的油罐容积{{VOLUME}}增幅太大",
     "strapVolumeAbruptError": "油罐的液位增加时({{LEVEL1}}至{{LEVEL2}})，油罐的视量容积从{{VOLUME1}}突然大幅增加到{{VOLUME2}}，请确认是否有错误",
-    "strapVolumeMaxChangeRate": "最大油罐容积增幅倍数(R)：用于校验每个液位对应的油罐容积增幅(dV)是否满足条件(dV < dVavg X R)",
+    "strapVolumeMaxChangeRate": "最大油罐容积增幅倍数(R)：用于校验每个液位对应的油罐容积增幅(dV)是否满足条件(dV < dVavg X R)。【请按回车键触发数据校验】",
     "strapVolumeWrongTitle": "位于液位{{LEVEL}}处的油罐容积{{VOLUME}}错误",
     "strapVolumeWrongError": "油罐的液位增加时({{LEVEL1}}至{{LEVEL2}})，油罐的视量容积必须也相应增加！但是{{VOLUME2}} <= {{VOLUME1}}",
     "submitFailed": "提交失败",
