@@ -409,8 +409,14 @@ const Settings = ({ value, access }) => {
 
   //Is todady ready for "Run and Override"
   const runnable = (data) => {
+    let today = null;
+    if (manualDates?.records[0]?.sysdate) {
+      today = moment(manualDates?.records[0]?.sysdate, 'YYYY-MM-DD HH:mm:ss');
+    } else {
+      today = moment();
+    }
+
     //1# today is not an exception
-    const today = moment();
     if (!checkDate(today)) {
       console.log('checkDate false');
       return false;
@@ -422,6 +428,7 @@ const Settings = ({ value, access }) => {
       })[0].param_value,
       'YYYY-MM-DD HH:mm:ss'
     );
+    
     if (today.format('HH:mm:ss') > nextDailyDate.format('HH:mm:ss')) {
       console.log('already run today');
       return false;

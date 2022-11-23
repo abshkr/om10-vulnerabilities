@@ -73,7 +73,8 @@ class FolioSetting extends CommonClass
                 NEXT_MANUAL_FREEZE_DATETIME, 
                 NEXT_MANUAL_CLOSE, 
                 SITE_LD_RETNPRD_NEW_MOV, 
-                SITE_LD_RETNPRD_USED_MOV，
+                SITE_LD_RETNPRD_USED_MOV, 
+                SYSDATE,
                 FROZEN_FOLIO
             FROM SITE, (SELECT COUNT(*) FROZEN_FOLIO FROM CLOSEOUTS WHERE STATUS = 1)";
         $stmt = oci_parse($this->conn, $query);
