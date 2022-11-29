@@ -11,7 +11,7 @@ import { ProductEditor, UnitEditor, ScheduleEditor, PreloadEditor, DelvNoEditor 
 
 import useSWR from 'swr';
 
-const Compartments = ({ form, value, tanker, drawer, supplier, customer, config }) => {
+const Compartments = ({ form, value, tanker, drawer, supplier, customer, config, setInit }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
@@ -43,6 +43,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
         })
         .then((res) => {
           setCompartments(res.data.records);
+          setInit(res.data.records);
 
           setFieldsValue({
             compartments: res.data.records,
@@ -90,6 +91,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
         })
         .then((res) => {
           setCompartments(res.data.records);
+          setInit(res.data.records);
 
           setFieldsValue({
             compartments: res.data.records,

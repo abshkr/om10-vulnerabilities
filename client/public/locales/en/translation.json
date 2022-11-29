@@ -37,6 +37,7 @@
     "calculateFailed": "Failed to calculate the values",
     "calculateSuccess": "You have calculated the values successfully",
     "cancelWarning": "Please note: you may have changed data in this page, and you will lose the changes if you exit without saving.",
+    "cancelWarningFields": "The fields changed: ",
     "cannotBeZeroCmptField": "This field cannot be zero in compartment ",
     "cannotBeZeroLineField": "This field cannot be zero in line item ",
     "cannotCalcQuantity": "Temperature, density, and either ambient, standard, or mass values required for at least one compartment",

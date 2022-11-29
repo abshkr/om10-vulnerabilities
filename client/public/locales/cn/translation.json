@@ -37,6 +37,7 @@
     "calculateFailed": "数值计算失败",
     "calculateSuccess": "您已成功完成了计算",
     "cancelWarning": "请注意：您可能已经修改了本页面上的数据，如果您不保存就退出，所有修改将会丢失。",
+    "cancelWarningFields": "已改变的字段：",
     "cannotBeZeroCmptField": "该字段不能为零，油仓号：",
     "cannotBeZeroLineField": "该字段不能为零，行号：",
     "cannotCalcQuantity": "计算之前，需要保证至少一个油仓已有温度、密度、以及油量（视量容积、标量容积或重量之一即可）三个数值",

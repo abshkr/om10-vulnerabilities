@@ -15,10 +15,10 @@ import { LOAD_SCHEDULES } from '../../../../api';
 const components = {
   UnitEditor: Unit,
   ScheduleEditor: Schedule,
-  ProductRender: ProductRender
+  ProductRender: ProductRender,
 };
 
-const Products = ({ value, form, drawer, customer, access }) => {
+const Products = ({ value, form, drawer, customer, access, setInit }) => {
   const { t } = useTranslation();
   const { data: units } = useSWR(LOAD_SCHEDULES.UNIT_TYPES);
 
@@ -42,6 +42,7 @@ const Products = ({ value, form, drawer, customer, access }) => {
           const payload = transform(res?.data?.records, units);
 
           setData(payload);
+          setInit(payload);
 
           setFieldsValue({
             products: payload,
@@ -62,34 +63,36 @@ const Products = ({ value, form, drawer, customer, access }) => {
         })
         .then((res) => {
           const payload = transform(res?.data?.records, units);
-          
+
           if (value.shls_cust) {
             api
-            .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
-              params: {
-                drawer_code: value.drawer_code,
-                customer: value.shls_cust,
-              },
-            })
-            .then((res) => {
-              const cust_prods = res?.data?.records;
-              
-              const filtered = _.filter(payload, (item) => {
-                for (let i = 0; i < cust_prods.length; i += 1) {
-                  if (item.prod_code === cust_prods[i].prod_code) {
-                    return true;
+              .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
+                params: {
+                  drawer_code: value.drawer_code,
+                  customer: value.shls_cust,
+                },
+              })
+              .then((res) => {
+                const cust_prods = res?.data?.records;
+
+                const filtered = _.filter(payload, (item) => {
+                  for (let i = 0; i < cust_prods.length; i += 1) {
+                    if (item.prod_code === cust_prods[i].prod_code) {
+                      return true;
+                    }
                   }
-                }
-                return false;
+                  return false;
+                });
+                setData(filtered);
+                setInit(filtered);
+
+                setFieldsValue({
+                  products: filtered,
+                });
               });
-              setData(filtered);
-  
-              setFieldsValue({
-                products: filtered,
-              });
-            });
           } else {
             setData(payload);
+            setInit(payload);
 
             setFieldsValue({
               products: payload,
@@ -101,13 +104,13 @@ const Products = ({ value, form, drawer, customer, access }) => {
 
   return (
     <Form.Item name="products" noStyle>
-      <DataTable 
-        data={data} 
-        columns={fields} 
-        parentHeight="320px" 
-        components={components} 
+      <DataTable
+        data={data}
+        columns={fields}
+        parentHeight="320px"
+        components={components}
         minimal
-        editType='fullRow'
+        editType="fullRow"
       />
     </Form.Item>
   );

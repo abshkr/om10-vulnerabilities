@@ -30,6 +30,7 @@ import {
   InputNumber,
   Tooltip,
   Divider,
+  Select,
 } from 'antd';
 
 import { useTranslation } from 'react-i18next';
@@ -67,7 +68,7 @@ import { SETTINGS } from '../../../constants';
 import { LOAD_SCHEDULES, SITE_CONFIGURATION, TANKER_LIST, ORDER_LISTINGS, COMPANIES } from '../../../api';
 
 import { useConfig } from '../../../hooks';
-import { validatorStatus } from '../../../utils';
+import { validatorStatus, checkFormFields } from '../../../utils';
 
 import Products from './products';
 import LoadReport from './load-report';
@@ -154,6 +155,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
   // for uniqueness validation
   const [suppTrip, setSuppTrip] = useState(0);
   const [existed, setExisted] = useState(false);
+  const [compartmentsInitArray, setCompartmentsInitArray] = useState([]);
+  const [compartmentsInitString, setCompartmentsInitString] = useState('');
+  const [productsInitArray, setProductsInitArray] = useState([]);
+  const [productsInitString, setProductsInitString] = useState('');
 
   /*
     1	F	NEW SCHEDULE
@@ -214,7 +219,21 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     }
   );
 
-  const { resetFields, setFieldsValue, validateFields } = form;
+  const { resetFields, setFieldsValue, validateFields, getFieldsValue } = form;
+
+  const setCompartmentsInit = (v) => {
+    console.log('....................setCompartmentsInit.....', v);
+    //setCompartmentsInit2(v);
+    setCompartmentsInitArray(_.cloneDeep(v));
+    setCompartmentsInitString(JSON.stringify(v));
+  };
+
+  const setProductsInit = (v) => {
+    console.log('....................setProductsInit.....', v);
+    //setCompartmentsInit2(v);
+    setProductsInitArray(_.cloneDeep(v));
+    setProductsInitString(JSON.stringify(v));
+  };
 
   const validateTripNumber = (rule, input) => {
     if (rule.required) {
@@ -267,12 +286,178 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
       onFormClosed();
       return;
     }
+    console.log('compartmentsInit', compartmentsInitArray, compartmentsInitString);
+
+    // check if any fields have been changed
+    const NEED_EXPIRY =
+      expHour !== null && expHour !== undefined && expHour !== '' && _.toNumber(expHour) > 0;
+    const columnsProduct = [
+      { code: 'prod_code', label: t('fields.code') },
+      { code: 'prod_name', label: t('fields.product') },
+      { code: 'qty_scheduled', label: t('fields.schedule') },
+      { code: 'unit_name', label: t('fields.unit') },
+    ];
+    const columnsSummary = [
+      { code: 'eqpt_code', label: t('fields.equipment') },
+      { code: 'compartment', label: t('fields.compartment') },
+      { code: 'prod_code', label: t('fields.code') },
+      { code: 'prod_name', label: t('fields.product') },
+      { code: 'qty_scheduled', label: t('fields.schedule') },
+      { code: 'qty_loaded', label: t('fields.loaded') },
+      { code: 'qty_preload', label: t('fields.preloaded') },
+      { code: 'unit_name', label: t('fields.unit') },
+      { code: 'order_cust_ordno', label: t('fields.orderNumber') },
+      { code: 'safefill', label: t('fields.safeFill') },
+      { code: 'schd_sold_to_num', label: t('fields.soldTo') },
+      { code: 'schd_deliv_num', label: t('fields.delvNo') },
+      { code: 'schd_ship_to_num', label: t('fields.shipTo') },
+    ];
+    const columnsCompartment = [
+      { code: 'eqpt_code', label: t('fields.equipment') },
+      { code: 'compartment', label: t('fields.compartment') },
+      { code: 'prod_code', label: t('fields.code') },
+      { code: 'prod_name', label: t('fields.product') },
+      { code: 'qty_scheduled', label: t('fields.schedule') },
+      { code: 'unit_name', label: t('fields.unit') },
+      { code: 'order_id', label: t('fields.orderNo') },
+      { code: 'order_cust_ordno', label: t('fields.orderNo') },
+      { code: 'safefill', label: t('fields.safeFill') },
+      { code: 'qty_preload', label: t('fields.preloaded') },
+      { code: 'prev_prod_name', label: t('fields.prevProduct') },
+      { code: 'schd_sold_to_num', label: t('fields.soldTo') },
+      { code: 'schd_ship_to_num', label: t('fields.shipTo') },
+      { code: 'schd_deliv_num', label: t('fields.delvNo') },
+    ];
+    const arrayColumns = {};
+
+    const columns = [];
+    columns.push({ code: 'shls_ld_type', label: t('fields.tripType') });
+    columns.push({ code: 'unload', label: t('fields.unload') });
+    columns.push({ code: 'shls_terminal', label: t('fields.terminal') });
+    columns.push({ code: 'supplier_code', label: t('fields.supplier') });
+    columns.push({ code: 'drawer_code', label: t('fields.drawer') });
+    if (site_customer_product || site_customer_carrier) {
+      columns.push({ code: 'shls_cust', label: t('fields.customer') });
+    }
+    columns.push({ code: 'carrier_code', label: t('fields.carrier') });
+    columns.push({ code: 'tnkr_code', label: t('fields.tanker') });
+    if (config?.siteTripResetDriver) {
+      columns.push({ code: 'driver_company', label: t('fields.employer') });
+      columns.push({ code: 'driver', label: t('fields.driver') });
+    }
+    columns.push({ code: 'shls_caldate', label: t('fields.scheduleDate') });
+    if (NEED_EXPIRY) {
+      columns.push({ code: 'shls_exp2', label: t('fields.expiryDate') });
+    }
+    columns.push({ code: 'shls_sold_to_num', label: t('fields.soldTo') });
+    columns.push({ code: 'shls_ship_to_num', label: t('fields.shipTo') });
+    columns.push({ code: 'shls_trip_no', label: t('fields.tripNumber') });
+    columns.push({ code: 'shls_shift', label: t('fields.shift') });
+    columns.push({ code: 'shls_priority', label: t('fields.priority') });
+    if (siteUseIsotainer) {
+      columns.push({ code: 'shls_isotainer_num', label: t('fields.schdIsotainer') });
+    }
+    if (showDORNumber) {
+      columns.push({ code: 'shl_fleet_data', label: t('fields.hostData') });
+    }
+    if (siteUseSpecIns) {
+      columns.push({ code: 'shls_spec_ins', label: t('fields.specialInstructions') });
+    }
+    if (showLSI) {
+      columns.push({ code: 'shls_load_security_info', label: t('fields.loadSecurityInformation') });
+    }
+    if (SHOW_WEIGHTS) {
+      columns.push({ code: 'sum_ldw_end_kg', label: t('fields.schdEndWeight') });
+      columns.push({ code: 'sum_ldw_start_kg', label: t('fields.schdStartWeight') });
+      columns.push({ code: 'sum_ldw_diff_kg', label: t('fields.schdDiffWeight') });
+    }
+    if (mode === '2' && !READ_ONLY) {
+      columns.push({ code: 'compartments', label: t('fields.compartments') });
+      if (!IS_CREATING) {
+        value.compartments = compartmentsInitArray;
+      }
+      arrayColumns.compartments = columnsCompartment;
+    }
+    if (mode === '3' && !READ_ONLY) {
+      columns.push({ code: 'products', label: t('fields.products') });
+      if (!IS_CREATING) {
+        value.products = productsInitArray;
+      }
+      arrayColumns.products = columnsProduct;
+    }
+    if (READ_ONLY) {
+      columns.push({ code: 'compartments', label: t('fields.compartments') });
+      if (!IS_CREATING) {
+        value.compartments = compartmentsInitArray;
+      }
+      arrayColumns.compartments = columnsSummary;
+    }
+
+    let fields;
+    try {
+      const codes = _.map(columns, (o) => o?.code);
+      fields = form.getFieldsValue(codes);
+    } catch (error) {
+      fields = value;
+    }
+    // console.log('..............fields', fields, form.getFieldValue('compartments'), form.getFieldsValue(true));
+    if (!fields?.shls_caldate) {
+      fields.shls_caldate = '';
+    } else {
+      if (_.isString(fields?.shls_caldate) === false) {
+        fields.shls_caldate = fields?.shls_caldate?.format(SETTINGS.DATE_TIME_FORMAT);
+      }
+    }
+    if (NEED_EXPIRY) {
+      if (!fields?.shls_exp2) {
+        fields.shls_exp2 = '';
+      } else {
+        if (_.isString(fields?.shls_exp2) === false) {
+          fields.shls_exp2 = fields?.shls_exp2?.format(SETTINGS.DATE_TIME_FORMAT);
+        }
+      }
+    }
+    const changes = checkFormFields(columns, fields, value, arrayColumns, IS_CREATING);
+    console.log('..........', changes);
+    if (changes?.length === 0) {
+      onFormClosed();
+      return;
+    }
+
+    const lines = (
+      <div style={{ width: '15w' }}>
+        <Select
+          style={{ width: '100%' }}
+          dropdownMatchSelectWidth={false}
+          showSearch
+          // optionFilterProp="children"
+          placeholder={t('descriptions.cancelWarningFields')}
+          /* filterOption={(value, option) =>
+            option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
+          } */
+        >
+          {changes.map((item, index) => (
+            <Select.Option key={index} value={item.field}>
+              <Tooltip
+                placement="topRight"
+                title={`${item.title}: ${item.oldtip || 'NULL'}${' => '}${item.newtip}`}
+              >
+                {item.title}: {item.old || 'NULL'}
+                {' => '}
+                {item.new}
+              </Tooltip>
+            </Select.Option>
+          ))}
+        </Select>
+      </div>
+    );
 
     Modal.confirm({
       title: t('prompts.cancel'),
       okText: t('operations.leave'),
       okType: 'primary',
       icon: <QuestionCircleOutlined />,
+      width: '20w',
       cancelText: t('operations.stay'),
       content: (
         <Card
@@ -281,6 +466,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
           title={t('validate.warning')}
         >
           {t('descriptions.cancelWarning')}
+          {lines}
         </Card>
       ),
       centered: true,
@@ -1627,6 +1813,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
                 supplier={value ? value.supplier_code : supplier}
                 customer={site_customer_product ? customer : undefined}
                 config={config}
+                setInit={setCompartmentsInit}
               />
             )}
 
@@ -1637,10 +1824,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
                 drawer={value ? value.supplier_code : supplier}
                 customer={site_customer_product ? customer : undefined}
                 access={access}
+                setInit={setProductsInit}
               />
             )}
 
-            {READ_ONLY && <Summary form={form} value={value} />}
+            {READ_ONLY && <Summary form={form} value={value} setInit={setCompartmentsInit} />}
           </TabPane>
 
           <TabPane

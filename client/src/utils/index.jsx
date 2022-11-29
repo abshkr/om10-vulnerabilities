@@ -39,6 +39,9 @@ import generateMaxInt from './generate-maxint';
 import castNumber from './cast-number';
 import updateUserPageColumns from './update-page-columns';
 import calcWiA from './calc-mass-in-air';
+import checkFormFields from './check-form-fields';
+import compareObjects from './compare-objects';
+import compareArrays from './compare-arrays';
 
 export {
   search,
@@ -84,4 +87,7 @@ export {
   castNumber,
   updateUserPageColumns,
   calcWiA,
+  checkFormFields,
+  compareObjects,
+  compareArrays,
 };

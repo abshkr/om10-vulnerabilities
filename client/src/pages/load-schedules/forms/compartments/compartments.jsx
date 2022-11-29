@@ -2,7 +2,7 @@ import React from 'react';
 import Regular from './regular';
 import DragAndDropEnabled from './drag-and-drop-enabled';
 
-const Compartments = ({ form, value, tanker, drawer, supplier, customer, config }) => {
+const Compartments = ({ form, value, tanker, drawer, supplier, customer, config, setInit }) => {
   const IS_DND_ENABLED = config?.siteAllowDragDrop;
 
   if (IS_DND_ENABLED) {
@@ -15,6 +15,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
         supplier={supplier}
         customer={customer}
         config={config}
+        setInit={setInit}
       />
     );
   } else {
@@ -27,6 +28,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config 
         supplier={supplier}
         customer={customer}
         config={config}
+        setInit={setInit}
       />
     );
   }

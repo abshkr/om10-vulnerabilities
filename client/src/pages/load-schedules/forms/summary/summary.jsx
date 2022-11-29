@@ -11,7 +11,7 @@ import productColumns from './product-columns';
 import { PreloadEditor } from './fields';
 import { useConfig } from '../../../../hooks';
 
-const Summary = ({ form, value }) => {
+const Summary = ({ form, value, setInit }) => {
   const { setFieldsValue } = form;
 
   const [hideProd, setHidProd] = useState(false);
@@ -43,6 +43,7 @@ const Summary = ({ form, value }) => {
   useEffect(() => {
     if (value && compartmentsPayload) {
       setCompartments(compartmentsPayload.records);
+      setInit(compartmentsPayload.records);
       setFieldsValue({
         compartments: compartmentsPayload.records,
       });
