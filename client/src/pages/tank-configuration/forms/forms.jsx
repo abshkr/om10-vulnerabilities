@@ -623,6 +623,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
             onClick={() => onExitClicked()}
+            disabled={!(flagTankUpdated === 0 && flagSpmTransfer === 0 && flagFolioTank === 0)}
           >
             {t('operations.cancel')}
           </Button>
@@ -633,7 +634,11 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             htmlType="submit"
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate || tab !== '1'}
+            disabled={
+              (IS_CREATING ? !access?.canCreate : !access?.canUpdate) ||
+              tab !== '1' ||
+              !(flagTankUpdated === 0 && flagSpmTransfer === 0 && flagFolioTank === 0)
+            }
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -644,7 +649,9 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={!access?.canDelete}
+              disabled={
+                !access?.canDelete || !(flagTankUpdated === 0 && flagSpmTransfer === 0 && flagFolioTank === 0)
+              }
             >
               {t('operations.delete')}
             </Button>
@@ -670,7 +677,14 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
                 </div>
               </Tag>
             )}
-            <Product form={form} value={value} onChange={setProduct} disabled={!!groupActiveTank} />
+            <Product
+              form={form}
+              value={value}
+              onChange={setProduct}
+              disabled={
+                !!groupActiveTank || !(flagTankUpdated === 0 && flagSpmTransfer === 0 && flagFolioTank === 0)
+              }
+            />
             {config?.siteFolioTankBaseChange && !IS_CREATING && product !== value?.tank_base && (
               <Tag color={'red'}>
                 <div
