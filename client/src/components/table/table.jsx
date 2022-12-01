@@ -38,6 +38,7 @@ import {
   TagListRenderer,
   PpmPercentageRenderer,
   RatioPercentageRenderer,
+  TipTextRenderer,
 } from './renderers';
 
 import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -101,6 +102,7 @@ const defaultComponents = {
   TagListRenderer,
   PpmPercentageRenderer,
   RatioPercentageRenderer,
+  TipTextRenderer,
 };
 
 const defaultColumnDef = {};

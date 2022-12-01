@@ -30,6 +30,7 @@ import LegacyExpDateRenderer from './legacy-exp-date';
 import TagListRenderer from './tag-list';
 import PpmPercentageRenderer from './ppm-percentage';
 import RatioPercentageRenderer from './ratio-percentage';
+import TipTextRenderer from './tip-text';
 
 export {
   BooleanRenderer,
@@ -63,5 +64,6 @@ export {
   LegacyExpDateRenderer,
   TagListRenderer,
   PpmPercentageRenderer,
-  RatioPercentageRenderer
+  RatioPercentageRenderer,
+  TipTextRenderer,
 };

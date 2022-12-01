@@ -37,11 +37,16 @@ const columns = (t) => [
   {
     headerName: t('fields.details'),
     field: 'message',
-    tooltipField: 'message',
+    // tooltipField: 'message',
     sortable: true,
     resizable: true,
     comparator: (valueA, valueB, nodeA, nodeB, isInverted) => {
       return 0;
+    },
+    cellRenderer: 'TipTextRenderer',
+    cellRendererParams: {
+      // tip: 'TOOLTIP',
+      tip: 'POPOVER',
     },
   },
 ];
