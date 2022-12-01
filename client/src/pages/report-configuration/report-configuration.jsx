@@ -7,13 +7,15 @@ import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { Page, DataTable, Download } from '../../components';
 import { REPORT_CONFIGURATION } from '../../api';
-import { useAuth } from '../../hooks';
+import { useAuth, useConfig } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 
 import Forms from './forms';
 
 const ReportConfiguration = () => {
+  const config = useConfig();
+
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
@@ -66,7 +68,13 @@ const ReportConfiguration = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
       />
-      <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
+      <Forms
+        value={selected}
+        visible={visible}
+        handleFormState={handleFormState}
+        access={access}
+        config={config}
+      />
     </Page>
   );
 };

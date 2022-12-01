@@ -31,8 +31,15 @@ const OtherForm = ({ value, form, config }) => {
     const result = input.replace(/\s/g, '').split(/:|;/);
     for (let i = 0; i < result.length; i++) {
       if (!regEx.test(result[i])) {
-        return Promise.reject(`${t('fields.closeoutRptEmails')}`);
+        return Promise.reject(`${t('placeholder.incorrectFormat')} ─ ${t('placeholder.emailInvalid')}`);
       }
+    }
+
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > config?.maxLengthEmail) {
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${config?.maxLengthEmail} ─ ${t('descriptions.maxCharacters')}`
+      );
     }
 
     return Promise.resolve();

@@ -17,7 +17,7 @@ import api, { REPORT_CONFIGURATION } from '../../../api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access }) => {
+const FormModal = ({ value, visible, handleFormState, access, config }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -162,7 +162,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
           <TabPane tab={t('tabColumns.general')} key="1">
             <Company form={form} value={value} onChange={setCompany} />
             <Name form={form} value={value} company={company} />
-            <Email form={form} value={value} enabled={enabled} canEmail={canEmail} />
+            <Email form={form} value={value} enabled={enabled} canEmail={canEmail} config={config} />
             <Divider>{t('divider.flags')}</Divider>
             <Flags
               form={form}
