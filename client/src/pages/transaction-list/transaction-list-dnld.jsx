@@ -111,7 +111,7 @@ const TransactionList = () => {
       setData([]);
     }
 
-    const tempUrl = `${TRANSACTION_LIST.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${
+    const tempUrl = `${TRANSACTION_LIST.READ}?pgflag=${v ? 'Y' : 'N'}&start_date=${
       !start ? '-1' : start
     }&end_date=${
       !end ? '-1' : end

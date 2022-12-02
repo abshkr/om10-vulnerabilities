@@ -150,7 +150,7 @@ const MovementNominations = () => {
       setData([]);
     }
 
-    const tempUrl = `${MOVEMENT_NOMIATIONS.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${
+    const tempUrl = `${MOVEMENT_NOMIATIONS.READ}?pgflag=${v ? 'Y' : 'N'}&start_date=${
       !start ? '-1' : start
     }&end_date=${
       !end ? '-1' : end
@@ -184,6 +184,20 @@ const MovementNominations = () => {
 
     setStart(start);
     setEnd(end);
+  };
+
+  const onTimeOptionChanged = (option) => {
+    const tempUrl = `${MOVEMENT_NOMIATIONS.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${
+      !start ? '-1' : start
+    }&end_date=${
+      !end ? '-1' : end
+    }&time_option=${option}&mv_key=${movKey}&mv_status=${movStatus}&mv_srctype=${movSrcType}&mv_terminal=${movTerminal}&mv_number=${movNumber}`;
+    setMainUrl(tempUrl);
+    setPage(1);
+    setRunUrlFlag(!pagingFlag);
+    if (revalidate) revalidate();
+
+    setTimeOption(option);
   };
 
   const onRefresh = () => {
@@ -332,6 +346,12 @@ const MovementNominations = () => {
     }
   }, [siteMoveNomPaging]);
 
+  useEffect(() => {
+    if (isValidating !== undefined) {
+      setDownloading(isValidating);
+    }
+  }, [isValidating]);
+
   const modifiers = (
     <>
       <Switch
@@ -345,7 +365,8 @@ const MovementNominations = () => {
       <Select
         dropdownMatchSelectWidth={false}
         defaultValue={filterByExpiry ? 'MV_DTIM_EXPIRY' : 'MV_DTIM_CREATE'}
-        onChange={setTimeOption}
+        value={timeOption}
+        onChange={onTimeOptionChanged}
         optionFilterProp="children"
         placeholder={null}
         filterOption={(input, option) =>

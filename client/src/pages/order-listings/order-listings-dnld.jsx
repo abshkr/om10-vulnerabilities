@@ -150,14 +150,10 @@ const OrderListings = ({ popup, params }) => {
 
     const tempUrl =
       popup && supplier && customer
-        ? `${ORDER_LISTINGS.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${
-            !start ? '-1' : start
-          }&end_date=${
+        ? `${ORDER_LISTINGS.READ}?pgflag=${v ? 'Y' : 'N'}&start_date=${!start ? '-1' : start}&end_date=${
             !end ? '-1' : end
           }&time_option=${timeOption}&order_supp_code=${supplier}&order_cust_acnt=${customer}&order_stat_id=${ordStatId}&order_cust_no=${ordCustNo}&order_ref_code=${ordRefCode}`
-        : `${ORDER_LISTINGS.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${
-            !start ? '-1' : start
-          }&end_date=${
+        : `${ORDER_LISTINGS.READ}?pgflag=${v ? 'Y' : 'N'}&start_date=${!start ? '-1' : start}&end_date=${
             !end ? '-1' : end
           }&time_option=${timeOption}&order_supp_code=${ordSuppCode}&order_cust_acnt=${ordCustAcnt}&order_stat_id=${ordStatId}&order_cust_no=${ordCustNo}&order_ref_code=${ordRefCode}`;
     setMainUrl(tempUrl);
@@ -194,6 +190,28 @@ const OrderListings = ({ popup, params }) => {
 
     setStart(start);
     setEnd(end);
+  };
+
+  const onTimeOptionChanged = (option) => {
+    const tempUrl =
+      popup && supplier && customer
+        ? `${ORDER_LISTINGS.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${
+            !start ? '-1' : start
+          }&end_date=${
+            !end ? '-1' : end
+          }&time_option=${option}&order_supp_code=${supplier}&order_cust_acnt=${customer}&order_stat_id=${ordStatId}&order_cust_no=${ordCustNo}&order_ref_code=${ordRefCode}`
+        : `${ORDER_LISTINGS.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${
+            !start ? '-1' : start
+          }&end_date=${
+            !end ? '-1' : end
+          }&time_option=${option}&order_supp_code=${ordSuppCode}&order_cust_acnt=${ordCustAcnt}&order_stat_id=${ordStatId}&order_cust_no=${ordCustNo}&order_ref_code=${ordRefCode}`;
+
+    setMainUrl(tempUrl);
+    setPage(1);
+    setRunUrlFlag(!pagingFlag);
+    if (revalidate) revalidate();
+
+    setTimeOption(option);
   };
 
   const onRefresh = () => {
@@ -361,6 +379,12 @@ const OrderListings = ({ popup, params }) => {
     }
   }, [siteOrderPaging]);
 
+  useEffect(() => {
+    if (isValidating !== undefined) {
+      setDownloading(isValidating);
+    }
+  }, [isValidating]);
+
   const modifiers = (
     <>
       <Switch
@@ -374,7 +398,8 @@ const OrderListings = ({ popup, params }) => {
       <Select
         dropdownMatchSelectWidth={false}
         defaultValue={filterByExpiry ? 'ORDER_EXP_TIME' : 'ORDER_ORD_TIME'}
-        onChange={setTimeOption}
+        value={timeOption}
+        onChange={onTimeOptionChanged}
         optionFilterProp="children"
         placeholder={null}
         filterOption={(input, option) =>

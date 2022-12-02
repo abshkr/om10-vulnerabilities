@@ -105,7 +105,7 @@ const LoadSchedules = () => {
       setData([]);
     }
 
-    const tempUrl = `${LOAD_SCHEDULES.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${
+    const tempUrl = `${LOAD_SCHEDULES.READ}?pgflag=${v ? 'Y' : 'N'}&start_date=${
       !start ? '-1' : start
     }&end_date=${
       !end ? '-1' : end

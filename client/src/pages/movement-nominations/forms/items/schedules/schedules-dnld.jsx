@@ -91,11 +91,11 @@ const Schedules = ({ selected, cbFunction, closeForm }) => {
     }
 
     const tempUrl = selected
-      ? `${MOVEMENT_SCHEDULES.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&mv_key=${movKey}&mvitm_item_id=${
+      ? `${MOVEMENT_SCHEDULES.READ}?pgflag=${v ? 'Y' : 'N'}&mv_key=${movKey}&mvitm_item_id=${
           selected?.mvitm_item_id
         }&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}`
       : `${MOVEMENT_SCHEDULES.READ}?pgflag=${
-          pagingFlag ? 'Y' : 'N'
+          v ? 'Y' : 'N'
         }&mv_key=${movKey}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}`;
     setMainUrl(tempUrl);
 

@@ -89,6 +89,9 @@ const DataDownloader = ({
       setTotal(sum);
       setRatio(percent);
 
+      // const cntPage = Math.ceil(counter/size);
+      // const sumPage = Math.ceil(sum/size);
+
       if (counter >= sum) {
         break;
       } else {
@@ -96,6 +99,9 @@ const DataDownloader = ({
         endPos = startPos + size - 1;
         startPosition.current = startPos;
         endPosition.current = endPos;
+        if (startPos >= sum) {
+          break;
+        }
       }
     }
 
