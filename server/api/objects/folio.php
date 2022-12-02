@@ -514,7 +514,165 @@ class Folio extends CommonClass
         return $result;
     }
 
+    public function pagination_count()
+    {
+        if (!isset($this->time_option) || $this->time_option == '') {
+            $this->time_option = "PREV_CLOSEOUT_DATE";
+        }
+        if (!isset($this->start_date) || $this->start_date == '') {
+            $this->start_date = "-1";
+        }
+        if (!isset($this->end_date) || $this->end_date == '') {
+            $this->end_date = "-1";
+        }
+        if (isset($this->start_date) && $this->start_date === -1) {
+            $this->start_date = "-1";
+        }
+        if (isset($this->end_date) && $this->end_date === -1) {
+            $this->end_date = "-1";
+        }
+        $this->start_date = trim($this->start_date);
+        $this->end_date = trim($this->end_date);
+
+        $query = "
+            SELECT COUNT(*) CN
+            FROM " . $this->VIEW_NAME . "
+            WHERE 1=1
+        ";
+
+        //        AND ('-1' = :start_date OR " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+        if ( $this->start_date === "-1") {
+            $query .= "
+                AND ('-1' = :start_date) 
+            ";
+        } else {
+            $query .= "
+                AND (" . $this->time_option . " >= TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+            ";
+        }
+        //        AND ('-1' = :end_date OR " . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+        if ( $this->end_date === "-1") {
+            $query .= "
+                AND ('-1' = :end_date)
+            ";
+        } else {
+            $query .= "
+                AND (" . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+            ";
+        }
+        // if (isset($this->start_date) && isset($this->end_date)) {
+        //     $query .= " 
+        //         AND PREV_CLOSEOUT_DATE >= :start_date
+        //         AND PREV_CLOSEOUT_DATE < :end_date 
+        //     ";
+        // }
+        
+        $stmt = oci_parse($this->conn, $query);
+
+        if (isset($this->start_date) && isset($this->end_date)) {
+            oci_bind_by_name($stmt, ':start_date', $this->start_date);
+            oci_bind_by_name($stmt, ':end_date', $this->end_date);
+        }
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            return (int) $row['CN'];
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return 0;
+        }
+    }
+
     public function read()
+    {
+        if (!isset($this->time_option) || $this->time_option == '') {
+            $this->time_option = "PREV_CLOSEOUT_DATE";
+        }
+        if (!isset($this->start_date) || $this->start_date == '') {
+            $this->start_date = "-1";
+        }
+        if (!isset($this->end_date) || $this->end_date == '') {
+            $this->end_date = "-1";
+        }
+        if (isset($this->start_date) && $this->start_date === -1) {
+            $this->start_date = "-1";
+        }
+        if (isset($this->end_date) && $this->end_date === -1) {
+            $this->end_date = "-1";
+        }
+        $this->start_date = trim($this->start_date);
+        $this->end_date = trim($this->end_date);
+
+        $query = "
+            SELECT CLOSEOUT_NR,
+                CLOSEOUT_DATE,
+                PREV_CLOSEOUT_DATE,
+                STATUS,
+                FOLIO_STATUS_TYPES.FOLIO_STATUS_NAME  as STATUS_STR,
+                DECODE(STATUS, 0, 'OPEN',
+                    1, 'FROZEN',
+                    'CLOSED') STATUS_STR2,
+                REPORT_TRIGGER,
+                USER_CODE,
+                LAST_CHG_TIME,
+                CLOSEOUT_NAME
+             FROM " . $this->VIEW_NAME . ", FOLIO_STATUS_TYPES 
+             WHERE STATUS = FOLIO_STATUS_TYPES.FOLIO_STATUS_ID
+        ";
+
+        //        AND ('-1' = :start_date OR " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+        if ( $this->start_date === "-1") {
+            $query .= "
+                AND ('-1' = :start_date) 
+            ";
+        } else {
+            $query .= "
+                AND (" . $this->time_option . " >= TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+            ";
+        }
+        //        AND ('-1' = :end_date OR " . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+        if ( $this->end_date === "-1") {
+            $query .= "
+                AND ('-1' = :end_date)
+            ";
+        } else {
+            $query .= "
+                AND (" . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+            ";
+        }
+        // if (isset($this->start_date) && isset($this->end_date)) {
+        //     $query .= " 
+        //         AND PREV_CLOSEOUT_DATE >= :start_date
+        //         AND PREV_CLOSEOUT_DATE < :end_date 
+        //     ";
+        // }
+        $query .= " ORDER BY CLOSEOUT_NR DESC";
+
+        if (isset($this->pgflag) && $this->pgflag==='Y') {
+            $query = $this->pagination_query($query);
+        }
+
+        $stmt = oci_parse($this->conn, $query);
+        if (isset($this->start_date) && isset($this->end_date)) {
+            oci_bind_by_name($stmt, ':start_date', $this->start_date);
+            oci_bind_by_name($stmt, ':end_date', $this->end_date);
+        }
+
+        if (isset($this->pgflag) && $this->pgflag==='Y') {
+            $this->pagination_binds($stmt);
+        }
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function read_all()
     {
         $query = "
             SELECT CLOSEOUT_NR,
@@ -550,6 +708,7 @@ class Folio extends CommonClass
             return null;
         }
     }
+
 
     protected function is_multi_folio_tank_base()
     {
