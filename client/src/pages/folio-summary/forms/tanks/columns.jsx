@@ -240,6 +240,10 @@ const columns = (t, enabled, config) => [
       min: 'min_temp',
     },
     suppressSizeToFit: true,
+    cellRenderer: 'TemperatureRenderer',
+    cellRendererParams: {
+      digits: String(config?.precisionTemperature),
+    },
   },
   {
     headerName: `${t('fields.closingDensity')} (${t('units.kg/m3')})`,
@@ -262,6 +266,10 @@ const columns = (t, enabled, config) => [
       min: 'bclass_dens_lo',
     },
     suppressSizeToFit: true,
+    cellRenderer: 'DensityRenderer',
+    cellRendererParams: {
+      digits: String(config?.precisionDensity),
+    },
   },
   {
     headerName: t('fields.gainLossExplanation'),
