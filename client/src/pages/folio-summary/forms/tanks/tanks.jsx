@@ -4,7 +4,8 @@ import _ from 'lodash';
 import { Card, Modal, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import api, { FOLIO_SUMMARY } from '../../../../api';
-import { DataTable } from '../../../../components';
+import { DataTable, Download } from '../../../../components';
+import { calcWiA } from '../../../../utils';
 import { useConfig } from 'hooks';
 
 import generator from './generator';
@@ -15,6 +16,7 @@ const Tanks = ({ id, enabled, saveToFolioTrigger, saveToTanksTrigger, calculateT
   const config = useConfig();
 
   const [data, setData] = useState([]);
+  const [dataCSV, setDataCSV] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [selected, setSelected] = useState([]);
   const [preSelected, setPreSelected] = useState([]);
@@ -34,6 +36,11 @@ const Tanks = ({ id, enabled, saveToFolioTrigger, saveToTanksTrigger, calculateT
 
       setData(values);
       setPreSelected(preSelected);
+
+      const valuesCSV = _.forEach(values, (o) => {
+        o.close_mass_tot_air = _.round(calcWiA(o?.close_mass_tot, o?.close_std_tot, null, 0.0011), 0);
+      });
+      setDataCSV(valuesCSV);
     });
   }, [id]);
 
@@ -266,6 +273,11 @@ const Tanks = ({ id, enabled, saveToFolioTrigger, saveToTanksTrigger, calculateT
     values.api.forEachNode((node) => payload.push(node.data));
 
     setData(payload);
+
+    const valuesCSV = _.forEach(payload, (o) => {
+      o.close_mass_tot_air = _.round(calcWiA(o?.close_mass_tot, o?.close_std_tot, null, 0.0011), 0);
+    });
+    setDataCSV(valuesCSV);
   };
 
   useEffect(() => {
@@ -296,6 +308,14 @@ const Tanks = ({ id, enabled, saveToFolioTrigger, saveToTanksTrigger, calculateT
         columns={fields}
         data={data}
         isLoading={isLoading}
+        extra={
+          <Download
+            data={dataCSV}
+            isLoading={isLoading}
+            columns={fields?.filter((o) => o?.headerName !== t('fields.calculate'))}
+            extra={'tanks'}
+          />
+        }
         t={t}
         height="25vh"
         onEditingFinished={onEditingFinished}

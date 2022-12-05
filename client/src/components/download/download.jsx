@@ -6,12 +6,12 @@ import { useTranslation } from 'react-i18next';
 
 import transform from './transform';
 
-const Download = ({ data, columns, isLoading, round, icon }) => {
+const Download = ({ data, columns, isLoading, round, icon, extra }) => {
   const payload = transform(data, columns);
   const { t } = useTranslation();
 
   return (
-    <CSVLink data={payload} filename={`om5k_${window.location.pathname}.csv`}>
+    <CSVLink data={payload} filename={`om5k_${window.location.pathname}${!extra ? '' : '_' + extra}.csv`}>
       <Button
         type="primary"
         shape={round ? 'round' : ''}
@@ -21,7 +21,7 @@ const Download = ({ data, columns, isLoading, round, icon }) => {
             message: t('messages.csvGenerationSuccessful'),
           })
         }
-        disabled={isLoading || payload?.length===0 || !payload}
+        disabled={isLoading || payload?.length === 0 || !payload}
       >
         {t('operations.export')}
       </Button>

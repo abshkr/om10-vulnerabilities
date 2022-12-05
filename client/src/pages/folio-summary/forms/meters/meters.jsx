@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
 
 import api, { FOLIO_SUMMARY } from '../../../../api';
-import { DataTable } from '../../../../components';
+import { DataTable, Download } from '../../../../components';
 
 import generator from './generator';
 import columns from './columns';
@@ -117,6 +117,7 @@ const Meters = ({ id, enabled, meterTrigger, saveToMetersTrigger }) => {
         columns={fields}
         data={data}
         isLoading={isValidating}
+        extra={<Download data={data} isLoading={isValidating} columns={fields} extra={'meters'} />}
         height="25vh"
         onEditingFinished={onEditingFinished}
         autoColWidth
