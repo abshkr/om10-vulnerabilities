@@ -11,7 +11,15 @@ import { useConfig } from 'hooks';
 import generator from './generator';
 import columns from './columns';
 
-const Tanks = ({ id, enabled, saveToFolioTrigger, saveToTanksTrigger, calculateTrigger, nullToZero }) => {
+const Tanks = ({
+  id,
+  folioLine,
+  enabled,
+  saveToFolioTrigger,
+  saveToTanksTrigger,
+  calculateTrigger,
+  nullToZero,
+}) => {
   const { t } = useTranslation();
   const config = useConfig();
 
@@ -313,7 +321,7 @@ const Tanks = ({ id, enabled, saveToFolioTrigger, saveToTanksTrigger, calculateT
             data={dataCSV}
             isLoading={isLoading}
             columns={fields?.filter((o) => o?.headerName !== t('fields.calculate'))}
-            extra={'tanks'}
+            extra={`tanks_${folioLine?.closeout_name}`}
           />
         }
         t={t}

@@ -10,7 +10,7 @@ import { DataTable, Download } from '../../../../components';
 import generator from './generator';
 import columns from './columns';
 
-const Meters = ({ id, enabled, meterTrigger, saveToMetersTrigger }) => {
+const Meters = ({ id, folioLine, enabled, meterTrigger, saveToMetersTrigger }) => {
   const { t } = useTranslation();
 
   const [data, setData] = useState([]);
@@ -117,7 +117,14 @@ const Meters = ({ id, enabled, meterTrigger, saveToMetersTrigger }) => {
         columns={fields}
         data={data}
         isLoading={isValidating}
-        extra={<Download data={data} isLoading={isValidating} columns={fields} extra={'meters'} />}
+        extra={
+          <Download
+            data={data}
+            isLoading={isValidating}
+            columns={fields}
+            extra={`meters_${folioLine?.closeout_name}`}
+          />
+        }
         height="25vh"
         onEditingFinished={onEditingFinished}
         autoColWidth

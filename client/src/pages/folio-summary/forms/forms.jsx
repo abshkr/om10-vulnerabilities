@@ -188,6 +188,7 @@ const Forms = ({ value, visible, handleFormState, closeoutIsIdle, access, config
         <TabPane style={{ paddingRight: 0 }} tab={t('tabColumns.meters')} key="2">
           <Meters
             id={value?.closeout_nr}
+            folioLine={value}
             enabled={enabled}
             access={access}
             handleFormState={handleFormState}
@@ -200,6 +201,7 @@ const Forms = ({ value, visible, handleFormState, closeoutIsIdle, access, config
         <TabPane tab={t('tabColumns.tanks')} key="3">
           <Tanks
             id={value?.closeout_nr}
+            folioLine={value}
             enabled={enabled}
             access={access}
             handleFormState={handleFormState}
