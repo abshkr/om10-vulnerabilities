@@ -665,6 +665,7 @@ class AuthServerService
     {
         // get Active Directory server
         $servers = $this->auth_servers("LDAP");
+        // $servers = $this->auth_servers($authobj->authmode);
         $manager = $this->get_site_manager();
         $terminal = $this->get_site_code();
         $sitename = $this->get_site_name();
@@ -757,6 +758,22 @@ class AuthServerService
                 $returns["USER_DETAIL"]["SITE_MOVEMENTS_REV_ENABLED"] = $this->get_site_config("SITE_MOVEMENTS_REV_ENABLED",  "N");
                 $returns["USER_DETAIL"]["SITE_CANCEL_LOAD_ENABLED"] = $this->get_site_config("SITE_CANCEL_LOAD_ENABLED",  "N");
                 $returns["USER_DETAIL"]["SITE_ISOTAINER_ENABLED"] = $this->get_site_config("SITE_ISOTAINER_ENABLED",  "N");
+
+                // 4001	ENG	Login information, User: %, Name: %, Role: %, Cmpy: %, Login Addr: %
+                $journal = new Journal($this->conn, false);
+                $jnl_data[0] = $authobj->user . ' [' . $authobj->authmode . ']';
+                $jnl_data[1] = $returns["USER_DETAIL"]["USER_NAME"];
+                $jnl_data[2] = $role;
+                $jnl_data[3] = $manager;
+                $jnl_data[4] = $authobj->clientip;
+        
+                if (!$journal->jnlLogEvent(
+                    4001, $jnl_data, JnlEvent::JNLT_SYS, JnlClass::JNLC_EVENT)) {
+                    $e = oci_error($stmt);
+                    write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                    oci_rollback($this->conn);
+                }
+                oci_commit($this->conn);
 
                 break;
             }
