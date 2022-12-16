@@ -129,6 +129,8 @@ const ConfigProvider = ({ children }) => {
     popupManualTransaction: false,
     siteEqptPaging: false,
     siteTnkrPaging: false,
+    siteEnabledLDAP: false,
+    siteEnabledSAML: false,
   });
 
   const { data: configuration, revalidate: revalidateConfiguration } = useSWR(SITE_CONFIGURATION.READ, {
@@ -328,6 +330,8 @@ const ConfigProvider = ({ children }) => {
         popupManualTransaction: configurationObject?.SITE_POPUP_MT || false,
         siteEqptPaging: configurationObject?.SITE_PAGINATION_EQPT_LIST || false,
         siteTnkrPaging: configurationObject?.SITE_PAGINATION_TNKR_LIST || false,
+        siteEnabledLDAP: configurationObject?.SITE_LDAP_ENABLED || false,
+        siteEnabledSAML: configurationObject?.SITE_SAML_ENABLED || false,
         revalidate: () => onRevalidate(),
       });
     }

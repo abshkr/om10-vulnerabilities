@@ -5,22 +5,31 @@ import { AUTHORIZED, UNAUTHORIZED } from './types';
 
 export const login = (values, callback) => async (dispatch) => {
   const payload = hash(values.language, values.code, values.password);
+  let url = AUTH.LOGIN;
+  if (values?.auth_type === 'LDAP' || values?.auth_type === 'SAML') {
+    payload.authmode = values?.auth_type;
+    payload.plainpsw = values?.password;
+    url = AUTH.LOGIN_MAIN;
+  }
 
   try {
     api
-      .post(AUTH.LOGIN, payload)
+      .post(url, payload)
       .then((response) => {
         const token = response.data.token;
 
         if (token) {
-          if (parseInt(response.data.http_session_trace_count) >= parseInt(response.data.max_http_session_allowed)) {
+          if (
+            parseInt(response.data.http_session_trace_count) >=
+            parseInt(response.data.max_http_session_allowed)
+          ) {
             response.data.killsession = true;
             callback(response, dispatch);
             return;
-          } else if (response.data.user_status_flag ==='0') {
+          } else if (response.data.user_status_flag === '0') {
             callback(response, dispatch);
             return;
-          } else if (response.data.twofa_result ==='AUTH 2FA') {
+          } else if (response.data.twofa_result === 'AUTH 2FA') {
             callback(response, dispatch);
             return;
           }

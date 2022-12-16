@@ -17,6 +17,7 @@ import _ from 'lodash';
 import api, { COMMON, AUTH } from 'api';
 import hash from 'utils/hash';
 import useMode from 'hooks/use-mode';
+import useAuthConfig from 'hooks/use-auth-config';
 import { AUTHORIZED, UNAUTHORIZED } from 'actions/types';
 import { ReactComponent as LoginIcon } from './login.svg';
 
@@ -47,6 +48,7 @@ const LoginOutlined = (props) => (
 
 const Login = ({ handleLogin, auth }) => {
   const { isFSC } = useMode();
+  const config = useAuthConfig();
 
   const [form] = Form.useForm();
   const { i18n, t } = useTranslation();
@@ -54,6 +56,7 @@ const Login = ({ handleLogin, auth }) => {
   const [isLoading, setLoading] = useState(false);
   const [attempts, setAttempts] = useState(null);
   const [status, setStatus] = useState(1);
+  const [authMode, setAuthMode] = useState('DEFAULT');
 
   const history = useHistory();
 
@@ -62,6 +65,10 @@ const Login = ({ handleLogin, auth }) => {
     sessionStorage.setItem('language', value);
     sessionStorage.setItem('user', document.getElementById('code')?.value);
     sessionStorage.setItem('password', document.getElementById('password')?.value);
+  };
+
+  const handleAuthMode = (value) => {
+    setAuthMode(value);
   };
 
   const getErrorMessage = (code) => {
@@ -224,6 +231,7 @@ const Login = ({ handleLogin, auth }) => {
     sessionStorage.setItem('user', values?.code);
     sessionStorage.setItem('password', values?.password);
     sessionStorage.setItem('language', values?.language);
+    sessionStorage.setItem('authmode', values?.auth_type || authMode);
 
     handleLogin(values, (response, dispatch) => {
       if (response?.data?.token) {
@@ -391,6 +399,24 @@ const Login = ({ handleLogin, auth }) => {
           <LoginSubtitle>{t('generic.login')}</LoginSubtitle>
 
           <Form form={form} onFinish={handleSubmit} initialValues={{ language: i18n.language || 'en' }}>
+            {(config?.siteEnabledLDAP || config?.siteEnabledSAML) && (
+              <Form.Item name="auth_type">
+                <Select onChange={handleAuthMode} defaultValue={'DEFAULT'}>
+                  <Select.Option value="DEFAULT">{t('fields.authModeDefault')}</Select.Option>
+                  {config?.siteEnabledLDAP && (
+                    <Select.Option value="LDAP" disabled={!config?.siteEnabledLDAP}>
+                      {t('fields.authModeLDAP')}
+                    </Select.Option>
+                  )}
+                  {config?.siteEnabledSAML && (
+                    <Select.Option value="SAML" disabled={!config?.siteEnabledSAML}>
+                      {t('fields.authModeSAML')}
+                    </Select.Option>
+                  )}
+                </Select>
+              </Form.Item>
+            )}
+
             <Form.Item name="code" rules={[{ required: true, message: t('messages.inputOmegaUser') }]}>
               <Input
                 style={{ marginBottom: 5 }}

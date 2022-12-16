@@ -7,6 +7,7 @@ import usePrevious from './use-previous';
 import useQuery from './use-query';
 import usePagination from './use-pagination';
 import useMode from './use-mode';
+import useAuthConfig from './use-auth-config';
 import usePageColumns from './use-page-columns';
 
 export {
@@ -19,5 +20,6 @@ export {
   useQuery,
   usePagination,
   useMode,
+  useAuthConfig,
   usePageColumns,
 };

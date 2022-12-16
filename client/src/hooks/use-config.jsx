@@ -194,6 +194,8 @@ const useConfig = () => {
     siteAllowAnySuppDrawTag: false,
     siteUniqueTripOrdNum: false,
     siteAtgFieldsEditable: false,
+    siteEnabledLDAP: false,
+    siteEnabledSAML: false,
     prodmvmnt_to_movement: false,
   });
 
@@ -454,6 +456,8 @@ const useConfig = () => {
         siteAllowAnySuppDrawTag: configurationObject?.SITE_ALLOW_ANY_SUPPDRAW_TAG || false,
         siteUniqueTripOrdNum: configurationObject?.SITE_UNIQUE_TRIP_OO_NUM || false,
         siteAtgFieldsEditable: configurationObject?.SITE_ATG_FIELDS_EDITABLE || false,
+        siteEnabledLDAP: configurationObject?.SITE_LDAP_ENABLED || false,
+        siteEnabledSAML: configurationObject?.SITE_SAML_ENABLED || false,
         prodmvmnt_to_movement: configurationObject?.PRODUCT_MVMNT_TO_MOVEMENT || false,
       });
 

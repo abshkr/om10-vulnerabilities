@@ -22,6 +22,7 @@ import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
 
 import AxleWeightLimit from './axle-weight-limit';
+import AuthServers from './auth-servers';
 import Locations from './locations';
 import { useAuth } from '../../hooks';
 import { ConfigurationContainer } from './styles';
@@ -638,6 +639,8 @@ const Configuration = ({ user, config }) => {
   const [selectedTerminal, setSelectedTerminal] = useState(null);
   const [visibleAxle, setVisibleAxle] = useState(false);
   const [selectedAxle, setSelectedAxle] = useState(null);
+  const [visibleServer, setVisibleServer] = useState(false);
+  const [selectedServer, setSelectedServer] = useState(null);
 
   const { t } = useTranslation();
 
@@ -646,6 +649,8 @@ const Configuration = ({ user, config }) => {
   const UPDATING_TERMINALS = tab === '5';
 
   const UPDATING_AXLES = tab === '9';
+
+  const UPDATING_SERVERS = tab === '11';
 
   const NUMERIC_KEYS = [
     'DRIVER_PIN_AUTO_EXPIRE',
@@ -804,9 +809,14 @@ const Configuration = ({ user, config }) => {
     setSelectedAxle(value);
   };
 
+  const handleServerFormState = (visibility, value) => {
+    setVisibleServer(visibility);
+    setSelectedServer(value);
+  };
+
   const modifiers = (
     <>
-      {!UPDATING_TERMINALS && !UPDATING_AXLES && (
+      {!UPDATING_TERMINALS && !UPDATING_AXLES && !UPDATING_SERVERS && (
         <Button icon={<EditOutlined />} type="primary" onClick={onUpdate} disabled={!access?.canUpdate}>
           {t('operations.update')}
         </Button>
@@ -853,6 +863,18 @@ const Configuration = ({ user, config }) => {
           type="primary"
           disabled={!access?.canCreate}
           onClick={() => handleAxleFormState(true, null)}
+        >
+          {t('operations.create')}
+        </Button>
+      )}
+
+      {UPDATING_SERVERS && (
+        <Button
+          icon={<PlusOutlined />}
+          // onClick={onFeatureDeselectAll}
+          type="primary"
+          disabled={!access?.canCreate}
+          onClick={() => handleServerFormState(true, null)}
         >
           {t('operations.create')}
         </Button>
@@ -966,6 +988,16 @@ const Configuration = ({ user, config }) => {
                 handleFormState={handleAxleFormState}
                 visible={visibleAxle}
                 selected={selectedAxle}
+                access={access}
+              />
+            </TabPane>
+          )}
+          {user?.per_code === '9999' && (config?.siteEnabledLDAP || config?.siteEnabledSAML) && (
+            <TabPane tab={t('tabColumns.authServers')} key="11">
+              <AuthServers
+                handleFormState={handleServerFormState}
+                visible={visibleServer}
+                selected={selectedServer}
                 access={access}
               />
             </TabPane>
