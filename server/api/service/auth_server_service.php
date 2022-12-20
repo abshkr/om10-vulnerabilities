@@ -4,6 +4,7 @@ include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/order_service.php';
 include_once __DIR__ . '/site_service.php';
+include_once __DIR__ . '/crypt_service.php';
 
 class AuthServerService
 {
@@ -669,12 +670,14 @@ class AuthServerService
         $manager = $this->get_site_manager();
         $terminal = $this->get_site_code();
         $sitename = $this->get_site_name();
+        $cs = new CryptService();
 
         $returns = array();
         // go through servers to authenticate the user
         foreach ($servers as $key => $item) {
             $useracct = $authobj->user;
-            $password = $authobj->plainpsw;
+            // $password = $authobj->plainpsw;
+            $password = $cs->decrypt_blowfish($authobj->user, $authobj->hash);
             // AS_CODE, AS_NAME, AS_IP, AS_USERNAME, AS_PASSWORD, AS_BASE_DN, AS_FILTERS, AS_RETURNS, AS_TYPE, AS_NOTE, AS_ROLE, AS_ACTIVE
             $result = $this->auth_by_ldap($item["AS_IP"], $useracct, $password, $item["AS_BASE_DN"], $item["AS_FILTERS"]);
             $returns = $result;
@@ -697,7 +700,8 @@ class AuthServerService
                     $params->per_department = $result["MSG_LIST"]["physicaldeliveryofficename"];
                     $params->per_licence_no = '';
                     $params->per_next_msg = '';
-                    $params->default_pwd = $this->ecrypt_password($authobj->plainpsw); // "a1qhH6yu9Tjg.";
+                    // $params->default_pwd = $this->ecrypt_password($authobj->plainpsw); // "a1qhH6yu9Tjg.";
+                    $params->default_pwd = $this->ecrypt_password($password); // "a1qhH6yu9Tjg.";
                     $params->per_level_num = 99;
                     $params->per_terminal = $terminal;
                     $params->per_comments = 'Active Directory User Account';
@@ -758,6 +762,8 @@ class AuthServerService
                 $returns["USER_DETAIL"]["SITE_MOVEMENTS_REV_ENABLED"] = $this->get_site_config("SITE_MOVEMENTS_REV_ENABLED",  "N");
                 $returns["USER_DETAIL"]["SITE_CANCEL_LOAD_ENABLED"] = $this->get_site_config("SITE_CANCEL_LOAD_ENABLED",  "N");
                 $returns["USER_DETAIL"]["SITE_ISOTAINER_ENABLED"] = $this->get_site_config("SITE_ISOTAINER_ENABLED",  "N");
+                // $returns["USER_DETAIL"]["PSW_DECRYPT"] = $password2;
+                // $returns["USER_DETAIL"]["PSW_DECRYPT2"] = rtrim($password2);
 
                 // 4001	ENG	Login information, User: %, Name: %, Role: %, Cmpy: %, Login Addr: %
                 $journal = new Journal($this->conn, false);

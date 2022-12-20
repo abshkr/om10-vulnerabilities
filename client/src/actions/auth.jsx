@@ -8,7 +8,7 @@ export const login = (values, callback) => async (dispatch) => {
   let url = AUTH.LOGIN;
   if (values?.auth_type === 'LDAP' || values?.auth_type === 'SAML') {
     payload.authmode = values?.auth_type;
-    payload.plainpsw = values?.password;
+    // payload.plainpsw = values?.password;
     url = AUTH.LOGIN_MAIN;
   }
 
