@@ -22,7 +22,7 @@ commit;
 /*
     define the SITE_LDAP_SERVER to store the LDAP authentication server IP
 */
-delete from SITE_CONFIG where CONFIG_KEY='SITE_LDAP_SERVER';
+/* delete from SITE_CONFIG where CONFIG_KEY='SITE_LDAP_SERVER';
 
 commit;
 
@@ -30,27 +30,27 @@ insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIR
 values ('SITE_LDAP_SERVER', '', 'LDAP authentication server IP', NULL );
 
 commit;
-
+ */
 /*
     define the SITE_LDAP_USERNAME to store the LDAP authentication server username
 */
-delete from SITE_CONFIG where CONFIG_KEY='SITE_LDAP_USERNAME';
+/* delete from SITE_CONFIG where CONFIG_KEY='SITE_LDAP_USERNAME';
 
 commit;
 
 insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIRED_BY_GUI) 
 values ('SITE_LDAP_USERNAME', '', 'LDAP authentication server username', NULL );
 
-commit;
+commit; */
 
 /*
     define the SITE_LDAP_PASSWORD to store the LDAP authentication server password
 */
-delete from SITE_CONFIG where CONFIG_KEY='SITE_LDAP_PASSWORD';
+/* delete from SITE_CONFIG where CONFIG_KEY='SITE_LDAP_PASSWORD';
 
 commit;
 
 insert into SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE, CONFIG_COMMENT, CONFIG_REQUIRED_BY_GUI) 
 values ('SITE_LDAP_PASSWORD', '', 'LDAP authentication server password', NULL );
 
-commit;
+commit; */
