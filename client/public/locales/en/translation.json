@@ -784,6 +784,7 @@
     "cmpyPidxCarrierFein": "Carrier FEIN",
     "cmpyPidxRtlAuthorizeLoad": "PIDX Right To Lift required for authorization",
     "cmpyPidxRtlBolSend": "PIDX EBOL will be sent after load completion",
+    "cmpyTripExpiryHours": "Default Expiry Hours for a schedule",
     "compartment": "Compartment",
     "compartmentNumber": "Compartment Number",
     "compartments": "Compartments",

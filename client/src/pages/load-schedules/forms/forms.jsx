@@ -205,6 +205,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
   const CAN_ADD_HOST_DATA = value?.shls_ld_type === '2' && manageAdditionalHostData;
 
   const { data: siteData } = useSWR(SITE_CONFIGURATION.GET_SITE);
+  const { data: suppConfig } = useSWR(`${COMPANIES.CONFIG}?cmpy_code=${supplier}`);
 
   const { data: trips } = useSWR(`${TANKER_LIST.CHECK_TANKER_ACTIVE_TRIPS}?tanker=${tanker}`, {
     refreshInterval: 0,
@@ -220,6 +221,14 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
   );
 
   const { resetFields, setFieldsValue, validateFields, getFieldsValue } = form;
+
+  /* const handleFieldsChange = (changedFields, allFields) => {
+    console.log('handleFieldsChange.....', changedFields, allFields)
+  }
+
+  const handleValuesChange = (changedValues, allValues) => {
+    console.log('handleValuesChange.....', changedValues, allValues)
+  } */
 
   const setCompartmentsInit = (v) => {
     console.log('....................setCompartmentsInit.....', v);
@@ -1256,10 +1265,21 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
   }, [value]);
 
   useEffect(() => {
-    if (siteData) {
-      setExpHour(siteData?.records?.[0].site_shls_exp_h);
+    if (!suppConfig) {
+      if (siteData) {
+        setExpHour(siteData?.records?.[0].site_shls_exp_h);
+      }
+    } else {
+      const item = _.find(suppConfig?.records, (o) => o?.config_key === 'CMPY_TRIP_EXPIRY_HOURS');
+      if (!item || !item?.config_value || item?.config_value === '' || item?.config_value === '0') {
+        if (siteData) {
+          setExpHour(siteData?.records?.[0].site_shls_exp_h);
+        }
+      } else {
+        setExpHour(item?.config_value);
+      }
     }
-  }, [siteData, setExpHour]);
+  }, [siteData, suppConfig, setExpHour]);
 
   useEffect(() => {
     if (value) {
@@ -1532,6 +1552,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
         form={form}
         scrollToFirstError
         initialValues={{ shls_ld_type: default_shls_ld_type }}
+        // onFieldsChange={handleFieldsChange}
+        // onValuesChange={handleValuesChange}
       >
         <Tabs defaultActiveKey="1" activeKey={tab} onChange={onTabChange} animated={false}>
           <TabPane tab={t('tabColumns.general')} key="0">

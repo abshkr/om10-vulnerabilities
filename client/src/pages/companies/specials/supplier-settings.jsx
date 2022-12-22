@@ -12,7 +12,13 @@ import { generateMaxInt } from '../../../utils';
 
 const SupplierForm = ({ value, form, config }) => {
   const { data: payload } = useSWR(`${COMPANIES.CONFIG}?cmpy_code=${value?.cmpy_code}`);
-  const { externalBlendAllowed, maxLengthTripNum, siteEnabledCOPS, siteEnabledPIDX } = config;
+  const {
+    externalBlendAllowed,
+    maxLengthTripNum,
+    siteEnabledCOPS,
+    siteEnabledPIDX,
+    siteTripExpiryHours,
+  } = config;
 
   const { t } = useTranslation();
   const { resetFields, setFieldsValue, getFieldDecorator } = form;
@@ -42,6 +48,7 @@ const SupplierForm = ({ value, form, config }) => {
   const [cmpy_guardmaster_product_flag, setCmpyGuardmasterProductFlag] = useState(false);
   const [cmpy_rtl_authorize_load, setCmpyRtlAuthorizeLoad] = useState(false);
   const [cmpy_rtl_bol_send, setCmpyRtlBolSend] = useState(false);
+  const [cmpy_trip_expiry_hours, setCmpyTripExpiryHours] = useState(siteTripExpiryHours);
 
   const IS_CREATING = !value;
 
@@ -205,6 +212,13 @@ const SupplierForm = ({ value, form, config }) => {
     });
   };
 
+  const onTripExpiryHours = (v) => {
+    setCmpyTripExpiryHours(v);
+    setFieldsValue({
+      cmpy_trip_expiry_hours: v,
+    });
+  };
+
   useEffect(() => {
     if (value) {
       setFieldsValue({
@@ -278,6 +292,9 @@ const SupplierForm = ({ value, form, config }) => {
       const rtlBolSendConfig = _.find(payload?.records, (item) => {
         return item.config_key === 'CMPY_RTL_BOL_SEND';
       });
+      const tripExpiryHoursConfig = _.find(payload?.records, (item) => {
+        return item.config_key === 'CMPY_TRIP_EXPIRY_HOURS';
+      });
 
       setFieldsValue({
         auto_complete_non_preschd_loads:
@@ -297,6 +314,7 @@ const SupplierForm = ({ value, form, config }) => {
         cmpy_rtl_authorize_load:
           rtlAuthorizeLoadConfig && rtlAuthorizeLoadConfig.config_value === 'Y' ? true : false,
         cmpy_rtl_bol_send: rtlBolSendConfig && rtlBolSendConfig.config_value === 'Y' ? true : false,
+        cmpy_trip_expiry_hours: tripExpiryHoursConfig?.config_value,
       });
       setAutoNonSchedule(autoNonSchduleConfig && autoNonSchduleConfig.config_value === 'Y' ? true : false);
       setSafefillCheck(safefillConfig && safefillConfig.config_value === 'Y' ? true : false);
@@ -315,6 +333,7 @@ const SupplierForm = ({ value, form, config }) => {
         rtlAuthorizeLoadConfig && rtlAuthorizeLoadConfig.config_value === 'Y' ? true : false
       );
       setCmpyRtlBolSend(rtlBolSendConfig && rtlBolSendConfig.config_value === 'Y' ? true : false);
+      setCmpyTripExpiryHours(tripExpiryHoursConfig?.config_value);
     }
   }, [value, setFieldsValue, payload, resetFields]);
 
@@ -742,7 +761,15 @@ const SupplierForm = ({ value, form, config }) => {
             </Form.Item>
           )}
         </Col>
-        <Col span={12}></Col>
+        <Col span={12}>
+          <Form.Item
+            name="cmpy_trip_expiry_hours"
+            label={t('fields.cmpyTripExpiryHours')}
+            {...rightItemLayout}
+          >
+            <InputNumber min={0} />
+          </Form.Item>
+        </Col>
       </Row>
     </div>
   );

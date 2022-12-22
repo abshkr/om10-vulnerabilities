@@ -129,6 +129,11 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
         config_key: 'CMPY_RTL_BOL_SEND',
         config_value: values.cmpy_rtl_bol_send ? 'Y' : 'N',
       },
+      {
+        cmpy_code: value.cmpy_code,
+        config_key: 'CMPY_TRIP_EXPIRY_HOURS',
+        config_value: values.cmpy_trip_expiry_hours,
+      },
     ];
 
     if (
