@@ -512,6 +512,21 @@ const FormSwitch = ({ config, onChange }) => {
         </Select>
       );
 
+    case 'SITE_SHLS_EXP_H':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'0 - 999999'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={999999}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
     default:
       return (
         // it is more reasonable to use Input instead of InputNumber as default

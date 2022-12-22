@@ -339,6 +339,10 @@ function response($case_name, $default = null, $params = null)
             "ENG" => "Next seal number",
             "CHN" => "下一个封签号"
         ),
+        "__SITE_TRIP_EXPIRY_HOURS__" => array(
+            "ENG" => "Default Expiry Hours of a Schedule",
+            "CHN" => "油库提单的默认有效时间(小时)"
+        ),
         "__AMB_ADJUSTMENT__" => array(
             "ENG" => "Ambient Quantity Adjustment (L)",
             "CHN" => "视量调整(升)"

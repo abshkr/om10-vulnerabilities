@@ -223,6 +223,7 @@ class SiteConfig extends CommonClass
     public function check_existence()
     {
         if ($this->config_key === "SITE_NEXT_SEAL" ||
+            $this->config_key === "SITE_SHLS_EXP_H" ||
             $this->config_key === "SITE_AL_ADJ" ||
             $this->config_key === "SITE_CL_ADJ" ||
             $this->config_key === "SITE_KG_ADJ" ||
@@ -259,6 +260,7 @@ class SiteConfig extends CommonClass
         $this->commit_mode = OCI_NO_AUTO_COMMIT;
 
         if ($this->config_key === "SITE_NEXT_SEAL" ||
+            $this->config_key === "SITE_SHLS_EXP_H" ||
             $this->config_key === "SITE_AL_ADJ" ||
             $this->config_key === "SITE_CL_ADJ" ||
             $this->config_key === "SITE_KG_ADJ" ||
@@ -269,7 +271,7 @@ class SiteConfig extends CommonClass
             $this->config_key === "SITE_SEAL_MODE" ||
             $this->config_key === "SITE_LD_RETNPRD_USED_MOV") {
             
-            $query = "SELECT SITE_CODE, SITE_NEXT_SEAL, SITE_AL_ADJ, SITE_CL_ADJ, SITE_KG_ADJ, SITE_LD_RETNPRD, 
+            $query = "SELECT SITE_CODE, SITE_NEXT_SEAL, SITE_SHLS_EXP_H, SITE_AL_ADJ, SITE_CL_ADJ, SITE_KG_ADJ, SITE_LD_RETNPRD, 
                 SITE_EXP_MONTHS, SITE_LD_RETN_NEWLDS, SITE_LD_RETNPRD_NEW_MOV, SITE_LD_RETNPRD_USED_MOV,
                 SITE_SEAL_MODE FROM SITE";
             $stmt = oci_parse($this->conn, $query);
@@ -372,7 +374,7 @@ class SiteConfig extends CommonClass
 
     public function read_decorate(&$result_array)
     {
-        $query = "SELECT SITE_NEXT_SEAL, SITE_AL_ADJ, SITE_CL_ADJ, SITE_KG_ADJ, SITE_LD_RETNPRD, 
+        $query = "SELECT SITE_NEXT_SEAL, SITE_SHLS_EXP_H, SITE_AL_ADJ, SITE_CL_ADJ, SITE_KG_ADJ, SITE_LD_RETNPRD, 
             SITE_EXP_MONTHS, SITE_LD_RETN_NEWLDS, SITE_LD_RETNPRD_NEW_MOV, SITE_LD_RETNPRD_USED_MOV,
             SITE_CODE, SITE_NAME,
             TZ_OFFSET(SESSIONTIMEZONE) SERVER_TIME_OFFSET,
@@ -392,6 +394,12 @@ class SiteConfig extends CommonClass
             "config_value" => $row['SITE_NEXT_SEAL'],
             "config_comment" => response("__SITE_NEXT_SEAL__"),
             "config_required_by_gui" => "S",
+            ));
+        array_push($result_array, array(
+            "config_key" => "SITE_SHLS_EXP_H",
+            "config_value" => $row['SITE_SHLS_EXP_H'],
+            "config_comment" => response("__SITE_TRIP_EXPIRY_HOURS__"),
+            "config_required_by_gui" => "R",
             ));
         array_push($result_array, array(
             "config_key" => "SITE_AL_ADJ",

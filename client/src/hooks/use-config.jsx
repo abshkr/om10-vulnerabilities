@@ -196,6 +196,7 @@ const useConfig = () => {
     siteAtgFieldsEditable: false,
     siteEnabledLDAP: false,
     siteEnabledSAML: false,
+    siteTripExpiryHours: null,
     prodmvmnt_to_movement: false,
   });
 
@@ -458,6 +459,7 @@ const useConfig = () => {
         siteAtgFieldsEditable: configurationObject?.SITE_ATG_FIELDS_EDITABLE || false,
         siteEnabledLDAP: configurationObject?.SITE_LDAP_ENABLED || false,
         siteEnabledSAML: configurationObject?.SITE_SAML_ENABLED || false,
+        siteTripExpiryHours: configurationObject?.SITE_SHLS_EXP_H,
         prodmvmnt_to_movement: configurationObject?.PRODUCT_MVMNT_TO_MOVEMENT || false,
       });
 
