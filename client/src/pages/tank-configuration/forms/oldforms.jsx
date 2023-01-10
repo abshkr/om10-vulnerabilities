@@ -182,70 +182,6 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     "mlitm_tankcode_to": "ZZZ998",
     "mlitm_prodcode_to": "400000257"
   */
-  const prepareTankTransfers = async (value, oldProd, newProd, moveType = '2') => {
-    try {
-      const values = {};
-
-      await api.get(`${SPECIAL_MOVEMENTS.NEXT_ID}`).then((response) => {
-        const payload = response.data?.records || [];
-        values.mlitm_id = payload[0].next_id;
-      });
-
-      values.mlitm_type = moveType;
-
-      const serverTime = await getServerTime();
-      const serverCurrent = moment(serverTime, SETTINGS.DATE_TIME_FORMAT);
-      // console.log('...........................server time', serverCurrent, serverTime);
-      // const serverCurrent = moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT);
-      values.mlitm_dtim_start = serverCurrent.format(SETTINGS.DATE_TIME_FORMAT);
-
-      // use 0 as default transfer type
-      // INSERT INTO MOV_REASONS (MR_ID, MR_ACTION, MR_TYPE, MR_FLAG, MR_SHOW_COMMENT) VALUES ('0', 'Product Change System Generated', 'T', '0', '0')
-      values.mlitm_reason_code = '0';
-      values.mlitm_qty_amb = value?.tank_amb_vol;
-      values.mlitm_qty_cor = value?.tank_cor_vol;
-      values.mlitm_qty_kg = value?.tank_liquid_kg;
-
-      let WiA = calcWiA(
-        value?.tank_liquid_kg,
-        value?.tank_cor_vol,
-        value?.tank_density,
-        config?.airBuoyancyFactor
-      );
-      values.mlitm_air_kg = WiA;
-      values.mlitm_dens_cor = value?.tank_density;
-      values.mlitm_temp_amb = value?.tank_temp;
-      values.mlitm_tankcode = value?.tank_code;
-      values.mlitm_tankcode_to = value?.tank_code;
-      values.mlitm_vcf = value?.tank_vcf; // value?.tank_cor_vol / value?.tank_amb_vol;
-
-      values.mlitm_prodcode = oldProd?.prod_code;
-      values.mlitm_prodcmpy = oldProd?.prod_cmpy;
-      values.mlitm_prodcode_to = newProd?.prod_code;
-      values.mlitm_prodcmpy_to = newProd?.prod_cmpy;
-
-      if (moveType === '0') {
-        values.mlitm_prodcmpy = '';
-        values.mlitm_tankcode = '';
-        values.mlitm_prodcode = '';
-      }
-      if (moveType === '1') {
-        values.mlitm_prodcmpy_to = '';
-        values.mlitm_tankcode_to = '';
-        values.mlitm_prodcode_to = '';
-      }
-
-      return values;
-    } catch (error) {
-      setFlagSpmTransfer(-2);
-      /* message.error({
-          key: 'submit',
-          content: t('descriptions.validationFailed'),
-        }); */
-      return undefined;
-    }
-  };
-
   const submitTankTransfers = async (value, oldProd, newProd, moveType = '2') => {
     try {
       const values = {};
@@ -338,33 +274,6 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
         key: 'submit',
         content: t('descriptions.validationFailed'),
       });
-    }
-  };
-
-  const prepareFolioTankBases = async (value, base, baseOld, oldDensity, newDensity) => {
-    try {
-      const closeouts = await api.get(`${STOCK_MANAGEMENT.CURR_CLOSEOUT}`);
-      const closeout = closeouts?.data?.records?.[0]?.closeout_nr;
-      const values = {
-        closeout_nr: closeout,
-        tank_terminal: value?.tank_terminal,
-        tank_code: value?.tank_code,
-        tank_basecode: base?.base_code,
-        tank_basename: base?.base_name,
-        tank_basecode_old: baseOld?.base_code,
-        tank_basename_old: baseOld?.base_name,
-        tank_density_old: oldDensity,
-        tank_density_new: newDensity,
-      };
-
-      return values;
-    } catch (error) {
-      setFlagFolioTank(-2);
-      /* message.error({
-        key: 'submit',
-        content: t('descriptions.validationFailed'),
-      }); */
-      return undefined;
     }
   };
 
@@ -595,130 +504,41 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
         disabled: ownershipNotEnough, // config?.siteFolioTankBaseChange && !IS_CREATING && values?.tank_base !== value?.tank_base && (!values?.tank_prod_from || !values?.tank_prod_to),
       },
       onOk: async () => {
-        if (config?.siteFolioTankBaseChange && !IS_CREATING && values?.tank_base !== value?.tank_base) {
-          // prepare data for SPM transfer and Folio Tank Base changes
-          const valuesSPM = await prepareTankTransfers(value, fromSupplierProduct, toSupplierProduct, '2');
-          if (!valuesSPM) {
-            message.error({
-              key: 'submitSPM',
-              content: t('descriptions.validationFailed'),
-            });
-            return;
-          }
-          const valuesFTB = await prepareFolioTankBases(
-            value,
-            baseItem?.records?.[0],
-            baseItemOld?.records?.[0],
-            value?.tank_density,
-            values?.tank_density
-          );
-          if (!valuesFTB) {
-            message.error({
-              key: 'submitFTB',
-              content: t('descriptions.validationFailed'),
-            });
-            return;
-          }
-
-          // Data is ready, do SPM transfer first and then do other two updates after SPM succeeds
-          // LEVEL ONE: SPM creation
-          await api
-            .post(SPECIAL_MOVEMENTS.CREATE, valuesSPM)
-            .then(() => {
-              // console.log("Created");
-            })
-            .catch((errors) => {
-              _.forEach(errors.response.data.errors, (error) => {
-                notification.error({
-                  message: error.code === 500 ? t('messages.createFailed') : error.type,
-                  description: error.message,
-                });
-              });
-              return;
-            });
-
-          // LEVEL ONE: SPM submit
-          await api
-            .post(SPECIAL_MOVEMENTS.SUBMIT, valuesSPM)
-            .then(async () => {
-              setFlagSpmTransfer(1);
-              notification.success({
-                message: t('messages.submitSuccess'),
-                description: t('descriptions.submitSuccess4SPM'),
-              });
-
-              // LEVEL TWO: now do folio tank changes
-              await api
-                .post(TANKS.ADJUST, valuesFTB)
-                .then(async () => {
-                  setFlagFolioTank(1);
-                  notification.success({
-                    message: t('messages.submitSuccess'),
-                    description: t('descriptions.submitSuccess4FOLIO'),
-                  });
-
-                  // LEVEL THREE: now do tank changes
-                  await api
-                    .post(TANKS.UPDATE, values)
-                    .then((response) => {
-                      onComplete(values?.tank_code);
-
-                      notification.success({
-                        message: t('messages.updateSuccess'),
-                        description: t('descriptions.updateSuccess'),
-                      });
-                    })
-                    .catch((errorsTNK) => {
-                      _.forEach(errorsTNK.response.data.errors, (error) => {
-                        notification.error({
-                          message: error.type,
-                          description: error.message,
-                        });
-                      });
-                    });
-                })
-                .catch((errorsFTB) => {
-                  setFlagFolioTank(-1);
-                  _.forEach(errorsFTB.response.data.errors, (error) => {
-                    notification.error({
-                      message: error.type,
-                      description: error.message,
-                    });
-                  });
-                });
-            })
-            .catch((errorsSPM) => {
-              setFlagSpmTransfer(-1);
-              _.forEach(errorsSPM.response.data.errors, (error) => {
-                notification.error({
-                  message: error.code === 500 ? t('messages.submitFailed') : error.type,
-                  description: error.message,
-                });
-              });
-            });
-        } else {
-          // create form OR base not changed OR site configuration is N
-          // perfomr the normal tank data operation
-          await api
-            .post(IS_CREATING ? TANKS.CREATE : TANKS.UPDATE, values)
-            .then((response) => {
+        await api
+          .post(IS_CREATING ? TANKS.CREATE : TANKS.UPDATE, values)
+          .then((response) => {
+            if (config?.siteFolioTankBaseChange && !IS_CREATING && product !== value?.tank_base) {
+              setFlagTankUpdated(1);
+              // tank to tank transfer by SPM
+              submitTankTransfers(value, fromSupplierProduct, toSupplierProduct, '2');
+              // add two records in CLOSEOUT_TANK_BASES
+              // Closing Stock for PRODUCT_1 = 0
+              // Opening Stock for PRODUCT_2 = 0
+              adjustFolioTankBases(
+                value,
+                baseItem?.records?.[0],
+                baseItemOld?.records?.[0],
+                value?.tank_density,
+                values?.tank_density
+              );
+            } else {
               onComplete(values?.tank_code);
 
               notification.success({
                 message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
                 description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
               });
-            })
+            }
+          })
 
-            .catch((errors) => {
-              _.forEach(errors.response.data.errors, (error) => {
-                notification.error({
-                  message: error.type,
-                  description: error.message,
-                });
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.type,
+                description: error.message,
               });
             });
-        }
+          });
       },
     });
   };
@@ -771,12 +591,12 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
 
   useEffect(() => {
     if (flagTankUpdated !== 0 && flagSpmTransfer !== 0 && flagFolioTank !== 0) {
-      /* onComplete(value?.tank_code);
+      onComplete(value?.tank_code);
 
       notification.success({
         message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
         description: IS_CREATING ? t('descriptions.createSuccess') : t('descriptions.updateSuccess'),
-      }); */
+      });
 
       setFlagTankUpdated(0);
       setFlagSpmTransfer(0);
@@ -803,7 +623,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             icon={<CloseOutlined />}
             style={{ float: 'right' }}
             onClick={() => onExitClicked()}
-            // disabled={!(flagTankUpdated === 0 && flagSpmTransfer === 0 && flagFolioTank === 0)}
+            disabled={!(flagTankUpdated === 0 && flagSpmTransfer === 0 && flagFolioTank === 0)}
           >
             {t('operations.cancel')}
           </Button>
@@ -814,7 +634,11 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
             htmlType="submit"
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
-            disabled={(IS_CREATING ? !access?.canCreate : !access?.canUpdate) || tab !== '1'}
+            disabled={
+              (IS_CREATING ? !access?.canCreate : !access?.canUpdate) ||
+              tab !== '1' ||
+              !(flagTankUpdated === 0 && flagSpmTransfer === 0 && flagFolioTank === 0)
+            }
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
@@ -825,7 +649,9 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
               icon={<DeleteOutlined />}
               style={{ float: 'right', marginRight: 5 }}
               onClick={onDelete}
-              disabled={!access?.canDelete}
+              disabled={
+                !access?.canDelete || !(flagTankUpdated === 0 && flagSpmTransfer === 0 && flagFolioTank === 0)
+              }
             >
               {t('operations.delete')}
             </Button>
@@ -851,7 +677,14 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
                 </div>
               </Tag>
             )}
-            <Product form={form} value={value} onChange={setProduct} disabled={!!groupActiveTank} />
+            <Product
+              form={form}
+              value={value}
+              onChange={setProduct}
+              disabled={
+                !!groupActiveTank || !(flagTankUpdated === 0 && flagSpmTransfer === 0 && flagFolioTank === 0)
+              }
+            />
             {config?.siteFolioTankBaseChange && !IS_CREATING && product !== value?.tank_base && (
               <Tag color={'red'}>
                 <div
