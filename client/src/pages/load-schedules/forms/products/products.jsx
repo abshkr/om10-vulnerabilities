@@ -42,7 +42,9 @@ const Products = ({ value, form, drawer, customer, access, setInit }) => {
           const payload = transform(res?.data?.records, units);
 
           setData(payload);
-          setInit(payload);
+          if (setInit) {
+            setInit(payload);
+          }
 
           setFieldsValue({
             products: payload,
@@ -84,7 +86,9 @@ const Products = ({ value, form, drawer, customer, access, setInit }) => {
                   return false;
                 });
                 setData(filtered);
-                setInit(filtered);
+                if (setInit) {
+                  setInit(filtered);
+                }
 
                 setFieldsValue({
                   products: filtered,
@@ -92,7 +96,9 @@ const Products = ({ value, form, drawer, customer, access, setInit }) => {
               });
           } else {
             setData(payload);
-            setInit(payload);
+            if (setInit) {
+              setInit(payload);
+            }
 
             setFieldsValue({
               products: payload,

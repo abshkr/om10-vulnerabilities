@@ -43,7 +43,9 @@ const Summary = ({ form, value, setInit }) => {
   useEffect(() => {
     if (value && compartmentsPayload) {
       setCompartments(compartmentsPayload.records);
-      setInit(compartmentsPayload.records);
+      if (setInit) {
+        setInit(compartmentsPayload.records);
+      }
       setFieldsValue({
         compartments: compartmentsPayload.records,
       });

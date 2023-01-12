@@ -37,7 +37,9 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
         })
         .then((res) => {
           setCompartments(res.data.records);
-          setInit(res.data.records);
+          if (setInit) {
+            setInit(res.data.records);
+          }
 
           setFieldsValue({
             compartments: res.data.records,
@@ -76,7 +78,9 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
         })
         .then((res) => {
           setCompartments(res.data.records);
-          setInit(res.data.records);
+          if (setInit) {
+            setInit(res.data.records);
+          }
 
           setFieldsValue({
             compartments: res.data.records,
