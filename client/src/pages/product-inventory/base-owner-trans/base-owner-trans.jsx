@@ -76,7 +76,7 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
     },
   ];
 
-  const fields = columns(t, reasons);
+  const fields = columns(t, reasons, config);
 
   const getBaseSummary = async (prod) => {
     const results = await api.get(`${BASE_OWNER_TRANSACTIONS.BASE_SUMMARY}?base_code=${prod}`);

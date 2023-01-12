@@ -269,7 +269,8 @@ const columns = (
     width: 120,
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      // digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
   {
@@ -290,7 +291,8 @@ const columns = (
     },
     cellRenderer: 'TemperatureRenderer',
     cellRendererParams: {
-      digits: '1',
+      // digits: '1',
+      digits: String(config?.precisionTemperature),
     },
   },
   {

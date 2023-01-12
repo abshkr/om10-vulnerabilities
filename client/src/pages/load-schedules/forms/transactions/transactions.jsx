@@ -45,8 +45,8 @@ const Transactions = ({ value, config }) => {
 
   const onTransactionSelect = (row) => {
     setTransfers(row?.transfers);
-    setProducts(row?.transfers[0].base_prods);
-    setMeters(row?.transfers[0].meters);
+    setProducts(row?.transfers?.[0]?.base_prods);
+    setMeters(row?.transfers?.[0]?.meters);
   };
 
   const onTransferSelect = (row) => {
@@ -75,12 +75,12 @@ const Transactions = ({ value, config }) => {
           setTransactions(trsaData);
 
           if (res?.data?.records?.length > 0) {
-            setTransfers(res?.data?.records[0]?.transfers);
+            setTransfers(res?.data?.records?.[0]?.transfers);
           }
 
-          if (res?.data?.records[0]?.transfers?.length > 0) {
-            setMeters(res?.data?.records[0]?.transfers[0]?.meters);
-            setProducts(res?.data?.records[0]?.transfers[0]?.base_prods);
+          if (res?.data?.records?.[0]?.transfers?.length > 0) {
+            setMeters(res?.data?.records?.[0]?.transfers?.[0]?.meters);
+            setProducts(res?.data?.records?.[0]?.transfers?.[0]?.base_prods);
           }
 
           setLoading(false);

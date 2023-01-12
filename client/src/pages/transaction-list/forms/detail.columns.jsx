@@ -153,6 +153,10 @@ const detailColumns = (isFromNomination, t, config) => [
         sortable: true,
         resizable: true,
         hide: !isFromNomination,
+        cellRenderer: 'TemperatureRenderer',
+        cellRendererParams: {
+          digits: String(config?.precisionTemperature),
+        },
       },
 
       {

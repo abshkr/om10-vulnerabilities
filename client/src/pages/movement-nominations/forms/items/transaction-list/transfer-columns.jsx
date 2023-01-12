@@ -93,6 +93,10 @@ const transferColumns = (t, config) => [
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
+    cellRenderer: 'TemperatureRenderer',
+    cellRendererParams: {
+      digits: String(config?.precisionTemperature),
+    },
   },
 
   {

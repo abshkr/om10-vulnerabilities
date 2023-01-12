@@ -88,6 +88,10 @@ const detailColumns = (t, config) => [
     field: 'trsb_tmp',
     sortable: true,
     resizable: true,
+    cellRenderer: 'TemperatureRenderer',
+    cellRendererParams: {
+      digits: String(config?.precisionTemperature),
+    },
   },
 
   {

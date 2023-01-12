@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-const columns = (t, reasons) => [
+const columns = (t, reasons, config) => [
   {
     headerName: t('fields.baseOwnerTransNo'),
     field: 'ownship_trsa_no',
@@ -76,7 +76,7 @@ const columns = (t, reasons) => [
     suppressSizeToFit: true,
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
   {
@@ -167,7 +167,7 @@ const columns = (t, reasons) => [
     suppressSizeToFit: true,
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
 
@@ -191,7 +191,7 @@ const columns = (t, reasons) => [
     suppressSizeToFit: true,
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
 
@@ -215,7 +215,7 @@ const columns = (t, reasons) => [
     suppressSizeToFit: true,
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
 ];

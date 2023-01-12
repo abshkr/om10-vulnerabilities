@@ -74,7 +74,7 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
     },
   ];
 
-  const fields = columns(t, reasons);
+  const fields = columns(t, reasons, config);
 
   const getOwnership = async (prod, supp) => {
     const results = await api.get(`${BASE_OWNERS.READ}?base_code=${prod}&cmpy_code=${supp}`);

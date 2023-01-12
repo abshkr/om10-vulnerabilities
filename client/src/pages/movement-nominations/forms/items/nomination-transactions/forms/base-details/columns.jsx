@@ -140,7 +140,8 @@ const columns = (t, pageState, form, arm, config) => [
     // cellClass: pageState === 'disposal' && !!arm ? 'editable-ag-grid-cell' : '',
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      // digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
   {
@@ -151,7 +152,8 @@ const columns = (t, pageState, form, arm, config) => [
     resizable: true,
     cellRenderer: 'TemperatureRenderer',
     cellRendererParams: {
-      digits: '1',
+      // digits: '1',
+      digits: String(config?.precisionTemperature),
     },
   },
   {

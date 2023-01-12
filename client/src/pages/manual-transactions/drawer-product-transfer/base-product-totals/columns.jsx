@@ -53,7 +53,8 @@ const columns = (t, config) => [
     // cellClass: 'editable-ag-grid-cell',
     cellRenderer: 'DensityRenderer',
     cellRendererParams: {
-      digits: '1',
+      // digits: '1',
+      digits: String(config?.precisionDensity),
     },
   },
   {
@@ -64,7 +65,8 @@ const columns = (t, config) => [
     resizable: true,
     cellRenderer: 'TemperatureRenderer',
     cellRendererParams: {
-      digits: '1',
+      // digits: '1',
+      digits: String(config?.precisionTemperature),
     },
   },
   {
