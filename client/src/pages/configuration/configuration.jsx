@@ -527,6 +527,293 @@ const FormSwitch = ({ config, onChange }) => {
         </>
       );
 
+    // the following are items for precisions and maximum lengths
+
+    case 'SITE_DEFAULT_PRECISION_ADDITIVE':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'0 - 3'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={3}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
+    case 'SITE_DEFAULT_PRECISION_API':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'0 - 6'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={6}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
+    case 'SITE_DEFAULT_PRECISION_DENSITY':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'0 - 3'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={3}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
+    case 'SITE_DEFAULT_PRECISION_LEVEL':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'0 - 3'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={3}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
+    case 'SITE_DEFAULT_PRECISION_MASS':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'0 - 3'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={3}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
+    case 'SITE_DEFAULT_PRECISION_SG':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'0 - 9'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={9}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
+    case 'SITE_DEFAULT_PRECISION_TEMPERATURE':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'0 - 3'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={3}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
+    case 'SITE_DEFAULT_PRECISION_VOLUME':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'0 - 3'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={3}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
+    case 'SITE_MAXLEN_BASECODE':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'9 - 20'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={9}
+            max={20}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
+    case 'SITE_MAXLEN_CMPYCODE':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'8 - 16'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={8}
+            max={16}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
+    case 'SITE_MAXLEN_CUSTACCT':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'20 - 40'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={20}
+            max={40}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
+    case 'SITE_MAXLEN_EMAIL':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'64 - 512'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={64}
+            max={512}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
+    case 'SITE_MAXLEN_EQPTCODE':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'20 - 40'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={20}
+            max={40}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
+    case 'SITE_MAXLEN_ORDREFCODE':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'16 - 32'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={16}
+            max={32}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
+    case 'SITE_MAXLEN_PRODCODE':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'9 - 36'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={9}
+            max={36}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
+    case 'SITE_MAXLEN_PSNLCODE':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'6 - 12'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={6}
+            max={12}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
+    case 'SITE_MAXLEN_SLP':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'40 - 120'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={40}
+            max={120}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
+    case 'SITE_MAXLEN_TANKCODE':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'10 - 24'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={10}
+            max={24}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
+    case 'SITE_MAXLEN_TNKRCODE':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'20 - 40'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={20}
+            max={40}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
     default:
       return (
         // it is more reasonable to use Input instead of InputNumber as default
@@ -917,6 +1204,15 @@ const Configuration = ({ user, config }) => {
               t={t}
             />
           </TabPane>
+          {user?.per_code === '9999' && (
+            <TabPane tab={t('tabColumns.precisionAndLength')} key="12">
+              <ConfigurationItems
+                data={_.filter(configuration, ['config_required_by_gui', 'L'])}
+                onChange={onConfigurationEdit}
+                t={t}
+              />
+            </TabPane>
+          )}
           <TabPane tab={t('tabColumns.driverPin')} key="3">
             <ConfigurationItems
               data={_.filter(configuration, ['config_required_by_gui', 'P'])}
