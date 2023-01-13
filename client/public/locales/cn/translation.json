@@ -2429,6 +2429,7 @@
     "revertPreOrder": "恢复成油品提单",
     "runAndOverride": "运行并覆盖",
     "save": "保存",
+    "saveColumns": "保存调整后的表列",
     "saveToFolio": "保存至预盘",
     "saveToTanks": "保存至油罐",
     "saveToMeters": "保存至流量计",

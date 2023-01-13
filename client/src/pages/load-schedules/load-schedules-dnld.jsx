@@ -4,7 +4,7 @@ import useSWR from 'swr';
 import moment from 'moment';
 import { Button, notification, Switch } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
+import { SyncOutlined, PlusOutlined, FileSearchOutlined, EditOutlined } from '@ant-design/icons';
 
 import {
   Page,
@@ -41,6 +41,8 @@ const LoadSchedules = () => {
   const [isSearching, setSearching] = useState(false);
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [columnAdjusted, setColumnAdjusted] = useState(false);
+  const [columnAPI, setColumnAPI] = useState(undefined);
 
   const { t } = useTranslation();
 
@@ -302,7 +304,15 @@ const LoadSchedules = () => {
 
   const handleColumnMovement = (columnAPI) => {
     console.log('.............moved', columnAPI);
+    setColumnAPI(columnAPI);
+    setColumnAdjusted(true);
+    // updateUserPageColumns(t, columnAPI, pageColumns, 'M_LOADSCHEDULES');
+  };
+
+  const saveColumnMovement = () => {
+    console.log('.............moved', columnAPI);
     updateUserPageColumns(t, columnAPI, pageColumns, 'M_LOADSCHEDULES');
+    setColumnAdjusted(false);
   };
 
   const modifiers = (
@@ -386,6 +396,19 @@ const LoadSchedules = () => {
     </>
   );
 
+  const actions = columnAdjusted && (
+    <>
+      <Button
+        type="primary"
+        icon={<EditOutlined />}
+        onClick={() => saveColumnMovement()}
+        style={{ float: 'right', marginRight: 5 }}
+      >
+        {t('operations.saveColumns')}
+      </Button>
+    </>
+  );
+
   return (
     <Page page={page} name={name} modifiers={modifiers} access={access}>
       <DataTable
@@ -399,6 +422,7 @@ const LoadSchedules = () => {
         autoColWidth
         clearFilterPlus={revalidate}
         handleColumnMovement={handleColumnMovement}
+        extra={actions}
       />
       <div
         style={{
