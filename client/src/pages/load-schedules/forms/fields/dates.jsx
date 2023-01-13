@@ -81,7 +81,7 @@ const Dates = ({ form, value, expiry }) => {
           value.shls_caldate === '' ? null : moment(value.shls_caldate, SETTINGS.DATE_TIME_FORMAT),
         shls_exp2:
           value.shls_exp2 === ''
-            ? !NEED_EXPIRY
+            ? !NEED_EXPIRY || IS_DISABLED
               ? null
               : baseDate.add(_.toNumber(expiry), 'hours')
             : moment(value.shls_exp2, SETTINGS.DATE_TIME_FORMAT),

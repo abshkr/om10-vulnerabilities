@@ -340,7 +340,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     const arrayColumns = {};
 
     const columns = [];
-    columns.push({ code: 'shls_ld_type', label: t('fields.tripType') });
+    if (!READ_ONLY) {
+      columns.push({ code: 'shls_ld_type', label: t('fields.tripType') });
+    }
+
     columns.push({ code: 'unload', label: t('fields.unload') });
     columns.push({ code: 'shls_terminal', label: t('fields.terminal') });
     columns.push({ code: 'supplier_code', label: t('fields.supplier') });
