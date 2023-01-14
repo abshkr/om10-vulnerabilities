@@ -284,32 +284,37 @@ const LoadSchedules = () => {
   }, [siteSchdPaging]);
 
   useEffect(() => {
-    // get the original columns
-    const values = columns(false, t, config);
-    if (pageColumns?.length === 0) {
-      // no settings, no sequence adjustment
-      setFields(values);
-    } else {
-      // found the settings, re-organize the sequence of columns
-      const newValues = [];
-      _.forEach(pageColumns, (o) => {
-        const item = _.find(values, (v) => v?.field === o?.column_code);
-        if (item) {
-          newValues.push(item);
-        }
-      });
-      setFields(newValues);
+    if (t && config && pageColumns) {
+      // get the original columns
+      const values = columns(false, t, config);
+      if (pageColumns?.length === 0) {
+        // no settings, no sequence adjustment
+        setFields(values);
+      } else {
+        // found the settings, re-organize the sequence of columns
+        const newValues = [];
+        _.forEach(pageColumns, (o) => {
+          const item = _.find(values, (v) => v?.field === o?.column_code);
+          if (item) {
+            item.width = o?.column_width;
+            item.hide = !o?.column_visible;
+            newValues.push(item);
+          }
+        });
+        setFields(newValues);
+        console.log('............new columns..', newValues);
+      }
     }
   }, [t, config, pageColumns]);
 
-  const handleColumnMovement = (columnAPI) => {
-    console.log('.............moved', columnAPI);
+  const handleColumnAdjustment = (columnAPI) => {
+    console.log('.............moved', columnAPI, columnAPI?.getAllGridColumns());
     setColumnAPI(columnAPI);
     setColumnAdjusted(true);
     // updateUserPageColumns(t, columnAPI, pageColumns, 'M_LOADSCHEDULES');
   };
 
-  const saveColumnMovement = () => {
+  const saveColumnAdjustment = () => {
     console.log('.............moved', columnAPI);
     updateUserPageColumns(t, columnAPI, pageColumns, 'M_LOADSCHEDULES');
     setColumnAdjusted(false);
@@ -401,7 +406,7 @@ const LoadSchedules = () => {
       <Button
         type="primary"
         icon={<EditOutlined />}
-        onClick={() => saveColumnMovement()}
+        onClick={() => saveColumnAdjustment()}
         style={{ float: 'right', marginRight: 5 }}
       >
         {t('operations.saveColumns')}
@@ -421,7 +426,7 @@ const LoadSchedules = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         autoColWidth
         clearFilterPlus={revalidate}
-        handleColumnMovement={handleColumnMovement}
+        handleColumnAdjustment={handleColumnAdjustment}
         extra={actions}
       />
       <div

@@ -135,7 +135,7 @@ const Table = ({
   rowEditingStopped,
   clearFilterPlus,
   onSortChanged,
-  handleColumnMovement,
+  handleColumnAdjustment,
 }) => {
   const { t } = useTranslation();
   const { windowWidth } = useWindowSize();
@@ -146,7 +146,7 @@ const Table = ({
   const [tableColumns, setTableColumns] = useState(columns);
   const [dragStarted, setDragStarted] = useState(false);
   const [dragStopped, setDragStopped] = useState(false);
-  const [columnMoved, setColumnMoved] = useState(false);
+  const [columnAdjusted, setColumnAdjusted] = useState(false);
   const [columnAPI, setColumnAPI] = useState('');
 
   const overlayNoRowsText =
@@ -166,8 +166,8 @@ const Table = ({
     setDragStopped(true);
   };
 
-  const onColumnMoved = (e) => {
-    setColumnMoved(true);
+  const onColumnAdjusted = (e) => {
+    setColumnAdjusted(true);
   };
 
   const handleMultipleSelection = () => {
@@ -212,16 +212,16 @@ const Table = ({
   };
 
   useEffect(() => {
-    if (dragStarted && dragStopped && columnMoved) {
-      if (handleColumnMovement && columnAPI) {
-        handleColumnMovement(columnAPI);
+    if (dragStarted && dragStopped && columnAdjusted) {
+      if (handleColumnAdjustment && columnAPI) {
+        handleColumnAdjustment(columnAPI);
       }
 
       setDragStarted(false);
       setDragStopped(false);
-      setColumnMoved(false);
+      setColumnAdjusted(false);
     }
-  }, [dragStarted, dragStopped, columnMoved, handleColumnMovement, columnAPI]);
+  }, [dragStarted, dragStopped, columnAdjusted, handleColumnAdjustment, columnAPI]);
 
   useEffect(() => {
     const query = value === '' ? undefined : value;
@@ -380,7 +380,8 @@ const Table = ({
                   singleClickEdit={true}
                   editType={editType === 'fullRow' ? 'fullRow' : ''}
                   onRowEditingStopped={rowEditingStopped}
-                  onColumnMoved={onColumnMoved}
+                  onColumnMoved={onColumnAdjusted}
+                  onColumnResized={onColumnAdjusted}
                   onDragStarted={onDragStarted}
                   onDragStopped={onDragStopped}
                 />

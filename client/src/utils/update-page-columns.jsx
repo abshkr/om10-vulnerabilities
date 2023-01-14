@@ -40,7 +40,8 @@ const updateUserPageColumns = (t, columnAPI, pageColumns, pageCode) => {
           column_editable: cln?.editable || false,
           column_sortable: cln?.sortable || false,
           column_resizable: cln?.resizable || false,
-          column_width: cln?.width || 100,
+          // column_width: cln?.width || 100,
+          column_width: columns?.[i]?.actualWidth || cln?.width || 100,
         };
         values.push(column);
       }
@@ -77,7 +78,8 @@ const updateUserPageColumns = (t, columnAPI, pageColumns, pageCode) => {
           column_editable: item?.column_editable,
           column_sortable: item?.column_sortable,
           column_resizable: item?.column_resizable,
-          column_width: item?.column_width,
+          // column_width: item?.column_width,
+          column_width: columns?.[i]?.actualWidth || item?.column_width,
         };
         values.push(column);
       }
