@@ -74,7 +74,7 @@ const Tanks = () => {
   };
 
   const onExitClicked = (value) => {
-    if (!config?.siteFormCloseAlert || currTank === null) {
+    if (!config?.siteFormCloseAlert || currTank === null || currTank?.tank_code === value?.tank_code) {
       onSelect(value);
       return;
     }
