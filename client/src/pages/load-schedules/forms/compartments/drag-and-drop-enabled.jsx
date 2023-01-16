@@ -144,35 +144,50 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
     setCompartments(current);
   };
 
-  const onDragFinished = (index, value) => {
+  const onDragFinished = (index, valueDrop) => {
     const payload = [];
 
-    const rowNode = tableAPI.getRowNode(index);
-    const data = rowNode.data;
+    // const rowNode = tableAPI.getRowNode(index);
+    // when getRowNodeId is defined, system will treat index as the node ID.
+    // For example, because we have defined data?.compartment as node ID, index 0 will be treated as compartment 0, which will cause the issue.
+    // so here we use forEachNodeAfterFilterAndSort to get the node which loops through rows by index
+    let rowNode = undefined;
+    tableAPI.forEachNodeAfterFilterAndSort((node, tableIndex) => {
+      if (tableIndex === index) {
+        rowNode = node;
+      }
+    });
+    const data = rowNode?.data;
 
-    const productCode = value?.prod_code || '';
-    const productName = value?.prod_name || '';
+    const productCode = valueDrop?.prod_code || '';
+    const productName = valueDrop?.prod_name || '';
 
-    const quantityScheduled = !value?.prod_code
-      ? value?.qty_scheduled
-      : value.qty_scheduled > 0
-      ? value?.qty_scheduled
-      : parseInt(data.safefill);
+    const quantityScheduled = !valueDrop?.prod_code
+      ? data?.qty_scheduled
+      : data?.qty_scheduled > 0
+      ? data?.qty_scheduled
+      : parseInt(data?.safefill);
 
     tableAPI.forEachNodeAfterFilterAndSort((rowNode, tableIndex) => {
       if (tableIndex === index) {
         payload.push({
-          ...rowNode.data,
+          ...rowNode?.data,
           prod_code: productCode,
           prod_name: productName,
           qty_scheduled: quantityScheduled,
+          prod_cmpy: supplier,
+          qty_preload: 0,
+          schdspec_shlstrip: value?.shls_trip_no,
+          schdspec_shlssupp: supplier,
         });
       } else {
-        payload.push(rowNode.data);
+        payload.push(rowNode?.data);
       }
     });
 
+    // console.log('....................1, tableAPI', tableAPI, payload);
     tableAPI.updateRowData({ update: payload });
+    // console.log('....................2, payload', payload, value, valueDrop);
 
     form.setFieldsValue({
       compartments: payload,
@@ -461,6 +476,9 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
             minimal
             apiContext={setTableAPI}
             rowEditingStopped={rowEditingStopped}
+            getRowNodeId={(data) => {
+              return data?.compartment;
+            }}
           />
         </Form.Item>
       </Col>
