@@ -139,7 +139,7 @@ const Table = ({
   columnAdjustable,
   pageColumns,
   pageModule,
-  // getRowNodeId,
+  getRowNodeId,
 }) => {
   const { t } = useTranslation();
   const { windowWidth } = useWindowSize();
@@ -400,7 +400,7 @@ const Table = ({
                   onColumnResized={onColumnAdjusted}
                   onDragStarted={onDragStarted}
                   onDragStopped={onDragStopped}
-                  // getRowNodeId={getRowNodeId}
+                  getRowNodeId={getRowNodeId}
                 />
               </div>
             </div>
