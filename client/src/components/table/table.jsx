@@ -4,6 +4,7 @@ import { AgGridReact } from 'ag-grid-react';
 import { useTranslation } from 'react-i18next';
 
 import { FuzzyFilter, MultiFilter, BooleanFilter } from './filters';
+import { updateUserPageColumns } from 'utils';
 
 import {
   BooleanRenderer,
@@ -41,7 +42,7 @@ import {
   TipTextRenderer,
 } from './renderers';
 
-import { ClearOutlined, LoadingOutlined } from '@ant-design/icons';
+import { ClearOutlined, LoadingOutlined, EditOutlined } from '@ant-design/icons';
 
 import {
   NumericEditor,
@@ -135,7 +136,10 @@ const Table = ({
   rowEditingStopped,
   clearFilterPlus,
   onSortChanged,
-  handleColumnAdjustment,
+  columnAdjustable,
+  pageColumns,
+  pageModule,
+  // getRowNodeId,
 }) => {
   const { t } = useTranslation();
   const { windowWidth } = useWindowSize();
@@ -168,6 +172,12 @@ const Table = ({
 
   const onColumnAdjusted = (e) => {
     setColumnAdjusted(true);
+  };
+
+  const saveColumnAdjustment = () => {
+    console.log('.............moved', columnAPI);
+    updateUserPageColumns(t, columnAPI, pageColumns, pageModule);
+    setColumnAdjusted(false);
   };
 
   const handleMultipleSelection = () => {
@@ -212,16 +222,11 @@ const Table = ({
   };
 
   useEffect(() => {
-    if (dragStarted && dragStopped && columnAdjusted) {
-      if (handleColumnAdjustment && columnAPI) {
-        handleColumnAdjustment(columnAPI);
-      }
-
+    if (dragStarted && dragStopped) {
       setDragStarted(false);
       setDragStopped(false);
-      setColumnAdjusted(false);
     }
-  }, [dragStarted, dragStopped, columnAdjusted, handleColumnAdjustment, columnAPI]);
+  }, [dragStarted, dragStopped]);
 
   useEffect(() => {
     const query = value === '' ? undefined : value;
@@ -344,6 +349,17 @@ const Table = ({
                   >
                     {t('operations.clearFilter')}
                   </Button>
+
+                  {columnAdjusted && columnAdjustable && (
+                    <Button
+                      type="primary"
+                      icon={<EditOutlined />}
+                      onClick={() => saveColumnAdjustment()}
+                      style={{ float: 'right', marginRight: 5 }}
+                    >
+                      {t('operations.saveColumns')}
+                    </Button>
+                  )}
                 </>
               )}
 
@@ -384,6 +400,7 @@ const Table = ({
                   onColumnResized={onColumnAdjusted}
                   onDragStarted={onDragStarted}
                   onDragStopped={onDragStopped}
+                  // getRowNodeId={getRowNodeId}
                 />
               </div>
             </div>

@@ -4,7 +4,7 @@ import useSWR from 'swr';
 import moment from 'moment';
 import { Button, notification, Switch } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { SyncOutlined, PlusOutlined, FileSearchOutlined, EditOutlined } from '@ant-design/icons';
+import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
 
 import {
   Page,
@@ -28,7 +28,6 @@ import SourceRender from './source-render';
 import ConvertTraceRender from './convert-trace-render';
 import _ from 'lodash';
 import usePagination from 'hooks/use-pagination';
-import { updateUserPageColumns } from 'utils';
 
 const LoadSchedules = () => {
   const config = useConfig();
@@ -41,8 +40,6 @@ const LoadSchedules = () => {
   const [isSearching, setSearching] = useState(false);
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
-  const [columnAdjusted, setColumnAdjusted] = useState(false);
-  const [columnAPI, setColumnAPI] = useState(undefined);
 
   const { t } = useTranslation();
 
@@ -307,19 +304,6 @@ const LoadSchedules = () => {
     }
   }, [t, config, pageColumns]);
 
-  const handleColumnAdjustment = (columnAPI) => {
-    console.log('.............moved', columnAPI, columnAPI?.getAllGridColumns());
-    setColumnAPI(columnAPI);
-    setColumnAdjusted(true);
-    // updateUserPageColumns(t, columnAPI, pageColumns, 'M_LOADSCHEDULES');
-  };
-
-  const saveColumnAdjustment = () => {
-    console.log('.............moved', columnAPI);
-    updateUserPageColumns(t, columnAPI, pageColumns, 'M_LOADSCHEDULES');
-    setColumnAdjusted(false);
-  };
-
   const modifiers = (
     <>
       <Switch
@@ -401,19 +385,6 @@ const LoadSchedules = () => {
     </>
   );
 
-  const actions = columnAdjusted && (
-    <>
-      <Button
-        type="primary"
-        icon={<EditOutlined />}
-        onClick={() => saveColumnAdjustment()}
-        style={{ float: 'right', marginRight: 5 }}
-      >
-        {t('operations.saveColumns')}
-      </Button>
-    </>
-  );
-
   return (
     <Page page={page} name={name} modifiers={modifiers} access={access}>
       <DataTable
@@ -426,8 +397,9 @@ const LoadSchedules = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         autoColWidth
         clearFilterPlus={revalidate}
-        handleColumnAdjustment={handleColumnAdjustment}
-        extra={actions}
+        columnAdjustable={true}
+        pageColumns={pageColumns}
+        pageModule={'M_LOADSCHEDULES'}
       />
       <div
         style={{
