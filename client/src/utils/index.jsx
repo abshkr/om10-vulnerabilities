@@ -38,6 +38,7 @@ import decimalThousandSeparator from './decimal-thousand-separator';
 import generateMaxInt from './generate-maxint';
 import castNumber from './cast-number';
 import updateUserPageColumns from './update-page-columns';
+import setupUserPageColumns from './setup-page-columns';
 import calcWiA from './calc-mass-in-air';
 import checkFormFields from './check-form-fields';
 import compareObjects from './compare-objects';
@@ -86,6 +87,7 @@ export {
   generateMaxInt,
   castNumber,
   updateUserPageColumns,
+  setupUserPageColumns,
   calcWiA,
   checkFormFields,
   compareObjects,

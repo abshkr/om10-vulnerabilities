@@ -15,7 +15,7 @@ const usePageColumns = (pageCode = '-1') => {
   const userCode = decoded?.per_code;
 
   const url = `${USER_COLUMNS.READ_BY_USER}?user_code=${userCode}&site_code=${siteCode}&page_code=${pageCode}`;
-  const { data: columns } = useSWR(url, { revalidateOnFocus: false });
+  const { data: columns, revalidate: reloadColumns } = useSWR(url, { revalidateOnFocus: false });
 
   useEffect(() => {
     if (columns?.records) {
@@ -23,7 +23,7 @@ const usePageColumns = (pageCode = '-1') => {
     }
   }, [columns]);
 
-  return { pageColumns };
+  return { pageColumns, reloadColumns };
 };
 
 export default usePageColumns;

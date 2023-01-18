@@ -37,3 +37,4 @@ export { default as Tank } from './tank';
 export { default as NumericInput } from './numeric-input';
 export { default as DecimalThousandSeparator } from './decimal-thousand-separator';
 export { default as FastTrack } from './fasttrack';
+export { default as AdjustableColumns } from './adjustable-columns';

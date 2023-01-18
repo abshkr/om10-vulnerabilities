@@ -5,16 +5,17 @@ import _ from 'lodash';
 import jwtDecode from 'jwt-decode';
 import api, { USER_COLUMNS } from '../api';
 
-const updateUserPageColumns = (t, columnAPI, pageColumns, pageCode) => {
+const updateUserPageColumns = (t, gridColumns, pageColumns, pageCode, columnLoader) => {
   const token = sessionStorage.getItem('token');
   const decoded = jwtDecode(token);
   const siteCode = decoded?.site_code;
   const userCode = decoded?.per_code;
 
   let IS_CREATING = true;
-  const columns = columnAPI?.getAllGridColumns();
+  const columns = gridColumns;
   console.log('...........................existing columns: ', columns);
   const values = [];
+  const newValues = [];
   if (pageColumns?.length === 0) {
     // no settings yet, get one from current column settings on screen
     // CREATE mode
@@ -47,27 +48,51 @@ const updateUserPageColumns = (t, columnAPI, pageColumns, pageCode) => {
       }
     }
   } else {
+    IS_CREATING = false;
     // found the settings, re-organize the sequence of columns
     for (let i = 0; i < columns?.length; i++) {
       const cln = columns?.[i]?.colDef;
       const item = _.find(pageColumns, (o) => cln?.field === o?.column_code);
       if (!item) {
-        continue;
+        // the missing columns need be created
+        const column = {
+          column_user: userCode,
+          column_site: siteCode,
+          column_page: pageCode,
+          column_code: cln?.field,
+          column_title: cln?.headerName,
+          column_visible: !cln?.hide ? true : false,
+          column_order: i + 1,
+          column_pinned: cln?.pinned || '',
+          column_type: 'STRING',
+          column_filter: cln?.filter || '',
+          column_editor: cln?.cellEditor || '',
+          column_render: cln?.cellRenderer || '',
+          column_style: cln?.cellClass || '',
+          column_editable: cln?.editable || false,
+          column_sortable: cln?.sortable || false,
+          column_resizable: cln?.resizable || false,
+          // column_width: cln?.width || 100,
+          column_width: columns?.[i]?.actualWidth || cln?.width || 100,
+        };
+        newValues.push(column);
       } else {
-        if (
+        /* if (
           userCode === item?.column_user &&
           siteCode === item?.column_site &&
           pageCode === item?.column_page
         ) {
           IS_CREATING = false;
-        }
+        } */
+        // the existing columns need be updated
         const column = {
           column_user: userCode,
           column_site: siteCode,
           column_page: pageCode,
           column_code: item?.column_code,
           column_title: item?.column_title,
-          column_visible: item?.column_visible,
+          // column_visible: item?.column_visible,
+          column_visible: !cln?.hide ? true : false,
           column_order: i + 1,
           column_pinned: item?.column_pinned,
           column_type: item?.column_type,
@@ -87,7 +112,13 @@ const updateUserPageColumns = (t, columnAPI, pageColumns, pageCode) => {
   }
 
   if (values?.length === 0) {
-    return;
+    if (IS_CREATING) {
+      return;
+    } else {
+      if (newValues?.length === 0) {
+        return;
+      }
+    }
   }
 
   Modal.confirm({
@@ -100,15 +131,43 @@ const updateUserPageColumns = (t, columnAPI, pageColumns, pageCode) => {
     onOk: async () => {
       await api
         .post(IS_CREATING ? USER_COLUMNS.CREATE_COLUMNS : USER_COLUMNS.UPDATE_COLUMNS, values)
-        .then((response) => {
-          Modal.destroyAll();
+        .then(async (response) => {
+          // when it is UPDATE mode, there might be the extra operation to create the missing columns
+          if (!IS_CREATING && newValues?.length > 0) {
+            await api
+              .post(USER_COLUMNS.CREATE_COLUMNS, newValues)
+              .then((response) => {
+                if (columnLoader) {
+                  columnLoader();
+                }
+                // the missing columns are created in the existing columns
+                Modal.destroyAll();
 
-          notification.success({
-            message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
-            description: IS_CREATING
-              ? t('descriptions.createSuccessColumns')
-              : t('descriptions.updateSuccessColumns'),
-          });
+                notification.success({
+                  message: t('messages.updateSuccess'),
+                  description: t('descriptions.updateSuccessColumns'),
+                });
+              })
+              .catch((error) => {
+                notification.error({
+                  message:
+                    error.code === 400 || error.code === 500 ? t('messages.updateFailed') : error.message,
+                  description: t('descriptions.updateFailedColumns'),
+                });
+              });
+          } else {
+            if (columnLoader) {
+              columnLoader();
+            }
+            Modal.destroyAll();
+
+            notification.success({
+              message: IS_CREATING ? t('messages.createSuccess') : t('messages.updateSuccess'),
+              description: IS_CREATING
+                ? t('descriptions.createSuccessColumns')
+                : t('descriptions.updateSuccessColumns'),
+            });
+          }
         })
 
         .catch((error) => {

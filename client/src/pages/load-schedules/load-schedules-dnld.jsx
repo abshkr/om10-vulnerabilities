@@ -28,12 +28,13 @@ import SourceRender from './source-render';
 import ConvertTraceRender from './convert-trace-render';
 import _ from 'lodash';
 import usePagination from 'hooks/use-pagination';
+import { setupUserPageColumns } from 'utils';
 
 const LoadSchedules = () => {
   const config = useConfig();
   const { siteSchdPaging, siteUseDownloader } = config;
 
-  const { pageColumns } = usePageColumns('M_LOADSCHEDULES');
+  const { pageColumns, reloadColumns } = usePageColumns('M_LOADSCHEDULES');
 
   const [fields, setFields] = useState([]);
   const [pagingFlag, setPagingFlag] = useState(undefined);
@@ -284,23 +285,11 @@ const LoadSchedules = () => {
     if (t && config && pageColumns) {
       // get the original columns
       const values = columns(false, t, config);
-      if (pageColumns?.length === 0) {
-        // no settings, no sequence adjustment
-        setFields(values);
-      } else {
-        // found the settings, re-organize the sequence of columns
-        const newValues = [];
-        _.forEach(pageColumns, (o) => {
-          const item = _.find(values, (v) => v?.field === o?.column_code);
-          if (item) {
-            item.width = o?.column_width;
-            item.hide = !o?.column_visible;
-            newValues.push(item);
-          }
-        });
-        setFields(newValues);
-        console.log('............new columns..', newValues);
-      }
+      const newValues = setupUserPageColumns(values, pageColumns);
+
+      console.log('............old columns..', values);
+      console.log('............new columns..', newValues);
+      setFields(newValues);
     }
   }, [t, config, pageColumns]);
 
@@ -400,6 +389,7 @@ const LoadSchedules = () => {
         columnAdjustable={true}
         pageColumns={pageColumns}
         pageModule={'M_LOADSCHEDULES'}
+        columnLoader={reloadColumns}
       />
       <div
         style={{

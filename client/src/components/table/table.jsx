@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Spin } from 'antd';
+import { Button, Spin, Tooltip } from 'antd';
 import { AgGridReact } from 'ag-grid-react';
 import { useTranslation } from 'react-i18next';
 
@@ -54,7 +54,7 @@ import {
   InputPopupEditor,
 } from './editors';
 import { LoadingStatus } from './status';
-import { Search } from '..';
+import { AdjustableColumns, Search } from '..';
 
 import './table.css';
 import useWindowSize from 'hooks/use-window-size';
@@ -139,6 +139,7 @@ const Table = ({
   columnAdjustable,
   pageColumns,
   pageModule,
+  columnLoader,
   getRowNodeId,
 }) => {
   const { t } = useTranslation();
@@ -175,8 +176,9 @@ const Table = ({
   };
 
   const saveColumnAdjustment = () => {
-    console.log('.............moved', columnAPI);
-    updateUserPageColumns(t, columnAPI, pageColumns, pageModule);
+    const gridColumns = columnAPI?.getAllGridColumns();
+    console.log('.............moved', columnAPI, gridColumns, pageColumns);
+    updateUserPageColumns(t, gridColumns, pageColumns, pageModule, columnLoader);
     setColumnAdjusted(false);
   };
 
@@ -350,15 +352,26 @@ const Table = ({
                     {t('operations.clearFilter')}
                   </Button>
 
+                  {columnAdjustable && (
+                    <AdjustableColumns
+                      pageColumns={pageColumns}
+                      pageModule={pageModule}
+                      columnAPI={columnAPI}
+                      columnLoader={columnLoader}
+                    />
+                  )}
+
                   {columnAdjusted && columnAdjustable && (
-                    <Button
-                      type="primary"
-                      icon={<EditOutlined />}
-                      onClick={() => saveColumnAdjustment()}
-                      style={{ float: 'right', marginRight: 5 }}
-                    >
-                      {t('operations.saveColumns')}
-                    </Button>
+                    <Tooltip placement="topLeft" title={t('descriptions.columnAdjusted')}>
+                      <Button
+                        type="primary"
+                        icon={<EditOutlined />}
+                        onClick={() => saveColumnAdjustment()}
+                        style={{ float: 'right', marginRight: 5 }}
+                      >
+                        {t('operations.saveColumns')}
+                      </Button>
+                    </Tooltip>
                   )}
                 </>
               )}
