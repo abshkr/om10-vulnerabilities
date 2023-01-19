@@ -38,3 +38,4 @@ export { default as NumericInput } from './numeric-input';
 export { default as DecimalThousandSeparator } from './decimal-thousand-separator';
 export { default as FastTrack } from './fasttrack';
 export { default as AdjustableColumns } from './adjustable-columns';
+export { default as PowerTable } from './power-table';

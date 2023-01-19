@@ -36,6 +36,16 @@ const AdjustableColumns = ({ pageColumns, pageModule, columnAPI, columnLoader })
     setItems(columns);
   };
 
+  const handleVisibleChange = (flag) => {
+    setVisible(flag);
+    if (columnAPI) {
+      const columns = columnAPI?.getAllGridColumns();
+      console.log('...........adjust visibility222', flag ? 'open...' : 'close...', columnAPI, columns);
+
+      setItems(columns);
+    }
+  };
+
   useEffect(() => {
     if (columnAPI) {
       const columns = columnAPI?.getAllGridColumns();
@@ -100,7 +110,7 @@ const AdjustableColumns = ({ pageColumns, pageModule, columnAPI, columnLoader })
   );
 
   return (
-    <Dropdown visible={visible} overlay={menu} onVisibleChange={setVisible} trigger={['click']}>
+    <Dropdown visible={visible} overlay={menu} onVisibleChange={handleVisibleChange} trigger={['click']}>
       <Tooltip placement="topLeft" title={t('descriptions.columnVisibility')}>
         <Button type="primary" icon={<EyeOutlined />} style={{ float: 'right', marginRight: 5 }}>
           {t('operations.updateColumnVisibility')}

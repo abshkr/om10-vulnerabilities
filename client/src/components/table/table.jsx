@@ -172,6 +172,8 @@ const Table = ({
   };
 
   const onColumnAdjusted = (e) => {
+    console.log('..................onColAdj', e);
+    setColumnAPI(e.columnApi);
     setColumnAdjusted(true);
   };
 
@@ -190,6 +192,7 @@ const Table = ({
   };
 
   const handleGridReady = (params) => {
+    console.log('..................handleGridReady', params);
     setAPI(params.api);
     setColumnAPI(params.columnApi);
 
