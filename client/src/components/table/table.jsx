@@ -172,8 +172,8 @@ const Table = ({
   };
 
   const onColumnAdjusted = (e) => {
-    console.log('..................onColAdj', e);
-    setColumnAPI(e.columnApi);
+    // console.log('..................onColAdj', e);
+    // setColumnAPI(e.columnApi);
     setColumnAdjusted(true);
   };
 
@@ -258,7 +258,9 @@ const Table = ({
   }, [data]);
 
   useEffect(() => {
-    if (t && columns) {
+    console.log('...........in DataTable...', columns);
+    if (t && columns && api && setTableColumns) {
+      console.log('...........in DataTable2...', columns);
       columns.forEach((o) => {
         if (o?.filter === 'FuzzyFilter' || o?.filter === 'MultiFilter' || o?.filter === 'BooleanFilter') {
           o.filterParams = {
@@ -288,9 +290,16 @@ const Table = ({
         // o.width = undefined;
       });
       // setTableColumns([]);
-      setTableColumns(columns);
+      // setTableColumns(columns);
+      if (api?.setColumnDefs) {
+        console.log('...........in DataTable3...', api);
+        api.setColumnDefs([]);
+        api.setColumnDefs(columns);
+      } else {
+        setTableColumns(columns);
+      }
     }
-  }, [t, columns, setTableColumns]);
+  }, [t, columns, api, setTableColumns]);
 
   useEffect(() => {
     if (!!filterValue) {
