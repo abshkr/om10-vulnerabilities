@@ -60,10 +60,10 @@ const columns = (t, enabled, config) => [
     width: 100,
     cellEditor: 'NumericEditor',
     cellEditorParams: {
-      // ranges: {
-      //   max: 999999999,
-      //   min: 0,
-      // },
+      ranges: {
+        max: 999999999,
+        min: 0,
+      },
       t,
     },
     suppressSizeToFit: true,
@@ -78,10 +78,10 @@ const columns = (t, enabled, config) => [
     width: 100,
     cellEditor: 'NumericEditor',
     cellEditorParams: {
-      // ranges: {
-      //   max: 999999999,
-      //   min: 0,
-      // },
+      ranges: {
+        max: 999999999,
+        min: 0,
+      },
       t,
     },
     suppressSizeToFit: true,
@@ -97,10 +97,10 @@ const columns = (t, enabled, config) => [
     width: 100,
     cellEditor: 'NumericEditor',
     cellEditorParams: {
-      // ranges: {
-      //   max: 999999999,
-      //   min: 0,
-      // },
+      ranges: {
+        max: 999999999,
+        min: 0,
+      },
       t,
     },
     suppressSizeToFit: true,
@@ -175,10 +175,10 @@ const columns = (t, enabled, config) => [
     editable: enabled,
     cellEditor: 'NumericEditor',
     cellEditorParams: {
-      // ranges: {
-      //   max: 999999999,
-      //   min: 0,
-      // },
+      ranges: {
+        max: 999999999,
+        min: 0,
+      },
       t,
     },
     cellClass: enabled ? 'editable-ag-grid-cell' : '',
@@ -193,10 +193,10 @@ const columns = (t, enabled, config) => [
     editable: enabled,
     cellEditor: 'NumericEditor',
     cellEditorParams: {
-      // ranges: {
-      //   max: 999999999,
-      //   min: 0,
-      // },
+      ranges: {
+        max: 999999999,
+        min: 0,
+      },
       t,
     },
     cellClass: enabled ? 'editable-ag-grid-cell' : '',
@@ -211,10 +211,10 @@ const columns = (t, enabled, config) => [
     editable: enabled,
     cellEditor: 'NumericEditor',
     cellEditorParams: {
-      // ranges: {
-      //   max: 999999999,
-      //   min: 0,
-      // },
+      ranges: {
+        max: 999999999,
+        min: 0,
+      },
       t,
     },
     cellClass: enabled ? 'editable-ag-grid-cell' : '',
