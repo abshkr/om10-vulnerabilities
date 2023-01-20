@@ -32,7 +32,7 @@ import { setupUserPageColumns } from 'utils';
 
 const LoadSchedules = () => {
   const config = useConfig();
-  const { siteSchdPaging, siteUseDownloader } = config;
+  const { siteSchdPaging, siteUseDownloader, siteCustomColumnSchedule } = config;
 
   const { pageColumns, reloadColumns } = usePageColumns('M_LOADSCHEDULES');
 
@@ -386,7 +386,7 @@ const LoadSchedules = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         autoColWidth
         clearFilterPlus={revalidate}
-        columnAdjustable={true}
+        columnAdjustable={siteCustomColumnSchedule}
         pageColumns={pageColumns}
         pageModule={'M_LOADSCHEDULES'}
         columnLoader={reloadColumns}
