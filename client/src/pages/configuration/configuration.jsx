@@ -1213,6 +1213,15 @@ const Configuration = ({ user, config }) => {
               />
             </TabPane>
           )}
+          {user?.per_code === '9999' && (
+            <TabPane tab={t('tabColumns.customisableColumns')} key="13">
+              <ConfigurationItems
+                data={_.filter(configuration, ['config_required_by_gui', 'C'])}
+                onChange={onConfigurationEdit}
+                t={t}
+              />
+            </TabPane>
+          )}
           <TabPane tab={t('tabColumns.driverPin')} key="3">
             <ConfigurationItems
               data={_.filter(configuration, ['config_required_by_gui', 'P'])}
