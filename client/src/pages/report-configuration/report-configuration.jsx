@@ -21,7 +21,7 @@ const ReportConfiguration = () => {
 
   const { t } = useTranslation();
 
-  const access = useAuth('M_PHYSICALPRINTERS');
+  const access = useAuth('M_REPOCONFIGURATION');
 
   const { data: payload, isValidating, revalidate } = useSWR(REPORT_CONFIGURATION.READ);
 
