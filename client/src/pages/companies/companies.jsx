@@ -5,7 +5,7 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, FormOutlined, ApiOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, FormModal } from '../../components';
+import { Page, PowerTable as DataTable, Download, FormModal } from '../../components';
 import { COMPANIES } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
@@ -22,7 +22,7 @@ const Companies = () => {
   const [currentCmpy, setCurrentCmpy] = useState(null);
   const [filterValue, setFilterValue] = useState('');
   const config = useConfig();
-  const { siteCompanyRelationAllowed } = config;
+  const { siteCompanyRelationAllowed, siteCustomColumnCompany } = config;
 
   const { data: payload, isValidating, revalidate } = useSWR(COMPANIES.READ);
 
@@ -114,6 +114,8 @@ const Companies = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
         filterValue={filterValue}
+        columnAdjustable={siteCustomColumnCompany}
+        pageModule={'M_COMPANIES'}
       />
       {visible && (
         <Forms

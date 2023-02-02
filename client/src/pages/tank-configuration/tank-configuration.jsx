@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download } from '../../components';
+import { Page, PowerTable as DataTable, Download } from '../../components';
 import { TANKS, COMMON } from '../../api';
 
 import generator from './generator';
@@ -73,6 +73,9 @@ const TankConfiguration = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         filterValue={filterValue}
         autoColWidth
+        columnAdjustable={config?.siteCustomColumnTankConfig}
+        //columnAdjustable={false}
+        pageModule={'M_TANKCONFIGURATION'}
       />
       {visible && (
         <Forms

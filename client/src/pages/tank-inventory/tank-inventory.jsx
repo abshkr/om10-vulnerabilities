@@ -5,8 +5,8 @@ import useSWR from 'swr';
 import { SyncOutlined } from '@ant-design/icons';
 import jwtDecode from 'jwt-decode';
 
-import { Page, DataTable, Download } from '../../components';
-import {TerminalList} from 'components/fields';
+import { Page, PowerTable as DataTable, Download } from '../../components';
+import { TerminalList } from 'components/fields';
 import { STOCK_MANAGEMENT } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
@@ -25,7 +25,9 @@ const TankInventory = () => {
   const [terminal, setTerminal] = useState('');
 
   // const { data, revalidate, isValidating } = useSWR(STOCK_MANAGEMENT.TANK_INVENTORY);
-  const { data, revalidate, isValidating } = useSWR(`${STOCK_MANAGEMENT.TANK_INVENTORY}?terminal=${terminal}`);
+  const { data, revalidate, isValidating } = useSWR(
+    `${STOCK_MANAGEMENT.TANK_INVENTORY}?terminal=${terminal}`
+  );
 
   const payload = data?.records;
   const fields = columns(t, config);
@@ -33,8 +35,15 @@ const TankInventory = () => {
   const modifiers = (
     <>
       {config?.siteUseMultiTerminals && (
-        <TerminalList value={terminal} listOptions={[]}
-        itemCode={'tank_terminal'} itemTitle={'terminal'} itemRequired={false} itemDisabled={false} onChange={setTerminal} />
+        <TerminalList
+          value={terminal}
+          listOptions={[]}
+          itemCode={'tank_terminal'}
+          itemTitle={'terminal'}
+          itemRequired={false}
+          itemDisabled={false}
+          onChange={setTerminal}
+        />
       )}
       <Space></Space>
 
@@ -53,7 +62,13 @@ const TankInventory = () => {
       avatar="tankInventory"
       access={access}
     >
-      <DataTable columns={fields} data={payload} isLoading={isValidating} />
+      <DataTable
+        columns={fields}
+        data={payload}
+        isLoading={isValidating}
+        columnAdjustable={config?.siteCustomColumnTankStock}
+        pageModule={'M_TANKINVENTORY'}
+      />
     </Page>
   );
 };

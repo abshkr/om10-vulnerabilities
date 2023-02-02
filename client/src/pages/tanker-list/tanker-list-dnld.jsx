@@ -8,7 +8,7 @@ import _ from 'lodash';
 
 import {
   Page,
-  DataTable,
+  PowerTable as DataTable,
   Download,
   DataDownloader,
   PageDownloader,
@@ -29,7 +29,13 @@ const TankerList = () => {
 
   const tanker = query.get('tanker') || '';
 
-  const { expiryDateMode, siteUseAxleWeightLimit, siteTnkrPaging, siteUseDownloader } = useConfig();
+  const {
+    expiryDateMode,
+    siteUseAxleWeightLimit,
+    siteTnkrPaging,
+    siteUseDownloader,
+    siteCustomColumnTnkrList,
+  } = useConfig();
 
   const { t } = useTranslation();
 
@@ -316,6 +322,8 @@ const TankerList = () => {
         selectionMode="single"
         autoColWidth
         filterValue={filterValue}
+        columnAdjustable={siteCustomColumnTnkrList}
+        pageModule={'M_TANKERS'}
       />
       <div
         style={{

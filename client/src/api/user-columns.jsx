@@ -7,3 +7,4 @@ export const UPDATE = '/api/pages/user_column/update.php';
 export const DELETE = '/api/pages/user_column/delete.php';
 export const CREATE_COLUMNS = '/api/pages/user_column/create_columns.php';
 export const UPDATE_COLUMNS = '/api/pages/user_column/update_columns.php';
+export const DELETE_COLUMNS = '/api/pages/user_column/delete_columns.php';

@@ -8,7 +8,7 @@ import { SyncOutlined, PlusOutlined, FileSearchOutlined, EyeOutlined } from '@an
 
 import {
   Page,
-  DataTable,
+  PowerTable as DataTable,
   Download,
   DataDownloader,
   PageDownloader,
@@ -31,7 +31,7 @@ const MovementNominations = () => {
   const config = useConfig();
   const rangeSetting = config.nominationDateRange;
   const filterByExpiry = config.filterNominationByExpiry;
-  const { siteMoveNomPaging, siteUseDownloader } = config;
+  const { siteMoveNomPaging, siteUseDownloader, siteCustomColumnNom } = config;
   console.log('filterByExpiry', filterByExpiry);
 
   const [pagingFlag, setPagingFlag] = useState(undefined);
@@ -489,6 +489,9 @@ const MovementNominations = () => {
             handleFormState(true, payload[0]);
           }}
           clearFilterPlus={revalidate}
+          columnAdjustable={siteCustomColumnNom}
+          // columnAdjustable={false}
+          pageModule={'M_NOMINATION'}
         />
         <div
           style={{

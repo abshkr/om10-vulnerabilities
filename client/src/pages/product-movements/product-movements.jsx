@@ -5,7 +5,7 @@ import { Button } from 'antd';
 import useSWR from 'swr';
 import moment from 'moment';
 
-import { Page, DataTable, Download, DateTimeRangePicker } from '../../components';
+import { Page, PowerTable as DataTable, Download, DateTimeRangePicker } from '../../components';
 import { PRODUCT_MOVEMENTS } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
@@ -24,14 +24,13 @@ const ProductMovements = () => {
   const [end, setEnd] = useState(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
   const config = useConfig();
-  const { refreshProductMovement, scheduleDateRange } = useConfig();
-  const {
-    data: payload,
-    isValidating,
-    revalidate,
-  } = useSWR(`${PRODUCT_MOVEMENTS.READ}?start_date=${start}&end_date=${end}`, {
-    refreshInterval: refreshProductMovement,
-  });
+  const { refreshProductMovement, scheduleDateRange, siteCustomColumnProdMove } = useConfig();
+  const { data: payload, isValidating, revalidate } = useSWR(
+    `${PRODUCT_MOVEMENTS.READ}?start_date=${start}&end_date=${end}`,
+    {
+      refreshInterval: refreshProductMovement,
+    }
+  );
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -105,6 +104,8 @@ const ProductMovements = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
         filterValue={filterValue}
+        columnAdjustable={siteCustomColumnProdMove}
+        pageModule={'M_PRODUCTMOVEMENT'}
       />
       <Forms
         value={selected}

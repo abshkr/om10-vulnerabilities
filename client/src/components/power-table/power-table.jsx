@@ -45,14 +45,24 @@ const PowerTable = ({
   const [fields, setFields] = useState(columns);
 
   useEffect(() => {
-    if (setFields && setupUserPageColumns && columns && pageColumns && pageColumns?.length > 0) {
+    const tmp = JSON.stringify(columns);
+    console.log('............power table >> ....sth changed..', tmp.length);
+    if (
+      columnAdjustable &&
+      setFields &&
+      setupUserPageColumns &&
+      columns &&
+      pageColumns &&
+      pageColumns?.length > 0
+    ) {
       const newValues = setupUserPageColumns(columns, pageColumns);
 
       console.log('............power table >> old columns..', columns);
-      console.log('............power table >> new columns..', newValues);
+      console.log('............power table >> new columns..', newValues, JSON.stringify(newValues)?.length);
       setFields(newValues);
     }
-  }, [columns, pageColumns, setFields, setupUserPageColumns]);
+  }, [columnAdjustable, columns, pageColumns, setFields, setupUserPageColumns]);
+  //}, [columnAdjustable, pageColumns, setFields, setupUserPageColumns]);
 
   return (
     <DataTable

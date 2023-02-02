@@ -6,7 +6,7 @@ import { Select, Button, Tabs, Form, Drawer } from 'antd';
 import useSWR from 'swr';
 import jwtDecode from 'jwt-decode';
 
-import { Page, DataTable, Download } from 'components';
+import { Page, PowerTable as DataTable, Download } from 'components';
 import { TerminalList } from 'components/fields';
 import { STOCK_MANAGEMENT } from 'api';
 import useAuth from 'hooks/use-auth';
@@ -149,6 +149,8 @@ const ProductInventory = () => {
         isLoading={isLoading}
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
+        columnAdjustable={config?.siteCustomColumnProdStock}
+        pageModule={'M_PRODUCTINVENTORY'}
       />
 
       <Drawer

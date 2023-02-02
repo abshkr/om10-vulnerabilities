@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
 
 import {
-  DataTable,
+  PowerTable as DataTable,
   Download,
   DataDownloader,
   PageDownloader,
@@ -26,7 +26,7 @@ const Schedules = ({ selected, cbFunction, closeForm }) => {
   //   : `${MOVEMENT_NOMIATIONS.SCHEDULES}`;
 
   const config = useConfig();
-  const { siteNomSchdPaging, siteUseDownloader } = config;
+  const { siteNomSchdPaging, siteUseDownloader, siteCustomColumnNomsched } = config;
 
   const [pagingFlag, setPagingFlag] = useState(undefined);
   const [visible, setVisible] = useState(false);
@@ -291,6 +291,8 @@ const Schedules = ({ selected, cbFunction, closeForm }) => {
             onClick={(payload) => handleFormState(true, payload)}
             handleSelect={(payload) => handleFormState(true, payload[0])}
             filterValue={filterValue}
+            columnAdjustable={siteCustomColumnNomsched}
+            pageModule={'M_NOMSCHEDULES'}
           />
           <div
             style={{

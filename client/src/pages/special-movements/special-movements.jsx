@@ -6,7 +6,7 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, DateTimeRangePicker, WindowSearch } from '../../components';
+import { Page, PowerTable as DataTable, Download, DateTimeRangePicker, WindowSearch } from '../../components';
 import api, { SPECIAL_MOVEMENTS } from '../../api';
 import { SETTINGS } from '../../constants';
 import columns from './columns';
@@ -156,6 +156,8 @@ const SpecialMovements = () => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
         clearFilterPlus={revalidate}
+        columnAdjustable={config?.siteCustomColumnSpecMove}
+        pageModule={'M_SPECIALMOVEMENTS'}
       />
       <Forms
         value={selected}

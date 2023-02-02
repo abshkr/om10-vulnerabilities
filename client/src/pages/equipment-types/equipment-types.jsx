@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 
-import { Page, DataTable, Download } from '../../components';
+import { Page, PowerTable as DataTable, Download } from '../../components';
 import { EQUIPMENT_TYPES } from '../../api';
 import { useAuth } from '../../hooks';
 import { useConfig, useQuery } from '../../hooks';
@@ -110,6 +110,8 @@ const EquipmentTypes = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         rowHeight={60}
         filterValue={filterValue}
+        columnAdjustable={config?.siteCustomColumnEqptType}
+        pageModule={'M_EQUIPMENT'}
       />
       {visible && (
         <Forms

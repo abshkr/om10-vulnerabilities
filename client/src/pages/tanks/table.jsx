@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { DataTable } from '../../components';
+import { PowerTable as DataTable } from '../../components';
 import columns from './columns';
 
 import Forms from './forms';
@@ -31,6 +31,8 @@ const Table = ({ data, access, visible, setVisible, selected, setSelected, confi
         }}
         autoColWidth
         filterValue={filterValue}
+        columnAdjustable={config?.siteCustomColumnTankStatus}
+        pageModule={'M_TANKSTATUS'}
       />
 
       <Forms

@@ -5,14 +5,15 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download } from '../../components';
+import { Page, PowerTable as DataTable, Download } from '../../components';
 import { PARTNERS } from '../../api';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
-import { useAuth } from '../../hooks';
+import { useAuth, useConfig } from '../../hooks';
 
 const Partners = () => {
+  const config = useConfig();
   const { t } = useTranslation();
   const access = useAuth('M_PARTNERS');
 
@@ -57,12 +58,14 @@ const Partners = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         autoColWidth
         filterValue={filterValue}
+        columnAdjustable={config?.siteCustomColumnPartner}
+        pageModule={'M_PARTNERS'}
       />
-      <Forms 
-        value={selected} 
-        visible={visible} 
-        handleFormState={handleFormState} 
-        access={access} 
+      <Forms
+        value={selected}
+        visible={visible}
+        handleFormState={handleFormState}
+        access={access}
         setFilterValue={setFilterValue}
       />
     </Page>

@@ -8,7 +8,7 @@ import _ from 'lodash';
 
 import {
   Page,
-  DataTable,
+  PowerTable as DataTable,
   Download,
   DataDownloader,
   PageDownloader,
@@ -33,6 +33,7 @@ const EquipmentList = () => {
     siteEnabledCOPS,
     siteEqptPaging,
     siteUseDownloader,
+    siteCustomColumnEqptList,
   } = useConfig();
 
   let equipment = query.get('equipment') || '';
@@ -274,6 +275,27 @@ const EquipmentList = () => {
     }
   }, [isValidating]);
 
+  useEffect(() => {
+    if (
+      columns &&
+      setFields &&
+      expiryTypes?.records &&
+      t &&
+      expiryDateMode !== undefined &&
+      siteUseAxleWeightLimit !== undefined &&
+      siteEnabledCOPS !== undefined
+    ) {
+      const newFields = columns(
+        expiryTypes?.records,
+        t,
+        expiryDateMode,
+        siteUseAxleWeightLimit,
+        siteEnabledCOPS
+      );
+      setFields(newFields);
+    }
+  }, [expiryTypes?.records, t, expiryDateMode, siteUseAxleWeightLimit, siteEnabledCOPS]);
+
   /* useEffect(() => {
     console.log('...................... filter', filterValue);
   }, [filterValue]); */
@@ -363,6 +385,9 @@ const EquipmentList = () => {
         autoColWidth
         filterValue={filterValue}
         clearFilterPlus={onRefresh}
+        columnAdjustable={siteCustomColumnEqptList}
+        //columnAdjustable={false}
+        pageModule={'M_EQUIPMENTLIST'}
       />
       <div
         style={{

@@ -5,15 +5,16 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SecurityScanOutlined, SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, IButton } from '../../components';
+import { Page, PowerTable as DataTable, Download, IButton } from '../../components';
 import { ID_ASSIGNMENT } from '../../api';
 
 import columns from './columns';
 import auth from '../../auth';
-import { useAuth } from 'hooks';
+import { useAuth, useConfig } from 'hooks';
 import Forms from './forms';
 
 const IdAssignment = () => {
+  const config = useConfig();
   const [search, setSearch] = useState('');
 
   const { t } = useTranslation();
@@ -78,6 +79,8 @@ const IdAssignment = () => {
         selectionMode="single"
         autoColWidth
         filterValue={filterValue}
+        columnAdjustable={config?.siteCustomColumnTag}
+        pageModule={'M_IDENTIFICATIONASSIGNMENT'}
       />
       {visible && (
         <Forms

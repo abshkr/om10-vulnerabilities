@@ -170,4 +170,29 @@ class UserColumn extends CommonClass
         }
     }
 
+    //Delete user-defined columns by site, user, and page code
+    public function delete_columns()
+    {
+        $this->commit_mode = OCI_NO_AUTO_COMMIT;
+
+        $query = "DELETE FROM URBAC_USER_COLUMNS WHERE COLUMN_USER = :user_code AND COLUMN_SITE = :site_code AND COLUMN_PAGE = :page_code";
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':user_code', $this->user_code);
+        oci_bind_by_name($stmt, ':site_code', $this->site_code);
+        oci_bind_by_name($stmt, ':page_code', $this->page_code);
+
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(400, response("__DATABASE_EXCEPTION__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $error = new EchoSchema(200, response("__DELETE_SUCCEEDED__"));
+        echo json_encode($error, JSON_PRETTY_PRINT);
+        oci_commit($this->conn);
+    }
+
 }

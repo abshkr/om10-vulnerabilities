@@ -17,7 +17,7 @@ const columns = (t, config) => [
     sortable: true,
     filter: 'FuzzyFilter',
     resizable: true,
-    // pinned: 'left',
+    pinned: 'left',
     width: 200,
     suppressSizeToFit: true,
   },

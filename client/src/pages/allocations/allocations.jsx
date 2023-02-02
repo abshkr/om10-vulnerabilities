@@ -5,7 +5,7 @@ import { Button, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, DateTimeRangePicker } from '../../components';
+import { Page, PowerTable as DataTable, Download, DateTimeRangePicker } from '../../components';
 import { ALLOCATIONS } from '../../api';
 import { SETTINGS } from '../../constants';
 import { useAuth, useConfig } from '../../hooks';
@@ -188,6 +188,8 @@ const Allocations = ({ popup, params }) => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
         clearFilterPlus={revalidate}
+        columnAdjustable={config?.siteCustomColumnAlloc}
+        pageModule={'M_ALLOCATIONS'}
       />
       {visible && !config?.siteAllowMultiAllocations && (
         <Forms

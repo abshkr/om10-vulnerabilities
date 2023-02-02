@@ -8,6 +8,7 @@ const columns = (config, t) => [
     resizable: true,
     filter: 'FuzzyFilter',
     pinned: 'left',
+    suppressSizeToFit: true,
     width: 100,
   },
   {
@@ -16,14 +17,18 @@ const columns = (config, t) => [
     sortable: true,
     resizable: true,
     filter: 'FuzzyFilter',
+    suppressSizeToFit: true,
+    width: 100,
   },
   {
-    headerName: t('fields.terminal'),
+    headerName: t('fields.terminalCode'),
     field: 'tank_terminal',
     sortable: true,
     resizable: true,
     filter: 'FuzzyFilter',
     hide: true,
+    suppressSizeToFit: true,
+    width: 120,
   },
   {
     headerName: t('fields.terminal'),
@@ -31,6 +36,8 @@ const columns = (config, t) => [
     sortable: true,
     resizable: true,
     filter: 'FuzzyFilter',
+    suppressSizeToFit: true,
+    width: 160,
   },
   {
     headerName: t('fields.baseProductCode'),
@@ -44,6 +51,8 @@ const columns = (config, t) => [
       field: 'product',
       index: 'tank_base',
     },
+    suppressSizeToFit: true,
+    width: 180,
   },
   {
     headerName: t('fields.baseProductName'),
@@ -51,6 +60,8 @@ const columns = (config, t) => [
     sortable: true,
     resizable: true,
     filter: 'MultiFilter',
+    suppressSizeToFit: true,
+    width: 200,
   },
   {
     headerName: t('fields.productCategory'),
@@ -58,18 +69,24 @@ const columns = (config, t) => [
     sortable: true,
     resizable: true,
     filter: 'MultiFilter',
+    suppressSizeToFit: true,
+    width: 200,
   },
   {
     headerName: `${t('fields.standardDensity')} (${t('units.kg/m3')})`,
     field: 'tank_density',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 220,
   },
   {
     headerName: `${t('fields.unitVarianceLimit')}`,
     field: 'tank_tol_unit',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 180,
   },
   {
     // headerName: `${t('fields.dailyVarianceLimit')} (${t('units.volume')})`,
@@ -77,12 +94,16 @@ const columns = (config, t) => [
     field: 'tank_dtol_volume',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 180,
   },
   {
     headerName: `${t('fields.dailyVarianceLimit')} (%)`,
     field: 'tank_dtol_percent',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 200,
   },
   {
     // headerName: `${t('fields.monthlyVarianceLimit')} (${t('units.volume')})`,
@@ -90,12 +111,16 @@ const columns = (config, t) => [
     field: 'tank_mtol_volume',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 210,
   },
   {
     headerName: `${t('fields.monthlyVarianceLimit')} (%)`,
     field: 'tank_mtol_percent',
     sortable: true,
     resizable: true,
+    suppressSizeToFit: true,
+    width: 220,
   },
   {
     headerName: t('fields.adaptiveArmPriority'),
@@ -103,6 +128,8 @@ const columns = (config, t) => [
     sortable: true,
     resizable: true,
     hide: !config?.siteUseAFC,
+    suppressSizeToFit: true,
+    width: 200,
   },
 
   {
@@ -112,6 +139,7 @@ const columns = (config, t) => [
     resizable: true,
     cellRenderer: 'FlowRateRenderer',
     hide: !config?.siteUseAFC,
+    suppressSizeToFit: true,
     width: 240,
   },
 ];

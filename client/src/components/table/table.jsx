@@ -4,7 +4,7 @@ import { AgGridReact } from 'ag-grid-react';
 import { useTranslation } from 'react-i18next';
 
 import { FuzzyFilter, MultiFilter, BooleanFilter } from './filters';
-import { updateUserPageColumns } from 'utils';
+import { updateUserPageColumns, removeUserPageColumns } from 'utils';
 
 import {
   BooleanRenderer,
@@ -42,7 +42,7 @@ import {
   TipTextRenderer,
 } from './renderers';
 
-import { ClearOutlined, LoadingOutlined, EditOutlined } from '@ant-design/icons';
+import { ClearOutlined, LoadingOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 
 import {
   NumericEditor,
@@ -184,6 +184,11 @@ const Table = ({
     setColumnAdjusted(false);
   };
 
+  const removeUserColumns = () => {
+    removeUserPageColumns(t, pageColumns, pageModule, columnLoader);
+    // setColumnAdjusted(false);
+  };
+
   const handleMultipleSelection = () => {
     if (handleSelect) {
       const payload = api.getSelectedRows();
@@ -217,7 +222,13 @@ const Table = ({
       return;
     }
 
+    // if the featur eof customizable columns is turned on, the widths should be manually set not adjusted automatically
+    if (columnAdjustable) {
+      return;
+    }
+
     const allColumnIds = [];
+    // skipHeaderOnAutoSize=true
     const skipHeader = false;
     params.columnApi.getAllColumns().forEach(function (column) {
       allColumnIds.push(column.colId);
@@ -291,11 +302,13 @@ const Table = ({
       });
       // setTableColumns([]);
       // setTableColumns(columns);
-      if (api?.setColumnDefs) {
+      if (api && api?.setColumnDefs) {
         console.log('...........in DataTable3...', api);
         api.setColumnDefs([]);
         api.setColumnDefs(columns);
+        api.sizeColumnsToFit();
       } else {
+        console.log('...........in DataTable4...', columns);
         setTableColumns(columns);
       }
     }
@@ -363,6 +376,19 @@ const Table = ({
                   >
                     {t('operations.clearFilter')}
                   </Button>
+
+                  {columnAdjustable && pageColumns?.length > 0 && (
+                    <Tooltip placement="topLeft" title={t('descriptions.columnRemoval')}>
+                      <Button
+                        type="danger"
+                        icon={<DeleteOutlined />}
+                        onClick={() => removeUserColumns()}
+                        style={{ float: 'right', marginRight: 5 }}
+                      >
+                        {t('operations.removeColumns')}
+                      </Button>
+                    </Tooltip>
+                  )}
 
                   {columnAdjustable && (
                     <AdjustableColumns

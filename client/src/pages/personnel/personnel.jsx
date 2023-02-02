@@ -5,7 +5,7 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download } from '../../components';
+import { Page, PowerTable as DataTable, Download } from '../../components';
 import { PERSONNEL } from 'api';
 
 import columns from './columns';
@@ -74,6 +74,8 @@ const Personnel = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         autoColWidth
         filterValue={filterValue}
+        columnAdjustable={config?.siteCustomColumnPersonnel}
+        pageModule={'M_PERSONNEL'}
       />
       <Forms
         value={selected}
