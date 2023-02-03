@@ -53,7 +53,7 @@ const PowerTable = ({
       setupUserPageColumns &&
       columns &&
       pageColumns &&
-      pageColumns?.length > 0
+      pageColumns?.length >= 0
     ) {
       const newValues = setupUserPageColumns(columns, pageColumns);
 
@@ -62,7 +62,6 @@ const PowerTable = ({
       setFields(newValues);
     }
   }, [columnAdjustable, columns, pageColumns, setFields, setupUserPageColumns]);
-  //}, [columnAdjustable, pageColumns, setFields, setupUserPageColumns]);
 
   return (
     <DataTable

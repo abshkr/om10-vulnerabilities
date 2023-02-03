@@ -17,7 +17,7 @@ const columns = (t, config) => [
     sortable: true,
     filter: 'FuzzyFilter',
     resizable: true,
-    pinned: 'left',
+    // pinned: 'left',
     width: 200,
     suppressSizeToFit: true,
   },
@@ -139,7 +139,6 @@ const columns = (t, config) => [
     resizable: true,
     suppressSizeToFit: true,
     width: 180,
-    suppressSizeToFit: true,
     cellRenderer: 'LinkRenderer',
     cellRendererParams: {
       endpoint: TANK_CONFIGURATION,
