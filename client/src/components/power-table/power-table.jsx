@@ -48,18 +48,24 @@ const PowerTable = ({
     const tmp = JSON.stringify(columns);
     console.log('............power table >> ....sth changed..', tmp.length);
     if (
-      columnAdjustable &&
-      setFields &&
-      setupUserPageColumns &&
-      columns &&
-      pageColumns &&
-      pageColumns?.length >= 0
+      (columnAdjustable &&
+        setFields &&
+        setupUserPageColumns &&
+        columns &&
+        pageColumns &&
+        pageColumns?.length >= 0) ||
+      (!columnAdjustable && setFields && columns)
     ) {
-      const newValues = setupUserPageColumns(columns, pageColumns);
+      if (columnAdjustable) {
+        const newValues = setupUserPageColumns(columns, pageColumns);
 
-      console.log('............power table >> old columns..', columns);
-      console.log('............power table >> new columns..', newValues, JSON.stringify(newValues)?.length);
-      setFields(newValues);
+        console.log('............power table >> old columns..', columns);
+        console.log('............power table >> new columns..', newValues, JSON.stringify(newValues)?.length);
+        setFields(newValues);
+      } else {
+        console.log('............power table >> curr columns..', columns);
+        setFields(columns);
+      }
     }
   }, [columnAdjustable, columns, pageColumns, setFields, setupUserPageColumns]);
 

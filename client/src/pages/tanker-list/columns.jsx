@@ -39,7 +39,7 @@ const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit, carrcod
       for (let i = 0; i < expiryTypes?.length; i++) {
         expiryColumns.push({
           headerName: expiryTypes[i].edt_type_desc,
-          field: 'expiry_dates',
+          field: 'expiry_dates' + (i + 1) + '_tnkr',
           sortable: true,
           resizable: true,
           // filter: 'FuzzyFilter',
