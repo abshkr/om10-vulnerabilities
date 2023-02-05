@@ -75,7 +75,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
     hide: true,
   },
-  {
+  /* {
     headerName: t('fields.axleFrontWeightLimit') + ' (' + t('units.kg') + ')',
     field: 'etyp_front_axle',
     filterable: true,
@@ -94,7 +94,7 @@ const columns = (t, config) => [
     width: 180,
     suppressSizeToFit: true,
     hide: true, // !config?.siteUseAxleWeightLimit,
-  },
+  }, */
 
   {
     headerName: t('fields.countEtypEquipment'),

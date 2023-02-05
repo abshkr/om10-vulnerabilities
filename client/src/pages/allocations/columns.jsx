@@ -32,7 +32,7 @@ const columns = (t, config) => [
     hide: false,
   },
   {
-    headerName: t('fields.allocCmpyCode'),
+    headerName: t('fields.allocCmpycode'),
     field: 'alloc_cmpycode',
     filter: 'FuzzyFilter',
     sortable: true,
