@@ -39,7 +39,7 @@ export default class DrawerProducts extends Component {
     // console.log('DrawerProducts, onClick, Arms', items, prodArms);
 
     current[index].trsf_prod_code = record?.item?.prod_code;
-    current[index].trsf_prod_name = record.children;
+    current[index].trsf_prod_name = record?.children;
     // current[index].trsf_prod_name = record?.item?.prod_desc;
     current[index].trsf_prod_cmpy = record?.item?.prod_cmpy;
     // current[index].trsf_arm_cd = items?.length>0 ? t('placeholder.selectArmCode') : t('placeholder.noArmAvailable');

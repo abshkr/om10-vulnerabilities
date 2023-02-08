@@ -151,6 +151,7 @@ class ManualTrans extends CommonClass
             SELECT 
                 (CO.ORD_SOLD_TO_NUM || NVL2(CMPY.CMPY_NAME,' - ','') || CMPY.CMPY_NAME) as CUSTOMER_CODE, 
                 (CO.ORD_SHIP_TO_NUM || NVL2(DL.DLV_NAME,' - ','') || DL.DLV_NAME) as DELIVERY_LOCATION,
+                ORDER_DRAWER,
                 ORDER_CARRIER
             FROM CUST_ORDER CO,
                 CUSTOMER CUST,
@@ -270,6 +271,7 @@ class ManualTrans extends CommonClass
                         C.CMPY_CODE CARRIER, 
                         C.CMPY_NAME CARRIER_NAME,
                         T.TNKR_CODE,
+                        S.SHLS_DRAWER DRAWER,
                         S.SHLS_DRIVER DRIVER
                     FROM SCHEDULE S, COMPANYS C, TANKERS T 
                     WHERE S.SHL_TANKER = T.TNKR_CODE 
@@ -286,6 +288,7 @@ class ManualTrans extends CommonClass
                         CMPY_CODE CARRIER, 
                         CMPY_NAME CARRIER_NAME,
                         NULL TNKR_CODE,
+                        NULL DRAWER,
                         NULL DRIVER
                     FROM GUI_COMPANYS 
                     WHERE BITAND(CMPY_TYPE, 4) <> 0 
@@ -304,6 +307,7 @@ class ManualTrans extends CommonClass
                 SELECT C.CMPY_CODE CARRIER, 
                     C.CMPY_NAME CARRIER_NAME,
                     T.TNKR_CODE,
+                    S.SHLS_DRAWER DRAWER,
                     S.SHLS_DRIVER DRIVER,
                     S.SHLS_CUST
                 FROM SCHEDULE S, COMPANYS C, TANKERS T 
@@ -518,7 +522,8 @@ class ManualTrans extends CommonClass
         $serv->set_property('start_time', $start_time->format('d.m.YH:i:s'));
         $end_time = DateTime::createFromFormat('Y-m-d H:i:s', $this->end_time);
         $serv->set_property('finish_time', $end_time->format('d.m.YH:i:s'));
-        $serv->set_property('drawer_code', $this->supplier);
+        // $serv->set_property('drawer_code', $this->supplier);
+        $serv->set_property('drawer_code', $this->drawer);
         $serv->set_property('drawer_name', "");
         $serv->set_property('tanker_code', $this->tanker);
         $serv->set_property('operator_code', "8888");
@@ -714,6 +719,7 @@ class ManualTrans extends CommonClass
         $query = "
             SELECT 
                 'BY_PRODUCT' AS SCHD_TYPE,
+                :supplier as SHLS_SUPP,
                 (
                     SELECT (
                         CASE 
@@ -723,7 +729,7 @@ class ManualTrans extends CommonClass
                         END
                     )
                     FROM DUAL
-                ) as SHLS_SUPP,
+                ) as SHLS_DRAWER,
                 TC.TNKR_CMPT_NO,
                 TC.TRAILERCOMP AS  TLR_CMPT,
                 (NVL(SF.ADJ_AMNT, 0) + TC.CMPT_CAPACIT) AS CMPT_CAPACIT,
@@ -825,10 +831,11 @@ class ManualTrans extends CommonClass
         $query = "
             SELECT 
                 CO.ORDER_CUST_ORDNO, 
-                OPD.OSPROD_PRODCODE as SUPP_PROD_CODE, 
-                P.PROD_NAME as SUPP_PROD_NAME, 
-                P.PROD_CLASS as SUPP_PROD_CLASS, 
-                OPD.OSPROD_PRODCMPY SUPP_PROD_CMPY, 
+                OPD.OSPROD_PRODCMPY PROD_CMPY, 
+                OPD.OSPROD_PRODCODE as PROD_CODE, 
+                P.PROD_NAME as PROD_NAME, 
+                P.PROD_CODE||' - '||P.PROD_NAME as PROD_DESC,
+                P.PROD_CLASS as PROD_CLASS, 
                 OPD.ORDER_PROD_QTY as SCHP_SPECQTY, 
                 OPD.ORDER_PROD_QTY as QTY_PLANNED, 
                 OPD.ORDER_PROD_UNIT as UNIT_CODE,
@@ -839,11 +846,11 @@ class ManualTrans extends CommonClass
                 NVL(OO_QTY.QTY_AMB,0) as QTY_AMB, 
                 NVL(OO_QTY.QTY_STD,0) as QTY_STD, 
                 NVL(OO_QTY.QTY_KG,0) as QTY_KG,
-                DRAWER_P.PROD_CMPY as PROD_CMPY, 
-                DRAWER_P.PROD_CODE as PROD_CODE, 
-                DRAWER_P.PROD_NAME as PROD_NAME, 
-                DRAWER_P.PROD_CODE||' - '||DRAWER_P.PROD_NAME as PROD_DESC,
-                DRAWER_P.PROD_CLASS as PROD_CLASS
+                DRAWER_P.PROD_CMPY as DRAW_PROD_CMPY, 
+                DRAWER_P.PROD_CODE as DRAW_PROD_CODE, 
+                DRAWER_P.PROD_NAME as DRAW_PROD_NAME, 
+                DRAWER_P.PROD_CODE||' - '||DRAWER_P.PROD_NAME as DRAW_PROD_DESC,
+                DRAWER_P.PROD_CLASS as DRAW_PROD_CLASS
             FROM
                 CUST_ORDER CO,
                 OPRODMTD OPD,
@@ -1036,6 +1043,7 @@ class ManualTrans extends CommonClass
                     sd.UNIT UNIT,
                     et.TRAILERCOMP TLR_CMPT,
                     sd.SHLS_SUPP,
+                    sd.SHLS_DRAWER,
                     sd.PROD_CODE,
                     sd.PROD_NAME,
                     sd.PROD_CODE||' - '||sd.PROD_NAME AS PROD_DESC,
@@ -1117,6 +1125,7 @@ class ManualTrans extends CommonClass
                             BA_ARMS.ARM_NAME,
                             SPECDETS.ARMCODE,
                             SCHEDULE.SHLS_SUPP,
+                            SCHEDULE.SHLS_DRAWER,
                             SPECDETS.SCHDSPEC_SHLSSUPP,
                             SPECDETS.SCHDSPEC_SHLSTRIP,
                             SPECDETS.SCHDPROD_PRODCMPY,
@@ -1246,6 +1255,7 @@ class ManualTrans extends CommonClass
                     et.UNIT as UNIT,
                     et.TRAILERCOMP TLR_CMPT,
                     sd2.SHLS_SUPP,
+                    sd2.SHLS_DRAWER,
                     null as PROD_CODE,
                     null as PROD_NAME,
                     NULL AS PROD_DESC,
@@ -1353,7 +1363,8 @@ class ManualTrans extends CommonClass
                     ) sd,
                     (
                         SELECT
-                            SHLS_SUPP,
+                            SCHEDULE.SHLS_SUPP,
+                            SCHEDULE.SHLS_DRAWER,
                             (SCHEDULE.SHLS_SOLD_TO_NUM || NVL2(COMPANYS.CMPY_NAME,' - ','') || COMPANYS.CMPY_NAME) CUSTOMER_CODE,
                             (SCHEDULE.SHLS_SHIP_TO_NUM || NVL2(DELV_LOCATION.DLV_NAME,' - ','') || DELV_LOCATION.DLV_NAME) DELIVERY_LOCATION,
                             SCHEDULE.SHL_FLEET_DATA DELIVERY_NUMBER
@@ -1466,27 +1477,38 @@ class ManualTrans extends CommonClass
 
         write_log(json_encode($this), __FILE__, __LINE__);
 
+        // fix the issue when the supplier and the drawer is different
         $query = "
-        SELECT UNIT_CODE,
-            QTY_SCHEDULED,
-            QTY_SCHEDULED as QTY_PLANNED,
+        SELECT 
             NVL(PRODUCTS.PROD_CODE, LOADED.PROD_CODE) PROD_CODE,
             NVL(PRODUCTS.PROD_NAME, LOADED.PROD_NAME) PROD_NAME,
             NVL(PRODUCTS.PROD_CODE, LOADED.PROD_CODE)||' - '||NVL(PRODUCTS.PROD_NAME, LOADED.PROD_NAME) as PROD_DESC,
             NVL(PRODUCTS.PROD_CMPY, LOADED.PROD_CMPY) PROD_CMPY,
-            QTY_LOADED,
+            NVL(PRODUCTS.PROD_CLASS, LOADED.PROD_CLASS) PROD_CLASS,
+            DRAWER_P.PROD_CMPY as DRAW_PROD_CMPY, 
+            DRAWER_P.PROD_CODE as DRAW_PROD_CODE, 
+            DRAWER_P.PROD_NAME as DRAW_PROD_NAME, 
+            DRAWER_P.PROD_CODE||' - '||DRAWER_P.PROD_NAME as DRAW_PROD_DESC,
+            DRAWER_P.PROD_CLASS as DRAW_PROD_CLASS,
+            QTY_SCHEDULED,
+            QTY_SCHEDULED as QTY_PLANNED,
+            UNIT_CODE,
             UNIT_NAME, 
+            QTY_LOADED,
             QTY_PRELOADED,
             QTY_AMB,
             QTY_STD,
             QTY_KG
-        FROM PRODUCTS,
-        (
+        FROM 
+            PRODUCTS,
+            PRODUCTS DRAWER_P,
+            (
             SELECT SPEC_PR.UNIT_CODE, 
                 SPEC_PR.QTY_SCHEDULED, 
                 SPEC_PR.PROD_CODE, 
                 SPEC_PR.PROD_NAME, 
                 SPEC_PR.PROD_CMPY, 
+                SPEC_PR.PROD_CLASS,
                 DECODE(SPEC_PR.SCHP_UNITS, 5, TRSF.TRIP_QTY_AMB, 11, TRSF.TRIP_QTY_STD, 17, TRSF.TRIP_QTY_KG, TRSF.TRIP_QTY_DELIVERED) 
                     AS QTY_LOADED, 
                 UV.DESCRIPTION AS UNIT_NAME, 
@@ -1559,12 +1581,15 @@ class ManualTrans extends CommonClass
                 AND CMPT.TRIP_PRODCODE = TRSF.TRIP_PRODCODE(+)
                 AND CMPT.TRIP_PRODCMPY = TRSF.TRIP_PRODCMPY(+)
                 AND UV.UNIT_ID = SPEC_PR.SCHP_UNITS
-        ) LOADED
+            ) LOADED
         WHERE PRODUCTS.PROD_CMPY = LOADED.PROD_CMPY(+)
             AND PRODUCTS.PROD_CODE = LOADED.PROD_CODE(+)
-            AND PRODUCTS.PROD_CMPY = :drawer_code
+            AND DRAWER_P.PROD_CLASS = PRODUCTS.PROD_CLASS -- get comptiable drawer products
+            AND DRAWER_P.PROD_CMPY = :drawer_code -- get comptiable drawer products
+            -- AND PRODUCTS.PROD_CMPY = :drawer_code
             AND NVL(LOADED.QTY_SCHEDULED,0) > 0
-        ORDER BY PRODUCTS.PROD_CODE";
+        ORDER BY PRODUCTS.PROD_CODE
+        ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':shls_trip_no', $this->shls_trip_no);
         oci_bind_by_name($stmt, ':shls_supp', $this->supplier_code);

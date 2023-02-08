@@ -6,7 +6,7 @@ import useSWR from 'swr';
 import moment from 'moment';
 import { useState } from 'react';
 
-import api, { MANUAL_TRANSACTIONS, TANKER_LIST } from '../../../api';
+import api, { LOAD_SCHEDULES, MANUAL_TRANSACTIONS, TANKER_LIST } from '../../../api';
 import { getDateTimeFormat, validateField } from '../../../utils';
 import TripSealManager from './trip-seals';
 import Carrier from './fields/carrier';
@@ -70,6 +70,7 @@ const Forms = ({
       ? MANUAL_TRANSACTIONS.SCHEDULE_SUPPLIERS 
       : (sourceType === 'OPENORDER' ? MANUAL_TRANSACTIONS.ORDER_SUPPLIERS : null)
   ); */
+  const { data: drawers, isValidating: drawersLoading } = useSWR(LOAD_SCHEDULES.DRAWERS);
   const { data: drivers, isValidating: driversLoading } = useSWR(MANUAL_TRANSACTIONS.DRIVERS);
   const { data: carriers, isValidating: carriersLoading } = useSWR(MANUAL_TRANSACTIONS.CARRIERS);
   const { data: activeTrips } = useSWR(`${TANKER_LIST.CHECK_TANKER_ACTIVE_TRIPS}?tanker=${selectedTanker}`);
@@ -153,6 +154,7 @@ const Forms = ({
     setFieldsValue({
       tanker: undefined,
       carrier: undefined,
+      drawer: undefined,
       driver: undefined,
       seal_range: '',
       load_security: '',
@@ -189,6 +191,7 @@ const Forms = ({
       tanker: value?.tnkr_code,
       customer: value?.shls_cust,
       carrier: value?.carrier,
+      drawer: value?.drawer,
       driver: !value?.driver ? drivers?.records?.[0]?.per_code : value?.driver,
       seal_range: sealResults?.records?.[0]?.shls_seal_no,
       load_security: briefsResults?.records?.[0]?.shls_load_security_info,
@@ -200,6 +203,7 @@ const Forms = ({
     setFieldsValue({
       tanker: undefined,
       carrier: undefined,
+      drawer: undefined,
       driver: undefined,
       seal_range: '',
       load_security: '',
@@ -228,6 +232,7 @@ const Forms = ({
     setFieldsValue({
       // tanker: null,
       carrier: value?.order_carrier,
+      drawer: value?.order_drawer,
       driver: drivers?.records?.[0]?.per_code,
       mt_cust_code: value?.customer_code,
       mt_delv_loc: value?.delivery_location,
@@ -240,6 +245,7 @@ const Forms = ({
       trip_no: undefined,
       tanker: undefined,
       carrier: undefined,
+      drawer: undefined,
       driver: undefined,
       customer: undefined,
       order_no: undefined,
@@ -279,6 +285,7 @@ const Forms = ({
     setFieldsValue({
       tanker: undefined,
       carrier: undefined,
+      drawer: undefined,
       driver: undefined,
       order_no: undefined,
       seal_range: '',
@@ -348,6 +355,7 @@ const Forms = ({
       trip_no: undefined,
       tanker: undefined,
       carrier: undefined,
+      drawer: undefined,
       driver: undefined,
       customer: undefined,
       order_no: undefined,
@@ -478,6 +486,7 @@ const Forms = ({
         trip_no: params?.trip_no,
         tanker: params?.tanker ? params?.tanker : value?.tnkr_code,
         carrier: params?.carrier ? params?.carrier : value?.carrier,
+        drawer: params?.drawer ? params?.drawer : value?.drawer,
         driver: params?.driver
           ? params?.driver
           : !value?.driver
@@ -508,6 +517,7 @@ const Forms = ({
         order_no: params?.order_cust_no,
         tanker: params?.tanker ? params?.tanker : null,
         carrier: params?.carrier ? params?.carrier : value?.order_carrier,
+        drawer: params?.drawer ? params?.drawer : value?.order_drawer,
         driver: params?.driver ? params?.driver : drivers?.records?.[0]?.per_code,
         mt_cust_code: params?.mt_cust_code ? params?.mt_cust_code : value?.customer_code,
         mt_delv_loc: params?.mt_delv_loc ? params?.mt_delv_loc : value?.delivery_location,
@@ -736,8 +746,14 @@ const Forms = ({
           </Form.Item>
         </Col>
 
-        <Col span={8}>
+        <Col span={4}>
           <Form.Item name="start_date" label={t('fields.mtDataStartTime')} rules={[{ required: false }]}>
+            <DatePicker showTime={{ format: 'HH:mm' }} format={format} style={{ width: '100%' }} />
+          </Form.Item>
+        </Col>
+
+        <Col span={4}>
+          <Form.Item name="end_date" label={t('fields.mtDataEndTime')} rules={[{ required: false }]}>
             <DatePicker showTime={{ format: 'HH:mm' }} format={format} style={{ width: '100%' }} />
           </Form.Item>
         </Col>
@@ -802,8 +818,25 @@ const Forms = ({
         </Col>
 
         <Col span={8}>
-          <Form.Item name="end_date" label={t('fields.mtDataEndTime')} rules={[{ required: false }]}>
-            <DatePicker showTime={{ format: 'HH:mm' }} format={format} style={{ width: '100%' }} />
+          <Form.Item name="drawer" label={t('fields.drawer')} rules={[{ required: false }]}>
+            <Select
+              dropdownMatchSelectWidth={false}
+              loading={drawersLoading}
+              allowClear
+              showSearch
+              disabled={true}
+              optionFilterProp="children"
+              placeholder={t('placeholder.selectDrawer')}
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {drawers?.records.map((item, index) => (
+                <Select.Option key={index} value={item.cmpy_code}>
+                  {item.cmpy_desc}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
         </Col>
       </Row>

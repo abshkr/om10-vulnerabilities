@@ -102,10 +102,10 @@ const buildBaseTransfersByArm = (prodArms, transfer) => {
 
 const buildBaseTransfers = (prodArms, transfers) => {
   let bases = [];
-  for (let index = 0; index < transfers.length; index++) {
-    const transfer = transfers[index];
+  for (let index = 0; index < transfers?.length; index++) {
+    const transfer = transfers?.[index];
 
-    if (!transfer?.trsf_arm_cd.includes(' ')) {
+    if (!transfer?.trsf_arm_cd?.includes(' ')) {
       const armBases = buildBaseTransfersByArm(prodArms, transfer);
       bases = _.concat(bases, armBases);
     }
