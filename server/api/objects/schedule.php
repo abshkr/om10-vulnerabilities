@@ -103,7 +103,7 @@ class Schedule extends CommonClass
             FROM PERSONNEL
             WHERE PER_AUTH IN (7, 8, 9) 
                 AND PER_CMPY = :per_cmpy
-                AND PER_CODE != '8888'
+                -- AND PER_CODE != '8888'
             ORDER BY PER_CODE";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':per_cmpy', $this->employer);
