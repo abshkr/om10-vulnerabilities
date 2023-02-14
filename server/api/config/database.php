@@ -92,12 +92,14 @@ class Database
    
         /**
          * Check AUTH by default, unless
-         * 1# Client is using Postman
-         * 2# is using localhost:3000 because this is Umesh is using
-         * his testing env.
+         * 1# Client is using Postman and EXCLUED_POSTMAN_AUTHCHECK is false
+         * 2# is using localhost:3000 because this is it is dev env.
          */
         if (AUTH_CHECK &&
-            (isset($_SERVER['HTTP_USER_AGENT']) && substr($_SERVER['HTTP_USER_AGENT'], 0, 7) != 'Postman')) {
+            (isset($_SERVER['HTTP_USER_AGENT']) && 
+            (substr($_SERVER['HTTP_USER_AGENT'], 0, 7) != 'Postman') || 
+            (substr($_SERVER['HTTP_USER_AGENT'], 0, 7) == 'Postman' && EXCLUED_POSTMAN_AUTHCHECK == false))) 
+        {
             if (isset($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], 'localhost')) {
                 // write_log("localhotst", __FILE__, __LINE__);
                 // return $this->conn;

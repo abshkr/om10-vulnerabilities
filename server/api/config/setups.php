@@ -24,6 +24,9 @@ define('JWT_AUTH', true);
 //Set it to true to call ini_set('display_errors', 1) and error_reporting(E_ALL)
 define('DISPLAY_ALL_ERROS', false);
 
+//When it is trun, http request from postman does not need to do JWT auth
+define('EXCLUED_POSTMAN_AUTHCHECK', false);
+
 //If it is true, client uses sth like
 //Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJwZXJfY29kZSI6ImN3X3Rlc3QiLCJleHAiOjE1MzY3NTk2NTF9.oGCzF22FiauRys6Ekq5HL3rxcRQIXr5qWiEMNJBPA7U
 //in HTTP REQUEST HEADER

@@ -1231,9 +1231,11 @@ class Utilities
     public static function getCurrPsn()
     {
         if (JWT_AUTH) {
-            if ((isset($_SERVER['HTTP_USER_AGENT']) && substr($_SERVER['HTTP_USER_AGENT'], 0, 7) === 'Postman')) {
-                write_log("Postman, use 9999 as user", __FILE__, __LINE__);
-                return "9999";
+            if (EXCLUED_POSTMAN_AUTHCHECK) {
+                if ((isset($_SERVER['HTTP_USER_AGENT']) && substr($_SERVER['HTTP_USER_AGENT'], 0, 7) === 'Postman')) {
+                    write_log("Postman, use 9999 as user", __FILE__, __LINE__);
+                    return "9999";
+                }
             }
 
             try {
