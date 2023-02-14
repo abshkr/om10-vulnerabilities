@@ -5,15 +5,16 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download } from '../../components';
+import { Page, PowerTable as DataTable, Download } from '../../components';
 import { DELV_LOCATIONS } from '../../api';
-import { useAuth } from '../../hooks';
+import { useAuth, useConfig } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 
 import Forms from './forms';
 
-const DelvLocations = ({popup, params}) => {
+const DelvLocations = ({ popup, params }) => {
+  const config = useConfig();
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [customer, setCustomer] = useState(null);
@@ -24,10 +25,7 @@ const DelvLocations = ({popup, params}) => {
 
   const access = useAuth('M_DELIVERYLOCATIONS');
 
-  const url =
-    popup && customer
-      ? `${DELV_LOCATIONS.READ}?delv_cust_acct=${customer}`
-      : DELV_LOCATIONS.READ;
+  const url = popup && customer ? `${DELV_LOCATIONS.READ}?delv_cust_acct=${customer}` : DELV_LOCATIONS.READ;
 
   const { data: payload, isValidating, revalidate } = useSWR(url);
   //const { data: payload, isValidating, revalidate } = useSWR(DELV_LOCATIONS.READ);
@@ -78,7 +76,14 @@ const DelvLocations = ({popup, params}) => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access} standalone={popup} avatar="deliveryLocations">
+    <Page
+      page={page}
+      name={name}
+      modifiers={modifiers}
+      access={access}
+      standalone={popup}
+      avatar="deliveryLocations"
+    >
       <DataTable
         minimal={false}
         data={data}
@@ -88,12 +93,14 @@ const DelvLocations = ({popup, params}) => {
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
         filterValue={filterValue}
+        columnAdjustable={config?.siteCustomColumnDlvloc}
+        pageModule={'M_DELIVERYLOCATIONS'}
       />
-      <Forms 
-        value={selected} 
-        visible={visible} 
-        handleFormState={handleFormState} 
-        access={access} 
+      <Forms
+        value={selected}
+        visible={visible}
+        handleFormState={handleFormState}
+        access={access}
         setFilterValue={setFilterValue}
         customer={customer}
         url={url}

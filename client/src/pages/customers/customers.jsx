@@ -5,15 +5,16 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download } from '../../components';
+import { Page, PowerTable as DataTable, Download } from '../../components';
 import { CUSTOMERS } from '../../api';
-import { useAuth } from '../../hooks';
+import { useAuth, useConfig } from '../../hooks';
 import columns from './columns';
 import auth from '../../auth';
 
 import Forms from './forms';
 
 const Customers = () => {
+  const config = useConfig();
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [filterValue, setFilterValue] = useState('');
@@ -68,6 +69,8 @@ const Customers = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         autoColWidth
         filterValue={filterValue}
+        columnAdjustable={config?.siteCustomColumnCustomer}
+        pageModule={'M_CUSTOMERS'}
       />
       <Forms
         value={selected}

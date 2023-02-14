@@ -19,7 +19,7 @@ const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit, siteEna
       } else {
         expiryColumns.push({
           headerName: expiryTypes[i].edt_type_desc,
-          field: 'expiry_dates',
+          field: 'expiry_dates' + (i + 1) + '_eqpt',
           sortable: true,
           resizable: true,
           // filter: 'FuzzyFilter',
@@ -202,7 +202,7 @@ const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit, siteEna
       suppressSizeToFit: true,
       hide: true,
     },
-    {
+    /* {
       headerName: t('fields.axleFrontWeightLimit') + ' (' + t('units.kg') + ')',
       field: 'etyp_front_axle',
       filterable: true,
@@ -221,9 +221,9 @@ const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit, siteEna
       width: 180,
       suppressSizeToFit: true,
       hide: true, // !siteUseAxleWeightLimit,
-    },
+    }, */
 
-    {
+    /* {
       headerName: t('fields.axleDetails'),
       field: 'eqpt_axle_details',
       filterable: true,
@@ -242,7 +242,7 @@ const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit, siteEna
       width: 180,
       suppressSizeToFit: true,
       hide: true, // !siteUseAxleWeightLimit,
-    },
+    }, */
     {
       headerName: t('fields.axleGroups'),
       field: 'eqpt_axle_groups',

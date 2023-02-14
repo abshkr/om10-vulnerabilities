@@ -68,7 +68,7 @@ const buildDrawTransfersByArm = (record, productArms, t, sourceType, loadType, r
     trsf_cmpt_capacit: record?.cmpt_capacit,
     trsf_cmpt_unit: record?.cmpt_units,
     trsf_tc_unit: record?.tc_units,
-    trsf_drwr_cd: record?.shls_supp,
+    trsf_drwr_cd: record?.shls_drawer, // supp,
     trsf_prod_code: record?.prod_code,
     trsf_prod_name: prodClnValue,
     trsf_prod_cmpy: record?.shls_supp,
@@ -92,9 +92,9 @@ const buildDrawTransfers = (records, productArms, t, sourceType, loadType, repos
   const transfers = [];
 
   _.forEach(records, (record) => {
-    // console.log('buildDrawTransfers', record?.shls_supp);
-    if (record.shls_supp !== '') {
-      // console.log('************* buildDrawTransfers', record, record?.shls_supp, record?.prod_code);
+    // console.log('buildDrawTransfers', record?.shls_supp, record?.shls_drawer);
+    if (record.shls_supp !== '' && record.shls_drawer !== '') {
+      // console.log('************* buildDrawTransfers', record, record?.shls_supp, record?.shls_drawer, record?.prod_code);
       const transfer = buildDrawTransfersByArm(record, productArms, t, sourceType, loadType, repost);
 
       transfers.push(transfer);

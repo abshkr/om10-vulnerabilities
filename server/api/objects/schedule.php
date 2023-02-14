@@ -103,7 +103,7 @@ class Schedule extends CommonClass
             FROM PERSONNEL
             WHERE PER_AUTH IN (7, 8, 9) 
                 AND PER_CMPY = :per_cmpy
-                AND PER_CODE != '8888'
+                -- AND PER_CODE != '8888'
             ORDER BY PER_CODE";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':per_cmpy', $this->employer);
@@ -2011,30 +2011,47 @@ class Schedule extends CommonClass
                         PR.PROD_NAME AS PROD_NAME,
                         PR.PROD_CMPY AS PROD_CMPY
                     FROM SPECPROD SPEC, PRODUCTS PR
-                    WHERE SPEC.SCHPPROD_PRODCMPY = PR.PROD_CMPY
+                    WHERE SPEC.SCHPPROD_PRODCMPY = PR.PROD_CMPY               -- product company will be always the supplier in SPECPROD
                         AND SPEC.SCHPPROD_PRODCODE = PR.PROD_CODE
                         AND SPEC.SCHPSPID_SHLSTRIP = :shls_trip_no
                         AND SPEC.SCHPSPID_SHLSSUPP = :shls_supp
                 ) SPEC_PR, 
                 UNIT_SCALE_VW UV, 
                 (
-                    SELECT SPECDETS.SCHDSPEC_SHLSSUPP AS TRIP_SUPPLIER,
-                        SPECDETS.SCHDSPEC_SHLSTRIP AS TRIP_NO,
-                        SPECDETS.SCHDPROD_PRODCMPY AS TRIP_PRODCMPY,
-                        SPECDETS.SCHDPROD_PRODCODE AS TRIP_PRODCODE,
-                        SUM(SPECDETS.SCHD_PRESETQTY) AS TRIP_QTY_PRESET,
-                        SUM(SPECDETS.SCHD_PRLDQTY) AS TRIP_QTY_PRELOAD,
-                        SUM(SPECDETS.SCHD_SPECQTY) AS TRIP_QTY_SCHED,
-                        SUM(SPECDETS.SCHD_DELIVERED) AS TRIP_QTY_LOADED,
+                    SELECT SPDT.SCHDSPEC_SHLSSUPP AS TRIP_SUPPLIER,
+                        SPDT.SCHDSPEC_SHLSTRIP AS TRIP_NO,
+                        SPDT.SCHDPROD_PRODCMPY AS TRIP_PRODCMPY,
+                        SPDT.SCHDPROD_PRODCODE AS TRIP_PRODCODE,
+                        SUM(SPDT.SCHD_PRESETQTY) AS TRIP_QTY_PRESET,
+                        SUM(SPDT.SCHD_PRLDQTY) AS TRIP_QTY_PRELOAD,
+                        SUM(SPDT.SCHD_SPECQTY) AS TRIP_QTY_SCHED,
+                        SUM(SPDT.SCHD_DELIVERED) AS TRIP_QTY_LOADED,
                         PRODUCTS.PROD_CLASS
-                    FROM SPECDETS, PRODUCTS
-                    WHERE SCHDPROD_PRODCMPY = PRODUCTS.PROD_CMPY AND SCHDPROD_PRODCODE = PROD_CODE
-                    GROUP BY SCHDSPEC_SHLSSUPP, SCHDSPEC_SHLSTRIP, SCHDPROD_PRODCMPY, SCHDPROD_PRODCODE, PROD_CLASS
+                    FROM PRODUCTS, (
+                        SELECT 
+                            SCHDSPEC_SHLSSUPP,
+                            SCHDSPEC_SHLSTRIP,
+                            -- product company will be the drawer sometimes in SPECDETS, convert it to supplier
+                            DECODE(SCHDPROD_PRODCMPY, :drawer_code, SCHDSPEC_SHLSSUPP, SCHDPROD_PRODCMPY) as SCHDPROD_PRODCMPY,
+                            SCHDPROD_PRODCODE,
+                            SCHD_PRESETQTY,
+                            SCHD_PRLDQTY,
+                            SCHD_SPECQTY,
+                            SCHD_DELIVERED
+                        FROM SPECDETS
+                        WHERE SCHDSPEC_SHLSSUPP=:shls_supp AND SCHDSPEC_SHLSTRIP = :shls_trip_no
+                        ) SPDT
+                    WHERE SPDT.SCHDPROD_PRODCMPY = PRODUCTS.PROD_CMPY 
+                        AND SPDT.SCHDPROD_PRODCODE = PRODUCTS.PROD_CODE
+                    GROUP BY SPDT.SCHDSPEC_SHLSSUPP, SPDT.SCHDSPEC_SHLSTRIP, SPDT.SCHDPROD_PRODCMPY, SPDT.SCHDPROD_PRODCODE, PRODUCTS.PROD_CLASS
                 ) CMPT, 
                 (
-                    SELECT SCHEDULE.SHLS_SUPP AS TRIP_SUPPLIER, PROD_CLASS,
+                    SELECT SCHEDULE.SHLS_SUPP AS TRIP_SUPPLIER
+                        , PRODUCTS.PROD_CLASS,
                         SCHEDULE.SHLS_TRIP_NO AS TRIP_NO,
-                        TRANSFERS.TRSFPROD_PRODCMPY AS TRIP_PRODCMPY,
+                        -- product company will be the drawer sometimes in TRANSFERS, leave as it is
+                        -- TRANSFERS.TRSFPROD_PRODCMPY AS TRIP_PRODCMPY,
+                        DECODE(TRANSFERS.TRSFPROD_PRODCMPY, :drawer_code, SCHEDULE.SHLS_SUPP, TRANSFERS.TRSFPROD_PRODCMPY) AS TRIP_PRODCMPY,
                         TRANSFERS.TRSFPROD_PRODCODE AS TRIP_PRODCODE,
                         SUM(TRANSFERS.TRSF_QTY_AMB) AS TRIP_QTY_AMB,
                         SUM(TRANSFERS.TRSF_QTY_COR) AS TRIP_QTY_STD,
@@ -2049,9 +2066,13 @@ class Schedule extends CommonClass
                         AND LOADS.LD_TERMINAL = TRANSACTIONS.TRSALDID_LD_TRM
                         AND TRANSACTIONS.TRSA_ID = TRANSFERS.TRSFTRID_TRSA_ID
                         AND TRANSACTIONS.TRSA_TERMINAL = TRANSFERS.TRSFTRID_TRSA_TRM
-                        AND TRSFPROD_PRODCODE = PROD_CODE AND TRSFPROD_PRODCMPY = PROD_CMPY
-                    GROUP BY SCHEDULE.SHLS_SUPP, SCHEDULE.SHLS_TRIP_NO, TRANSFERS.TRSFPROD_PRODCMPY, 
-                        TRANSFERS.TRSFPROD_PRODCODE, PROD_CLASS
+                        AND TRSFPROD_PRODCODE = PROD_CODE 
+                        AND DECODE(TRANSFERS.TRSFPROD_PRODCMPY, :drawer_code, SCHEDULE.SHLS_SUPP, TRANSFERS.TRSFPROD_PRODCMPY) = PROD_CMPY
+                        AND SCHEDULE.SHLS_TRIP_NO = :shls_trip_no
+                        AND SCHEDULE.SHLS_SUPP = :shls_supp
+                    GROUP BY SCHEDULE.SHLS_SUPP, SCHEDULE.SHLS_TRIP_NO, 
+                        DECODE(TRANSFERS.TRSFPROD_PRODCMPY, :drawer_code, SCHEDULE.SHLS_SUPP, TRANSFERS.TRSFPROD_PRODCMPY), 
+                        TRANSFERS.TRSFPROD_PRODCODE, PRODUCTS.PROD_CLASS
                 ) TRSF
             WHERE SPEC_PR.SCHPSPID_SHLSSUPP = CMPT.TRIP_SUPPLIER (+)
                 AND SPEC_PR.SCHPSPID_SHLSTRIP = CMPT.TRIP_NO (+)
@@ -2067,7 +2088,7 @@ class Schedule extends CommonClass
         ) LOADED
         WHERE PRODUCTS.PROD_CMPY = LOADED.PROD_CMPY(+)
             AND PRODUCTS.PROD_CODE = LOADED.PROD_CODE(+)
-            AND PRODUCTS.PROD_CMPY = :drawer_code
+            AND PRODUCTS.PROD_CMPY = :shls_supp
         ORDER BY PRODUCTS.PROD_CODE";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':shls_trip_no', $this->shls_trip_no);

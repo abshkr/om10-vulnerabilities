@@ -1,5 +1,5 @@
 import React from 'react';
-import { useConfig } from 'hooks';
+// import { useConfig } from 'hooks';
 import NumberFormat from 'react-number-format';
 
 /*
@@ -18,8 +18,10 @@ import NumberFormat from 'react-number-format';
 1234567.89	China (based on powers of 10 000—see Chinese numerals[citation needed]).
 */
 const DecimalThousandSeparator = ({ text, type }) => {
-  const config = useConfig();
-  const seperatorType = (config.decimal_thousand_separator || type) - 1;
+  // const config = useConfig();
+  // const seperatorType = (config.decimal_thousand_separator || type) - 1;
+  const seperatorType = (type === undefined ? 13 : type) - 1;
+  // console.log('................separater', seperatorType);
   const types = [
     // 1 - canadianEnglish           1 234 567.89 ?
     // 1 - canadianFrench            1 234 567,89

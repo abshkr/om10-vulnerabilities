@@ -17,7 +17,7 @@ const columns = (expiryTypes, t, expiryDateMode) => {
       } else {
         expiryColumns.push({
           headerName: expiryTypes[i].edt_type_desc,
-          field: 'expiry_dates',
+          field: 'expiry_dates' + (i + 1) + '_psnl',
           sortable: true,
           resizable: true,
           // filter: 'FuzzyFilter',

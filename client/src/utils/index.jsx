@@ -39,6 +39,7 @@ import generateMaxInt from './generate-maxint';
 import castNumber from './cast-number';
 import updateUserPageColumns from './update-page-columns';
 import setupUserPageColumns from './setup-page-columns';
+import removeUserPageColumns from './remove-page-columns';
 import calcWiA from './calc-mass-in-air';
 import checkFormFields from './check-form-fields';
 import compareObjects from './compare-objects';
@@ -88,6 +89,7 @@ export {
   castNumber,
   updateUserPageColumns,
   setupUserPageColumns,
+  removeUserPageColumns,
   calcWiA,
   checkFormFields,
   compareObjects,

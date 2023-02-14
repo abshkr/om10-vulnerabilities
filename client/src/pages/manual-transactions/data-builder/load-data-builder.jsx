@@ -10,6 +10,7 @@ const buildPayloadToLoad = (payload, setRepost, t) => {
   values.order_cust_no = mthead?.ORDER_TRIP_IND;
   values.trip_no = mthead?.LOAD_NUMBER;
   values.supplier = mthead?.SUPPLIER;
+  values.drawer = mthead?.DRAWER;
   values.carrier = mthead?.CARRIER;
   values.tanker = mthead?.TANKER_CODE;
   values.driver = mthead?.OPERATOR_CODE;
@@ -84,7 +85,7 @@ const buildPayloadToLoad = (payload, setRepost, t) => {
     transfer.trsf_delv_num = titem?.DELV_NUM;
     transfer.trsf_arm_cd = titem?.ARM_CODE === '' ? t('placeholder.selectArmCode') : titem?.ARM_CODE;
     transfer.trsf_drwr_cd = titem?.DRAWER_CODE;
-    transfer.trsf_prod_cmpy = titem?.DRAWER_CODE;
+    transfer.trsf_prod_cmpy = titem?.SUPPLIER_CODE;
     transfer.trsf_prod_code =
       titem?.PRODUCT_CODE === '' ? t('placeholder.selectDrawerProduct') : titem?.PRODUCT_CODE;
     transfer.trsf_density = titem?.DENS;

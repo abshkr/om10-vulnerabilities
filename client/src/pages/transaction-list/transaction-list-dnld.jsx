@@ -9,7 +9,7 @@ import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icon
 import {
   Page,
   FormModal,
-  DataTable,
+  PowerTable as DataTable,
   Download,
   DataDownloader,
   PageDownloader,
@@ -30,7 +30,7 @@ import usePagination from 'hooks/use-pagination';
 
 const TransactionList = () => {
   const config = useConfig();
-  const { siteTrsaPaging, siteUseDownloader } = config;
+  const { siteTrsaPaging, siteUseDownloader, siteCustomColumnTrnsList } = config;
 
   const [pagingFlag, setPagingFlag] = useState(undefined);
   const [isSearching, setSearching] = useState(false);
@@ -343,6 +343,8 @@ const TransactionList = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         autoColWidth
         clearFilterPlus={revalidate}
+        columnAdjustable={siteCustomColumnTrnsList}
+        pageModule={'M_TRANSACTIONLIST'}
       />
       <div
         style={{

@@ -1,0 +1,216 @@
+{
+  "M_ALLOCATIONS": {
+    "visibility": ["alloc_index", "alloc_start_date", "alloc_end_date", "alloc_next_date"]
+  },
+
+  "M_BASEPRODUCTS": {
+    "visibility": [
+      "base_dens_lo",
+      "base_dens_hi",
+      "base_limit_preset_ht",
+      "afc_enabled",
+      "afc_priority",
+      "base_stock_unit",
+      "base_stock_unit_name",
+      "base_pidx_code"
+    ]
+  },
+
+  "M_COMPANIES": {
+    "visibility": [
+      "cmpy_pidx_carrier",
+      "cmpy_pidx_carrier_fein",
+      "cmpy_pidx_supplier",
+      "cmpy_pidx_drawer",
+      "cmpy_pidx_customer"
+    ]
+  },
+
+  "M_CUSTOMERS": { "visibility": [] },
+
+  "M_DELIVERYLOCATIONS": { "visibility": [] },
+
+  "M_EQUIPMENT": {
+    "visibility": ["front_weigh_limit", "rear_weigh_limit", "etyp_front_axle", "etyp_rear_axle"]
+  },
+
+  "M_EQUIPMENTLIST": {
+    "visibility": [
+      "eqpt_guard_master_used",
+      "eqpt_guard_master_id",
+      "eqpt_guard_master_desc",
+      "front_weigh_limit",
+      "rear_weigh_limit",
+      "etyp_front_axle",
+      "etyp_rear_axle",
+      "eqpt_axle_details",
+      "eqpt_axle_briefs",
+      "eqpt_axle_groups",
+      "eqpt_axle_weights"
+    ]
+  },
+
+  "M_IDENTIFICATIONASSIGNMENT": { "visibility": [] },
+
+  "M_LOADSCHEDULES": {
+    "visibility": [
+      "shls_cnvrt_trace",
+      "shls_cust",
+      "shls_cust_cmpycode",
+      "shls_cust_cmpyname",
+      "mv_key",
+      "trsf_product",
+      "trsf_qty_amb",
+      "trsf_qty_cor",
+      "trsf_load_kg",
+      "trsf_air_kg",
+      "dt_posted",
+      "trsa_alt_qty",
+      "trsa_alt_unt",
+      "ld_type"
+    ]
+  },
+
+  "M_NOMINATION": { "visibility": [] },
+
+  "M_NOMSCHEDULES": {
+    "visibility": [
+      "shls_srctype",
+      "shls_trip_no_org",
+      "carrier_code",
+      "tnkr_name",
+      "supplier_code",
+      "shls_priority",
+      "order_cust_ordno",
+      "order_cust_cmpy_code",
+      "trsf_load_kg",
+      "trsf_air_kg",
+      "shls_supp_org",
+      "shls_sold_to_num",
+      "shls_ship_to_num"
+    ]
+  },
+
+  "M_ORDERLISTING": { "visibility": [] },
+
+  "M_PARTNERS": { "visibility": [] },
+
+  "M_PARTNERSHIP": { "visibility": [] },
+
+  "M_PERSONNEL": { "visibility": [] },
+
+  "M_PRODUCTINVENTORY": {
+    "visibility": ["tank_site", "tank_sitename", "ullage"]
+  },
+
+  "M_PRODUCTMOVEMENT": { "visibility": ["pmv_mv_id"] },
+
+  "M_DRAWERPRODUCTS": {
+    "visibility": [
+      "prod_check_hot_volume",
+      "prod_15_density",
+      "prod_hot_temp",
+      "prod_check_2nd_drawer",
+      "prod_2nd_drawer",
+      "prod_2nd_drawer_name",
+      "prod_2nd_product",
+      "prod_2nd_product_name",
+      "prod_guardmaster_code",
+      "prod_guardmaster_quality",
+      "prod_guardmaster_qltycode",
+      "prod_guardmaster_qltyname",
+      "prod_pidx_code"
+    ]
+  },
+
+  "M_SITEBALANCE": {
+    "visibility": ["tanksite", "tanksitename", "base_period_open", "base_period_close"]
+  },
+
+  "M_SPECIALMOVEMENTS": { "visibility": [] },
+
+  "M_TANKCONFIGURATION": {
+    "visibility": ["afc_priority", "tank_max_flow"]
+  },
+
+  "M_TANKERS": {
+    "visibility": ["tnkr_number", "tnkr_axle_groups", "tnkr_axle_weights"]
+  },
+
+  "M_TANKINVENTORY": {
+    "visibility": ["tank_site", "tank_sitename", "tank_water_lvl", "tank_water", "tank_ifc"]
+  },
+
+  "M_TANKSTATUS": {
+    "visibility": [
+      "tank_water_lvl",
+      "tank_water",
+      "tank_ifc",
+      "tank_liquid_kg",
+      "tank_air_kg",
+      "tank_15_density",
+      "tank_api",
+      "tank_sg",
+      "afc_priority",
+      "tank_max_flow",
+      "tank_hh_level",
+      "tank_h_level",
+      "tank_l_level",
+      "tank_ll_level",
+      "tank_uh_level",
+      "tank_ul_level",
+      "tank_hh_state",
+      "tank_h_state",
+      "tank_l_state",
+      "tank_ll_state",
+      "tank_uh_state",
+      "tank_ul_state"
+    ]
+  },
+
+  "M_TRANSACTIONLIST": { "visibility": [] },
+
+  "M_ADAPTIVEFLOW": { "visibility": [] },
+  "M_ADDRESSES": { "visibility": [] },
+  "M_AREA": { "visibility": [] },
+  "M_AUDITREPORT": { "visibility": [] },
+  "M_BAYMOVEMENT": { "visibility": [] },
+  "M_BAYVIEW": { "visibility": [] },
+  "M_CUSTOMERCATEGORIES": { "visibility": [] },
+  "M_CUSTOMERPRICING": { "visibility": [] },
+  "M_DANGEROUSGOODS": { "visibility": [] },
+  "M_PRODUCTS": { "visibility": [] },
+  "M_EXPIRYDATES": { "visibility": [] },
+  "M_FOLIOMANAGEMENT": { "visibility": [] },
+  "M_FOLIOSCHEDULING": { "visibility": [] },
+  "M_FSCSTATUS": { "visibility": [] },
+  "M_GATECONTROL": { "visibility": [] },
+  "M_GATEPERMISSION": { "visibility": [] },
+  "M_GSAPMESSAGING": { "visibility": [] },
+  "M_HAZCHEM": { "visibility": [] },
+  "M_INVENTORYREQUEST": { "visibility": [] },
+  "M_JASPERREPORTS": { "visibility": [] },
+  "M_JOURNALREPORT": { "visibility": [] },
+  "M_KEYREADERDEVICES": { "visibility": [] },
+  "M_LOADBAYS": { "visibility": [] },
+  "M_LOADMETERS": { "visibility": [] },
+  "M_LOGICALPRINTERS": { "visibility": [] },
+  "M_MANUALTRANSACTIONS": { "visibility": [] },
+  "M_METERING": { "visibility": [] },
+  "M_METERINGDEVICES": { "visibility": [] },
+  "M_MOVEMENTREASON": { "visibility": [] },
+  "M_ONSITEREPORT": { "visibility": [] },
+  "M_ORDERPRODUCTPRICING": { "visibility": [] },
+  "M_PHYSICALPRINTERS": { "visibility": [] },
+  "M_PRICEOFFSETS": { "visibility": [] },
+  "M_PRODUCTASSETS": { "visibility": [] },
+  "M_REPOCONFIGURATION": { "visibility": [] },
+  "M_REPOPROFILE": { "visibility": [] },
+  "M_ROLEACCESS": { "visibility": [] },
+  "M_SFTRANSACTIONLIST": { "visibility": [] },
+  "M_SITEACCESSDEVICES": { "visibility": [] },
+  "M_SITECONFIG": { "visibility": [] },
+  "M_TANKGROUPS": { "visibility": [] },
+  "M_TANKVIEW": { "visibility": [] },
+  "M_TIMECODES": { "visibility": [] }
+}

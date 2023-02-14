@@ -13,7 +13,7 @@ import {
   TrademarkOutlined,
 } from '@ant-design/icons';
 
-import { Page, DataTable, Download, FormModal } from 'components';
+import { Page, PowerTable as DataTable, Download, FormModal } from 'components';
 import { DRAWER_PRODUCTS } from '../../api';
 import { useAuth } from '../../hooks';
 import columns from './columns';
@@ -176,6 +176,8 @@ const DrawerProduct = () => {
             filterValue={filterValue}
             height={'310px'}
             // parentHeight={'65vh'}
+            columnAdjustable={config?.siteCustomColumnDrawProd}
+            pageModule={'M_DRAWERPRODUCTS'}
           />
           {visible && (
             <Forms

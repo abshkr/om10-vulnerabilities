@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import jwtDecode from 'jwt-decode';
 
 import { useAuth, useConfig } from 'hooks';
-import { Page, DataTable, Download } from 'components';
+import { Page, PowerTable as DataTable, Download } from 'components';
 import { TerminalList } from 'components/fields';
 import { STOCK_MANAGEMENT } from 'api';
 import auth from 'auth';
@@ -102,7 +102,13 @@ const SiteBalance = () => {
       access={access}
       avatar="siteBalance"
     >
-      <DataTable columns={fields} data={payload} isLoading={isValidating} />
+      <DataTable
+        columns={fields}
+        data={payload}
+        isLoading={isValidating}
+        columnAdjustable={config?.siteCustomColumnSiteBalance}
+        pageModule={'M_SITEBALANCE'}
+      />
     </Page>
   );
 };

@@ -98,7 +98,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
     width: 170,
   },
-  {
+  /* {
     headerName: t('fields.usableVolume2'),
     field: 'usablevol2',
     sortable: true,
@@ -110,7 +110,7 @@ const columns = (t, config) => [
     },
     suppressSizeToFit: true,
     width: 170,
-  },
+  }, */
 ];
 
 export default columns;

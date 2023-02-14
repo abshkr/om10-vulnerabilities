@@ -13,6 +13,7 @@ const setupUserPageColumns = (origColumns, pageColumns) => {
       if (item) {
         item.width = o?.column_width;
         item.hide = !o?.column_visible;
+        item.suppressSizeToFit = true;
         newColumns.push(item);
       }
     });

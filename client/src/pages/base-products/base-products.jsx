@@ -5,7 +5,7 @@ import { Button, Drawer, Tabs } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, EyeOutlined, CloseOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download } from '../../components';
+import { Page, PowerTable as DataTable, Download } from '../../components';
 import { BASE_PRODUCTS } from '../../api';
 import { useAuth, useConfig, useQuery } from '../../hooks';
 import columns from './columns';
@@ -150,6 +150,8 @@ const BaseProducts = () => {
           handleSelect={(payload) => handleFormState(true, payload[0])}
           autoColWidth
           filterValue={filterValue}
+          columnAdjustable={config?.siteCustomColumnBaseProd}
+          pageModule={'M_BASEPRODUCTS'}
         />
 
         {visible && (

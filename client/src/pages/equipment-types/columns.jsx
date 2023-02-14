@@ -32,6 +32,8 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     cellRenderer: 'EquipmentRenderer',
+    width: 500,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.schedulable'),
@@ -73,7 +75,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
     hide: true,
   },
-  {
+  /* {
     headerName: t('fields.axleFrontWeightLimit') + ' (' + t('units.kg') + ')',
     field: 'etyp_front_axle',
     filterable: true,
@@ -92,7 +94,7 @@ const columns = (t, config) => [
     width: 180,
     suppressSizeToFit: true,
     hide: true, // !config?.siteUseAxleWeightLimit,
-  },
+  }, */
 
   {
     headerName: t('fields.countEtypEquipment'),
@@ -100,7 +102,7 @@ const columns = (t, config) => [
     filterable: true,
     sortable: true,
     resizable: true,
-    width: 140,
+    width: 160,
     suppressSizeToFit: true,
     // hide: true,
   },
@@ -110,7 +112,7 @@ const columns = (t, config) => [
     filterable: true,
     sortable: true,
     resizable: true,
-    width: 140,
+    width: 160,
     suppressSizeToFit: true,
     // hide: true,
   },
@@ -120,7 +122,7 @@ const columns = (t, config) => [
     filterable: true,
     sortable: true,
     resizable: true,
-    width: 140,
+    width: 160,
     suppressSizeToFit: true,
     hide: true,
   },

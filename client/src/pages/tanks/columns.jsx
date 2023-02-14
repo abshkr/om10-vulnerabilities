@@ -39,7 +39,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
-    headerName: t('fields.terminal'),
+    headerName: t('fields.terminalCode'),
     field: 'tank_terminal',
     filter: 'FuzzyFilter',
     sortable: true,

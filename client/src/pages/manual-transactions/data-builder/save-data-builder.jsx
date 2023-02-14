@@ -15,6 +15,7 @@ const buildPayloadToSave = (values, customers, sourceType, repost, user_code, sa
   mthead.ORDER_TRIP_IND = sourceType === 'OPENORDER' ? values?.order_no : '';
   mthead.LOAD_NUMBER = sourceType === 'SCHEDULE' ? values?.trip_no : '';
   mthead.SUPPLIER = values?.supplier;
+  mthead.DRAWER = values?.drawer;
   mthead.CARRIER = values?.carrier;
   mthead.TANKER_CODE = values?.tanker;
   mthead.OPERATOR_CODE = values?.driver;
@@ -92,6 +93,7 @@ const buildPayloadToSave = (values, customers, sourceType, repost, user_code, sa
         ? ''
         : titem.trsf_arm_cd;
     transfer.DRAWER_CODE = titem.trsf_drwr_cd;
+    transfer.SUPPLIER_CODE = titem.trsf_prod_cmpy;
     transfer.PRODUCT_CODE =
       titem.trsf_prod_code === t('placeholder.selectDrawerProduct') ? '' : titem.trsf_prod_code;
     transfer.DENS = titem.trsf_density;

@@ -8,7 +8,7 @@ import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icon
 
 import {
   Page,
-  DataTable,
+  PowerTable as DataTable,
   Download,
   DataDownloader,
   PageDownloader,
@@ -29,7 +29,7 @@ const OrderListings = ({ popup, params }) => {
   const config = useConfig();
   const rangeSetting = config.openOrderDateRange;
   const filterByExpiry = config.filterOpenOrderByExpiry;
-  const { siteOrderPaging, siteUseDownloader } = config;
+  const { siteOrderPaging, siteUseDownloader, siteCustomColumnOrder } = config;
   console.log('filterByExpiry', filterByExpiry);
 
   const [pagingFlag, setPagingFlag] = useState(undefined);
@@ -508,6 +508,8 @@ const OrderListings = ({ popup, params }) => {
         }}
         autoColWidth
         clearFilterPlus={revalidate}
+        columnAdjustable={siteCustomColumnOrder}
+        pageModule={'M_ORDERLISTING'}
       />
       <div
         style={{

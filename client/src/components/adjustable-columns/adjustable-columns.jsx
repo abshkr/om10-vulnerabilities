@@ -8,12 +8,26 @@ import { Scrollbars } from 'react-custom-scrollbars';
 
 import api, { AUTH } from '../../api';
 import { updateUserPageColumns } from 'utils';
+import specialColumns from './special-columns.json';
 
 const AdjustableColumns = ({ pageColumns, pageModule, columnAPI, columnLoader }) => {
   const { t } = useTranslation();
 
   const [items, setItems] = useState([]);
   const [visible, setVisible] = useState(false);
+
+  const hideDisabled = false;
+
+  const isColumnDisabled = (field) => {
+    const list = specialColumns?.[pageModule]?.['visibility'];
+    if (!list || list?.length === 0) {
+      return false;
+    } else {
+      const index = _.indexOf(list, field);
+      // console.log('.............adjcol', index, field, specialColumns, pageModule, list)
+      return index < 0 ? false : true;
+    }
+  };
 
   const onFinish = (type, payload) => {
     // console.log('.............moved', columnAPI, pageColumns);
@@ -80,7 +94,9 @@ const AdjustableColumns = ({ pageColumns, pageModule, columnAPI, columnLoader })
             style={{ height: 'calc(100vh - 300px)', overflowY: 'auto', minHeight: 500 }}
             itemLayout="horizontal"
             size="small"
-            dataSource={items}
+            dataSource={items?.filter((o) => {
+              return hideDisabled ? !isColumnDisabled(o?.colDef?.field) : true;
+            })}
             renderItem={(item) => {
               return (
                 <List.Item
@@ -95,6 +111,7 @@ const AdjustableColumns = ({ pageColumns, pageModule, columnAPI, columnLoader })
                         checkedChildren={<span>{t('operations.switchShow')}</span>}
                         unCheckedChildren={<span>{t('operations.switchHide')}</span>}
                         onChange={(value) => onColumnChanged(item, value)}
+                        disabled={isColumnDisabled(item?.colDef?.field)}
                       />
                     }
                     // eslint-disable-next-line

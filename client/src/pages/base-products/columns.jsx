@@ -139,7 +139,6 @@ const columns = (t, config) => [
     resizable: true,
     suppressSizeToFit: true,
     width: 180,
-    suppressSizeToFit: true,
     cellRenderer: 'LinkRenderer',
     cellRendererParams: {
       endpoint: TANK_CONFIGURATION,
