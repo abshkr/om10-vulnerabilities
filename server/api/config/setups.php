@@ -37,13 +37,8 @@ otherwise there will be a "Request header field Authorization is not allowed by 
  */
 define('AUTH_IN_HEADER', true);
 
-//
-// define('JWT_SECRET', 'dki_jwt');
-
 //It can be http:// or https://
 define('URL_PROTOCOL', 'https://');
-
-define('JWT_SECRET', 'dki_jwt');
 
 //if it is true, store $token['sess_id'] in db, and when check token
 //also check if $token['sess_id'] is in db. Because when logout, $token['sess_id']
