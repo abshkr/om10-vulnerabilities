@@ -248,7 +248,7 @@ class SpecialMovement extends CommonClass
             write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
             // $error = new EchoSchema(500, response("__INTERNAL_ERROR__", "Internal Error: " . $e['message']));
             // echo json_encode($error, JSON_PRETTY_PRINT);
-            false;
+            return false;
         };
 
         return true;
@@ -795,6 +795,128 @@ class SpecialMovement extends CommonClass
         return true;
     }
 
+    // Directly insert into MOVEMENTS and MOVEMENT_ITEMS. Same logic as module\nomination.pc::Mv_prepare_spec_mv
+    private function zeroQtySubmit()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+        
+        // Set status to be COMPLETE
+        $query = "UPDATE MOV_LOAD_ITEMS SET MLITM_STATUS = 5 WHERE MLITM_ID = :mlitm_id";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':mlitm_id', $this->mlitm_id);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+
+            $result = new EchoSchema(500, response("__SPECIAL_MOVEMENT_FAILED__",
+                "Failed to submit special movement, error message: " . $e['message']));
+            echo json_encode($result, JSON_PRETTY_PRINT);
+            return;
+        };
+
+        $query = "SELECT NVL(MAX(MV_ID), 1) NEXT_ID FROM MOVEMENTS";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $mv_id = intval($row['NEXT_ID']) + 1;
+        /* database constraint. mv_key usually comes from host, but this is speical movement, so do it this way */
+        $mv_key = $mv_id * 1000 + 900000001;      
+        write_log(sprintf("mv_id:%d, key:%d, type:%s", $mv_id, $mv_key, $this->mlitm_type), __FILE__, __LINE__);
+        if (intval($this->mlitm_type) == 0)     //MV_RECEIPT
+        {
+            $query = 
+                "INSERT INTO MOVEMENTS (MV_ID, MV_KEY, MV_TERMINAL, MV_TPPOINT, MV_CLASS, MV_DTIM_CREATE, MV_DTIM_CHANGE, 
+                    MV_SUPPLIER, MV_DRAWER, MV_SRCTYPE, MV_OPER_CREATE, MV_OPER_CHANGE, MV_STATUS)
+                SELECT :mv_id, :mv_key, MLITM_TERMINAL, MLITM_TERMINAL, 1, SYSDATE, SYSDATE, 
+                    MLITM_PRODCMPY_TO, MLITM_PRODCMPY_TO, 3, MLITM_OPER_POSTED, MLITM_OPER_POSTED, 5
+                FROM MOV_LOAD_ITEMS WHERE MLITM_ID = :mlitm_id";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':mv_id', $mv_id);
+            oci_bind_by_name($stmt, ':mv_key', $mv_key);
+            oci_bind_by_name($stmt, ':mlitm_id', $this->mlitm_id);
+        }
+        else if (intval($this->mlitm_type) == 1)    //MV_DISPOSAL
+        {
+            $query = 
+                "INSERT INTO MOVEMENTS (MV_ID, MV_KEY, MV_TERMINAL, MV_TPPOINT, MV_CLASS, MV_DTIM_CREATE, MV_DTIM_CHANGE, 
+                    MV_SUPPLIER, MV_DRAWER, MV_SRCTYPE, MV_OPER_CREATE, MV_OPER_CHANGE, MV_STATUS)
+                SELECT :mv_id, :mv_key, MLITM_TERMINAL, MLITM_TERMINAL, 1, SYSDATE, SYSDATE, 
+                    MLITM_PRODCMPY, MLITM_PRODCMPY, 3, MLITM_OPER_POSTED, MLITM_OPER_POSTED, 5
+                FROM MOV_LOAD_ITEMS WHERE MLITM_ID = :mlitm_id";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':mv_id', $mv_id);
+            oci_bind_by_name($stmt, ':mv_key', $mv_key);
+            oci_bind_by_name($stmt, ':mlitm_id', $this->mlitm_id);
+        }
+        else if (intval($this->mlitm_type) == 2)    //MV_TRANSFER
+        {
+            $query = 
+                "INSERT INTO MOVEMENTS (MV_ID, MV_KEY, MV_TERMINAL, MV_TPPOINT, MV_CLASS, MV_DTIM_CREATE, MV_DTIM_CHANGE, 
+                    MV_SUPPLIER, MV_DRAWER, MV_SRCTYPE, MV_OPER_CREATE, MV_OPER_CHANGE, MV_STATUS)
+                SELECT :mv_id, :mv_key, MLITM_TERMINAL, MLITM_TERMINAL, 1, SYSDATE, SYSDATE, 
+                    MLITM_PRODCMPY, MLITM_PRODCMPY, 3, MLITM_OPER_POSTED, MLITM_OPER_POSTED, 5
+                FROM MOV_LOAD_ITEMS WHERE MLITM_ID = :mlitm_id";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':mv_id', $mv_id);
+            oci_bind_by_name($stmt, ':mv_key', $mv_key);
+            oci_bind_by_name($stmt, ':mlitm_id', $this->mlitm_id);
+        }
+
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        // Insert into MOVEMENT_ITEMS. Always use 5 (l amb) as unit
+        $query = 
+            "INSERT INTO MOVEMENT_ITEMS (MVITM_MOVE_ID, MVITM_LINE_ID, MVITM_ITEM_ID, MVITM_ITEM_KEY, MVITM_PRODCMPY_TO, MVITM_PRODCODE_TO, 
+                MVITM_TANK_TO, MVITM_PRODCMPY_FROM, MVITM_PRODCODE_FROM, MVITM_TANK_FROM, MVITM_TYPE, MVITM_QTY_SCHD, MVITM_UNIT_SCHD,
+                MVITM_QTY_MOVE, MVITM_UNIT_MOVE, MVITM_QTY_DELV, MVITM_UNIT_DELV, MVITM_PROD_QTY, MVITM_PROD_UNIT, MVITM_KEY, MVITM_OPER_CHANGE)
+            SELECT :mv_id, 1, :mv_id * 1000 + 1, :mv_id * 1000 + 1, MLITM_PRODCMPY_TO, MLITM_PRODCODE_TO,
+                MLITM_TANKCODE_TO, MLITM_PRODCMPY, MLITM_PRODCODE, MLITM_TANKCODE, :mlitm_type, 0, 5,
+                0, 5, 0, 5, MLITM_QTY_AMB, 5, :mv_key, MLITM_OPER_POSTED
+            FROM MOV_LOAD_ITEMS WHERE MLITM_ID = :mlitm_id";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':mv_id', $mv_id);
+        oci_bind_by_name($stmt, ':mv_key', $mv_key);
+        oci_bind_by_name($stmt, ':mlitm_type', $this->mlitm_type);
+        oci_bind_by_name($stmt, ':mlitm_id', $this->mlitm_id);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        // Update MOV_LOAD_ITEMS to link to MOVEMENT_ITEMS
+        $query = 
+            "UPDATE MOV_LOAD_ITEMS 
+            SET MLITM_MOV_ID = :mv_id, MLITM_MOV_LINE = 1, MLITM_MOV_ITEM = :mv_id * 1000 + 1, MLITM_MOV_KEY = :mv_key
+            WHERE MLITM_ID = :mlitm_id";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':mv_id', $mv_id);
+        oci_bind_by_name($stmt, ':mv_key', $mv_key);
+        oci_bind_by_name($stmt, ':mlitm_id', $this->mlitm_id);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        $this->adjust_movement();
+        $this->adjust_tank_batch();
+
+        $result = new EchoSchema(200, response("__SPECIAL_MOVEMENT_SUBMITTED__",
+            sprintf("Special movment %d submitted", $this->mlitm_id)));
+        echo json_encode($result, JSON_PRETTY_PRINT);
+    }
+
     /**
      * Old PHP: dmSpecialMovements.processSpecialMovement
      */
@@ -802,6 +924,12 @@ class SpecialMovement extends CommonClass
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
+
+        // If qty is 0, it is chaning tank base and tank qty is 0
+        if (isset($this->mlitm_qty_amb) && $this->mlitm_qty_amb == 0 )
+        {
+            return $this->zeroQtySubmit();
+        }
         
         $serv = new SpecialMvService($this->conn, $mlitm_id = $this->mlitm_id);
         if (isset($this->mlitm_vcf)) {
