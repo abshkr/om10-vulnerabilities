@@ -143,7 +143,17 @@ if ($array['MSG_CODE'] === "0") {
     $twofa_result = 'NA';
     if ($object->user !== '9999') {
         $fa_auth = new FaAuth($db);
-        $twofa_result = $fa_auth->sendout_factor($object->user);
+        $fa_auth_result = $fa_auth->sendout_factor($object->user);
+        if ($fa_auth_result['is_success'] == false) {
+            http_response_code(400);
+            $login_result = array(
+                'msg_desc' => $fa_auth_result['err_msg']);
+            
+            echo json_encode($login_result, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $twofa_result = $fa_auth_result['twofa_result'];
     }
     
     $exp_min = 180; 

@@ -13,7 +13,7 @@ import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
-import _ from 'lodash';
+import _, { join } from 'lodash';
 import api, { COMMON, AUTH } from 'api';
 import hash from 'utils/hash';
 import useMode from 'hooks/use-mode';
@@ -297,10 +297,11 @@ const Login = ({ handleLogin, auth }) => {
         setStatus(_.toNumber(response?.data.user_status_flag));
 
         setAttempts(attempt);
+        const desc = getErrorMessage(response.data.msg_code);
         notification.error({
           placement: 'bottomRight',
           message: t('messages.loginFailed'),
-          description: getErrorMessage(response.data.msg_code), // _.capitalize(response.data.msg_desc),
+          description: desc != '' ? desc : _.capitalize(response.data.msg_desc),
           icon: <FrownOutlined style={{ color: '#ec6e68' }} />,
         });
       }

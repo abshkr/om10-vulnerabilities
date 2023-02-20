@@ -114,11 +114,25 @@ Yours securely,
 Team DKI", $auth_code);
         $from = "-rno-reply@TEST-2FA.shell-manual.sites";
 
-        mail($to, $subject, $msg, null, $from);
+        $result = mail($to, $subject, $msg, null, $from);
 
-        write_log(sprintf("Send auth code %s mail address %s", $auth_code, $mail),
+        write_log(sprintf("Send auth code %s mail address %s. result:%s", $auth_code, $mail, $result ? "true" : " false"),
             __FILE__, __LINE__);
-        return $auth_code;
+
+        if (!$result)
+        {
+            write_log("Failed to send mail out, please contact administrator");
+            return [
+                "auth_code" => "",
+                "result" => false,
+                "err_msg" => "Failed to send out authentication mail, please contact administrator"
+            ];
+        }
+        return [
+            "auth_code" => $auth_code,
+            "result" => true,
+            "err_msg" => ""
+        ];
     }
 
     public function post_check()
@@ -238,20 +252,36 @@ Team DKI", $auth_code);
                     return $mail;
                 }
                 
-                $auth_code = $this->TwoFA_mailout($mail);
+                $mail_result = $this->TwoFA_mailout($mail);
                 
                 if (!isset($_SESSION)) {
                     session_start();
                 }
 
-                $_SESSION['AUTH_CODE'] = $auth_code;
-                $_SESSION['AUTH_CODE_CREATE_TIME'] = time();
+                if ($mail_result['result']) {
+                    $_SESSION['AUTH_CODE'] = $mail_result['auth_code'];
+                    $_SESSION['AUTH_CODE_CREATE_TIME'] = time();
 
-                // write_log(json_encode($_SESSION), __FILE__, __LINE__);
-                return "AUTH 2FA";
+                    // write_log(json_encode($_SESSION), __FILE__, __LINE__);
+                    return [
+                        "is_success" => true,
+                        "twofa_result" => "AUTH 2FA",
+                        "err_msg" => ""
+                    ];
+                } else {
+                    return [
+                        "is_success" => false,
+                        "twofa_result" => "NA",
+                        "err_msg" => $mail_result['err_msg']
+                    ];
+                }
+                
             }
         }
 
-        return "NA";
+        return [
+            "is_success" => true,
+            "twofa_result" => "NA"
+        ];
     }
 }
