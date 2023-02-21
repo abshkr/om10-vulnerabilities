@@ -14,6 +14,7 @@ const buildPayloadToSubmit = (values, sourceType, orderSeals, t) => {
     payload.order_cust_no = values?.order_no;
   }
   payload.tanker = values?.tanker;
+  payload.driver = values?.driver;
   // console.log('...........buildPayloadToSubmit', values);
   // console.log('...........buildPayloadToSubmit', values?.start_date);
   // console.log('...........buildPayloadToSubmit', values?.end_date);
