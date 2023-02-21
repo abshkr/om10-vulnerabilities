@@ -526,7 +526,10 @@ class ManualTrans extends CommonClass
         $serv->set_property('drawer_code', $this->drawer);
         $serv->set_property('drawer_name', "");
         $serv->set_property('tanker_code', $this->tanker);
-        $serv->set_property('operator_code', "8888");
+        $serv->set_property('operator_code', '8888');   //By default, use 8888 as driver
+        if (isset($this->driver) && $this->driver != null && $this->driver != 'null' && $this->driver != 'undefined') {
+            $serv->set_property('operator_code', $this->driver);
+        }
         if (isset($this->order_cust_no)) {
             $serv->set_property('order_cust_no', $this->order_cust_no);
             $serv->set_property('load_number', $this->order_cust_no);
