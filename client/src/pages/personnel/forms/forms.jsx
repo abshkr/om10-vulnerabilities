@@ -351,7 +351,7 @@ const FormModal = ({
             </Button>
           )}
 
-          {!IS_CREATING && value?.user_status_flag === '1' && (
+          {!IS_CREATING && (value?.user_status_flag === '1' || value?.user_status_flag === '0') && (
             <Button
               type="primary"
               disabled={IS_CREATING || !access?.canUpdate}
