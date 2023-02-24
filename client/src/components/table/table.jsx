@@ -452,6 +452,7 @@ const Table = ({
                   onDragStarted={onDragStarted}
                   onDragStopped={onDragStopped}
                   getRowNodeId={getRowNodeId}
+                  suppressDragLeaveHidesColumns={true}
                 />
               </div>
             </div>
