@@ -165,6 +165,19 @@ const Tanks = () => {
           }
         }
       }
+      if (selected && mode === '1') {
+        setSelected(null);
+        if (!currTank) {
+          setSelected(records[0]);
+          setCurrTank(records[0]);
+        } else {
+          // get the current value of tank
+          const newTank = _.find(records, (o) => o.tank_code === currTank?.tank_code);
+          if (newTank) {
+            setSelected(newTank);
+          }
+        }
+      }
     }
   }, [read]);
 
