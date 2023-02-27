@@ -216,6 +216,12 @@ const Schedules = ({ selected, cbFunction, closeForm }) => {
     }
   }, [siteNomSchdPaging]);
 
+  useEffect(() => {
+    if (isValidating !== undefined) {
+      setDownloading(isValidating);
+    }
+  }, [isValidating]);
+
   const modifiers = (
     <>
       <Switch

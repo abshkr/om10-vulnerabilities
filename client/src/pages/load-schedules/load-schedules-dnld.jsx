@@ -282,6 +282,12 @@ const LoadSchedules = () => {
   }, [siteSchdPaging]);
 
   useEffect(() => {
+    if (isValidating !== undefined) {
+      setDownloading(isValidating);
+    }
+  }, [isValidating]);
+
+  useEffect(() => {
     if (t && config && pageColumns) {
       // get the original columns
       const values = columns(false, t, config);
