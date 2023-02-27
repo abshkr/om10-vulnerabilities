@@ -271,7 +271,7 @@ const Table = ({
   useEffect(() => {
     console.log('...........in DataTable...', columns);
     if (t && columns && api && setTableColumns) {
-      console.log('...........in DataTable2...', columns);
+      console.log('...........in DataTable2...', columnAdjusted, columns);
       columns.forEach((o) => {
         if (o?.filter === 'FuzzyFilter' || o?.filter === 'MultiFilter' || o?.filter === 'BooleanFilter') {
           o.filterParams = {
@@ -303,10 +303,12 @@ const Table = ({
       // setTableColumns([]);
       // setTableColumns(columns);
       if (api && api?.setColumnDefs) {
-        console.log('...........in DataTable3...', api);
-        api.setColumnDefs([]);
-        api.setColumnDefs(columns);
-        api.sizeColumnsToFit();
+        if (!columnAdjusted) {
+          console.log('...........in DataTable3...', api);
+          api.setColumnDefs([]);
+          api.setColumnDefs(columns);
+          api.sizeColumnsToFit();
+        }
       } else {
         console.log('...........in DataTable4...', columns);
         setTableColumns(columns);
@@ -396,6 +398,7 @@ const Table = ({
                       pageModule={pageModule}
                       columnAPI={columnAPI}
                       columnLoader={columnLoader}
+                      setColumnAdjusted={setColumnAdjusted}
                     />
                   )}
 

@@ -10,7 +10,7 @@ import api, { AUTH } from '../../api';
 import { updateUserPageColumns } from 'utils';
 import specialColumns from './special-columns.json';
 
-const AdjustableColumns = ({ pageColumns, pageModule, columnAPI, columnLoader }) => {
+const AdjustableColumns = ({ pageColumns, pageModule, columnAPI, columnLoader, setColumnAdjusted }) => {
   const { t } = useTranslation();
 
   const [items, setItems] = useState([]);
@@ -33,6 +33,7 @@ const AdjustableColumns = ({ pageColumns, pageModule, columnAPI, columnLoader })
     // console.log('.............moved', columnAPI, pageColumns);
     setVisible(false);
     updateUserPageColumns(t, items, pageColumns, pageModule, columnLoader);
+    setColumnAdjusted(false);
   };
 
   const onColumnChanged = async (object, value) => {
@@ -42,6 +43,7 @@ const AdjustableColumns = ({ pageColumns, pageModule, columnAPI, columnLoader })
       const item = items?.[i];
       if (item?.colDef?.field === object?.colDef?.field) {
         item.colDef.hide = !value;
+        setColumnAdjusted(true);
       }
       columns.push(item);
     }
