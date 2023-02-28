@@ -480,6 +480,9 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
     if ((IS_CREATING && supplier) || (!IS_CREATING && type && company && supplier && allocIndex)) {
       getAllocations();
     }
+    if (!supplier) {
+      setAllocations([]);
+    }
   }, [IS_CREATING, type, company, supplier, allocIndex, getAllocations]);
 
   return (
@@ -568,7 +571,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
                 <Company form={form} value={value} type={type} onChange={setCompany} />
               </Col>
               <Col span={12}>
-                <Supplier form={form} value={value} type={type} onChange={setSupplier} />
+                <Supplier
+                  form={form}
+                  value={value}
+                  type={type}
+                  onChange={setSupplier}
+                  multiAllocFlag={config?.siteAllowMultiAllocations}
+                />
               </Col>
             </Row>
 

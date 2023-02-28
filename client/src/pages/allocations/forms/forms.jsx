@@ -371,7 +371,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
           <TabPane tab={t('tabColumns.general')} key="1">
             <Type form={form} value={value} onChange={setType} onSupplier={setSupplier} />
             <Company form={form} value={value} type={type} onChange={setCompany} />
-            <Supplier form={form} value={value} type={type} onChange={setSupplier} />
+            <Supplier form={form} value={value} type={type} onChange={setSupplier} multiAllocFlag={false} />
             <LockType form={form} value={value} onChange={setLockType} enableWhenEdit={true} />
             <PeriodItem form={form} value={value} lockType={lockType} enableWhenEdit={true} />
             <Divider />

@@ -30,9 +30,10 @@ const Type = ({ form, value, onChange, onSupplier }) => {
       alloc_suppcode: payload,
     });
 
-    if (payload) {
-      onSupplier(payload);
-    }
+    onSupplier(payload);
+    // if (payload) {
+    //   onSupplier(payload);
+    // }
   };
 
   useEffect(() => {

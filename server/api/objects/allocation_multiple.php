@@ -683,12 +683,12 @@ class Allocation extends CommonClass
                         NULL ALLOC_LOCK,
                         NULL ALLOC_LOCKNAME,
                         NULL ALLOC_PERIOD
-                    FROM PRODUCTS, CUSTOMER_PRODUCT, CUSTOMER
+                    FROM PRODUCTS, CUSTOMER_PRODUCTS_VW, CUSTOMER
                     WHERE PRODUCTS.PROD_CMPY = :supplier 
-                        AND CUSTOMER_PRODUCT.CUST_ACCT = CUSTOMER.CUST_ACCT
+                        AND CUSTOMER_PRODUCTS_VW.CUST_ACCT = CUSTOMER.CUST_ACCT
                         AND CUSTOMER.CUST_CODE = :customer
-                        AND PRODUCTS.PROD_CODE = CUSTOMER_PRODUCT.PROD_CODE
-                        AND PRODUCTS.PROD_CMPY = CUSTOMER_PRODUCT.PROD_CMPY
+                        AND PRODUCTS.PROD_CODE = CUSTOMER_PRODUCTS_VW.PROD_CODE
+                        AND PRODUCTS.PROD_CMPY = CUSTOMER_PRODUCTS_VW.PROD_CMPY
                 ) ALL_PRODS,
                 GUI_ALLOCATION_ITEMS
                 , UNIT_SCALE_VW					aunit
@@ -792,16 +792,16 @@ class Allocation extends CommonClass
                         ALLOC_LOCK,
                         ALLOC_LOCKNAME,
                         ALLOC_PERIOD
-                    FROM PRODUCTS, GUI_ALLOCATIONS, CUSTOMER_PRODUCT, CUSTOMER
+                    FROM PRODUCTS, GUI_ALLOCATIONS, CUSTOMER_PRODUCTS_VW, CUSTOMER
                     WHERE PRODUCTS.PROD_CMPY = GUI_ALLOCATIONS.ALLOC_SUPPCODE
-                        AND PRODUCTS.PROD_CODE = CUSTOMER_PRODUCT.PROD_CODE
-                        AND PRODUCTS.PROD_CMPY = CUSTOMER_PRODUCT.PROD_CMPY
+                        AND PRODUCTS.PROD_CODE = CUSTOMER_PRODUCTS_VW.PROD_CODE
+                        AND PRODUCTS.PROD_CMPY = CUSTOMER_PRODUCTS_VW.PROD_CMPY
                         AND ALLOC_INDEX = :alloc_index
                         AND ALLOC_TYPE = :alloc_type
                         AND ALLOC_CMPYCODE = :alloc_cmpy
                         AND ALLOC_SUPPCODE = :alloc_supp
                         AND CUSTOMER.CUST_CODE = :customer
-                        AND CUSTOMER_PRODUCT.CUST_ACCT = CUSTOMER.CUST_ACCT
+                        AND CUSTOMER_PRODUCTS_VW.CUST_ACCT = CUSTOMER.CUST_ACCT
                 ) ALL_PRODS,
                 GUI_ALLOCATION_ITEMS
                 , UNIT_SCALE_VW					aunit
