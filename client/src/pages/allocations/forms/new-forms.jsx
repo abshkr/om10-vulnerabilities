@@ -24,6 +24,7 @@ import {
   Type,
   Company,
   Supplier,
+  Customer,
   LockType,
   Period as PeriodItem,
   Unit,
@@ -566,20 +567,39 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
               </Col>
             </Row>
 
-            <Row gutter={[8, 3]}>
-              <Col span={12}>
-                <Company form={form} value={value} type={type} onChange={setCompany} />
-              </Col>
-              <Col span={12}>
-                <Supplier
-                  form={form}
-                  value={value}
-                  type={type}
-                  onChange={setSupplier}
-                  multiAllocFlag={config?.siteAllowMultiAllocations}
-                />
-              </Col>
-            </Row>
+            {(type !== '3' || !config?.siteAllocCustomerStrict) && (
+              <Row gutter={[8, 3]}>
+                <Col span={12}>
+                  <Company form={form} value={value} type={type} onChange={setCompany} />
+                </Col>
+                <Col span={12}>
+                  <Supplier
+                    form={form}
+                    value={value}
+                    type={type}
+                    onChange={setSupplier}
+                    multiAllocFlag={config?.siteAllowMultiAllocations}
+                  />
+                </Col>
+              </Row>
+            )}
+
+            {type === '3' && config?.siteAllocCustomerStrict && (
+              <Row gutter={[8, 3]}>
+                <Col span={12}>
+                  <Supplier
+                    form={form}
+                    value={value}
+                    type={type}
+                    onChange={setSupplier}
+                    multiAllocFlag={config?.siteAllowMultiAllocations}
+                  />
+                </Col>
+                <Col span={12}>
+                  <Customer form={form} value={value} onChange={setCompany} supplier={supplier} />
+                </Col>
+              </Row>
+            )}
 
             <Row gutter={[8, 3]}>
               <Col span={12}>
