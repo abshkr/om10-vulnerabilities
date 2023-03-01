@@ -95,9 +95,11 @@ const columns = (t, config) => [
     width: 180,
     suppressSizeToFit: true,
     hide: !config?.manageBaseProductDensityRange,
-    cellRenderer: 'SeperatorRenderer',
+    cellRenderer: 'QuantitySeperatorRenderer',
     cellRendererParams: {
       type: String(config?.decimal_thousand_separator),
+      digits: String(config?.precisionDensity),
+      min: '1',
     },
   },
   {
@@ -108,9 +110,11 @@ const columns = (t, config) => [
     width: 180,
     suppressSizeToFit: true,
     hide: !config?.manageBaseProductDensityRange,
-    cellRenderer: 'SeperatorRenderer',
+    cellRenderer: 'QuantitySeperatorRenderer',
     cellRendererParams: {
       type: String(config?.decimal_thousand_separator),
+      digits: String(config?.precisionDensity),
+      min: '1',
     },
   },
   {
@@ -153,9 +157,11 @@ const columns = (t, config) => [
     resizable: true,
     width: 180,
     suppressSizeToFit: true,
-    cellRenderer: 'SeperatorRenderer',
+    cellRenderer: 'QuantitySeperatorRenderer',
     cellRendererParams: {
       type: String(config?.decimal_thousand_separator),
+      digits: String(config?.precisionDensity),
+      min: '1',
     },
   },
   {
@@ -165,9 +171,11 @@ const columns = (t, config) => [
     resizable: true,
     width: 180,
     suppressSizeToFit: true,
-    cellRenderer: 'SeperatorRenderer',
+    cellRenderer: 'QuantitySeperatorRenderer',
     cellRendererParams: {
       type: String(config?.decimal_thousand_separator),
+      digits: String(config?.precisionDensity),
+      min: '1',
     },
   },
   {
