@@ -9,7 +9,7 @@ const BatchCode = ({ form, value, config }) => {
   const { t } = useTranslation();
 
   const validate = (rule, input) => {
-    if (input === '' || !input) {
+    if (rule.required && (input === '' || !input)) {
       return Promise.reject(`${t('validate.set')} ─ ${t(config?.siteLabelUser + 'fields.batch')}`);
     }
 
@@ -28,7 +28,7 @@ const BatchCode = ({ form, value, config }) => {
     <Form.Item
       name="pmv_batchcode"
       label={t(config?.siteLabelUser + 'fields.batch')}
-      rules={[{ required: true, validator: validate }]}
+      rules={[{ required: false, validator: validate }]}
     >
       <Input disabled={!!value} />
     </Form.Item>

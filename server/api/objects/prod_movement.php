@@ -325,6 +325,14 @@ class ProdMovement extends CommonClass
         if ($this->update_bases($this->pmv_number, $this->pmv_src_base, $this->pmv_dst_base) == false) {
             return false;
         }
+        // adjust the batch code
+        if (!isset($this->pmv_batchcode) || $this->pmv_batchcode == "") {
+            // batch code is not defined
+            if ($this->clear_batchcode($this->pmv_number) == false) {
+                return false;
+            }
+        }
+
         oci_commit($this->conn);
 
         $error = new EchoSchema(200, response("__PRODUCTMOVEMENT_CREATED__"));
@@ -346,6 +354,29 @@ class ProdMovement extends CommonClass
         oci_bind_by_name($stmt, ':pmv_number', $pmv_number);
         oci_bind_by_name($stmt, ':src_base', $src_base);
         oci_bind_by_name($stmt, ':dst_base', $dst_base);
+
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function clear_batchcode($pmv_number)
+    {
+        write_log(sprintf("%s::%s() START ==%d==", __CLASS__, __FUNCTION__, $pmv_number),
+            __FILE__, __LINE__);
+
+        $query = "
+            UPDATE PRODUCT_MVMNTS
+            SET PMV_BATCHCODE = NULL
+            WHERE PMV_NUMBER = :pmv_number
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':pmv_number', $pmv_number);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
@@ -612,9 +643,9 @@ class ProdMovement extends CommonClass
                 MOV_BASE.BASE_NAME              PMV_PRDCTLNK_NAME,
                 SRC_BASE.BASE_NAME              PMV_SRC_BASENAME,
                 DST_BASE.BASE_NAME              PMV_DST_BASENAME,
-                MOV_BASE.BASE_CODE||' - '||MOV_BASE.BASE_NAME              PMV_PRDCTLNK_DESC,
-                SRC_BASE.BASE_CODE||' - '||SRC_BASE.BASE_NAME              PMV_SRC_BASEDESC,
-                DST_BASE.BASE_CODE||' - '||DST_BASE.BASE_NAME              PMV_DST_BASEDESC,
+                DECODE(MOV_BASE.BASE_CODE, NULL, NULL, MOV_BASE.BASE_CODE||' - '||MOV_BASE.BASE_NAME)              PMV_PRDCTLNK_DESC,
+                DECODE(SRC_BASE.BASE_CODE, NULL, NULL, SRC_BASE.BASE_CODE||' - '||SRC_BASE.BASE_NAME)              PMV_SRC_BASEDESC,
+                DECODE(DST_BASE.BASE_CODE, NULL, NULL, DST_BASE.BASE_CODE||' - '||DST_BASE.BASE_NAME)              PMV_DST_BASEDESC,
                 PMV.PMV_BATCHCODE,
                 PMV.PMV_STATUS,
                 PMV.PMV_MV_ID,
