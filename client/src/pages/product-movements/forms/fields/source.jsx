@@ -7,10 +7,11 @@ import _ from 'lodash';
 
 import { PRODUCT_MOVEMENTS } from '../../../../api';
 
-const Source = ({ form, value, base }) => {
+const Source = ({ form, value, base, setBase }) => {
   const { t } = useTranslation();
 
   const { data: types, typesLoading } = useSWR(PRODUCT_MOVEMENTS.TYPES);
+  const { data: bases, basesLoading } = useSWR(PRODUCT_MOVEMENTS.BASES);
   const { data: tanks, tanksLoading } = useSWR(PRODUCT_MOVEMENTS.TANKS);
 
   const [source, setSource] = useState(undefined);
@@ -22,6 +23,14 @@ const Source = ({ form, value, base }) => {
   const validateType = (rule, input) => {
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.sourceType')}`);
+    }
+
+    return Promise.resolve();
+  };
+
+  const validateBase = (rule, input) => {
+    if (rule.required && (input === '' || !input)) {
+      return Promise.reject(`${t('validate.select')} ─ ${t('fields.sourceBase')}`);
     }
 
     return Promise.resolve();
@@ -40,13 +49,15 @@ const Source = ({ form, value, base }) => {
       setFieldsValue({
         pmv_srctype: value.pmv_srctype,
         pmv_srccode: value.pmv_srccode,
+        pmv_src_base: value.pmv_src_base,
       });
+      setSource(value.pmv_srctype);
     }
   }, [value, setFieldsValue]);
 
-  return value ? (
+  return (
     <>
-      <Col span={6}>
+      <Col span={7}>
         <Form.Item
           name="pmv_srctype"
           label={t('fields.sourceType')}
@@ -74,7 +85,37 @@ const Source = ({ form, value, base }) => {
         </Form.Item>
       </Col>
 
-      <Col span={6}>
+      <Col span={10}>
+        <Form.Item
+          name="pmv_src_base"
+          label={t('fields.sourceBase')}
+          rules={[{ required: source === '3', validator: validateBase }]}
+        >
+          <Select
+            dropdownMatchSelectWidth={false}
+            allowClear
+            loading={basesLoading}
+            showSearch
+            disabled={value || (!value && source !== '3')}
+            onChange={setBase}
+            optionFilterProp="children"
+            placeholder={!value ? t('placeholder.selectSrcBaseProduct') : null}
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+          >
+            {bases
+              ? bases.records.map((item, index) => (
+                  <Select.Option key={index} value={item.base_code}>
+                    {item.base_desc}
+                  </Select.Option>
+                ))
+              : null}
+          </Select>
+        </Form.Item>
+      </Col>
+
+      <Col span={7}>
         <Form.Item
           name="pmv_srccode"
           label={t('fields.sourceUnit')}
@@ -106,65 +147,6 @@ const Source = ({ form, value, base }) => {
           )}
         </Form.Item>
       </Col>
-    </>
-  ) : (
-    <>
-      <Form.Item
-        name="pmv_srctype"
-        label={t('fields.sourceType')}
-        rules={[{ required: true, validator: validateType }]}
-      >
-        <Select
-          dropdownMatchSelectWidth={false}
-          allowClear
-          loading={isLoading}
-          showSearch
-          onChange={setSource}
-          disabled={value}
-          optionFilterProp="children"
-          placeholder={t('placeholder.selectSourceType')}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-        >
-          {types?.records.map((item, index) => (
-            <Select.Option key={index} value={item.pmv_id}>
-              {item.pmv_name}
-            </Select.Option>
-          ))}
-        </Select>
-      </Form.Item>
-
-      <Form.Item
-        name="pmv_srccode"
-        label={t('fields.sourceUnit')}
-        rules={[{ required: true, validator: validateCode }]}
-      >
-        {source === '3' ? (
-          <Select
-            dropdownMatchSelectWidth={false}
-            allowClear
-            loading={isLoading}
-            showSearch
-            disabled={!source}
-            optionFilterProp="children"
-            placeholder={t('placeholder.setSourceUnit')}
-            filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }
-          >
-            {_.filter(tanks?.records, (item) => {
-              return item.tank_base === base;
-            }).map((item, index) => (
-              <Select.Option key={index} value={item.tank_code}>
-                {item.tank_code}
-              </Select.Option>
-            ))}
-          </Select>
-        ) : (
-          <Input disabled={!source} />
-        )}
-      </Form.Item>
     </>
   );
 };

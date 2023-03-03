@@ -42,7 +42,7 @@ import {
 } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import MakeNomination from './make-nomination'
+import MakeNomination from './make-nomination';
 
 import api, { PRODUCT_MOVEMENTS } from 'api';
 
@@ -56,6 +56,8 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
   const IS_CREATING = !value;
 
   const [base, setBase] = useState(null);
+  const [srcBase, setSrcBase] = useState(null);
+  const [dstBase, setDstBase] = useState(null);
   const [movementType, setMovementType] = useState('NEW');
   const [mvModalVisbile, setMvModalVisible] = useState(false);
 
@@ -78,7 +80,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
   const onFinish = async () => {
     const values = await form.validateFields();
 
-    if (values.pmv_srctype !== '3' && values.pmv_dsttype !== '3') {
+    if (values?.pmv_srctype !== '3' && values?.pmv_dsttype !== '3') {
       notification.error({
         message: t('messages.validationFailed'),
         description: t('validate.prodMoveSrcAndDst'),
@@ -88,6 +90,23 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
 
     if (movementType === 'COMPLETE') {
       values.pmv_status = 3;
+    }
+
+    // assign value to pmv_prdctlnk
+    // if it is a RECEIPT type, the destination is a tank, the PMV_DST_BASE has the value and PMV_SRC_BASE is NULL,
+    // assign the value of PMV_DST_BASE to PMV_PRDCTLNK
+    if (values?.pmv_srctype !== '3' && values?.pmv_dsttype === '3') {
+      values.pmv_prdctlnk = values?.pmv_dst_base;
+    }
+    // if it is a DISPOSAL type, the source is a tank, the PMV_SRC_BASE has the value and PMV_DST_BASE is NULL,
+    // assign the value of PMV_SRC_BASE to PMV_PRDCTLNK
+    if (values?.pmv_srctype === '3' && values?.pmv_dsttype !== '3') {
+      values.pmv_prdctlnk = values?.pmv_src_base;
+    }
+    // if it is a TRANSFER type, both the source and destination are tanks, the PMV_SRC_BASE and PMV_DST_BASE both have the values,
+    // assign the value of PMV_DST_BASE to PMV_PRDCTLNK considering most likely the destination tank would be used in future operations
+    if (values?.pmv_srctype === '3' && values?.pmv_dsttype === '3') {
+      values.pmv_prdctlnk = values?.pmv_dst_base;
     }
 
     Modal.confirm({
@@ -392,13 +411,29 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
             <MovementType value={value} onChange={setMovementType} />
-            <BaseProduct form={form} value={value} setBase={setBase} />
-            <Source form={form} value={value} base={base} />
-            <Destination form={form} value={value} base={base} />
-            <BatchCode form={form} value={value} config={config} />
-            <Class form={form} value={value} />
-            <Quantity form={form} value={value} />
+            {/* <BaseProduct form={form} value={value} setBase={setBase} /> */}
+
+            <Row gutter={[8, 8]}>
+              <Source form={form} value={value} base={srcBase} setBase={setSrcBase} />
+            </Row>
+            <Row gutter={[8, 8]}>
+              <Destination form={form} value={value} base={dstBase} setBase={setDstBase} />
+            </Row>
+
+            <Row gutter={[8, 8]}>
+              <Col span={7}>
+                <BatchCode form={form} value={value} config={config} />
+              </Col>
+              <Col span={10}>
+                <Class form={form} value={value} />
+              </Col>
+              <Col span={7}>
+                <Quantity form={form} value={value} />
+              </Col>
+            </Row>
+
             <Unit form={form} value={value} />
+
             {IS_CREATING && movementType === 'COMPLETE' && (
               <Form.Item
                 name="pmv_opening_qty"
@@ -495,9 +530,9 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
             )}
 
             {!IS_CREATING && value.pmv_status === '3' /* Complete */ && config.prodmvmnt_to_movement && (
-              <Button 
-                type="primary" 
-                style={{ float: 'right', marginRight: 5 }} 
+              <Button
+                type="primary"
+                style={{ float: 'right', marginRight: 5 }}
                 onClick={() => setMvModalVisible(true)}
                 disabled={value?.pmv_mv_id > 0 || value?.pmv_moved_qty <= 0}
               >
@@ -552,14 +587,16 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
                 {t('fields.details')}
               </Divider>
               <Row gutter={[8, 8]}>
-                <Col span={6}>
+                {/* <Col span={6}>
                   <BaseProduct form={form} value={value} setBase={setBase} />
-                </Col>
+                </Col> */}
                 <BayLoaded form={form} value={value} />
               </Row>
               <Row gutter={[8, 8]}>
-                <Source form={form} value={value} base={base} />
-                <Destination form={form} value={value} base={base} />
+                <Source form={form} value={value} base={srcBase} setBase={setSrcBase} />
+              </Row>
+              <Row gutter={[8, 8]}>
+                <Destination form={form} value={value} base={dstBase} setBase={setDstBase} />
               </Row>
               <Row gutter={[8, 8]}>
                 <Col span={6}>
@@ -609,10 +646,10 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
           </Tabs>
         </Form>
       </Drawer>
-      <MakeNomination 
-        value={value} 
-        t={t} 
-        visible={mvModalVisbile} 
+      <MakeNomination
+        value={value}
+        t={t}
+        visible={mvModalVisbile}
         setVisible={setMvModalVisible}
         onComplete={onComplete}
       />

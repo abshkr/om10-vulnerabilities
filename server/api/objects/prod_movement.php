@@ -316,14 +316,45 @@ class ProdMovement extends CommonClass
         if (strpos($res, "op=\"212\"") === false) {
             $error = new EchoSchema(400, response("__CGI_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
-            return true;
+            return false;
         }
 
         // write_log($res, __FILE__, __LINE__);
 
+        // update src and dst bases
+        if ($this->update_bases($this->pmv_number, $this->pmv_src_base, $this->pmv_dst_base) == false) {
+            return false;
+        }
+        oci_commit($this->conn);
+
         $error = new EchoSchema(200, response("__PRODUCTMOVEMENT_CREATED__"));
         echo json_encode($error, JSON_PRETTY_PRINT);
-        return false;
+        return true;
+    }
+
+    protected function update_bases($pmv_number, $src_base, $dst_base)
+    {
+        write_log(sprintf("%s::%s() START ==%d==, ==%s==, ==%s==", __CLASS__, __FUNCTION__, $pmv_number, $src_base, $dst_base),
+            __FILE__, __LINE__);
+
+        $query = "
+            UPDATE PRODUCT_MVMNTS
+            SET PMV_SRC_BASE = :src_base, PMV_DST_BASE = :dst_base
+            WHERE PMV_NUMBER = :pmv_number
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':pmv_number', $pmv_number);
+        oci_bind_by_name($stmt, ':src_base', $src_base);
+        oci_bind_by_name($stmt, ':dst_base', $dst_base);
+
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -576,16 +607,29 @@ class ProdMovement extends CommonClass
                 PMV_TRANSFER_CLASS_NAME PMV_TRANS_TYPE_NAME,
                 PMV.PMV_DSTCODE,
                 PMV.PMV_PRDCTLNK,
+                PMV.PMV_SRC_BASE,
+                PMV.PMV_DST_BASE,
+                MOV_BASE.BASE_NAME              PMV_PRDCTLNK_NAME,
+                SRC_BASE.BASE_NAME              PMV_SRC_BASENAME,
+                DST_BASE.BASE_NAME              PMV_DST_BASENAME,
+                MOV_BASE.BASE_CODE||' - '||MOV_BASE.BASE_NAME              PMV_PRDCTLNK_DESC,
+                SRC_BASE.BASE_CODE||' - '||SRC_BASE.BASE_NAME              PMV_SRC_BASEDESC,
+                DST_BASE.BASE_CODE||' - '||DST_BASE.BASE_NAME              PMV_DST_BASEDESC,
                 PMV.PMV_BATCHCODE,
                 PMV.PMV_STATUS,
                 PMV.PMV_MV_ID,
                 PMV_STATE_TYP.PMV_STATE_NAME PMV_STATUS_NAME
             FROM PRODUCT_MVMNTS PMV, PMV_STATE_TYP, PMV_TYP PMV_TYP1, PMV_TYP PMV_TYP2, UNIT_SCALE_VW, PMV_TRANSFER_CLASS_TYP
+                , BASE_PRODS SRC_BASE, BASE_PRODS DST_BASE, BASE_PRODS MOV_BASE
             WHERE PMV.PMV_STATUS = PMV_STATE_TYP.PMV_STATE_ID(+)
                 AND PMV_SRCTYPE = PMV_TYP1.PMV_ID
                 AND PMV_DSTTYPE = PMV_TYP2.PMV_ID
+                AND PMV.PMV_PRDCTLNK = MOV_BASE.BASE_CODE(+)
+                AND PMV.PMV_SRC_BASE = SRC_BASE.BASE_CODE(+)
+                AND PMV.PMV_DST_BASE = DST_BASE.BASE_CODE(+)
                 AND PMV_UNIT = UNIT_ID(+)
-                AND PMV_TRANS_TYPE = PMV_TRANSFER_CLASS_TYP.PMV_TRANSFER_CLASS_ID ";
+                AND PMV_TRANS_TYPE = PMV_TRANSFER_CLASS_TYP.PMV_TRANSFER_CLASS_ID 
+        ";
         if (isset($this->start_date) && $this->start_date != -1 && $this->start_date != '-1') {
             $query .= "
                 AND PMV_DATE1 > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')
