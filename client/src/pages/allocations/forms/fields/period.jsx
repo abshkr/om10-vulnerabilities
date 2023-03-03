@@ -45,6 +45,7 @@ const Period = ({ form, value, lockType, enableWhenEdit }) => {
       rules={[{ required: String(lockType) === '3', validator: validate }]}
     >
       <Select
+        dropdownMatchSelectWidth={false}
         loading={isValidating}
         allowClear
         showSearch
