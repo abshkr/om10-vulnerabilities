@@ -33,34 +33,22 @@ const EndFolio = ({ form, value }) => {
     <>
       <Row gutter={[8, 8]}>
         <Col span={6}>
-          <Form.Item
-            name="closeout_nr"
-            label={t('fields.endCloseout')}
-          >
+          <Form.Item name="closeout_nr" label={t('fields.endCloseout')}>
             <Input disabled={!!value} />
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item
-            name="pmv_date2"
-            label={t('fields.endDate')}
-          >
+          <Form.Item name="pmv_date2" label={t('fields.endDate')}>
             <Input disabled={!!value} />
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item
-            name="tank_level"
-            label={t('fields.endLevel')}
-          >
+          <Form.Item name="tank_level" label={t('fields.endLevel')}>
             <Input disabled={!!value} />
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item
-            name="pmv_close_amb"
-            label={t('fields.endAmb')}
-          >
+          <Form.Item name="close_temp" label={t('fields.endTemp')}>
             <Input disabled={!!value} />
           </Form.Item>
         </Col>
@@ -68,34 +56,22 @@ const EndFolio = ({ form, value }) => {
 
       <Row gutter={[8, 8]}>
         <Col span={6}>
-          <Form.Item
-            name="pmv_close_cor"
-            label={t('fields.endStd')}
-          >
+          <Form.Item name="pmv_close_amb" label={t('fields.endAmb')}>
             <Input disabled={!!value} />
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item
-            name="pmv_close_kg"
-            label={t('fields.endKG')}
-          >
+          <Form.Item name="pmv_close_cor" label={t('fields.endStd')}>
             <Input disabled={!!value} />
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item
-            name="close_temp"
-            label={t('fields.endTemp')}
-          >
+          <Form.Item name="pmv_close_kg" label={t('fields.endKG')}>
             <Input disabled={!!value} />
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item
-            name="close_density"
-            label={t('fields.endDens')}
-          >
+          <Form.Item name="close_density" label={t('fields.endDens')}>
             <Input disabled={!!value} />
           </Form.Item>
         </Col>
@@ -103,26 +79,17 @@ const EndFolio = ({ form, value }) => {
 
       <Row gutter={[8, 8]}>
         <Col span={6}>
-          <Form.Item
-            name="avl_sum"
-            label={t('fields.finalAmb')}
-          >
+          <Form.Item name="avl_sum" label={t('fields.finalAmb')}>
             <Input disabled={!!value} />
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item
-            name="cvl_sum"
-            label={t('fields.finalStd')}
-          >
+          <Form.Item name="cvl_sum" label={t('fields.finalStd')}>
             <Input disabled={!!value} />
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item
-            name="kg_sum"
-            label={t('fields.finalKG')}
-          >
+          <Form.Item name="kg_sum" label={t('fields.finalKG')}>
             <Input disabled={!!value} />
           </Form.Item>
         </Col>

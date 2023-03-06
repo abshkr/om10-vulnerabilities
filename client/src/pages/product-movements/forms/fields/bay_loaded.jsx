@@ -23,30 +23,21 @@ const BayLoaded = ({ form, value }) => {
 
   return (
     <>
-      <Col span={6}>
-          <Form.Item
-            name="bay_avl_sum"
-            label={t('fields.bayAmb')}
-          >
-            <Input disabled={!!value} />
-          </Form.Item>
-        </Col>
-        <Col span={6}>
-          <Form.Item
-            name="bay_cvl_sum"
-            label={t('fields.bayStd')}
-          >
-            <Input disabled={!!value} />
-          </Form.Item>
-        </Col>
-        <Col span={6}>
-          <Form.Item
-            name="bay_kg_sum"
-            label={t('fields.bayKG')}
-          >
-            <Input disabled={!!value} />
-          </Form.Item>
-        </Col>
+      <Col span={8}>
+        <Form.Item name="bay_avl_sum" label={t('fields.bayAmb')}>
+          <Input disabled={!!value} />
+        </Form.Item>
+      </Col>
+      <Col span={8}>
+        <Form.Item name="bay_cvl_sum" label={t('fields.bayStd')}>
+          <Input disabled={!!value} />
+        </Form.Item>
+      </Col>
+      <Col span={8}>
+        <Form.Item name="bay_kg_sum" label={t('fields.bayKG')}>
+          <Input disabled={!!value} />
+        </Form.Item>
+      </Col>
     </>
   );
 };

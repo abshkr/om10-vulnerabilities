@@ -57,7 +57,7 @@ const Source = ({ form, value, base, setBase }) => {
 
   return (
     <>
-      <Col span={7}>
+      <Col span={8}>
         <Form.Item
           name="pmv_srctype"
           label={t('fields.sourceType')}
@@ -85,7 +85,7 @@ const Source = ({ form, value, base, setBase }) => {
         </Form.Item>
       </Col>
 
-      <Col span={10}>
+      <Col span={8}>
         <Form.Item
           name="pmv_src_base"
           label={t('fields.sourceBase')}
@@ -115,7 +115,7 @@ const Source = ({ form, value, base, setBase }) => {
         </Form.Item>
       </Col>
 
-      <Col span={7}>
+      <Col span={8}>
         <Form.Item
           name="pmv_srccode"
           label={t('fields.sourceUnit')}

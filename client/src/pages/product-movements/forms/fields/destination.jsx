@@ -57,7 +57,7 @@ const Destination = ({ form, value, base, setBase }) => {
 
   return (
     <>
-      <Col span={7}>
+      <Col span={8}>
         <Form.Item
           name="pmv_dsttype"
           label={t('fields.destinationType')}
@@ -85,7 +85,7 @@ const Destination = ({ form, value, base, setBase }) => {
         </Form.Item>
       </Col>
 
-      <Col span={10}>
+      <Col span={8}>
         <Form.Item
           name="pmv_dst_base"
           label={t('fields.destinationBase')}
@@ -115,7 +115,7 @@ const Destination = ({ form, value, base, setBase }) => {
         </Form.Item>
       </Col>
 
-      <Col span={7}>
+      <Col span={8}>
         <Form.Item
           name="pmv_dstcode"
           label={t('fields.destinationUnit')}

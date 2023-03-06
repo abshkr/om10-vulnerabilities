@@ -30,34 +30,22 @@ const StartFolio = ({ form, value }) => {
     <>
       <Row gutter={[8, 8]}>
         <Col span={6}>
-          <Form.Item
-            name="start_nr"
-            label={t('fields.startCloseout')}
-          >
+          <Form.Item name="start_nr" label={t('fields.startCloseout')}>
             <Input disabled={!!value} />
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item
-            name="pmv_date1"
-            label={t('fields.startDate')}
-          >
+          <Form.Item name="pmv_date1" label={t('fields.startDate')}>
             <Input disabled={!!value} />
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item
-            name="start_tank_level"
-            label={t('fields.startLevel')}
-          >
+          <Form.Item name="start_tank_level" label={t('fields.startLevel')}>
             <Input disabled={!!value} />
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item
-            name="pmv_open_amb"
-            label={t('fields.startAmb')}
-          >
+          <Form.Item name="open_temp" label={t('fields.startTemp')}>
             <Input disabled={!!value} />
           </Form.Item>
         </Col>
@@ -65,34 +53,22 @@ const StartFolio = ({ form, value }) => {
 
       <Row gutter={[8, 8]}>
         <Col span={6}>
-          <Form.Item
-            name="pmv_open_cor"
-            label={t('fields.startStd')}
-          >
+          <Form.Item name="pmv_open_amb" label={t('fields.startAmb')}>
             <Input disabled={!!value} />
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item
-            name="pmv_open_kg"
-            label={t('fields.startKg')}
-          >
+          <Form.Item name="pmv_open_cor" label={t('fields.startStd')}>
             <Input disabled={!!value} />
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item
-            name="open_temp"
-            label={t('fields.startTemp')}
-          >
+          <Form.Item name="pmv_open_kg" label={t('fields.startKg')}>
             <Input disabled={!!value} />
           </Form.Item>
         </Col>
         <Col span={6}>
-          <Form.Item
-            name="open_density"
-            label={t('fields.startDens')}
-          >
+          <Form.Item name="open_density" label={t('fields.startDens')}>
             <Input disabled={!!value} />
           </Form.Item>
         </Col>

@@ -68,6 +68,9 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
   3 COMPLETE
   4 Does not exist */
 
+  // for testing of GUI only
+  // if (value) value.pmv_status = '3';
+
   const onComplete = (pmv_batchcode) => {
     handleFormState(false, null);
     refresh();
@@ -421,36 +424,44 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
             </Row>
 
             <Row gutter={[8, 8]}>
-              <Col span={7}>
+              <Col span={8}>
                 <BatchCode form={form} value={value} config={config} />
               </Col>
-              <Col span={10}>
+              <Col span={8}>
                 <Class form={form} value={value} />
               </Col>
-              <Col span={7}>
+              <Col span={8}>
                 <Quantity form={form} value={value} />
               </Col>
             </Row>
 
-            <Unit form={form} value={value} />
+            <Row gutter={[8, 8]}>
+              <Col span={8}>
+                <Unit form={form} value={value} />
+              </Col>
+            </Row>
 
             {IS_CREATING && movementType === 'COMPLETE' && (
-              <Form.Item
-                name="pmv_opening_qty"
-                label={t('fields.initialStandardVolume')}
-                rules={[{ required: true, validator: validateInitial }]}
-              >
-                <Input disabled={!!value} />
-              </Form.Item>
-            )}
-            {IS_CREATING && movementType === 'COMPLETE' && (
-              <Form.Item
-                name="pmv_obsvd_dens"
-                label={t('fields.prodMovDens')}
-                rules={[{ required: true, validator: validateDens }]}
-              >
-                <InputNumber min={0} disabled={!!value} />
-              </Form.Item>
+              <Row gutter={[8, 8]}>
+                <Col span={12}>
+                  <Form.Item
+                    name="pmv_opening_qty"
+                    label={t('fields.initialStandardVolume')}
+                    rules={[{ required: true, validator: validateInitial }]}
+                  >
+                    <Input disabled={!!value} style={{ width: '100%' }} />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    name="pmv_obsvd_dens"
+                    label={t('fields.prodMovDens')}
+                    rules={[{ required: true, validator: validateDens }]}
+                  >
+                    <InputNumber min={0} disabled={!!value} style={{ width: '100%' }} />
+                  </Form.Item>
+                </Col>
+              </Row>
             )}
           </TabPane>
         </Tabs>
@@ -578,41 +589,41 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
         >
           <Tabs defaultActiveKey="1">
             <TabPane tab={t('tabColumns.general')} key="1">
-              <Divider style={{ marginBottom: 5 }} orientation="left">
+              <Divider style={{ marginBottom: 5, marginTop: 5 }} orientation="left">
                 {t('fields.beginMovement')}
               </Divider>
               {/* <StartFolioDes form={form} value={value} /> */}
               <StartFolio form={form} value={value} />
-              <Divider style={{ marginBottom: 5 }} orientation="left">
+              <Divider style={{ marginBottom: 5, marginTop: 5 }} orientation="left">
                 {t('fields.details')}
               </Divider>
-              <Row gutter={[8, 8]}>
+              <Row gutter={[8, 1]}>
                 {/* <Col span={6}>
                   <BaseProduct form={form} value={value} setBase={setBase} />
                 </Col> */}
                 <BayLoaded form={form} value={value} />
               </Row>
-              <Row gutter={[8, 8]}>
+              <Row gutter={[8, 1]}>
                 <Source form={form} value={value} base={srcBase} setBase={setSrcBase} />
               </Row>
-              <Row gutter={[8, 8]}>
+              <Row gutter={[8, 1]}>
                 <Destination form={form} value={value} base={dstBase} setBase={setDstBase} />
               </Row>
-              <Row gutter={[8, 8]}>
-                <Col span={6}>
+              <Row gutter={[8, 1]}>
+                <Col span={8}>
                   <BatchCode form={form} value={value} config={config} />
                 </Col>
-                <Col span={6}>
+                <Col span={8}>
                   <Class form={form} value={value} />
                 </Col>
-                <Col span={6}>
+                <Col span={4}>
                   <Quantity form={form} value={value} />
                 </Col>
-                <Col span={6}>
+                <Col span={4}>
                   <Unit form={form} value={value} />
                 </Col>
               </Row>
-              <Row gutter={[8, 8]}>
+              <Row gutter={[8, 1]}>
                 <Col span={4}>
                   <Tag color="#0097df" style={{ width: '100%', textAlign: 'center' }}>
                     {t('fields.progress')}
