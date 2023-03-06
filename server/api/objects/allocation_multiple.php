@@ -651,7 +651,7 @@ class Allocation extends CommonClass
         if (isset($this->supplier)) {
             if (isset($this->customer) && $this->customer !== "null" && $serv->site_customer_product()) {
                 $query = "
-                SELECT 
+                SELECT
                     NVL(GUI_ALLOCATION_ITEMS.AITEM_INDEX, ALL_PRODS.ALLOC_INDEX) AITEM_INDEX,
                     NVL(GUI_ALLOCATION_ITEMS.AITEM_TYPE, ALL_PRODS.ALLOC_TYPE) AITEM_TYPE,
                     NVL(AITEM_TYPENAME, ALLOC_TYPENAME) AITEM_TYPENAME,
@@ -670,7 +670,7 @@ class Allocation extends CommonClass
                     NVL(AITEM_PERCHILD, ALLOC_PERIOD) AITEM_PERCHILD
                 FROM
                 (
-                    SELECT PRODUCTS.PROD_CODE,
+                    SELECT distinct PRODUCTS.PROD_CODE,
                         PRODUCTS.PROD_CMPY,
                         PRODUCTS.PROD_NAME,
                         NULL ALLOC_INDEX,
@@ -707,7 +707,7 @@ class Allocation extends CommonClass
                 oci_bind_by_name($stmt, ':customer', $this->customer);
             } else {
                 $query = "
-                SELECT 
+                SELECT
                     NVL(GUI_ALLOCATION_ITEMS.AITEM_INDEX, ALL_PRODS.ALLOC_INDEX) AITEM_INDEX,
                     NVL(GUI_ALLOCATION_ITEMS.AITEM_TYPE, ALL_PRODS.ALLOC_TYPE) AITEM_TYPE,
                     NVL(AITEM_TYPENAME, ALLOC_TYPENAME) AITEM_TYPENAME,
@@ -726,7 +726,7 @@ class Allocation extends CommonClass
                     NVL(AITEM_PERCHILD, ALLOC_PERIOD) AITEM_PERCHILD
                 FROM
                 (
-                    SELECT PROD_CODE,
+                    SELECT distinct PROD_CODE,
                         PROD_CMPY,
                         PROD_NAME,
                         NULL ALLOC_INDEX,
@@ -760,7 +760,7 @@ class Allocation extends CommonClass
         } else {
             if (isset($this->customer) && $this->customer !== "null" && $serv->site_customer_product()) {
                 $query = "
-                SELECT 
+                SELECT
                     NVL(GUI_ALLOCATION_ITEMS.AITEM_INDEX, ALL_PRODS.ALLOC_INDEX) AITEM_INDEX,
                     NVL(GUI_ALLOCATION_ITEMS.AITEM_TYPE, ALL_PRODS.ALLOC_TYPE) AITEM_TYPE,
                     NVL(AITEM_TYPENAME, ALLOC_TYPENAME) AITEM_TYPENAME,
@@ -779,7 +779,7 @@ class Allocation extends CommonClass
                     NVL(AITEM_PERCHILD, ALLOC_PERIOD) AITEM_PERCHILD
                 FROM
                 (
-                    SELECT PRODUCTS.PROD_CODE,
+                    SELECT distinct PRODUCTS.PROD_CODE,
                         PRODUCTS.PROD_CMPY,
                         PRODUCTS.PROD_NAME,
                         ALLOC_INDEX,
@@ -822,7 +822,7 @@ class Allocation extends CommonClass
                 oci_bind_by_name($stmt, ':customer', $this->customer);
             } else {
                 $query = "
-                SELECT 
+                SELECT
                     NVL(GUI_ALLOCATION_ITEMS.AITEM_INDEX, ALL_PRODS.ALLOC_INDEX) AITEM_INDEX,
                     NVL(GUI_ALLOCATION_ITEMS.AITEM_TYPE, ALL_PRODS.ALLOC_TYPE) AITEM_TYPE,
                     NVL(AITEM_TYPENAME, ALLOC_TYPENAME) AITEM_TYPENAME,
@@ -841,7 +841,7 @@ class Allocation extends CommonClass
                     NVL(AITEM_PERCHILD, ALLOC_PERIOD) AITEM_PERCHILD
                 FROM
                 (
-                    SELECT PROD_CODE,
+                    SELECT distinct PROD_CODE,
                         PROD_CMPY,
                         PROD_NAME,
                         ALLOC_INDEX,
