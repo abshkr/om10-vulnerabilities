@@ -274,6 +274,11 @@ class ProdMovement extends CommonClass
             $this->pmv_number = $row['PMV_NUMBER'];
         }
 
+        // assign the batch code with the value of pmv_number if the batch code is not set or blank
+        if (!isset($this->pmv_batchcode) || $this->pmv_batchcode == "") {
+            $this->pmv_batchcode = "PMB_" . $this->pmv_number;
+        }
+
         if (!isset($this->pmv_status)) {
             $this->pmv_status = 0;
         }
@@ -328,7 +333,8 @@ class ProdMovement extends CommonClass
         // adjust the batch code
         if (!isset($this->pmv_batchcode) || $this->pmv_batchcode == "") {
             // batch code is not defined
-            if ($this->clear_batchcode($this->pmv_number) == false) {
+            $this->pmv_batchcode = "PMB_" . $this->pmv_number;
+            if ($this->update_batch($this->pmv_number, $this->pmv_batchcode) == false) {
                 return false;
             }
         }
@@ -354,6 +360,30 @@ class ProdMovement extends CommonClass
         oci_bind_by_name($stmt, ':pmv_number', $pmv_number);
         oci_bind_by_name($stmt, ':src_base', $src_base);
         oci_bind_by_name($stmt, ':dst_base', $dst_base);
+
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function update_batch($pmv_number, $batch)
+    {
+        write_log(sprintf("%s::%s() START ==%d==, ==%s==", __CLASS__, __FUNCTION__, $pmv_number, $batch),
+            __FILE__, __LINE__);
+
+        $query = "
+            UPDATE PRODUCT_MVMNTS
+            SET PMV_BATCHCODE = :batch
+            WHERE PMV_NUMBER = :pmv_number
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':pmv_number', $pmv_number);
+        oci_bind_by_name($stmt, ':batch', $batch);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
