@@ -107,9 +107,9 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
       values.pmv_prdctlnk = values?.pmv_src_base;
     }
     // if it is a TRANSFER type, both the source and destination are tanks, the PMV_SRC_BASE and PMV_DST_BASE both have the values,
-    // assign the value of PMV_DST_BASE to PMV_PRDCTLNK considering most likely the destination tank would be used in future operations
+    // assign the value of PMV_SRC_BASE to PMV_PRDCTLNK considering TPMMAN process currently writes the data of source tank to PRODUCT_MVMNTS table.
     if (values?.pmv_srctype === '3' && values?.pmv_dsttype === '3') {
-      values.pmv_prdctlnk = values?.pmv_dst_base;
+      values.pmv_prdctlnk = values?.pmv_src_base;
     }
 
     Modal.confirm({
