@@ -13,6 +13,7 @@ import {
 import {
   MovementType,
   Unit,
+  Monitor,
   Source,
   Destination,
   BatchCode,
@@ -58,6 +59,8 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
   const [base, setBase] = useState(null);
   const [srcBase, setSrcBase] = useState(null);
   const [dstBase, setDstBase] = useState(null);
+  const [srcType, setSrcType] = useState(undefined);
+  const [dstType, setDstType] = useState(undefined);
   const [movementType, setMovementType] = useState('NEW');
   const [mvModalVisbile, setMvModalVisible] = useState(false);
 
@@ -70,6 +73,18 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
 
   // for testing of GUI only
   // if (value) value.pmv_status = '3';
+
+  const monitoringTank = () => {
+    let status = value?.pmv_monitor;
+    if (!status) {
+      status = srcType === '3' ? 'S' : dstType === '3' ? 'D' : '';
+    }
+
+    const statusText = status === 'S' ? t('fields.source') : status === 'D' ? t('fields.destination') : '';
+    const tankText = status === 'S' ? value?.pmv_srccode : status === 'D' ? value?.pmv_dstcode : '';
+
+    return `${t('fields.monitoring')}: ${statusText} ${tankText}`;
+  };
 
   const onComplete = (pmv_batchcode) => {
     handleFormState(false, null);
@@ -417,10 +432,16 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
             {/* <BaseProduct form={form} value={value} setBase={setBase} /> */}
 
             <Row gutter={[8, 8]}>
-              <Source form={form} value={value} base={srcBase} setBase={setSrcBase} />
+              <Source form={form} value={value} base={srcBase} setBase={setSrcBase} setType={setSrcType} />
             </Row>
             <Row gutter={[8, 8]}>
-              <Destination form={form} value={value} base={dstBase} setBase={setDstBase} />
+              <Destination
+                form={form}
+                value={value}
+                base={dstBase}
+                setBase={setDstBase}
+                setType={setDstType}
+              />
             </Row>
 
             <Row gutter={[8, 8]}>
@@ -438,6 +459,10 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
             <Row gutter={[8, 8]}>
               <Col span={8}>
                 <Unit form={form} value={value} />
+              </Col>
+              <Col span={8}></Col>
+              <Col span={8}>
+                <Monitor form={form} value={value} srcType={srcType} dstType={dstType} />
               </Col>
             </Row>
 
@@ -590,12 +615,12 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
           <Tabs defaultActiveKey="1">
             <TabPane tab={t('tabColumns.general')} key="1">
               <Divider style={{ marginBottom: 5, marginTop: 5 }} orientation="left">
-                {t('fields.beginMovement')}
+                {t('fields.beginMovement')} ({monitoringTank()})
               </Divider>
               {/* <StartFolioDes form={form} value={value} /> */}
               <StartFolio form={form} value={value} />
               <Divider style={{ marginBottom: 5, marginTop: 5 }} orientation="left">
-                {t('fields.details')}
+                {t('fields.details')} ({monitoringTank()})
               </Divider>
               <Row gutter={[8, 1]}>
                 {/* <Col span={6}>
@@ -604,10 +629,16 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
                 <BayLoaded form={form} value={value} />
               </Row>
               <Row gutter={[8, 1]}>
-                <Source form={form} value={value} base={srcBase} setBase={setSrcBase} />
+                <Source form={form} value={value} base={srcBase} setBase={setSrcBase} setType={setSrcType} />
               </Row>
               <Row gutter={[8, 1]}>
-                <Destination form={form} value={value} base={dstBase} setBase={setDstBase} />
+                <Destination
+                  form={form}
+                  value={value}
+                  base={dstBase}
+                  setBase={setDstBase}
+                  setType={setDstType}
+                />
               </Row>
               <Row gutter={[8, 1]}>
                 <Col span={8}>
@@ -645,7 +676,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
                 </Col>
               </Row>
               <Divider style={{ marginBottom: 5 }} orientation="left">
-                {t('fields.endMovement')}
+                {t('fields.endMovement')} ({monitoringTank()})
               </Divider>
               <EndFolio form={form} value={value} />
             </TabPane>

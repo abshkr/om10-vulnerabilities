@@ -7,7 +7,7 @@ import _ from 'lodash';
 
 import { PRODUCT_MOVEMENTS } from '../../../../api';
 
-const Destination = ({ form, value, base, setBase }) => {
+const Destination = ({ form, value, base, setBase, setType }) => {
   const { t } = useTranslation();
 
   const { data: types, typesLoading } = useSWR(PRODUCT_MOVEMENTS.TYPES);
@@ -54,6 +54,10 @@ const Destination = ({ form, value, base, setBase }) => {
       setSource(value.pmv_dsttype);
     }
   }, [value, setFieldsValue]);
+
+  useEffect(() => {
+    setType(source);
+  }, [source]);
 
   return (
     <>

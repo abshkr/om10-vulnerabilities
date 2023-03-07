@@ -338,6 +338,10 @@ class ProdMovement extends CommonClass
                 return false;
             }
         }
+        // update monitoring option
+        if ($this->update_monitor($this->pmv_number, $this->pmv_monitor) == false) {
+            return false;
+        }
 
         oci_commit($this->conn);
 
@@ -360,6 +364,30 @@ class ProdMovement extends CommonClass
         oci_bind_by_name($stmt, ':pmv_number', $pmv_number);
         oci_bind_by_name($stmt, ':src_base', $src_base);
         oci_bind_by_name($stmt, ':dst_base', $dst_base);
+
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function update_monitor($pmv_number, $monitor)
+    {
+        write_log(sprintf("%s::%s() START ==%d==, ==%s==", __CLASS__, __FUNCTION__, $pmv_number, $monitor),
+            __FILE__, __LINE__);
+
+        $query = "
+            UPDATE PRODUCT_MVMNTS
+            SET PMV_MONITOR = :monitor
+            WHERE PMV_NUMBER = :pmv_number
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':pmv_number', $pmv_number);
+        oci_bind_by_name($stmt, ':monitor', $monitor);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
@@ -650,6 +678,7 @@ class ProdMovement extends CommonClass
             SELECT 
                 PMV.PMV_NUMBER,
                 PMV.PMV_SRC_TERMINAL,
+                PMV.PMV_MONITOR,
                 PMV.PMV_SRCTYPE,
                 PMV_TYP1.PMV_NAME PMV_SRCTYPE_NAME,
                 PMV.PMV_SRCCODE,
