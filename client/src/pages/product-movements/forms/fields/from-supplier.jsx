@@ -11,8 +11,22 @@ const Supplier = ({ value }) => {
 
   const { data: options, isValidating } = useSWR(LOAD_SCHEDULES.SUPPLIERS);
 
+  const validate = (rule, input) => {
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.select')} ─ ${t('fields.fromSupplier')}`);
+      }
+    }
+
+    return Promise.resolve();
+  };
+
   return (
-    <Form.Item name="from_supplier" label={t('fields.fromSupplier')} rules={[{ required: true }]}>
+    <Form.Item
+      name="from_supplier"
+      label={t('fields.fromSupplier')}
+      rules={[{ required: true, validator: validate }]}
+    >
       <Select
         loading={isValidating}
         allowClear

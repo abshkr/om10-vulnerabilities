@@ -808,7 +808,7 @@ class ProdMovement extends CommonClass
                     AND TRSA_ED_DMY > NVL(PMV_DATE1, SYSDATE)
                     AND TRSA_ED_DMY < NVL(PMV_DATE2, SYSDATE)
                     AND TRSB_TK_TANKCODE = DECODE(PMV_MONITOR, 'S', PMV_SRCCODE, 'D', PMV_DSTCODE, DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE))
-                GROUP BY PMV_SRCTYPE, PMV_SRCCODE, PMV_DSTCODE, PMV_NUMBER
+                GROUP BY PMV_MONITOR, PMV_SRCTYPE, PMV_SRCCODE, PMV_DSTCODE, PMV_NUMBER
             ) LOADED,
             (
                 SELECT TANK_COR_VOL,
@@ -910,7 +910,7 @@ class ProdMovement extends CommonClass
                     AND TRSA_ED_DMY > NVL(PMV_DATE1, SYSDATE)
                     AND TRSA_ED_DMY < NVL(PMV_DATE2, SYSDATE)
                     AND TRSB_TK_TANKCODE = DECODE(PMV_MONITOR, 'S', PMV_SRCCODE, 'D', PMV_DSTCODE, DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE))
-                GROUP BY PMV_SRCTYPE, PMV_SRCCODE, PMV_DSTCODE
+                GROUP BY PMV_MONITOR, PMV_SRCTYPE, PMV_SRCCODE, PMV_DSTCODE
             ) LOAD_INFO
             WHERE PMV_TANK.TANK_CODE = LOAD_INFO.TANK_CODE (+)";
         $stmt = oci_parse($this->conn, $query);
@@ -964,7 +964,7 @@ class ProdMovement extends CommonClass
                     AND TRSA_ED_DMY > NVL(PMV_DATE1, SYSDATE)
                     AND TRSA_ED_DMY < NVL(PMV_DATE2, SYSDATE)
                     AND TRSB_TK_TANKCODE = DECODE(PMV_MONITOR, 'S', PMV_SRCCODE, 'D', PMV_DSTCODE, DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE))
-                GROUP BY PMV_SRCTYPE, PMV_SRCCODE, PMV_DSTCODE, PMV_NUMBER
+                GROUP BY PMV_MONITOR, PMV_SRCTYPE, PMV_SRCCODE, PMV_DSTCODE, PMV_NUMBER
             ) LOADED,
             (
                 SELECT TANK_COR_VOL,
@@ -1404,8 +1404,14 @@ class ProdMovement extends CommonClass
         $serv->set_property('supplier', trim(substr($response, 41, 20)));
         $serv->set_property('trip_no', trim(substr($response, 32, 9)));
         $serv->set_property('load_number', trim(substr($response, 32, 9)));
-        $serv->set_property('start_time', $this->pmv_date1);
-        $serv->set_property('finish_time', $this->pmv_date2);
+        // Now we allow user to modify the date time in GUI 
+        if (!isset($this->pmv_datetime)) {
+            $serv->set_property('start_time', $this->pmv_date1);
+            $serv->set_property('finish_time', $this->pmv_date2);
+        } else {
+            $serv->set_property('start_time', $this->pmv_datetime);
+            $serv->set_property('finish_time', $this->pmv_datetime);
+        }
         $serv->set_property('drawer_code', trim(substr($response, 41, 20)));
         $serv->set_property('drawer_name', "");
         $serv->set_property('tanker_code', "SPECIAL");
@@ -1426,9 +1432,28 @@ class ProdMovement extends CommonClass
             
             $transfers[$i]->dens = $this->pmv_obsvd_dens * 1000;
             $transfers[$i]->Temperature = $this->pmv_temperature * 100;
-            $transfers[$i]->amb_vol = abs($this->pmv_close_amb - $this->pmv_open_amb) * 1000;
-            $transfers[$i]->cor_vol = abs($this->pmv_close_cor - $this->pmv_open_cor) * 1000;
-            $transfers[$i]->liq_kg = abs($this->pmv_close_kg - $this->pmv_open_kg) * 1000;
+            // Now we allow the user to modify pmv_qty_amb, pmv_qty_cor, pmv_qty_wiv, pmv_qty_wia
+            if (!isset($this->pmv_qty_amb)) {
+                $transfers[$i]->amb_vol = abs($this->pmv_close_amb - $this->pmv_open_amb) * 1000;
+            } else {
+                $transfers[$i]->amb_vol = abs($this->pmv_qty_amb) * 1000;
+            }
+            if (!isset($this->pmv_qty_cor)) {
+                $transfers[$i]->cor_vol = abs($this->pmv_close_cor - $this->pmv_open_cor) * 1000;
+            } else {
+                $transfers[$i]->cor_vol = abs($this->pmv_qty_cor) * 1000;
+            }
+            if (!isset($this->pmv_qty_wiv)) {
+                $transfers[$i]->liq_kg = abs($this->pmv_close_kg - $this->pmv_open_kg) * 1000;
+            } else {
+                $transfers[$i]->liq_kg = abs($this->pmv_qty_wiv) * 1000;
+            }
+            // need a new column for WIA in table transfers
+            /* if (!isset($this->pmv_qty_wia)) {
+                $transfers[$i]->wia_kg = abs($this->pmv_close_kg - $this->pmv_open_kg) * 1000;
+            } else {
+                $transfers[$i]->wia_kg = abs($this->pmv_qty_wia) * 1000;
+            } */
 
             $transfers[$i]->num_of_meter = 0; // No meter info
 
@@ -1450,9 +1475,28 @@ class ProdMovement extends CommonClass
                 $transfers[$i]->bases[$j]->dens = $this->pmv_obsvd_dens * 1000;
                 $transfers[$i]->bases[$j]->Temperature = $this->pmv_temperature * 100;
 
-                $transfers[$i]->bases[$j]->amb_vol = abs($this->pmv_close_amb - $this->pmv_open_amb) * 1000;
-                $transfers[$i]->bases[$j]->cor_vol = abs($this->pmv_close_cor - $this->pmv_open_cor) * 1000;
-                $transfers[$i]->bases[$j]->liq_kg = abs($this->pmv_close_kg - $this->pmv_open_kg) * 1000;
+                // Now we allow the user to modify pmv_qty_amb, pmv_qty_cor, pmv_qty_wiv, pmv_qty_wia
+                if (!isset($this->pmv_qty_amb)) {
+                    $transfers[$i]->bases[$j]->amb_vol = abs($this->pmv_close_amb - $this->pmv_open_amb) * 1000;
+                } else {
+                    $transfers[$i]->bases[$j]->amb_vol = abs($this->pmv_qty_amb) * 1000;
+                }
+                if (!isset($this->pmv_qty_cor)) {
+                    $transfers[$i]->bases[$j]->cor_vol = abs($this->pmv_close_cor - $this->pmv_open_cor) * 1000;
+                } else {
+                    $transfers[$i]->bases[$j]->cor_vol = abs($this->pmv_qty_cor) * 1000;
+                }
+                if (!isset($this->pmv_qty_wiv)) {
+                    $transfers[$i]->bases[$j]->liq_kg = abs($this->pmv_close_kg - $this->pmv_open_kg) * 1000;
+                } else {
+                    $transfers[$i]->bases[$j]->liq_kg = abs($this->pmv_qty_wiv) * 1000;
+                }
+                // need a new column for WIA in table transfers
+                /* if (!isset($this->pmv_qty_wia)) {
+                    $transfers[$i]->bases[$j]->wia_kg = abs($this->pmv_close_kg - $this->pmv_open_kg) * 1000;
+                } else {
+                    $transfers[$i]->bases[$j]->wia_kg = abs($this->pmv_qty_wia) * 1000;
+                } */
             }
         }
         
@@ -1479,8 +1523,14 @@ class ProdMovement extends CommonClass
         $serv->set_property('supplier', trim(substr($response, 70, 20)));
         $serv->set_property('trip_no', trim(substr($response, 61, 9)));
         $serv->set_property('load_number', trim(substr($response, 61, 9)));
-        $serv->set_property('start_time', $this->pmv_date1);
-        $serv->set_property('finish_time', $this->pmv_date2);
+        // Now we allow user to modify the date time in GUI 
+        if (!isset($this->pmv_datetime)) {
+            $serv->set_property('start_time', $this->pmv_date1);
+            $serv->set_property('finish_time', $this->pmv_date2);
+        } else {
+            $serv->set_property('start_time', $this->pmv_datetime);
+            $serv->set_property('finish_time', $this->pmv_datetime);
+        }
         $serv->set_property('drawer_name', "");
         $serv->set_property('tanker_code', "SPECIAL");
         $serv->set_property('operator_code', "");
@@ -1500,9 +1550,28 @@ class ProdMovement extends CommonClass
             
             $transfers[$i]->dens = $this->pmv_obsvd_dens * 1000;
             $transfers[$i]->Temperature = $this->pmv_temperature * 100;
-            $transfers[$i]->amb_vol = abs($this->pmv_close_amb - $this->pmv_open_amb) * 1000;
-            $transfers[$i]->cor_vol = abs($this->pmv_close_cor - $this->pmv_open_cor) * 1000;
-            $transfers[$i]->liq_kg = abs($this->pmv_close_kg - $this->pmv_open_kg) * 1000;
+            // Now we allow the user to modify pmv_qty_amb, pmv_qty_cor, pmv_qty_wiv, pmv_qty_wia
+            if (!isset($this->pmv_qty_amb)) {
+                $transfers[$i]->amb_vol = abs($this->pmv_close_amb - $this->pmv_open_amb) * 1000;
+            } else {
+                $transfers[$i]->amb_vol = abs($this->pmv_qty_amb) * 1000;
+            }
+            if (!isset($this->pmv_qty_cor)) {
+                $transfers[$i]->cor_vol = abs($this->pmv_close_cor - $this->pmv_open_cor) * 1000;
+            } else {
+                $transfers[$i]->cor_vol = abs($this->pmv_qty_cor) * 1000;
+            }
+            if (!isset($this->pmv_qty_wiv)) {
+                $transfers[$i]->liq_kg = abs($this->pmv_close_kg - $this->pmv_open_kg) * 1000;
+            } else {
+                $transfers[$i]->liq_kg = abs($this->pmv_qty_wiv) * 1000;
+            }
+            // need a new column for WIA in table transfers
+            /* if (!isset($this->pmv_qty_wia)) {
+                $transfers[$i]->wia_kg = abs($this->pmv_close_kg - $this->pmv_open_kg) * 1000;
+            } else {
+                $transfers[$i]->wia_kg = abs($this->pmv_qty_wia) * 1000;
+            } */
 
             $transfers[$i]->num_of_meter = 0; //Special movement does not have meter info
 
@@ -1518,9 +1587,28 @@ class ProdMovement extends CommonClass
                 $transfers[$i]->bases[$j]->dens = $this->pmv_obsvd_dens * 1000;
                 $transfers[$i]->bases[$j]->Temperature = $this->pmv_temperature * 100;
 
-                $transfers[$i]->bases[$j]->amb_vol = abs($this->pmv_close_amb - $this->pmv_open_amb) * 1000;
-                $transfers[$i]->bases[$j]->cor_vol = abs($this->pmv_close_cor - $this->pmv_open_cor) * 1000;
-                $transfers[$i]->bases[$j]->liq_kg = abs($this->pmv_close_kg - $this->pmv_open_kg) * 1000;
+                // Now we allow the user to modify pmv_qty_amb, pmv_qty_cor, pmv_qty_wiv, pmv_qty_wia
+                if (!isset($this->pmv_qty_amb)) {
+                    $transfers[$i]->bases[$j]->amb_vol = abs($this->pmv_close_amb - $this->pmv_open_amb) * 1000;
+                } else {
+                    $transfers[$i]->bases[$j]->amb_vol = abs($this->pmv_qty_amb) * 1000;
+                }
+                if (!isset($this->pmv_qty_cor)) {
+                    $transfers[$i]->bases[$j]->cor_vol = abs($this->pmv_close_cor - $this->pmv_open_cor) * 1000;
+                } else {
+                    $transfers[$i]->bases[$j]->cor_vol = abs($this->pmv_qty_cor) * 1000;
+                }
+                if (!isset($this->pmv_qty_wiv)) {
+                    $transfers[$i]->bases[$j]->liq_kg = abs($this->pmv_close_kg - $this->pmv_open_kg) * 1000;
+                } else {
+                    $transfers[$i]->bases[$j]->liq_kg = abs($this->pmv_qty_wiv) * 1000;
+                }
+                // need a new column for WIA in table transfers
+                /* if (!isset($this->pmv_qty_wia)) {
+                    $transfers[$i]->bases[$j]->wia_kg = abs($this->pmv_close_kg - $this->pmv_open_kg) * 1000;
+                } else {
+                    $transfers[$i]->bases[$j]->wia_kg = abs($this->pmv_qty_wia) * 1000;
+                } */
             }
         }
 

@@ -688,13 +688,16 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
           </Tabs>
         </Form>
       </Drawer>
-      <MakeNomination
-        value={value}
-        t={t}
-        visible={mvModalVisbile}
-        setVisible={setMvModalVisible}
-        onComplete={onComplete}
-      />
+      {mvModalVisbile && (
+        <MakeNomination
+          value={value}
+          config={config}
+          t={t}
+          visible={mvModalVisbile}
+          setVisible={setMvModalVisible}
+          onComplete={onComplete}
+        />
+      )}
     </React.Fragment>
   );
 };
