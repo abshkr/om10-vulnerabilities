@@ -152,7 +152,7 @@ class ProdMovement extends CommonClass
                     TANK_PROD_LVL
                 FROM TANKS
                 WHERE TANK_CODE = (
-                        SELECT DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)
+                        SELECT DECODE(PMV_MONITOR, 'S', PMV_SRCCODE, 'D', PMV_DSTCODE, DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE))
                         FROM PRODUCT_MVMNTS
                         WHERE PMV_NUMBER = :pmv_number
                     )";
@@ -484,7 +484,7 @@ class ProdMovement extends CommonClass
                 TANK_PROD_LVL
             FROM TANKS
             WHERE TANK_CODE = (
-                    SELECT DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)
+                    SELECT DECODE(PMV_MONITOR, 'S', PMV_SRCCODE, 'D', PMV_DSTCODE, DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE))
                     FROM PRODUCT_MVMNTS
                     WHERE PMV_NUMBER = :pmv_number
                 )";
@@ -799,7 +799,7 @@ class ProdMovement extends CommonClass
                 SELECT NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_AVL / 1000, TRSB_AVL)), 0) LOADED_AVL,
                     NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_CVL / 1000, TRSB_CVL)), 0) LOADED_CVL,
                     NVL(SUM(TRSB_KG), 0) LOADED_KG,
-                    DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE,
+                    DECODE(PMV_MONITOR, 'S', PMV_SRCCODE, 'D', PMV_DSTCODE, DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)) TANK_CODE,
                     PMV_NUMBER
                 FROM TRANBASE, TRANSFERS, TRANSACTIONS, PRODUCT_MVMNTS
                 WHERE TRSB_ID_TRSF_ID = TRSF_ID AND TRSB_ID_TRSF_TRM = TRSF_TERMINAL
@@ -807,7 +807,7 @@ class ProdMovement extends CommonClass
                     AND PMV_NUMBER = :pmv_number
                     AND TRSA_ED_DMY > NVL(PMV_DATE1, SYSDATE)
                     AND TRSA_ED_DMY < NVL(PMV_DATE2, SYSDATE)
-                    AND TRSB_TK_TANKCODE = DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)
+                    AND TRSB_TK_TANKCODE = DECODE(PMV_MONITOR, 'S', PMV_SRCCODE, 'D', PMV_DSTCODE, DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE))
                 GROUP BY PMV_SRCTYPE, PMV_SRCCODE, PMV_DSTCODE, PMV_NUMBER
             ) LOADED,
             (
@@ -819,7 +819,7 @@ class ProdMovement extends CommonClass
                     TANK_PROD_LVL
                 FROM TANKS
                 WHERE TANK_CODE = (
-                        SELECT DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)
+                        SELECT DECODE(PMV_MONITOR, 'S', PMV_SRCCODE, 'D', PMV_DSTCODE, DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE))
                         FROM PRODUCT_MVMNTS
                         WHERE PMV_NUMBER = :pmv_number
                     )
@@ -858,7 +858,7 @@ class ProdMovement extends CommonClass
     {
         $query = "
             SELECT CLOSEOUT_NR, 
-                DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE, 
+                DECODE(PMV_MONITOR, 'S', PMV_SRCCODE, 'D', PMV_DSTCODE, DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)) TANK_CODE, 
                 ROUND(NVL(PMV_OPEN_COR, 0), 0) PMV_OPEN_COR, 
                 PMV_TEMPERATURE OPEN_TEMP, 
                 ROUND(PMV_OPEN_AMB, 0) PMV_OPEN_AMB,
@@ -895,20 +895,21 @@ class ProdMovement extends CommonClass
                 NVL(KG_SUM, 0) BAY_KG_SUM
             FROM
             (
-                SELECT DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE FROM PRODUCT_MVMNTS WHERE PMV_NUMBER = :pmv_number
+                SELECT DECODE(PMV_MONITOR, 'S', PMV_SRCCODE, 'D', PMV_DSTCODE, DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)) TANK_CODE 
+                FROM PRODUCT_MVMNTS WHERE PMV_NUMBER = :pmv_number
             ) PMV_TANK,
             (
                 SELECT NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_AVL / 1000, TRSB_AVL)), 0) AVL_SUM,
                     NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_CVL / 1000, TRSB_CVL)), 0) CVL_SUM,
                     NVL(SUM(TRSB_KG), 0) KG_SUM,
-                    DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE
+                    DECODE(PMV_MONITOR, 'S', PMV_SRCCODE, 'D', PMV_DSTCODE, DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)) TANK_CODE
                 FROM TRANBASE, TRANSFERS, TRANSACTIONS, PRODUCT_MVMNTS
                 WHERE TRSB_ID_TRSF_ID = TRSF_ID AND TRSB_ID_TRSF_TRM = TRSF_TERMINAL
                     AND TRSFTRID_TRSA_ID = TRSA_ID AND TRSFTRID_TRSA_TRM = TRSA_TERMINAL
                     AND PMV_NUMBER = :pmv_number
                     AND TRSA_ED_DMY > NVL(PMV_DATE1, SYSDATE)
                     AND TRSA_ED_DMY < NVL(PMV_DATE2, SYSDATE)
-                    AND TRSB_TK_TANKCODE = DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)
+                    AND TRSB_TK_TANKCODE = DECODE(PMV_MONITOR, 'S', PMV_SRCCODE, 'D', PMV_DSTCODE, DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE))
                 GROUP BY PMV_SRCTYPE, PMV_SRCCODE, PMV_DSTCODE
             ) LOAD_INFO
             WHERE PMV_TANK.TANK_CODE = LOAD_INFO.TANK_CODE (+)";
@@ -927,7 +928,7 @@ class ProdMovement extends CommonClass
     {
         $query = "
             SELECT CLOSEOUT_NR, 
-                DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE, 
+                DECODE(PMV_MONITOR, 'S', PMV_SRCCODE, 'D', PMV_DSTCODE, DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)) TANK_CODE, 
                 ROUND(DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL), 0) PMV_CLOSE_COR, 
                 ROUND(DECODE(PMV_STATUS, 3, PMV_CLOSE_TEMP, TANK_TEMP), 0) CLOSE_TEMP, 
                 ROUND(DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL), 0) PMV_CLOSE_AMB,
@@ -954,7 +955,7 @@ class ProdMovement extends CommonClass
                 SELECT NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_AVL / 1000, TRSB_AVL)), 0) LOADED_AVL,
                     NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_CVL / 1000, TRSB_CVL)), 0) LOADED_CVL,
                     NVL(SUM(TRSB_KG), 0) LOADED_KG,
-                    DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE,
+                    DECODE(PMV_MONITOR, 'S', PMV_SRCCODE, 'D', PMV_DSTCODE, DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)) TANK_CODE,
                     PMV_NUMBER
                 FROM TRANBASE, TRANSFERS, TRANSACTIONS, PRODUCT_MVMNTS
                 WHERE TRSB_ID_TRSF_ID = TRSF_ID AND TRSB_ID_TRSF_TRM = TRSF_TERMINAL
@@ -962,7 +963,7 @@ class ProdMovement extends CommonClass
                     AND PMV_NUMBER = :pmv_number
                     AND TRSA_ED_DMY > NVL(PMV_DATE1, SYSDATE)
                     AND TRSA_ED_DMY < NVL(PMV_DATE2, SYSDATE)
-                    AND TRSB_TK_TANKCODE = DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)
+                    AND TRSB_TK_TANKCODE = DECODE(PMV_MONITOR, 'S', PMV_SRCCODE, 'D', PMV_DSTCODE, DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE))
                 GROUP BY PMV_SRCTYPE, PMV_SRCCODE, PMV_DSTCODE, PMV_NUMBER
             ) LOADED,
             (
@@ -974,7 +975,7 @@ class ProdMovement extends CommonClass
                     TANK_PROD_LVL
                 FROM TANKS
                 WHERE TANK_CODE = (
-                        SELECT DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)
+                        SELECT DECODE(PMV_MONITOR, 'S', PMV_SRCCODE, 'D', PMV_DSTCODE, DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE))
                         FROM PRODUCT_MVMNTS
                         WHERE PMV_NUMBER = :pmv_number
                     )
@@ -984,7 +985,7 @@ class ProdMovement extends CommonClass
                 AND PRODUCT_MVMNTS.PMV_NUMBER = LOADED.PMV_NUMBER(+)";
         // $query = "
         //     SELECT CLOSEOUTS.CLOSEOUT_NR, 
-        //         DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) TANK_CODE, 
+        //         DECODE(PMV_MONITOR, 'S', PMV_SRCCODE, 'D', PMV_DSTCODE, DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)) TANK_CODE, 
         //         PMV_CLOSE_COR, 
         //         PMV_CLOSE_TEMP CLOSE_TEMP, 
         //         PMV_CLOSE_AMB,
@@ -1007,7 +1008,7 @@ class ProdMovement extends CommonClass
         //     WHERE PMV_NUMBER = :pmv_number
         //         AND PMV_DATE2 > PREV_CLOSEOUT_DATE AND PMV_DATE2 < CLOSEOUT_DATE
         //         AND CLOSEOUTS.CLOSEOUT_NR = CLOSEOUT_TANK.CLOSEOUT_NR
-        //         AND DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE) = TANK_CODE";
+        //         AND DECODE(PMV_MONITOR, 'S', PMV_SRCCODE, 'D', PMV_DSTCODE, DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE)) = TANK_CODE";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
         if (oci_execute($stmt, $this->commit_mode)) {
