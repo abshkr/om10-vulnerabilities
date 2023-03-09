@@ -1,20 +1,27 @@
 import React, { useEffect, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
-import { Form, Input, Select, Col } from 'antd';
+import { Form, Input, Select, Col, Tag } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
 
 import { PRODUCT_MOVEMENTS } from '../../../../api';
 
-const Destination = ({ form, value, base, setBase, setType }) => {
+const Destination = ({ form, value, base, setBase, setType, setLoaded }) => {
   const { t } = useTranslation();
 
   const { data: types, typesLoading } = useSWR(PRODUCT_MOVEMENTS.TYPES);
   const { data: bases, basesLoading } = useSWR(PRODUCT_MOVEMENTS.BASES);
   const { data: tanks, tanksLoading } = useSWR(PRODUCT_MOVEMENTS.TANKS);
+  const { data: loads } = useSWR(
+    `${PRODUCT_MOVEMENTS.TANK_BAY_LOADED}?pmv_number=${value?.pmv_number || -1}`,
+    {
+      refreshInterval: 5000,
+    }
+  );
 
   const [source, setSource] = useState(undefined);
+  const [bayLoaded, setBayLoaded] = useState(false);
 
   const { setFieldsValue } = form;
 
@@ -58,6 +65,27 @@ const Destination = ({ form, value, base, setBase, setType }) => {
   useEffect(() => {
     setType(source);
   }, [source]);
+
+  useEffect(() => {
+    if (loads && loads.records.length > 0) {
+      const item = _.find(loads.records, (o) => o?.tank_code === value.pmv_dstcode);
+      if (!item) {
+        setBayLoaded(false);
+        setLoaded(false);
+      } else {
+        if (item?.bay_avl_sum > 0 || item?.bay_cvl_sum > 0 || item?.bay_kg_sum > 0) {
+          setBayLoaded(true);
+          setLoaded(true);
+        } else {
+          setBayLoaded(false);
+          setLoaded(false);
+        }
+      }
+    } else {
+      setBayLoaded(false);
+      setLoaded(false);
+    }
+  }, [loads]);
 
   return (
     <>
@@ -122,7 +150,16 @@ const Destination = ({ form, value, base, setBase, setType }) => {
       <Col span={8}>
         <Form.Item
           name="pmv_dstcode"
-          label={t('fields.destinationUnit')}
+          label={
+            source === '3' && bayLoaded ? (
+              <>
+                {t('fields.destinationUnit')} &nbsp;&nbsp;&nbsp;
+                <Tag color={'red'}>{t('descriptions.bayLoading')}</Tag>
+              </>
+            ) : (
+              t('fields.destinationUnit')
+            )
+          }
           rules={[{ required: true, validator: validateCode }]}
         >
           {source === '3' ? (

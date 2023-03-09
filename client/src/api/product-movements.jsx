@@ -17,5 +17,6 @@ export const MAKE_NOMINATION = '/api/pages/prod_movement/make_nomination.php';
 export const START_FOLIO = '/api/pages/prod_movement/start_folio.php';
 export const END_FOLIO = '/api/pages/prod_movement/end_folio.php';
 export const BAY_LOADED = '/api/pages/prod_movement/bay_loaded.php';
+export const TANK_BAY_LOADED = '/api/pages/prod_movement/tank_bay_loaded.php';
 
 export const PROGRESS_TABLE = '/api/pages/prod_movement/progress_table.php';

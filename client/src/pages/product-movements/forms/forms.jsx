@@ -63,6 +63,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
   const [dstType, setDstType] = useState(undefined);
   const [movementType, setMovementType] = useState('NEW');
   const [mvModalVisbile, setMvModalVisible] = useState(false);
+  const [dstTankLoaded, setDstTankLoaded] = useState(false);
 
   /** Status:
   0	NEW
@@ -196,7 +197,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
 
   const onStart = () => {
     Modal.confirm({
-      title: t('prompts.pmvStart'),
+      title: dstTankLoaded ? t('descriptions.pmvDstTankBayLoaded') : t('prompts.pmvStart'),
       okText: t('operations.start'),
       okType: 'primary',
       icon: <RedoOutlined />,
@@ -441,6 +442,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
                 base={dstBase}
                 setBase={setDstBase}
                 setType={setDstType}
+                setLoaded={setDstTankLoaded}
               />
             </Row>
 
@@ -638,6 +640,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
                   base={dstBase}
                   setBase={setDstBase}
                   setType={setDstType}
+                  setLoaded={setDstTankLoaded}
                 />
               </Row>
               <Row gutter={[8, 1]}>
