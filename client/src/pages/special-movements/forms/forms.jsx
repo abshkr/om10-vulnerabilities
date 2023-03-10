@@ -197,6 +197,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
         } else {
           values.mlitm_dtim_start = values?.mlitm_dtim_start?.format(SETTINGS.DATE_TIME_FORMAT);
         }
+        values.mlitm_dtim_end = values.mlitm_dtim_start;
         if (type === '0') {
           values.mlitm_prodcmpy = '';
           values.mlitm_tankcode = '';
@@ -547,6 +548,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
           } else {
             values.mlitm_dtim_start = values?.mlitm_dtim_start?.format(SETTINGS.DATE_TIME_FORMAT);
           }
+          values.mlitm_dtim_end = values.mlitm_dtim_start;
 
           if (type === '0') {
             values.mlitm_prodcmpy = '';
