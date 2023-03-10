@@ -783,17 +783,38 @@ class ProdMovement extends CommonClass
             $result_array[$i]['bay_avl_sum'] = 0;
             $result_array[$i]['bay_cvl_sum'] = 0;
             
+            /*
+                Disposal: 
+                    Quantity Delivered             = Start Quantity          - End Quantity            - BAY Loading
+                Transfer:
+                    Transferred quantity delivered = Start Quantity (Tank A) - End Quantity (Tank A)   - BAY Loading (Tank A).
+                    Transferred quantity received  = End Quantity (Tank B)   - Start Quantity (Tank B) + BAY Loading (Tank B)
+                Receipt:
+                    Quantity Received              = End Quantity            - Start Quantity          + BAY Loading
+            */
             $query = "
             SELECT PMV_UNIT, 
-                DECODE(PMV_SRCTYPE, 3, 
-                    PMV_OPEN_AMB - DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) + NVL(LOADED_AVL, 0), 
-                    DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) - PMV_OPEN_AMB + NVL(LOADED_AVL, 0)) AVL_SUM,
-                DECODE(PMV_SRCTYPE, 3, 
-                    PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) + NVL(LOADED_CVL, 0), 
-                    DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - PMV_OPEN_COR + NVL(LOADED_CVL, 0)) CVL_SUM,
-                DECODE(PMV_SRCTYPE, 3, 
-                    PMV_OPEN_KG - DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) + NVL(LOADED_KG, 0), 
-                    DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) - PMV_OPEN_KG + NVL(LOADED_KG, 0)) KG_SUM
+                DECODE(PMV_MONITOR, 
+                    'S', PMV_OPEN_AMB - DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) - NVL(LOADED_AVL, 0), 
+                    'D', DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) - PMV_OPEN_AMB + NVL(LOADED_AVL, 0),
+                    DECODE(PMV_SRCTYPE, 3, 
+                        PMV_OPEN_AMB - DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) - NVL(LOADED_AVL, 0), 
+                        DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) - PMV_OPEN_AMB + NVL(LOADED_AVL, 0))
+                ) AVL_SUM,
+                DECODE(PMV_MONITOR, 
+                    'S', PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - NVL(LOADED_CVL, 0), 
+                    'D', DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - PMV_OPEN_COR + NVL(LOADED_CVL, 0),
+                    DECODE(PMV_SRCTYPE, 3, 
+                        PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - NVL(LOADED_CVL, 0), 
+                        DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - PMV_OPEN_COR + NVL(LOADED_CVL, 0))
+                ) CVL_SUM,
+                DECODE(PMV_MONITOR, 
+                    'S', PMV_OPEN_KG - DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) - NVL(LOADED_KG, 0), 
+                    'D', DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) - PMV_OPEN_KG + NVL(LOADED_KG, 0),
+                    DECODE(PMV_SRCTYPE, 3, 
+                        PMV_OPEN_KG - DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) - NVL(LOADED_KG, 0), 
+                        DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) - PMV_OPEN_KG + NVL(LOADED_KG, 0))
+                ) KG_SUM
             FROM PRODUCT_MVMNTS, 
             (
                 SELECT NVL(SUM(DECODE(TRSB_UNT, 34, TRSB_AVL / 1000, TRSB_AVL)), 0) LOADED_AVL,
@@ -968,15 +989,27 @@ class ProdMovement extends CommonClass
                 DECODE(PMV_STATUS, 3, PMV_CLOSE_DENS, TANK_DENSITY) CLOSE_DENSITY, 
                 PMV_DATE2, 
                 DECODE(PMV_STATUS, 3, PMV_CLOSE_TANKLEVEL, TANK_PROD_LVL) TANK_LEVEL,
-                ROUND(DECODE(PMV_SRCTYPE, 3, 
-                    PMV_OPEN_AMB - DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) + NVL(LOADED_AVL, 0), 
-                    DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) - PMV_OPEN_AMB + NVL(LOADED_AVL, 0)), 0) AVL_SUM,
-                ROUND(DECODE(PMV_SRCTYPE, 3, 
-                    PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) + NVL(LOADED_CVL, 0), 
-                    DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - PMV_OPEN_COR + NVL(LOADED_CVL, 0)), 0) CVL_SUM,
-                ROUND(DECODE(PMV_SRCTYPE, 3, 
-                    PMV_OPEN_KG - DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) + NVL(LOADED_KG, 0), 
-                    DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) - PMV_OPEN_KG + NVL(LOADED_KG, 0)), 0) KG_SUM
+                ROUND(DECODE(PMV_MONITOR, 
+                    'S', PMV_OPEN_AMB - DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) - NVL(LOADED_AVL, 0), 
+                    'D', DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) - PMV_OPEN_AMB + NVL(LOADED_AVL, 0),
+                    DECODE(PMV_SRCTYPE, 3, 
+                        PMV_OPEN_AMB - DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) - NVL(LOADED_AVL, 0), 
+                        DECODE(PMV_STATUS, 3, PMV_CLOSE_AMB, TANK_AMB_VOL) - PMV_OPEN_AMB + NVL(LOADED_AVL, 0))
+                ), 0) AVL_SUM,
+                ROUND(DECODE(PMV_MONITOR, 
+                    'S', PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - NVL(LOADED_CVL, 0), 
+                    'D', DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - PMV_OPEN_COR + NVL(LOADED_CVL, 0),
+                    DECODE(PMV_SRCTYPE, 3, 
+                        PMV_OPEN_COR - DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - NVL(LOADED_CVL, 0), 
+                        DECODE(PMV_STATUS, 3, PMV_CLOSE_COR, TANK_COR_VOL) - PMV_OPEN_COR + NVL(LOADED_CVL, 0))
+                ), 0) CVL_SUM,
+                ROUND(DECODE(PMV_MONITOR, 
+                    'S', PMV_OPEN_KG - DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) - NVL(LOADED_KG, 0), 
+                    'D', DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) - PMV_OPEN_KG + NVL(LOADED_KG, 0),
+                    DECODE(PMV_SRCTYPE, 3, 
+                        PMV_OPEN_KG - DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) - NVL(LOADED_KG, 0), 
+                        DECODE(PMV_STATUS, 3, PMV_CLOSE_KG, TANK_LIQUID_KG) - PMV_OPEN_KG + NVL(LOADED_KG, 0))
+                ), 0) KG_SUM
             FROM PRODUCT_MVMNTS, 
             (
                 SELECT CLOSEOUT_NR, PMV_NUMBER FROM CLOSEOUTS, PRODUCT_MVMNTS
