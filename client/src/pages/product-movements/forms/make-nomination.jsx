@@ -64,10 +64,26 @@ const MakeNomination = ({ value, config, t, visible, setVisible, onComplete }) =
   useEffect(() => {
     if (folioStart && folioStart.records.length > 0 && folioEnd && folioEnd.records.length > 0) {
       const datetime = folioStart.records[0].pmv_date1;
-      const amb = folioEnd.records[0].pmv_close_amb || 0 - folioStart.records[0].pmv_open_amb || 0;
-      const cor = folioEnd.records[0].pmv_close_cor || 0 - folioStart.records[0].pmv_open_cor || 0;
-      const wiv = folioEnd.records[0].pmv_close_kg || 0 - folioStart.records[0].pmv_open_kg || 0;
+      const amb = (folioEnd.records[0].pmv_close_amb || 0) - (folioStart.records[0].pmv_open_amb || 0);
+      const cor = (folioEnd.records[0].pmv_close_cor || 0) - (folioStart.records[0].pmv_open_cor || 0);
+      const wiv = (folioEnd.records[0].pmv_close_kg || 0) - (folioStart.records[0].pmv_open_kg || 0);
       console.log('..............', SETTINGS.DATE_TIME_FORMAT, value, folioStart, folioEnd, datetime);
+      console.log('......quantities........', amb, cor, wiv);
+      console.log(
+        '......quantities..amb......',
+        folioEnd.records[0].pmv_close_amb,
+        folioStart.records[0].pmv_open_amb
+      );
+      console.log(
+        '......quantities..cor......',
+        folioEnd.records[0].pmv_close_cor,
+        folioStart.records[0].pmv_open_cor
+      );
+      console.log(
+        '......quantities..wiv......',
+        folioEnd.records[0].pmv_close_kg,
+        folioStart.records[0].pmv_open_kg
+      );
       /* let monitor = value?.pmv_monitor;
         if (!monitor) {
           if (value?.pmv_srctype==='3') {
