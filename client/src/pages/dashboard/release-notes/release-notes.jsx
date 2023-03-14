@@ -8,6 +8,34 @@ const { Panel } = Collapse;
 
 const data = [
   {
+    title: `Release Notes (10.7.0-rc.2) - 14/03/2023`,
+    content: (
+      <>
+        <>
+          <p>OM5K-10895 - <a href="https://dev.diamondkey.com/browse/OM5K-10895">https://dev.diamondkey.com/browse/OM5K-10895</a></p>
+          <p>OM5K-10912 - <a href="https://dev.diamondkey.com/browse/OM5K-10912">https://dev.diamondkey.com/browse/OM5K-10912</a></p>
+          <p>OM5K-10922 - <a href="https://dev.diamondkey.com/browse/OM5K-10922">https://dev.diamondkey.com/browse/OM5K-10922</a></p>
+          <p>OM5K-10932 - <a href="https://dev.diamondkey.com/browse/OM5K-10932">https://dev.diamondkey.com/browse/OM5K-10932</a></p>
+          <p>OM5K-10936 - <a href="https://dev.diamondkey.com/browse/OM5K-10936">https://dev.diamondkey.com/browse/OM5K-10936</a></p>
+          <p>OM5K-10938 - <a href="https://dev.diamondkey.com/browse/OM5K-10938">https://dev.diamondkey.com/browse/OM5K-10938</a></p>
+          <p>OM5K-10939 - <a href="https://dev.diamondkey.com/browse/OM5K-10939">https://dev.diamondkey.com/browse/OM5K-10939</a></p>
+          <p>OM5K-10940 - <a href="https://dev.diamondkey.com/browse/OM5K-10940">https://dev.diamondkey.com/browse/OM5K-10940</a></p>
+          <p>OM5K-10941 - <a href="https://dev.diamondkey.com/browse/OM5K-10941">https://dev.diamondkey.com/browse/OM5K-10941</a></p>
+          <p>OM5K-10942 - <a href="https://dev.diamondkey.com/browse/OM5K-10942">https://dev.diamondkey.com/browse/OM5K-10942</a></p>
+          <p>OM5K-10836 - <a href="https://dev.diamondkey.com/browse/OM5K-10836">https://dev.diamondkey.com/browse/OM5K-10836</a></p>
+          <p>OM5K-10879 - <a href="https://dev.diamondkey.com/browse/OM5K-10879">https://dev.diamondkey.com/browse/OM5K-10879</a></p>
+          <p>OM5K-10890 - <a href="https://dev.diamondkey.com/browse/OM5K-10890">https://dev.diamondkey.com/browse/OM5K-10890</a></p>
+          <p>OM5K-10903 - <a href="https://dev.diamondkey.com/browse/OM5K-10903">https://dev.diamondkey.com/browse/OM5K-10903</a></p>
+          <p>OM5K-10906 - <a href="https://dev.diamondkey.com/browse/OM5K-10906">https://dev.diamondkey.com/browse/OM5K-10906</a></p>
+          <p>OM5K-10907 - <a href="https://dev.diamondkey.com/browse/OM5K-10907">https://dev.diamondkey.com/browse/OM5K-10907</a></p>
+          <p>OM5K-10911 - <a href="https://dev.diamondkey.com/browse/OM5K-10911">https://dev.diamondkey.com/browse/OM5K-10911</a></p>
+          <p>OM5K-10915 - <a href="https://dev.diamondkey.com/browse/OM5K-10915">https://dev.diamondkey.com/browse/OM5K-10915</a></p>
+          <p>OM5K-10908 - <a href="https://dev.diamondkey.com/browse/OM5K-10908">https://dev.diamondkey.com/browse/OM5K-10908</a></p>
+	      </>
+      </>
+    ),
+  },
+  {
     title: `Release Notes (10.7.0-rc.1) - 09/03/2023`,
     content: (
       <>
