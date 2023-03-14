@@ -94,7 +94,9 @@ const MakeNomination = ({ value, config, t, visible, setVisible, onComplete }) =
   const finishHandler = async () => {
     const values = await form.validateFields();
     // need give the date time correct format before sending to API
-    values.pmv_datetime = !values.pmv_datetime ? '' : values.pmv_datetime?.format(SETTINGS.DATE_TIME_FORMAT);
+    // a specal date time format is required by the backend  - DD.MM.RRRRHH24:MI:SS
+    const BAIMAN_DATE_TIME_FORMAT = 'DD.MM.YYYYHH:mm:ss';
+    values.pmv_datetime = !values.pmv_datetime ? '' : values.pmv_datetime?.format(BAIMAN_DATE_TIME_FORMAT);
 
     const params = {
       ...value,
