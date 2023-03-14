@@ -164,6 +164,7 @@
     "loadSuccess": "You have loaded the values successfully",
     "lockSuccess": "You have locked the record",
     "loginFailureDatabase": "Database not available or wrong connection.",
+    "loginFailureEmail": "Invalid email address or wrong username / password",
     "loginFailurePassword": "Wrong username or password",
     "loginFailureUsercode": "Could not find user or account is locked or deleted",
     "loginSuccess": "You have logged in as: ",

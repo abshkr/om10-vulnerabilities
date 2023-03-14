@@ -82,6 +82,10 @@ const Login = ({ handleLogin, auth }) => {
     if (code === '30003') {
       desc = t('descriptions.loginFailureUsercode');
     }
+    // new prompts for LDAP login
+    if (code === '-2') {
+      desc = t('descriptions.loginFailureEmail');
+    }
     return desc;
   };
 

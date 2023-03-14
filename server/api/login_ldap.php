@@ -197,7 +197,7 @@ if ($array['MSG_CODE'] === "0") {
         'msg_desc' => $msg_desc,
         'attempt_left' => (isset($array['USER_DETAIL']['USER_ATTEMPT_LEFT']) ? $array['USER_DETAIL']['USER_ATTEMPT_LEFT'] : 0),
         // 'attempt_left' => $array['USER_DETAIL']['USER_ATTEMPT_LEFT'],
-        'user_status_flag' => $array['USER_DETAIL']['USER_STATUS_FLAG']);
+        'user_status_flag' => (isset($array['USER_DETAIL']['USER_STATUS_FLAG']) ? $array['USER_DETAIL']['USER_STATUS_FLAG'] : '-1'));
     
     echo json_encode($login_result, JSON_PRETTY_PRINT);
 }
