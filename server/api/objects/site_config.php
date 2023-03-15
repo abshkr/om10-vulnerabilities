@@ -107,6 +107,16 @@ class SiteConfig extends CommonClass
         "SITE_CUSTOM_COLUMN_PARTNERS" => "在合作伙伴管理屏幕启用可定制化表列",
         "SITE_CUSTOM_COLUMN_PARTNERSHIP" => "在合作伙伴关系管理屏幕启用可定制化表列",
         "SITE_CUSTOM_COLUMN_TANKCONFIG" => "在油罐配置管理屏幕启用可定制化表列",
+        "SITE_TYPE_UNTICK_CHECK" => "当任何公司类型被取消选择时检查该类型的公司是否拥有子记录",
+        "SITE_TYPE_UNTICK_CHECK_1MANAGER" => "当油库管理公司类型被取消选择时检查该类型的公司是否拥有子记录",
+        "SITE_TYPE_UNTICK_CHECK_2SUPPLIER" => "当供应商公司类型被取消选择时检查该类型的公司是否拥有子记录",
+        "SITE_TYPE_UNTICK_CHECK_3CARRIER" => "当承运商公司类型被取消选择时检查该类型的公司是否拥有子记录",
+        "SITE_TYPE_UNTICK_CHECK_4CUSTOMER" => "当客户公司类型被取消选择时检查该类型的公司是否拥有子记录",
+        "SITE_TYPE_UNTICK_CHECK_5DRAWER" => "当油品调配公司类型被取消选择时检查该类型的公司是否拥有子记录",
+        "SITE_TYPE_UNTICK_CHECK_6ISSUER" => "当标识发放公司类型被取消选择时检查该类型的公司是否拥有子记录",
+        "SITE_TYPE_UNTICK_CHECK_7EMPLOYER" => "当雇主公司类型被取消选择时检查该类型的公司是否拥有子记录",
+        "SITE_TYPE_UNTICK_CHECK_8HOST" => "当上级公司类型被取消选择时检查该类型的公司是否拥有子记录",
+        "SITE_TYPE_UNTICK_FORCED" => "允许用户在某类型的公司拥有子记录的情况下仍然可以强行取消公司的类型",
     );
 
     private $ENG_DESC = array(
@@ -273,6 +283,16 @@ class SiteConfig extends CommonClass
         "SITE_CUSTOM_COLUMN_PARTNERS" => "Enable the customisable columns in the page Partners",
         "SITE_CUSTOM_COLUMN_PARTNERSHIP" => "Enable the customisable columns in the page Partnership",
         "SITE_CUSTOM_COLUMN_TANKCONFIG" => "Enable the customisable columns in the page Tank Configuration",
+        "SITE_TYPE_UNTICK_CHECK" => "Check if the type of company has the child records when any of types is unticked",
+        "SITE_TYPE_UNTICK_CHECK_1MANAGER" => "Check if the SITE MANAGER company has the child records when the SITE MANAGER type is unticked",
+        "SITE_TYPE_UNTICK_CHECK_2SUPPLIER" => "Check if the SUPPLIER company has the child records when the SUPPLIER type is unticked",
+        "SITE_TYPE_UNTICK_CHECK_3CARRIER" => "Check if the CARRIER company has the child records when the CARRIER type is unticked",
+        "SITE_TYPE_UNTICK_CHECK_4CUSTOMER" => "Check if the CUSTOMER company has the child records when the CUSTOMER type is unticked",
+        "SITE_TYPE_UNTICK_CHECK_5DRAWER" => "Check if the DRAWER company has the child records when the DRAWER type is unticked",
+        "SITE_TYPE_UNTICK_CHECK_6ISSUER" => "Check if the ISSUER company has the child records when the ISSUER type is unticked",
+        "SITE_TYPE_UNTICK_CHECK_7EMPLOYER" => "Check if the EMPLOYER company has the child records when the EMPLOYER type is unticked",
+        "SITE_TYPE_UNTICK_CHECK_8HOST" => "Check if the HOST company has the child records when the HOST type is unticked",
+        "SITE_TYPE_UNTICK_FORCED" => "Allow the user to untick the type even if the type of company has the child records",
     );
 
     public function read()

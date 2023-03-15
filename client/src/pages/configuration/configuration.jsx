@@ -1259,6 +1259,16 @@ const Configuration = ({ user, config }) => {
           </TabPane>
 
           {user?.per_code === '9999' && (
+            <TabPane tab={t('tabColumns.companyTypes')} key="14">
+              <ConfigurationItems
+                data={_.filter(configuration, ['config_required_by_gui', 'U'])}
+                onChange={onConfigurationEdit}
+                t={t}
+              />
+            </TabPane>
+          )}
+
+          {user?.per_code === '9999' && (
             <TabPane tab={t('tabColumns.features')} key="7">
               <Input.Search
                 enterButton={<SearchIconOutlined />}

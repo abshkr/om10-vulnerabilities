@@ -266,9 +266,9 @@ const FormModal = ({
   };
 
   const onManagerChange = async (v) => {
-    if (site_manager) {
+    if (site_manager && (config?.siteTypeUntickCheckAny || config?.siteTypeUntickCheckManager)) {
       const children = await checkChildren('Site Manager');
-      if (children?.length > 0) {
+      if (children?.length > 0 && !config?.siteTypeUntickForced) {
         return;
       }
     }
@@ -280,9 +280,9 @@ const FormModal = ({
   };
 
   const onSupplierChange = async (v) => {
-    if (supplier) {
+    if (supplier && (config?.siteTypeUntickCheckAny || config?.siteTypeUntickCheckSupplier)) {
       const children = await checkChildren('Supplier');
-      if (children?.length > 0) {
+      if (children?.length > 0 && !config?.siteTypeUntickForced) {
         return;
       }
     }
@@ -302,9 +302,9 @@ const FormModal = ({
   };
 
   const onCarrierChange = async (v) => {
-    if (carrier) {
+    if (carrier && (config?.siteTypeUntickCheckAny || config?.siteTypeUntickCheckCarrier)) {
       const children = await checkChildren('Carrier');
-      if (children?.length > 0) {
+      if (children?.length > 0 && !config?.siteTypeUntickForced) {
         return;
       }
     }
@@ -316,9 +316,9 @@ const FormModal = ({
   };
 
   const onCustomerChange = async (v) => {
-    if (customer) {
+    if (customer && (config?.siteTypeUntickCheckAny || config?.siteTypeUntickCheckCustomer)) {
       const children = await checkChildren('Customer');
-      if (children?.length > 0) {
+      if (children?.length > 0 && !config?.siteTypeUntickForced) {
         return;
       }
     }
@@ -330,9 +330,9 @@ const FormModal = ({
   };
 
   const onDrawerChange = async (v) => {
-    if (drawer) {
+    if (drawer && (config?.siteTypeUntickCheckAny || config?.siteTypeUntickCheckDrawer)) {
       const children = await checkChildren('Drawer');
-      if (children?.length > 0) {
+      if (children?.length > 0 && !config?.siteTypeUntickForced) {
         return;
       }
     }
@@ -348,9 +348,9 @@ const FormModal = ({
   };
 
   const onIssuerChange = async (v) => {
-    if (issuer) {
+    if (issuer && (config?.siteTypeUntickCheckAny || config?.siteTypeUntickCheckIssuer)) {
       const children = await checkChildren('Issuer');
-      if (children?.length > 0) {
+      if (children?.length > 0 && !config?.siteTypeUntickForced) {
         return;
       }
     }
@@ -362,9 +362,9 @@ const FormModal = ({
   };
 
   const onEmployerChange = async (v) => {
-    if (employer) {
+    if (employer && (config?.siteTypeUntickCheckAny || config?.siteTypeUntickCheckEmployer)) {
       const children = await checkChildren('Employer');
-      if (children?.length > 0) {
+      if (children?.length > 0 && !config?.siteTypeUntickForced) {
         return;
       }
     }
@@ -376,9 +376,9 @@ const FormModal = ({
   };
 
   const onHostChange = async (v) => {
-    if (host) {
+    if (host && (config?.siteTypeUntickCheckAny || config?.siteTypeUntickCheckHost)) {
       const children = await checkChildren('Host');
-      if (children?.length > 0) {
+      if (children?.length > 0 && !config?.siteTypeUntickForced) {
         return;
       }
     }
