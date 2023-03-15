@@ -168,7 +168,7 @@ const Destination = ({ form, value, base, setBase, setType, setLoaded }) => {
               allowClear
               loading={isLoading}
               showSearch
-              disabled={!source}
+              disabled={value || !source}
               optionFilterProp="children"
               placeholder={t('placeholder.setDestinationUnit')}
               filterOption={(input, option) =>

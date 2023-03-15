@@ -164,7 +164,7 @@ const Source = ({ form, value, base, setBase, setType }) => {
               allowClear
               loading={isLoading}
               showSearch
-              disabled={!source}
+              disabled={value || !source}
               optionFilterProp="children"
               placeholder={t('placeholder.setSourceUnit')}
               filterOption={(input, option) =>
