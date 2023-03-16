@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
-import { Form, Modal, Input, notification, DatePicker, Row, Col } from 'antd';
+import { Form, Modal, Input, notification, DatePicker, Row, Col, message } from 'antd';
 import moment from 'moment';
 import _ from 'lodash';
 import FromSupplier from './fields/from-supplier';
@@ -13,6 +13,8 @@ import { SETTINGS } from '../../../constants';
 const MakeNomination = ({ value, config, t, visible, setVisible, onComplete }) => {
   const [form] = Form.useForm();
   const FORMAT = getDateTimeFormat();
+
+  const [disabled, setDisabled] = useState(false);
 
   const { setFieldsValue } = form;
 
@@ -108,42 +110,59 @@ const MakeNomination = ({ value, config, t, visible, setVisible, onComplete }) =
   }, [folioStart, folioEnd, setFieldsValue]);
 
   const finishHandler = async () => {
-    const values = await form.validateFields();
-    // need give the date time correct format before sending to API
-    // a specal date time format is required by the backend  - DD.MM.RRRRHH24:MI:SS
-    const BAIMAN_DATE_TIME_FORMAT = 'DD.MM.YYYYHH:mm:ss';
-    values.pmv_datetime = !values.pmv_datetime ? '' : values.pmv_datetime?.format(BAIMAN_DATE_TIME_FORMAT);
+    try {
+      setDisabled(true);
+      const values = await form.validateFields();
+      // need give the date time correct format before sending to API
+      // a specal date time format is required by the backend  - DD.MM.RRRRHH24:MI:SS
+      const BAIMAN_DATE_TIME_FORMAT = 'DD.MM.YYYYHH:mm:ss';
+      values.pmv_datetime = !values.pmv_datetime ? '' : values.pmv_datetime?.format(BAIMAN_DATE_TIME_FORMAT);
 
-    const params = {
-      ...value,
-      ...values,
-    };
+      const params = {
+        ...value,
+        ...values,
+      };
 
-    await api
-      .post(PRODUCT_MOVEMENTS.MAKE_NOMINATION, params)
-      .then((response) => {
-        setVisible(false);
-        onComplete();
-
-        notification.success({
-          message: t('messages.submitSuccess'),
-          description: t('descriptions.pmvNominationCreated'),
-        });
-      })
-
-      .catch((errors) => {
-        _.forEach(errors.response.data.errors, (error) => {
-          notification.error({
-            message: error.type,
-            description: error.message,
-          });
+      await api
+        .post(PRODUCT_MOVEMENTS.MAKE_NOMINATION, params)
+        .then((response) => {
+          setDisabled(false);
           setVisible(false);
+          onComplete();
+
+          notification.success({
+            message: t('messages.submitSuccess'),
+            description: t('descriptions.pmvNominationCreated'),
+          });
+        })
+
+        .catch((errors) => {
+          setDisabled(false);
+          _.forEach(errors.response.data.errors, (error) => {
+            notification.error({
+              message: error.type,
+              description: error.message,
+            });
+            setVisible(false);
+          });
         });
+    } catch (error) {
+      setDisabled(false);
+      message.error({
+        key: 'submit',
+        content: t('descriptions.validationFailed'),
       });
+    }
   };
 
   return (
-    <Modal centered visible={visible} onOk={finishHandler} onCancel={() => setVisible(false)}>
+    <Modal
+      centered
+      visible={visible}
+      okButtonProps={{ disabled: disabled }}
+      onOk={finishHandler}
+      onCancel={() => setVisible(false)}
+    >
       <Form form={form} layout="vertical">
         <p>{t('prompts.pmvMakeNomination')}</p>
         {value?.pmv_srctype == '3' && <FromSupplier />}
