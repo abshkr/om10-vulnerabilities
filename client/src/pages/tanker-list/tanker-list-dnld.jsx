@@ -67,7 +67,10 @@ const TankerList = () => {
     }&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`
   );
   const baseUrl = mainUrl.replace('pgflag=N', 'pgflag=Y');
-  const url = !pagingFlag && siteUseDownloader ? null : mainUrl + `&start_num=${take}&end_num=${offset}`;
+  const url =
+    !pagingFlag && siteUseDownloader
+      ? null
+      : mainUrl.replace('pgflag=N', 'pgflag=Y') + `&start_num=${take}&end_num=${offset}`;
   const pageUrl = mainUrl.replace('pgflag=N', 'pgflag=Y');
 
   // const baseUrl = `${TANKER_LIST.READ}?pgflag=${

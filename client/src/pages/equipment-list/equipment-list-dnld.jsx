@@ -67,7 +67,10 @@ const EquipmentList = () => {
         }&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`
   );
   const baseUrl = mainUrl.replace('pgflag=N', 'pgflag=Y');
-  const url = !pagingFlag && siteUseDownloader ? null : mainUrl + `&start_num=${take}&end_num=${offset}`;
+  const url =
+    !pagingFlag && siteUseDownloader
+      ? null
+      : mainUrl.replace('pgflag=N', 'pgflag=Y') + `&start_num=${take}&end_num=${offset}`;
   const pageUrl = mainUrl.replace('pgflag=N', 'pgflag=Y');
 
   /* const baseUrl =
@@ -256,6 +259,7 @@ const EquipmentList = () => {
 
   useEffect(() => {
     if (siteEqptPaging !== undefined) {
+      console.log('................paging flag:', siteEqptPaging);
       setPagingFlag(siteEqptPaging);
     }
   }, [siteEqptPaging]);
