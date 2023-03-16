@@ -217,7 +217,7 @@
     "pleaseKeepValueRange": "Please keep the values between ",
     "pmvBatchCompleted": "You have completed the batch",
     "pmvNominationCreated": "You have created a nomination out of this product movement",
-    "pmvDstTankBayLoaded": "BAY loading is observed in the destination tank! If RECEIPT happens at the same time then there is a potential risk for the density used for BAY loading will not be accurate. Are you sure you want to start this product movement?",
+    "pmvDstTankBayLoaded": "BAY loading is observed in the destination tank! There is a potential risk that the density used for BAY loading will not be accurate if the destination tank is receiving the product at the same time. Are you sure you want to start this product movement?",
     "possibleReasonsToFailVCF": "The failure could be due to density or temperature out of range or wrong base product details ",
     "preOrderProdUnit": "Select unit for product",
     "preOrderReady": "Input quantity for at least one product",
