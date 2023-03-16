@@ -20,6 +20,7 @@ const MakeNomination = ({ value, config, t, visible, setVisible, onComplete }) =
 
   const { data: folioStart } = useSWR(`${PRODUCT_MOVEMENTS.START_FOLIO}?pmv_number=${value?.pmv_number}`);
   const { data: folioEnd } = useSWR(`${PRODUCT_MOVEMENTS.END_FOLIO}?pmv_number=${value?.pmv_number}`);
+  const { data: bayLoaded } = useSWR(`${PRODUCT_MOVEMENTS.BAY_LOADED}?pmv_number=${value?.pmv_number}`);
 
   const validateDate = (rule, input) => {
     if (rule.required) {
@@ -64,28 +65,66 @@ const MakeNomination = ({ value, config, t, visible, setVisible, onComplete }) =
   };
 
   useEffect(() => {
-    if (folioStart && folioStart.records.length > 0 && folioEnd && folioEnd.records.length > 0) {
+    if (
+      value &&
+      folioStart &&
+      folioStart.records.length > 0 &&
+      folioEnd &&
+      folioEnd.records.length > 0 &&
+      bayLoaded &&
+      bayLoaded.records.length > 0
+    ) {
+      // DECODE(PMV_MONITOR, 'S', PMV_SRCCODE, 'D', PMV_DSTCODE, DECODE(PMV_SRCTYPE, 3, PMV_SRCCODE, PMV_DSTCODE))
+      let monitor = value?.pmv_monitor;
+      if (monitor !== 'S' && monitor !== 'D') {
+        if (value?.pmv_srctype === '3') {
+          monitor = 'S';
+        } else {
+          monitor = 'D';
+        }
+      }
       const datetime = folioStart.records[0].pmv_date1;
-      const amb = (folioEnd.records[0].pmv_close_amb || 0) - (folioStart.records[0].pmv_open_amb || 0);
-      const cor = (folioEnd.records[0].pmv_close_cor || 0) - (folioStart.records[0].pmv_open_cor || 0);
-      const wiv = (folioEnd.records[0].pmv_close_kg || 0) - (folioStart.records[0].pmv_open_kg || 0);
-      console.log('..............', SETTINGS.DATE_TIME_FORMAT, value, folioStart, folioEnd, datetime);
+
+      // for source tank - Quantity Delivered = Start Quantity - End Quantity - BAY Loading
+      const ambSrc =
+        (folioStart.records[0].pmv_open_amb || 0) -
+        (folioEnd.records[0].pmv_close_amb || 0) -
+        (bayLoaded.records[0].bay_avl_sum || 0);
+      const corSrc =
+        (folioStart.records[0].pmv_open_cor || 0) -
+        (folioEnd.records[0].pmv_close_cor || 0) -
+        (bayLoaded.records[0].bay_cvl_sum || 0);
+      const wivSrc =
+        (folioStart.records[0].pmv_open_kg || 0) -
+        (folioEnd.records[0].pmv_close_kg || 0) -
+        (bayLoaded.records[0].bay_kg_sum || 0);
+      // for destination tank - Quantity Received = End Quantity - Start Quantity + BAY Loading
+      const ambDst =
+        (folioEnd.records[0].pmv_close_amb || 0) -
+        (folioStart.records[0].pmv_open_amb || 0) +
+        (bayLoaded.records[0].bay_avl_sum || 0);
+      const corDst =
+        (folioEnd.records[0].pmv_close_cor || 0) -
+        (folioStart.records[0].pmv_open_cor || 0) +
+        (bayLoaded.records[0].bay_cvl_sum || 0);
+      const wivDst =
+        (folioEnd.records[0].pmv_close_kg || 0) -
+        (folioStart.records[0].pmv_open_kg || 0) +
+        (bayLoaded.records[0].bay_kg_sum || 0);
+      const amb = monitor === 'S' ? ambSrc : ambDst;
+      const cor = monitor === 'S' ? corSrc : corDst;
+      const wiv = monitor === 'S' ? wivSrc : wivDst;
+
+      console.log(
+        '..............',
+        SETTINGS.DATE_TIME_FORMAT,
+        value,
+        folioStart,
+        folioEnd,
+        bayLoaded,
+        datetime
+      );
       console.log('......quantities........', amb, cor, wiv);
-      console.log(
-        '......quantities..amb......',
-        folioEnd.records[0].pmv_close_amb,
-        folioStart.records[0].pmv_open_amb
-      );
-      console.log(
-        '......quantities..cor......',
-        folioEnd.records[0].pmv_close_cor,
-        folioStart.records[0].pmv_open_cor
-      );
-      console.log(
-        '......quantities..wiv......',
-        folioEnd.records[0].pmv_close_kg,
-        folioStart.records[0].pmv_open_kg
-      );
       /* let monitor = value?.pmv_monitor;
         if (!monitor) {
           if (value?.pmv_srctype==='3') {
@@ -107,7 +146,7 @@ const MakeNomination = ({ value, config, t, visible, setVisible, onComplete }) =
         pmv_qty_wia: _.round(wia),
       });
     }
-  }, [folioStart, folioEnd, setFieldsValue]);
+  }, [folioStart, folioEnd, bayLoaded, value, setFieldsValue]);
 
   const finishHandler = async () => {
     try {
