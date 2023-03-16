@@ -51,6 +51,15 @@ const Destination = ({ form, value, base, setBase, setType, setLoaded }) => {
     return Promise.resolve();
   };
 
+  const onTypeChanged = (value) => {
+    setSource(value);
+    setFieldsValue({
+      pmv_dst_base: undefined,
+      pmv_dstcode: undefined,
+    });
+    setBase(undefined);
+  };
+
   useEffect(() => {
     if (value) {
       setFieldsValue({
@@ -101,7 +110,7 @@ const Destination = ({ form, value, base, setBase, setType, setLoaded }) => {
             loading={isLoading}
             showSearch
             disabled={value}
-            onChange={setSource}
+            onChange={onTypeChanged}
             optionFilterProp="children"
             placeholder={t('placeholder.selectDestinationType')}
             filterOption={(input, option) =>

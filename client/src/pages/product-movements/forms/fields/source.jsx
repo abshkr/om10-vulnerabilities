@@ -51,6 +51,15 @@ const Source = ({ form, value, base, setBase, setType }) => {
     return Promise.resolve();
   };
 
+  const onTypeChanged = (value) => {
+    setSource(value);
+    setFieldsValue({
+      pmv_src_base: undefined,
+      pmv_srccode: undefined,
+    });
+    setBase(undefined);
+  };
+
   useEffect(() => {
     if (value) {
       setFieldsValue({
@@ -96,7 +105,7 @@ const Source = ({ form, value, base, setBase, setType }) => {
             allowClear
             loading={isLoading}
             showSearch
-            onChange={setSource}
+            onChange={onTypeChanged}
             disabled={value}
             optionFilterProp="children"
             placeholder={t('placeholder.selectSourceType')}
