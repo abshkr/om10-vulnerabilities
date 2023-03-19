@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { setupUserPageColumns, updateUserPageColumns } from 'utils';
 import { usePageColumns } from 'hooks';
 
-import { DataTable } from '..';
+// import { DataTable } from '..';
+import { CustomTable } from '../table/custom-table.jsx';
 
 const PowerTable = ({
   data,
@@ -70,7 +71,7 @@ const PowerTable = ({
   }, [columnAdjustable, columns, pageColumns, setFields, setupUserPageColumns]);
 
   return (
-    <DataTable
+    <CustomTable
       data={data}
       isLoading={isLoading}
       onClick={onClick}
