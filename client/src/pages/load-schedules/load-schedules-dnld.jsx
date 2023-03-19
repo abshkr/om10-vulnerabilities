@@ -8,7 +8,7 @@ import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icon
 
 import {
   Page,
-  DataTable,
+  PowerTable as DataTable,
   Download,
   DataDownloader,
   PageDownloader,
@@ -19,7 +19,7 @@ import {
 } from '../../components';
 import { LOAD_SCHEDULES, SITE_CONFIGURATION } from '../../api';
 import { SETTINGS } from '../../constants';
-import { useAuth, useConfig, usePageColumns } from 'hooks';
+import { useAuth, useConfig } from 'hooks';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
@@ -28,15 +28,11 @@ import SourceRender from './source-render';
 import ConvertTraceRender from './convert-trace-render';
 import _ from 'lodash';
 import usePagination from 'hooks/use-pagination';
-import { setupUserPageColumns } from 'utils';
 
 const LoadSchedules = () => {
   const config = useConfig();
   const { siteSchdPaging, siteUseDownloader, siteCustomColumnSchedule } = config;
 
-  const { pageColumns, reloadColumns } = usePageColumns('M_LOADSCHEDULES');
-
-  const [fields, setFields] = useState([]);
   const [pagingFlag, setPagingFlag] = useState(undefined);
   const [isSearching, setSearching] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -81,7 +77,7 @@ const LoadSchedules = () => {
 
   const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
 
-  // const fields = columns(false, t, config);
+  const fields = columns(false, t, config);
 
   const components = {
     SourceRender,
@@ -287,18 +283,6 @@ const LoadSchedules = () => {
     }
   }, [isValidating]);
 
-  useEffect(() => {
-    if (t && config && pageColumns) {
-      // get the original columns
-      const values = columns(false, t, config);
-      const newValues = setupUserPageColumns(values, pageColumns);
-
-      console.log('............old columns..', values);
-      console.log('............new columns..', newValues);
-      setFields(newValues);
-    }
-  }, [t, config, pageColumns]);
-
   const modifiers = (
     <>
       <Switch
@@ -393,9 +377,7 @@ const LoadSchedules = () => {
         autoColWidth
         clearFilterPlus={revalidate}
         columnAdjustable={siteCustomColumnSchedule}
-        pageColumns={pageColumns}
         pageModule={'M_LOADSCHEDULES'}
-        columnLoader={reloadColumns}
       />
       <div
         style={{
