@@ -32,8 +32,8 @@ const AdjustableColumns = ({ pageColumns, pageModule, columnAPI, columnLoader, s
   const onFinish = (type, payload) => {
     // console.log('.............moved', columnAPI, pageColumns);
     setVisible(false);
-    updateUserPageColumns(t, items, pageColumns, pageModule, columnLoader);
-    setColumnAdjusted(false);
+    updateUserPageColumns(t, items, pageColumns, pageModule, columnLoader, setColumnAdjusted);
+    // setColumnAdjusted(false);
   };
 
   const onColumnChanged = async (object, value) => {

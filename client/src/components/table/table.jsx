@@ -180,8 +180,8 @@ const Table = ({
   const saveColumnAdjustment = () => {
     const gridColumns = columnAPI?.getAllGridColumns();
     console.log('.............moved', columnAPI, gridColumns, pageColumns);
-    updateUserPageColumns(t, gridColumns, pageColumns, pageModule, columnLoader);
-    setColumnAdjusted(false);
+    updateUserPageColumns(t, gridColumns, pageColumns, pageModule, columnLoader, setColumnAdjusted);
+    // setColumnAdjusted(false);
   };
 
   const removeUserColumns = () => {

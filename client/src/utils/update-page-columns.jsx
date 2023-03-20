@@ -5,7 +5,7 @@ import _ from 'lodash';
 import jwtDecode from 'jwt-decode';
 import api, { USER_COLUMNS } from '../api';
 
-const updateUserPageColumns = (t, gridColumns, pageColumns, pageCode, columnLoader) => {
+const updateUserPageColumns = (t, gridColumns, pageColumns, pageCode, columnLoader, flagHandler) => {
   const token = sessionStorage.getItem('token');
   const decoded = jwtDecode(token);
   const siteCode = decoded?.site_code;
@@ -128,6 +128,12 @@ const updateUserPageColumns = (t, gridColumns, pageColumns, pageCode, columnLoad
     icon: <QuestionCircleOutlined />,
     cancelText: t('operations.no'),
     centered: true,
+    onCancel() {
+      if (flagHandler) {
+        flagHandler(false);
+      }
+      Modal.destroyAll();
+    },
     onOk: async () => {
       await api
         .post(IS_CREATING ? USER_COLUMNS.CREATE_COLUMNS : USER_COLUMNS.UPDATE_COLUMNS, values)
@@ -139,6 +145,9 @@ const updateUserPageColumns = (t, gridColumns, pageColumns, pageCode, columnLoad
               .then((response) => {
                 if (columnLoader) {
                   columnLoader();
+                }
+                if (flagHandler) {
+                  flagHandler(false);
                 }
                 // the missing columns are created in the existing columns
                 Modal.destroyAll();
@@ -158,6 +167,9 @@ const updateUserPageColumns = (t, gridColumns, pageColumns, pageCode, columnLoad
           } else {
             if (columnLoader) {
               columnLoader();
+            }
+            if (flagHandler) {
+              flagHandler(false);
             }
             Modal.destroyAll();
 
