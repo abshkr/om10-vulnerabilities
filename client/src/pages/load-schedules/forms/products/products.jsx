@@ -28,6 +28,10 @@ const Products = ({ value, form, drawer, customer, access, setInit }) => {
 
   const fields = columns(t, form, units, access);
 
+  // Because we use:
+  //    customer={site_customer_product ? customer : undefined}
+  // when customer === undefined, the site confoguration must be off
+
   useEffect(() => {
     setData([]);
     if (drawer && !value && units) {
@@ -35,7 +39,7 @@ const Products = ({ value, form, drawer, customer, access, setInit }) => {
         .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
           params: {
             drawer_code: drawer,
-            customer: value ? value.shls_cust : customer,
+            customer: value ? (!customer ? undefined : value.shls_cust) : customer,
           },
         })
         .then((res) => {
@@ -66,7 +70,7 @@ const Products = ({ value, form, drawer, customer, access, setInit }) => {
         .then((res) => {
           const payload = transform(res?.data?.records, units);
 
-          if (value.shls_cust) {
+          if (value.shls_cust && customer) {
             api
               .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
                 params: {
@@ -106,7 +110,7 @@ const Products = ({ value, form, drawer, customer, access, setInit }) => {
           }
         });
     }
-  }, [value, units, setFieldsValue]);
+  }, [value, units, setFieldsValue, customer]);
 
   return (
     <Form.Item name="products" noStyle>

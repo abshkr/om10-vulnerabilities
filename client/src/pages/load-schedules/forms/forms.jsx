@@ -540,10 +540,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
 
   const changeCustomer = (customer) => {
     setCustomer(customer);
-    setFieldsValue({
-      tnkr_code: undefined,
-      carrier_code: undefined,
-    });
+    // need check the site configuration SITE_CUSTOMER_CARRIER before the clearing
+    if (site_customer_carrier) {
+      setFieldsValue({
+        tnkr_code: undefined,
+        carrier_code: undefined,
+      });
+    }
   };
 
   const getTankerCompartments = async (tanker) => {
@@ -1296,6 +1299,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
       setMode(value.shls_ld_type === '6' ? '3' : value.shls_ld_type);
       setSupermode(false);
       setDcsmode(false);
+      setCustomer(value.shls_cust);
     }
   }, [setFieldsValue, value]);
 
