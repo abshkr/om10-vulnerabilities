@@ -102,7 +102,7 @@ const columns = (expiryTypes, t, expiryDateMode) => {
       width: 130,
     },
     {
-      headerName: t('fields.status'),
+      headerName: t('fields.statusId'),
       field: 'user_status_flag',
       sortable: true,
       resizable: true,

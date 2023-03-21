@@ -1,6 +1,6 @@
 const columns = (t, config) => [
   {
-    headerName: t('fields.terminal'),
+    headerName: t('fields.terminalCode'),
     field: 'tanksite',
     sortable: true,
     resizable: true,

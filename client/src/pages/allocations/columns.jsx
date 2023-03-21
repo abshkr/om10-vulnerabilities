@@ -56,7 +56,7 @@ const columns = (t, config) => [
     hide: false,
   },
   {
-    headerName: t('fields.allocSuppCode'),
+    headerName: t('fields.allocSuppcode'),
     field: 'alloc_suppcode',
     filter: 'FuzzyFilter',
     sortable: true,

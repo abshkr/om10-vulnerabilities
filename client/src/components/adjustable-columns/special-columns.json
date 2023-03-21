@@ -77,9 +77,6 @@
     "visibility": [
       "shls_srctype",
       "shls_trip_no_org",
-      "carrier_code",
-      "tnkr_name",
-      "supplier_code",
       "shls_priority",
       "order_cust_ordno",
       "order_cust_cmpy_code",

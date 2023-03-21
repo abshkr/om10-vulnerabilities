@@ -93,6 +93,16 @@ const columns = (IS_NOMINATION, t, config) => [
     width: 120,
     suppressSizeToFit: true,
   },
+  /* {
+    headerName: t('fields.vehicle'),
+    field: 'tnkr_code',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: !IS_NOMINATION,
+    width: 130,
+    suppressSizeToFit: true,
+  }, */
 
   {
     headerName: t('fields.tankerCode'),
@@ -157,6 +167,16 @@ const columns = (IS_NOMINATION, t, config) => [
     resizable: true,
     hide: true,
     width: 140,
+    suppressSizeToFit: true,
+  },
+  {
+    headerName: t('fields.nominationKey'),
+    field: 'mv_key',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: !IS_NOMINATION,
+    width: 120,
     suppressSizeToFit: true,
   },
   {
@@ -264,6 +284,102 @@ const columns = (IS_NOMINATION, t, config) => [
     width: 150,
     suppressSizeToFit: true,
     cellRenderer: 'DateRenderer',
+  },
+  {
+    headerName: t('fields.product'),
+    field: 'trsf_product',
+    sortable: true,
+    resizable: true,
+    hide: !IS_NOMINATION,
+    width: 120,
+    suppressSizeToFit: true,
+  },
+
+  {
+    headerName: t(config?.siteLabelUser + 'fields.ambient'),
+    field: 'trsf_qty_amb',
+    sortable: true,
+    resizable: true,
+    hide: !IS_NOMINATION,
+    width: 120,
+    suppressSizeToFit: true,
+  },
+
+  {
+    headerName: t(config?.siteLabelUser + 'fields.standard'),
+    field: 'trsf_qty_cor',
+    sortable: true,
+    resizable: true,
+    hide: !IS_NOMINATION,
+    width: 120,
+    suppressSizeToFit: true,
+  },
+
+  {
+    headerName: t(config?.siteLabelUser + 'fields.mass'),
+    field: 'trsf_load_kg',
+    sortable: true,
+    resizable: true,
+    hide: !IS_NOMINATION || !config?.siteMassInVacuum,
+    width: 120,
+    suppressSizeToFit: true,
+  },
+  {
+    headerName: t(config?.siteLabelUser + 'fields.massInAir'),
+    field: 'trsf_air_kg',
+    sortable: true,
+    resizable: true,
+    hide: !IS_NOMINATION || !config?.siteMassInAir,
+    width: 120,
+    suppressSizeToFit: true,
+    cellRenderer: 'MassInAirRenderer',
+    cellRendererParams: {
+      digits: String(config?.precisionMass),
+      massInVacuum: 'trsf_load_kg',
+      standardVolume: 'trsf_qty_cor',
+      factor: config?.airBuoyancyFactor,
+    },
+  },
+
+  {
+    headerName: t('fields.postedOn'),
+    field: 'dt_posted',
+    sortable: true,
+    resizable: true,
+    hide: !IS_NOMINATION,
+    width: 150,
+    suppressSizeToFit: true,
+    cellRenderer: 'DateRenderer',
+  },
+
+  {
+    headerName: t('fields.alternateQuantity'),
+    field: 'trsa_alt_qty',
+    sortable: true,
+    resizable: true,
+    hide: !IS_NOMINATION,
+    width: 120,
+    suppressSizeToFit: true,
+  },
+
+  {
+    headerName: t('fields.alternateUnit'),
+    field: 'trsa_alt_unt',
+    sortable: true,
+    resizable: true,
+    hide: !IS_NOMINATION,
+    width: 120,
+    suppressSizeToFit: true,
+  },
+
+  {
+    headerName: t('fields.tripType'),
+    field: 'ld_type',
+    sortable: true,
+    resizable: true,
+    hide: !IS_NOMINATION,
+    width: 120,
+    suppressSizeToFit: true,
   },
 
   {

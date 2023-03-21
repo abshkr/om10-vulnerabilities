@@ -139,7 +139,7 @@ const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit, carrcod
     },
 
     {
-      headerName: t('fields.equipment'),
+      headerName: t('fields.equipmentId'),
       field: 'tnkr_eqpt_ids',
       sortable: true,
       resizable: true,

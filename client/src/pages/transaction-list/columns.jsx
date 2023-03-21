@@ -49,7 +49,7 @@ const columns = (t) => [
     resizable: true,
   },
   {
-    headerName: t('fields.operator'),
+    headerName: t('fields.operatorName'),
     field: 'trsa_per_name',
     filter: 'MultiFilter',
     sortable: true,
@@ -78,7 +78,7 @@ const columns = (t) => [
     resizable: true,
   },
   {
-    headerName: t('fields.terminal'),
+    headerName: t('fields.terminalCode'),
     field: 'trsa_terminal',
     filter: 'MultiFilter',
     sortable: true,
@@ -93,7 +93,7 @@ const columns = (t) => [
     resizable: true,
   },
   {
-    headerName: t('fields.lastModifiedBy'),
+    headerName: t('fields.lastModifiedByCode'),
     field: 'trsa_psn',
     filter: 'MultiFilter',
     sortable: true,
