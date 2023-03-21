@@ -151,6 +151,8 @@ const CustomTable = ({
   const [tableColumns, setTableColumns] = useState(columns);
   const [dragStarted, setDragStarted] = useState(false);
   const [dragStopped, setDragStopped] = useState(false);
+  const [columnMoved, setColumnMoved] = useState(false);
+  const [columnResized, setColumnResized] = useState(false);
   const [columnAdjusted, setColumnAdjusted] = useState(false);
   const [columnAPI, setColumnAPI] = useState('');
 
@@ -169,6 +171,14 @@ const CustomTable = ({
 
   const onDragStopped = (e) => {
     setDragStopped(true);
+  };
+
+  const onColumnMoved = (e) => {
+    setColumnMoved(true);
+  };
+
+  const onColumnResized = (e) => {
+    setColumnResized(true);
   };
 
   const onColumnAdjusted = (e) => {
@@ -238,11 +248,26 @@ const CustomTable = ({
   };
 
   useEffect(() => {
-    if (dragStarted && dragStopped) {
+    // console.log('....111dragStarted, dragStopped, columnMoved, columnResized.....', dragStarted, dragStopped, columnMoved, columnResized)
+    if (dragStarted && dragStopped && (columnMoved || columnResized)) {
+      console.log(
+        '....222dragStarted, dragStopped, columnMoved, columnResized.....',
+        dragStarted,
+        dragStopped,
+        columnMoved,
+        columnResized
+      );
+      setColumnAdjusted(true);
       setDragStarted(false);
       setDragStopped(false);
+      if (columnMoved) {
+        setColumnMoved(false);
+      }
+      if (columnResized) {
+        setColumnResized(false);
+      }
     }
-  }, [dragStarted, dragStopped]);
+  }, [dragStarted, dragStopped, columnMoved, columnResized]);
 
   useEffect(() => {
     const query = value === '' ? undefined : value;
@@ -453,8 +478,8 @@ const CustomTable = ({
                   singleClickEdit={true}
                   editType={editType === 'fullRow' ? 'fullRow' : ''}
                   onRowEditingStopped={rowEditingStopped}
-                  onColumnMoved={onColumnAdjusted}
-                  onColumnResized={onColumnAdjusted}
+                  onColumnMoved={onColumnMoved}
+                  onColumnResized={onColumnResized}
                   onDragStarted={onDragStarted}
                   onDragStopped={onDragStopped}
                   getRowNodeId={getRowNodeId}
