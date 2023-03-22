@@ -87,30 +87,30 @@ const MakeNomination = ({ value, config, t, visible, setVisible, onComplete }) =
 
       // for source tank - Quantity Delivered = Start Quantity - End Quantity - BAY Loading
       const ambSrc =
-        (folioStart.records[0].pmv_open_amb || 0) -
-        (folioEnd.records[0].pmv_close_amb || 0) -
-        (bayLoaded.records[0].bay_avl_sum || 0);
+        _.toNumber(folioStart.records[0].pmv_open_amb || 0) -
+        _.toNumber(folioEnd.records[0].pmv_close_amb || 0) -
+        _.toNumber(bayLoaded.records[0].bay_avl_sum || 0);
       const corSrc =
-        (folioStart.records[0].pmv_open_cor || 0) -
-        (folioEnd.records[0].pmv_close_cor || 0) -
-        (bayLoaded.records[0].bay_cvl_sum || 0);
+        _.toNumber(folioStart.records[0].pmv_open_cor || 0) -
+        _.toNumber(folioEnd.records[0].pmv_close_cor || 0) -
+        _.toNumber(bayLoaded.records[0].bay_cvl_sum || 0);
       const wivSrc =
-        (folioStart.records[0].pmv_open_kg || 0) -
-        (folioEnd.records[0].pmv_close_kg || 0) -
-        (bayLoaded.records[0].bay_kg_sum || 0);
+        _.toNumber(folioStart.records[0].pmv_open_kg || 0) -
+        _.toNumber(folioEnd.records[0].pmv_close_kg || 0) -
+        _.toNumber(bayLoaded.records[0].bay_kg_sum || 0);
       // for destination tank - Quantity Received = End Quantity - Start Quantity + BAY Loading
       const ambDst =
-        (folioEnd.records[0].pmv_close_amb || 0) -
-        (folioStart.records[0].pmv_open_amb || 0) +
-        (bayLoaded.records[0].bay_avl_sum || 0);
+        _.toNumber(folioEnd.records[0].pmv_close_amb || 0) -
+        _.toNumber(folioStart.records[0].pmv_open_amb || 0) +
+        _.toNumber(bayLoaded.records[0].bay_avl_sum || 0);
       const corDst =
-        (folioEnd.records[0].pmv_close_cor || 0) -
-        (folioStart.records[0].pmv_open_cor || 0) +
-        (bayLoaded.records[0].bay_cvl_sum || 0);
+        _.toNumber(folioEnd.records[0].pmv_close_cor || 0) -
+        _.toNumber(folioStart.records[0].pmv_open_cor || 0) +
+        _.toNumber(bayLoaded.records[0].bay_cvl_sum || 0);
       const wivDst =
-        (folioEnd.records[0].pmv_close_kg || 0) -
-        (folioStart.records[0].pmv_open_kg || 0) +
-        (bayLoaded.records[0].bay_kg_sum || 0);
+        _.toNumber(folioEnd.records[0].pmv_close_kg || 0) -
+        _.toNumber(folioStart.records[0].pmv_open_kg || 0) +
+        _.toNumber(bayLoaded.records[0].bay_kg_sum || 0);
       const amb = monitor === 'S' ? ambSrc : ambDst;
       const cor = monitor === 'S' ? corSrc : corDst;
       const wiv = monitor === 'S' ? wivSrc : wivDst;
@@ -124,6 +124,8 @@ const MakeNomination = ({ value, config, t, visible, setVisible, onComplete }) =
         bayLoaded,
         datetime
       );
+      //......wiv........ -3325.7 8432482.7 914383 913540 2482.7
+      // console.log('......wiv........',  wivSrc, wivDst, folioEnd.records[0].pmv_close_kg, folioStart.records[0].pmv_open_kg, bayLoaded.records[0].bay_kg_sum);
       console.log('......quantities........', amb, cor, wiv);
       /* let monitor = value?.pmv_monitor;
         if (!monitor) {
