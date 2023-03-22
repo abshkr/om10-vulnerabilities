@@ -15,7 +15,7 @@ import ImageDisplay from './image-display';
 
 const TabPane = Tabs.TabPane;
 
-const AssetForm = ({ value, visible, handleFormState, access, setFilterValue }) => {
+const AssetForm = ({ value, visible, handleFormState, access, setFilterValue, revalidate }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
@@ -25,9 +25,9 @@ const AssetForm = ({ value, visible, handleFormState, access, setFilterValue }) 
     handleFormState(false, null);
     // setSelected(null);
     if (prod_code) {
-      setFilterValue('' + prod_code);
+      setFilterValue(' ' + prod_code);
     }
-    mutate(DRAWER_PRODUCTS.ASSETS);
+    revalidate();
   };
 
   const onFinish = async () => {

@@ -49,6 +49,7 @@ const Assets = ({ access, tabFlag }) => {
         handleFormState={handleFormState}
         access={access}
         setFilterValue={setFilterValue}
+        revalidate={revalidate}
       />
     </div>
   );
