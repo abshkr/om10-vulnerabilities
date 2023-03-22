@@ -189,7 +189,7 @@ const Source = ({ form, value, base, setBase, setType }) => {
               ))}
             </Select>
           ) : (
-            <Input disabled={!source} />
+            <Input disabled={value || !source} />
           )}
         </Form.Item>
       </Col>

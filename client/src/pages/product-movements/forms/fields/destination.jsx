@@ -193,7 +193,7 @@ const Destination = ({ form, value, base, setBase, setType, setLoaded }) => {
               ))}
             </Select>
           ) : (
-            <Input disabled={!source} />
+            <Input disabled={value || !source} />
           )}
         </Form.Item>
       </Col>
