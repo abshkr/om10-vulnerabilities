@@ -185,7 +185,25 @@ const AssetForm = ({ value, visible, handleFormState, access, setFilterValue }) 
             <Divider orientation="left">{t('fields.prodImage')}</Divider>
 
             <Form.Item name="prod_image" label={t('fields.prodImage')}>
-              <Input disabled></Input>
+              <Input
+                disabled
+                addonAfter={
+                  value?.prod_image && (
+                    <Button
+                      type="danger"
+                      icon={<CloseOutlined />}
+                      onClick={() => {
+                        setFieldsValue({
+                          prod_image: '',
+                        });
+                      }}
+                      disabled={!value?.prod_image}
+                    >
+                      {t('operations.clear')}
+                    </Button>
+                  )
+                }
+              />
             </Form.Item>
 
             {/* <div style={{
