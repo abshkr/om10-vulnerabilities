@@ -50,7 +50,7 @@ const Customer = ({ form, value, supplier }) => {
         dropdownMatchSelectWidth={false}
         allowClear
         loading={isValidating}
-        // disabled={!!value}
+        disabled={!!value}
         showSearch
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectCompany') : null}
