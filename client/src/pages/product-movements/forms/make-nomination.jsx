@@ -37,12 +37,46 @@ const MakeNomination = ({ value, config, t, visible, setVisible, onComplete }) =
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.pmvObsQty')}`);
     }
 
+    const number = _.toNumber(input);
+    const invalid = _.isNaN(number);
+
+    const decimals = _.toString(number).split('.')[1]?.length || 0;
+
+    if (input && input !== '' && invalid) {
+      return Promise.reject(`${t('validate.wrongType')}: ${t('validate.mustBeNumber')}`);
+    }
+
+    if (decimals > config?.precisionVolume) {
+      return Promise.reject(
+        `${t('validate.decimalPlacesExceeded')} ${config?.precisionVolume} ─ ${t(
+          'descriptions.invalidDecimals'
+        )}`
+      );
+    }
+
     return Promise.resolve();
   };
 
   const validateStdQty = (rule, input) => {
     if ((rule.required && input === '') || (rule.required && input !== 0 && !input)) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.pmvStdQty')}`);
+    }
+
+    const number = _.toNumber(input);
+    const invalid = _.isNaN(number);
+
+    const decimals = _.toString(number).split('.')[1]?.length || 0;
+
+    if (input && input !== '' && invalid) {
+      return Promise.reject(`${t('validate.wrongType')}: ${t('validate.mustBeNumber')}`);
+    }
+
+    if (decimals > config?.precisionVolume) {
+      return Promise.reject(
+        `${t('validate.decimalPlacesExceeded')} ${config?.precisionVolume} ─ ${t(
+          'descriptions.invalidDecimals'
+        )}`
+      );
     }
 
     return Promise.resolve();
@@ -53,12 +87,46 @@ const MakeNomination = ({ value, config, t, visible, setVisible, onComplete }) =
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.pmvWiV')}`);
     }
 
+    const number = _.toNumber(input);
+    const invalid = _.isNaN(number);
+
+    const decimals = _.toString(number).split('.')[1]?.length || 0;
+
+    if (input && input !== '' && invalid) {
+      return Promise.reject(`${t('validate.wrongType')}: ${t('validate.mustBeNumber')}`);
+    }
+
+    if (decimals > config?.precisionMass) {
+      return Promise.reject(
+        `${t('validate.decimalPlacesExceeded')} ${config?.precisionMass} ─ ${t(
+          'descriptions.invalidDecimals'
+        )}`
+      );
+    }
+
     return Promise.resolve();
   };
 
   const validateWiA = (rule, input) => {
     if ((rule.required && input === '') || (rule.required && input !== 0 && !input)) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.pmvWiA')}`);
+    }
+
+    const number = _.toNumber(input);
+    const invalid = _.isNaN(number);
+
+    const decimals = _.toString(number).split('.')[1]?.length || 0;
+
+    if (input && input !== '' && invalid) {
+      return Promise.reject(`${t('validate.wrongType')}: ${t('validate.mustBeNumber')}`);
+    }
+
+    if (decimals > config?.precisionMass) {
+      return Promise.reject(
+        `${t('validate.decimalPlacesExceeded')} ${config?.precisionMass} ─ ${t(
+          'descriptions.invalidDecimals'
+        )}`
+      );
     }
 
     return Promise.resolve();
@@ -199,6 +267,8 @@ const MakeNomination = ({ value, config, t, visible, setVisible, onComplete }) =
   return (
     <Modal
       centered
+      maskClosable={false}
+      mask={true}
       visible={visible}
       okButtonProps={{ disabled: disabled }}
       onOk={finishHandler}

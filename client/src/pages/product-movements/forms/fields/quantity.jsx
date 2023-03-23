@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { Form, Input } from 'antd';
+import _ from 'lodash';
 
 const Quantity = ({ form, value }) => {
   const { setFieldsValue } = form;
@@ -9,8 +10,23 @@ const Quantity = ({ form, value }) => {
   const { t } = useTranslation();
 
   const validate = (rule, input) => {
-    if (input === '' || !input) {
+    if ((rule.required && input === '') || (rule.required && input !== 0 && !input)) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.quantity')}`);
+    }
+
+    const number = _.toNumber(input);
+    const invalid = _.isNaN(number);
+
+    const decimals = _.toString(number).split('.')[1]?.length || 0;
+
+    if (input && input !== '' && invalid) {
+      return Promise.reject(`${t('validate.wrongType')}: ${t('validate.mustBeNumber')}`);
+    }
+
+    if (decimals > 0) {
+      return Promise.reject(
+        `${t('validate.decimalPlacesExceeded')} ${0} ─ ${t('descriptions.invalidDecimals')}`
+      );
     }
 
     return Promise.resolve();
