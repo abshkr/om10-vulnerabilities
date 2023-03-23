@@ -165,6 +165,7 @@
     "lockSuccess": "您已成功锁定了记录",
     "loginFailureDatabase": "数据库连接不上或账户信息错误",
     "loginFailureEmail": "Email地址无效或用户名或密码错误",
+    "loginFailureServer": "登录校验服务器不存在或连接失败",
     "loginFailurePassword": "用户名或密码错误",
     "loginFailureUsercode": "用户不存在或者账号已被锁定或删除",
     "loginSuccess": "登录账号: ",

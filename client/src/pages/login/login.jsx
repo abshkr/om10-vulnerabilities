@@ -86,6 +86,9 @@ const Login = ({ handleLogin, auth }) => {
     if (code === '-2') {
       desc = t('descriptions.loginFailureEmail');
     }
+    if (code === '-3') {
+      desc = t('descriptions.loginFailureServer');
+    }
     return desc;
   };
 
