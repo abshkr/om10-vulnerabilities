@@ -14,7 +14,7 @@ const Destination = ({ form, value, base, setBase, setType, setLoaded }) => {
   const { data: bases, basesLoading } = useSWR(PRODUCT_MOVEMENTS.BASES);
   const { data: tanks, tanksLoading } = useSWR(PRODUCT_MOVEMENTS.TANKS);
   const { data: loads } = useSWR(
-    `${PRODUCT_MOVEMENTS.TANK_BAY_LOADED}?pmv_number=${value?.pmv_number || -1}`,
+    `${PRODUCT_MOVEMENTS.IS_BAY_LOADING}?pmv_number=${value?.pmv_number || -1}`,
     {
       refreshInterval: 5000,
     }
@@ -82,7 +82,7 @@ const Destination = ({ form, value, base, setBase, setType, setLoaded }) => {
         setBayLoaded(false);
         setLoaded(false);
       } else {
-        if (item?.bay_avl_sum > 0 || item?.bay_cvl_sum > 0 || item?.bay_kg_sum > 0) {
+        if (item?.count_trsa > 0) {
           setBayLoaded(true);
           setLoaded(true);
         } else {
@@ -163,7 +163,9 @@ const Destination = ({ form, value, base, setBase, setType, setLoaded }) => {
             source === '3' && bayLoaded ? (
               <>
                 {t('fields.destinationUnit')} &nbsp;&nbsp;&nbsp;
-                <Tag color={'red'}>{t('descriptions.bayLoading')}</Tag>
+                <Tag color={'red'}>
+                  {value.pmv_status === '0' ? t('descriptions.bayLoading') : t('descriptions.bayLoaded')}
+                </Tag>
               </>
             ) : (
               t('fields.destinationUnit')

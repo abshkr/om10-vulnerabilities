@@ -903,6 +903,35 @@ class ProdMovement extends CommonClass
         }
     }
 
+    public function is_bay_loading()
+    {
+        if (!isset($this->pmv_number)) {
+            return null;
+        }
+
+        $query = "
+            SELECT 
+                TRSB_TK_TANKCODE TANK_CODE,
+                COUNT(TRSA_ID) COUNT_TRSA
+            FROM TRANBASE, TRANSFERS, TRANSACTIONS, PRODUCT_MVMNTS
+            WHERE TRSB_ID_TRSF_ID = TRSF_ID AND TRSB_ID_TRSF_TRM = TRSF_TERMINAL
+                AND TRSFTRID_TRSA_ID = TRSA_ID AND TRSFTRID_TRSA_TRM = TRSA_TERMINAL
+                AND PMV_NUMBER = :pmv_number
+                AND (TRSA_ED_DMY IS NULL OR (TRSA_ED_DMY > NVL(PMV_DATE1, SYSDATE) AND TRSA_ED_DMY < NVL(PMV_DATE2, SYSDATE)))
+                AND (TRSB_TK_TANKCODE = PMV_SRCCODE OR TRSB_TK_TANKCODE = PMV_DSTCODE)
+            GROUP BY TRSB_TK_TANKCODE
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function tank_bay_loaded()
     {
         if (!isset($this->pmv_number)) {
