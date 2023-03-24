@@ -21,7 +21,7 @@ const Source = ({ form, value, base, setBase, setType }) => {
   );
 
   const [source, setSource] = useState(undefined);
-  const [bayLoaded, setBayLoaded] = useState(false);
+  const [bayLoading, setBayLoading] = useState(false);
 
   const { setFieldsValue } = form;
 
@@ -79,16 +79,16 @@ const Source = ({ form, value, base, setBase, setType }) => {
     if (loads && loads.records.length > 0) {
       const item = _.find(loads.records, (o) => o?.tank_code === value.pmv_srccode);
       if (!item) {
-        setBayLoaded(false);
+        setBayLoading(false);
       } else {
         if (item?.count_trsa > 0) {
-          setBayLoaded(true);
+          setBayLoading(true);
         } else {
-          setBayLoaded(false);
+          setBayLoading(false);
         }
       }
     } else {
-      setBayLoaded(false);
+      setBayLoading(false);
     }
   }, [loads]);
 
@@ -156,12 +156,10 @@ const Source = ({ form, value, base, setBase, setType }) => {
         <Form.Item
           name="pmv_srccode"
           label={
-            source === '3' && bayLoaded ? (
+            source === '3' && bayLoading ? (
               <>
                 {t('fields.sourceUnit')} &nbsp;&nbsp;&nbsp;
-                <Tag color={'red'}>
-                  {value.pmv_status === '0' ? t('descriptions.bayLoading') : t('descriptions.bayLoaded')}
-                </Tag>
+                <Tag color={'red'}>{t('descriptions.bayLoading')}</Tag>
               </>
             ) : (
               t('fields.sourceUnit')

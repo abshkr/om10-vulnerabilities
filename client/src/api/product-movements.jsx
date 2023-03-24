@@ -19,5 +19,6 @@ export const END_FOLIO = '/api/pages/prod_movement/end_folio.php';
 export const BAY_LOADED = '/api/pages/prod_movement/bay_loaded.php';
 export const TANK_BAY_LOADED = '/api/pages/prod_movement/tank_bay_loaded.php';
 export const IS_BAY_LOADING = '/api/pages/prod_movement/is_bay_loading.php';
+export const IS_BAY_LOADED = '/api/pages/prod_movement/is_bay_loaded.php';
 
 export const PROGRESS_TABLE = '/api/pages/prod_movement/progress_table.php';

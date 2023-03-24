@@ -7,7 +7,7 @@ import _ from 'lodash';
 
 import { PRODUCT_MOVEMENTS } from '../../../../api';
 
-const Destination = ({ form, value, base, setBase, setType, setLoaded }) => {
+const Destination = ({ form, value, base, setBase, setType, setLoading }) => {
   const { t } = useTranslation();
 
   const { data: types, typesLoading } = useSWR(PRODUCT_MOVEMENTS.TYPES);
@@ -16,12 +16,12 @@ const Destination = ({ form, value, base, setBase, setType, setLoaded }) => {
   const { data: loads } = useSWR(
     `${PRODUCT_MOVEMENTS.IS_BAY_LOADING}?pmv_number=${value?.pmv_number || -1}`,
     {
-      refreshInterval: 5000,
+      refreshInterval: 3000,
     }
   );
 
   const [source, setSource] = useState(undefined);
-  const [bayLoaded, setBayLoaded] = useState(false);
+  const [bayLoading, setBayLoading] = useState(false);
 
   const { setFieldsValue } = form;
 
@@ -79,20 +79,20 @@ const Destination = ({ form, value, base, setBase, setType, setLoaded }) => {
     if (loads && loads.records.length > 0) {
       const item = _.find(loads.records, (o) => o?.tank_code === value.pmv_dstcode);
       if (!item) {
-        setBayLoaded(false);
-        setLoaded(false);
+        setBayLoading(false);
+        setLoading(false);
       } else {
         if (item?.count_trsa > 0) {
-          setBayLoaded(true);
-          setLoaded(true);
+          setBayLoading(true);
+          setLoading(true);
         } else {
-          setBayLoaded(false);
-          setLoaded(false);
+          setBayLoading(false);
+          setLoading(false);
         }
       }
     } else {
-      setBayLoaded(false);
-      setLoaded(false);
+      setBayLoading(false);
+      setLoading(false);
     }
   }, [loads]);
 
@@ -160,12 +160,10 @@ const Destination = ({ form, value, base, setBase, setType, setLoaded }) => {
         <Form.Item
           name="pmv_dstcode"
           label={
-            source === '3' && bayLoaded ? (
+            source === '3' && bayLoading ? (
               <>
                 {t('fields.destinationUnit')} &nbsp;&nbsp;&nbsp;
-                <Tag color={'red'}>
-                  {value.pmv_status === '0' ? t('descriptions.bayLoading') : t('descriptions.bayLoaded')}
-                </Tag>
+                <Tag color={'red'}>{t('descriptions.bayLoading')}</Tag>
               </>
             ) : (
               t('fields.destinationUnit')
