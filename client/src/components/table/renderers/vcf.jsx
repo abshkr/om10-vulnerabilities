@@ -22,14 +22,22 @@ export default class VcfRenderer extends Component {
     let VCF = this.state.value;
     if (!VCF) {
       if (!GOV || !GSV) {
-        VCF = 0;
+        VCF = undefined;
       } else {
-        VCF = _.toNumber(GSV) / _.toNumber(GOV);
+        const numberGSV = _.toNumber(GSV);
+        const invalidGSV = _.isNaN(numberGSV);
+        const numberGOV = _.toNumber(GOV);
+        const invalidGOV = _.isNaN(numberGOV);
+        if (!invalidGSV && !invalidGOV && numberGOV !== 0 && numberGSV !== 0) {
+          VCF = numberGSV / numberGOV;
+        } else {
+          VCF = undefined;
+        }
       }
     }
 
-    const vcfQty = _.round(VCF, precision);
-    const tipQty = _.round(VCF, precision + 1);
+    const vcfQty = VCF === undefined ? '' : _.round(VCF, precision);
+    const tipQty = VCF === undefined ? '' : _.round(VCF, precision + 1);
 
     return (
       <Tooltip placement="topRight" title={tipQty}>
