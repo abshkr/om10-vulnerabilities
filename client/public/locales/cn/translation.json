@@ -3048,6 +3048,7 @@
     "outOfRange": "数值超出范围",
     "outOfRangeMax": "数值超出范围，最大允许值：",
     "outOfRangeMin": "数值超出范围，最小允许值：",
+    "positiveNumber": "必须是正数",
     "prodMoveSrcAndDst": "来源单元/目的单元必须是一个油罐并且已被指定",
     "quantityCompartmentsLessThanProduct": "装载油品[[PRODUCT]]的油仓总油量少于油品提单中的该油品订油量。",
     "quantityCompartmentsMoreThanProduct": "装载油品[[PRODUCT]]的油仓总油量多于油品提单中的该油品订油量。",

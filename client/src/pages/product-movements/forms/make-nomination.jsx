@@ -46,6 +46,10 @@ const MakeNomination = ({ value, config, t, visible, setVisible, onComplete }) =
       return Promise.reject(`${t('validate.wrongType')}: ${t('validate.mustBeNumber')}`);
     }
 
+    if (input !== '' && !invalid && number <= 0) {
+      return Promise.reject(`${t('validate.positiveNumber')}`);
+    }
+
     if (decimals > config?.precisionVolume) {
       return Promise.reject(
         `${t('validate.decimalPlacesExceeded')} ${config?.precisionVolume} ─ ${t(
@@ -69,6 +73,10 @@ const MakeNomination = ({ value, config, t, visible, setVisible, onComplete }) =
 
     if (input && input !== '' && invalid) {
       return Promise.reject(`${t('validate.wrongType')}: ${t('validate.mustBeNumber')}`);
+    }
+
+    if (input !== '' && !invalid && number <= 0) {
+      return Promise.reject(`${t('validate.positiveNumber')}`);
     }
 
     if (decimals > config?.precisionVolume) {
@@ -96,6 +104,10 @@ const MakeNomination = ({ value, config, t, visible, setVisible, onComplete }) =
       return Promise.reject(`${t('validate.wrongType')}: ${t('validate.mustBeNumber')}`);
     }
 
+    if (input !== '' && !invalid && number <= 0) {
+      return Promise.reject(`${t('validate.positiveNumber')}`);
+    }
+
     if (decimals > config?.precisionMass) {
       return Promise.reject(
         `${t('validate.decimalPlacesExceeded')} ${config?.precisionMass} ─ ${t(
@@ -119,6 +131,10 @@ const MakeNomination = ({ value, config, t, visible, setVisible, onComplete }) =
 
     if (input && input !== '' && invalid) {
       return Promise.reject(`${t('validate.wrongType')}: ${t('validate.mustBeNumber')}`);
+    }
+
+    if (input !== '' && !invalid && number <= 0) {
+      return Promise.reject(`${t('validate.positiveNumber')}`);
     }
 
     if (decimals > config?.precisionMass) {

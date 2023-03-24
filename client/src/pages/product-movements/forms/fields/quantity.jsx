@@ -23,6 +23,10 @@ const Quantity = ({ form, value }) => {
       return Promise.reject(`${t('validate.wrongType')}: ${t('validate.mustBeNumber')}`);
     }
 
+    if (input !== '' && !invalid && number <= 0) {
+      return Promise.reject(`${t('validate.positiveNumber')}`);
+    }
+
     if (decimals > 0) {
       return Promise.reject(
         `${t('validate.decimalPlacesExceeded')} ${0} ─ ${t('descriptions.invalidDecimals')}`

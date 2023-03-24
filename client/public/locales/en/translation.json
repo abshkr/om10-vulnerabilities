@@ -3053,6 +3053,7 @@
     "outOfRange": "Value out of range",
     "outOfRangeMax": "Value out of range, max value:",
     "outOfRangeMin": "Value out of range, min value:",
+    "positiveNumber": "Positive number expected",
     "prodMoveSrcAndDst": "Source and/or destination must be a tank and specified",
     "quantityCompartmentsLessThanProduct": "The compartment quantities are less than the quantities defined in the pre-order for the product [[PRODUCT]].",
     "quantityCompartmentsMoreThanProduct": "The compartment quantities are more than the quantities defined in the pre-order for the product [[PRODUCT]].",
