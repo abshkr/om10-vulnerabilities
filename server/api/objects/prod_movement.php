@@ -909,6 +909,7 @@ class ProdMovement extends CommonClass
             return null;
         }
 
+        /* this query won't work because there is no record in TRANBASE yet
         $query = "
             SELECT 
                 TRSB_TK_TANKCODE TANK_CODE,
@@ -920,6 +921,19 @@ class ProdMovement extends CommonClass
                 AND (TRSA_ED_DMY IS NULL)
                 AND (TRSB_TK_TANKCODE = PMV_SRCCODE OR TRSB_TK_TANKCODE = PMV_DSTCODE)
             GROUP BY TRSB_TK_TANKCODE
+        ";*/
+
+        $query = "
+            SELECT 
+            STREAM_TANKCODE TANK_CODE,
+                COUNT(TRSA_ID) COUNT_TRSA
+            FROM TRANSACTIONS, PRODUCT_MVMNTS, GUI_PIPENODE
+            WHERE STREAM_BAYCODE = TRSA_BAY_CD
+                AND STREAM_TANKSITE = TRSA_TERMINAL
+                AND PMV_NUMBER = :pmv_number
+                AND (TRSA_ED_DMY IS NULL)
+                AND (STREAM_TANKCODE = PMV_SRCCODE OR STREAM_TANKCODE = PMV_DSTCODE)
+            GROUP BY STREAM_TANKCODE
         ";
         $stmt = oci_parse($this->conn, $query);
         oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
