@@ -163,6 +163,15 @@ class AuthServerService
     {
         $ldapServer = $server;
 
+        // need make sure the LDAP module and its functions are installed, otherwise return error message
+        if (extension_loaded("ldap") === false || function_exists("ldap_connect") === false) {
+            // connection check failed
+            return array(
+                'MSG_CODE' => '-9',
+                'MSG_DESC' => 'LDAP module and its functions are not available'
+            );
+        }
+
         $ldap = ldap_connect($ldapServer);
         if ($ldap === false) {
             // connection check failed

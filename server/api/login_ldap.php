@@ -193,7 +193,7 @@ if ($array['MSG_CODE'] === "0") {
         $msg_desc = response("__LOGIN_USER_LOCKED__");
     }
     $login_result = array(
-        'msg_code' => (!isset($array['MSG_CODE']) ? '-3' : $array['MSG_CODE']),
+        'msg_code' => (!isset($array['MSG_CODE']) ? '-1' : $array['MSG_CODE']),
         'msg_desc' => (!isset($array['MSG_CODE']) ? 'Server does not exist or fail to connect' : $msg_desc),
         'attempt_left' => (isset($array['USER_DETAIL']['USER_ATTEMPT_LEFT']) ? $array['USER_DETAIL']['USER_ATTEMPT_LEFT'] : 0),
         // 'attempt_left' => $array['USER_DETAIL']['USER_ATTEMPT_LEFT'],

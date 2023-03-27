@@ -83,12 +83,25 @@ const Login = ({ handleLogin, auth }) => {
       desc = t('descriptions.loginFailureUsercode');
     }
     // new prompts for LDAP login
+    if (code === '-1') {
+      desc = t('descriptions.ldapLoginFailureServer');
+    }
     if (code === '-2') {
-      desc = t('descriptions.loginFailureEmail');
+      desc = t('descriptions.ldapLoginFailureEmail');
     }
     if (code === '-3') {
-      desc = t('descriptions.loginFailureServer');
+      desc = t('descriptions.ldapLoginFailureSearchUser');
     }
+    if (code === '-4') {
+      desc = t('descriptions.ldapLoginFailureRetrieveUser');
+    }
+    if (code === '-5') {
+      desc = t('descriptions.ldapLoginFailureMatchUser');
+    }
+    if (code === '-9') {
+      desc = t('descriptions.ldapLoginFailurePkgFunc');
+    }
+
     return desc;
   };
 
