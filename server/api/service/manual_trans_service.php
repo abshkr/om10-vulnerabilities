@@ -1427,6 +1427,12 @@ class ManualTransactionService
             $client->send($tran_det);
             $response = $client->get_repond();
             write_log(sprintf("TRANS_DET response: %s", $response), __FILE__, __LINE__);
+            if ($response == "") {
+                write_log("Wait for TRANS_DET response time out", __FILE__, __LINE__, LogLevel::WARNING);
+                $journal = new Journal($this->conn, $autocommit = $this->auto_commit);
+                $jnl_data[0] = sprintf("Wait for manula transaction detail response timeout. transaction id:%d", $this->trsa_id);
+                $journal->jnlLogEvent(Lookup::TMM_TEXT_ONLY, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT);
+            }
 
             $response_code = substr($response, 75, 10);
             if ($response_code != null && substr_compare($response_code, "OK", 0, 2) == 0) {

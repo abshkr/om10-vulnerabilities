@@ -44,6 +44,8 @@ class SocketClient
                 __FILE__, __LINE__, LogLevel::WARNING);
             throw new Bay999Exception("Failed to connect to server, please check bay999. errnum:" . $errnum . ", errstr:" . $errstr);
         }
+
+        stream_set_timeout($this->fp, 120);
     }
 
     private function close_socket_client()
