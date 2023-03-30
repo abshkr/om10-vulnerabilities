@@ -49,7 +49,16 @@ import api, { PRODUCT_MOVEMENTS } from 'api';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, setFilterValue, refresh, config }) => {
+const FormModal = ({
+  value,
+  visible,
+  handleFormState,
+  access,
+  setFilterValue,
+  refresh,
+  config,
+  maskFlag,
+}) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const { resetFields } = form;
@@ -361,7 +370,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
-      mask={IS_CREATING}
+      mask={maskFlag}
       placement="right"
       width="50vw"
       visible={visible}
@@ -503,7 +512,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue, re
         onClose={() => handleFormState(false, null)}
         maskClosable={IS_CREATING}
         destroyOnClose={true}
-        mask={IS_CREATING}
+        mask={maskFlag}
         placement="right"
         width="50vw"
         visible={visible}

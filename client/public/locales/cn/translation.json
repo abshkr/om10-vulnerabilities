@@ -2399,6 +2399,7 @@
     "generateReport": "生成报表",
     "genericProd": "油品通用名称",
     "getTankDensities": "读取油罐密度",
+    "goLive": "启动实时进程",
     "halt": "停止",
     "hideSpecProd": "隐藏油品信息",
     "import": "导入",

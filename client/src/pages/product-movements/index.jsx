@@ -1,2 +1,2 @@
-import ProductMovements from './product-movements';
+import ProductMovements from './product-movements-dnld';
 export default ProductMovements;
