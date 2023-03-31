@@ -36,7 +36,7 @@ const ProductMovements = () => {
   const [data, setData] = useState(null);
   const [goLive, setGoLive] = useState(false);
   const [tickFlag, setTickFlag] = useState(false);
-  const [interval, setInterval] = useState(refreshProductMovement);
+  const [interval, setInterval] = useState(goLive ? refreshProductMovement : 0);
   const [maskFlag, setMaskFlag] = useState(true);
 
   const timeOptions = [
@@ -362,7 +362,7 @@ const ProductMovements = () => {
 
   useEffect(() => {
     if (refreshProductMovement !== undefined) {
-      setInterval(refreshProductMovement);
+      setInterval(goLive ? refreshProductMovement : 0);
     }
   }, [refreshProductMovement]);
 
