@@ -222,7 +222,7 @@ const ProductMovements = () => {
 
   const modifiers = (
     <>
-      {goLive && (
+      {(pagingFlag || !siteUseDownloader) && goLive && (
         <>
           <Button
             type="dashed"
@@ -246,18 +246,20 @@ const ProductMovements = () => {
         </>
       )}
 
-      <Checkbox
-        style={{
-          paddingTop: '4px',
-          color: !goLive ? 'black' : tickFlag ? 'white' : 'red',
-          fontWeight: !goLive ? 'normal' : tickFlag ? 'normal' : 'bolder',
-        }}
-        checked={goLive}
-        disabled={false}
-        onChange={onPollChanged}
-      >
-        {t('operations.goLive')}
-      </Checkbox>
+      {(pagingFlag || !siteUseDownloader) && (
+        <Checkbox
+          style={{
+            paddingTop: '4px',
+            color: !goLive ? 'black' : tickFlag ? 'white' : 'red',
+            fontWeight: !goLive ? 'normal' : tickFlag ? 'normal' : 'bolder',
+          }}
+          checked={goLive}
+          disabled={false}
+          onChange={onPollChanged}
+        >
+          {t('operations.goLive')}
+        </Checkbox>
+      )}
 
       <Switch
         style={{ marginRight: 5 }}
