@@ -293,6 +293,174 @@ const Calculate = ({
     return Promise.resolve();
   };
 
+  const validateTemperature = (rule, input) => {
+    if ((rule.required && input === '') || (rule.required && input !== 0 && !input)) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.observedTemperature')}`);
+    }
+
+    const number = _.toNumber(input);
+    const invalid = _.isNaN(number);
+
+    const precision = _.toString(number).split('.')[1]?.length || 0;
+
+    if (invalid) {
+      return Promise.reject(`${t('validate.wrongType')} ─ ${t('validate.mustBeNumber')}`);
+    }
+
+    /* if (precision > config?.precisionTemperature) {
+      return Promise.reject(
+        `${t('validate.decimalPlacesExceeded')} ${config?.precisionTemperature} ─ ${t(
+          'descriptions.invalidDecimals'
+        )}`
+      );
+    } */
+
+    if (number < limit?.temp_lo || number > limit?.temp_hi) {
+      return Promise.reject(
+        `${t('validate.outOfRange')} ─ ${t('validate.mustBeBetween')} ${limit?.temp_lo} & ${limit?.temp_hi}`
+      );
+    }
+
+    return Promise.resolve();
+  };
+
+  const validateAMB = (rule, input) => {
+    if ((rule.required && input === '') || (rule.required && input !== 0 && !input)) {
+      return Promise.reject(`${t('validate.set')} ─ ${t(config?.siteLabelUser + 'fields.observedQuantity')}`);
+    }
+
+    const number = _.toNumber(input);
+    const invalid = _.isNaN(number);
+
+    const decimals = _.toString(number).split('.')[1]?.length || 0;
+
+    if (input && input !== '' && invalid) {
+      return Promise.reject(`${t('validate.wrongType')}: ${t('validate.mustBeNumber')}`);
+    }
+
+    if (input !== '' && !invalid && number <= 0) {
+      return Promise.reject(`${t('validate.positiveNumber')}`);
+    }
+
+    /* if (decimals > config?.precisionVolume) {
+      return Promise.reject(
+        `${t('validate.decimalPlacesExceeded')} ${config?.precisionVolume} ─ ${t(
+          'descriptions.invalidDecimals'
+        )}`
+      );
+    } */
+
+    return Promise.resolve();
+  };
+
+  const validateCOR = (rule, input) => {
+    if ((rule.required && input === '') || (rule.required && input !== 0 && !input)) {
+      return Promise.reject(`${t('validate.set')} ─ ${t(config?.siteLabelUser + 'fields.standardQuantity')}`);
+    }
+
+    const number = _.toNumber(input);
+    const invalid = _.isNaN(number);
+
+    const decimals = _.toString(number).split('.')[1]?.length || 0;
+
+    if (input && input !== '' && invalid) {
+      return Promise.reject(`${t('validate.wrongType')}: ${t('validate.mustBeNumber')}`);
+    }
+
+    if (input !== '' && !invalid && number <= 0) {
+      return Promise.reject(`${t('validate.positiveNumber')}`);
+    }
+
+    /* if (decimals > config?.precisionVolume) {
+      return Promise.reject(
+        `${t('validate.decimalPlacesExceeded')} ${config?.precisionVolume} ─ ${t(
+          'descriptions.invalidDecimals'
+        )}`
+      );
+    } */
+
+    return Promise.resolve();
+  };
+
+  const validateVCF = (rule, input) => {
+    if ((rule.required && input === '') || (rule.required && input !== 0 && !input)) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.vcf')}`);
+    }
+
+    const number = _.toNumber(input);
+    const invalid = _.isNaN(number);
+
+    const decimals = _.toString(number).split('.')[1]?.length || 0;
+
+    if (input && input !== '' && invalid) {
+      return Promise.reject(`${t('validate.wrongType')}: ${t('validate.mustBeNumber')}`);
+    }
+
+    /* if (decimals > config?.precisionVCF) {
+      return Promise.reject(
+        `${t('validate.decimalPlacesExceeded')} ${config?.precisionVCF} ─ ${t(
+          'descriptions.invalidDecimals'
+        )}`
+      );
+    } */
+
+    return Promise.resolve();
+  };
+
+  const validateWIV = (rule, input) => {
+    if ((rule.required && input === '') || (rule.required && input !== 0 && !input)) {
+      return Promise.reject(`${t('validate.set')} ─ ${t(config?.siteLabelUser + 'fields.observedMass')}`);
+    }
+
+    const number = _.toNumber(input);
+    const invalid = _.isNaN(number);
+
+    const decimals = _.toString(number).split('.')[1]?.length || 0;
+
+    if (input && input !== '' && invalid) {
+      return Promise.reject(`${t('validate.wrongType')}: ${t('validate.mustBeNumber')}`);
+    }
+
+    if (input !== '' && !invalid && number <= 0) {
+      return Promise.reject(`${t('validate.positiveNumber')}`);
+    }
+
+    /* if (decimals > config?.precisionMass) {
+      return Promise.reject(
+        `${t('validate.decimalPlacesExceeded')} ${config?.precisionMass} ─ ${t(
+          'descriptions.invalidDecimals'
+        )}`
+      );
+    } */
+
+    return Promise.resolve();
+  };
+
+  const validateWIA = (rule, input) => {
+    if ((rule.required && input === '') || (rule.required && input !== 0 && !input)) {
+      return Promise.reject(`${t('validate.set')} ─ ${t(config?.siteLabelUser + 'fields.weightInAir')}`);
+    }
+
+    const number = _.toNumber(input);
+    const invalid = _.isNaN(number);
+
+    const decimals = _.toString(number).split('.')[1]?.length || 0;
+
+    if (input && input !== '' && invalid) {
+      return Promise.reject(`${t('validate.wrongType')}: ${t('validate.mustBeNumber')}`);
+    }
+
+    /* if (decimals > config?.precisionMass) {
+      return Promise.reject(
+        `${t('validate.decimalPlacesExceeded')} ${config?.precisionMass} ─ ${t(
+          'descriptions.invalidDecimals'
+        )}`
+      );
+    } */
+
+    return Promise.resolve();
+  };
+
   return (
     <>
       <Row gutter={[8, 8]}>
@@ -300,6 +468,7 @@ const Calculate = ({
           <Form.Item
             name="mlitm_qty_amb"
             label={t(config?.siteLabelUser + 'fields.observedQuantity') + '(' + t('units.ltr') + ')'}
+            rules={[{ required: config?.siteMandatoryTankCalcFields, validator: validateAMB }]}
           >
             <InputNumber
               min={0}
@@ -315,6 +484,7 @@ const Calculate = ({
           <Form.Item
             name="mlitm_qty_cor"
             label={t(config?.siteLabelUser + 'fields.standardQuantity') + '(' + t('units.ltr') + ')'}
+            rules={[{ required: config?.siteMandatoryTankCalcFields, validator: validateCOR }]}
           >
             <InputNumber
               min={0}
@@ -328,7 +498,11 @@ const Calculate = ({
         </Col>
         {config?.siteUseVCF && (
           <Col span={8}>
-            <Form.Item name="mlitm_vcf" label={t('fields.vcf')}>
+            <Form.Item
+              name="mlitm_vcf"
+              label={t('fields.vcf')}
+              rules={[{ required: false, validator: validateVCF }]}
+            >
               <InputNumber
                 min={0}
                 max={999999999}
@@ -348,6 +522,7 @@ const Calculate = ({
             <Form.Item
               name="mlitm_qty_kg"
               label={t(config?.siteLabelUser + 'fields.observedMass') + '(' + t('units.kg') + ')'}
+              rules={[{ required: config?.siteMandatoryTankCalcFields, validator: validateWIV }]}
             >
               <InputNumber
                 min={0}
@@ -365,6 +540,7 @@ const Calculate = ({
             <Form.Item
               name="mlitm_air_kg"
               label={t(config?.siteLabelUser + 'fields.weightInAir') + '(' + t('units.kg') + ')'}
+              rules={[{ required: false, validator: validateWIA }]}
             >
               <InputNumber
                 min={0}
@@ -389,7 +565,7 @@ const Calculate = ({
               t('units.kg/m3') +
               ')'
             }
-            rules={[{ required: false, validator: validateDensity }]}
+            rules={[{ required: config?.siteMandatoryTankCalcFields, validator: validateDensity }]}
           >
             <InputNumber
               precision={densDecimals > config.precisionDensity ? config.precisionDensity : densDecimals}
@@ -410,6 +586,7 @@ const Calculate = ({
               t('units.degC') +
               ')'
             }
+            rules={[{ required: config?.siteMandatoryTankCalcFields, validator: validateTemperature }]}
           >
             <InputNumber
               precision={
