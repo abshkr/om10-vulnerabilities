@@ -59,8 +59,150 @@ class Personnel extends CommonClass
         }
     }
 
-    // read personnel
+    public function check_psnl_code()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM GUI_PERSONNEL WHERE PER_CODE = :psnl_code
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':psnl_code', $this->psnl_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function pagination_count()
+    {
+        $query = "
+            SELECT COUNT(*) CN
+            FROM  " . $this->VIEW_NAME . " 
+            WHERE 1=1
+        ";
+
+        if (isset($this->psnl_code) && $this->psnl_code!='') {
+            $query = $query . " AND UPPER(PER_CODE) LIKE '%'||UPPER(:psnl_code)||'%' ";
+        }
+        if (isset($this->psnl_employer) && $this->psnl_employer!='') {
+            $query = $query . " AND PER_CMPY = :psnl_employer ";
+        }
+        if (isset($this->psnl_name) && $this->psnl_name!='') {
+            $query = $query . " AND UPPER(PER_NAME) LIKE '%'||UPPER(:psnl_name)||'%' ";
+        }
+        if (isset($this->psnl_role) && $this->psnl_role!='') {
+            $query = $query . " AND PER_AUTH = :psnl_role ";
+        }
+        if (isset($this->psnl_lock) && $this->psnl_lock!='') {
+            $query = $query . " AND PER_LOCK = :psnl_lock ";
+        }
+        if (isset($this->psnl_status) && $this->psnl_status!='') {
+            $query = $query . " AND USER_STATUS_FLAG = :psnl_status ";
+        }
+
+        $stmt = oci_parse($this->conn, $query);
+
+        if (isset($this->psnl_code) && $this->psnl_code!='') {
+            oci_bind_by_name($stmt, ':psnl_code', $this->psnl_code);
+        }
+        if (isset($this->psnl_employer) && $this->psnl_employer!='') {
+            oci_bind_by_name($stmt, ':psnl_employer', $this->psnl_employer);
+        }
+        if (isset($this->psnl_name) && $this->psnl_name!='') {
+            oci_bind_by_name($stmt, ':psnl_name', $this->psnl_name);
+        }
+        if (isset($this->psnl_role) && $this->psnl_role!='') {
+            oci_bind_by_name($stmt, ':psnl_role', $this->psnl_role);
+        }
+        if (isset($this->psnl_lock) && $this->psnl_lock!='') {
+            oci_bind_by_name($stmt, ':psnl_lock', $this->psnl_lock);
+        }
+        if (isset($this->psnl_status) && $this->psnl_status!='') {
+            oci_bind_by_name($stmt, ':psnl_status', $this->psnl_status);
+        }
+        
+        if (oci_execute($stmt, $this->commit_mode)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            return (int) $row['CN'];
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return 0;
+        }
+    }
+
     public function read()
+    {
+        $query = "
+            SELECT * 
+            FROM
+            (
+                SELECT * FROM " . $this->VIEW_NAME . " ORDER BY PER_CODE
+            )
+            WHERE 1=1
+        ";
+
+        if (isset($this->psnl_code) && $this->psnl_code!='') {
+            $query = $query . " AND UPPER(PER_CODE) LIKE '%'||UPPER(:psnl_code)||'%' ";
+        }
+        if (isset($this->psnl_employer) && $this->psnl_employer!='') {
+            $query = $query . " AND PER_CMPY = :psnl_employer ";
+        }
+        if (isset($this->psnl_name) && $this->psnl_name!='') {
+            $query = $query . " AND UPPER(PER_NAME) LIKE '%'||UPPER(:psnl_name)||'%' ";
+        }
+        if (isset($this->psnl_role) && $this->psnl_role!='') {
+            $query = $query . " AND PER_AUTH = :psnl_role ";
+        }
+        if (isset($this->psnl_lock) && $this->psnl_lock!='') {
+            $query = $query . " AND PER_LOCK = :psnl_lock ";
+        }
+        if (isset($this->psnl_status) && $this->psnl_status!='') {
+            $query = $query . " AND USER_STATUS_FLAG = :psnl_status ";
+        }
+
+        if (isset($this->pgflag) && $this->pgflag==='Y') {
+            $query = $this->pagination_query($query);
+        }
+
+        $stmt = oci_parse($this->conn, $query);
+
+        if (isset($this->psnl_code) && $this->psnl_code!='') {
+            oci_bind_by_name($stmt, ':psnl_code', $this->psnl_code);
+        }
+        if (isset($this->psnl_employer) && $this->psnl_employer!='') {
+            oci_bind_by_name($stmt, ':psnl_employer', $this->psnl_employer);
+        }
+        if (isset($this->psnl_name) && $this->psnl_name!='') {
+            oci_bind_by_name($stmt, ':psnl_name', $this->psnl_name);
+        }
+        if (isset($this->psnl_role) && $this->psnl_role!='') {
+            oci_bind_by_name($stmt, ':psnl_role', $this->psnl_role);
+        }
+        if (isset($this->psnl_lock) && $this->psnl_lock!='') {
+            oci_bind_by_name($stmt, ':psnl_lock', $this->psnl_lock);
+        }
+        if (isset($this->psnl_status) && $this->psnl_status!='') {
+            oci_bind_by_name($stmt, ':psnl_status', $this->psnl_status);
+        }
+
+        if (isset($this->pgflag) && $this->pgflag==='Y') {
+            $this->pagination_binds($stmt);
+        }
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    // read personnel
+    public function read_all()
     {
         $query = "SELECT * FROM " . $this->VIEW_NAME . " ORDER BY PER_CODE";
 

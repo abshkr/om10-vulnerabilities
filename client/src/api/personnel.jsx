@@ -19,3 +19,4 @@ export const USER_STATUS = '/api/pages/personnel/user_status.php';
 export const CHECK_PERSONNEL_TAGS = '/api/pages/personnel/check_personnel_tags.php';
 export const CHECK_PERSONNEL_LOADS = '/api/pages/personnel/check_personnel_loads.php';
 export const CHECK_PERSONNEL_TRIPS = '/api/pages/personnel/check_personnel_trips.php';
+export const CHECK_PSNL_CODE = '/api/pages/personnel/check_psnl_code.php';

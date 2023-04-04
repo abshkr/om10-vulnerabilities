@@ -36,6 +36,11 @@ import TnkrOwner from './tnkr-owner';
 import TnkrEtyp from './tnkr-etyp';
 import TnkrFlags from './tnkr-flags';
 import BayList from './bay';
+import PsnlCode from './psnl-code';
+import PsnlEmployer from './psnl-employer';
+import PsnlName from './psnl-name';
+import PsnlRole from './psnl-role';
+import PsnlFlags from './psnl-flags';
 
 export {
   DateRange,
@@ -76,4 +81,9 @@ export {
   TnkrEtyp,
   TnkrFlags,
   BayList,
+  PsnlCode,
+  PsnlEmployer,
+  PsnlName,
+  PsnlRole,
+  PsnlFlags,
 };

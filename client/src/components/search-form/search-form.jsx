@@ -47,6 +47,11 @@ import {
   TnkrEtyp,
   TnkrFlags,
   BayList,
+  PsnlCode,
+  PsnlEmployer,
+  PsnlName,
+  PsnlRole,
+  PsnlFlags,
 } from './fields';
 
 const SearchForm = ({ onSearch, fields, initValues, modal, rangeRequired, timeRequired }) => {
@@ -158,6 +163,11 @@ const SearchForm = ({ onSearch, fields, initValues, modal, rangeRequired, timeRe
       {fields?.tnkr_owner && <TnkrOwner />}
       {fields?.tnkr_etyp && <TnkrEtyp />}
       {fields?.tnkr_flags && <TnkrFlags />}
+      {fields?.psnl_code_input && <PsnlCode />}
+      {fields?.psnl_name && <PsnlName />}
+      {fields?.psnl_employer && <PsnlEmployer />}
+      {fields?.psnl_role && <PsnlRole />}
+      {fields?.psnl_flags && <PsnlFlags />}
 
       {rangeRequired && (
         <DateRange

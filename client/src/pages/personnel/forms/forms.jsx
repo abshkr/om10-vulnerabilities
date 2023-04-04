@@ -46,10 +46,14 @@ const FormModal = ({
   visible,
   handleFormState,
   access,
-  setFilterValue,
+  // setFilterValue,
+  revalidate,
   expiryDateMode,
   expiryTypes,
   config,
+  onLocate,
+  setPage,
+  maskFlag,
 }) => {
   const [passwordResetVisible, setPasswordResetVisible] = useState(false);
   const [areaVisible, setAreaVisible] = useState(false);
@@ -119,13 +123,21 @@ const FormModal = ({
   };
 
   const onComplete = (per_code) => {
+    // resetFields();
     handleFormState(false, null);
-    mutate(PERSONNEL.READ);
-    if (per_code) {
+    /* if (per_code) {
       setFilterValue('' + per_code);
+      revalidate();
     } else {
       setFilterValue(' ');
+    } */
+    if (per_code) {
+      onLocate(per_code);
+    } else {
+      onLocate('');
     }
+    setPage(1);
+    revalidate();
   };
 
   const onFinish = async () => {
@@ -281,7 +293,7 @@ const FormModal = ({
       onClose={() => onExitClicked()}
       maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
       destroyOnClose={true}
-      mask={config?.siteFormCloseAlert ? true : IS_CREATING}
+      mask={config?.siteFormCloseAlert ? true : maskFlag}
       placement="right"
       width="80vw"
       visible={visible}
