@@ -97,6 +97,18 @@ const TankerList = () => {
   };
 
   const onChangePagination = async (v) => {
+    if (!v) {
+      setData([]);
+    }
+
+    const tempUrl = `${TANKER_LIST.READ}?pgflag=${
+      v ? 'Y' : 'N'
+    }&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`;
+    setMainUrl(tempUrl);
+
+    setPage(1);
+    setRunUrlFlag(!v);
+
     setPagingFlag(v);
 
     // change the value in site_config
@@ -108,16 +120,6 @@ const TankerList = () => {
     ];
 
     await api.post(SITE_CONFIGURATION.UPDATE, values);
-
-    setData([]);
-
-    const tempUrl = `${TANKER_LIST.READ}?pgflag=${
-      v ? 'Y' : 'N'
-    }&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`;
-    setMainUrl(tempUrl);
-
-    setPage(1);
-    setRunUrlFlag(!pagingFlag);
   };
 
   const onRefresh = () => {
