@@ -113,6 +113,21 @@ const EquipmentList = () => {
   };
 
   const onChangePagination = async (v) => {
+    if (!v) {
+      setData([]);
+    }
+
+    const tempUrl =
+      parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
+        ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${v ? 'Y' : 'N'}`
+        : `${EQUIPMENT_LIST.READ}?pgflag=${
+            v ? 'Y' : 'N'
+          }&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
+    setMainUrl(tempUrl);
+
+    setPage(1);
+    setRunUrlFlag(!v);
+
     setPagingFlag(v);
 
     // change the value in site_config
@@ -124,19 +139,6 @@ const EquipmentList = () => {
     ];
 
     await api.post(SITE_CONFIGURATION.UPDATE, values);
-
-    setData([]);
-
-    const tempUrl =
-      parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
-        ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${v ? 'Y' : 'N'}`
-        : `${EQUIPMENT_LIST.READ}?pgflag=${
-            v ? 'Y' : 'N'
-          }&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
-    setMainUrl(tempUrl);
-
-    setPage(1);
-    setRunUrlFlag(!pagingFlag);
   };
 
   const onRefresh = () => {
