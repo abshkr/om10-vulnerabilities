@@ -44,8 +44,28 @@ const Source = ({ form, value, base, setBase, setType }) => {
   };
 
   const validateCode = (rule, input) => {
-    if (input === '' || !input) {
+    if (rule.required && (input === '' || !input)) {
       return Promise.reject(`${t('validate.select')} ─ ${t('fields.sourceUnit')}`);
+    }
+
+    return Promise.resolve();
+  };
+
+  const validateOtherCode = (rule, input) => {
+    if (rule.required && (input === '' || !input)) {
+      return Promise.reject(`${t('validate.set')} ─ ${t('fields.sourceUnit')}`);
+    }
+
+    const len = new TextEncoder().encode(input).length;
+    if (input && len > 40) {
+      return Promise.reject(`${t('placeholder.maxCharacters')}: 40 ─ ${t('descriptions.maxCharacters')}`);
+    }
+
+    if (input !== undefined && input !== input.trimLeft()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
+    }
+    if (input !== undefined && input !== input.trimRight()) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
     }
 
     return Promise.resolve();
@@ -165,7 +185,7 @@ const Source = ({ form, value, base, setBase, setType }) => {
               t('fields.sourceUnit')
             )
           }
-          rules={[{ required: true, validator: validateCode }]}
+          rules={[{ required: true, validator: source === '3' ? validateCode : validateOtherCode }]}
         >
           {source === '3' ? (
             <Select
