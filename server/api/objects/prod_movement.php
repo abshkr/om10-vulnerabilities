@@ -346,6 +346,7 @@ class ProdMovement extends CommonClass
         oci_commit($this->conn);
 
         $error = new EchoSchema(200, response("__PRODUCTMOVEMENT_CREATED__"));
+        $error->result[0]->id = $this->pmv_number;
         echo json_encode($error, JSON_PRETTY_PRINT);
         return true;
     }
@@ -698,38 +699,46 @@ class ProdMovement extends CommonClass
             WHERE 1=1
         ";
 
-        //        AND ('-1' = :start_date OR " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
-        if ( $this->start_date === "-1") {
-            $query .= "
-                AND ('-1' = :start_date) 
-            ";
+        if (isset($this->pmv_number) && $this->pmv_number!='') {
+            $query = $query . " AND PMV_NUMBER = :pmv_number ";
         } else {
-            $query .= "
-                AND (" . $this->time_option . " >= TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
-            ";
+            //        AND ('-1' = :start_date OR " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+            if ( $this->start_date === "-1") {
+                $query .= "
+                    AND ('-1' = :start_date) 
+                ";
+            } else {
+                $query .= "
+                    AND (" . $this->time_option . " >= TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+                ";
+            }
+            //        AND ('-1' = :end_date OR " . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+            if ( $this->end_date === "-1") {
+                $query .= "
+                    AND ('-1' = :end_date)
+                ";
+            } else {
+                $query .= "
+                    AND (" . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+                ";
+            }
+            // if (isset($this->start_date) && isset($this->end_date)) {
+            //     $query .= " 
+            //         AND PMV_DATE1 >= :start_date
+            //         AND PMV_DATE1 < :end_date 
+            //     ";
+            // }
         }
-        //        AND ('-1' = :end_date OR " . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
-        if ( $this->end_date === "-1") {
-            $query .= "
-                AND ('-1' = :end_date)
-            ";
-        } else {
-            $query .= "
-                AND (" . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
-            ";
-        }
-        // if (isset($this->start_date) && isset($this->end_date)) {
-        //     $query .= " 
-        //         AND PMV_DATE1 >= :start_date
-        //         AND PMV_DATE1 < :end_date 
-        //     ";
-        // }
         
         $stmt = oci_parse($this->conn, $query);
 
-        if (isset($this->start_date) && isset($this->end_date)) {
-            oci_bind_by_name($stmt, ':start_date', $this->start_date);
-            oci_bind_by_name($stmt, ':end_date', $this->end_date);
+        if (isset($this->pmv_number) && $this->pmv_number!='') {
+            oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
+        } else {
+            if (isset($this->start_date) && isset($this->end_date)) {
+                oci_bind_by_name($stmt, ':start_date', $this->start_date);
+                oci_bind_by_name($stmt, ':end_date', $this->end_date);
+            }
         }
 
         if (oci_execute($stmt, $this->commit_mode)) {
@@ -809,32 +818,36 @@ class ProdMovement extends CommonClass
                 AND PMV_TRANS_TYPE = PMV_TRANSFER_CLASS_TYP.PMV_TRANSFER_CLASS_ID 
         ";
 
-        //        AND ('-1' = :start_date OR " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
-        if ( $this->start_date === "-1") {
-            $query .= "
-                AND ('-1' = :start_date) 
-            ";
+        if (isset($this->pmv_number) && $this->pmv_number!='') {
+            $query = $query . " AND PMV_NUMBER = :pmv_number ";
         } else {
-            $query .= "
-                AND (" . $this->time_option . " >= TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
-            ";
+            //        AND ('-1' = :start_date OR " . $this->time_option . " > TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+            if ( $this->start_date === "-1") {
+                $query .= "
+                    AND ('-1' = :start_date) 
+                ";
+            } else {
+                $query .= "
+                    AND (" . $this->time_option . " >= TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS')) 
+                ";
+            }
+            //        AND ('-1' = :end_date OR " . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+            if ( $this->end_date === "-1") {
+                $query .= "
+                    AND ('-1' = :end_date)
+                ";
+            } else {
+                $query .= "
+                    AND (" . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
+                ";
+            }
+            // if (isset($this->start_date) && isset($this->end_date)) {
+            //     $query .= " 
+            //         AND PMV_DATE1 >= :start_date
+            //         AND PMV_DATE1 < :end_date 
+            //     ";
+            // }
         }
-        //        AND ('-1' = :end_date OR " . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
-        if ( $this->end_date === "-1") {
-            $query .= "
-                AND ('-1' = :end_date)
-            ";
-        } else {
-            $query .= "
-                AND (" . $this->time_option . " < TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS'))
-            ";
-        }
-        // if (isset($this->start_date) && isset($this->end_date)) {
-        //     $query .= " 
-        //         AND PMV_DATE1 >= :start_date
-        //         AND PMV_DATE1 < :end_date 
-        //     ";
-        // }
 
         $query .= " ORDER BY NVL(PMV." . $this->time_option . ", SYSDATE) DESC, PMV.PMV_STATUS DESC";
 
@@ -843,9 +856,14 @@ class ProdMovement extends CommonClass
         }
 
         $stmt = oci_parse($this->conn, $query);
-        if (isset($this->start_date) && isset($this->end_date)) {
-            oci_bind_by_name($stmt, ':start_date', $this->start_date);
-            oci_bind_by_name($stmt, ':end_date', $this->end_date);
+
+        if (isset($this->pmv_number) && $this->pmv_number!='') {
+            oci_bind_by_name($stmt, ':pmv_number', $this->pmv_number);
+        } else {
+            if (isset($this->start_date) && isset($this->end_date)) {
+                oci_bind_by_name($stmt, ':start_date', $this->start_date);
+                oci_bind_by_name($stmt, ':end_date', $this->end_date);
+            }
         }
 
         if (isset($this->pgflag) && $this->pgflag==='Y') {

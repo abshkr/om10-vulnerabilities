@@ -253,7 +253,7 @@ const MakeNomination = ({ value, config, t, visible, setVisible, onComplete }) =
         .then((response) => {
           setDisabled(false);
           setVisible(false);
-          onComplete();
+          onComplete(value?.pmv_number);
 
           notification.success({
             message: t('messages.submitSuccess'),

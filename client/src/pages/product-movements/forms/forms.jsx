@@ -54,8 +54,10 @@ const FormModal = ({
   visible,
   handleFormState,
   access,
-  setFilterValue,
+  // setFilterValue,
   refresh,
+  onLocate,
+  setPage,
   config,
   maskFlag,
 }) => {
@@ -96,13 +98,17 @@ const FormModal = ({
     return `${t('fields.monitoring')}: ${statusText} ${tankText}`;
   };
 
-  const onComplete = (pmv_batchcode) => {
+  const onComplete = (pmv_number) => {
+    // resetFields();
     handleFormState(false, null);
+    if (pmv_number) {
+      onLocate(pmv_number);
+    } else {
+      onLocate('');
+    }
+    setPage(1);
     refresh();
     setMovementType('NEW');
-    if (pmv_batchcode) {
-      setFilterValue('' + pmv_batchcode);
-    }
   };
 
   const onFinish = async () => {
@@ -148,11 +154,8 @@ const FormModal = ({
         await api
           .post(PRODUCT_MOVEMENTS.CREATE, values)
           .then((response) => {
-            handleFormState(false, null);
-            refresh();
-            if (values?.pmv_batchcode) {
-              setFilterValue('' + values.pmv_batchcode);
-            }
+            console.log('.......response data....', response?.data?.result?.[0]?.id);
+            onComplete(response?.data?.result?.[0]?.id);
 
             notification.success({
               message: t('messages.createSuccess'),
@@ -184,7 +187,7 @@ const FormModal = ({
         await api
           .post(PRODUCT_MOVEMENTS.HALT, value)
           .then((response) => {
-            onComplete(value?.pmv_batchcode);
+            onComplete(value?.pmv_number);
 
             notification.success({
               message: t('messages.haltSuccess'),
@@ -216,7 +219,7 @@ const FormModal = ({
         await api
           .post(PRODUCT_MOVEMENTS.START, value)
           .then((response) => {
-            onComplete(value?.pmv_batchcode);
+            onComplete(value?.pmv_number);
 
             notification.success({
               message: t('messages.startSuccess'),
@@ -248,7 +251,7 @@ const FormModal = ({
         await api
           .post(PRODUCT_MOVEMENTS.COMPLETE, value)
           .then((response) => {
-            onComplete(value?.pmv_batchcode);
+            onComplete(value?.pmv_number);
 
             notification.success({
               message: t('messages.startSuccess'),
@@ -280,7 +283,7 @@ const FormModal = ({
         await api
           .post(PRODUCT_MOVEMENTS.COMPLETE_BATCH, value)
           .then((response) => {
-            onComplete(value?.pmv_batchcode);
+            onComplete(value?.pmv_number);
 
             notification.success({
               message: t('messages.submitSuccess'),

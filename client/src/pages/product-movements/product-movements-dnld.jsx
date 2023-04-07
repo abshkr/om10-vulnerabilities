@@ -31,6 +31,7 @@ const ProductMovements = () => {
   const { refreshProductMovement, siteCustomColumnProdMove, siteProdMovePaging, siteUseDownloader } = config;
   const filterDateType = config.filterProdMovementDateType;
 
+  const [pmvNumber, setPmvNumber] = useState('');
   const [pagingFlag, setPagingFlag] = useState(undefined);
   const [timeOption, setTimeOption] = useState(filterDateType === 'END' ? 'PMV_DATE2' : 'PMV_DATE1');
   const [data, setData] = useState(null);
@@ -38,6 +39,7 @@ const ProductMovements = () => {
   const [tickFlag, setTickFlag] = useState(false);
   const [interval, setInterval] = useState(goLive ? refreshProductMovement : 0);
   const [maskFlag, setMaskFlag] = useState(true);
+  const [isSearching, setSearching] = useState(false);
 
   const timeOptions = [
     {
@@ -69,7 +71,7 @@ const ProductMovements = () => {
   const [mainUrl, setMainUrl] = useState(
     `${PRODUCT_MOVEMENTS.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${
       !start ? '-1' : start
-    }&end_date=${!end ? '-1' : end}&time_option=${timeOption}`
+    }&end_date=${!end ? '-1' : end}&time_option=${timeOption}&pmv_number=${pmvNumber}`
   );
   const baseUrl = mainUrl.replace('pgflag=N', 'pgflag=Y');
   const url =
@@ -150,7 +152,7 @@ const ProductMovements = () => {
 
     const tempUrl = `${PRODUCT_MOVEMENTS.READ}?pgflag=${v ? 'Y' : 'N'}&start_date=${
       !start ? '-1' : start
-    }&end_date=${!end ? '-1' : end}&time_option=${timeOption}`;
+    }&end_date=${!end ? '-1' : end}&time_option=${timeOption}&pmv_number=${pmvNumber}`;
     setMainUrl(tempUrl);
 
     setPage(1);
@@ -173,7 +175,7 @@ const ProductMovements = () => {
     console.log('...........................here i am', start, end);
     const tempUrl = `${PRODUCT_MOVEMENTS.READ}?pgflag=${
       pagingFlag ? 'Y' : 'N'
-    }&start_date=${start}&end_date=${end}&time_option=${timeOption}`;
+    }&start_date=${start}&end_date=${end}&time_option=${timeOption}&pmv_number=${pmvNumber}`;
     setMainUrl(tempUrl);
     setPage(1);
     setRunUrlFlag(!pagingFlag);
@@ -186,7 +188,7 @@ const ProductMovements = () => {
   const onTimeOptionChanged = (option) => {
     const tempUrl = `${PRODUCT_MOVEMENTS.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${
       !start ? '-1' : start
-    }&end_date=${!end ? '-1' : end}&time_option=${option}`;
+    }&end_date=${!end ? '-1' : end}&time_option=${option}&pmv_number=${pmvNumber}`;
     setMainUrl(tempUrl);
     setPage(1);
     setRunUrlFlag(!pagingFlag);
@@ -204,10 +206,38 @@ const ProductMovements = () => {
     }
 
     setTimeOption(filterDateType === 'END' ? 'PMV_DATE2' : 'PMV_DATE1');
+    setPmvNumber('');
     setRefreshed(true);
 
     // Don't need revalidate, let useSWR handle itself while parameter changes
     // revalidate();
+  };
+
+  const onLocate = (value) => {
+    runSearch({
+      pmv_number: value,
+    });
+  };
+
+  const runSearch = (values) => {
+    if (!pagingFlag) {
+      setData([]);
+    }
+
+    setSearching(true);
+    setPmvNumber(!values.pmv_number ? '' : values?.pmv_number);
+
+    const pmvNumber = !values.pmv_number ? '' : values?.pmv_number;
+    const tempUrl = `${PRODUCT_MOVEMENTS.READ}?pgflag=${
+      pagingFlag ? 'Y' : 'N'
+    }&start_date=${start}&end_date=${end}&time_option=${timeOption}&pmv_number=${pmvNumber}`;
+    setMainUrl(tempUrl);
+    console.log('....................', tempUrl);
+
+    setPage(1);
+    setRunUrlFlag(!pagingFlag);
+    if (revalidate) revalidate();
+    setSearching(false);
   };
 
   useEffect(() => {
@@ -298,11 +328,11 @@ const ProductMovements = () => {
         // localBased={true}
       />
 
-      <Button icon={<SyncOutlined />} onClick={onRefresh} loading={isDownloading}>
+      <Button icon={<SyncOutlined />} onClick={onRefresh} loading={isDownloading || isSearching}>
         {t('operations.refresh')}
       </Button>
 
-      {!pagingFlag && <Download data={data} isLoading={isDownloading} columns={fields} />}
+      {!pagingFlag && <Download data={data} isLoading={isDownloading || isSearching} columns={fields} />}
 
       {pagingFlag && (
         <PageDownloader
@@ -321,7 +351,7 @@ const ProductMovements = () => {
           setMaskFlag(true);
           handleFormState(true, null);
         }}
-        loading={isDownloading}
+        loading={isDownloading || isSearching}
         disabled={!access?.canCreate}
       >
         {t('operations.create')}
@@ -377,7 +407,7 @@ const ProductMovements = () => {
       <DataTable
         columns={fields}
         data={data}
-        isLoading={isDownloading}
+        isLoading={isDownloading || isSearching}
         selectionMode="single"
         onClick={(payload) => {
           setMaskFlag(false);
@@ -425,8 +455,10 @@ const ProductMovements = () => {
           visible={visible}
           handleFormState={handleFormState}
           access={access}
-          setFilterValue={setFilterValue}
+          // setFilterValue={setFilterValue}
           refresh={revalidate}
+          onLocate={onLocate}
+          setPage={setPage}
           config={config}
           maskFlag={maskFlag}
         />
