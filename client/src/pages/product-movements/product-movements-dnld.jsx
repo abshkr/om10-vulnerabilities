@@ -28,7 +28,13 @@ const ProductMovements = () => {
   const access = useAuth('M_PRODUCTMOVEMENT');
 
   const config = useConfig();
-  const { refreshProductMovement, siteCustomColumnProdMove, siteProdMovePaging, siteUseDownloader } = config;
+  const {
+    refreshProductMovement,
+    siteCustomColumnProdMove,
+    siteProdMovePaging,
+    siteProdMoveDownloader,
+    siteDownloaderBatchMax,
+  } = config;
   const filterDateType = config.filterProdMovementDateType;
 
   const [pmvNumber, setPmvNumber] = useState('');
@@ -40,6 +46,7 @@ const ProductMovements = () => {
   const [interval, setInterval] = useState(goLive ? refreshProductMovement : 0);
   const [maskFlag, setMaskFlag] = useState(true);
   const [isSearching, setSearching] = useState(false);
+  const [downloaderFlag, setDownloaderFlag] = useState(undefined);
 
   const timeOptions = [
     {
@@ -75,9 +82,11 @@ const ProductMovements = () => {
   );
   const baseUrl = mainUrl.replace('pgflag=N', 'pgflag=Y');
   const url =
-    !pagingFlag && siteUseDownloader
+    !pagingFlag && downloaderFlag
       ? null
-      : mainUrl.replace('pgflag=N', 'pgflag=Y') + `&start_num=${take}&end_num=${offset}`;
+      : pagingFlag
+      ? mainUrl.replace('pgflag=N', 'pgflag=Y') + `&start_num=${take}&end_num=${offset}`
+      : mainUrl.replace('pgflag=N', 'pgflag=Y') + `&start_num=${0}&end_num=${siteDownloaderBatchMax}`;
   const pageUrl = mainUrl.replace('pgflag=N', 'pgflag=Y');
 
   const { data: payload, isValidating, revalidate } = useSWR(url, { refreshInterval: interval });
@@ -139,6 +148,32 @@ const ProductMovements = () => {
       {
         config_key: 'SITE_REFRESH_PRODMV_INTERVAL',
         config_value: v,
+      },
+    ];
+
+    await api.post(SITE_CONFIGURATION.UPDATE, values);
+  };
+
+  const onChangeDownloader = async (v) => {
+    if (!v) {
+      setData([]);
+    }
+
+    const tempUrl = `${PRODUCT_MOVEMENTS.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${
+      !start ? '-1' : start
+    }&end_date=${!end ? '-1' : end}&time_option=${timeOption}&pmv_number=${pmvNumber}`;
+    setMainUrl(tempUrl);
+
+    setPage(1);
+    setRunUrlFlag(!pagingFlag);
+
+    setDownloaderFlag(v);
+
+    // change the value in site_config
+    const values = [
+      {
+        config_key: 'SITE_DOWNLOADER_PRODMOVE_LIST',
+        config_value: v ? 'Y' : 'N',
       },
     ];
 
@@ -252,7 +287,7 @@ const ProductMovements = () => {
 
   const modifiers = (
     <>
-      {(pagingFlag || !siteUseDownloader) && goLive && (
+      {(pagingFlag || !downloaderFlag) && goLive && (
         <>
           <Button
             type="dashed"
@@ -276,7 +311,7 @@ const ProductMovements = () => {
         </>
       )}
 
-      {(pagingFlag || !siteUseDownloader) && (
+      {(pagingFlag || !downloaderFlag) && (
         <Checkbox
           style={{
             paddingTop: '4px',
@@ -298,6 +333,16 @@ const ProductMovements = () => {
         unCheckedChildren={<span>{t('operations.paginationOff')}</span>}
         onChange={(value) => onChangePagination(value)}
       />
+
+      {!pagingFlag && (
+        <Switch
+          style={{ marginRight: 5 }}
+          checked={downloaderFlag}
+          checkedChildren={<span>{t('operations.downloaderOn')}</span>}
+          unCheckedChildren={<span>{t('operations.downloaderOff')}</span>}
+          onChange={(value) => onChangeDownloader(value)}
+        />
+      )}
 
       <Select
         dropdownMatchSelectWidth={false}
@@ -385,6 +430,12 @@ const ProductMovements = () => {
   }, [siteProdMovePaging]);
 
   useEffect(() => {
+    if (siteProdMoveDownloader !== undefined) {
+      setDownloaderFlag(siteProdMoveDownloader);
+    }
+  }, [siteProdMoveDownloader]);
+
+  useEffect(() => {
     if (isValidating !== undefined) {
       setDownloading(isValidating);
     }
@@ -433,8 +484,17 @@ const ProductMovements = () => {
         {/* pagingFlag ? paginator : t('fields.totalCount') + ': ' + count */}
         {pagingFlag ? (
           paginator
-        ) : siteUseDownloader === false ? (
-          t('fields.totalCount') + ': ' + count
+        ) : downloaderFlag === false ? (
+          count > siteDownloaderBatchMax ? (
+            <>
+              {`${t('fields.totalCount')}: ${count}`} &nbsp;&nbsp;&nbsp;
+              <Tag color={'red'}>
+                {t('descriptions.downloaderBatchMax', { BATCHMAX: siteDownloaderBatchMax })}
+              </Tag>
+            </>
+          ) : (
+            t('fields.totalCount') + ': ' + count
+          )
         ) : (
           <DataDownloader
             baseUrl={pageUrl}
