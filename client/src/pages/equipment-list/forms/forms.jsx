@@ -64,7 +64,9 @@ const FormModal = ({
   const { resetFields } = form;
 
   const { data: payload } = useSWR(
-    value?.eqpt_code ? `${EQUIPMENT_LIST.MATCHES_BY_TITLE}?eqpt_title=${value?.eqpt_title}` : null
+    value?.eqpt_code
+      ? `${EQUIPMENT_LIST.MATCHES_BY_TITLE}?eqpt_title=${encodeURIComponent(value?.eqpt_title)}`
+      : null
   );
   const [eqptType, setEqptType] = useState(undefined);
   const [image, setImage] = useState(null);
