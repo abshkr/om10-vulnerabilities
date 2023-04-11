@@ -87,7 +87,9 @@ const FormModal = ({
   const [carrier, setCarrier] = useState(null);
 
   const { data: payload } = useSWR(
-    value?.tnkr_name ? `${TANKER_LIST.MATCHES_BY_NAME}?tnkr_name=${value?.tnkr_name}` : null
+    value?.tnkr_name
+      ? `${TANKER_LIST.MATCHES_BY_NAME}?tnkr_name=${encodeURIComponent(value?.tnkr_name)}`
+      : null
   );
 
   const [equipment, setEquipment] = useState(undefined);
