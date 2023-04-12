@@ -64,7 +64,9 @@ const EquipmentList = () => {
       ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${pagingFlag ? 'Y' : 'N'}`
       : `${EQUIPMENT_LIST.READ}?pgflag=${
           pagingFlag ? 'Y' : 'N'
-        }&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`
+        }&eqpt_id=${eqptId}&eqpt_code=${encodeURIComponent(
+          eqptCode
+        )}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`
   );
   const baseUrl = mainUrl.replace('pgflag=N', 'pgflag=Y');
   const url =
@@ -80,7 +82,7 @@ const EquipmentList = () => {
         }`
       : `${EQUIPMENT_LIST.READ}?pgflag=${
           pagingFlag ? 'Y' : 'N'
-        }&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
+        }&eqpt_id=${eqptId}&eqpt_code=${encodeURIComponent(eqptCode)}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
 
   const url =
     parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
@@ -89,7 +91,7 @@ const EquipmentList = () => {
         }&start_num=${take}&end_num=${offset}`
       : `${EQUIPMENT_LIST.READ}?pgflag=${
           pagingFlag ? 'Y' : 'N'
-        }&start_num=${take}&end_num=${offset}&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`; */
+        }&start_num=${take}&end_num=${offset}&eqpt_id=${eqptId}&eqpt_code=${encodeURIComponent(eqptCode)}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`; */
 
   const { data: payload, isValidating, revalidate } = useSWR(pagingFlag === undefined ? null : url, {
     revalidateOnFocus: false,
@@ -120,9 +122,9 @@ const EquipmentList = () => {
     const tempUrl =
       parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
         ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${v ? 'Y' : 'N'}`
-        : `${EQUIPMENT_LIST.READ}?pgflag=${
-            v ? 'Y' : 'N'
-          }&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
+        : `${EQUIPMENT_LIST.READ}?pgflag=${v ? 'Y' : 'N'}&eqpt_id=${eqptId}&eqpt_code=${encodeURIComponent(
+            eqptCode
+          )}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
     setMainUrl(tempUrl);
 
     setPage(1);
@@ -157,7 +159,7 @@ const EquipmentList = () => {
     //   }`
     // : `${EQUIPMENT_LIST.READ}?pgflag=${
     //     pagingFlag ? 'Y' : 'N'
-    //   }&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`);
+    //   }&eqpt_id=${eqptId}&eqpt_code=${encodeURIComponent(eqptCode)}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`);
     const tempUrl =
       parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
         ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${pagingFlag ? 'Y' : 'N'}`
@@ -211,7 +213,9 @@ const EquipmentList = () => {
         ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${pagingFlag ? 'Y' : 'N'}`
         : `${EQUIPMENT_LIST.READ}?pgflag=${
             pagingFlag ? 'Y' : 'N'
-          }&eqpt_id=${eqptId}&eqpt_code=${eqptCode}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
+          }&eqpt_id=${eqptId}&eqpt_code=${encodeURIComponent(
+            eqptCode
+          )}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
     setMainUrl(tempUrl);
 
     setPage(1);

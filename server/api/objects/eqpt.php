@@ -30,6 +30,11 @@ class Equipment extends CommonClass
         "EQPT_AXLE_LIMIT_TYPE",
     );
 
+    public $AMPERSAND_FIELDS = array(
+        "EQPT_CODE",
+        "EQPT_TITLE",
+    );
+
     protected $check_mandatory = false;
     public $check_exists = false;
 
@@ -240,7 +245,7 @@ class Equipment extends CommonClass
             oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
         }
         if (isset($this->eqpt_code) && $this->eqpt_code!='') {
-            oci_bind_by_name($stmt, ':eqpt_code', $this->eqpt_code);
+            oci_bind_by_name($stmt, ':eqpt_code', html_entity_decode($this->eqpt_code));
         }
         if (isset($this->eqpt_owner) && $this->eqpt_owner!='') {
             oci_bind_by_name($stmt, ':eqpt_owner', $this->eqpt_owner);
@@ -267,7 +272,7 @@ class Equipment extends CommonClass
             ORDER BY EQPT_CODE";
 
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':eqpt_title', $this->eqpt_title);
+        oci_bind_by_name($stmt, ':eqpt_title', html_entity_decode($this->eqpt_title));
 
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
@@ -435,7 +440,7 @@ class Equipment extends CommonClass
             oci_bind_by_name($stmt, ':eqpt_id', $this->eqpt_id);
         }
         if (isset($this->eqpt_code) && $this->eqpt_code!='') {
-            oci_bind_by_name($stmt, ':eqpt_code', $this->eqpt_code);
+            oci_bind_by_name($stmt, ':eqpt_code', html_entity_decode($this->eqpt_code));
         }
         if (isset($this->eqpt_owner) && $this->eqpt_owner!='') {
             oci_bind_by_name($stmt, ':eqpt_owner', $this->eqpt_owner);
