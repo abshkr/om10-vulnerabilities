@@ -128,6 +128,9 @@ class Tanker extends CommonClass
         if (isset($this->tnkr_code) && $this->tnkr_code!='') {
             $query = $query . " AND UPPER(TNKR_CODE) LIKE '%'||UPPER(:tnkr_code)||'%' ";
         }
+        if (isset($this->tnkr_name) && $this->tnkr_name!='') {
+            $query = $query . " AND UPPER(TNKR_NAME) LIKE '%'||UPPER(:tnkr_name)||'%' ";
+        }
         if (isset($this->tnkr_carrier) && $this->tnkr_carrier!='') {
             $query = $query . " AND TNKR_CARRIER = :tnkr_carrier ";
         }
@@ -148,6 +151,9 @@ class Tanker extends CommonClass
 
         if (isset($this->tnkr_code) && $this->tnkr_code!='') {
             oci_bind_by_name($stmt, ':tnkr_code', html_entity_decode($this->tnkr_code));
+        }
+        if (isset($this->tnkr_name) && $this->tnkr_name!='') {
+            oci_bind_by_name($stmt, ':tnkr_name', html_entity_decode($this->tnkr_name));
         }
         if (isset($this->tnkr_carrier) && $this->tnkr_carrier!='') {
             oci_bind_by_name($stmt, ':tnkr_carrier', $this->tnkr_carrier);
@@ -277,6 +283,9 @@ class Tanker extends CommonClass
         if (isset($this->tnkr_code) && $this->tnkr_code!='') {
             $query = $query . " AND UPPER(TNKR_CODE) LIKE '%'||UPPER(:tnkr_code)||'%' ";
         }
+        if (isset($this->tnkr_name) && $this->tnkr_name!='') {
+            $query = $query . " AND UPPER(TNKR_NAME) LIKE '%'||UPPER(:tnkr_name)||'%' ";
+        }
         if (isset($this->tnkr_carrier) && $this->tnkr_carrier!='') {
             $query = $query . " AND TNKR_CARRIER = :tnkr_carrier ";
         }
@@ -301,6 +310,9 @@ class Tanker extends CommonClass
 
         if (isset($this->tnkr_code) && $this->tnkr_code!='') {
             oci_bind_by_name($stmt, ':tnkr_code', html_entity_decode($this->tnkr_code));
+        }
+        if (isset($this->tnkr_name) && $this->tnkr_name!='') {
+            oci_bind_by_name($stmt, ':tnkr_name', html_entity_decode($this->tnkr_name));
         }
         if (isset($this->tnkr_carrier) && $this->tnkr_carrier!='') {
             oci_bind_by_name($stmt, ':tnkr_carrier', $this->tnkr_carrier);
