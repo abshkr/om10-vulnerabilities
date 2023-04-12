@@ -62,9 +62,9 @@ const TankerList = () => {
   const access = useAuth('M_TANKERS');
 
   const [mainUrl, setMainUrl] = useState(
-    `${TANKER_LIST.READ}?pgflag=${
-      pagingFlag ? 'Y' : 'N'
-    }&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`
+    `${TANKER_LIST.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&tnkr_code=${encodeURIComponent(
+      tnkrCode
+    )}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`
   );
   const baseUrl = mainUrl.replace('pgflag=N', 'pgflag=Y');
   const url =
@@ -75,10 +75,10 @@ const TankerList = () => {
 
   // const baseUrl = `${TANKER_LIST.READ}?pgflag=${
   //   pagingFlag ? 'Y' : 'N'
-  // }&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`;
+  // }&tnkr_code=${encodeURIComponent(tnkrCode)}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`;
   // const url = `${TANKER_LIST.READ}?pgflag=${
   //   pagingFlag ? 'Y' : 'N'
-  // }&start_num=${take}&end_num=${offset}&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`;
+  // }&start_num=${take}&end_num=${offset}&tnkr_code=${encodeURIComponent(tnkrCode)}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`;
 
   const { data: payload, isValidating, revalidate } = useSWR(pagingFlag === undefined ? null : url, {
     revalidateOnFocus: false,
@@ -101,9 +101,9 @@ const TankerList = () => {
       setData([]);
     }
 
-    const tempUrl = `${TANKER_LIST.READ}?pgflag=${
-      v ? 'Y' : 'N'
-    }&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`;
+    const tempUrl = `${TANKER_LIST.READ}?pgflag=${v ? 'Y' : 'N'}&tnkr_code=${encodeURIComponent(
+      tnkrCode
+    )}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`;
     setMainUrl(tempUrl);
 
     setPage(1);
@@ -134,7 +134,7 @@ const TankerList = () => {
 
     // const tempUrl = (`${TANKER_LIST.READ}?pgflag=${
     //   pagingFlag ? 'Y' : 'N'
-    // }&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`);
+    // }&tnkr_code=${encodeURIComponent(tnkrCode)}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`);
     const tempUrl = `${TANKER_LIST.READ}?pgflag=${
       pagingFlag ? 'Y' : 'N'
     }&tnkr_code=${''}&tnkr_carrier=${''}&tnkr_owner=${''}&tnkr_etyp=${''}&tnkr_lock=${''}&tnkr_active=${''}`;
@@ -189,9 +189,9 @@ const TankerList = () => {
     const tnkrEtyp = !values.tnkr_etp ? '' : values.tnkr_etp;
     const tnkrLock = values.tnkr_lock === undefined ? '' : values.tnkr_lock;
     const tnkrActive = values.tnkr_active === undefined ? '' : values.tnkr_active;
-    const tempUrl = `${TANKER_LIST.READ}?pgflag=${
-      pagingFlag ? 'Y' : 'N'
-    }&tnkr_code=${tnkrCode}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`;
+    const tempUrl = `${TANKER_LIST.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&tnkr_code=${encodeURIComponent(
+      tnkrCode
+    )}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`;
     setMainUrl(tempUrl);
 
     setPage(1);

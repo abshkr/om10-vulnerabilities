@@ -35,6 +35,7 @@ class Tanker extends CommonClass
 
     public $AMPERSAND_FIELDS = array(
         "TNKR_CODE",
+        "TNKR_NAME",
     );
 
     // protected $table_view_map = array(
@@ -146,7 +147,7 @@ class Tanker extends CommonClass
         $stmt = oci_parse($this->conn, $query);
 
         if (isset($this->tnkr_code) && $this->tnkr_code!='') {
-            oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+            oci_bind_by_name($stmt, ':tnkr_code', html_entity_decode($this->tnkr_code));
         }
         if (isset($this->tnkr_carrier) && $this->tnkr_carrier!='') {
             oci_bind_by_name($stmt, ':tnkr_carrier', $this->tnkr_carrier);
@@ -191,7 +192,7 @@ class Tanker extends CommonClass
             ORDER BY TNKR_CODE";
 
         $stmt = oci_parse($this->conn, $query);
-        oci_bind_by_name($stmt, ':tnkr_name', $this->tnkr_name);
+        oci_bind_by_name($stmt, ':tnkr_name', html_entity_decode($this->tnkr_name));
 
         if (oci_execute($stmt, $this->commit_mode)) {
             return $stmt;
@@ -299,7 +300,7 @@ class Tanker extends CommonClass
         $stmt = oci_parse($this->conn, $query);
 
         if (isset($this->tnkr_code) && $this->tnkr_code!='') {
-            oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+            oci_bind_by_name($stmt, ':tnkr_code', html_entity_decode($this->tnkr_code));
         }
         if (isset($this->tnkr_carrier) && $this->tnkr_carrier!='') {
             oci_bind_by_name($stmt, ':tnkr_carrier', $this->tnkr_carrier);
