@@ -39,9 +39,11 @@ import {
   JournalCategory,
   EqptId,
   EqptCode,
+  EqptTitle,
   EqptOwner,
   EqptType,
   TnkrCode,
+  TnkrName,
   TnkrCarrier,
   TnkrOwner,
   TnkrEtyp,
@@ -156,9 +158,11 @@ const SearchForm = ({ onSearch, fields, initValues, modal, rangeRequired, timeRe
       {fields?.journal_category && <JournalCategory />}
       {fields?.eqpt_id && <EqptId />}
       {fields?.eqpt_code && <EqptCode />}
+      {fields?.eqpt_title && <EqptTitle />}
       {fields?.eqpt_owner && <EqptOwner />}
       {fields?.eqpt_etyp && <EqptType />}
       {fields?.tnkr_code_input && <TnkrCode />}
+      {fields?.tnkr_name && <TnkrName />}
       {fields?.tnkr_carrier && <TnkrCarrier />}
       {fields?.tnkr_owner && <TnkrOwner />}
       {fields?.tnkr_etyp && <TnkrEtyp />}

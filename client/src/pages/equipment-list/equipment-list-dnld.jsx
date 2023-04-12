@@ -45,6 +45,7 @@ const EquipmentList = () => {
   const [parentEqpt, setParentEqpt] = useState(equipment);
   const [eqptId, setEqptId] = useState('');
   const [eqptCode, setEqptCode] = useState('');
+  const [eqptTitle, setEqptTitle] = useState('');
   const [eqptOwner, setEqptOwner] = useState('');
   const [eqptEtyp, setEqptEtyp] = useState('');
   const [pagingFlag, setPagingFlag] = useState(undefined);
@@ -64,8 +65,8 @@ const EquipmentList = () => {
       ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${pagingFlag ? 'Y' : 'N'}`
       : `${EQUIPMENT_LIST.READ}?pgflag=${
           pagingFlag ? 'Y' : 'N'
-        }&eqpt_id=${eqptId}&eqpt_code=${encodeURIComponent(
-          eqptCode
+        }&eqpt_id=${eqptId}&eqpt_code=${encodeURIComponent(eqptCode)}&eqpt_title=${encodeURIComponent(
+          eqptTitle
         )}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`
   );
   const baseUrl = mainUrl.replace('pgflag=N', 'pgflag=Y');
@@ -82,7 +83,7 @@ const EquipmentList = () => {
         }`
       : `${EQUIPMENT_LIST.READ}?pgflag=${
           pagingFlag ? 'Y' : 'N'
-        }&eqpt_id=${eqptId}&eqpt_code=${encodeURIComponent(eqptCode)}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
+        }&eqpt_id=${eqptId}&eqpt_code=${encodeURIComponent(eqptCode)}&eqpt_title=${encodeURIComponent(eqptTitle)}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
 
   const url =
     parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
@@ -91,7 +92,7 @@ const EquipmentList = () => {
         }&start_num=${take}&end_num=${offset}`
       : `${EQUIPMENT_LIST.READ}?pgflag=${
           pagingFlag ? 'Y' : 'N'
-        }&start_num=${take}&end_num=${offset}&eqpt_id=${eqptId}&eqpt_code=${encodeURIComponent(eqptCode)}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`; */
+        }&start_num=${take}&end_num=${offset}&eqpt_id=${eqptId}&eqpt_code=${encodeURIComponent(eqptCode)}&eqpt_title=${encodeURIComponent(eqptTitle)}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`; */
 
   const { data: payload, isValidating, revalidate } = useSWR(pagingFlag === undefined ? null : url, {
     revalidateOnFocus: false,
@@ -124,7 +125,7 @@ const EquipmentList = () => {
         ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${v ? 'Y' : 'N'}`
         : `${EQUIPMENT_LIST.READ}?pgflag=${v ? 'Y' : 'N'}&eqpt_id=${eqptId}&eqpt_code=${encodeURIComponent(
             eqptCode
-          )}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
+          )}&eqpt_title=${encodeURIComponent(eqptTitle)}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
     setMainUrl(tempUrl);
 
     setPage(1);
@@ -149,6 +150,7 @@ const EquipmentList = () => {
     setParentEqpt('');
     setEqptId('');
     setEqptCode('');
+    setEqptTitle('');
     setEqptOwner('');
     setEqptEtyp('');
 
@@ -159,13 +161,13 @@ const EquipmentList = () => {
     //   }`
     // : `${EQUIPMENT_LIST.READ}?pgflag=${
     //     pagingFlag ? 'Y' : 'N'
-    //   }&eqpt_id=${eqptId}&eqpt_code=${encodeURIComponent(eqptCode)}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`);
+    //   }&eqpt_id=${eqptId}&eqpt_code=${encodeURIComponent(eqptCode)}&eqpt_title=${encodeURIComponent(eqptTitle)}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`);
     const tempUrl =
       parentEqpt && parentEqpt?.length > 0 // && !_.isNaN(_.toNumber(parentEqpt))
         ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${pagingFlag ? 'Y' : 'N'}`
         : `${EQUIPMENT_LIST.READ}?pgflag=${
             pagingFlag ? 'Y' : 'N'
-          }&eqpt_id=${''}&eqpt_code=${''}&eqpt_owner=${''}&eqpt_etyp=${''}`;
+          }&eqpt_id=${''}&eqpt_code=${''}&eqpt_title=${''}&eqpt_owner=${''}&eqpt_etyp=${''}`;
     setMainUrl(tempUrl);
 
     setPage(1);
@@ -188,7 +190,7 @@ const EquipmentList = () => {
   };
 
   const setSearch = (values) => {
-    /* if (!values.eqpt_id && !values.eqpt_code && !values.eqpt_owner && !values.eqpt_etp) {
+    /* if (!values.eqpt_id && !values.eqpt_code && !values.eqpt_title && !values.eqpt_owner && !values.eqpt_etp) {
       return;
     } */
 
@@ -199,6 +201,7 @@ const EquipmentList = () => {
     setParentEqpt('');
     setEqptId(!values.eqpt_id ? '' : values.eqpt_id);
     setEqptCode(!values.eqpt_code ? '' : values.eqpt_code);
+    setEqptTitle(!values.eqpt_title ? '' : values.eqpt_title);
     setEqptOwner(!values.eqpt_owner ? '' : values.eqpt_owner);
     setEqptEtyp(!values.eqpt_etp ? '' : values.eqpt_etp);
 
@@ -206,6 +209,7 @@ const EquipmentList = () => {
     const parentEqpt = '';
     const eqptId = !values.eqpt_id ? '' : values.eqpt_id;
     const eqptCode = !values.eqpt_code ? '' : values.eqpt_code;
+    const eqptTitle = !values.eqpt_title ? '' : values.eqpt_title;
     const eqptOwner = !values.eqpt_owner ? '' : values.eqpt_owner;
     const eqptEtyp = !values.eqpt_etp ? '' : values.eqpt_etp;
     const tempUrl =
@@ -213,8 +217,8 @@ const EquipmentList = () => {
         ? `${EQUIPMENT_LIST.READ}?eqpt_id=${parentEqpt}&pgflag=${pagingFlag ? 'Y' : 'N'}`
         : `${EQUIPMENT_LIST.READ}?pgflag=${
             pagingFlag ? 'Y' : 'N'
-          }&eqpt_id=${eqptId}&eqpt_code=${encodeURIComponent(
-            eqptCode
+          }&eqpt_id=${eqptId}&eqpt_code=${encodeURIComponent(eqptCode)}&eqpt_title=${encodeURIComponent(
+            eqptTitle
           )}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`;
     setMainUrl(tempUrl);
 
@@ -228,6 +232,7 @@ const EquipmentList = () => {
         params: {
           eqpt_id: values.eqpt_id,
           eqpt_code: values.eqpt_code,
+          eqpt_title: values.eqpt_title,
           eqpt_owner: values.eqpt_owner,
           eqpt_etyp: values.eqpt_etp,
           pgflag: pagingFlag ? 'Y' : 'N',
@@ -346,12 +351,14 @@ const EquipmentList = () => {
             {
               eqpt_id: true,
               eqpt_code: true,
+              eqpt_title: true,
               eqpt_owner: true,
               eqpt_etyp: true,
             },
             {
               eqpt_id: eqptId,
               eqpt_code: eqptCode,
+              eqpt_title: eqptTitle,
               eqpt_owner: eqptOwner,
               eqpt_etp: eqptEtyp,
             },

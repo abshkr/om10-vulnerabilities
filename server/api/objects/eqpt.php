@@ -232,6 +232,9 @@ class Equipment extends CommonClass
         if (isset($this->eqpt_code) && $this->eqpt_code!='') {
             $query = $query . " AND UPPER(EQPT_CODE) LIKE '%'||UPPER(:eqpt_code)||'%' ";
         }
+        if (isset($this->eqpt_title) && $this->eqpt_title!='') {
+            $query = $query . " AND UPPER(EQPT_TITLE) LIKE '%'||UPPER(:eqpt_title)||'%' ";
+        }
         if (isset($this->eqpt_owner) && $this->eqpt_owner!='') {
             $query = $query . " AND EQPT_OWNER = :eqpt_owner ";
         }
@@ -246,6 +249,9 @@ class Equipment extends CommonClass
         }
         if (isset($this->eqpt_code) && $this->eqpt_code!='') {
             oci_bind_by_name($stmt, ':eqpt_code', html_entity_decode($this->eqpt_code));
+        }
+        if (isset($this->eqpt_title) && $this->eqpt_title!='') {
+            oci_bind_by_name($stmt, ':eqpt_title', html_entity_decode($this->eqpt_title));
         }
         if (isset($this->eqpt_owner) && $this->eqpt_owner!='') {
             oci_bind_by_name($stmt, ':eqpt_owner', $this->eqpt_owner);
@@ -423,6 +429,9 @@ class Equipment extends CommonClass
         if (isset($this->eqpt_code) && $this->eqpt_code!='') {
             $query = $query . " AND UPPER(EQPT_CODE) LIKE '%'||UPPER(:eqpt_code)||'%' ";
         }
+        if (isset($this->eqpt_title) && $this->eqpt_title!='') {
+            $query = $query . " AND UPPER(EQPT_TITLE) LIKE '%'||UPPER(:eqpt_title)||'%' ";
+        }
         if (isset($this->eqpt_owner) && $this->eqpt_owner!='') {
             $query = $query . " AND EQPT_OWNER = :eqpt_owner ";
         }
@@ -441,6 +450,9 @@ class Equipment extends CommonClass
         }
         if (isset($this->eqpt_code) && $this->eqpt_code!='') {
             oci_bind_by_name($stmt, ':eqpt_code', html_entity_decode($this->eqpt_code));
+        }
+        if (isset($this->eqpt_title) && $this->eqpt_title!='') {
+            oci_bind_by_name($stmt, ':eqpt_title', html_entity_decode($this->eqpt_title));
         }
         if (isset($this->eqpt_owner) && $this->eqpt_owner!='') {
             oci_bind_by_name($stmt, ':eqpt_owner', $this->eqpt_owner);
