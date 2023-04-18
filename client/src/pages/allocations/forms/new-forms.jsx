@@ -24,6 +24,7 @@ import {
   Type,
   Company,
   Supplier,
+  BaseSupplier,
   Customer,
   LockType,
   Period as PeriodItem,
@@ -47,6 +48,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
   const [type, setType] = useState(undefined);
   const [company, setCompany] = useState(undefined);
   const [supplier, setSupplier] = useState(undefined);
+  const [owner, setOwner] = useState(undefined);
   const [lockType, setLockType] = useState(undefined);
   const [selected, setSelected] = useState(null);
 
@@ -169,16 +171,35 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
       const payload = response.data?.records || [];
       setAllocations([]);
 
-      form.setFieldsValue({
-        allocs: payload,
-      });
+      // filter the base products on owner when type is "1"
+      if (type === '1') {
+        const filtered = payload.filter(
+          (o) =>
+            (owner === undefined && o?.aitem_prodowner === 'BaSePrOd') ||
+            (!!owner && o?.aitem_prodowner === owner)
+        );
+        form.setFieldsValue({
+          allocs: filtered,
+        });
 
-      setAllocations(payload);
+        setAllocations(filtered);
+      } else {
+        form.setFieldsValue({
+          allocs: payload,
+        });
+
+        setAllocations(payload);
+      }
     });
-  }, [company, type, supplier, allocIndex]);
+  }, [company, type, supplier, allocIndex, owner]);
 
   const onFinish = async () => {
     const values = await form.validateFields();
+
+    if (values?.alloc_type === '1') {
+      values.alloc_suppcode = supplier;
+      values.alloc_ownercode = owner;
+    }
 
     if (!values?.alloc_start_date) {
       values.alloc_start_date = '';
@@ -470,6 +491,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
       setType(undefined);
       setCompany(undefined);
       setSupplier(undefined);
+      setOwner(undefined);
       setLockType(undefined);
       setAllocations([]);
     }
@@ -572,15 +594,30 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
                 <Col span={12}>
                   <Company form={form} value={value} type={type} onChange={setCompany} />
                 </Col>
-                <Col span={12}>
-                  <Supplier
-                    form={form}
-                    value={value}
-                    type={type}
-                    onChange={setSupplier}
-                    multiAllocFlag={config?.siteAllowMultiAllocations}
-                  />
-                </Col>
+                {type === '1' && config?.siteSupplierExchangeAllocation && (
+                  <Col span={12}>
+                    <BaseSupplier
+                      form={form}
+                      value={value}
+                      type={type}
+                      company={company}
+                      onChangeSupplier={setSupplier}
+                      onChangeOwner={setOwner}
+                      multiAllocFlag={config?.siteAllowMultiAllocations}
+                    />
+                  </Col>
+                )}
+                {(type !== '1' || !config?.siteSupplierExchangeAllocation) && (
+                  <Col span={12}>
+                    <Supplier
+                      form={form}
+                      value={value}
+                      type={type}
+                      onChange={setSupplier}
+                      multiAllocFlag={config?.siteAllowMultiAllocations}
+                    />
+                  </Col>
+                )}
               </Row>
             )}
 

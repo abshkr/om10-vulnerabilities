@@ -1,6 +1,14 @@
 {
   "M_ALLOCATIONS": {
-    "visibility": ["alloc_index", "alloc_start_date", "alloc_end_date", "alloc_next_date"]
+    "visibility": [
+      "alloc_index",
+      "alloc_start_date",
+      "alloc_end_date",
+      "alloc_next_date",
+      "alloc_ownercode",
+      "alloc_ownername",
+      "alloc_ownerdesc"
+    ]
   },
 
   "M_BASEPRODUCTS": {

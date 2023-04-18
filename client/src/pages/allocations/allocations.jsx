@@ -4,6 +4,7 @@ import useSWR from 'swr';
 import { Button, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
+import _ from 'lodash';
 
 import { Page, PowerTable as DataTable, Download, DateTimeRangePicker } from '../../components';
 import { ALLOCATIONS } from '../../api';
@@ -15,7 +16,7 @@ import auth from '../../auth';
 import Forms from './forms';
 import NewForms from './forms/new-forms';
 import api from 'api';
-import _ from 'lodash';
+import SupplierRender from './supplier-render';
 
 const Allocations = ({ popup, params }) => {
   const config = useConfig();
@@ -105,6 +106,10 @@ const Allocations = ({ popup, params }) => {
 
   const fields = columns(t, config);
 
+  const components = {
+    SupplierRender,
+  };
+
   // const data = payload?.records;
   const [data, setData] = useState(payload?.records);
   const isLoading = isValidating || !data;
@@ -183,6 +188,7 @@ const Allocations = ({ popup, params }) => {
         minimal={false}
         data={data}
         columns={fields}
+        components={components}
         isLoading={isLoading || isSearching}
         selectionMode="single"
         onClick={(payload) => handleFormState(true, payload)}

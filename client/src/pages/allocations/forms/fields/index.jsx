@@ -2,6 +2,7 @@ import AllocIndex from './alloc-index';
 import Type from './type';
 import Company from './company';
 import Supplier from './supplier';
+import BaseSupplier from './base-supplier';
 import Customer from './customer';
 import LockType from './lock-type';
 import Period from './period';
@@ -15,6 +16,7 @@ export {
   Type,
   Company,
   Supplier,
+  BaseSupplier,
   Customer,
   LockType,
   Period,
