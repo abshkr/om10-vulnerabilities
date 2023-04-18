@@ -233,6 +233,25 @@ class Allocation extends CommonClass
                 if ($alloc->aitem_prodcode == $prodcode) {
                     // if ($alloc->aitem_qtylimit == 0) {
                     if ($alloc->aitem_qtylimit === '' || is_null($alloc->aitem_qtylimit)) {
+                        // delete ADJUSTS
+                        $query = "DELETE FROM ADJUSTS
+                            WHERE 
+                                ADJALL_ALL_INDEX = :alloc_index
+                                AND ADJALL_ALL_PROD_PRODCMPY = :alloc_suppcode
+                                AND ADJALL_ALL_ATKY_AT_TYPE = :alloc_type
+                                AND ADJALL_ALL_ATKY_AT_CMPY = :alloc_cmpycode";
+                        $stmt = oci_parse($this->conn, $query);
+                        oci_bind_by_name($stmt, ':alloc_index', $this->alloc_index);
+                        oci_bind_by_name($stmt, ':alloc_suppcode', $this->alloc_suppcode);
+                        oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
+                        oci_bind_by_name($stmt, ':alloc_cmpycode', $this->alloc_cmpycode);
+                        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                            $e = oci_error($stmt);
+                            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                            return false;
+                        }
+
+                        // delete ALL_CHILD
                         $query = "DELETE FROM ALL_CHILD
                             WHERE 
                                 ALCH_ALP_ALL_INDEX = :alloc_index
