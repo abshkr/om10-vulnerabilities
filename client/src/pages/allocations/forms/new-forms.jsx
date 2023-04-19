@@ -77,7 +77,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
     }
   };
 
-  const checkMultiAllocation = async (type, cmpy, supp, lock, period, start, end) => {
+  const checkMultiAllocation = async (type, cmpy, supp, lock, period, start, end, owner) => {
     const values = {
       at_type: type,
       at_cmpy: cmpy,
@@ -86,6 +86,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
       period_type: period,
       start_date: start,
       end_date: end,
+      owner: owner,
     };
 
     const results = await api.post(ALLOCATIONS.CHECK_MULTI_ALLOC, values);
@@ -96,6 +97,31 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
     } else {
       return 0;
     }
+  };
+
+  const prepareErrorMessage = (values, multi) => {
+    let txt = `"${t('fields.type')}: ${values?.alloc_type}, ${t('fields.company')}: ${
+      values?.alloc_cmpycode
+    }, `;
+    if (!multi) {
+      txt += `${t('fields.supplier')}: ${values?.alloc_suppcode}"`;
+    } else {
+      txt += `${t('fields.allocLock')}: ${values?.alloc_lock}, `;
+      txt += `${t('fields.allocPeriod')}: ${values?.alloc_period}, `;
+      txt += `${t('fields.supplier')}: ${values?.alloc_suppcode}`;
+      if (values?.alloc_type === '1' && !!values?.alloc_ownercode) {
+        txt += `/${values?.alloc_ownercode}`;
+      }
+      if (values?.alloc_lock === '3' || values?.alloc_lock === '4') {
+        txt += ` (${values?.alloc_start_date} ~ ${values.alloc_end_date})`;
+      }
+      txt += '"';
+    }
+
+    let notes = t('descriptions.alreadyExistsRecord');
+    notes = notes.replace('[[PKEY]]', txt);
+
+    return notes;
   };
 
   const nextAllocIndex = async (type, cmpy, supp) => {
@@ -238,39 +264,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
           values?.alloc_lock,
           values?.alloc_period,
           values?.alloc_start_date,
-          values?.alloc_end_date
+          values?.alloc_end_date,
+          values?.alloc_ownercode
         );
         if (counter > 0) {
-          let notes = t('descriptions.alreadyExistsRecord');
-          notes = notes.replace(
-            '[[PKEY]]',
-            '"' +
-              t('fields.type') +
-              ': ' +
-              values?.alloc_type +
-              ', ' +
-              t('fields.company') +
-              ': ' +
-              values?.alloc_cmpycode +
-              ', ' +
-              t('fields.allocLock') +
-              ': ' +
-              values?.alloc_lock +
-              ', ' +
-              t('fields.allocPeriod') +
-              ': ' +
-              values?.alloc_period +
-              ', ' +
-              t('fields.supplier') +
-              ': ' +
-              values?.alloc_suppcode +
-              '(' +
-              values?.alloc_start_date +
-              '~' +
-              values.alloc_end_date +
-              ')' +
-              '"'
-          );
+          const notes = prepareErrorMessage(values, true);
           notification.error({
             message: t('messages.validationFailed'),
             description: notes,
@@ -284,23 +282,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
           values?.alloc_suppcode
         );
         if (counter > 0) {
-          let notes = t('descriptions.alreadyExistsRecord');
-          notes = notes.replace(
-            '[[PKEY]]',
-            '"' +
-              t('fields.type') +
-              ': ' +
-              values?.alloc_type +
-              ', ' +
-              t('fields.company') +
-              ': ' +
-              values?.alloc_cmpycode +
-              ', ' +
-              t('fields.supplier') +
-              ': ' +
-              values?.alloc_suppcode +
-              '"'
-          );
+          const notes = prepareErrorMessage(values, false);
           notification.error({
             message: t('messages.validationFailed'),
             description: notes,
@@ -322,34 +304,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
           values?.alloc_cmpycode,
           values?.alloc_suppcode,
           values?.alloc_lock,
-          values?.alloc_period
+          values?.alloc_period,
+          values?.alloc_start_date,
+          values?.alloc_end_date,
+          values?.alloc_ownercode
         );
         if (counter > 0) {
-          let notes = t('descriptions.alreadyExistsRecord');
-          notes = notes.replace(
-            '[[PKEY]]',
-            '"' +
-              t('fields.type') +
-              ': ' +
-              values?.alloc_type +
-              ', ' +
-              t('fields.company') +
-              ': ' +
-              values?.alloc_cmpycode +
-              ', ' +
-              t('fields.allocLock') +
-              ': ' +
-              values?.alloc_lock +
-              ', ' +
-              t('fields.allocPeriod') +
-              ': ' +
-              values?.alloc_period +
-              ', ' +
-              t('fields.supplier') +
-              ': ' +
-              values?.alloc_suppcode +
-              '"'
-          );
+          const notes = prepareErrorMessage(values, true);
           notification.error({
             message: t('messages.validationFailed'),
             description: notes,

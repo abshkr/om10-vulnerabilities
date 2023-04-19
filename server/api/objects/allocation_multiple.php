@@ -1190,6 +1190,58 @@ class Allocation extends CommonClass
 
     public function check_multi_allocation()
     {
+        $checkPeriod = false;
+        if ($this->lock_type == "3" || $this->lock_type == "4") {
+            $checkPeriod = true;
+        }
+        $checkOwner = false;
+        if ($this->at_type == "1") {
+            $checkOwner = true;
+        }
+
+        $query = "
+            SELECT COUNT(*) AS CNT 
+            FROM LOCKAL 
+            WHERE 
+                LOCKATYP_AT_TYPE=:at_type 
+                AND LOCKATYP_AT_CMPY=:at_cmpy 
+                AND LOCKAL_SUPL=:supplier
+                AND LOCKAL_LOCK = :lock_type
+                AND (LOCKAL_LOCK!=3 OR LOCKAL_PERIOD = :period_type)
+        ";
+        if ($checkPeriod) {
+            $query .= "AND LOCKAL_START_DMY = TO_DATE(:start_date, 'YYYY-MM-DD HH24:MI:SS') ";
+            $query .= "AND LOCKAL_END_DMY = TO_DATE(:end_date, 'YYYY-MM-DD HH24:MI:SS') ";
+        }
+        if ($checkOwner) {
+            $query .= "AND ((LOCKAL_OWNER IS NULL AND :owner IS NULL) OR LOCKAL_OWNER=:owner)";
+        }
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':lock_type', $this->lock_type);
+        oci_bind_by_name($stmt, ':period_type', $this->period_type);
+        oci_bind_by_name($stmt, ':at_type', $this->at_type);
+        oci_bind_by_name($stmt, ':at_cmpy', $this->at_cmpy);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        if ($checkPeriod) {
+            oci_bind_by_name($stmt, ':start_date', $this->start_date);
+            oci_bind_by_name($stmt, ':end_date', $this->end_date);
+        }
+        if ($checkOwner) {
+            oci_bind_by_name($stmt, ':owner', $this->owner);
+        }
+
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function check_multi_allocation_no_owner()
+    {
         $checkPeriod = true;
 
         $query = "
