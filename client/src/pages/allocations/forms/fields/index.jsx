@@ -3,6 +3,7 @@ import Type from './type';
 import Company from './company';
 import Supplier from './supplier';
 import BaseSupplier from './base-supplier';
+import BaseAllocFlag from './base-alloc-flag';
 import Customer from './customer';
 import LockType from './lock-type';
 import Period from './period';
@@ -17,6 +18,7 @@ export {
   Company,
   Supplier,
   BaseSupplier,
+  BaseAllocFlag,
   Customer,
   LockType,
   Period,

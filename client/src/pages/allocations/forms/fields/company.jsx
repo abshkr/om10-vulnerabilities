@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
 import api, { ALLOCATIONS } from '../../../../api';
 
-const Company = ({ form, value, type, onChange }) => {
+const Company = ({ form, value, type, onChange, exchange }) => {
   const { setFieldsValue } = form;
   const [options, setOptions] = useState(null);
 
@@ -12,7 +12,11 @@ const Company = ({ form, value, type, onChange }) => {
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.company')}`);
+      return Promise.reject(
+        `${t('validate.select')} ─ ${
+          type === '1' && exchange ? t('fields.allocExchangeCompany') : t('fields.company')
+        }`
+      );
     }
 
     return Promise.resolve();
@@ -48,7 +52,7 @@ const Company = ({ form, value, type, onChange }) => {
   return (
     <Form.Item
       name="alloc_cmpycode"
-      label={t('fields.company')}
+      label={type === '1' && exchange ? t('fields.allocExchangeCompany') : t('fields.company')}
       rules={[{ required: true, validator: validate }]}
     >
       <Select

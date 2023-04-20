@@ -12,20 +12,23 @@ const BaseSupplier = ({ form, value, type, company, onChangeSupplier, onChangeOw
 
   const { data: options, isValidating } = useSWR(ALLOCATIONS.SUPPLIERS);
   const [items, setItems] = useState([]);
+  const [label, setLabel] = useState(t('fields.allocExchangeSupplier'));
 
   const handleSelection = (v) => {
     if (v === 'BaSePrOd') {
       onChangeSupplier(v);
       onChangeOwner(undefined);
+      setLabel(t('fields.supplier'));
     } else {
       onChangeSupplier('BaSePrOd');
       onChangeOwner(v);
+      setLabel(t('fields.allocExchangeSupplier'));
     }
   };
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.supplier')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${label}`);
     }
 
     return Promise.resolve();
@@ -46,6 +49,14 @@ const BaseSupplier = ({ form, value, type, company, onChangeSupplier, onChangeOw
 
   useEffect(() => {
     console.log('.............................base supp');
+    if (type === '1') {
+      const supplier = getFieldValue('alloc_suppcode');
+      if (supplier !== 'BaSePrOd') {
+        setLabel(t('fields.allocExchangeSupplier'));
+      } else {
+        setLabel(t('fields.supplier'));
+      }
+    }
     if (options) {
       if (type === '1' || (type === '3' && multiAllocFlag)) {
         // need add BaSePrOd
@@ -82,11 +93,7 @@ const BaseSupplier = ({ form, value, type, company, onChangeSupplier, onChangeOw
   }, [type, company, multiAllocFlag, options]);
 
   return (
-    <Form.Item
-      name="alloc_suppcode"
-      label={t('fields.supplier')}
-      rules={[{ required: type !== '1', validator: validate }]}
-    >
+    <Form.Item name="alloc_suppcode" label={label} rules={[{ required: type !== '1', validator: validate }]}>
       <Select
         dropdownMatchSelectWidth={false}
         allowClear

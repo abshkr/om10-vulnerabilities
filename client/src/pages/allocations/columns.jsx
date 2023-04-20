@@ -6,6 +6,8 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     hide: !config?.siteAllowMultiAllocations,
+    width: 80,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.allocType'),
@@ -14,6 +16,8 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     hide: true,
+    width: 140,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.allocTypeName'),
@@ -22,6 +26,8 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     hide: true,
+    width: 140,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.allocTypeDesc'),
@@ -30,6 +36,8 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     hide: false,
+    width: 180,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.allocCmpycode'),
@@ -38,6 +46,8 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     hide: true,
+    width: 140,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.allocCmpyName'),
@@ -46,6 +56,8 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     hide: true,
+    width: 200,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.allocCmpyDesc'),
@@ -54,6 +66,18 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     hide: false,
+    width: 320,
+    suppressSizeToFit: true,
+  },
+  {
+    headerName: t('fields.allocBaseFlag'),
+    field: 'alloc_baseflag',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'BooleanRenderer',
+    filter: 'BooleanFilter',
+    width: 160,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.allocSuppcode'),
@@ -70,6 +94,8 @@ const columns = (t, config) => [
       supplierColumn: 'alloc_suppcode',
       ownerColumn: 'alloc_ownercode',
     },
+    width: 140,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.allocSuppName'),
@@ -86,6 +112,8 @@ const columns = (t, config) => [
       supplierColumn: 'alloc_suppname',
       ownerColumn: 'alloc_ownername',
     },
+    width: 200,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.allocSuppDesc'),
@@ -102,6 +130,8 @@ const columns = (t, config) => [
       supplierColumn: 'alloc_suppdesc',
       ownerColumn: 'alloc_ownerdesc',
     },
+    width: 320,
+    suppressSizeToFit: true,
   },
   /* {
     headerName: t('fields.allocOwnerCode'),
@@ -110,6 +140,8 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     hide: true,
+    width: 140,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.allocOwnerName'),
@@ -118,6 +150,8 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     hide: true,
+    width: 140,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.allocOwnerDesc'),
@@ -126,6 +160,8 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     hide: !config?.siteSupplierExchangeAllocation,
+    width: 200,
+    suppressSizeToFit: true,
   }, */
   {
     headerName: t('fields.allocLock'),
@@ -134,6 +170,8 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     hide: true,
+    width: 140,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.allocLockName'),
@@ -142,6 +180,8 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     hide: true,
+    width: 140,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.allocLockDesc'),
@@ -150,6 +190,8 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     hide: false,
+    width: 150,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.allocPeriod'),
@@ -157,6 +199,8 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     hide: true,
+    width: 140,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.allocPeriodName'),
@@ -165,6 +209,8 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     hide: true,
+    width: 140,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.allocPeriodDesc'),
@@ -173,6 +219,8 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     hide: false,
+    width: 150,
+    suppressSizeToFit: true,
   },
 
   {
@@ -182,6 +230,8 @@ const columns = (t, config) => [
     resizable: true,
     cellRenderer: 'DateRenderer',
     hide: !config?.siteAllocResetPeriodDateRanges,
+    width: 180,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.allocEndDate'),
@@ -190,6 +240,8 @@ const columns = (t, config) => [
     resizable: true,
     cellRenderer: 'DateRenderer',
     hide: !config?.siteAllocResetPeriodDateRanges,
+    width: 180,
+    suppressSizeToFit: true,
   },
   {
     headerName: t('fields.allocNextDate'),
@@ -198,6 +250,8 @@ const columns = (t, config) => [
     resizable: true,
     cellRenderer: 'DateRenderer',
     hide: !config?.siteAllocResetPeriodDateRanges,
+    width: 180,
+    suppressSizeToFit: true,
   },
 
   {
@@ -206,6 +260,8 @@ const columns = (t, config) => [
     sortable: true,
     resizable: true,
     cellRenderer: 'DateRenderer',
+    width: 180,
+    suppressSizeToFit: true,
   },
 ];
 

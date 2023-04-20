@@ -40,6 +40,11 @@ class Allocation extends CommonClass
         // "ALLOC_INDEX",
     );
 
+    //All the fields that should be treated as BOOLEAN in JSON
+    public $BOOLEAN_FIELDS = array(
+        "ALLOC_BASEFLAG" => "Y",
+    );
+
     protected function retrieve_children_data()
     {
         $query = "SELECT * FROM GUI_ALLOCATION_ITEMS

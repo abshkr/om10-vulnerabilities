@@ -25,6 +25,7 @@ import {
   Company,
   Supplier,
   BaseSupplier,
+  BaseAllocFlag,
   Customer,
   LockType,
   Period as PeriodItem,
@@ -221,6 +222,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
 
   const onFinish = async () => {
     const values = await form.validateFields();
+    // clear the value of alloc_baseflag so it won't break the DB operations
+    values.alloc_baseflag = undefined;
 
     if (values?.alloc_type === '1') {
       values.alloc_suppcode = supplier;
@@ -553,10 +556,21 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
             {(type !== '3' || !config?.siteAllocCustomerStrict) && (
               <Row gutter={[8, 3]}>
                 <Col span={12}>
-                  <Company form={form} value={value} type={type} onChange={setCompany} />
+                  <Company
+                    form={form}
+                    value={value}
+                    type={type}
+                    onChange={setCompany}
+                    exchange={config?.siteSupplierExchangeAllocation}
+                  />
                 </Col>
                 {type === '1' && config?.siteSupplierExchangeAllocation && (
-                  <Col span={12}>
+                  <Col span={4}>
+                    <BaseAllocFlag form={form} value={value} type={type} />
+                  </Col>
+                )}
+                {type === '1' && config?.siteSupplierExchangeAllocation && (
+                  <Col span={8}>
                     <BaseSupplier
                       form={form}
                       value={value}
@@ -625,7 +639,16 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
             <Divider />
             <Form.Item name="allocs">
               <DataTable
-                data={allocations}
+                data={allocations.filter((o) => {
+                  if (type === '1') {
+                    return (
+                      (owner === undefined && o?.aitem_prodowner === 'BaSePrOd') ||
+                      (!!owner && o?.aitem_prodowner === owner)
+                    );
+                  } else {
+                    return true;
+                  }
+                })}
                 height="60vh"
                 minimal
                 columns={columns(t, IS_CREATING, form, units)}

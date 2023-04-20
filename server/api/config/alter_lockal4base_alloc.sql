@@ -37,6 +37,7 @@ select
     , DECODE(alloc.LOCKAL_OWNER, NULL, '', alloc.LOCKAL_OWNER || ' - ' || ocmpy.CMPY_NAME)                    as ALLOC_OWNERDESC
     , alloc.LOCKAL_LOCK || ' - ' || ltype.ALLOC_LOCK_NAME              as ALLOC_LOCKDESC
     , DECODE(alloc.LOCKAL_PERIOD, NULL, '', alloc.LOCKAL_PERIOD || ' - ' || ptype.ALLOC_PERIOD_NAME)          as ALLOC_PERIODDESC
+    , DECODE(alloc.LOCKAL_SUPL, 'BaSePrOd', 'Y', 'N')                  as ALLOC_BASEFLAG
 from
     LOCKAL                          alloc
     , COMPANY_TYP                   ctype
