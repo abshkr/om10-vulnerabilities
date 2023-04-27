@@ -6,15 +6,16 @@ import useSWR from 'swr';
 import _ from 'lodash';
 import api, { ALLOCATIONS, LOAD_SCHEDULES } from '../../../../api';
 
-const Customer = ({ form, value, onChange, supplier }) => {
-  const { setFieldsValue } = form;
+const Customer = ({ form, value, onChange, supplier, owner, baseFlag }) => {
+  const { setFieldsValue, getFieldValue } = form;
   const [options, setOptions] = useState(null);
 
   const { t } = useTranslation();
 
   const { data: companys, isValidatingCompany } = useSWR(`${ALLOCATIONS.CUSTOMERS}`);
   const { data: accounts, isValidatingAccount } = useSWR(
-    `${LOAD_SCHEDULES.SUPP_CUSTOMERS}?supplier=${!supplier || supplier === 'BaSePrOd' ? '-1' : supplier}`
+    // `${LOAD_SCHEDULES.SUPP_CUSTOMERS}?supplier=${baseFlag ? owner : supplier}`
+    `${LOAD_SCHEDULES.SUPP_CUSTOMERS}?supplier=${'-1'}`
   );
 
   const validate = (rule, input) => {
@@ -26,24 +27,36 @@ const Customer = ({ form, value, onChange, supplier }) => {
   };
 
   useEffect(() => {
-    if (companys && accounts) {
+    if (
+      companys &&
+      accounts &&
+      ((baseFlag && supplier === 'BaSePrOd' && owner !== undefined) ||
+        (!baseFlag && supplier !== 'BaSePrOd' && owner === undefined))
+    ) {
       const items = _.filter(companys?.records, (o) => {
-        const acnt = _.find(accounts?.records, (itm) => o?.cmpy_code === itm.cust_cmpy_code);
+        const acnt = _.find(
+          accounts?.records,
+          (itm) =>
+            o?.cmpy_code === itm.cust_cmpy_code && itm?.cust_supp_code === (baseFlag ? owner : supplier)
+        );
         if (!acnt) {
           return false;
         } else {
           return true;
         }
       });
+      const cmpy = getFieldValue('alloc_cmpycode');
+      const item = _.find(items, (o) => o?.cmpy_code === cmpy);
+      console.log('........................customer', item, cmpy);
       setOptions(items);
-      if (!value) {
-        setFieldsValue({
-          alloc_cmpycode: undefined,
-        });
-        onChange(undefined);
-      }
+      //if (!value) {
+      setFieldsValue({
+        alloc_cmpycode: !item ? undefined : cmpy,
+      });
+      onChange(!item ? undefined : cmpy);
+      //}
     }
-  }, [companys, accounts]);
+  }, [companys, accounts, supplier, owner, baseFlag]);
 
   useEffect(() => {
     if (value) {

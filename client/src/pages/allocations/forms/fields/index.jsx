@@ -1,7 +1,9 @@
 import AllocIndex from './alloc-index';
 import Type from './type';
 import Company from './company';
+import SuppCompany from './supp-company';
 import Supplier from './supplier';
+import CustSupplier from './cust-supplier';
 import BaseSupplier from './base-supplier';
 import BaseAllocFlag from './base-alloc-flag';
 import Customer from './customer';
@@ -16,7 +18,9 @@ export {
   AllocIndex,
   Type,
   Company,
+  SuppCompany,
   Supplier,
+  CustSupplier,
   BaseSupplier,
   BaseAllocFlag,
   Customer,

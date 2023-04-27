@@ -14,7 +14,11 @@ export default class SupplierRender extends Component {
     const type = data?.[typeColumn];
 
     let supplier = data?.[supplierColumn];
-    if (type === typeValue && data.hasOwnProperty(ownerColumn) && !!data?.[ownerColumn]) {
+    if (
+      (type === typeValue || typeValue.indexOf(type) >= 0) &&
+      data.hasOwnProperty(ownerColumn) &&
+      !!data?.[ownerColumn]
+    ) {
       supplier = data?.[ownerColumn];
     }
 

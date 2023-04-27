@@ -670,9 +670,9 @@ class Allocation extends CommonClass
 
     public function items()
     {
-        if (isset($this->customer) && $this->customer !== "null") {
+        /* if (isset($this->customer) && $this->customer !== "null") {
             return $this->items_no_exchange();
-        }
+        } */
 
         $serv = new SiteService($this->conn);
         //Because Reactjs can call carriers.php?customer=undefined, so undefined becomes a string
@@ -688,6 +688,7 @@ class Allocation extends CommonClass
                     NVL(AITEM_CMPYNAME, ALLOC_CMPYNAME) AITEM_CMPYNAME,
                     NVL(AITEM_PRODCODE, PROD_CODE) AITEM_PRODCODE,
                     NVL(AITEM_PRODNAME, PROD_NAME) AITEM_PRODNAME,
+                    PROD_CMPY                      AITEM_PRODCMPY,
                     PROD_OWNER                     AITEM_PRODOWNER,
                     NVL(AITEM_SUPPCODE, ALLOC_SUPPCODE) AITEM_SUPPCODE,
                     NVL(AITEM_SUPPNAME, ALLOC_SUPPNAME) AITEM_SUPPNAME,
@@ -703,12 +704,14 @@ class Allocation extends CommonClass
                     SELECT distinct PRODUCTS.PROD_CODE,
                         PRODUCTS.PROD_CMPY,
                         PRODUCTS.PROD_NAME,
-                        PRODUCTS.PROD_OWNER,
+                        -- PRODUCTS.PROD_OWNER,
+                        CUSTOMER.CUST_SUPP PROD_OWNER,
                         NULL ALLOC_INDEX,
                         NULL ALLOC_TYPE,
                         NULL ALLOC_TYPENAME,
-                        NULL ALLOC_CMPYCODE,
+                        CUSTOMER.CUST_CODE ALLOC_CMPYCODE,
                         NULL ALLOC_CMPYNAME,
+                        -- CUSTOMER.CUST_SUPP ALLOC_SUPPCODE,
                         NULL ALLOC_SUPPCODE,
                         NULL ALLOC_SUPPNAME,
                         NULL ALLOC_LOCK,
@@ -746,6 +749,7 @@ class Allocation extends CommonClass
                     NVL(AITEM_CMPYNAME, ALLOC_CMPYNAME) AITEM_CMPYNAME,
                     NVL(AITEM_PRODCODE, PROD_CODE) AITEM_PRODCODE,
                     NVL(AITEM_PRODNAME, PROD_NAME) AITEM_PRODNAME,
+                    PROD_CMPY                      AITEM_PRODCMPY,
                     PROD_OWNER                     AITEM_PRODOWNER,
                     NVL(AITEM_SUPPCODE, ALLOC_SUPPCODE) AITEM_SUPPCODE,
                     NVL(AITEM_SUPPNAME, ALLOC_SUPPNAME) AITEM_SUPPNAME,
@@ -801,6 +805,7 @@ class Allocation extends CommonClass
                     NVL(AITEM_CMPYNAME, ALLOC_CMPYNAME) AITEM_CMPYNAME,
                     NVL(AITEM_PRODCODE, PROD_CODE) AITEM_PRODCODE,
                     NVL(AITEM_PRODNAME, PROD_NAME) AITEM_PRODNAME,
+                    PROD_CMPY                      AITEM_PRODCMPY,
                     PROD_OWNER                     AITEM_PRODOWNER,
                     NVL(AITEM_SUPPCODE, ALLOC_SUPPCODE) AITEM_SUPPCODE,
                     NVL(AITEM_SUPPNAME, ALLOC_SUPPNAME) AITEM_SUPPNAME,
@@ -816,7 +821,8 @@ class Allocation extends CommonClass
                     SELECT distinct PRODUCTS.PROD_CODE,
                         PRODUCTS.PROD_CMPY,
                         PRODUCTS.PROD_NAME,
-                        PRODUCTS.PROD_OWNER,
+                        -- PRODUCTS.PROD_OWNER,
+                        CUSTOMER.CUST_SUPP PROD_OWNER,
                         ALLOC_INDEX,
                         ALLOC_TYPE,
                         ALLOC_TYPENAME,
@@ -865,6 +871,7 @@ class Allocation extends CommonClass
                     NVL(AITEM_CMPYNAME, ALLOC_CMPYNAME) AITEM_CMPYNAME,
                     NVL(AITEM_PRODCODE, PROD_CODE) AITEM_PRODCODE,
                     NVL(AITEM_PRODNAME, PROD_NAME) AITEM_PRODNAME,
+                    PROD_CMPY                      AITEM_PRODCMPY,
                     PROD_OWNER                     AITEM_PRODOWNER,
                     NVL(AITEM_SUPPCODE, ALLOC_SUPPCODE) AITEM_SUPPCODE,
                     NVL(AITEM_SUPPNAME, ALLOC_SUPPNAME) AITEM_SUPPNAME,

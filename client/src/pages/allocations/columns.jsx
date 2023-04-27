@@ -90,7 +90,7 @@ const columns = (t, config) => [
     cellRendererParams: {
       t: t,
       typeColumn: 'alloc_type',
-      typeValue: '1',
+      typeValue: ['1', '3'],
       supplierColumn: 'alloc_suppcode',
       ownerColumn: 'alloc_ownercode',
     },
@@ -108,7 +108,7 @@ const columns = (t, config) => [
     cellRendererParams: {
       t: t,
       typeColumn: 'alloc_type',
-      typeValue: '1',
+      typeValue: ['1', '3'],
       supplierColumn: 'alloc_suppname',
       ownerColumn: 'alloc_ownername',
     },
@@ -126,7 +126,7 @@ const columns = (t, config) => [
     cellRendererParams: {
       t: t,
       typeColumn: 'alloc_type',
-      typeValue: '1',
+      typeValue: ['1', '3'],
       supplierColumn: 'alloc_suppdesc',
       ownerColumn: 'alloc_ownerdesc',
     },

@@ -5,7 +5,7 @@ import useSWR from 'swr';
 
 import { ALLOCATIONS } from '../../../../api';
 
-const Supplier = ({ form, value, type, onChange }) => {
+const Supplier = ({ form, value, type, onChange, multiAllocFlag }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
@@ -32,17 +32,21 @@ const Supplier = ({ form, value, type, onChange }) => {
 
   useEffect(() => {
     if (options) {
-      if (type === '1') {
+      if (type === '1' || (type === '3' && multiAllocFlag)) {
         // need add BaSePrOd
         const newOptions = [];
-        const baseDesc = `${'BaSePrOd - Base Allocation'}`;
+        const extraBaseDesc = ` (${t('fields.baseProduct')})`;
+        const baseDesc = `${'BaSePrOd - Base Allocation'}${type === '3' ? extraBaseDesc : ''}`;
         newOptions.push({
           cmpy_code: 'BaSePrOd',
           cmpy_name: 'Base Allocation',
           cmpy_desc: baseDesc,
         });
+        const extraDrawerDesc = ` (${t('fields.drawerProduct')})`;
         for (let i = 0; i < options?.records?.length; i++) {
           const item = options?.records?.[i];
+          const drawerDesc = `${item?.cmpy_desc}${type === '3' ? extraDrawerDesc : ''}`;
+          item.cmpy_desc = drawerDesc;
           newOptions.push(item);
         }
         setItems(newOptions);
@@ -50,7 +54,7 @@ const Supplier = ({ form, value, type, onChange }) => {
         setItems(options?.records);
       }
     }
-  }, [type, options]);
+  }, [type, multiAllocFlag, options]);
 
   return (
     <Form.Item

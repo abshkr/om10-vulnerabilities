@@ -4,10 +4,10 @@ import { useTranslation } from 'react-i18next';
 
 import CheckboxContainer from './style';
 
-const BaseAllocFlag = ({ form, value, type }) => {
+const BaseAllocFlag = ({ form, value, type, flag, setFlag }) => {
   const { t } = useTranslation();
   const { setFieldsValue } = form;
-  const [flag, setFlag] = useState(type === '1' ? true : value?.alloc_baseflag);
+  // const [flag, setFlag] = useState(type === '1' ? true : value?.alloc_baseflag);
 
   const onCheck = (v) => {
     setFlag(v.target.checked);
@@ -32,13 +32,22 @@ const BaseAllocFlag = ({ form, value, type }) => {
       });
       setFlag(true);
     }
+    if (!value && type === '3') {
+      setFieldsValue({
+        alloc_baseflag: false,
+      });
+      setFlag(false);
+    }
   }, [value, type, setFieldsValue, setFlag]);
 
   return (
     <Form.Item name="alloc_baseflag" label={t('fields.allocBaseFlag')}>
-      <CheckboxContainer>
-        <Checkbox checked={flag} onChange={onCheck} disabled={type === '1'}></Checkbox>
-      </CheckboxContainer>
+      {type === '1' && (
+        <CheckboxContainer>
+          <Checkbox checked={flag} onChange={onCheck} disabled={true}></Checkbox>
+        </CheckboxContainer>
+      )}
+      {type !== '1' && <Checkbox checked={flag} onChange={onCheck} disabled={false}></Checkbox>}
     </Form.Item>
   );
 };

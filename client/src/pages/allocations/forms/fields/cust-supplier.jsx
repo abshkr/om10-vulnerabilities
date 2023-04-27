@@ -5,13 +5,23 @@ import useSWR from 'swr';
 
 import { ALLOCATIONS } from '../../../../api';
 
-const Supplier = ({ form, value, type, onChange }) => {
-  const { setFieldsValue } = form;
+const CustSupplier = ({ form, value, type, onChange, onChangeSupplier, onChangeOwner, baseFlag }) => {
+  const { setFieldsValue, getFieldValue } = form;
 
   const { t } = useTranslation();
 
   const { data: options, isValidating } = useSWR(ALLOCATIONS.SUPPLIERS);
   const [items, setItems] = useState([]);
+
+  const handleSelection = (v) => {
+    if (baseFlag) {
+      onChangeSupplier('BaSePrOd');
+      onChangeOwner(v);
+    } else {
+      onChangeSupplier(v);
+      onChangeOwner(undefined);
+    }
+  };
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
@@ -23,34 +33,34 @@ const Supplier = ({ form, value, type, onChange }) => {
 
   useEffect(() => {
     if (value) {
+      const supp = baseFlag ? value.alloc_ownercode : value.alloc_suppcode;
       setFieldsValue({
-        alloc_suppcode: value.alloc_suppcode,
+        alloc_suppcode: supp,
       });
-      onChange(value.alloc_suppcode);
+      handleSelection(supp);
     }
-  }, [value, setFieldsValue, onChange]);
+  }, [value, setFieldsValue, baseFlag, handleSelection]);
+
+  useEffect(() => {
+    if (value) {
+      const supp = baseFlag ? value.alloc_ownercode : value.alloc_suppcode;
+      setFieldsValue({
+        alloc_suppcode: supp,
+      });
+      handleSelection(supp);
+    }
+  }, [value, setFieldsValue, baseFlag, handleSelection]);
 
   useEffect(() => {
     if (options) {
-      if (type === '1') {
-        // need add BaSePrOd
-        const newOptions = [];
-        const baseDesc = `${'BaSePrOd - Base Allocation'}`;
-        newOptions.push({
-          cmpy_code: 'BaSePrOd',
-          cmpy_name: 'Base Allocation',
-          cmpy_desc: baseDesc,
-        });
-        for (let i = 0; i < options?.records?.length; i++) {
-          const item = options?.records?.[i];
-          newOptions.push(item);
-        }
-        setItems(newOptions);
-      } else {
-        setItems(options?.records);
-      }
+      setItems(options?.records);
     }
-  }, [type, options]);
+  }, [options]);
+
+  useEffect(() => {
+    const supp = getFieldValue('alloc_suppcode');
+    handleSelection(supp);
+  }, [baseFlag, handleSelection]);
 
   return (
     <Form.Item
@@ -81,4 +91,4 @@ const Supplier = ({ form, value, type, onChange }) => {
   );
 };
 
-export default Supplier;
+export default CustSupplier;

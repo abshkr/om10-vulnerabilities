@@ -23,7 +23,9 @@ import {
   AllocIndex,
   Type,
   Company,
+  SuppCompany,
   Supplier,
+  CustSupplier,
   BaseSupplier,
   BaseAllocFlag,
   Customer,
@@ -52,6 +54,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
   const [owner, setOwner] = useState(undefined);
   const [lockType, setLockType] = useState(undefined);
   const [selected, setSelected] = useState(null);
+  const [baseFlag, setBaseFlag] = useState(type === '1' ? true : value?.alloc_baseflag);
 
   const [allocations, setAllocations] = useState([]);
   const [showPeriod, setShowPeriod] = useState(false);
@@ -200,11 +203,53 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
 
       // filter the base products on owner when type is "1"
       if (type === '1') {
+        /*
+          const handleSelection = (v) => {
+            if (v === 'BaSePrOd') {
+              onChangeSupplier(v);
+              onChangeOwner(undefined);
+              setLabel(t('fields.supplier'));
+            } else {
+              onChangeSupplier('BaSePrOd');
+              onChangeOwner(v);
+              setLabel(t('fields.allocExchangeSupplier'));
+            }
+          };
+        */
         const filtered = payload.filter(
           (o) =>
             (owner === undefined && o?.aitem_prodowner === 'BaSePrOd') ||
             (!!owner && o?.aitem_prodowner === owner)
         );
+        form.setFieldsValue({
+          allocs: filtered,
+        });
+
+        setAllocations(filtered);
+      } else if (type === '3') {
+        /*
+          const handleSelection = (v) => {
+            if (baseFlag) {
+              onChangeSupplier('BaSePrOd');
+              onChangeOwner(v);
+            } else {
+              onChangeSupplier(v);
+              onChangeOwner(undefined);
+            }
+          };
+        */
+        const filtered = payload.filter(
+          (o) =>
+            (owner === undefined &&
+              o?.aitem_prodcmpy === supplier &&
+              o?.aitem_prodowner === supplier /*&& o?.aitem_suppcode === supplier*/ &&
+              o?.aitem_cmpycode === company) ||
+            (!!owner &&
+              o?.aitem_prodowner === owner &&
+              o?.aitem_prodcmpy === 'BaSePrOd' /*&& o?.aitem_suppcode === owner*/ &&
+              o?.aitem_cmpycode === company)
+        );
+        console.log('.............filtered.....', filtered);
         form.setFieldsValue({
           allocs: filtered,
         });
@@ -225,7 +270,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
     // clear the value of alloc_baseflag so it won't break the DB operations
     values.alloc_baseflag = undefined;
 
-    if (values?.alloc_type === '1') {
+    if (values?.alloc_type === '1' || values?.alloc_type === '3') {
       values.alloc_suppcode = supplier;
       values.alloc_ownercode = owner;
     }
@@ -555,18 +600,32 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
 
             {(type !== '3' || !config?.siteAllocCustomerStrict) && (
               <Row gutter={[8, 3]}>
-                <Col span={12}>
-                  <Company
-                    form={form}
-                    value={value}
-                    type={type}
-                    onChange={setCompany}
-                    exchange={config?.siteSupplierExchangeAllocation}
-                  />
-                </Col>
+                {type === '1' && config?.siteSupplierExchangeAllocation && (
+                  <Col span={12}>
+                    <SuppCompany
+                      form={form}
+                      value={value}
+                      type={type}
+                      onChange={setCompany}
+                      exchange={config?.siteSupplierExchangeAllocation}
+                      owner={owner}
+                    />
+                  </Col>
+                )}
+                {(type !== '1' || !config?.siteSupplierExchangeAllocation) && (
+                  <Col span={12}>
+                    <Company form={form} value={value} type={type} onChange={setCompany} />
+                  </Col>
+                )}
                 {type === '1' && config?.siteSupplierExchangeAllocation && (
                   <Col span={4}>
-                    <BaseAllocFlag form={form} value={value} type={type} />
+                    <BaseAllocFlag
+                      form={form}
+                      value={value}
+                      type={type}
+                      flag={baseFlag}
+                      setFlag={setBaseFlag}
+                    />
                   </Col>
                 )}
                 {type === '1' && config?.siteSupplierExchangeAllocation && (
@@ -584,13 +643,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
                 )}
                 {(type !== '1' || !config?.siteSupplierExchangeAllocation) && (
                   <Col span={12}>
-                    <Supplier
-                      form={form}
-                      value={value}
-                      type={type}
-                      onChange={setSupplier}
-                      multiAllocFlag={config?.siteAllowMultiAllocations}
-                    />
+                    <Supplier form={form} value={value} type={type} onChange={setSupplier} />
                   </Col>
                 )}
               </Row>
@@ -598,17 +651,44 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateLockal,
 
             {type === '3' && config?.siteAllocCustomerStrict && (
               <Row gutter={[8, 3]}>
+                {config?.siteCustomerBaseAllocation && (
+                  <Col span={4}>
+                    <BaseAllocFlag
+                      form={form}
+                      value={value}
+                      type={type}
+                      flag={baseFlag}
+                      setFlag={setBaseFlag}
+                    />
+                  </Col>
+                )}
+                {config?.siteCustomerBaseAllocation && (
+                  <Col span={8}>
+                    <CustSupplier
+                      form={form}
+                      value={value}
+                      type={type}
+                      onChange={setSupplier}
+                      onChangeSupplier={setSupplier}
+                      onChangeOwner={setOwner}
+                      baseFlag={baseFlag}
+                    />
+                  </Col>
+                )}
+                {!config?.siteCustomerBaseAllocation && (
+                  <Col span={12}>
+                    <Supplier form={form} value={value} type={type} onChange={setSupplier} />
+                  </Col>
+                )}
                 <Col span={12}>
-                  <Supplier
+                  <Customer
                     form={form}
                     value={value}
-                    type={type}
-                    onChange={setSupplier}
-                    multiAllocFlag={config?.siteAllowMultiAllocations}
+                    onChange={setCompany}
+                    supplier={supplier}
+                    owner={owner}
+                    baseFlag={baseFlag}
                   />
-                </Col>
-                <Col span={12}>
-                  <Customer form={form} value={value} onChange={setCompany} supplier={supplier} />
                 </Col>
               </Row>
             )}

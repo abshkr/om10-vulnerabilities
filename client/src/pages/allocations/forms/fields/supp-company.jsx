@@ -4,19 +4,28 @@ import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
 import api, { ALLOCATIONS } from '../../../../api';
 
-const Company = ({ form, value, type, onChange }) => {
+const SuppCompany = ({ form, value, type, onChange, exchange, owner }) => {
   const { setFieldsValue } = form;
   const [options, setOptions] = useState(null);
+  const [label, setLabel] = useState('');
 
   const { t } = useTranslation();
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.company')}`);
+      return Promise.reject(`${t('validate.select')} ─ ${label}`);
     }
 
     return Promise.resolve();
   };
+
+  useEffect(() => {
+    if (type === '1' && exchange && !!owner && owner !== 'BaSePrOd') {
+      setLabel(t('fields.allocExchangeCompany'));
+    } else {
+      setLabel(t('fields.company'));
+    }
+  }, [type, exchange, owner]);
 
   useEffect(() => {
     if (type) {
@@ -46,11 +55,7 @@ const Company = ({ form, value, type, onChange }) => {
   }, [value, setFieldsValue, onChange]);
 
   return (
-    <Form.Item
-      name="alloc_cmpycode"
-      label={t('fields.company')}
-      rules={[{ required: true, validator: validate }]}
-    >
+    <Form.Item name="alloc_cmpycode" label={label} rules={[{ required: true, validator: validate }]}>
       <Select
         dropdownMatchSelectWidth={false}
         allowClear
@@ -74,4 +79,4 @@ const Company = ({ form, value, type, onChange }) => {
   );
 };
 
-export default Company;
+export default SuppCompany;
