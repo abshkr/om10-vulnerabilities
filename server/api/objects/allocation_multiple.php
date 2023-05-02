@@ -1207,7 +1207,8 @@ class Allocation extends CommonClass
             $checkPeriod = true;
         }
         $checkOwner = false;
-        if ($this->at_type == "1") {
+        // LOCKAL_OWNER is used in SUPPLIER and CUSTOMER base allocation
+        if ($this->at_type == "1" || $this->at_type == "3") {
             $checkOwner = true;
         }
 
