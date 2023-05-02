@@ -1207,7 +1207,7 @@ class Allocation extends CommonClass
             $checkPeriod = true;
         }
         $checkOwner = false;
-        if ($this->at_type == "1" || $this->at_type == "3") {
+        if ($this->at_type == "1") {
             $checkOwner = true;
         }
 
