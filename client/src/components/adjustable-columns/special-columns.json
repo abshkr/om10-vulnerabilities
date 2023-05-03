@@ -112,6 +112,7 @@
 
   "M_DRAWERPRODUCTS": {
     "visibility": [
+      "prod_is_locked",
       "prod_check_hot_volume",
       "prod_15_density",
       "prod_hot_temp",

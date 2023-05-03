@@ -58,6 +58,7 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
     cellRenderer: 'BooleanRenderer',
     width: 90,
+    hide: !config.siteUseProdLock,
   },
   {
     headerName: t('fields.prodGroup'),

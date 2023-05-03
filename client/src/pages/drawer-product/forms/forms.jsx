@@ -785,7 +785,7 @@ const DrawerForm = ({
                   </Col>
                 </Row>
                 <Row gutter={[8, 0]}>
-                  <Col span={12}>
+                  <Col span={config?.siteUseProdLock ? 12 : 24}>
                     <Form.Item name="prod_is_compliant" label={t('fields.prodCompliant')}>
                       <Checkbox
                         valuePropName="checked"
@@ -799,20 +799,22 @@ const DrawerForm = ({
                       ></Checkbox>
                     </Form.Item>
                   </Col>
-                  <Col span={12}>
-                    <Form.Item name="prod_is_locked" label={t('fields.locked')}>
-                      <Checkbox
-                        valuePropName="checked"
-                        checked={prod_is_locked}
-                        onChange={(v) => {
-                          setLocked(v.target.checked);
-                          setFieldsValue({
-                            prod_is_locked: v.target.checked,
-                          });
-                        }}
-                      ></Checkbox>
-                    </Form.Item>
-                  </Col>
+                  {config?.siteUseProdLock && (
+                    <Col span={12}>
+                      <Form.Item name="prod_is_locked" label={t('fields.locked')}>
+                        <Checkbox
+                          valuePropName="checked"
+                          checked={prod_is_locked}
+                          onChange={(v) => {
+                            setLocked(v.target.checked);
+                            setFieldsValue({
+                              prod_is_locked: v.target.checked,
+                            });
+                          }}
+                        ></Checkbox>
+                      </Form.Item>
+                    </Col>
+                  )}
                 </Row>
               </Col>
               <Col span={16}>
