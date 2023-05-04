@@ -67,6 +67,11 @@ const columns = (t, enabled, config) => [
       t,
     },
     suppressSizeToFit: true,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: String(config?.precisionVolume),
+      min: '100',
+    },
   },
   {
     headerName: `${t(config?.siteLabelUser + 'fields.closingCorrected')} (${t('units.ltr')})`,
@@ -85,6 +90,11 @@ const columns = (t, enabled, config) => [
       t,
     },
     suppressSizeToFit: true,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: String(config?.precisionVolume),
+      min: '100',
+    },
   },
   {
     headerName: `${t(config?.siteLabelUser + 'fields.closingMass')} (${t('units.kg')})`,
@@ -104,6 +114,11 @@ const columns = (t, enabled, config) => [
       t,
     },
     suppressSizeToFit: true,
+    cellRenderer: 'QuantityRenderer',
+    cellRendererParams: {
+      digits: String(config?.precisionMass),
+      min: '100',
+    },
   },
   {
     headerName: t(config?.siteLabelUser + 'fields.closingMassAir') + ' (' + t('units.kg') + ')',
