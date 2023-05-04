@@ -134,6 +134,11 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
         config_key: 'CMPY_TRIP_EXPIRY_HOURS',
         config_value: values.cmpy_trip_expiry_hours,
       },
+      {
+        cmpy_code: value.cmpy_code,
+        config_key: 'NO_CUSTOMER_ALLOWED',
+        config_value: values.cmpy_no_customer_allowed_flag ? 'Y' : 'N',
+      },
     ];
 
     if (

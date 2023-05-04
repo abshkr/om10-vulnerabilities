@@ -1949,6 +1949,8 @@
     "sourceUnit": "Source Unit",
     "specificGravity": "Specific Gravity @60°F",
     "specialInstructions": "Special Instructions",
+    "stagingBayNoCustomerAllowed": "Staging Pickup Loads without a customer defined",
+    "stagingBayCmpyLoadOptions": "Company loading options (Normal or/and Pickup Loads)",
     "standard": "Standard",
     "standardDensity": "Standard Density",
     "standardDensitySource": "Standard Density of product from the Duty Tank/Ship/Wagon/Truck/Tanker (S) [DENs@Std]",

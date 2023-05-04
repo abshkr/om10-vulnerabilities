@@ -1949,6 +1949,8 @@
     "sourceUnit": "来源单元",
     "specificGravity": "比重@60°F",
     "specialInstructions": "特殊指令",
+    "stagingBayNoCustomerAllowed": "在客户未定义时仍然允许创建组合提单",
+    "stagingBayCmpyLoadOptions": "公司提油方式(普通提单/组合提单)",
     "standard": "标量",
     "standardDensity": "标准密度",
     "standardDensitySource": "从源油罐/船/车等输入目标油罐油品的标准密度[DENs@Std]",

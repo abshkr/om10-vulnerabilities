@@ -242,6 +242,9 @@ const useConfig = () => {
     siteEnabledLDAP: false,
     siteEnabledSAML: false,
     siteUseProdLock: false,
+    siteUseStagingBay: false,
+    siteCmpyLoadOptionsDefault: '00000000',
+    siteCmpyLoadOptionsEditable: '01001000',
     siteTripExpiryHours: null,
     prodmvmnt_to_movement: false,
   });
@@ -548,6 +551,9 @@ const useConfig = () => {
         siteEnabledLDAP: configurationObject?.SITE_LDAP_ENABLED || false,
         siteEnabledSAML: configurationObject?.SITE_SAML_ENABLED || false,
         siteUseProdLock: configurationObject?.SITE_USE_PRODUCT_LOCK || false,
+        siteUseStagingBay: configurationObject?.SITE_USE_STAGING_BAY || false,
+        siteCmpyLoadOptionsDefault: configurationObject?.SITE_CMPY_LOAD_OPTIONS_DEFAULT || '00000000',
+        siteCmpyLoadOptionsEditable: configurationObject?.SITE_CMPY_LOAD_OPTIONS_EDITABLE || '01001000',
         siteTripExpiryHours: configurationObject?.SITE_SHLS_EXP_H,
         prodmvmnt_to_movement: configurationObject?.PRODUCT_MVMNT_TO_MOVEMENT || false,
       });

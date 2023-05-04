@@ -18,6 +18,7 @@ const SupplierForm = ({ value, form, config }) => {
     siteEnabledCOPS,
     siteEnabledPIDX,
     siteTripExpiryHours,
+    siteUseStagingBay,
   } = config;
 
   const { t } = useTranslation();
@@ -49,6 +50,7 @@ const SupplierForm = ({ value, form, config }) => {
   const [cmpy_rtl_authorize_load, setCmpyRtlAuthorizeLoad] = useState(false);
   const [cmpy_rtl_bol_send, setCmpyRtlBolSend] = useState(false);
   const [cmpy_trip_expiry_hours, setCmpyTripExpiryHours] = useState(siteTripExpiryHours);
+  const [cmpy_no_customer_allowed_flag, setCmpyNoCustomerAllowedFlag] = useState(false);
 
   const IS_CREATING = !value;
 
@@ -219,6 +221,13 @@ const SupplierForm = ({ value, form, config }) => {
     });
   };
 
+  const onNoCustomerAllowedFlag = (v) => {
+    setCmpyNoCustomerAllowedFlag(v);
+    setFieldsValue({
+      cmpy_no_customer_allowed_flag: v,
+    });
+  };
+
   useEffect(() => {
     if (value) {
       setFieldsValue({
@@ -295,6 +304,9 @@ const SupplierForm = ({ value, form, config }) => {
       const tripExpiryHoursConfig = _.find(payload?.records, (item) => {
         return item.config_key === 'CMPY_TRIP_EXPIRY_HOURS';
       });
+      const noCustomerAllowedConfig = _.find(payload?.records, (item) => {
+        return item.config_key === 'NO_CUSTOMER_ALLOWED';
+      });
 
       setFieldsValue({
         auto_complete_non_preschd_loads:
@@ -315,6 +327,8 @@ const SupplierForm = ({ value, form, config }) => {
           rtlAuthorizeLoadConfig && rtlAuthorizeLoadConfig.config_value === 'Y' ? true : false,
         cmpy_rtl_bol_send: rtlBolSendConfig && rtlBolSendConfig.config_value === 'Y' ? true : false,
         cmpy_trip_expiry_hours: tripExpiryHoursConfig?.config_value,
+        cmpy_no_customer_allowed_flag:
+          noCustomerAllowedConfig && noCustomerAllowedConfig.config_value === 'Y' ? true : false,
       });
       setAutoNonSchedule(autoNonSchduleConfig && autoNonSchduleConfig.config_value === 'Y' ? true : false);
       setSafefillCheck(safefillConfig && safefillConfig.config_value === 'Y' ? true : false);
@@ -334,6 +348,9 @@ const SupplierForm = ({ value, form, config }) => {
       );
       setCmpyRtlBolSend(rtlBolSendConfig && rtlBolSendConfig.config_value === 'Y' ? true : false);
       setCmpyTripExpiryHours(tripExpiryHoursConfig?.config_value);
+      setCmpyNoCustomerAllowedFlag(
+        noCustomerAllowedConfig && noCustomerAllowedConfig.config_value === 'Y' ? true : false
+      );
     }
   }, [value, setFieldsValue, payload, resetFields]);
 
@@ -770,6 +787,26 @@ const SupplierForm = ({ value, form, config }) => {
             <InputNumber min={0} />
           </Form.Item>
         </Col>
+      </Row>
+
+      <Row justify="center">
+        <Col span={12}>
+          {siteUseStagingBay && (
+            <Form.Item
+              name="cmpy_no_customer_allowed_flag"
+              label={t('fields.stagingBayNoCustomerAllowed')}
+              {...leftItemLayout}
+            >
+              <Switch
+                checkedChildren={t('operations.yes')}
+                unCheckedChildren={t('operations.no')}
+                checked={cmpy_no_customer_allowed_flag}
+                onChange={onNoCustomerAllowedFlag}
+              />
+            </Form.Item>
+          )}
+        </Col>
+        <Col span={12}></Col>
       </Row>
     </div>
   );
