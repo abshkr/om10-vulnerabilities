@@ -37,6 +37,7 @@ import getChildrenFromTxt from './get-children-from-txt';
 import decimalThousandSeparator from './decimal-thousand-separator';
 import generateMaxInt from './generate-maxint';
 import castNumber from './cast-number';
+import secureNumber from './secure-number';
 import updateUserPageColumns from './update-page-columns';
 import setupUserPageColumns from './setup-page-columns';
 import removeUserPageColumns from './remove-page-columns';
@@ -87,6 +88,7 @@ export {
   decimalThousandSeparator,
   generateMaxInt,
   castNumber,
+  secureNumber,
   updateUserPageColumns,
   setupUserPageColumns,
   removeUserPageColumns,
