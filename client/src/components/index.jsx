@@ -39,3 +39,4 @@ export { default as DecimalThousandSeparator } from './decimal-thousand-separato
 export { default as FastTrack } from './fasttrack';
 export { default as AdjustableColumns } from './adjustable-columns';
 export { default as PowerTable } from './power-table';
+export { default as CheckGroupList } from './check-group-list';

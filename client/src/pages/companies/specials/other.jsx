@@ -7,10 +7,17 @@ import _ from 'lodash';
 
 import { COMPANIES } from '../../../api';
 import { generateMaxInt } from '../../../utils';
+import { CheckGroupList } from '../../../components/';
 
 const OtherForm = ({ value, form, config }) => {
   const { data: payload } = useSWR(`${COMPANIES.CONFIG}?cmpy_code=${value?.cmpy_code}`);
-  const { maxLengthOrderNum, bolVersion } = config;
+  const {
+    maxLengthOrderNum,
+    bolVersion,
+    siteUseStagingBay,
+    siteCmpyLoadOptionsDefault,
+    siteCmpyLoadOptionsEditable,
+  } = config;
 
   const { t } = useTranslation();
   const { TextArea } = Input;
@@ -25,6 +32,29 @@ const OtherForm = ({ value, form, config }) => {
   const [cmpy_wipe_ordets, setOrdCarrier] = useState(value?.cmpy_wipe_ordets);
   const [cmpy_enable_expd, setWghComplete] = useState(value?.cmpy_enable_expd);
   const [cmpy_bol_text_copies_value, setCmpyBolTextCopiesValue] = useState(1);
+  const [cmpy_load_options, setCmpyLoadOptions] = useState(siteCmpyLoadOptionsDefault);
+
+  const companyTypes = [
+    { index: 1, code: 'SITE_MANAGER', title: t('fields.siteManager') },
+    { index: 2, code: 'SUPPLIER', title: t('fields.schdSupplier') },
+    { index: 3, code: 'CARRIER', title: t('fields.schdCarrier') },
+    { index: 4, code: 'CUSTOMER', title: t('fields.customer') },
+    { index: 5, code: 'DRAWER', title: t('fields.drawer') },
+    { index: 6, code: 'ISSUER', title: t('fields.issuer') },
+    { index: 7, code: 'EMPLOYER', title: t('fields.employer') },
+    { index: 8, code: 'HOST', title: t('fields.host') },
+  ];
+
+  /*
+    "stagingBayAnyLoads": "No Check",
+    "": "Normal Loads",
+    "": "Pickup Loads",
+    "stagingBayBothLoads": "Normal and Pickup Loads",
+  */
+  const loadTypes = [
+    { index: 1, code: 'NORMAL_LOADS', title: t('fields.stagingBayNormalLoads') },
+    { index: 2, code: 'PICKUP_LOADS', title: t('fields.stagingBayPickupLoads') },
+  ];
 
   const emailValidate = (rule, input) => {
     const regEx = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
@@ -145,7 +175,24 @@ const OtherForm = ({ value, form, config }) => {
       });
       setCmpyBolTextCopiesValue(bolTextCopiesConfig?.config_value || 1);
     }
+    if (payload) {
+      const cmpyLoadOptionsConfig = _.find(payload?.records, (item) => {
+        return item.config_key === 'CMPY_LOAD_OPTIONS';
+      });
+
+      setFieldsValue({
+        cmpy_load_options: cmpyLoadOptionsConfig?.config_value || siteCmpyLoadOptionsDefault,
+      });
+      setCmpyLoadOptions(cmpyLoadOptionsConfig?.config_value || siteCmpyLoadOptionsDefault);
+    }
   }, [value, setFieldsValue, payload]);
+
+  const changeCmpyLoadoptionsField = (options) => {
+    setFieldsValue({
+      cmpy_load_options: options,
+    });
+    setCmpyLoadOptions(options);
+  };
 
   const leftItemLayout = {
     labelCol: { span: 18 },
@@ -372,6 +419,33 @@ const OtherForm = ({ value, form, config }) => {
           <div>{t('fields.closeoutRptEmailsNote')}</div>
         </Col>
       </Row>
+
+      {siteUseStagingBay && (
+        <Row justify="center" gutter="8" style={{ marginTop: 10 }}>
+          <Col span={24}>
+            <Form.Item
+              name="cmpy_load_options"
+              label={t('fields.stagingBayCmpyLoadOptions')}
+              {...singleLineLayout}
+              // rules={[{ validator: emailValidate }]}
+            >
+              <Input value={cmpy_load_options} disabled={true} />
+            </Form.Item>
+          </Col>
+          <Col offset={0} span={24}>
+            <div>
+              <CheckGroupList
+                value={cmpy_load_options}
+                defaultValue={siteCmpyLoadOptionsDefault}
+                flags={siteCmpyLoadOptionsEditable}
+                listOptions={companyTypes}
+                checkOptions={loadTypes}
+                onChange={changeCmpyLoadoptionsField}
+              />
+            </div>
+          </Col>
+        </Row>
+      )}
     </div>
   );
 };

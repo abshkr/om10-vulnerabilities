@@ -18,7 +18,7 @@ const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, handleFormState, setFilterValue }) => {
   const config = useConfig();
-  const { bolVersion } = config;
+  const { bolVersion, siteCmpyLoadOptionsDefault } = config;
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -139,6 +139,11 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
         config_key: 'NO_CUSTOMER_ALLOWED',
         config_value: values.cmpy_no_customer_allowed_flag ? 'Y' : 'N',
       },
+      {
+        cmpy_code: value.cmpy_code,
+        config_key: 'CMPY_LOAD_OPTIONS',
+        config_value: values.cmpy_load_options || siteCmpyLoadOptionsDefault,
+      },
     ];
 
     if (
@@ -204,7 +209,7 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
               <SupplierForm value={value} form={form} config={config}></SupplierForm>
             </TabPane>
           )}
-          <TabPane tab={t('tabColumns.others')} key="2" style={{ height: '60vh' }}>
+          <TabPane tab={t('tabColumns.others')} key="2">
             <OtherForm value={value} form={form} config={config}></OtherForm>
           </TabPane>
           <TabPane tab={t('tabColumns.printerSettings')} key="3" style={{ height: '60vh' }}>
