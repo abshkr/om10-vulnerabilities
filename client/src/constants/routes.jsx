@@ -22,6 +22,7 @@ export const TRANSACTION_LIST = '/transaction-list';
 export const SELF_FUEL_TRANSACTION_LIST = '/self-fuel-transaction-list';
 export const DELIVERY_DETAILS = '/delivery-details';
 
+export const BAY_CONFIGURATION = '/bay-configuration';
 export const LOAD_BAYS = '/load-bays';
 export const COMPANIES = '/companies';
 export const TANK_GROUPS = '/tank-groups';

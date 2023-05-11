@@ -162,6 +162,11 @@ const paths = [
   },
 
   {
+    path: ROUTES.BAY_CONFIGURATION,
+    component: lazy(() => import('../pages/bay-configuration')),
+  },
+
+  {
     path: ROUTES.LOAD_BAYS,
     component: lazy(() => import('../pages/load-bays')),
   },

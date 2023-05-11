@@ -5,6 +5,7 @@ import convertToLocale from './convert-to-locale';
 import getDateTimeFormat from './get-date-time-format';
 import getDateRangeOffset from './get-date-range-offset';
 import getDensityRange from './get-density-range';
+import getKeyText from './get-key-text';
 import getRangeDays from './get-range-days';
 import getTankVCF from './get-tank-vcf';
 import getQtyByLevel from './get-qty-bylevel';
@@ -55,6 +56,7 @@ export {
   getDateTimeFormat,
   getDateRangeOffset,
   getDensityRange,
+  getKeyText,
   getRangeDays,
   getTankVCF,
   getQtyByLevel,

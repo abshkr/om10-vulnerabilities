@@ -76,6 +76,7 @@ import { ReactComponent as Timecodes } from './security/timecodes.svg';
 import { ReactComponent as CompanyBayMovement } from './configuration/company-bay-movements.svg';
 import { ReactComponent as KeyReaderDevices } from './configuration/key-reader-devices.svg';
 import { ReactComponent as LoadBays } from './configuration/load-bays.svg';
+import { ReactComponent as BayConfiguration } from './configuration/load-bays.svg';
 import { ReactComponent as LoadMeters } from './configuration/load-meters.svg';
 import { ReactComponent as LogicalPrinters } from './configuration/logical-printers.svg';
 import { ReactComponent as MeterDevices } from './configuration/meter-devices.svg';
@@ -292,6 +293,9 @@ const loader = (key) => {
 
     case 'keyReaderDevices':
       return KeyReaderDevices;
+
+    case 'bayConfiguration':
+      return BayConfiguration;
 
     case 'loadBays':
       return LoadBays;

@@ -697,7 +697,8 @@
     "LAST_TRIP": "NA",
     "LAST_TNKR_KEY": "NA",
     "BA_TRIPS": "NA",
-    "BA_PHYSTYPE": "NA"
+    "BA_PHYSTYPE": "NA",
+    "BA_LOAD_OPTION": "ENUM|STAGING_LOAD_OPTION|ENUM_LANG|ENUM_NO|ENUM_TEXT"
   },
   "BA_ARMS": {
     "BAA_KG_TOT": "NA",

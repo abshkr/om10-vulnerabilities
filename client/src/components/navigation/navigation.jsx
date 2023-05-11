@@ -659,6 +659,17 @@ const Navigation = () => {
             </Menu.Item>
           )}
 
+          {modules?.M_LOADBAYS && (
+            <Menu.Item
+              key={ROUTES.BAY_CONFIGURATION}
+              style={{ display: 'flex', marginTop: 10 }}
+              newscreen={ROUTES.BAY_CONFIGURATION}
+            >
+              <Icons size={40} hidden type="bayConfiguration" />
+              {t('pageNames.bayConfiguration')}
+            </Menu.Item>
+          )}
+
           {modules?.M_BAYMOVEMENT && (
             <Menu.Item
               key={ROUTES.COMPANY_BAY_MOVEMENT}

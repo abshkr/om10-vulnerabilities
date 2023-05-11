@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { List, Avatar, Card, Input, Spin } from 'antd';
+import { List, Avatar, Card, Input, Spin, Row, Col } from 'antd';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { LoadingOutlined } from '@ant-design/icons';
 
@@ -8,15 +8,59 @@ import { ListViewContainer, ViewContainer, CardContainer, DescriptionContainer }
 import { search } from '../../utils';
 
 const ItemDescription = ({ descriptions, item }) => {
-  return (
-    <DescriptionContainer>
-      {descriptions.map((value, index) => (
-        <div key={index}>
-          <strong>{value.field}</strong>: {item[value.key]}
-        </div>
-      ))}
-    </DescriptionContainer>
-  );
+  if (descriptions.length <= 4) {
+    return (
+      <DescriptionContainer>
+        {descriptions.map((value, index) => (
+          <div key={index}>
+            <strong>{value.field}</strong>: {item[value.key]}
+          </div>
+        ))}
+      </DescriptionContainer>
+    );
+  } else {
+    const len = descriptions.length / 2;
+    /* return (
+      <>
+        <DescriptionContainer style={{float: 'left'}}>
+          {descriptions.slice(0, len).map((value, index) => (
+            <div key={index}>
+              <strong>{value.field}</strong>: {item[value.key]}
+            </div>
+          ))}
+        </DescriptionContainer>
+        <DescriptionContainer style={{float: 'left'}}>
+          {descriptions.slice(len, descriptions.length).map((value, index) => (
+            <div key={index}>
+              <strong>{value.field}</strong>: {item[value.key]}
+            </div>
+          ))}
+        </DescriptionContainer>
+      </>
+    ); */
+    return (
+      <Row>
+        <Col span={12}>
+          <DescriptionContainer>
+            {descriptions.slice(0, len).map((value, index) => (
+              <div key={index}>
+                <strong>{value.field}</strong>: {item[value.key]}
+              </div>
+            ))}
+          </DescriptionContainer>
+        </Col>
+        <Col span={12}>
+          <DescriptionContainer>
+            {descriptions.slice(len, descriptions.length).map((value, index) => (
+              <div key={index}>
+                <strong>{value.field}</strong>: {item[value.key]}
+              </div>
+            ))}
+          </DescriptionContainer>
+        </Col>
+      </Row>
+    );
+  }
 };
 
 const ListView = ({ id, data, onSelect, name, description, content, children, isLoading, selected }) => {
@@ -32,7 +76,7 @@ const ListView = ({ id, data, onSelect, name, description, content, children, is
       setPayload(results);
 
       // find if selected item is still in the filtered results
-      const idx = results?.findIndex((o) => (o[id] === selected));
+      const idx = results?.findIndex((o) => o[id] === selected);
       if (idx === -1) {
         onSelect(results?.[0]);
       }
@@ -48,7 +92,7 @@ const ListView = ({ id, data, onSelect, name, description, content, children, is
               style={{ borderRadius: 5 }}
               placeholder={t('placeholder.searchTanks')}
               onSearch={setQuery}
-              onChange={e => setQuery(e.target.value)}
+              onChange={(e) => setQuery(e.target.value)}
               size="large"
             />
           </div>

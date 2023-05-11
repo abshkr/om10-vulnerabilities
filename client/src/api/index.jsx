@@ -64,6 +64,7 @@ import * as CUSTOMERS from './customers';
 import * as DRAWER_PRODUCTS from './drawer-products';
 import * as DELIVERY_DETAILS from './delivery-details';
 import * as NOMINATION_TRANSACTIONS from './nomination-transactions';
+import * as BAY_CONFIGURATION from './bay-configuration';
 import * as LOAD_BAYS from './load-bays';
 import * as AXLE_WEIGHTS from './axle-weights';
 import * as TRIP_AXLES from './trip-axles';
@@ -142,6 +143,7 @@ export {
   DRAWER_PRODUCTS,
   DELIVERY_DETAILS,
   NOMINATION_TRANSACTIONS,
+  BAY_CONFIGURATION,
   LOAD_BAYS,
   AXLE_WEIGHTS,
   TRIP_AXLES,
