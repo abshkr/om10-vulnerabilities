@@ -77,6 +77,8 @@ if (API_F == "YES") {
 
         public $prod_class;
         public $dens;
+        public $low_dens;
+        public $high_dens;
         public $mass_fract;
         public $exp_coeff;
         public $pub_tempe; /* published temperature. 11-05-2011*/
@@ -94,6 +96,8 @@ if (API_F == "YES") {
             $this->prod_class = "        ";
 
             $this->dens = "       ";
+            $this->low_dens = "       ";
+            $this->high_dens = "       ";
             $this->mass_fract = "        ";
             $this->exp_coeff = "        ";
 
@@ -105,6 +109,22 @@ if (API_F == "YES") {
 
         public function __toString()
         {
+            if (DENS_RANGE == "YES") {
+                return $this->is_base_product .
+                    $this->drawer_code .
+                    $this->product_code .
+                    $this->prod_class .
+                    $this->dens .
+                    $this->low_dens .
+                    $this->high_dens .
+                    $this->mass_fract .
+                    $this->exp_coeff .
+                    $this->pub_tempe .
+                    $this->amb_vol .
+                    $this->cor_vol .
+                    $this->liq_kg;
+            }
+
             return $this->is_base_product .
             $this->drawer_code .
             $this->product_code .
@@ -421,6 +441,8 @@ if (API_F == "YES") {
     {
         public $prod_class;
         public $dens;
+        public $low_dens;
+        public $high_dens;
         public $mass_fract;
         public $exp_coeff;
 
@@ -428,12 +450,23 @@ if (API_F == "YES") {
         {
             $this->prod_class = "        ";
             $this->dens = "       ";
+            $this->low_dens = "       ";
+            $this->high_dens = "       ";
             $this->mass_fract = "        ";
             $this->exp_coeff = "        ";
         }
 
         public function __toString()
         {
+            if (DENS_RANGE == "YES") {
+                return $this->prod_class .
+                $this->dens .
+                $this->low_dens .
+                $this->high_dens .
+                $this->mass_fract .
+                $this->exp_coeff;
+            }
+
             return $this->prod_class .
             $this->dens .
             $this->mass_fract .
@@ -639,7 +672,15 @@ if (API_F == "YES") {
 
         public $Start_Mass;
         public $End_Mass;
+        public $is_trf_finished;
+        public $is_closeout_trf;
         public $Was_Anything_Recycled;
+
+        public function __construct()
+        {
+            $this->is_trf_finished = " ";
+            $this->is_closeout_trf = " ";
+        }
 
         public function __toString()
         {
@@ -671,10 +712,19 @@ if (API_F == "YES") {
                 $msg_string = $msg_string . $this->base[$i];
             }
 
-            $msg_string = $msg_string .
-            $this->Start_Mass .
-            $this->End_Mass .
-            $this->Was_Anything_Recycled;
+            if (CLOSEOUT_TEMP_TRANS_FEATURE == 'YES') {
+                $msg_string = $msg_string .
+                    $this->Start_Mass .
+                    $this->End_Mass .
+                    $this->is_trf_finished .
+                    $this->is_closeout_trf .
+                    $this->Was_Anything_Recycled;
+            } else {
+                $msg_string = $msg_string .
+                    $this->Start_Mass .
+                    $this->End_Mass .
+                    $this->Was_Anything_Recycled;
+            }
 
             return $msg_string;
         }

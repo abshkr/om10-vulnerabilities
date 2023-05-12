@@ -68,6 +68,12 @@ define('ENCTYPED_SALT', 'a1\0');
 // If API_F == "YES", use API_F message definition, otherwise use the old style
 define("API_F", "NO");
 
+// If DENS_RANGE == "YES", use DENS_RANGE message definition, otherwise use the old style
+define("DENS_RANGE", "NO");
+
+// If CLOSEOUT_TEMP_TRANS_FEATURE == "YES", use CLOSEOUT_TEMP_TRANS_FEATURE message definition, otherwise use the old style
+define("CLOSEOUT_TEMP_TRANS_FEATURE", "NO");
+
 if (DISPLAY_ALL_ERROS) {
     ini_set('display_errors', 1);
     error_reporting(E_ALL);
