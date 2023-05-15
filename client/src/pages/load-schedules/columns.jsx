@@ -32,6 +32,20 @@ const columns = (IS_NOMINATION, t, config) => [
     hide: IS_NOMINATION,
   },
   {
+    headerName: t('fields.stagingBayPickupLoad'),
+    field: 'shls_pickup_mode',
+    filter: 'MultiFilter',
+    sortable: true,
+    resizable: true,
+    width: 130,
+    suppressSizeToFit: true,
+    hide: !config?.siteUseStagingBay,
+    cellRenderer: 'PickupModeRender',
+    cellRendererParams: {
+      t: t,
+    },
+  },
+  {
     headerName: t('fields.sourceTrip'),
     field: 'shls_srctype_desc',
     filter: 'MultiFilter',
@@ -41,6 +55,10 @@ const columns = (IS_NOMINATION, t, config) => [
     suppressSizeToFit: true,
     hide: IS_NOMINATION,
     cellRenderer: 'SourceRender',
+    cellRendererParams: {
+      t: t,
+      flag: config?.siteUseStagingBay,
+    },
   },
   {
     headerName: t('fields.schdConvertTrace'),
@@ -73,6 +91,11 @@ const columns = (IS_NOMINATION, t, config) => [
     resizable: true,
     width: 140,
     suppressSizeToFit: true,
+    cellRenderer: 'TripStatusRender',
+    cellRendererParams: {
+      t: t,
+      flag: config?.siteUseStagingBay,
+    },
   },
   {
     headerName: t('fields.carrierCode'),

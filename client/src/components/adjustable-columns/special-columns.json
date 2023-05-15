@@ -62,6 +62,7 @@
 
   "M_LOADSCHEDULES": {
     "visibility": [
+      "shls_pickup_mode",
       "shls_cnvrt_trace",
       "shls_cust",
       "shls_cust_cmpycode",
