@@ -23,6 +23,7 @@ import { useAuth, useConfig } from 'hooks';
 import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
+import StagingForms from './forms/staging-forms';
 import api from 'api';
 import SourceRender from './source-render';
 import ConvertTraceRender from './convert-trace-render';
@@ -410,8 +411,19 @@ const LoadSchedules = () => {
           />
         )}
       </div>
-      {visible && (
+      {visible && !config?.siteUseStagingBay && (
         <Forms
+          value={selected}
+          visible={visible}
+          handleFormState={handleFormState}
+          access={access}
+          url={url}
+          locateTrip={locateTrip}
+          default_shls_ld_type={config?.site_default_shls_ld_type}
+        />
+      )}
+      {visible && config?.siteUseStagingBay && (
+        <StagingForms
           value={selected}
           visible={visible}
           handleFormState={handleFormState}
