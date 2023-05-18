@@ -1,8 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-import { EditOutlined, PlusOutlined, CloseOutlined, DeleteOutlined } from '@ant-design/icons';
+import {
+  EditOutlined,
+  PlusOutlined,
+  CloseOutlined,
+  DeleteOutlined,
+  QuestionCircleOutlined,
+} from '@ant-design/icons';
 
-import { Form, Button, Tabs, Modal, Select, InputNumber, Checkbox, Row, Col } from 'antd';
+import { Form, Button, Tabs, Modal, Select, InputNumber, Checkbox, Row, Col, Popover, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 import _ from 'lodash';
@@ -133,6 +139,244 @@ const FormModal = ({ value, handleBaseCallBack, config, tableBases }) => {
     }
   }, [value]);
 
+  const popupText = (
+    <Popover
+      placement="right"
+      title={
+        <span style={{ fontWeight: 'bold', fontSize: '24px' }}>
+          {t('descriptions.blendToleranceNoteTitle')}
+        </span>
+      }
+      content={
+        <div>
+          <p>
+            {t('descriptions.blendToleranceNoteLine1')}
+            <br></br>
+            {t('descriptions.blendToleranceNoteLine2')}
+            <br></br>
+            {t('descriptions.blendToleranceNoteLine3')}
+            <br></br>
+            {t('descriptions.blendToleranceNoteLine4')}
+            <br></br>
+            <b>{t('descriptions.blendToleranceNoteLine5')}</b>
+            <br></br>
+            <table border="1" style={{ width: '100%', textAlign: 'center' }}>
+              <tr style={{ fontWeight: 'bold' }}>
+                <td>{t('descriptions.blendToleranceLabelBase')}</td>
+                <td>{t('descriptions.blendToleranceLabelRecipe')}</td>
+                <td>{t('descriptions.blendToleranceLabelRecipe')} %</td>
+                <td>+{t('descriptions.blendToleranceLabelTol')}</td>
+                <td>-{t('descriptions.blendToleranceLabelTol')}</td>
+                <td style={{ fontWeight: 'normal' }}>{t('descriptions.blendToleranceLabelMax')}</td>
+                <td style={{ fontWeight: 'normal' }}>{t('descriptions.blendToleranceLabelMin')}</td>
+              </tr>
+              <tr style={{ fontWeight: 'bold' }}>
+                <td>A</td>
+                <td>1000</td>
+                <td>62.46%</td>
+                <td>10%</td>
+                <td>-10%</td>
+                <td style={{ fontWeight: 'normal' }}>68.71%</td>
+                <td style={{ fontWeight: 'normal' }}>56.21%</td>
+              </tr>
+              <tr style={{ fontWeight: 'bold' }}>
+                <td>B</td>
+                <td>600</td>
+                <td>37.48%</td>
+                <td>20%</td>
+                <td>-5%</td>
+                <td style={{ fontWeight: 'normal' }}>44.97%</td>
+                <td style={{ fontWeight: 'normal' }}>35.60%</td>
+              </tr>
+              <tr style={{ fontWeight: 'bold' }}>
+                <td>C</td>
+                <td>1</td>
+                <td>0.062%</td>
+                <td>20%</td>
+                <td>-10%</td>
+                <td style={{ fontWeight: 'normal' }}>0.075%</td>
+                <td style={{ fontWeight: 'normal' }}>0.056%</td>
+              </tr>
+              <tr style={{ fontWeight: 'bold' }}>
+                <td>&nbsp;</td>
+                <td>1601</td>
+                <td>100.000%</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+              </tr>
+            </table>
+            {t('descriptions.blendToleranceNoteLine61')} <b>5000</b>{' '}
+            {t('descriptions.blendToleranceNoteLine62')} <b>{t('descriptions.blendToleranceLabelDrawX')}</b>{' '}
+            {t('descriptions.blendToleranceNoteLine63')}
+            <br></br>
+            {t('descriptions.blendToleranceNoteLine7')} <b>-{t('descriptions.blendToleranceLabelTol')}</b>
+            <br></br>
+            <table border="1" style={{ width: '100%', textAlign: 'center' }}>
+              <tr style={{ fontWeight: 'bold' }}>
+                <td>{t('descriptions.blendToleranceLabelDrawX')}</td>
+                <td>{t('descriptions.blendToleranceLabelQty')} (5000L)</td>
+                <td>+{t('descriptions.blendToleranceLabelTol')}</td>
+                <td>+{t('descriptions.blendToleranceLabelTol')}(L)</td>
+                <td>-{t('descriptions.blendToleranceLabelTol')}</td>
+                <td>-{t('descriptions.blendToleranceLabelTol')}(L)</td>
+                <td>{t('descriptions.blendToleranceLabelStatus')}</td>
+              </tr>
+              <tr>
+                <td>{t('descriptions.blendToleranceLabelBaseA')}</td>
+                <td>3247</td>
+                <td>10%</td>
+                <td>3435.35</td>
+                <td>-10%</td>
+                <td>2810.74</td>
+                <td style={{ fontWeight: 'bold', color: 'green' }}>
+                  {t('descriptions.blendToleranceLabelOk')}
+                </td>
+              </tr>
+              <tr>
+                <td>{t('descriptions.blendToleranceLabelBaseB')}</td>
+                <td>1750</td>
+                <td>20%</td>
+                <td>2248.59</td>
+                <td>-5%</td>
+                <td>1780.14</td>
+                <td style={{ fontWeight: 'bold', color: 'red' }}>
+                  {t('descriptions.blendToleranceLabelError')}
+                </td>
+              </tr>
+              <tr>
+                <td>{t('descriptions.blendToleranceLabelBaseC')}</td>
+                <td>3.123</td>
+                <td>20%</td>
+                <td>3.75</td>
+                <td>-10%</td>
+                <td>2.81</td>
+                <td style={{ fontWeight: 'bold', color: 'green' }}>
+                  {t('descriptions.blendToleranceLabelOk')}
+                </td>
+              </tr>
+            </table>
+          </p>
+        </div>
+      }
+    >
+      <QuestionCircleOutlined style={{ transform: 'scale(1.4)', color: '#0054a4', fontWeight: 900 }} />
+    </Popover>
+  );
+
+  const popupText2 = (
+    <Popover
+      placement="right"
+      title={<span style={{ fontWeight: 'bold', fontSize: '24px' }}>Blend Tolerance</span>}
+      content={
+        <div>
+          <p>
+            All Drawer products are defined in terms of their constituent Base Products and the ratios.
+            <br></br>
+            These percentage tolerances refer to the quantity of this base product.<br></br>
+            If Lower limit &lt; Actual delivered Base &lt; Upper limit then it is within tolerance.<br></br>
+            If Actual delivered Base &lt; Lower limit OR Actual delivered &gt; Upper limit then tolerance has
+            failed.<br></br>
+            <b>Example of 3 product Blend:</b>
+            <br></br>
+            <table border="1" style={{ width: '100%', textAlign: 'center' }}>
+              <tr style={{ fontWeight: 'bold' }}>
+                <td>Base Product</td>
+                <td>Recipe</td>
+                <td>Recipe %</td>
+                <td>+Tol</td>
+                <td>-Tol</td>
+                <td style={{ fontWeight: 'normal' }}>Maximum</td>
+                <td style={{ fontWeight: 'normal' }}>Minimum</td>
+              </tr>
+              <tr style={{ fontWeight: 'bold' }}>
+                <td>A</td>
+                <td>1000</td>
+                <td>62.46%</td>
+                <td>10%</td>
+                <td>-10%</td>
+                <td style={{ fontWeight: 'normal' }}>68.71%</td>
+                <td style={{ fontWeight: 'normal' }}>56.21%</td>
+              </tr>
+              <tr style={{ fontWeight: 'bold' }}>
+                <td>B</td>
+                <td>600</td>
+                <td>37.48%</td>
+                <td>20%</td>
+                <td>-5%</td>
+                <td style={{ fontWeight: 'normal' }}>44.97%</td>
+                <td style={{ fontWeight: 'normal' }}>35.60%</td>
+              </tr>
+              <tr style={{ fontWeight: 'bold' }}>
+                <td>C</td>
+                <td>1</td>
+                <td>0.062%</td>
+                <td>20%</td>
+                <td>-10%</td>
+                <td style={{ fontWeight: 'normal' }}>0.075%</td>
+                <td style={{ fontWeight: 'normal' }}>0.056%</td>
+              </tr>
+              <tr style={{ fontWeight: 'bold' }}>
+                <td>&nbsp;</td>
+                <td>1601</td>
+                <td>100.000%</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+              </tr>
+            </table>
+            As an example <b>5000</b> litres of <b>Drawer Product X</b> would produce the following if the
+            actual quantity of <br></br>
+            the blend product was lower than the amount required by the receipe by more then the <b>-Tol</b>
+            <br></br>
+            <table border="1" style={{ width: '100%', textAlign: 'center' }}>
+              <tr style={{ fontWeight: 'bold' }}>
+                <td>Drawer Product X</td>
+                <td>Qty (5000L)</td>
+                <td>+Tol</td>
+                <td>+Tol(L)</td>
+                <td>-Tol</td>
+                <td>-Tol(L)</td>
+                <td>STATUS</td>
+              </tr>
+              <tr>
+                <td>Base Product A actual</td>
+                <td>3247</td>
+                <td>10%</td>
+                <td>3435.35</td>
+                <td>-10%</td>
+                <td>2810.74</td>
+                <td style={{ fontWeight: 'bold', color: 'green' }}>OK</td>
+              </tr>
+              <tr>
+                <td>Base Product B actual</td>
+                <td>1750</td>
+                <td>20%</td>
+                <td>2248.59</td>
+                <td>-5%</td>
+                <td>1780.14</td>
+                <td style={{ fontWeight: 'bold', color: 'red' }}>Out of Tolerance</td>
+              </tr>
+              <tr>
+                <td>Base Product C actual</td>
+                <td>3.123</td>
+                <td>20%</td>
+                <td>3.75</td>
+                <td>-10%</td>
+                <td>2.81</td>
+                <td style={{ fontWeight: 'bold', color: 'green' }}>OK</td>
+              </tr>
+            </table>
+          </p>
+        </div>
+      }
+    >
+      <QuestionCircleOutlined style={{ transform: 'scale(1.2)' }} />
+    </Popover>
+  );
+
   return (
     <div>
       <Form
@@ -208,47 +452,62 @@ const FormModal = ({ value, handleBaseCallBack, config, tableBases }) => {
               <div style={{ color: 'red', paddingBottom: 20 }}>{t('descriptions.ratioPercentPPM')}</div>
             )}
 
-            <Form.Item name="pitem_bltol_flag" label={t('fields.pitemBltolFlag2')} valuePropName="checked">
-              <Checkbox defaultChecked={value?.pitem_bltol_flag} onChange={onCheck} />
-            </Form.Item>
+            <Card
+              size="small"
+              title={t('descriptions.blendToleranceCardTitle')}
+              hoverable
+              headStyle={{ paddingRight: 10 }}
+              style={{ marginBottom: 16 }}
+              extra={popupText}
+            >
+              <Form.Item name="pitem_bltol_flag" label={''} valuePropName="checked">
+                <Checkbox
+                  defaultChecked={value?.pitem_bltol_flag}
+                  onChange={onCheck}
+                  style={{ color: '#0054a4', fontWeight: 500 }}
+                >
+                  {t('fields.pitemBltolFlag2')}
+                </Checkbox>
+              </Form.Item>
 
-            <Row gutter={[8, 20]}>
-              <Col span={12}>
-                <Form.Item
-                  name="pitem_bltol_ntol"
-                  label={t('fields.pitemBltolNtol')}
-                  rules={[{ required: false }]}
-                >
-                  <InputNumber
-                    min={-200}
-                    max={0}
-                    // defaultValue={-10}
-                    formatter={(value) => `${value}%`}
-                    parser={(value) => value.replace('%', '')}
-                    disabled={!pitem_bltol_flag}
-                    // onChange={onChangeNtol}
-                    style={{ width: '100%' }}
-                  />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  name="pitem_bltol_ptol"
-                  label={t('fields.pitemBltolPtol')}
-                  rules={[{ required: false }]}
-                >
-                  <InputNumber
-                    min={0}
-                    max={200}
-                    formatter={(value) => `${value}%`}
-                    parser={(value) => value.replace('%', '')}
-                    disabled={!pitem_bltol_flag}
-                    // onChange={onChangePtol}
-                    style={{ width: '100%' }}
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
+              <Row gutter={[8, 4]}>
+                <Col span={12}>
+                  <Form.Item
+                    name="pitem_bltol_ntol"
+                    label={t('fields.pitemBltolNtol2')}
+                    rules={[{ required: false }]}
+                  >
+                    <InputNumber
+                      min={-200}
+                      max={0}
+                      // defaultValue={-10}
+                      formatter={(value) => `${value}%`}
+                      parser={(value) => value.replace('%', '')}
+                      disabled={!pitem_bltol_flag}
+                      // onChange={onChangeNtol}
+                      style={{ width: '100%' }}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item
+                    name="pitem_bltol_ptol"
+                    label={t('fields.pitemBltolPtol2')}
+                    rules={[{ required: false }]}
+                  >
+                    <InputNumber
+                      min={0}
+                      max={200}
+                      formatter={(value) => `${value}%`}
+                      parser={(value) => value.replace('%', '')}
+                      disabled={!pitem_bltol_flag}
+                      // onChange={onChangePtol}
+                      style={{ width: '100%' }}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Card>
 
             {config.manageHotProduct && (
               <Form.Item name="pitem_hot_main" label={t('fields.pitemHotMain')} valuePropName="checked">
