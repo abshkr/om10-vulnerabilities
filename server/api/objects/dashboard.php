@@ -75,14 +75,14 @@ class Dashboard extends CommonClass
             SELECT BAYS_PER_LOAD, 
                 LOADS,
                 (SELECT COUNT(DISTINCT load_id) 
-                FROM GUI_TRANSACTIONS, transfers where trsa_id = trsftrid_trsa_id)  TOTAL
+                FROM GUI_TRANSACTIONS)  TOTAL
             FROM
             (
                 SELECT BAYS_PER_LOAD, COUNT(*) LOADS
                 FROM 
                 (
                     SELECT LOAD_ID, COUNT(DISTINCT TRSA_BAY_CD) BAYS_PER_LOAD  
-                    FROM GUI_TRANSACTIONS, TRANSFERS WHERE TRSA_ID = TRSFTRID_TRSA_ID 
+                    FROM GUI_TRANSACTIONS 
                     GROUP BY LOAD_ID
                 )
                 GROUP BY BAYS_PER_LOAD
