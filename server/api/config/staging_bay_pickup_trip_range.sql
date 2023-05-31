@@ -70,3 +70,29 @@ WHERE
 
 COMMIT;
 
+/*
+    define the CMPY_PICKUP_TRIP_LAST to determine the last used trip number for pickup load at company level
+*/
+INSERT INTO COMPANY_CONFIG (
+    CMPY_CODE,
+    CONFIG_KEY,
+    CONFIG_VALUE, 
+    CONFIG_COMMENT
+)
+SELECT
+   CMP.CMPY_CODE,
+   'CMPY_PICKUP_TRIP_LAST'                                AS CONFIG_KEY,
+   CFG.CONFIG_VALUE                                       AS CONFIG_VALUE,
+   'Last used trip number for pickup load at company level'    AS CONFIG_COMMENT
+FROM
+   COMPANYS             CMP
+   , COMPANY_CONFIG     CFG
+WHERE
+    BITAND(CMP.CMPY_TYPE, POWER(2, 1)) != 0
+    AND CFG.CMPY_CODE = CMP.CMPY_CODE
+    AND CFG.CONFIG_KEY = 'CMPY_PICKUP_TRIP_START'
+    AND ((CMP.CMPY_CODE, 'CMPY_PICKUP_TRIP_LAST') NOT IN (SELECT CMPY_CODE, CONFIG_KEY FROM COMPANY_CONFIG))
+;
+
+COMMIT;
+
