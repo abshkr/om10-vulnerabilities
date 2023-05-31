@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import useSWR from 'swr';
 import moment from 'moment';
-import { Button, notification, Switch } from 'antd';
+import { Button, notification, Switch, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
+import { SyncOutlined, PlusOutlined, FileSearchOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 
 import {
   Page,
@@ -24,6 +24,7 @@ import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
 import StagingForms from './forms/staging-forms';
+import StagingBay from './staging-bay';
 import api from 'api';
 import SourceRender from './source-render';
 import ConvertTraceRender from './convert-trace-render';
@@ -40,6 +41,7 @@ const LoadSchedules = () => {
   const [isSearching, setSearching] = useState(false);
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [isStaging, setStaging] = useState(false);
 
   const { t } = useTranslation();
 
@@ -97,8 +99,41 @@ const LoadSchedules = () => {
   const name = t('pageNames.loadSchedules');
 
   const handleFormState = (visibility, value) => {
-    setSelected(value);
-    setVisible(visibility);
+    if (config?.siteUseStagingBay) {
+      if (visibility && !value) {
+        Modal.confirm({
+          title: t('prompts.isPickupLoad'),
+          icon: <ExclamationCircleOutlined />,
+          okText: t('operations.no'),
+          cancelText: t('operations.yes'),
+          centered: true,
+          onOk() {
+            setStaging(false);
+
+            setSelected(value);
+            setVisible(visibility);
+          },
+          onCancel() {
+            setStaging(true);
+
+            setSelected(value);
+            setVisible(visibility);
+          },
+        });
+      } else {
+        setSelected(value);
+        setVisible(visibility);
+        if (visibility && value && value?.shls_pickup_mode === '1') {
+          setStaging(true);
+        } else {
+          setStaging(false);
+        }
+      }
+    } else {
+      setSelected(value);
+      setVisible(visibility);
+      setStaging(false);
+    }
   };
 
   const onChangePagination = async (v) => {
@@ -422,7 +457,7 @@ const LoadSchedules = () => {
           default_shls_ld_type={config?.site_default_shls_ld_type}
         />
       )}
-      {visible && config?.siteUseStagingBay && (
+      {visible && config?.siteUseStagingBay && !isStaging && (
         <StagingForms
           value={selected}
           visible={visible}
@@ -431,6 +466,17 @@ const LoadSchedules = () => {
           url={url}
           locateTrip={locateTrip}
           default_shls_ld_type={config?.site_default_shls_ld_type}
+        />
+      )}
+      {visible && config?.siteUseStagingBay && isStaging && (
+        <StagingBay
+          value={selected}
+          visible={visible}
+          handleFormState={handleFormState}
+          access={access}
+          url={url}
+          locateTrip={locateTrip}
+          default_shls_ld_type={'2'}
         />
       )}
     </Page>

@@ -38,6 +38,7 @@ import * as MOVEMENT_REASONS from './movement-reasons';
 import * as METER_DEVICES from './meter-devices';
 import * as SITE_ACCESS_DEVICES from './site-access-devices';
 import * as MANUAL_TRANSACTIONS from './manual-transactions';
+import * as STAGING_BAY from './staging-bay';
 import * as GATE_PERMISSION from './gate-permission';
 import * as ON_DEMAND_REPORTS from './on-demand-reports';
 import * as INVENTORY_REQUESTS from './inventory-requests';
@@ -120,6 +121,7 @@ export {
   METER_DEVICES,
   SITE_ACCESS_DEVICES,
   MANUAL_TRANSACTIONS,
+  STAGING_BAY,
   TANKER_LIST,
   GATE_PERMISSION,
   ON_DEMAND_REPORTS,

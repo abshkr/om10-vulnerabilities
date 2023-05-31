@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Tooltip } from 'antd';
-import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, CloseCircleOutlined, CloseCircleFilled } from '@ant-design/icons';
 
 /*
   SHLS_PICKUP_MODE
@@ -46,11 +46,11 @@ export default class PickupModeRender extends Component {
       <Tooltip placement="left" title={this.getLabel()}>
         <div className="cell-icon">
           {this.getFlag() ? (
-            <CheckCircleOutlined style={{ fontSize: 16, color: '#52c41a' }} />
+            <CheckCircleOutlined style={{ fontSize: 18, color: '#52c41a' }} />
+          ) : this.props.value === '2' ? (
+            <CloseCircleFilled style={{ fontSize: 18, color: '#ec6e68' }} />
           ) : (
-            <CloseCircleOutlined
-              style={{ fontSize: 18, color: this.props.value === '2' ? '#bc3e38' : '#ec6e68' }}
-            />
+            <CloseCircleOutlined style={{ fontSize: 18, color: '#ec6e68' }} />
           )}
         </div>
       </Tooltip>

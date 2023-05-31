@@ -13,6 +13,8 @@ import {
   AuditOutlined,
   CaretDownOutlined,
   FilePdfOutlined,
+  CheckSquareOutlined,
+  CloseSquareOutlined,
 } from '@ant-design/icons';
 
 import {
@@ -62,30 +64,38 @@ import {
   StartWeight,
   DiffWeight,
   Isotainer,
-} from './fields';
+} from '../forms/fields';
 
 import { SelectInput, PartnershipManager } from '../../../components';
 import { SETTINGS } from '../../../constants';
-import { LOAD_SCHEDULES, SITE_CONFIGURATION, TANKER_LIST, ORDER_LISTINGS, COMPANIES } from '../../../api';
+import {
+  LOAD_SCHEDULES,
+  STAGING_BAY,
+  SITE_CONFIGURATION,
+  TANKER_LIST,
+  ORDER_LISTINGS,
+  COMPANIES,
+} from '../../../api';
 
 import { useConfig } from '../../../hooks';
 import { validatorStatus, checkFormFields } from '../../../utils';
 
-import Products from './products';
-import LoadReport from './load-report';
+import Products from '../forms/products';
+import LoadReport from '../forms/load-report';
 import DeliveryDetails from '../../delivery-details';
-import DriverInstructions from './driver-instructions';
-import AdditionalHostData from './additional-host-data';
-import Compartments from './compartments';
-import StagingCompartments from './staging-compartments';
-import Transactions from './transactions';
-import Summary from './summary';
-import StagingSummary from './staging-summary';
-import Seals from './seals';
-import BOL from './bol';
-import Axles from './axles';
-import ScheduleConversion from './schedule-conversion';
+import DriverInstructions from '../forms/driver-instructions';
+import AdditionalHostData from '../forms/additional-host-data';
+import Compartments from '../forms/compartments';
+import Transactions from '../forms/transactions';
+import Summary from '../forms/summary';
+import Seals from '../forms/seals';
+import BOL from '../forms/bol';
+import Axles from '../forms/axles';
+import ScheduleConversion from '../forms/schedule-conversion';
 import { ManualTransactionsPopup } from '../../manual-transactions';
+import StagedSources from './staged-sources';
+import StagingCompartments from './staging-compartments';
+import StagingSummary from './staging-summary';
 
 const TabPane = Tabs.TabPane;
 
@@ -111,16 +121,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     fasttrackEnabled,
   } = config;
 
-  access.canCreate = value?.shls_pickup_mode === '2' ? false : access.canCreate;
-  access.canUpdate = value?.shls_pickup_mode === '2' ? false : access.canUpdate;
-  access.canDelete = value?.shls_pickup_mode === '2' ? false : access.canDelete;
-
   const popupMT = config?.popupManualTransaction;
 
   const SHOW_ISO_DOR = siteUseIsotainer && showDORNumber;
 
-  const ALLOW_CUSTOMER_PRODUCT = site_customer_product && value?.shls_pickup_mode !== '1';
-  const ALLOW_CUSTOMER_CARRIER = site_customer_carrier && value?.shls_pickup_mode !== '1';
+  const ALLOW_CUSTOMER_PRODUCT = site_customer_product;
+  const ALLOW_CUSTOMER_CARRIER = site_customer_carrier;
 
   const send_to_ft_ready = value?.status === 'F' && value?.shls_ld_type === '2';
 
@@ -186,6 +192,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
   const CAN_VIEW_REPORTS = value?.shlsload_load_id !== '0';
   const CAN_VIEW_TRANSACTIONS = value?.status !== 'F';
   const CAN_DELIVERY_DETAIL = value !== null && value !== undefined && manageViewDeliveryDetails;
+  const CAN_ACTIVATE = value?.status === 'F';
+  const CAN_DEACTIVATE = value?.status === 'A';
 
   const CAN_REVERSE =
     (value?.load_reverse_flag === '0' || value?.load_reverse_flag === '2') &&
@@ -359,7 +367,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     columns.push({ code: 'supplier_code', label: t('fields.supplier') });
     columns.push({ code: 'drawer_code', label: t('fields.drawer') });
     if (ALLOW_CUSTOMER_PRODUCT || ALLOW_CUSTOMER_CARRIER) {
-      columns.push({ code: 'shls_cust', label: t('fields.customer') });
+      // columns.push({ code: 'shls_cust', label: t('fields.customer') });
     }
     columns.push({ code: 'carrier_code', label: t('fields.carrier') });
     columns.push({ code: 'tnkr_code', label: t('fields.tanker') });
@@ -560,7 +568,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
   };
 
   const getTankerCompartments = async (tanker) => {
-    const results = await api.get(`${LOAD_SCHEDULES.COMPARTMENTS_BY_TANKER}?tnkr_code=${tanker}`);
+    const results = await api.get(`${STAGING_BAY.COMPARTMENTS_BY_TANKER}?tnkr_code=${tanker}`);
 
     const cmpts = results?.data?.records;
     const units = [];
@@ -899,6 +907,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
       submitPrompt += ' (' + String(errors.length) + ' ' + t('validate.warnings') + ')';
     }
 
+    delete values?.stage_compartments;
+    delete values?.stage_products;
+    delete values?.stage_items;
+    console.log('................pickp load values', values);
+
     Modal.confirm({
       title: submitPrompt, // IS_CREATING ? t('prompts.create') : t('prompts.update'),
       okText: IS_CREATING ? t('operations.create') : t('operations.update'),
@@ -910,7 +923,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
       content: lines,
       onOk: async () => {
         await api
-          .post(IS_CREATING ? LOAD_SCHEDULES.CREATE : LOAD_SCHEDULES.UPDATE, values)
+          .post(IS_CREATING ? STAGING_BAY.CREATE : STAGING_BAY.UPDATE, values)
           .then(() => {
             onComplete(values);
 
@@ -922,7 +935,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
-                message: error.type,
+                message:
+                  error.code === 500
+                    ? IS_CREATING
+                      ? t('messages.createFailed')
+                      : t('messages.updateFailed')
+                    : error.type,
                 description: error.message,
               });
             });
@@ -974,7 +992,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
       centered: true,
       onOk: async () => {
         await api
-          .post(LOAD_SCHEDULES.DELETE, value)
+          .post(STAGING_BAY.DELETE, value)
           .then(() => {
             onComplete();
 
@@ -986,7 +1004,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
-                message: error.type,
+                message: error.code === 500 ? t('messages.deleteFailed') : error.type,
                 description: error.message,
               });
             });
@@ -995,28 +1013,60 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     });
   };
 
-  const onRevertSchedule = () => {
+  const onActivate = () => {
     Modal.confirm({
-      title: t('prompts.confirmRevertSchedule'),
-      okText: t('operations.revert'),
-      okType: 'primary',
-      icon: <RedoOutlined />,
+      title: t('prompts.activate'),
+      okText: t('operations.yes'),
+      okType: 'danger',
+      icon: <DeleteOutlined />,
       cancelText: t('operations.no'),
       centered: true,
       onOk: async () => {
         await api
-          .post(LOAD_SCHEDULES.REVERT_SCHEDULE, value)
+          .post(STAGING_BAY.ACTIVATE, value)
           .then(() => {
+            onComplete();
+
             notification.success({
-              message: t('messages.revertSuccessSchedule'),
-              description: t('descriptions.revertSuccessSchedule'),
+              message: t('messages.activateSuccess'),
+              description: `${t('descriptions.activateSuccess')}`,
             });
-            onComplete(value);
           })
           .catch((errors) => {
             _.forEach(errors.response.data.errors, (error) => {
               notification.error({
-                message: error.code === 500 ? t('messages.revertFailedSchedule') : error.type,
+                message: error.code === 500 ? t('messages.activateFailed') : error.type,
+                description: error.message,
+              });
+            });
+          });
+      },
+    });
+  };
+
+  const onDeactivate = () => {
+    Modal.confirm({
+      title: t('prompts.deactivate'),
+      okText: t('operations.yes'),
+      okType: 'danger',
+      icon: <DeleteOutlined />,
+      cancelText: t('operations.no'),
+      centered: true,
+      onOk: async () => {
+        await api
+          .post(STAGING_BAY.DEACTIVATE, value)
+          .then(() => {
+            onComplete();
+
+            notification.success({
+              message: t('messages.deactivateSuccess'),
+              description: `${t('descriptions.deactivateSuccess')}`,
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.code === 500 ? t('messages.deactivateFailed') : error.type,
                 description: error.message,
               });
             });
@@ -1418,6 +1468,46 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
             )}
 
           {!IS_CREATING &&
+            CAN_ACTIVATE &&
+            tab !== '6' &&
+            tab !== '7' &&
+            tab !== '8' &&
+            tab !== '9' &&
+            tab !== '10' && (
+              <>
+                <Button
+                  type="primary"
+                  icon={<CheckSquareOutlined />}
+                  style={{ float: 'right', marginRight: 5 }}
+                  disabled={!access?.canUpdate}
+                  onClick={onActivate}
+                >
+                  {t('operations.activate')}
+                </Button>
+              </>
+            )}
+
+          {!IS_CREATING &&
+            CAN_DEACTIVATE &&
+            tab !== '6' &&
+            tab !== '7' &&
+            tab !== '8' &&
+            tab !== '9' &&
+            tab !== '10' && (
+              <>
+                <Button
+                  type="primary"
+                  icon={<CloseSquareOutlined />}
+                  style={{ float: 'right', marginRight: 5 }}
+                  disabled={!access?.canUpdate}
+                  onClick={onDeactivate}
+                >
+                  {t('operations.deactivate')}
+                </Button>
+              </>
+            )}
+
+          {!IS_CREATING &&
             !READ_ONLY &&
             tab !== '6' &&
             tab !== '7' &&
@@ -1575,7 +1665,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
         <Tabs defaultActiveKey="1" activeKey={tab} onChange={onTabChange} animated={false}>
           <TabPane tab={t('tabColumns.general')} key="0">
             <Row gutter={[8, 8]}>
-              <Col span={12}>
+              <Col span={6}>
                 <Form.Item name="shls_ld_type" style={{ display: 'inline-block' }}>
                   <Radio.Group
                     buttonStyle="solid"
@@ -1583,117 +1673,56 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
                     onChange={(event) => setMode(event.target.value)}
                     disabled={!!value}
                   >
-                    {(IS_CREATING || value?.shls_ld_type === '3' || value?.shls_ld_type === '6') && (
-                      <Radio.Button value="3">{t('operations.preOrder')}</Radio.Button>
-                    )}
                     {(IS_CREATING || value?.shls_ld_type === '2') && !unload && (
                       <Radio.Button value="2">{t('operations.preSchedule')}</Radio.Button>
                     )}
-                    {/* {(IS_CREATING || value?.shls_ld_type === '6') && <Radio.Button value="6">{t('fields.unload')}</Radio.Button>} */}
-                    {!IS_CREATING && !['2', '3', '6'].includes(value?.shls_ld_type) && (
-                      <Radio.Button value="4">{t('operations.openOrder')}</Radio.Button>
-                    )}
-                    {/* <Radio.Button value="3">{t('operations.preOrder')}</Radio.Button>
-                    <Radio.Button value="2">{t('operations.preSchedule')}</Radio.Button> */}
                   </Radio.Group>
                 </Form.Item>
-                <Form.Item
-                  name="unload"
-                  style={{ marginLeft: 20, display: 'inline-block' }}
-                  valuePropName="checked"
-                >
-                  <Checkbox disabled={!IS_CREATING} onChange={onUnload}>
-                    {t('fields.unload')}
-                  </Checkbox>
-                </Form.Item>
-                {siteSchdTypeConvertible &&
-                  !IS_CREATING &&
-                  access.canUpdate &&
-                  value?.shls_ld_type === '3' &&
-                  value?.shls_pickup_mode !== '1' &&
-                  value?.status === 'F' && (
-                    <Button
-                      type="primary"
-                      icon={<EditOutlined />}
-                      style={{ marginLeft: 5 }}
-                      disabled={!siteSchdTypeConvertible}
-                      onClick={() => setShowConvertSchedule(true)}
-                    >
-                      {t('operations.convertPreSchedule')}
-                    </Button>
-                  )}
-                {siteSchdTypeConvertible &&
-                  !IS_CREATING &&
-                  access.canUpdate &&
-                  value?.shls_ld_type === '2' &&
-                  value?.shls_pickup_mode !== '1' &&
-                  value?.status === 'F' && (
-                    <Button
-                      type="primary"
-                      icon={<EditOutlined />}
-                      style={{ marginLeft: 5 }}
-                      disabled={!siteSchdTypeConvertible}
-                      onClick={onRevertSchedule}
-                    >
-                      {t('operations.revertPreOrder')}
-                    </Button>
-                  )}
-                {value?.shls_pickup_mode === '1' && (
-                  <Tag color={'green'} style={{ marginLeft: 10 }}>
-                    {t('fields.stagingBayPickupLoad')}
-                  </Tag>
-                )}
-                {value?.shls_pickup_mode === '2' && (
-                  <Tag color={'red'} style={{ marginLeft: 10 }}>
-                    {t('fields.stagingBayStagedLoad')}
-                  </Tag>
-                )}
-                {/*_.repeat(value?.shls_pickup_mode, 6)*/}
+                <Tag color={'green'} style={{ marginLeft: 10 }}>
+                  {t('fields.stagingBayPickupLoad')}
+                </Tag>
+                111
               </Col>
 
-              <Col span={12}>
+              <Col span={6}>
                 <Terminal form={form} value={value} />
               </Col>
-            </Row>
 
-            <Row gutter={[8, 8]}>
-              <Col span={12}>
+              <Col span={6}>
                 <Supplier form={form} value={value} onChange={changeSupplier} />
               </Col>
 
-              {ALLOW_CUSTOMER_PRODUCT || ALLOW_CUSTOMER_CARRIER ? (
-                <Fragment>
-                  <Col span={6}>
-                    <DrawerForm
-                      form={form}
-                      drawer={drawer ? drawer : value?.drawer_code}
-                      value={value}
-                      onChange={setDrawer}
-                    />
-                  </Col>
-                  <Col span={6}>
-                    <Customer
-                      form={form}
-                      supplier={value ? value.supplier_code : supplier}
-                      value={value}
-                      onChange={changeCustomer}
-                    />
-                  </Col>
-                </Fragment>
-              ) : (
-                <Col span={12}>
-                  <DrawerForm
-                    form={form}
-                    drawer={drawer ? drawer : value?.drawer_code}
-                    value={value}
-                    onChange={setDrawer}
+              <Col span={6}>
+                {/* <TripNumber form={form} value={value} supplier={supplier} onChange={setTrip} /> */}
+                <Form.Item
+                  name="shls_trip_no"
+                  label={t('fields.tripNumber')}
+                  rules={[{ required: true, validator: validateTripNumber }]}
+                  hasFeedback
+                  validateStatus={suppTrip ? status : null}
+                  shouldUpdate
+                >
+                  <InputNumber
+                    min={1}
+                    style={{ width: '100%' }}
+                    disabled={!supplier || !!value}
+                    onChange={onChangeTripNumber}
                   />
-                </Col>
-              )}
+                </Form.Item>
+              </Col>
             </Row>
 
             <Row gutter={[8, 8]}>
-              <Col span={12}>
+              <Col span={6}>
+                <DrawerForm
+                  form={form}
+                  drawer={drawer ? drawer : value?.drawer_code}
+                  value={value}
+                  onChange={setDrawer}
+                />
+              </Col>
+
+              <Col span={6}>
                 <Carrier
                   form={form}
                   customer={ALLOW_CUSTOMER_CARRIER ? customer : undefined}
@@ -1713,132 +1742,108 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
               </Col>
             </Row>
 
-            {config?.siteTripResetDriver && (
-              <Row gutter={[8, 8]}>
-                <Col span={12}>
-                  <Employer
-                    form={form}
-                    value={value}
-                    onChange={setEmployer}
-                    enabled={value?.status === 'F'}
-                  />
-                </Col>
-
-                <Col span={12}>
-                  <Driver form={form} value={value} employer={employer} enabled={value?.status === 'F'} />
-                </Col>
-              </Row>
-            )}
-
             <Row gutter={[8, 8]}>
+              <Col span={6}>
+                <Employer form={form} value={value} onChange={setEmployer} enabled={value?.status === 'F'} />
+              </Col>
+
+              <Col span={6}>
+                <Driver form={form} value={value} employer={employer} enabled={value?.status === 'F'} />
+              </Col>
+
               <Dates form={form} value={value} expiry={expHour} />
-
-              <Col span={6}>
-                {/* <SoldTo form={form} value={value} mode={mode} /> */}
-                <SelectInput
-                  form={form}
-                  value={value}
-                  name="shls_sold_to_num"
-                  label={t('fields.soldTo')}
-                  required={false}
-                  allowClear={true}
-                  maxLength={20}
-                  disabled={mode === '2' || (value && value?.status !== 'F')}
-                  onChange={setSoldTo}
-                  popupManager={PartnershipManager}
-                  popupTitle={t('fields.soldTo') + ' - ' + t('pageNames.partnership')}
-                  popupDisabled={!(value ? value.supplier_code : supplier)}
-                  popupIcon={<CaretDownOutlined />}
-                  popupLabel={''}
-                  popupParams={{
-                    partner_code: soldTo,
-                    partner_type: 'AG',
-                    partner_cmpy_code: value ? value.supplier_code : supplier,
-                    partner_cust_acct: '',
-                  }}
-                />
-              </Col>
-
-              <Col span={6}>
-                {/* <ShipTo form={form} value={value} mode={mode} carrier={carrier} /> */}
-                <SelectInput
-                  form={form}
-                  value={value}
-                  name="shls_ship_to_num"
-                  label={t('fields.shipTo')}
-                  required={false}
-                  allowClear={true}
-                  maxLength={20}
-                  disabled={mode === '2' || (value && value?.status !== 'F')}
-                  onChange={setShipTo}
-                  popupManager={PartnershipManager}
-                  popupTitle={t('fields.shipTo') + ' - ' + t('pageNames.partnership')}
-                  popupDisabled={!(value ? value.supplier_code : supplier)}
-                  popupIcon={<CaretDownOutlined />}
-                  popupLabel={''}
-                  popupParams={{
-                    partner_code: shipTo,
-                    partner_type: 'WE',
-                    partner_cmpy_code: value ? value.supplier_code : supplier,
-                    partner_cust_acct: '',
-                  }}
-                />
-              </Col>
             </Row>
 
-            <Row gutter={[8, 8]}>
-              <Col span={6}>
-                {/* <TripNumber form={form} value={value} supplier={supplier} onChange={setTrip} /> */}
-                <Form.Item
-                  name="shls_trip_no"
-                  label={t('fields.tripNumber')}
-                  rules={[{ required: true, validator: validateTripNumber }]}
-                  hasFeedback
-                  validateStatus={suppTrip ? status : null}
-                  shouldUpdate
-                >
-                  <InputNumber
-                    min={1}
-                    style={{ width: '100%' }}
-                    disabled={!supplier || !!value}
-                    onChange={onChangeTripNumber}
-                  />
-                </Form.Item>
-              </Col>
+            {false && (
+              <>
+                <Row gutter={[8, 8]}>
+                  <Col span={6}>
+                    <SelectInput
+                      form={form}
+                      value={value}
+                      name="shls_sold_to_num"
+                      label={t('fields.soldTo')}
+                      required={false}
+                      allowClear={true}
+                      maxLength={20}
+                      disabled={mode === '2' || (value && value?.status !== 'F')}
+                      onChange={setSoldTo}
+                      popupManager={PartnershipManager}
+                      popupTitle={t('fields.soldTo') + ' - ' + t('pageNames.partnership')}
+                      popupDisabled={!(value ? value.supplier_code : supplier)}
+                      popupIcon={<CaretDownOutlined />}
+                      popupLabel={''}
+                      popupParams={{
+                        partner_code: soldTo,
+                        partner_type: 'AG',
+                        partner_cmpy_code: value ? value.supplier_code : supplier,
+                        partner_cust_acct: '',
+                      }}
+                    />
+                  </Col>
 
-              <Col span={SHOW_ISO_DOR ? 3 : 6}>
-                <Shift form={form} value={value} />
-              </Col>
+                  <Col span={6}>
+                    <SelectInput
+                      form={form}
+                      value={value}
+                      name="shls_ship_to_num"
+                      label={t('fields.shipTo')}
+                      required={false}
+                      allowClear={true}
+                      maxLength={20}
+                      disabled={mode === '2' || (value && value?.status !== 'F')}
+                      onChange={setShipTo}
+                      popupManager={PartnershipManager}
+                      popupTitle={t('fields.shipTo') + ' - ' + t('pageNames.partnership')}
+                      popupDisabled={!(value ? value.supplier_code : supplier)}
+                      popupIcon={<CaretDownOutlined />}
+                      popupLabel={''}
+                      popupParams={{
+                        partner_code: shipTo,
+                        partner_type: 'WE',
+                        partner_cmpy_code: value ? value.supplier_code : supplier,
+                        partner_cust_acct: '',
+                      }}
+                    />
+                  </Col>
+                </Row>
 
-              <Col span={SHOW_ISO_DOR ? 3 : 6}>
-                <Priority form={form} value={value} />
-              </Col>
+                <Row gutter={[8, 8]}>
+                  <Col span={SHOW_ISO_DOR ? 3 : 6}>
+                    <Shift form={form} value={value} />
+                  </Col>
 
-              {siteUseIsotainer && (
-                <Col span={6}>
-                  <Isotainer form={form} value={value} />
-                </Col>
-              )}
+                  <Col span={SHOW_ISO_DOR ? 3 : 6}>
+                    <Priority form={form} value={value} />
+                  </Col>
 
-              {showDORNumber && (
-                <Col span={6}>
-                  <HostData form={form} value={value} canEdit={canEditDOR} />
-                </Col>
-              )}
-            </Row>
+                  {siteUseIsotainer && (
+                    <Col span={6}>
+                      <Isotainer form={form} value={value} />
+                    </Col>
+                  )}
 
-            <Row gutter={[8, 2]}>
-              {siteUseSpecIns && (
-                <Col span={showLSI ? 12 : 24}>
-                  <SpecialInstructions form={form} value={value} />
-                </Col>
-              )}
-              {showLSI && (
-                <Col span={siteUseSpecIns ? 12 : 24}>
-                  <LoadSecurityInformation form={form} value={value} />
-                </Col>
-              )}
-            </Row>
+                  {showDORNumber && (
+                    <Col span={6}>
+                      <HostData form={form} value={value} canEdit={canEditDOR} />
+                    </Col>
+                  )}
+                </Row>
+
+                <Row gutter={[8, 2]}>
+                  {siteUseSpecIns && (
+                    <Col span={showLSI ? 12 : 24}>
+                      <SpecialInstructions form={form} value={value} />
+                    </Col>
+                  )}
+                  {showLSI && (
+                    <Col span={siteUseSpecIns ? 12 : 24}>
+                      <LoadSecurityInformation form={form} value={value} />
+                    </Col>
+                  )}
+                </Row>
+              </>
+            )}
 
             {SHOW_WEIGHTS && (
               <Row gutter={[8, 8]}>
@@ -1856,30 +1861,31 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
               </Row>
             )}
 
-            {mode === '2' && !READ_ONLY && value?.shls_pickup_mode !== '1' && (
-              <Compartments
-                form={form}
-                value={value}
-                drawer={value ? value.supplier_code : supplier} //Same as v9, when supplier != drawer, use supplier product
-                tanker={!tanker ? value?.tnkr_code : tanker}
-                supplier={value ? value.supplier_code : supplier}
-                customer={ALLOW_CUSTOMER_PRODUCT ? customer : undefined}
-                config={config}
-                setInit={setCompartmentsInit}
-              />
-            )}
+            {/* drawer && (
+              <StagedSources value={value} form={form} supplier={drawer} config={config} />
+            ) */}
+            {supplier && <StagedSources value={value} form={form} supplier={supplier} config={config} />}
 
-            {mode === '2' && !READ_ONLY && value?.shls_pickup_mode === '1' && (
-              <StagingCompartments
-                form={form}
-                value={value}
-                drawer={value ? value.supplier_code : supplier} //Same as v9, when supplier != drawer, use supplier product
-                tanker={!tanker ? value?.tnkr_code : tanker}
-                supplier={value ? value.supplier_code : supplier}
-                customer={undefined}
-                config={config}
-                setInit={setCompartmentsInit}
-              />
+            {mode === '2' && !READ_ONLY && (
+              <Card
+                size="small"
+                title={t('tabColumns.stagingDestination')}
+                hoverable
+                headStyle={{ paddingRight: 10, fontWeight: 'bold' }}
+                style={{ marginTop: 8 }}
+                // extra={popupText}
+              >
+                <StagingCompartments
+                  form={form}
+                  value={value}
+                  drawer={value ? value.supplier_code : supplier} //Same as v9, when supplier != drawer, use supplier product
+                  tanker={!tanker ? value?.tnkr_code : tanker}
+                  supplier={value ? value.supplier_code : supplier}
+                  customer={undefined}
+                  config={config}
+                  setInit={setCompartmentsInit}
+                />
+              </Card>
             )}
 
             {mode === '3' && !READ_ONLY && (
@@ -1893,24 +1899,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
               />
             )}
 
-            {mode === '4' && !READ_ONLY && (
-              <Products
-                form={form}
-                value={value}
-                drawer={value ? value.supplier_code : supplier}
-                customer={ALLOW_CUSTOMER_PRODUCT ? customer : undefined}
-                access={access}
-                setInit={setProductsInit}
-              />
-            )}
-
-            {READ_ONLY && value?.shls_pickup_mode !== '1' && (
-              <Summary form={form} value={value} setInit={setCompartmentsInit} />
-            )}
-
-            {READ_ONLY && value?.shls_pickup_mode === '1' && (
-              <StagingSummary form={form} value={value} setInit={setCompartmentsInit} />
-            )}
+            {READ_ONLY && <StagingSummary form={form} value={value} setInit={setCompartmentsInit} />}
           </TabPane>
 
           <TabPane
