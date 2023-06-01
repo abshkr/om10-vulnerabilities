@@ -2075,6 +2075,7 @@
     "stagingBayNormalStat": "普通",
     "stagingBayPickupStat": "组合",
     "stagingBayStagedStat": "已被组合",
+    "stagingBayPickupMode": "提单提油模式",
     "standard": "标量",
     "standardDensity": "标准密度",
     "standardDensitySource": "从源油罐/船/车等输入目标油罐油品的标准密度[DENs@Std]",

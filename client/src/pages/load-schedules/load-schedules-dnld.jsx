@@ -65,6 +65,7 @@ const LoadSchedules = () => {
   const [useSearch, setUseSearch] = useState(false);
 
   const [tripTerminal, setTripTerminal] = useState('');
+  const [tripPickupMode, setTripPickupMode] = useState('');
   const [tripNumber, setTripNumber] = useState('');
   const [tripSupplier, setTripSupplier] = useState('');
   const [tripCarrier, setTripCarrier] = useState('');
@@ -145,7 +146,7 @@ const LoadSchedules = () => {
       !start ? '-1' : start
     }&end_date=${
       !end ? '-1' : end
-    }&shls_terminal=${tripTerminal}&shls_trip_no=${tripNumber}&supplier_code=${tripSupplier}&carrier_code=${tripCarrier}&tnkr_code=${tripTanker}&status=${tripStatus}`;
+    }&shls_terminal=${tripTerminal}&shls_trip_no=${tripNumber}&supplier_code=${tripSupplier}&carrier_code=${tripCarrier}&tnkr_code=${tripTanker}&status=${tripStatus}&shls_pickup_mode=${tripPickupMode}`;
     setMainUrl(tempUrl);
 
     setPage(1);
@@ -168,7 +169,7 @@ const LoadSchedules = () => {
     // revalidate();
     const tempUrl = `${LOAD_SCHEDULES.READ}?pgflag=${
       pagingFlag ? 'Y' : 'N'
-    }&start_date=${start}&end_date=${end}&shls_terminal=${tripTerminal}&shls_trip_no=${tripNumber}&supplier_code=${tripSupplier}&carrier_code=${tripCarrier}&tnkr_code=${tripTanker}&status=${tripStatus}`;
+    }&start_date=${start}&end_date=${end}&shls_terminal=${tripTerminal}&shls_trip_no=${tripNumber}&supplier_code=${tripSupplier}&carrier_code=${tripCarrier}&tnkr_code=${tripTanker}&status=${tripStatus}&shls_pickup_mode=${tripPickupMode}`;
     setMainUrl(tempUrl);
     setPage(1);
     setRunUrlFlag(!pagingFlag);
@@ -196,13 +197,13 @@ const LoadSchedules = () => {
     setTripTanker('');
     setTripStatus('');
     /* // const tempUrl = (
-    //   `${LOAD_SCHEDULES.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${!start?'-1':start}&end_date=${!end?'-1':end}&shls_terminal=${tripTerminal}&shls_trip_no=${tripNumber}&supplier_code=${tripSupplier}&carrier_code=${tripCarrier}&tnkr_code=${tripTanker}&status=${tripStatus}`
+    //   `${LOAD_SCHEDULES.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${!start?'-1':start}&end_date=${!end?'-1':end}&shls_terminal=${tripTerminal}&shls_trip_no=${tripNumber}&supplier_code=${tripSupplier}&carrier_code=${tripCarrier}&tnkr_code=${tripTanker}&status=${tripStatus}&shls_pickup_mode=${tripPickupMode}`
     // );
     const tempUrl = `${LOAD_SCHEDULES.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${
       !start ? '-1' : start
     }&end_date=${
       !end ? '-1' : end
-    }&shls_terminal=${''}&shls_trip_no=${''}&supplier_code=${''}&carrier_code=${''}&tnkr_code=${''}&status=${''}`;
+    }&shls_terminal=${''}&shls_trip_no=${''}&supplier_code=${''}&carrier_code=${''}&tnkr_code=${''}&status=${''}&shls_pickup_mode=${''}`;
     setMainUrl(tempUrl);
 
     setPage(1);
@@ -239,6 +240,7 @@ const LoadSchedules = () => {
     setSearching(true);
 
     setTripTerminal(!values?.terminal ? '' : values?.terminal);
+    setTripPickupMode(!values?.shls_pickup_mode ? '' : values?.shls_pickup_mode);
     setTripNumber(!values?.shls_trip_no ? '' : values?.shls_trip_no);
     setTripSupplier(!values?.supplier_code ? '' : values?.supplier_code);
     setTripCarrier(!values?.carrier_code ? '' : values?.carrier_code);
@@ -249,7 +251,7 @@ const LoadSchedules = () => {
     setEndTimeSearch(values.use_date_range ? (!values.end_date ? '-1' : values.end_date) : '-1');
     setUseSearch(true);
 
-    const tripTerminal = !values?.terminal ? '' : values?.terminal;
+    const tripPickupMode = !values?.shls_pickup_mode ? '' : values?.shls_pickup_mode;
     const tripNumber = !values?.shls_trip_no ? '' : values?.shls_trip_no;
     const tripSupplier = !values?.supplier_code ? '' : values?.supplier_code;
     const tripCarrier = !values?.carrier_code ? '' : values?.carrier_code;
@@ -259,11 +261,11 @@ const LoadSchedules = () => {
     const startTimeSearch = values.use_date_range ? (!values.start_date ? '-1' : values.start_date) : '-1';
     const endTimeSearch = values.use_date_range ? (!values.end_date ? '-1' : values.end_date) : '-1';
     // const tempUrl = (
-    //   `${LOAD_SCHEDULES.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${useSearch?startTimeSearch:start}&end_date=${useSearch?endTimeSearch:end}&shls_terminal=${tripTerminal}&shls_trip_no=${tripNumber}&supplier_code=${tripSupplier}&carrier_code=${tripCarrier}&tnkr_code=${tripTanker}&status=${tripStatus}`
+    //   `${LOAD_SCHEDULES.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${useSearch?startTimeSearch:start}&end_date=${useSearch?endTimeSearch:end}&shls_terminal=${tripTerminal}&shls_trip_no=${tripNumber}&supplier_code=${tripSupplier}&carrier_code=${tripCarrier}&tnkr_code=${tripTanker}&status=${tripStatus}&shls_pickup_mode=${tripPickupMode}`
     // );
     const tempUrl = `${LOAD_SCHEDULES.READ}?pgflag=${
       pagingFlag ? 'Y' : 'N'
-    }&start_date=${startTimeSearch}&end_date=${endTimeSearch}&shls_terminal=${tripTerminal}&shls_trip_no=${tripNumber}&supplier_code=${tripSupplier}&carrier_code=${tripCarrier}&tnkr_code=${tripTanker}&status=${tripStatus}`;
+    }&start_date=${startTimeSearch}&end_date=${endTimeSearch}&shls_terminal=${tripTerminal}&shls_trip_no=${tripNumber}&supplier_code=${tripSupplier}&carrier_code=${tripCarrier}&tnkr_code=${tripTanker}&status=${tripStatus}&shls_pickup_mode=${tripPickupMode}`;
     setMainUrl(tempUrl);
 
     setPage(1);
@@ -371,6 +373,7 @@ const LoadSchedules = () => {
               terminal: true,
               shls_trip_no: true,
               supplier_code: true,
+              shls_pickup_mode: config?.siteUseStagingBay,
               trip_status: true,
               tnkr_code: true,
               carrier_code: true,
@@ -379,6 +382,7 @@ const LoadSchedules = () => {
               terminal: tripTerminal,
               shls_trip_no: tripNumber,
               supplier_code: tripSupplier,
+              shls_pickup_mode: tripPickupMode,
               trip_status: tripStatus,
               tnkr_code: tripTanker,
               carrier_code: tripCarrier,

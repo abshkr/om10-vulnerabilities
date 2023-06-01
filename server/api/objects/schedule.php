@@ -1611,6 +1611,10 @@ class Schedule extends CommonClass
             $query = $query . " AND TNKR_CODE LIKE '%'||:tnkr_code||'%'";
         }
 
+        if (isset($this->shls_pickup_mode) && $this->shls_pickup_mode != '') {
+            $query = $query . " AND SHLS_PICKUP_MODE = :shls_pickup_mode";
+        }
+
         if (isset($this->status) && $this->status != '') {
             $query = $query . " AND STATUS = :status";
         }
@@ -1642,6 +1646,10 @@ class Schedule extends CommonClass
 
         if (isset($this->tnkr_code) && $this->tnkr_code != '') {
             oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+        }
+
+        if (isset($this->shls_pickup_mode) && $this->shls_pickup_mode != '') {
+            oci_bind_by_name($stmt, ':shls_pickup_mode', $this->shls_pickup_mode);
         }
 
         if (isset($this->status) && $this->status != '') {
@@ -1719,6 +1727,10 @@ class Schedule extends CommonClass
             $query = $query . " AND TNKR_CODE LIKE '%'||:tnkr_code||'%'";
         }
 
+        if (isset($this->shls_pickup_mode) && $this->shls_pickup_mode != '') {
+            $query = $query . " AND SHLS_PICKUP_MODE = :shls_pickup_mode";
+        }
+
         if (isset($this->status) && $this->status != '') {
             $query = $query . " AND STATUS = :status";
         }
@@ -1761,6 +1773,10 @@ class Schedule extends CommonClass
 
         if (isset($this->tnkr_code) && $this->tnkr_code != '') {
             oci_bind_by_name($stmt, ':tnkr_code', $this->tnkr_code);
+        }
+
+        if (isset($this->shls_pickup_mode) && $this->shls_pickup_mode != '') {
+            oci_bind_by_name($stmt, ':shls_pickup_mode', $this->shls_pickup_mode);
         }
 
         if (isset($this->status) && $this->status != '') {

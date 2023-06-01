@@ -54,6 +54,7 @@ import {
   PsnlName,
   PsnlRole,
   PsnlFlags,
+  PickupModes,
 } from './fields';
 
 const SearchForm = ({ onSearch, fields, initValues, modal, rangeRequired, timeRequired }) => {
@@ -134,6 +135,7 @@ const SearchForm = ({ onSearch, fields, initValues, modal, rangeRequired, timeRe
       {fields?.mv_key && <NominationKey />}
       {fields?.shls_trip_no && <Trip />}
       {fields?.supplier_code && <Supplier />}
+      {fields?.shls_pickup_mode && <PickupModes />}
       {fields?.mlitm_prodcmpy && <PlantSupplier />}
       {fields?.mlitm_id && <MovementID />}
       {fields?.load_id && <LoadID />}

@@ -1337,7 +1337,11 @@ class StagingBay extends CommonClass
         $data->terminal = $this->shls_terminal;
         $data->drawer = $this->drawer_code;
         $data->carrier = $this->carrier_code;
-        $data->driver = $this->driver;
+        if (isset($this->driver) && $this->driver != "") {
+            $data->driver = $this->driver;
+        } else {
+            $data->driver = '8888';
+        }
         $data->dateScheduled = $this->shls_caldate;
         $data->dateExpired = $this->shls_exp2;
 
@@ -1525,7 +1529,7 @@ class StagingBay extends CommonClass
         $data = (object)array();
         $data->supplier = $this->supplier_code;
         $data->trip = $this->shls_trip_no;
-        $data->ids = $ids;
+        // $data->ids = $ids;
 
         $options = array(
             'http' => array(
@@ -1585,7 +1589,7 @@ class StagingBay extends CommonClass
         $data = (object)array();
         $data->supplier = $this->supplier_code;
         $data->trip = $this->shls_trip_no;
-        $data->ids = $ids;
+        // $data->ids = $ids;
 
         $options = array(
             'http' => array(

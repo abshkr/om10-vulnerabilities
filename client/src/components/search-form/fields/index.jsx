@@ -43,6 +43,7 @@ import PsnlEmployer from './psnl-employer';
 import PsnlName from './psnl-name';
 import PsnlRole from './psnl-role';
 import PsnlFlags from './psnl-flags';
+import PickupModes from './pickup-modes';
 
 export {
   DateRange,
@@ -90,4 +91,5 @@ export {
   PsnlName,
   PsnlRole,
   PsnlFlags,
+  PickupModes,
 };

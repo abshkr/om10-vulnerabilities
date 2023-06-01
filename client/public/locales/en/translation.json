@@ -2076,6 +2076,7 @@
     "stagingBayNormalStat": "NORMAL",
     "stagingBayPickupStat": "PICKUP",
     "stagingBayStagedStat": "STAGED",
+    "stagingBayPickupMode": "Pickup/Load Mode",
     "standard": "Standard",
     "standardDensity": "Standard Density",
     "standardDensitySource": "Standard Density of product from the Duty Tank/Ship/Wagon/Truck/Tanker (S) [DENs@Std]",
