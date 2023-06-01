@@ -5,5 +5,17 @@ import PreloadEditor from './preload';
 import DelvNoEditor from './delv-no';
 import SoldToEditor from './sold-to';
 import ShipToEditor from './ship-to';
+import CustomerEditor from './customer';
+import DelvlocEditor from './delvloc';
 
-export { ProductEditor, UnitEditor, ScheduleEditor, PreloadEditor, DelvNoEditor, SoldToEditor, ShipToEditor };
+export {
+  ProductEditor,
+  UnitEditor,
+  ScheduleEditor,
+  PreloadEditor,
+  DelvNoEditor,
+  SoldToEditor,
+  ShipToEditor,
+  CustomerEditor,
+  DelvlocEditor,
+};

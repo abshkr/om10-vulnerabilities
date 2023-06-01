@@ -7,7 +7,15 @@ import { DataTable, PartnershipManager, OrderManager } from '../../../../compone
 
 import api, { LOAD_SCHEDULES, STAGING_BAY } from '../../../../api';
 
-import { ProductEditor, UnitEditor, ScheduleEditor, PreloadEditor, DelvNoEditor } from './fields';
+import {
+  ProductEditor,
+  UnitEditor,
+  ScheduleEditor,
+  PreloadEditor,
+  DelvNoEditor,
+  CustomerEditor,
+  DelvlocEditor,
+} from './fields';
 
 import useSWR from 'swr';
 
@@ -18,10 +26,10 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
   const IS_CREATING = !value;
 
   const { data: units } = useSWR(LOAD_SCHEDULES.UNIT_TYPES);
-  //const { data: customersBySupplier } = useSWR(`${STAGING_BAY.SUPP_CUSTOMERS}?supplier=${supplier}`);
-  //const { data: delvLocsBySupplier } = useSWR(`${STAGING_BAY.SUPP_DELVLOCS}?supplier=${supplier}`);
-  const { data: customersBySupplier } = useSWR(`${STAGING_BAY.SUPP_CUSTOMERS}?supplier=${'-1'}`);
-  const { data: delvLocsBySupplier } = useSWR(`${STAGING_BAY.SUPP_DELVLOCS}?supplier=${'-1'}`);
+  const { data: customersBySupplier } = useSWR(`${STAGING_BAY.SUPP_CUSTOMERS}?supplier=${supplier}`);
+  const { data: delvLocsBySupplier } = useSWR(`${STAGING_BAY.SUPP_DELVLOCS}?supplier=${supplier}`);
+  // const { data: customersBySupplier } = useSWR(`${STAGING_BAY.SUPP_CUSTOMERS}?supplier=${'-1'}`);
+  // const { data: delvLocsBySupplier } = useSWR(`${STAGING_BAY.SUPP_DELVLOCS}?supplier=${'-1'}`);
 
   const [compartments, setCompartments] = useState([]);
   const [products, setProducts] = useState([]);
@@ -443,7 +451,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
         : _.min([parseInt(data?.safefill), parseInt(valueDrop?.plss_staged_prldqty)]);
     }
 
-    const customerScheduled = !valueDrop?.prod_code
+    /* const customerScheduled = !valueDrop?.prod_code
       ? data?.plss_staged_cust
       : data?.plss_staged_cust !== ''
       ? data?.plss_staged_cust
@@ -452,6 +460,18 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
     const delvlocScheduled = !valueDrop?.prod_code
       ? data?.plss_staged_delvloc
       : data?.plss_staged_delvloc !== ''
+      ? data?.plss_staged_delvloc
+      : valueDrop?.plss_staged_delvloc; */
+
+    const customerScheduled = !valueDrop?.prod_code
+      ? data?.plss_staged_cust
+      : !valueDrop?.plss_staged_cust // === ''
+      ? data?.plss_staged_cust
+      : valueDrop?.plss_staged_cust;
+
+    const delvlocScheduled = !valueDrop?.prod_code
+      ? data?.plss_staged_delvloc
+      : !valueDrop?.plss_staged_delvloc // === ''
       ? data?.plss_staged_delvloc
       : valueDrop?.plss_staged_delvloc;
 
@@ -485,6 +505,8 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
           plss_staged_cust: customerScheduled,
           plss_staged_delvloc: delvlocScheduled,
           plss_staged_loadtype: valueDrop?.plss_staged_loadtype,
+          customer_editable: !valueDrop?.plss_staged_cust,
+          delvloc_editable: !valueDrop?.plss_staged_delvloc,
         });
       } else {
         payload.push(rowNode?.data);
@@ -694,13 +716,14 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
           })
         ),
       },
-      cellEditor: 'ListEditor',
+      cellEditor: 'CustomerEditor',
       cellEditorParams: {
         values: _.uniq(
           _.map(customersBySupplier?.records, (item) => {
             return { code: item.cust_acnt, name: item.cust_desc };
           })
         ),
+        editableColumn: 'customer_editable',
       },
     },
 
@@ -729,13 +752,15 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
           })
         ),
       },
-      cellEditor: 'ListEditor',
+      cellEditor: 'DelvlocEditor',
       cellEditorParams: {
         values: _.uniq(
           _.map(delvLocsBySupplier?.records, (item) => {
-            return { code: item.delv_code, name: item.delv_desc };
+            return { code: item.delv_code, name: item.delv_desc, parent: item.delv_cust_acct };
           })
         ),
+        editableColumn: 'delvloc_editable',
+        parentColumn: 'plss_staged_cust',
       },
     },
 
@@ -845,6 +870,8 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
     ScheduleEditor,
     PreloadEditor,
     DelvNoEditor,
+    CustomerEditor,
+    DelvlocEditor,
   };
 
   return (

@@ -1864,7 +1864,14 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
             {/* drawer && (
               <StagedSources value={value} form={form} supplier={drawer} config={config} />
             ) */}
-            {supplier && <StagedSources value={value} form={form} supplier={supplier} config={config} />}
+            {(supplier || value?.supplier_code) && (
+              <StagedSources
+                value={value}
+                form={form}
+                supplier={supplier || value?.supplier_code}
+                config={config}
+              />
+            )}
 
             {mode === '2' && !READ_ONLY && (
               <Card
