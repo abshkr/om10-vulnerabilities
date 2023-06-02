@@ -2,6 +2,7 @@
 
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
+include_once __DIR__ . '/../service/company_service.php';
 //include_once __DIR__ . '/../service/manual_trans_service.php';
 include_once __DIR__ . '/../service/schedule_service.php';
 include_once 'common_class.php';
@@ -1295,6 +1296,23 @@ class StagingBay extends CommonClass
         }
     }
 
+    public function next_trip_no()
+    {
+        $company_service = new CompanyService($this->conn, $this->supplier_code, $auto_commit = true);
+        $new_pickup = $company_service->next_pickup_no();
+
+        $result = array();
+        $result["records"] = array();
+        $item = array(
+            "next_trip_no" => $new_pickup,
+        );
+
+        array_push($result["records"], $item);
+
+        http_response_code(200);
+        echo json_encode($result, JSON_PRETTY_PRINT);
+    }
+
 
     public function create_pickup()
     {
@@ -1365,6 +1383,10 @@ class StagingBay extends CommonClass
 
 
         if (isset($array['result']) && $array['result'] == true) {
+            // need update CMPY_PICKUP_TRIP_LAST
+            $company_service = new CompanyService($this->conn, $this->supplier_code, $auto_commit = true);
+            $company_service->set_last_pickup($this->shls_trip_no);
+
             $response = new EchoSchema(200, 
                 response("__CREATE_SUCCEEDED__",
                     sprintf("Pickup Load (trip number:%d, supplier:%s) created", $this->shls_trip_no, $this->supplier_code)

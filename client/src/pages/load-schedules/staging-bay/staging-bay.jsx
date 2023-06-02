@@ -537,7 +537,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
   const changeSupplier = (supplier) => {
     if (IS_CREATING) {
       api
-        .get(LOAD_SCHEDULES.NEXT_TRIP, {
+        .get(STAGING_BAY.NEXT_TRIP, {
           params: {
             supplier_code: supplier,
           },

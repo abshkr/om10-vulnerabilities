@@ -1,3 +1,5 @@
+export const NEXT_TRIP = '/api/pages/staging_bay/next_trip_no.php';
+
 export const PRE_SCHEDULES = '/api/pages/staging_bay/get_pre_schedules.php';
 export const PRE_ORDERS = '/api/pages/staging_bay/get_pre_orders.php';
 export const OPEN_ORDERS = '/api/pages/staging_bay/get_open_orders.php';
