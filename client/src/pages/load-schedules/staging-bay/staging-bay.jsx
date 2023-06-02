@@ -1681,7 +1681,6 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
                 <Tag color={'green'} style={{ marginLeft: 10 }}>
                   {t('fields.stagingBayPickupLoad')}
                 </Tag>
-                111
               </Col>
 
               <Col span={6}>
