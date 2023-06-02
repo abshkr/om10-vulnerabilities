@@ -45,6 +45,7 @@ import {
   Supplier,
   Drawer as DrawerForm,
   Customer,
+  DeliveryLocation,
   Carrier,
   Tanker,
   Employer,
@@ -77,10 +78,8 @@ import DeliveryDetails from '../../delivery-details';
 import DriverInstructions from './driver-instructions';
 import AdditionalHostData from './additional-host-data';
 import Compartments from './compartments';
-import StagingCompartments from './staging-compartments';
 import Transactions from './transactions';
 import Summary from './summary';
-import StagingSummary from './staging-summary';
 import Seals from './seals';
 import BOL from './bol';
 import Axles from './axles';
@@ -111,16 +110,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     fasttrackEnabled,
   } = config;
 
-  access.canCreate = value?.shls_pickup_mode === '2' ? false : access.canCreate;
-  access.canUpdate = value?.shls_pickup_mode === '2' ? false : access.canUpdate;
-  access.canDelete = value?.shls_pickup_mode === '2' ? false : access.canDelete;
+  access.canCreate = value?.shls_pickup_mode !== '2' && access.canCreate;
+  access.canUpdate = value?.shls_pickup_mode !== '2' && access.canUpdate;
+  access.canDelete = value?.shls_pickup_mode !== '2' && access.canDelete;
 
   const popupMT = config?.popupManualTransaction;
 
   const SHOW_ISO_DOR = siteUseIsotainer && showDORNumber;
-
-  const ALLOW_CUSTOMER_PRODUCT = site_customer_product && value?.shls_pickup_mode !== '1';
-  const ALLOW_CUSTOMER_CARRIER = site_customer_carrier && value?.shls_pickup_mode !== '1';
 
   const send_to_ft_ready = value?.status === 'F' && value?.shls_ld_type === '2';
 
@@ -213,6 +209,22 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
   const CAN_MAKE_TRANSACTIONS = CAN_MAKE && manageMakeManualTransaction;
   const CAN_REPOST_TRANSACTIONS = CAN_REPOST && manageMakeManualTransaction;
   const CAN_ADD_HOST_DATA = value?.shls_ld_type === '2' && manageAdditionalHostData;
+
+  const CAN_CONVERT_PRE_SCHEDULE =
+    siteSchdTypeConvertible &&
+    access.canUpdate &&
+    !IS_CREATING &&
+    // value?.shls_pickup_mode !== '1' &&
+    value?.shls_ld_type === '3' &&
+    value?.status === 'F';
+
+  const CAN_REVERT_PRE_ORDER =
+    siteSchdTypeConvertible &&
+    access.canUpdate &&
+    !IS_CREATING &&
+    // value?.shls_pickup_mode !== '1' &&
+    value?.shls_ld_type === '2' &&
+    value?.status === 'F';
 
   const { data: siteData } = useSWR(SITE_CONFIGURATION.GET_SITE);
   const { data: suppConfig } = useSWR(`${COMPANIES.CONFIG}?cmpy_code=${supplier}`);
@@ -358,7 +370,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     columns.push({ code: 'shls_terminal', label: t('fields.terminal') });
     columns.push({ code: 'supplier_code', label: t('fields.supplier') });
     columns.push({ code: 'drawer_code', label: t('fields.drawer') });
-    if (ALLOW_CUSTOMER_PRODUCT || ALLOW_CUSTOMER_CARRIER) {
+    if (site_customer_product || site_customer_carrier) {
       columns.push({ code: 'shls_cust', label: t('fields.customer') });
     }
     columns.push({ code: 'carrier_code', label: t('fields.carrier') });
@@ -551,7 +563,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
   const changeCustomer = (customer) => {
     setCustomer(customer);
     // need check the site configuration SITE_CUSTOMER_CARRIER before the clearing
-    if (ALLOW_CUSTOMER_CARRIER) {
+    if (site_customer_carrier) {
       setFieldsValue({
         tnkr_code: undefined,
         carrier_code: undefined,
@@ -1274,6 +1286,28 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
       });
   };
 
+  const modeIndicator = () => {
+    let tag = <></>;
+    if (config?.siteUseStagingBay) {
+      if (value?.shls_pickup_mode === '1') {
+        tag = (
+          <Tag color={'green'} style={{ marginLeft: 10 }}>
+            {t('fields.stagingBayPickupLoad')}
+          </Tag>
+        );
+      }
+      if (value?.shls_pickup_mode === '2') {
+        tag = (
+          <Tag color={'red'} style={{ marginLeft: 10 }}>
+            {t('fields.stagingBayStagedLoad')}
+          </Tag>
+        );
+      }
+    }
+
+    return tag;
+  };
+
   useEffect(() => {
     if (!value) {
       setTab('0');
@@ -1606,49 +1640,29 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
                     {t('fields.unload')}
                   </Checkbox>
                 </Form.Item>
-                {siteSchdTypeConvertible &&
-                  !IS_CREATING &&
-                  access.canUpdate &&
-                  value?.shls_ld_type === '3' &&
-                  value?.shls_pickup_mode !== '1' &&
-                  value?.status === 'F' && (
-                    <Button
-                      type="primary"
-                      icon={<EditOutlined />}
-                      style={{ marginLeft: 5 }}
-                      disabled={!siteSchdTypeConvertible}
-                      onClick={() => setShowConvertSchedule(true)}
-                    >
-                      {t('operations.convertPreSchedule')}
-                    </Button>
-                  )}
-                {siteSchdTypeConvertible &&
-                  !IS_CREATING &&
-                  access.canUpdate &&
-                  value?.shls_ld_type === '2' &&
-                  value?.shls_pickup_mode !== '1' &&
-                  value?.status === 'F' && (
-                    <Button
-                      type="primary"
-                      icon={<EditOutlined />}
-                      style={{ marginLeft: 5 }}
-                      disabled={!siteSchdTypeConvertible}
-                      onClick={onRevertSchedule}
-                    >
-                      {t('operations.revertPreOrder')}
-                    </Button>
-                  )}
-                {value?.shls_pickup_mode === '1' && (
-                  <Tag color={'green'} style={{ marginLeft: 10 }}>
-                    {t('fields.stagingBayPickupLoad')}
-                  </Tag>
+                {CAN_CONVERT_PRE_SCHEDULE && (
+                  <Button
+                    type="primary"
+                    icon={<EditOutlined />}
+                    style={{ marginLeft: 5 }}
+                    disabled={!siteSchdTypeConvertible}
+                    onClick={() => setShowConvertSchedule(true)}
+                  >
+                    {t('operations.convertPreSchedule')}
+                  </Button>
                 )}
-                {value?.shls_pickup_mode === '2' && (
-                  <Tag color={'red'} style={{ marginLeft: 10 }}>
-                    {t('fields.stagingBayStagedLoad')}
-                  </Tag>
+                {CAN_REVERT_PRE_ORDER && (
+                  <Button
+                    type="primary"
+                    icon={<EditOutlined />}
+                    style={{ marginLeft: 5 }}
+                    disabled={!siteSchdTypeConvertible}
+                    onClick={onRevertSchedule}
+                  >
+                    {t('operations.revertPreOrder')}
+                  </Button>
                 )}
-                {/*_.repeat(value?.shls_pickup_mode, 6)*/}
+                {modeIndicator()}
               </Col>
 
               <Col span={12}>
@@ -1661,42 +1675,43 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
                 <Supplier form={form} value={value} onChange={changeSupplier} />
               </Col>
 
-              {ALLOW_CUSTOMER_PRODUCT || ALLOW_CUSTOMER_CARRIER ? (
-                <Fragment>
-                  <Col span={6}>
-                    <DrawerForm
-                      form={form}
-                      drawer={drawer ? drawer : value?.drawer_code}
-                      value={value}
-                      onChange={setDrawer}
-                    />
-                  </Col>
-                  <Col span={6}>
-                    <Customer
-                      form={form}
-                      supplier={value ? value.supplier_code : supplier}
-                      value={value}
-                      onChange={changeCustomer}
-                    />
-                  </Col>
-                </Fragment>
-              ) : (
+              <Col span={12}>
+                <DrawerForm
+                  form={form}
+                  drawer={drawer ? drawer : value?.drawer_code}
+                  value={value}
+                  onChange={setDrawer}
+                />
+              </Col>
+            </Row>
+
+            {(site_customer_product || site_customer_carrier) && (
+              <Row gutter={[8, 8]}>
                 <Col span={12}>
-                  <DrawerForm
+                  <Customer
                     form={form}
-                    drawer={drawer ? drawer : value?.drawer_code}
+                    supplier={value ? value.supplier_code : supplier}
                     value={value}
-                    onChange={setDrawer}
+                    onChange={changeCustomer}
                   />
                 </Col>
-              )}
-            </Row>
+
+                <Col span={12}>
+                  <DeliveryLocation
+                    form={form}
+                    value={value}
+                    customer={customer}
+                    enabled={value?.status === 'F'}
+                  />
+                </Col>
+              </Row>
+            )}
 
             <Row gutter={[8, 8]}>
               <Col span={12}>
                 <Carrier
                   form={form}
-                  customer={ALLOW_CUSTOMER_CARRIER ? customer : undefined}
+                  customer={site_customer_carrier ? customer : undefined}
                   value={value}
                   onChange={setCarrier}
                 />
@@ -1856,27 +1871,14 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
               </Row>
             )}
 
-            {mode === '2' && !READ_ONLY && value?.shls_pickup_mode !== '1' && (
+            {mode === '2' && !READ_ONLY && (
               <Compartments
                 form={form}
                 value={value}
                 drawer={value ? value.supplier_code : supplier} //Same as v9, when supplier != drawer, use supplier product
                 tanker={!tanker ? value?.tnkr_code : tanker}
                 supplier={value ? value.supplier_code : supplier}
-                customer={ALLOW_CUSTOMER_PRODUCT ? customer : undefined}
-                config={config}
-                setInit={setCompartmentsInit}
-              />
-            )}
-
-            {mode === '2' && !READ_ONLY && value?.shls_pickup_mode === '1' && (
-              <StagingCompartments
-                form={form}
-                value={value}
-                drawer={value ? value.supplier_code : supplier} //Same as v9, when supplier != drawer, use supplier product
-                tanker={!tanker ? value?.tnkr_code : tanker}
-                supplier={value ? value.supplier_code : supplier}
-                customer={undefined}
+                customer={site_customer_product ? customer : undefined}
                 config={config}
                 setInit={setCompartmentsInit}
               />
@@ -1887,7 +1889,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
                 form={form}
                 value={value}
                 drawer={value ? value.supplier_code : supplier}
-                customer={ALLOW_CUSTOMER_PRODUCT ? customer : undefined}
+                customer={site_customer_product ? customer : undefined}
                 access={access}
                 setInit={setProductsInit}
               />
@@ -1898,19 +1900,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
                 form={form}
                 value={value}
                 drawer={value ? value.supplier_code : supplier}
-                customer={ALLOW_CUSTOMER_PRODUCT ? customer : undefined}
+                customer={site_customer_product ? customer : undefined}
                 access={access}
                 setInit={setProductsInit}
               />
             )}
 
-            {READ_ONLY && value?.shls_pickup_mode !== '1' && (
-              <Summary form={form} value={value} setInit={setCompartmentsInit} />
-            )}
-
-            {READ_ONLY && value?.shls_pickup_mode === '1' && (
-              <StagingSummary form={form} value={value} setInit={setCompartmentsInit} />
-            )}
+            {READ_ONLY && <Summary form={form} value={value} setInit={setCompartmentsInit} />}
           </TabPane>
 
           <TabPane
@@ -2097,22 +2093,18 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
         </Drawer>
       )}
 
-      {siteSchdTypeConvertible &&
-        !IS_CREATING &&
-        access.canUpdate &&
-        value?.shls_ld_type === '3' &&
-        value?.status === 'F' && (
-          <ScheduleConversion
-            value={value}
-            visible={showConvertSchedule}
-            // handleFormState={handleFormState}
-            handleFormState={setShowConvertSchedule}
-            access={access}
-            customer={customer}
-            config={config}
-            onCompleteParent={onComplete}
-          />
-        )}
+      {CAN_CONVERT_PRE_SCHEDULE && (
+        <ScheduleConversion
+          value={value}
+          visible={showConvertSchedule}
+          // handleFormState={handleFormState}
+          handleFormState={setShowConvertSchedule}
+          access={access}
+          customer={customer}
+          config={config}
+          onCompleteParent={onComplete}
+        />
+      )}
     </Drawer>
   );
 };

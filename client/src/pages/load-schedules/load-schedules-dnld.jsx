@@ -99,6 +99,23 @@ const LoadSchedules = () => {
   const page = t('pageMenu.operations');
   const name = t('pageNames.loadSchedules');
 
+  /*
+    siteUseStagingBay = false
+      isStaging = false
+        Normal Load Trip:                 Normal Form
+
+    siteUseStagingBay = true
+      CREATE
+        isStaging = true
+          Pickup Load Trip:               Staging Bay
+        isStaging = false
+          Normal Load Trip:               Staging Form without Pickup Load and Staged Load 
+      UPDATE
+        isStaging = true
+          Pickup Load Trip                Staging Bay
+        isStaging = false
+          Normal or Staged Load Trip:     Staging Form without Pickup Load
+  */
   const handleFormState = (visibility, value) => {
     if (config?.siteUseStagingBay) {
       if (visibility && !value) {

@@ -254,10 +254,10 @@ class StagingBay extends CommonClass
                         SPEC.SCHD_ORDER,
                         SPEC.SCHD_DELIV_NUM,
                         NVL(CUST_ORDER.ORDER_CUST, SCHD.SHLS_CUST)    AS PLSS_STAGED_CUST,
-                        CUSTOMER.CUST_DELIV_POINT                     AS PLSS_STAGED_DELVLOC,
+                        NVL(SCHD.SHLS_DELVLOC, CUSTOMER.CUST_DELIV_POINT)  AS PLSS_STAGED_DELVLOC,
                         DECODE(SPEC.SCHD_ORDER, NULL, TO_CHAR(SPEC.SCHDSPEC_SHLSTRIP), SPEC.SCHDSPEC_SHLSTRIP||'/'||CUST_ORDER.ORDER_CUST_ORDNO)               AS TRIP_ORDER_NO,
                         DECODE(NVL(CUST_ORDER.ORDER_CUST, SCHD.SHLS_CUST), NULL, NULL, NVL(CUST_ORDER.ORDER_CUST, SCHD.SHLS_CUST)||' - '||COMPANYS.CMPY_NAME)  AS TRIP_CUSTOMER,
-                        DECODE(CUSTOMER.CUST_DELIV_POINT, NULL, NULL, CUSTOMER.CUST_DELIV_POINT||' - '||DLOC.DLV_NAME)                                         AS TRIP_DELVLOC,
+                        DECODE(NVL(SCHD.SHLS_DELVLOC, CUSTOMER.CUST_DELIV_POINT), NULL, NULL, NVL(SCHD.SHLS_DELVLOC, CUSTOMER.CUST_DELIV_POINT)||' - '||DLOC.DLV_NAME)   AS TRIP_DELVLOC,
                         PR.PROD_CLASS
                     FROM SPECDETS SPEC,
                         SCHEDULE SCHD,
@@ -277,7 +277,7 @@ class StagingBay extends CommonClass
                         AND SPEC.SCHD_ORDER = CUST_ORDER.ORDER_NO(+)
                         AND NVL(CUST_ORDER.ORDER_CUST, SCHD.SHLS_CUST) = CUSTOMER.CUST_ACCT(+)
                         AND CUSTOMER.CUST_CODE = COMPANYS.CMPY_CODE(+)
-                        AND CUSTOMER.CUST_DELIV_POINT = DLOC.DLV_CODE(+)
+                        AND NVL(SCHD.SHLS_DELVLOC, CUSTOMER.CUST_DELIV_POINT) = DLOC.DLV_CODE(+)
                 ) SPEC_PROD, 
                 (
                     SELECT SCHEDULE.SHLS_SUPP              AS TRIP_SUPPLIER,
@@ -419,10 +419,10 @@ class StagingBay extends CommonClass
                         SPEC.SCHP_ORDER,    
                         CUST_ORDER.ORDER_CUST_ORDNO,
                         NVL(CUST_ORDER.ORDER_CUST, SCHD.SHLS_CUST)    AS PLSS_STAGED_CUST,
-                        CUSTOMER.CUST_DELIV_POINT                     AS PLSS_STAGED_DELVLOC,
+                        NVL(SCHD.SHLS_DELVLOC, CUSTOMER.CUST_DELIV_POINT)  AS PLSS_STAGED_DELVLOC,
                         DECODE(SPEC.SCHP_ORDER, NULL, TO_CHAR(SPEC.SCHPSPID_SHLSTRIP), SPEC.SCHPSPID_SHLSTRIP||'/'||CUST_ORDER.ORDER_CUST_ORDNO)               AS TRIP_ORDER_NO,
                         DECODE(NVL(CUST_ORDER.ORDER_CUST, SCHD.SHLS_CUST), NULL, NULL, NVL(CUST_ORDER.ORDER_CUST, SCHD.SHLS_CUST)||' - '||COMPANYS.CMPY_NAME)  AS TRIP_CUSTOMER,
-                        DECODE(CUSTOMER.CUST_DELIV_POINT, NULL, NULL, CUSTOMER.CUST_DELIV_POINT||' - '||DLOC.DLV_NAME)                                         AS TRIP_DELVLOC,
+                        DECODE(NVL(SCHD.SHLS_DELVLOC, CUSTOMER.CUST_DELIV_POINT), NULL, NULL, NVL(SCHD.SHLS_DELVLOC, CUSTOMER.CUST_DELIV_POINT)||' - '||DLOC.DLV_NAME)   AS TRIP_DELVLOC,
                         PR.PROD_CODE                       AS PROD_CODE,
                         PR.PROD_NAME                       AS PROD_NAME,
                         PR.PROD_CMPY                       AS PROD_CMPY
@@ -442,7 +442,7 @@ class StagingBay extends CommonClass
                         AND SPEC.SCHP_ORDER = CUST_ORDER.ORDER_NO(+)
                         AND NVL(CUST_ORDER.ORDER_CUST, SCHD.SHLS_CUST) = CUSTOMER.CUST_ACCT(+)
                         AND CUSTOMER.CUST_CODE = COMPANYS.CMPY_CODE(+)
-                        AND CUSTOMER.CUST_DELIV_POINT = DLOC.DLV_CODE(+)
+                        AND NVL(SCHD.SHLS_DELVLOC, CUSTOMER.CUST_DELIV_POINT) = DLOC.DLV_CODE(+)
                 ) SPEC_PR, 
                 UNIT_SCALE_VW UV, 
                 (
@@ -565,12 +565,12 @@ class StagingBay extends CommonClass
                 NVL(OO_QTY.QTY_PRELOADED,0)                AS PLSS_STAGED_PRLDQTY,
                 OPD.ORDER_PROD_KEY                         AS PLSS_STAGED_ORDER,
                 CO.ORDER_CUST                              AS PLSS_STAGED_CUST,
-                CUSTOMER.CUST_DELIV_POINT                  AS PLSS_STAGED_DELVLOC,
+                NVL(CO.ORDER_DLV_CODE, CUSTOMER.CUST_DELIV_POINT)                  AS PLSS_STAGED_DELVLOC,
                 4                                          AS PLSS_STAGED_LOADTYPE,
                 OPD.ORDER_PROD_KEY                         AS ORDER_ID,
                 NULL||'/'||CO.ORDER_CUST_ORDNO             AS TRIP_ORDER_NO,
                 DECODE(CO.ORDER_CUST, NULL, NULL, CO.ORDER_CUST||' - '||COMPANYS.CMPY_NAME)                       AS TRIP_CUSTOMER,
-                DECODE(CUSTOMER.CUST_DELIV_POINT, NULL, NULL, CUSTOMER.CUST_DELIV_POINT||' - '||DLOC.DLV_NAME)    AS TRIP_DELVLOC,
+                DECODE(NVL(CO.ORDER_DLV_CODE, CUSTOMER.CUST_DELIV_POINT), NULL, NULL, NVL(CO.ORDER_DLV_CODE, CUSTOMER.CUST_DELIV_POINT)||' - '||DLOC.DLV_NAME)    AS TRIP_DELVLOC,
                 NVL(OO_QTY.QTY_AMB,0)                      AS QTY_AMB,
                 NVL(OO_QTY.QTY_STD,0)                      AS QTY_STD,
                 NVL(OO_QTY.QTY_KG,0)                       AS QTY_KG,
@@ -703,7 +703,7 @@ class StagingBay extends CommonClass
                 AND (OPD.ORDER_PROD_QTY - NVL(OO_QTY.QTY_LOADED,0)) > 0
                 AND CO.ORDER_CUST = CUSTOMER.CUST_ACCT
                 AND CUSTOMER.CUST_CODE = COMPANYS.CMPY_CODE
-                AND CUSTOMER.CUST_DELIV_POINT = DLOC.DLV_CODE(+)
+                AND NVL(CO.ORDER_DLV_CODE, CUSTOMER.CUST_DELIV_POINT) = DLOC.DLV_CODE(+)
             ORDER BY OPD.OSPROD_PRODCODE
         ";
         $stmt = oci_parse($this->conn, $query);

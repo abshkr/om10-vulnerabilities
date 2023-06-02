@@ -1,6 +1,7 @@
 import Supplier from './supplier';
 import Drawer from './drawer';
 import Customer from './customer';
+import DeliveryLocation from './delv-location';
 import Carrier from './carrier';
 import Tanker from './tanker';
 import Employer from './employer';
@@ -23,6 +24,7 @@ export {
   Supplier,
   Drawer,
   Customer,
+  DeliveryLocation,
   Carrier,
   Tanker,
   Employer,

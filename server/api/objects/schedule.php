@@ -1479,6 +1479,7 @@ class Schedule extends CommonClass
 
         $this->insert_special_instructions();
         $this->set_cust();
+        $this->set_delvloc();
         return $this->setSHLS_SRCTYPE();
     }
 
@@ -1510,13 +1511,42 @@ class Schedule extends CommonClass
         }
     }
 
+    protected function set_delvloc()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        if (!isset($this->shls_delvloc)) {
+            return true;
+        }
+
+        $query = "
+            UPDATE SCHEDULE 
+            SET SHLS_DELVLOC = :shls_delvloc
+            WHERE SHLS_TRIP_NO = :trip 
+                AND SHLS_SUPP = :supp ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supp', $this->supplier_code);
+        oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+        oci_bind_by_name($stmt, ':shls_delvloc', $this->shls_delvloc);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return true;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+    }
+
     public function update()
     {
         if (isset($this->shls_spec_ins)) {
             $this->delete_special_instructions();
             $this->insert_special_instructions();
         }
-        return $this->create_n_update("MOD");
+        $this->create_n_update("MOD");
+        return $this->set_delvloc();
     }
 
     protected function insert_special_instructions()
