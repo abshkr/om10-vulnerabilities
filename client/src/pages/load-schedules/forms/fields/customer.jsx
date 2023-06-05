@@ -6,7 +6,7 @@ import { Form, Select } from 'antd';
 
 import { LOAD_SCHEDULES } from '../../../../api';
 
-const Customer = ({ form, supplier, value, onChange }) => {
+const Customer = ({ form, supplier, value, onChange, config }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;

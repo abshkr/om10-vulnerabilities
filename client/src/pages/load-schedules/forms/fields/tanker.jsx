@@ -128,7 +128,7 @@ const Tanker = ({ form, value, carrier, onChange, activeTrips }) => {
         </Form.Item>
       </Col>
       {value && (
-        <Col span={5} style={{ paddingTop: '35px' }}>
+        <Col span={5} style={{ paddingTop: '34px' }}>
           <Button icon={<SecurityScanOutlined />} onClick={() => handleTagLookUp()}>
             {t('operations.tagLookUp')}
           </Button>

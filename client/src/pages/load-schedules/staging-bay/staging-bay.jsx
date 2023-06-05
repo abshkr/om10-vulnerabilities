@@ -125,9 +125,6 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
 
   const SHOW_ISO_DOR = siteUseIsotainer && showDORNumber;
 
-  const ALLOW_CUSTOMER_PRODUCT = site_customer_product;
-  const ALLOW_CUSTOMER_CARRIER = site_customer_carrier;
-
   const send_to_ft_ready = value?.status === 'F' && value?.shls_ld_type === '2';
 
   // const { authenticated } = useSelector((state) => state.auth);
@@ -366,9 +363,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     columns.push({ code: 'shls_terminal', label: t('fields.terminal') });
     columns.push({ code: 'supplier_code', label: t('fields.supplier') });
     columns.push({ code: 'drawer_code', label: t('fields.drawer') });
-    if (ALLOW_CUSTOMER_PRODUCT || ALLOW_CUSTOMER_CARRIER) {
-      // columns.push({ code: 'shls_cust', label: t('fields.customer') });
-    }
+
     columns.push({ code: 'carrier_code', label: t('fields.carrier') });
     columns.push({ code: 'tnkr_code', label: t('fields.tanker') });
     if (config?.siteTripResetDriver) {
@@ -554,17 +549,6 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
 
     setSupplier(supplier);
     setDrawer(supplier);
-  };
-
-  const changeCustomer = (customer) => {
-    setCustomer(customer);
-    // need check the site configuration SITE_CUSTOMER_CARRIER before the clearing
-    if (ALLOW_CUSTOMER_CARRIER) {
-      setFieldsValue({
-        tnkr_code: undefined,
-        carrier_code: undefined,
-      });
-    }
   };
 
   const getTankerCompartments = async (tanker) => {
@@ -1722,12 +1706,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
               </Col>
 
               <Col span={6}>
-                <Carrier
-                  form={form}
-                  customer={ALLOW_CUSTOMER_CARRIER ? customer : undefined}
-                  value={value}
-                  onChange={setCarrier}
-                />
+                <Carrier form={form} customer={undefined} value={value} onChange={setCarrier} />
               </Col>
 
               <Col span={12}>
@@ -1899,7 +1878,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
                 form={form}
                 value={value}
                 drawer={value ? value.supplier_code : supplier}
-                customer={ALLOW_CUSTOMER_PRODUCT ? customer : undefined}
+                customer={site_customer_product ? customer : undefined}
                 access={access}
                 setInit={setProductsInit}
               />

@@ -1693,6 +1693,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
                     supplier={value ? value.supplier_code : supplier}
                     value={value}
                     onChange={changeCustomer}
+                    config={config}
                   />
                 </Col>
 
