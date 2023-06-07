@@ -621,6 +621,7 @@
     "autoOrderNumbers": "自动生成的客户订单号",
     "autoTankConfig": "允许为来自主机的提单自动配置油罐车",
     "autoTripNumbers": "自动生成的提单号",
+    "autoPickupNumbers": "自动生成的组合提单号",
     "auxilary": "电子地址",
     "availableTanks": "尚未分组的油罐",
     "availableTerminals": "尚未分组的油库",

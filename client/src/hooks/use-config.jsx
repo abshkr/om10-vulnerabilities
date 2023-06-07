@@ -247,6 +247,8 @@ const useConfig = () => {
     siteCmpyLoadOptionsEditable: '01001000',
     siteTripExpiryHours: null,
     prodmvmnt_to_movement: false,
+    sitePickupTripStart: 800000000,
+    sitePickupTripEnd: 999999999,
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -556,6 +558,8 @@ const useConfig = () => {
         siteCmpyLoadOptionsEditable: configurationObject?.SITE_CMPY_LOAD_OPTIONS_EDITABLE || '01001000',
         siteTripExpiryHours: configurationObject?.SITE_SHLS_EXP_H,
         prodmvmnt_to_movement: configurationObject?.PRODUCT_MVMNT_TO_MOVEMENT || false,
+        sitePickupTripStart: configurationObject?.SITE_PICKUP_TRIP_START || 800000000,
+        sitePickupTripEnd: configurationObject?.SITE_PICKUP_TRIP_END || 999999999,
       });
 
       // utils function cannot use hooks, use global constants to by pass

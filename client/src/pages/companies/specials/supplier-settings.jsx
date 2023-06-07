@@ -19,6 +19,8 @@ const SupplierForm = ({ value, form, config }) => {
     siteEnabledPIDX,
     siteTripExpiryHours,
     siteUseStagingBay,
+    sitePickupTripStart,
+    sitePickupTripEnd,
   } = config;
 
   const { t } = useTranslation();
@@ -51,6 +53,9 @@ const SupplierForm = ({ value, form, config }) => {
   const [cmpy_rtl_bol_send, setCmpyRtlBolSend] = useState(false);
   const [cmpy_trip_expiry_hours, setCmpyTripExpiryHours] = useState(siteTripExpiryHours);
   const [cmpy_no_customer_allowed_flag, setCmpyNoCustomerAllowedFlag] = useState(false);
+  const [cmpy_pickup_trip_start, setCmpyPickupTripStart] = useState(sitePickupTripStart);
+  const [cmpy_pickup_trip_end, setCmpyPickupTripEnd] = useState(sitePickupTripEnd);
+  const [cmpy_pickup_trip_last, setCmpyPickupTripLast] = useState(sitePickupTripStart);
 
   const IS_CREATING = !value;
 
@@ -228,6 +233,27 @@ const SupplierForm = ({ value, form, config }) => {
     });
   };
 
+  const onCmpyPickupTripStart = (v) => {
+    setCmpyPickupTripStart(v);
+    setFieldsValue({
+      cmpy_pickup_trip_start: v,
+    });
+  };
+
+  const onCmpyPickupTripEnd = (v) => {
+    setCmpyPickupTripEnd(v);
+    setFieldsValue({
+      cmpy_pickup_trip_end: v,
+    });
+  };
+
+  const onCmpyPickupTripLast = (v) => {
+    setCmpyPickupTripLast(v);
+    setFieldsValue({
+      cmpy_pickup_trip_last: v,
+    });
+  };
+
   useEffect(() => {
     if (value) {
       setFieldsValue({
@@ -307,6 +333,15 @@ const SupplierForm = ({ value, form, config }) => {
       const noCustomerAllowedConfig = _.find(payload?.records, (item) => {
         return item.config_key === 'NO_CUSTOMER_ALLOWED';
       });
+      const cmpyPickupTripStartConfig = _.find(payload?.records, (item) => {
+        return item.config_key === 'CMPY_PICKUP_TRIP_START';
+      });
+      const cmpyPickupTripEndConfig = _.find(payload?.records, (item) => {
+        return item.config_key === 'CMPY_PICKUP_TRIP_END';
+      });
+      const cmpyPickupTripLastConfig = _.find(payload?.records, (item) => {
+        return item.config_key === 'CMPY_PICKUP_TRIP_LAST';
+      });
 
       setFieldsValue({
         auto_complete_non_preschd_loads:
@@ -329,6 +364,9 @@ const SupplierForm = ({ value, form, config }) => {
         cmpy_trip_expiry_hours: tripExpiryHoursConfig?.config_value,
         cmpy_no_customer_allowed_flag:
           noCustomerAllowedConfig && noCustomerAllowedConfig.config_value === 'Y' ? true : false,
+        cmpy_pickup_trip_start: cmpyPickupTripStartConfig?.config_value,
+        cmpy_pickup_trip_end: cmpyPickupTripEndConfig?.config_value,
+        cmpy_pickup_trip_last: cmpyPickupTripLastConfig?.config_value,
       });
       setAutoNonSchedule(autoNonSchduleConfig && autoNonSchduleConfig.config_value === 'Y' ? true : false);
       setSafefillCheck(safefillConfig && safefillConfig.config_value === 'Y' ? true : false);
@@ -351,6 +389,9 @@ const SupplierForm = ({ value, form, config }) => {
       setCmpyNoCustomerAllowedFlag(
         noCustomerAllowedConfig && noCustomerAllowedConfig.config_value === 'Y' ? true : false
       );
+      setCmpyPickupTripStart(cmpyPickupTripStartConfig?.config_value);
+      setCmpyPickupTripEnd(cmpyPickupTripEndConfig?.config_value);
+      setCmpyPickupTripLast(cmpyPickupTripLastConfig?.config_value);
     }
   }, [value, setFieldsValue, payload, resetFields]);
 
@@ -446,6 +487,56 @@ const SupplierForm = ({ value, form, config }) => {
           </Form.Item>
         </Col>
       </Row>
+
+      {siteUseStagingBay && (
+        <>
+          <Divider orientation="left">{t('fields.autoPickupNumbers')}</Divider>
+          <Row justify="center">
+            <Col span={7}>
+              <Form.Item
+                name="cmpy_pickup_trip_start"
+                label={t('fields.startAt')}
+                rules={[
+                  {
+                    required: true,
+                    message: `${t('validate.select')} ─ ${t('fields.startAt')}`,
+                  },
+                ]}
+              >
+                <InputNumber min={1} max={generateMaxInt(maxLengthTripNum)} style={{ width: 200 }} />
+              </Form.Item>
+            </Col>
+            <Col span={7}>
+              <Form.Item
+                name="cmpy_pickup_trip_end"
+                label={t('fields.endAt')}
+                rules={[
+                  {
+                    required: true,
+                    message: `${t('validate.select')} ─ ${t('fields.endAt')}`,
+                  },
+                ]}
+              >
+                <InputNumber min={1} max={generateMaxInt(maxLengthTripNum)} style={{ width: 200 }} />
+              </Form.Item>
+            </Col>
+            <Col span={7}>
+              <Form.Item
+                name="cmpy_pickup_trip_last"
+                label={t('fields.lastUsed')}
+                rules={[
+                  {
+                    required: true,
+                    message: `${t('validate.select')} ─ ${t('fields.lastUsed')}`,
+                  },
+                ]}
+              >
+                <InputNumber min={0} max={generateMaxInt(maxLengthTripNum)} style={{ width: 200 }} />
+              </Form.Item>
+            </Col>
+          </Row>
+        </>
+      )}
 
       <Divider orientation="left"></Divider>
       <Row justify="center">

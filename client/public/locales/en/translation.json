@@ -621,6 +621,7 @@
     "autoOrderNumbers": "Auto Order Numbers",
     "autoTankConfig": "Auto tanker configuration for load specs sent from host",
     "autoTripNumbers": "Auto Trip Numbers",
+    "autoPickupNumbers": "Auto Pickup Load Numbers",
     "auxilary": "Auxiliary",
     "availableTanks": "Available Tank(s)",
     "availableTerminals": "Available Terminal(s)",

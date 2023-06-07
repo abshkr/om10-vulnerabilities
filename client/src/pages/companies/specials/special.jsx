@@ -144,6 +144,21 @@ const FormModal = ({ value, handleFormState, setFilterValue }) => {
         config_key: 'CMPY_LOAD_OPTIONS',
         config_value: values.cmpy_load_options || siteCmpyLoadOptionsDefault,
       },
+      {
+        cmpy_code: value.cmpy_code,
+        config_key: 'CMPY_PICKUP_TRIP_START',
+        config_value: values.cmpy_pickup_trip_start,
+      },
+      {
+        cmpy_code: value.cmpy_code,
+        config_key: 'CMPY_PICKUP_TRIP_END',
+        config_value: values.cmpy_pickup_trip_end,
+      },
+      {
+        cmpy_code: value.cmpy_code,
+        config_key: 'CMPY_PICKUP_TRIP_LAST',
+        config_value: values.cmpy_pickup_trip_last,
+      },
     ];
 
     if (
