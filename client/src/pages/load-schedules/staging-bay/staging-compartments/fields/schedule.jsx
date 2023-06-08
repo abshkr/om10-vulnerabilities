@@ -108,6 +108,7 @@ export default class Schedule extends Component {
     let current = form.getFieldValue('compartments');
 
     current[rowIndex].qty_scheduled = value;
+    current[rowIndex].plss_staged_specqty = value;
 
     form.setFieldsValue({
       compartments: current,

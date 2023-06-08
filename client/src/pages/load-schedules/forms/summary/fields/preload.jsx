@@ -119,7 +119,7 @@ export default class Preload extends Component {
     }
 
     let current = form.getFieldValue('compartments');
-    current[rowIndex].qty_reload = value;
+    current[rowIndex].qty_preload = value;
 
     form.setFieldsValue({
       compartments: current,

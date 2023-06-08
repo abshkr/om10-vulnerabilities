@@ -143,6 +143,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
       scheduled = 0;
     }
     current[values.rowIndex].qty_scheduled = scheduled;
+    current[values.rowIndex].plss_staged_specqty = scheduled;
 
     /* console.log('....................111preload check', preloaded, scheduled, current[values.rowIndex]);
     // check preload qty and make sure it does not exceed scheduled

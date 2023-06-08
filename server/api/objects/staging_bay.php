@@ -1557,8 +1557,8 @@ class StagingBay extends CommonClass
                 $new_compartment->staged_supp = $compartment->plss_staged_supp;
                 $new_compartment->staged_comp_id = $compartment->plss_staged_cmpt;
                 $new_compartment->staged_order = $compartment->order_cust_ordno; // plss_staged_order;
-                $new_compartment->schd_specqty = $compartment->plss_staged_specqty;
-                $new_compartment->schd_prldqty = $compartment->plss_staged_prldqty;
+                $new_compartment->schd_specqty = $compartment->qty_scheduled; // plss_staged_specqty;
+                $new_compartment->schd_prldqty = $compartment->qty_preload; // plss_staged_prldqty;
                 $new_compartment->staged_customer = $compartment->plss_staged_cust;
                 $new_compartment->staged_delvloc = $compartment->plss_staged_delvloc;
                 $new_compartment->staged_loadtype = $compartment->plss_staged_loadtype;
