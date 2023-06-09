@@ -46,6 +46,7 @@ import calcWiA from './calc-mass-in-air';
 import checkFormFields from './check-form-fields';
 import compareObjects from './compare-objects';
 import compareArrays from './compare-arrays';
+import adjustPreloadQuantity from './adjust-preload-quantity';
 
 export {
   search,
@@ -98,4 +99,5 @@ export {
   checkFormFields,
   compareObjects,
   compareArrays,
+  adjustPreloadQuantity,
 };

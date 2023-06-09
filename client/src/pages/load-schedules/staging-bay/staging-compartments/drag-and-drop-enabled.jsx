@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { DataTable, PartnershipManager, OrderManager } from '../../../../components';
 
 import api, { LOAD_SCHEDULES, STAGING_BAY } from '../../../../api';
+import { adjustPreloadQuantity } from '../../../../utils';
 
 import {
   ProductEditor,
@@ -131,6 +132,24 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
     }
   }, [value, tanker, setFieldsValue, setCompartments]);
 
+  const onCellUpdate = (value) => {
+    if (value?.colDef?.field === 'qty_scheduled') {
+      console.log('...........onCellUpdate', value?.data?.qty_scheduled, value?.data?.qty_preload, value);
+      const preload = adjustPreloadQuantity(
+        config?.sitePreloadDeductFromPreset,
+        value?.data?.safefill,
+        value?.data?.qty_scheduled,
+        value?.data?.qty_preload
+      );
+      const current = form.getFieldValue('compartments');
+      current[value.rowIndex].qty_preload = preload;
+      current[value.rowIndex].plss_staged_prldqty = preload;
+      console.log('....................222preload check', preload, current[value.rowIndex]);
+      setCompartments([]);
+      setCompartments(current);
+    }
+  };
+
   const rowEditingStopped = (values) => {
     // console.log(values)
 
@@ -145,13 +164,15 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
     current[values.rowIndex].qty_scheduled = scheduled;
     current[values.rowIndex].plss_staged_specqty = scheduled;
 
-    /* console.log('....................111preload check', preloaded, scheduled, current[values.rowIndex]);
-    // check preload qty and make sure it does not exceed scheduled
-    const preloaded = current[values.rowIndex].qty_preload;
-    if (_.toNumber(preloaded) > scheduled) {
-      current[values.rowIndex].qty_preload = scheduled;
-      console.log('....................preload check', preloaded, scheduled, current[values.rowIndex]);
-    } */
+    /* const preload = adjustPreloadQuantity(
+      config?.sitePreloadDeductFromPreset, 
+      current[values.rowIndex].safefill, 
+      current[values.rowIndex].qty_scheduled, 
+      current[values.rowIndex].qty_preload
+    );
+    current[values.rowIndex].qty_preload = preload;
+    current[values.rowIndex].plss_staged_prldqty = preload;
+    console.log('....................222preload check', preload, scheduled, current[values.rowIndex]); */
 
     setCompartments([]);
     setCompartments(current);
@@ -385,6 +406,135 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
     return duplicated;
   };
 
+  const checkAvailableQuantity = (valueDrop, valueGrid, gridNodes, tripNumber = '') => {
+    // if (valueDrop?.prod_code === '') {
+    //   return 0;
+    // }
+    let warning = '';
+    let details = [];
+
+    // need check the available qty scheduled for a staged trip, mainly pre-order or open order
+    // PLSS_STAGED_LOADTYPE
+    // 2: Pre Schedule
+    // 3: Pre Order
+    // 4: Open Order
+    let sumScheduled = 0;
+    gridNodes.forEach((node) => {
+      const cmpt = node?.data;
+      let tripUsed = false;
+      if (valueDrop?.plss_staged_loadtype === '2') {
+        if (
+          cmpt?.plss_staged_trip === valueDrop?.plss_staged_trip &&
+          cmpt?.plss_staged_supp === valueDrop?.plss_staged_supp &&
+          cmpt?.plss_staged_cmpt === valueDrop?.plss_staged_cmpt &&
+          cmpt?.prod_code === valueDrop?.prod_code &&
+          cmpt?.prod_name === valueDrop?.prod_name
+        ) {
+          tripUsed = true;
+        }
+      }
+      if (valueDrop?.plss_staged_loadtype === '3') {
+        if (
+          cmpt?.plss_staged_trip === valueDrop?.plss_staged_trip &&
+          cmpt?.plss_staged_supp === valueDrop?.plss_staged_supp &&
+          cmpt?.prod_code === valueDrop?.prod_code &&
+          cmpt?.prod_name === valueDrop?.prod_name
+        ) {
+          tripUsed = true;
+        }
+      }
+      if (valueDrop?.plss_staged_loadtype === '4') {
+        if (
+          cmpt?.plss_staged_supp === valueDrop?.plss_staged_supp &&
+          cmpt?.prod_code === valueDrop?.prod_code &&
+          cmpt?.prod_name === valueDrop?.prod_name &&
+          cmpt?.plss_staged_order === valueDrop?.plss_staged_order
+        ) {
+          console.log(valueDrop);
+          tripUsed = true;
+        }
+      }
+      if (tripUsed) {
+        sumScheduled += parseInt(cmpt?.qty_scheduled);
+      }
+    });
+    // for open order item, it already takes care of thq qty scheduled by previous loads in SQL
+    // (OPD.ORDER_PROD_QTY - OPD.OPROD_SCHEDULED) AS PLSS_STAGED_SPECQTY
+    const availToSchedule = parseInt(valueDrop?.plss_staged_specqty) - sumScheduled;
+
+    if (availToSchedule <= 0) {
+      if (valueDrop?.plss_staged_loadtype === '2') {
+        warning = t('descriptions.stagingPreScheduleConsumed', {
+          SRC_TRIP: valueDrop?.plss_staged_trip,
+          SRC_CMPT: valueDrop?.plss_staged_cmpt,
+          DST_TRIP: tripNumber,
+          DST_CMPT: valueGrid?.compartment,
+        });
+        details = [
+          { title: t('fields.loadType'), value: t('operations.preSchedule') },
+          { title: t('fields.schdTripNo'), value: valueDrop?.plss_staged_trip },
+          { title: t('fields.product'), value: valueDrop?.prod_code + ' - ' + valueDrop?.prod_name },
+          { title: t('fields.compartment'), value: valueDrop?.plss_staged_cmpt },
+        ];
+      }
+      // source is a pre-order
+      if (valueDrop?.plss_staged_loadtype === '3') {
+        warning = t('descriptions.stagingPreOrderConsumed', {
+          SRC_TRIP: valueDrop?.plss_staged_trip,
+          SRC_PROD: valueDrop?.prod_code,
+          DST_TRIP: tripNumber,
+          DST_CMPT: valueGrid?.compartment,
+        });
+        details = [
+          { title: t('fields.loadType'), value: t('operations.preOrder') },
+          { title: t('fields.schdTripNo'), value: valueDrop?.plss_staged_trip },
+          { title: t('fields.product'), value: valueDrop?.prod_code + ' - ' + valueDrop?.prod_name },
+        ];
+      }
+      // source is an open order
+      if (valueDrop?.plss_staged_loadtype === '4') {
+        warning = t('descriptions.stagingOpenOrderConsumed', {
+          SRC_ORDER: valueDrop?.order_cust_ordno,
+          SRC_PROD: valueDrop?.prod_code,
+          DST_TRIP: tripNumber,
+          DST_CMPT: valueGrid?.compartment,
+        });
+        details = [
+          { title: t('fields.loadType'), value: t('operations.openOrder') },
+          { title: t('fields.schdOrderId'), value: valueDrop?.order_cust_ordno },
+          { title: t('fields.customer'), value: valueDrop?.trip_customer },
+          { title: t('fields.product'), value: valueDrop?.prod_code + ' - ' + valueDrop?.prod_name },
+        ];
+      }
+
+      notification.warning({
+        message: t('messages.validationFailed'),
+        description: (
+          <>
+            <div>{warning}</div>
+            <div>
+              <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }} column={1}>
+                {details?.map((note, index) => (
+                  <Descriptions.Item key={index} label={note.title} span={1}>
+                    {note.value}
+                  </Descriptions.Item>
+                ))}
+              </Descriptions>
+            </div>
+          </>
+        ),
+        // duration: 0,
+        style: {
+          width: 500,
+          height: 'calc(100vh - 480px)',
+          overflowY: 'scroll',
+        },
+      });
+    }
+
+    return availToSchedule;
+  };
+
   const onDragFinished = (index, valueDrop) => {
     const payload = [];
 
@@ -398,10 +548,12 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
     let rowNode = undefined;
     let indexDrop = index;
     let indexGrid = index;
+    const nodes = [];
     tableAPI.forEachNodeAfterFilterAndSort((node, tableIndex) => {
       if (tableIndex === index) {
         rowNode = node;
       }
+      nodes.push(node);
     });
     const data = rowNode?.data;
     console.log('................ valueDrop', index, valueDrop);
@@ -419,6 +571,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
       if (duplicated) {
         return;
       }
+      // check the other compartments
       duplicated = false;
       tableAPI.forEachNodeAfterFilterAndSort((node, tableIndex) => {
         if (tableIndex !== index) {
@@ -433,6 +586,12 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
       }
     }
 
+    // check the available quantity
+    const availToSchedule = checkAvailableQuantity(valueDrop, data, nodes, tripNumber);
+    if (availToSchedule <= 0) {
+      return;
+    }
+
     const productCode = valueDrop?.prod_code || '';
     const productName = valueDrop?.prod_name || '';
     const sourceType = valueDrop?.plss_staged_loadtype || '-1';
@@ -440,8 +599,9 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
     const quantityScheduled = !valueDrop?.prod_code
       ? data?.qty_scheduled
       : data?.qty_scheduled > 0
-      ? data?.qty_scheduled
-      : _.min([parseInt(data?.safefill), parseInt(valueDrop?.plss_staged_specqty)]);
+      ? // ? data?.qty_scheduled
+        _.min([parseInt(data?.safefill), data?.qty_scheduled, availToSchedule])
+      : _.min([parseInt(data?.safefill), availToSchedule]);
 
     let quantityPreloaded = 0;
     if (sourceType === '2') {
@@ -890,6 +1050,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
             minimal
             apiContext={setTableAPI}
             rowEditingStopped={rowEditingStopped}
+            onCellUpdate={onCellUpdate}
             getRowNodeId={(data) => {
               return data?.compartment;
             }}
