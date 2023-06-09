@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Switch, Checkbox, Form } from 'antd';
 import useSWR from 'swr';
+// import _ from 'lodash';
 
 import { DataTable } from '../../../../components';
 import { LOAD_SCHEDULES, STAGING_BAY } from '../../../../api';
@@ -21,7 +22,7 @@ const Summary = ({ form, value, setInit }) => {
 
   const { data: products } = useSWR(
     value
-      ? `${LOAD_SCHEDULES.PRODUCTS}?shls_trip_no=${value?.shls_trip_no}&supplier_code=${value?.supplier_code}`
+      ? `${STAGING_BAY.PRODUCTS}?shls_trip_no=${value?.shls_trip_no}&supplier_code=${value?.supplier_code}`
       : null
   );
 
@@ -39,6 +40,30 @@ const Summary = ({ form, value, setInit }) => {
   const onChange = (v) => {
     setHidProd(v.target.checked);
   };
+
+  /* const getProductDetailsByCompartments = (cmpts) => {
+    const products = [];
+    for (let i=0; i<cmpts?.length; i++) {
+      const cmpt = cmpts?.[i];
+      console.log('.................cmpt...', i, cmpt?.qty_scheduled, cmpt?.qty_loaded, cmpt?.qty_preload);
+      const item = _.find(products, (o) => (o?.prod_code === cmpt?.prod_code));
+      if (!item) {
+        products.push({
+          prod_code: cmpt?.prod_code,
+          prod_name: cmpt?.prod_name,
+          unit_name: cmpt?.unit_name,
+          qty_scheduled: _.isNaN(cmpt?.qty_scheduled) ? 0 : _.toNumber(cmpt?.qty_scheduled),
+          qty_loaded: _.isNaN(cmpt?.qty_loaded) ? 0 : _.toNumber(cmpt?.qty_loaded),
+          qty_preloaded: _.isNaN(cmpt?.qty_preload) ? 0 : _.toNumber(cmpt?.qty_preload),
+        });
+      } else {
+        item.qty_scheduled += _.isNaN(cmpt?.qty_scheduled) ? 0 : _.toNumber(cmpt?.qty_scheduled);
+        item.qty_loaded += _.isNaN(cmpt?.qty_loaded) ? 0 : _.toNumber(cmpt?.qty_loaded);
+        item.qty_preloaded += _.isNaN(cmpt?.qty_preload) ? 0 : _.toNumber(cmpt?.qty_preload);
+      }
+    }
+    return products;
+  } */
 
   useEffect(() => {
     if (value && compartmentsPayload) {

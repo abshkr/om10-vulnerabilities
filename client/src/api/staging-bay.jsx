@@ -11,6 +11,7 @@ export const ORDER_ITEMS = '/api/pages/staging_bay/get_order_items.php';
 // export const TRIP_COMPARTMENTS = '/api/pages/schedule/get_cmpt_details.php';
 // export const ORDER_ITEMS = '/api/pages/open_order/order_items.php';
 
+export const PRODUCTS = '/api/pages/staging_bay/get_product_details.php';
 export const COMPARTMENTS = '/api/pages/staging_bay/get_cmpt_details.php';
 export const COMPARTMENTS_BY_TANKER = '/api/pages/staging_bay/get_tnkr_cmpts.php';
 
