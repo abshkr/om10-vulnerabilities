@@ -178,13 +178,60 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
     setCompartments(current);
   };
 
+  const getStagedLoadType = (load) => {
+    let type = load?.plss_staged_loadtype;
+    if (type === '' || (type !== '2' && type !== '3' && type !== '4')) {
+      // means we need get the type by other attributes in the load object
+      // pre schedule
+      // "plss_staged_trip": "900172",
+      // "plss_staged_supp": "7640102",
+      // "plss_staged_cmpt": "4",
+      // "plss_staged_order": "",
+      if (
+        load?.plss_staged_trip !== '' &&
+        load?.plss_staged_supp !== '' &&
+        load?.plss_staged_cmpt !== '' &&
+        load?.plss_staged_order === ''
+      ) {
+        type = '2';
+      }
+      // pre order
+      // "plss_staged_trip": "900173",
+      // "plss_staged_supp": "7640102",
+      // "plss_staged_cmpt": "",
+      // "plss_staged_order": "",
+      if (
+        load?.plss_staged_trip !== '' &&
+        load?.plss_staged_supp !== '' &&
+        load?.plss_staged_cmpt === '' &&
+        load?.plss_staged_order === ''
+      ) {
+        type = '3';
+      }
+      // open order
+      // "plss_staged_trip": "900175" or "",
+      // "plss_staged_supp": "7640102",
+      // "plss_staged_cmpt": "",
+      // "plss_staged_order": "42",
+      if (load?.plss_staged_supp !== '' && load?.plss_staged_cmpt === '' && load?.plss_staged_order !== '') {
+        type = '4';
+      }
+    }
+
+    return type;
+  };
+
   const checkExistence = (valueDrop, valueGrid, tripNumber = '') => {
+    console.log('checkExistence............', valueDrop, valueGrid, tripNumber);
+
     if (valueDrop?.prod_code === '') {
       return false;
     }
     let existed = false;
     let warning = '';
     let details = [];
+
+    valueGrid.plss_staged_loadtype = getStagedLoadType(valueGrid);
 
     existed =
       valueGrid?.plss_staged_loadtype !== '' &&
@@ -243,12 +290,16 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
   };
 
   const checkDuplication = (indexDrop, valueDrop, indexGrid, valueGrid, tripNumber = '') => {
+    console.log('checkDuplication............', indexDrop, valueDrop, indexGrid, valueGrid, tripNumber);
     if (valueDrop?.prod_code === '') {
       return false;
     }
     let duplicated = false;
     let warning = '';
     let details = [];
+
+    valueGrid.plss_staged_loadtype = getStagedLoadType(valueGrid);
+
     // if it is a pre-schedule, compare the value dropped with all existing compartemnts to make sure the valueDrop not used before
     if (valueDrop?.plss_staged_loadtype === '2') {
       /*
@@ -412,6 +463,8 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
     // }
     let warning = '';
     let details = [];
+
+    valueGrid.plss_staged_loadtype = getStagedLoadType(valueGrid);
 
     // need check the available qty scheduled for a staged trip, mainly pre-order or open order
     // PLSS_STAGED_LOADTYPE

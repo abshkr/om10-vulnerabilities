@@ -11,6 +11,35 @@ class StagingBay extends CommonClass
 {
     protected $TABLE_NAME = 'DUMMY';
 
+
+    public function get_pickup_specs() 
+    {
+        if (!isset($this->supplier_code) || $this->supplier_code === "undefined") {
+            $this->supplier_code = "-1";
+        }
+        if (!isset($this->shls_trip_no) || $this->shls_trip_no === "undefined") {
+            $this->shls_trip_no = -1;
+        }
+        $query = "
+            SELECT *
+            FROM PICKUP_SCHEDULE_SPECS
+            WHERE
+                PLSS_PICKUP_TRIP = :shls_trip_no
+                AND PLSS_PICKUP_SUPP = :shls_supp
+        ";
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':shls_trip_no', $this->shls_trip_no);
+        oci_bind_by_name($stmt, ':shls_supp', $this->supplier_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function get_pre_schedules()
     {
         $query = "
@@ -44,7 +73,7 @@ class StagingBay extends CommonClass
                 AND cust.CUST_CODE = ccmp.CMPY_CODE(+)
                 AND (STATUS IS NULL OR STATUS = 'F') 
                 AND SUPPLIER_CODE = :supplier 
-                AND SHLS_PICKUP_MODE = 0 
+                AND SHLS_PICKUP_MODE != 1 
                 AND SHLS_LD_TYPE = 2
             ORDER BY SHLS_CALDATE DESC
         ";
@@ -92,7 +121,7 @@ class StagingBay extends CommonClass
                 AND cust.CUST_CODE = ccmp.CMPY_CODE(+)
                 AND (STATUS IS NULL OR STATUS = 'F')  
                 AND SUPPLIER_CODE = :supplier 
-                AND SHLS_PICKUP_MODE = 0 
+                AND SHLS_PICKUP_MODE != 1 
                 AND SHLS_LD_TYPE = 3
             ORDER BY SHLS_CALDATE DESC
         ";

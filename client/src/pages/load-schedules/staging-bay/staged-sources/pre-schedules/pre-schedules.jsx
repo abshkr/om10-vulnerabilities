@@ -27,6 +27,13 @@ const PreSchedules = ({ value, form, supplier, config }) => {
     }
   );
 
+  const { data: pickup, isValidatingPickup, revalidatePickup } = useSWR(
+    `${STAGING_BAY.PICKUP_SPECS}?shls_trip_no=${value?.shls_trip_no}&supplier_code=${value?.supplier_code}`,
+    {
+      refreshInterval: 0,
+    }
+  );
+
   const { data: compartmentsPayload } = useSWR(
     selected
       ? `${STAGING_BAY.TRIP_COMPARTMENTS}?shls_trip_no=${selected?.shls_trip_no}&supplier_code=${selected?.supplier_code}`
@@ -60,10 +67,22 @@ const PreSchedules = ({ value, form, supplier, config }) => {
   };
 
   useEffect(() => {
-    if (payload) {
-      setTrips(payload?.records);
+    if (payload && pickup) {
+      const trips = _.filter(payload?.records, (o) => {
+        if (o?.shls_pickup_mode === '0') {
+          return true;
+        }
+        if (o?.shls_pickup_mode === '2') {
+          const item = _.find(
+            pickup?.records,
+            (p) => p?.plss_staged_trip === o?.shls_trip_no && p?.plss_staged_supp === o?.supplier_code
+          );
+          return !item ? false : true;
+        }
+      });
+      setTrips(trips);
     }
-  }, [payload]);
+  }, [payload, pickup]);
 
   useEffect(() => {
     if (selected && compartmentsPayload) {
