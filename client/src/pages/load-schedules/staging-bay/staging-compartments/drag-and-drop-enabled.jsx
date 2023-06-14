@@ -32,6 +32,10 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
   // const { data: customersBySupplier } = useSWR(`${STAGING_BAY.SUPP_CUSTOMERS}?supplier=${'-1'}`);
   // const { data: delvLocsBySupplier } = useSWR(`${STAGING_BAY.SUPP_DELVLOCS}?supplier=${'-1'}`);
 
+  const { data: pickup } = useSWR(
+    `${STAGING_BAY.PICKUP_SPECS_EXTRA}?shls_trip_no=${value?.shls_trip_no}&supplier_code=${value?.supplier_code}`
+  );
+
   const [compartments, setCompartments] = useState([]);
   const [products, setProducts] = useState([]);
   const [tableAPI, setTableAPI] = useState(null);
@@ -132,16 +136,280 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
     }
   }, [value, tanker, setFieldsValue, setCompartments]);
 
+  const getStagedLoadType = (load) => {
+    let type = load?.plss_staged_loadtype;
+    if (type === '' || (type !== '2' && type !== '3' && type !== '4')) {
+      if (!pickup) {
+        // means we need get the type by other attributes in the load object
+        // pre schedule
+        // "plss_staged_trip": "900172",
+        // "plss_staged_supp": "7640102",
+        // "plss_staged_cmpt": "4",
+        // "plss_staged_order": "",
+        if (
+          load?.plss_staged_trip !== '' &&
+          load?.plss_staged_supp !== '' &&
+          load?.plss_staged_cmpt !== '' &&
+          load?.plss_staged_order === ''
+        ) {
+          type = '2';
+        }
+        // pre order
+        // "plss_staged_trip": "900173",
+        // "plss_staged_supp": "7640102",
+        // "plss_staged_cmpt": "",
+        // "plss_staged_order": "",
+        if (
+          load?.plss_staged_trip !== '' &&
+          load?.plss_staged_supp !== '' &&
+          load?.plss_staged_cmpt === '' &&
+          load?.plss_staged_order === ''
+        ) {
+          type = '3';
+        }
+        // open order
+        // "plss_staged_trip": "900175" or "",
+        // "plss_staged_supp": "7640102",
+        // "plss_staged_cmpt": "",
+        // "plss_staged_order": "42",
+        if (
+          load?.plss_staged_supp !== '' &&
+          load?.plss_staged_cmpt === '' &&
+          load?.plss_staged_order !== ''
+        ) {
+          type = '4';
+        }
+      } else {
+        const item = _.find(
+          pickup?.records,
+          (o) =>
+            o?.plss_pickup_supp === load?.plss_pickup_supp &&
+            o?.plss_pickup_trip === load?.plss_pickup_trip &&
+            o?.plss_pickup_cmpt === load?.plss_pickup_cmpt
+        );
+        if (item) {
+          type = item?.plss_staged_loadtype2;
+        }
+      }
+    }
+
+    return type;
+  };
+
+  const getTotalQtyScheduled = (compartments, selection) => {
+    let sumScheduled = 0;
+    compartments.forEach((cmpt) => {
+      let tripUsed = false;
+      if (selection?.plss_staged_loadtype === '2') {
+        if (
+          cmpt?.plss_staged_trip === selection?.plss_staged_trip &&
+          cmpt?.plss_staged_supp === selection?.plss_staged_supp &&
+          cmpt?.plss_staged_cmpt === selection?.plss_staged_cmpt &&
+          cmpt?.prod_code === selection?.prod_code &&
+          cmpt?.prod_name === selection?.prod_name
+        ) {
+          tripUsed = true;
+        }
+      }
+      if (selection?.plss_staged_loadtype === '3') {
+        if (
+          cmpt?.plss_staged_trip === selection?.plss_staged_trip &&
+          cmpt?.plss_staged_supp === selection?.plss_staged_supp &&
+          cmpt?.prod_code === selection?.prod_code &&
+          cmpt?.prod_name === selection?.prod_name
+        ) {
+          tripUsed = true;
+        }
+      }
+      if (selection?.plss_staged_loadtype === '4') {
+        if (
+          cmpt?.plss_staged_supp === selection?.plss_staged_supp &&
+          cmpt?.prod_code === selection?.prod_code &&
+          cmpt?.prod_name === selection?.prod_name &&
+          cmpt?.plss_staged_order === selection?.plss_staged_order
+        ) {
+          console.log(selection);
+          tripUsed = true;
+        }
+      }
+      if (tripUsed) {
+        sumScheduled += parseInt(cmpt?.qty_scheduled);
+      }
+    });
+    console.log('...........onCellUpdat00e', compartments, selection, sumScheduled);
+
+    return sumScheduled;
+  };
+
+  const getStagedAvailQty = (load) => {
+    if (!load?.plss_staged_availqty) {
+      let qty = load?.plss_staged_specqty;
+      if (pickup?.records) {
+        const item = _.find(
+          pickup?.records,
+          (o) =>
+            o?.plss_pickup_supp === load?.plss_pickup_supp &&
+            o?.plss_pickup_trip === load?.plss_pickup_trip &&
+            o?.plss_pickup_cmpt === load?.plss_pickup_cmpt
+        );
+        if (item) {
+          if (item?.plss_staged_loadtype2 === '4') {
+            qty = parseInt(item?.plss_staged_availqty) + parseInt(item?.plss_staged_availord);
+          } else {
+            qty = item?.plss_staged_availqty;
+          }
+        }
+      }
+      return qty;
+    } else {
+      return load?.plss_staged_availqty;
+    }
+  };
+
+  const adjustStagedAvailQty = (load) => {
+    let qty = load?.plss_staged_availqty;
+    if (load?.plss_staged_loadtype === '4') {
+      /*
+                NULL                                       AS PLSS_PICKUP_TRIP,
+                NULL                                       AS PLSS_PICKUP_SUPP,
+                NULL                                       AS PLSS_PICKUP_CMPT,
+                NULL                                       AS PLSS_STAGED_TRIP,
+                CUSTOMER.CUST_SUPP                         AS PLSS_STAGED_SUPP,
+                NULL                                       AS PLSS_STAGED_CMPT,
+                OPD.OSPROD_PRODCODE                        AS PLSS_STAGED_PRODCODE,
+                OPD.OSPROD_PRODCMPY                        AS PLSS_STAGED_PRODCMPY,
+                OPD.ORDER_PROD_UNIT                        AS PLSS_STAGED_UNITS,
+                (OPD.ORDER_PROD_QTY - OPD.OPROD_SCHEDULED) AS PLSS_STAGED_AVAILQTY,
+                (OPD.ORDER_PROD_QTY - OPD.OPROD_SCHEDULED) AS PLSS_STAGED_SPECQTY,
+                NVL(OO_QTY.QTY_PRELOADED,0)                AS PLSS_STAGED_PRLDQTY,
+                OPD.ORDER_PROD_KEY                         AS PLSS_STAGED_ORDER,
+                CO.ORDER_CUST                              AS PLSS_STAGED_CUST,
+      */
+
+      if (pickup?.records) {
+        // when creating a pickup load, the OO-based staged trips and their OOs must be ONE to ONE relations
+        const item = _.find(
+          pickup?.records,
+          (o) =>
+            o?.plss_staged_supp === load?.plss_staged_supp &&
+            o?.plss_staged_prodcode === load?.plss_staged_prodcode &&
+            o?.plss_staged_prodcmpy === load?.plss_staged_prodcmpy &&
+            o?.plss_staged_order === load?.plss_staged_order
+        );
+        if (item) {
+          qty = parseInt(item?.plss_staged_availqty) + parseInt(item?.plss_staged_availord);
+        }
+        console.log('............adjustStagedAvailQty...', qty, load, item);
+      }
+    }
+    return qty;
+  };
+
   const onCellUpdate = (value) => {
     if (value?.colDef?.field === 'qty_scheduled') {
+      const current = form.getFieldValue('compartments');
+      const valueDrop = current[value.rowIndex];
+      valueDrop.plss_staged_loadtype = getStagedLoadType(valueDrop);
+      valueDrop.plss_staged_availqty = getStagedAvailQty(valueDrop);
+      const sumScheduled = getTotalQtyScheduled(current, valueDrop);
+
+      if (sumScheduled > valueDrop?.plss_staged_availqty) {
+        let warning = '';
+        let details = [];
+        const qtyExceeded = sumScheduled - parseInt(valueDrop?.plss_staged_availqty);
+        const pickupNumber = valueDrop?.plss_pickup_trip;
+        const pickupCompartment = valueDrop?.plss_pickup_cmpt;
+        if (valueDrop?.plss_staged_loadtype === '2') {
+          warning = t('descriptions.stagingPreScheduleExceeded', {
+            SRC_TRIP: valueDrop?.plss_staged_trip,
+            SRC_CMPT: valueDrop?.plss_staged_cmpt,
+            QTY_EXCEED: qtyExceeded,
+            DST_TRIP: pickupNumber,
+            DST_CMPT: pickupCompartment,
+          });
+          details = [
+            { title: t('fields.loadType'), value: t('operations.preSchedule') },
+            { title: t('fields.schdTripNo'), value: valueDrop?.plss_staged_trip },
+            { title: t('fields.product'), value: valueDrop?.prod_code + ' - ' + valueDrop?.prod_name },
+            { title: t('fields.compartment'), value: valueDrop?.plss_staged_cmpt },
+            { title: t('fields.availableToSchedule'), value: valueDrop?.plss_staged_availqty },
+          ];
+        }
+        // source is a pre-order
+        if (valueDrop?.plss_staged_loadtype === '3') {
+          warning = t('descriptions.stagingPreOrderExceeded', {
+            SRC_TRIP: valueDrop?.plss_staged_trip,
+            SRC_PROD: valueDrop?.prod_code,
+            QTY_EXCEED: qtyExceeded,
+            DST_TRIP: pickupNumber,
+            DST_CMPT: pickupCompartment,
+          });
+          details = [
+            { title: t('fields.loadType'), value: t('operations.preOrder') },
+            { title: t('fields.schdTripNo'), value: valueDrop?.plss_staged_trip },
+            { title: t('fields.product'), value: valueDrop?.prod_code + ' - ' + valueDrop?.prod_name },
+            { title: t('fields.availableToSchedule'), value: valueDrop?.plss_staged_availqty },
+          ];
+        }
+        // source is an open order
+        if (valueDrop?.plss_staged_loadtype === '4') {
+          warning = t('descriptions.stagingOpenOrderExceeded', {
+            SRC_ORDER: valueDrop?.order_cust_ordno,
+            SRC_PROD: valueDrop?.prod_code,
+            QTY_EXCEED: qtyExceeded,
+            DST_TRIP: pickupNumber,
+            DST_CMPT: pickupCompartment,
+          });
+          details = [
+            { title: t('fields.loadType'), value: t('operations.openOrder') },
+            { title: t('fields.schdOrderId'), value: valueDrop?.order_cust_ordno },
+            { title: t('fields.customer'), value: valueDrop?.trip_customer },
+            { title: t('fields.product'), value: valueDrop?.prod_code + ' - ' + valueDrop?.prod_name },
+            { title: t('fields.availableToSchedule'), value: valueDrop?.plss_staged_availqty },
+          ];
+        }
+
+        notification.warning({
+          message: t('messages.validationFailed'),
+          description: (
+            <>
+              <div>{warning}</div>
+              <div>
+                <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }} column={1}>
+                  {details?.map((note, index) => (
+                    <Descriptions.Item key={index} label={note.title} span={1}>
+                      {note.value}
+                    </Descriptions.Item>
+                  ))}
+                </Descriptions>
+              </div>
+            </>
+          ),
+          // duration: 0,
+          style: {
+            width: 500,
+            height: 'calc(100vh - 480px)',
+            overflowY: 'scroll',
+          },
+        });
+      }
+
+      // adjust the schedule qty if it exceeds
+      let scheduled = parseInt(value?.data?.qty_scheduled);
+      if (sumScheduled > valueDrop?.plss_staged_availqty) {
+        const exceeded = sumScheduled - parseInt(valueDrop?.plss_staged_availqty);
+        scheduled = scheduled - exceeded;
+        current[value.rowIndex].qty_scheduled = scheduled;
+        current[value.rowIndex].plss_staged_specqty = scheduled;
+      }
+
       console.log('...........onCellUpdate', value?.data?.qty_scheduled, value?.data?.qty_preload, value);
       const preload = adjustPreloadQuantity(
         config?.sitePreloadDeductFromPreset,
         value?.data?.safefill,
-        value?.data?.qty_scheduled,
+        scheduled,
         value?.data?.qty_preload
       );
-      const current = form.getFieldValue('compartments');
       current[value.rowIndex].qty_preload = preload;
       current[value.rowIndex].plss_staged_prldqty = preload;
       console.log('....................222preload check', preload, current[value.rowIndex]);
@@ -176,49 +444,6 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
 
     setCompartments([]);
     setCompartments(current);
-  };
-
-  const getStagedLoadType = (load) => {
-    let type = load?.plss_staged_loadtype;
-    if (type === '' || (type !== '2' && type !== '3' && type !== '4')) {
-      // means we need get the type by other attributes in the load object
-      // pre schedule
-      // "plss_staged_trip": "900172",
-      // "plss_staged_supp": "7640102",
-      // "plss_staged_cmpt": "4",
-      // "plss_staged_order": "",
-      if (
-        load?.plss_staged_trip !== '' &&
-        load?.plss_staged_supp !== '' &&
-        load?.plss_staged_cmpt !== '' &&
-        load?.plss_staged_order === ''
-      ) {
-        type = '2';
-      }
-      // pre order
-      // "plss_staged_trip": "900173",
-      // "plss_staged_supp": "7640102",
-      // "plss_staged_cmpt": "",
-      // "plss_staged_order": "",
-      if (
-        load?.plss_staged_trip !== '' &&
-        load?.plss_staged_supp !== '' &&
-        load?.plss_staged_cmpt === '' &&
-        load?.plss_staged_order === ''
-      ) {
-        type = '3';
-      }
-      // open order
-      // "plss_staged_trip": "900175" or "",
-      // "plss_staged_supp": "7640102",
-      // "plss_staged_cmpt": "",
-      // "plss_staged_order": "42",
-      if (load?.plss_staged_supp !== '' && load?.plss_staged_cmpt === '' && load?.plss_staged_order !== '') {
-        type = '4';
-      }
-    }
-
-    return type;
   };
 
   const checkExistence = (valueDrop, valueGrid, tripNumber = '') => {
@@ -466,14 +691,17 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
 
     valueGrid.plss_staged_loadtype = getStagedLoadType(valueGrid);
 
+    valueDrop.plss_staged_availqty = adjustStagedAvailQty(valueDrop);
+
     // need check the available qty scheduled for a staged trip, mainly pre-order or open order
     // PLSS_STAGED_LOADTYPE
     // 2: Pre Schedule
     // 3: Pre Order
     // 4: Open Order
-    let sumScheduled = 0;
+    const sumScheduled = getTotalQtyScheduled(gridNodes, valueDrop);
+    /* let sumScheduled = 0;
     gridNodes.forEach((node) => {
-      const cmpt = node?.data;
+      const cmpt = node;
       let tripUsed = false;
       if (valueDrop?.plss_staged_loadtype === '2') {
         if (
@@ -510,10 +738,10 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
       if (tripUsed) {
         sumScheduled += parseInt(cmpt?.qty_scheduled);
       }
-    });
+    }); */
     // for open order item, it already takes care of thq qty scheduled by previous loads in SQL
     // (OPD.ORDER_PROD_QTY - OPD.OPROD_SCHEDULED) AS PLSS_STAGED_SPECQTY
-    const availToSchedule = parseInt(valueDrop?.plss_staged_specqty) - sumScheduled;
+    const availToSchedule = parseInt(valueDrop?.plss_staged_availqty) - sumScheduled;
 
     if (availToSchedule <= 0) {
       if (valueDrop?.plss_staged_loadtype === '2') {
@@ -528,6 +756,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
           { title: t('fields.schdTripNo'), value: valueDrop?.plss_staged_trip },
           { title: t('fields.product'), value: valueDrop?.prod_code + ' - ' + valueDrop?.prod_name },
           { title: t('fields.compartment'), value: valueDrop?.plss_staged_cmpt },
+          { title: t('fields.availableToSchedule'), value: valueDrop?.plss_staged_availqty },
         ];
       }
       // source is a pre-order
@@ -542,6 +771,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
           { title: t('fields.loadType'), value: t('operations.preOrder') },
           { title: t('fields.schdTripNo'), value: valueDrop?.plss_staged_trip },
           { title: t('fields.product'), value: valueDrop?.prod_code + ' - ' + valueDrop?.prod_name },
+          { title: t('fields.availableToSchedule'), value: valueDrop?.plss_staged_availqty },
         ];
       }
       // source is an open order
@@ -557,6 +787,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
           { title: t('fields.schdOrderId'), value: valueDrop?.order_cust_ordno },
           { title: t('fields.customer'), value: valueDrop?.trip_customer },
           { title: t('fields.product'), value: valueDrop?.prod_code + ' - ' + valueDrop?.prod_name },
+          { title: t('fields.availableToSchedule'), value: valueDrop?.plss_staged_availqty },
         ];
       }
 
@@ -606,7 +837,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
       if (tableIndex === index) {
         rowNode = node;
       }
-      nodes.push(node);
+      nodes.push(node?.data);
     });
     const data = rowNode?.data;
     console.log('................ valueDrop', index, valueDrop);
@@ -714,6 +945,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
           plss_staged_prodcmpy: valueDrop?.plss_staged_prodcmpy,
           plss_staged_units: valueDrop?.plss_staged_units,
           plss_staged_specqty: quantityScheduled,
+          plss_staged_availqty: valueDrop?.plss_staged_availqty,
           plss_staged_prldqty: quantityPreloaded,
           plss_staged_order: valueDrop?.plss_staged_order,
           plss_staged_cust: customerScheduled,

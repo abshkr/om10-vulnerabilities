@@ -40,6 +40,76 @@ class StagingBay extends CommonClass
         }
     }
 
+    public function get_pickup_specs_extra() 
+    {
+        if (!isset($this->supplier_code) || $this->supplier_code === "undefined") {
+            $this->supplier_code = "-1";
+        }
+        if (!isset($this->shls_trip_no) || $this->shls_trip_no === "undefined") {
+            $this->shls_trip_no = -1;
+        }
+        $query = "
+            SELECT distinct * 
+            FROM (
+                SELECT PLSS.*, CMPT.SCHD_SPECQTY AS PLSS_STAGED_AVAILQTY, SCHD.SHLS_LD_TYPE AS PLSS_STAGED_LOADTYPE2, 0 AS PLSS_STAGED_AVAILORD
+                FROM PICKUP_SCHEDULE_SPECS PLSS, SPECDETS CMPT, SCHEDULE SCHD
+                WHERE
+                    PLSS.PLSS_STAGED_TRIP = CMPT.SCHDSPEC_SHLSTRIP
+                    AND PLSS.PLSS_STAGED_SUPP = CMPT.SCHDSPEC_SHLSSUPP
+                    AND PLSS.PLSS_STAGED_CMPT = CMPT.SCHD_COMP_ID
+                    AND PLSS.PLSS_STAGED_PRODCODE = CMPT.SCHDPROD_PRODCODE
+                    AND PLSS.PLSS_STAGED_PRODCMPY = CMPT.SCHDPROD_PRODCMPY
+                    AND PLSS.PLSS_STAGED_ORDER IS NULL
+                    AND SCHD.SHLS_TRIP_NO = CMPT.SCHDSPEC_SHLSTRIP
+                    AND SCHD.SHLS_SUPP = CMPT.SCHDSPEC_SHLSSUPP
+                    AND SCHD.SHLS_LD_TYPE = 2
+                UNION ALL
+                SELECT PLSS.*, PROD.SCHP_SPECQTY AS PLSS_STAGED_AVAILQTY, SCHD.SHLS_LD_TYPE AS PLSS_STAGED_LOADTYPE2, 0 AS PLSS_STAGED_AVAILORD
+                FROM PICKUP_SCHEDULE_SPECS PLSS, SPECPROD PROD, SCHEDULE SCHD
+                WHERE
+                    PLSS.PLSS_STAGED_TRIP = PROD.SCHPSPID_SHLSTRIP
+                    AND PLSS.PLSS_STAGED_SUPP = PROD.SCHPSPID_SHLSSUPP
+                    AND PLSS.PLSS_STAGED_PRODCODE = PROD.SCHPPROD_PRODCODE
+                    AND PLSS.PLSS_STAGED_PRODCMPY = PROD.SCHPPROD_PRODCMPY
+                    AND PLSS.PLSS_STAGED_CMPT IS NULL
+                    AND PLSS.PLSS_STAGED_ORDER IS NULL
+                    AND SCHD.SHLS_TRIP_NO = PROD.SCHPSPID_SHLSTRIP
+                    AND SCHD.SHLS_SUPP = PROD.SCHPSPID_SHLSSUPP
+                    AND SCHD.SHLS_LD_TYPE = 3
+                UNION ALL
+                SELECT PLSS.*, PROD.SCHP_SPECQTY AS PLSS_STAGED_AVAILQTY, SCHD.SHLS_LD_TYPE AS PLSS_STAGED_LOADTYPE2, (OPRD.ORDER_PROD_QTY - OPRD.OPROD_SCHEDULED) AS PLSS_STAGED_AVAILORD
+                FROM PICKUP_SCHEDULE_SPECS PLSS, SPECPROD PROD, SCHEDULE SCHD, OPRODMTD OPRD
+                WHERE
+                    PLSS.PLSS_STAGED_TRIP = PROD.SCHPSPID_SHLSTRIP
+                    AND PLSS.PLSS_STAGED_SUPP = PROD.SCHPSPID_SHLSSUPP
+                    AND PLSS.PLSS_STAGED_PRODCODE = PROD.SCHPPROD_PRODCODE
+                    AND PLSS.PLSS_STAGED_PRODCMPY = PROD.SCHPPROD_PRODCMPY
+                    AND PLSS.PLSS_STAGED_CMPT IS NULL
+                    AND PLSS.PLSS_STAGED_ORDER = PROD.SCHP_ORDER
+                    AND SCHD.SHLS_TRIP_NO = PROD.SCHPSPID_SHLSTRIP
+                    AND SCHD.SHLS_SUPP = PROD.SCHPSPID_SHLSSUPP
+                    AND SCHD.SHLS_LD_TYPE = 4
+                    AND PLSS.PLSS_STAGED_PRODCODE = OPRD.OSPROD_PRODCODE
+                    AND PLSS.PLSS_STAGED_PRODCMPY = OPRD.OSPROD_PRODCMPY
+                    AND PLSS.PLSS_STAGED_ORDER = OPRD.ORDER_PROD_KEY
+            )
+            WHERE
+                PLSS_PICKUP_TRIP = :shls_trip_no
+                AND PLSS_PICKUP_SUPP = :shls_supp
+        ";
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':shls_trip_no', $this->shls_trip_no);
+        oci_bind_by_name($stmt, ':shls_supp', $this->supplier_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function get_pre_schedules()
     {
         $query = "
@@ -200,6 +270,7 @@ class StagingBay extends CommonClass
             PROD_CODE                                      AS PLSS_STAGED_PRODCODE,
             PROD_CMPY                                      AS PLSS_STAGED_PRODCMPY,
             NVL(UNIT_CODE, CMPT_UNITS)                     AS PLSS_STAGED_UNITS,
+            NVL(QTY_SCHEDULED, QTY_LOADED)                 AS PLSS_STAGED_AVAILQTY,
             NVL(QTY_SCHEDULED, QTY_LOADED)                 AS PLSS_STAGED_SPECQTY,
             QTY_PRELOAD                                    AS PLSS_STAGED_PRLDQTY,
             SCHD_ORDER                                     AS PLSS_STAGED_ORDER,
@@ -395,6 +466,7 @@ class StagingBay extends CommonClass
             NVL(PRODUCTS.PROD_CODE, LOADED.PROD_CODE)      AS PLSS_STAGED_PRODCODE,
             NVL(PRODUCTS.PROD_CMPY, LOADED.PROD_CMPY)      AS PLSS_STAGED_PRODCMPY,
             LOADED.UNIT_CODE                               AS PLSS_STAGED_UNITS,
+            LOADED.QTY_SCHEDULED                           AS PLSS_STAGED_AVAILQTY,
             LOADED.QTY_SCHEDULED                           AS PLSS_STAGED_SPECQTY,
             LOADED.QTY_PRELOADED                           AS PLSS_STAGED_PRLDQTY,
             LOADED.SCHP_ORDER                              AS PLSS_STAGED_ORDER,
@@ -590,6 +662,7 @@ class StagingBay extends CommonClass
                 OPD.OSPROD_PRODCODE                        AS PLSS_STAGED_PRODCODE,
                 OPD.OSPROD_PRODCMPY                        AS PLSS_STAGED_PRODCMPY,
                 OPD.ORDER_PROD_UNIT                        AS PLSS_STAGED_UNITS,
+                (OPD.ORDER_PROD_QTY - OPD.OPROD_SCHEDULED) AS PLSS_STAGED_AVAILQTY,
                 (OPD.ORDER_PROD_QTY - OPD.OPROD_SCHEDULED) AS PLSS_STAGED_SPECQTY,
                 NVL(OO_QTY.QTY_PRELOADED,0)                AS PLSS_STAGED_PRLDQTY,
                 OPD.ORDER_PROD_KEY                         AS PLSS_STAGED_ORDER,
@@ -937,6 +1010,7 @@ class StagingBay extends CommonClass
                     NULL PLSS_STAGED_PRODCODE,
                     NULL PLSS_STAGED_PRODCMPY,
                     NULL PLSS_STAGED_UNITS,
+                    NULL PLSS_STAGED_AVAILQTY,
                     NULL PLSS_STAGED_SPECQTY,
                     NULL PLSS_STAGED_PRLDQTY,
                     NULL PLSS_STAGED_ORDER,
@@ -1041,6 +1115,7 @@ class StagingBay extends CommonClass
             PLSS_STAGED_PRODCODE,
             PLSS_STAGED_PRODCMPY,
             PLSS_STAGED_UNITS,
+            NULL                               AS PLSS_STAGED_AVAILQTY,
             PLSS_STAGED_SPECQTY,
             PLSS_STAGED_PRLDQTY,
             PLSS_STAGED_ORDER,
@@ -1261,6 +1336,7 @@ class StagingBay extends CommonClass
             PLSS_STAGED_PRODCODE,
             PLSS_STAGED_PRODCMPY,
             PLSS_STAGED_UNITS,
+            NULL                               AS PLSS_STAGED_AVAILQTY,
             PLSS_STAGED_SPECQTY,
             PLSS_STAGED_PRLDQTY,
             PLSS_STAGED_ORDER,
@@ -1488,6 +1564,7 @@ class StagingBay extends CommonClass
                 PLSS_STAGED_PRODCODE,
                 PLSS_STAGED_PRODCMPY,
                 PLSS_STAGED_UNITS,
+                NULL                               AS PLSS_STAGED_AVAILQTY,
                 PLSS_STAGED_SPECQTY,
                 PLSS_STAGED_PRLDQTY,
                 PLSS_STAGED_ORDER,
@@ -1928,6 +2005,39 @@ class StagingBay extends CommonClass
     }
 
 
+    /* private function update_pickup_cmpt($compartment)
+    {
+        // PLSS_PICKUP_TRIP
+        // PLSS_PICKUP_SUPP
+        // PLSS_PICKUP_CMPT
+        // PLSS_STAGED_TRIP
+        // PLSS_STAGED_SUPP
+        // PLSS_STAGED_CMPT
+        // PLSS_STAGED_PRODCODE
+        // PLSS_STAGED_PRODCMPY
+        // PLSS_STAGED_ORDER        
+        $query = "
+            UPDATE PICKUP_SCHEDULE_SPECS 
+            SET PLSS_STAGED_LOADTYPE = :loadtype
+            WHERE PLSS_PICKUP_SUPP = :supp 
+                AND PLSS_PICKUP_TRIP = :trip 
+                AND PLSS_PICKUP_CMPT = :cmpt
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':loadtype', $compartment->plss_staged_loadtype);
+        oci_bind_by_name($stmt, ':supp', $this->supplier_code);
+        oci_bind_by_name($stmt, ':trip', $this->shls_trip_no);
+        oci_bind_by_name($stmt, ':cmpt', $compartment->compartment);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return true;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+    } */
+
     public function create_pickup()
     {
         // write_log(json_encode($this), __FILE__, __LINE__);
@@ -2011,7 +2121,7 @@ class StagingBay extends CommonClass
         } else {
             $response = new EchoSchema(500, 
                 response("__CREATE_FAILED__",
-                    sprintf("Pickup Load (trip number:%d, supplier:%s) is failed to create [error: %s]", $this->shls_trip_no, $this->supplier_code, json_encode($array['message']))
+                    sprintf("Pickup Load (trip number:%d, supplier:%s) is failed to create [error: %s]", $this->shls_trip_no, $this->supplier_code, json_encode($array['details']))
                 )
             );
             echo json_encode($response, JSON_PRETTY_PRINT);
@@ -2053,7 +2163,7 @@ class StagingBay extends CommonClass
         } else {
             $response = new EchoSchema(500, 
                 response("__DELETE_FAILED__",
-                    sprintf("Pickup Load (trip number:%d, supplier:%s) is failed to delete [error: %s]", $this->shls_trip_no, $this->supplier_code, json_encode($array['message']))
+                    sprintf("Pickup Load (trip number:%d, supplier:%s) is failed to delete [error: %s]", $this->shls_trip_no, $this->supplier_code, json_encode($array['details']))
                 )
             );
             echo json_encode($response, JSON_PRETTY_PRINT);
@@ -2090,7 +2200,7 @@ class StagingBay extends CommonClass
         } else {
             $response = new EchoSchema(500, 
                 response("__DELETE_FAILED__",
-                    sprintf("Pickup Load (trip number:%d, supplier:%s) is failed to delete [error: %s]", $this->shls_trip_no, $this->supplier_code, json_encode($array['message']))
+                    sprintf("Pickup Load (trip number:%d, supplier:%s) is failed to delete [error: %s]", $this->shls_trip_no, $this->supplier_code, json_encode($array['details']))
                 )
             );
             echo json_encode($response, JSON_PRETTY_PRINT);
@@ -2191,7 +2301,7 @@ class StagingBay extends CommonClass
         } else {
             $response = new EchoSchema(500, 
                 response("__UPDATE_FAILED__",
-                    sprintf("Pickup Load (trip number:%d, supplier:%s) is failed to activate [error: %s]", $this->shls_trip_no, $this->supplier_code, json_encode($array['message']))
+                    sprintf("Pickup Load (trip number:%d, supplier:%s) is failed to activate [error: %s]", $this->shls_trip_no, $this->supplier_code, json_encode($array['details']))
                 )
             );
             echo json_encode($response, JSON_PRETTY_PRINT);
@@ -2251,7 +2361,7 @@ class StagingBay extends CommonClass
         } else {
             $response = new EchoSchema(500, 
                 response("__UPDATE_FAILED__",
-                    sprintf("Pickup Load (trip number:%d, supplier:%s) is failed to deactivate [error: %s]", $this->shls_trip_no, $this->supplier_code, json_encode($array['message']))
+                    sprintf("Pickup Load (trip number:%d, supplier:%s) is failed to deactivate [error: %s]", $this->shls_trip_no, $this->supplier_code, json_encode($array['details']))
                 )
             );
             echo json_encode($response, JSON_PRETTY_PRINT);
