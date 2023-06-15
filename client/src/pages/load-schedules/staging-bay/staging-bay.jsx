@@ -86,7 +86,7 @@ import DeliveryDetails from '../../delivery-details';
 import DriverInstructions from '../forms/driver-instructions';
 import AdditionalHostData from '../forms/additional-host-data';
 import Compartments from '../forms/compartments';
-import Transactions from '../forms/transactions';
+import StagingTransactions from './staging-transactions';
 import Summary from '../forms/summary';
 import Seals from '../forms/seals';
 import BOL from '../forms/bol';
@@ -1892,7 +1892,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
             disabled={IS_CREATING || !CAN_VIEW_TRANSACTIONS}
             key="1"
           >
-            <Transactions value={value} config={config} />
+            <StagingTransactions value={value} config={config} />
           </TabPane>
 
           <TabPane tab={t('tabColumns.driverInstructions')} disabled={IS_CREATING} key="2">

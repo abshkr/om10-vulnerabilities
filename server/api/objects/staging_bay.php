@@ -1888,6 +1888,187 @@ class StagingBay extends CommonClass
 
 
 
+    public function transactions()
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        if (isset($this->mv_id)) {
+            if (isset($this->mv_all)) {
+                $query = "
+                    SELECT GUI_TRANSACTIONS.*, 
+                        DECODE(TRSA_REVERSE_FLAG, 1, TRSA_REVERSE, NULL) TRSA_REVERSE_EX,
+                        DECODE(TRSA_REVERSE_FLAG, 1, 'Reversal', 2, 'Repost', NULL) TRSA_REVERSE_DESC
+                    FROM GUI_TRANSACTIONS 
+                    WHERE (TRSA_TRIP, TRSA_SUPPLIER) IN 
+                        (SELECT MS.MS_SHLSTRIP, MS.MS_SHLSSUPP FROM MOV_SCHEDULES MS, MOV_SCHD_ITEMS MI, MOVEMENT_ITEMS NI 
+                        WHERE MS.MS_SHLSTRIP = MI.MSITM_SHLSTRIP AND MS.MS_SHLSSUPP = MI.MSITM_SHLSSUPP 
+                            AND MI.MSITM_MOVEID = NI.MVITM_MOVE_ID AND MI.MSITM_MOVITEM = NI.MVITM_LINE_ID AND NI.MVITM_TYPE = 0
+                            AND MI.MSITM_MOVEID = :move_id ) 
+                    ORDER BY TRSA_ID";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':move_id', $this->mv_id); 
+                // oci_bind_by_name($stmt, ':line_id', $this->line_id); 
+            } else {
+                $query = "
+                    SELECT GUI_TRANSACTIONS.*, 
+                        DECODE(TRSA_REVERSE_FLAG, 1, TRSA_REVERSE, NULL) TRSA_REVERSE_EX,
+                        DECODE(TRSA_REVERSE_FLAG, 1, 'Reversal', 2, 'Repost', NULL) TRSA_REVERSE_DESC
+                    FROM GUI_TRANSACTIONS 
+                    WHERE (TRSA_TRIP, TRSA_SUPPLIER) IN 
+                        (SELECT MS.MS_SHLSTRIP, MS.MS_SHLSSUPP FROM MOV_SCHEDULES MS, MOV_SCHD_ITEMS MI 
+                        WHERE MS.MS_SHLSTRIP = MI.MSITM_SHLSTRIP AND MS.MS_SHLSSUPP = MI.MSITM_SHLSSUPP 
+                            AND MI.MSITM_MOVEID = :move_id AND MI.MSITM_MOVITEM = :line_id) 
+                    ORDER BY TRSA_ID";
+                $stmt = oci_parse($this->conn, $query);
+                oci_bind_by_name($stmt, ':move_id', $this->mv_id); 
+                oci_bind_by_name($stmt, ':line_id', $this->line_id); 
+            }
+        } else {
+            $query = "
+                SELECT TRSA.*, 
+                    DECODE(TRSA.TRSA_REVERSE_FLAG, 1, TRSA.TRSA_REVERSE, NULL)          AS TRSA_REVERSE_EX,
+                    DECODE(TRSA.TRSA_REVERSE_FLAG, 1, 'Reversal', 2, 'Repost', NULL)    AS TRSA_REVERSE_DESC
+                FROM 
+                    GUI_TRANSACTIONS TRSA
+                    , (
+                        SELECT DISTINCT PLSS_PICKUP_TRIP, PLSS_PICKUP_SUPP, PLSS_STAGED_TRIP, PLSS_STAGED_SUPP
+                        FROM PICKUP_SCHEDULE_SPECS
+                    )  PLSS
+                WHERE 
+                    TRSA.TRSA_TRIP = PLSS.PLSS_STAGED_TRIP
+                    AND TRSA.TRSA_SUPPLIER = PLSS.PLSS_STAGED_SUPP
+                    AND PLSS.PLSS_PICKUP_TRIP = :trip_no
+                    AND PLSS.PLSS_PICKUP_SUPP = :supplier
+                ORDER BY PLSS.PLSS_STAGED_SUPP, PLSS.PLSS_STAGED_TRIP, TRSA.TRSA_ID
+            ";
+            $stmt = oci_parse($this->conn, $query);
+            oci_bind_by_name($stmt, ':trip_no', $this->trip_no); 
+            oci_bind_by_name($stmt, ':supplier', $this->supplier); 
+        }
+        
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function transactions_hook(&$hook_item)
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        $result = array();
+        $hook_item['transfers'] = $result;
+        // write_log(json_encode($hook_item), __FILE__, __LINE__);
+
+        if (!array_key_exists('trsa_id', $hook_item)) {
+            write_log("hook_item does not have trsa_id item, cannot do transactions_hook",
+                __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        $query = "
+            SELECT * FROM GUI_TRANSACTION_DETAILS 
+            WHERE TRSFTRID_TRSA_ID = :trsa_id
+            ORDER BY TRSFTRID_TRSA_ID, TRSF_ID
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':trsa_id', $hook_item['trsa_id']);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        Utilities::retrieve($result, $this, $stmt, $method=__FUNCTION__);
+        $hook_item['transfers'] = $result;
+    }
+
+    public function transactions_hook_hook(&$hook_item)
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        $result = array();
+        $hook_item['base_prods'] = $result;
+        // write_log(json_encode($hook_item), __FILE__, __LINE__);
+
+        if (!array_key_exists('trsf_id', $hook_item)) {
+            write_log("hook_item does not have mv_id item, cannot do transactions_hook",
+                __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        $query = "
+            SELECT DECODE(TRSB_UNT, 34, TRANBASE.TRSB_CVL / 1000, TRANBASE.TRSB_CVL) TRSB_CVL, 
+                DECODE(TRSB_UNT, 34, TRANBASE.TRSB_AVL / 1000, TRANBASE.TRSB_AVL) TRSB_AVL, 
+                TRANBASE.TRSB_TMP, 
+                TRANBASE.TRSB_DNS, 
+                TRANBASE.TRSB_TMP_F, 
+                TRANBASE.TRSB_API, 
+                TRANBASE.TRSB_TK_TANKCODE, 
+                TRANBASE.TRSB_KG, 
+                DECODE(TRSB_UNT, 34, 5, TRSB_UNT) TRSB_UNT, 
+                BASE_PRODS.BASE_CODE, 
+                BASE_PRODS.BASE_NAME, 
+                BASE_PRODS.BASE_CAT,
+                TRANBASE.TRSB_VCF,
+                TRANBASE.TRSB_BATCH_NO
+            FROM TRANBASE, BASE_PRODS
+            WHERE BASE_PRODS.BASE_CODE = TRANBASE.TRSB_BS AND 
+                TRANBASE.TRSB_ID_TRSF_ID = :trsf_id
+            ORDER BY BASE_PRODS.BASE_CAT DESC
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':trsf_id', $hook_item['trsf_id']);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        //The last $method parameter need to be NonExistHook to prevent 
+        Utilities::retrieve($result, $this, $stmt, $method='NonExistHook');
+        $hook_item['base_prods'] = $result;
+
+        //Another hook
+        $result = array();
+        $hook_item['meters'] = $result;
+        
+        $query = "
+            SELECT MIN(TRSB_OPN_AMB) TRSB_OPN_AMB,
+                MIN(TRSB_OPN_COR) TRSB_OPN_COR,
+                MIN(TRSB_OPN_KG) TRSB_OPN_KG,
+                MAX(TRSB_CLS_AMB) TRSB_CLS_AMB, 
+                MAX(TRSB_CLS_COR) TRSB_CLS_COR,
+                MAX(TRSB_CLS_KG) TRSB_CLS_KG,
+                TRSB_METER,
+                TRSB_ID_TRSF_ID
+            FROM TRANBASE
+            WHERE TRSB_ID_TRSF_ID = :trsf_id
+                AND TRSB_INJECTOR IS NULL
+            GROUP BY TRSB_METER, TRSB_ID_TRSF_ID
+            ORDER BY TRSB_METER
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':trsf_id', $hook_item['trsf_id']);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        //The last $method parameter need to be NonExistHook to prevent 
+        Utilities::retrieve($result, $this, $stmt, $method='NonExistHook');
+        $hook_item['meters'] = $result;
+    }
+
+
+
     // read delivery locations links to suppliers
     public function delvloc_by_supplier()
     {

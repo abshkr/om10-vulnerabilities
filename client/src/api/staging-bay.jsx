@@ -5,6 +5,7 @@ export const PRE_ORDERS = '/api/pages/staging_bay/get_pre_orders.php';
 export const OPEN_ORDERS = '/api/pages/staging_bay/get_open_orders.php';
 export const PICKUP_SPECS = '/api/pages/staging_bay/get_pickup_specs.php';
 export const PICKUP_SPECS_EXTRA = '/api/pages/staging_bay/get_pickup_specs_extra.php';
+export const TRANSACTIONS = '/api/pages/staging_bay/transactions.php';
 
 export const TRIP_PRODUCTS = '/api/pages/staging_bay/get_trip_products.php';
 export const TRIP_COMPARTMENTS = '/api/pages/staging_bay/get_trip_compartments.php';
