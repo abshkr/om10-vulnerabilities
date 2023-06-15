@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { MOVEMENT_NOMIATIONS } from '../../../../api';
 
 import { validatorStatus } from '../../../../utils';
+import { REGEX } from '../../../../constants';
 
 const NominationKey = ({ form, value }) => {
   const [nomkey, setNomkey] = useState(value?.mv_key);
@@ -64,6 +65,14 @@ const NominationKey = ({ form, value }) => {
     if (input !== undefined && input !== input.trimRight()) {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
     }
+
+    const regex = new RegExp(REGEX.INTEGER_NONZERO);
+    const validated = regex.exec(input);
+
+    if (input && input.length > 0 && !validated) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextIntegerNonZero')}`);
+    }
+
     if (input && input.length > 20) {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 20 ─ ${t('descriptions.maxCharacters')}`);
     }
