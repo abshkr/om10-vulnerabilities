@@ -424,7 +424,7 @@ class CompanyService
         $last_pickup = $pickup_range['CMPY_PICKUP_TRIP_LAST'];
         if ($unique_flag && $pickup_end < 999999999) {
             // may need a big end number
-            // $pickup_end = 999999999;
+            $pickup_end = 999999999;
         }
         if ($unique_flag && $pickup_start < 800000000) {
             // may need a big start number
