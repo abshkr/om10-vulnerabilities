@@ -25,9 +25,14 @@ export default class CustomerEditor extends Component {
   };
 
   render() {
-    const { values, editableColumn, data } = this.props;
+    const { values, editableColumn, products, data } = this.props;
     const disabled = data?.[editableColumn] === undefined || data?.[editableColumn] ? false : true;
     console.log('................cus edit', disabled, editableColumn, data?.[editableColumn]);
+    const prodCustomers = _.filter(
+      products,
+      (o) => data?.prod_code === o?.prod_code && data?.prod_cmpy === o?.prod_cmpy
+    );
+    const availCustomers = _.uniq(_.map(prodCustomers, 'cust_acct'));
 
     return (
       <div style={{ display: 'flex' }}>
@@ -39,14 +44,16 @@ export default class CustomerEditor extends Component {
           onChange={this.onClick}
           bordered={false}
         >
-          {values?.map((item) => (
-            //<Select.Option key={(_.split(item, '|'))[0]} value={(_.split(item, '|'))[0]}>
-            //  {(_.split(item, '|'))[1]}
-            //</Select.Option>
-            <Select.Option key={item.code} value={item.code}>
-              {item.name}
-            </Select.Option>
-          ))}
+          {values
+            ?.filter((itm) => availCustomers?.includes(itm.code))
+            ?.map((item) => (
+              //<Select.Option key={(_.split(item, '|'))[0]} value={(_.split(item, '|'))[0]}>
+              //  {(_.split(item, '|'))[1]}
+              //</Select.Option>
+              <Select.Option key={item.code} value={item.code}>
+                {item.name}
+              </Select.Option>
+            ))}
         </Select>
       </div>
     );

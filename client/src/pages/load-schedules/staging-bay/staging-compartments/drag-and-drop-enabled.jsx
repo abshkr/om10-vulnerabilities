@@ -28,6 +28,9 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
 
   const { data: units } = useSWR(LOAD_SCHEDULES.UNIT_TYPES);
   const { data: customersBySupplier } = useSWR(`${STAGING_BAY.SUPP_CUSTOMERS}?supplier=${supplier}`);
+  const { data: customerProductsBySupplier } = useSWR(
+    `${STAGING_BAY.SUPP_CUSTOMER_PRODUCTS}?supplier=${supplier}`
+  );
   const { data: delvLocsBySupplier } = useSWR(`${STAGING_BAY.SUPP_DELVLOCS}?supplier=${supplier}`);
   // const { data: customersBySupplier } = useSWR(`${STAGING_BAY.SUPP_CUSTOMERS}?supplier=${'-1'}`);
   // const { data: delvLocsBySupplier } = useSWR(`${STAGING_BAY.SUPP_DELVLOCS}?supplier=${'-1'}`);
@@ -1170,6 +1173,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
           })
         ),
         editableColumn: 'customer_editable',
+        products: customerProductsBySupplier?.records,
       },
     },
 

@@ -2069,6 +2069,35 @@ class StagingBay extends CommonClass
 
 
 
+    public function customer_products_by_supplier()
+    {
+        $query = "SELECT CUSTOMER_PRODUCT.CUST_ACCT,
+                CUSTOMER.CUST_CODE CUST_CODE,
+                PRODUCTS.PROD_CODE,
+                PRODUCTS.PROD_CMPY,
+                PRODUCTS.PROD_NAME,
+                CUSTOMER.CUST_SUPP SUPPLIER_CODE,
+                SUPP.CMPY_NAME SUPPLIER_NAME,
+                CCMP.CMPY_NAME CUSTOMER_NAME
+            FROM CUSTOMER_PRODUCT, CUSTOMER, PRODUCTS, COMPANYS SUPP, COMPANYS CCMP
+            WHERE CUSTOMER.CUST_SUPP = SUPP.CMPY_CODE
+                AND CUSTOMER.CUST_CODE = CCMP.CMPY_CODE
+                AND CUSTOMER_PRODUCT.CUST_ACCT = CUSTOMER.CUST_ACCT
+                AND CUSTOMER_PRODUCT.PROD_CODE = PRODUCTS.PROD_CODE
+                AND CUSTOMER_PRODUCT.PROD_CMPY = PRODUCTS.PROD_CMPY
+                AND CUSTOMER.CUST_SUPP = :supplier
+            ORDER BY PRODUCTS.PROD_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, 'supplier', $this->supplier);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     // read delivery locations links to suppliers
     public function delvloc_by_supplier()
     {

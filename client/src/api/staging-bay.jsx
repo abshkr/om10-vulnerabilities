@@ -21,6 +21,7 @@ export const COMPARTMENTS_BY_TANKER = '/api/pages/staging_bay/get_tnkr_cmpts.php
 export const SUPP_CUSTOMERS = '/api/pages/schedule/supp_customers.php';
 export const CUST_DELVLOCS = '/api/pages/staging_bay/delvloc_by_customer.php';
 export const SUPP_DELVLOCS = '/api/pages/staging_bay/delvloc_by_supplier.php';
+export const SUPP_CUSTOMER_PRODUCTS = '/api/pages/staging_bay/customer_products_by_supplier.php';
 
 // export const UNIT_TYPES = '/api/pages/open_order/unit_types.php';
 export const UNIT_TYPES = '/api/pages/schedule/unit_types.php';
