@@ -25,7 +25,7 @@ export default class CustomerEditor extends Component {
   };
 
   render() {
-    const { values, editableColumn, products, data } = this.props;
+    const { values, editableColumn, products, data, flag } = this.props;
     const disabled = data?.[editableColumn] === undefined || data?.[editableColumn] ? false : true;
     console.log('................cus edit', disabled, editableColumn, data?.[editableColumn]);
     const prodCustomers = _.filter(
@@ -45,7 +45,7 @@ export default class CustomerEditor extends Component {
           bordered={false}
         >
           {values
-            ?.filter((itm) => availCustomers?.includes(itm.code))
+            ?.filter((itm) => !flag || availCustomers?.includes(itm.code))
             ?.map((item) => (
               //<Select.Option key={(_.split(item, '|'))[0]} value={(_.split(item, '|'))[0]}>
               //  {(_.split(item, '|'))[1]}
