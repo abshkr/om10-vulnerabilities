@@ -1174,6 +1174,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
         ),
         editableColumn: 'customer_editable',
         products: customerProductsBySupplier?.records,
+        flag: config?.site_customer_product,
       },
     },
 
