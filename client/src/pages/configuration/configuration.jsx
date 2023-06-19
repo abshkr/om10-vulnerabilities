@@ -27,7 +27,7 @@ import Locations from './locations';
 import { useAuth } from '../../hooks';
 import { ConfigurationContainer } from './styles';
 import api, { SITE_CONFIGURATION, FOLIO_SCHEDULING } from '../../api';
-import { Page } from '../../components';
+import { Page, CheckGroupList } from '../../components';
 import auth from '../../auth';
 import { complexityDesc, decimalThousandSeparator } from 'utils';
 
@@ -46,6 +46,18 @@ const FormSwitch = ({ config, onChange }) => {
   if (config.config_value === 'N' || config.config_value === 'Y') {
     return null;
   }
+
+  const prepareChars = (excludes) => {
+    const list = [];
+    for (let i = 0; i <= 255; i++) {
+      if (!excludes.includes(String.fromCharCode(i))) {
+        list.push(String.fromCharCode(i));
+      }
+    }
+    return list;
+  };
+  const blockInvalidChar = (e) => prepareChars(['0', '1']).includes(e.key) && e.preventDefault();
+  const blockInvalidChar4 = (e) => prepareChars(['0', '1', '2', '3']).includes(e.key) && e.preventDefault();
 
   const isNegativeNumber = (key, value) => {
     const keys = [
@@ -814,6 +826,74 @@ const FormSwitch = ({ config, onChange }) => {
         </>
       );
 
+    case 'SITE_PICKUP_TRIP_START':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'0 - 999999999'}</Tag>
+          </Tooltip>
+          <InputNumber
+            style={{ width: '10vw' }}
+            min={0}
+            max={999999999}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
+    case 'SITE_PICKUP_TRIP_END':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'0 - 999999999'}</Tag>
+          </Tooltip>
+          <InputNumber
+            style={{ width: '10vw' }}
+            min={0}
+            max={999999999}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
+    case 'SITE_CMPY_LOAD_OPTIONS_EDITABLE':
+    case 'SITE_CMPY_LOAD_OPTIONS_DEFAULT':
+      return '';
+
+    case 'SITE_CMPY_LOAD_OPTIONS_EDITABLE123':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'NNNNNNNN, N: 0,1'}</Tag>
+          </Tooltip>
+          <Input
+            style={{ width: '10vw' }}
+            value={config.config_value}
+            onChange={(event) => onChange(config, event.target.value)}
+            onKeyDown={blockInvalidChar}
+            maxLength={8}
+          />
+        </>
+      );
+
+    case 'SITE_CMPY_LOAD_OPTIONS_DEFAULT123':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'NNNNNNNN, N: 0,1,2,3'}</Tag>
+          </Tooltip>
+          <Input
+            style={{ width: '10vw' }}
+            value={config.config_value}
+            onChange={(event) => onChange(config, event.target.value)}
+            onKeyDown={blockInvalidChar4}
+            maxLength={8}
+          />
+        </>
+      );
+
     default:
       return (
         // it is more reasonable to use Input instead of InputNumber as default
@@ -830,6 +910,84 @@ const FormSwitch = ({ config, onChange }) => {
           onChange={(value) => onChange(config, value)}
         /> */
       );
+  }
+};
+
+const FormField = ({ config, onChange }) => {
+  const { t } = useTranslation();
+
+  const companyTypes = [
+    { index: 1, code: 'SITE_MANAGER', title: t('fields.siteManager') },
+    { index: 2, code: 'SUPPLIER', title: t('fields.schdSupplier') },
+    { index: 3, code: 'CARRIER', title: t('fields.schdCarrier') },
+    { index: 4, code: 'CUSTOMER', title: t('fields.customer') },
+    { index: 5, code: 'DRAWER', title: t('fields.drawer') },
+    { index: 6, code: 'ISSUER', title: t('fields.issuer') },
+    { index: 7, code: 'EMPLOYER', title: t('fields.employer') },
+    { index: 8, code: 'HOST', title: t('fields.host') },
+  ];
+
+  /*
+    "stagingBayAnyLoads": "No Check",
+    "": "Normal Loads",
+    "": "Pickup Loads",
+    "stagingBayBothLoads": "Normal and Pickup Loads",
+  */
+  const loadTypes = [
+    { index: 1, code: 'NORMAL_LOADS', title: t('fields.stagingBayNormalLoads') },
+    { index: 2, code: 'PICKUP_LOADS', title: t('fields.stagingBayPickupLoads') },
+  ];
+
+  const editTypes = [{ index: 1, code: 'EDITABLE', title: t('fields.editable') }];
+
+  if (config.config_value === 'N' || config.config_value === 'Y') {
+    return null;
+  }
+
+  switch (config.config_key) {
+    case 'SITE_CMPY_LOAD_OPTIONS_EDITABLE':
+      return (
+        <CheckGroupList
+          value={config.config_value}
+          defaultValue={'00000000'}
+          flags={'11111111'}
+          listOptions={companyTypes}
+          checkOptions={editTypes}
+          onChange={(value) => {
+            onChange(config, value);
+          }}
+        />
+      );
+
+    case 'SITE_CMPY_LOAD_OPTIONS_DEFAULT':
+      return (
+        <CheckGroupList
+          value={config.config_value}
+          defaultValue={'01001000'}
+          flags={'11111111'}
+          listOptions={companyTypes}
+          checkOptions={loadTypes}
+          onChange={(value) => {
+            onChange(config, value);
+          }}
+        />
+      );
+
+    default:
+      return '';
+  }
+};
+
+const FormTag = ({ config }) => {
+  switch (config.config_key) {
+    case 'SITE_CMPY_LOAD_OPTIONS_EDITABLE':
+    case 'SITE_CMPY_LOAD_OPTIONS_DEFAULT':
+      return (
+        /* <Tag color={'red'}>{config.config_value}</Tag> */
+        <Input value={config.config_value} disabled={true} style={{ width: '10vw' }} />
+      );
+    default:
+      return '';
   }
 };
 
@@ -857,7 +1015,15 @@ const ConfigurationItems = ({ data, onChange, t }) => (
               />
             }
             // eslint-disable-next-line
-            title={<a>{item.config_comment}</a>}
+            title={
+              <>
+                <a>{item.config_comment}</a>
+                <div style={{ float: 'right' }}>
+                  <FormTag config={item} />
+                </div>
+              </>
+            }
+            description={<FormField config={item} onChange={onChange} />}
           />
           <FormSwitch config={item} onChange={onChange} />
         </List.Item>
@@ -1329,6 +1495,15 @@ const Configuration = ({ user, config }) => {
                 visible={visibleServer}
                 selected={selectedServer}
                 access={access}
+              />
+            </TabPane>
+          )}
+          {user?.per_code === '9999' && (
+            <TabPane tab={t('tabColumns.stagingBay')} key="15">
+              <ConfigurationItems
+                data={_.filter(configuration, ['config_required_by_gui', 'B'])}
+                onChange={onConfigurationEdit}
+                t={t}
               />
             </TabPane>
           )}

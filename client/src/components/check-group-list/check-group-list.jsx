@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { EyeOutlined, EditOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import { Scrollbars } from 'react-custom-scrollbars';
+import { CheckGroupListContainer } from './styles';
 
 const CheckGroupList = ({ value, defaultValue, flags, listOptions, checkOptions, onChange }) => {
   const { t } = useTranslation();
@@ -49,7 +50,7 @@ const CheckGroupList = ({ value, defaultValue, flags, listOptions, checkOptions,
   };
 
   return (
-    <>
+    <CheckGroupListContainer>
       <List
         style={{ width: '100%', minWidth: 800, overflowX: 'auto', overflowY: 'auto', minHeight: 120 }}
         grid={layout}
@@ -72,8 +73,9 @@ const CheckGroupList = ({ value, defaultValue, flags, listOptions, checkOptions,
                 size="small"
                 title={listItem?.title}
                 hoverable
-                headStyle={{ paddingRight: 0 }}
-                style={{ width: 160, margin: 0, padding: 0, minwidth: 100 }}
+                className="check-group-list"
+                // headStyle={{ paddingRight: 0, background: '#a9bfd2', color: 'red', fontSize: '12px', fontWeight: 'bold' }}
+                style={{ margin: 0, padding: 0, minWidth: 160 }}
               >
                 {checkOptions?.map((checkItem) => (
                   <Row>
@@ -122,7 +124,7 @@ const CheckGroupList = ({ value, defaultValue, flags, listOptions, checkOptions,
           );
         }}
       />
-    </>
+    </CheckGroupListContainer>
   );
 };
 

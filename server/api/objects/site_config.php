@@ -117,6 +117,11 @@ class SiteConfig extends CommonClass
         "SITE_TYPE_UNTICK_CHECK_7EMPLOYER" => "当雇主公司类型被取消选择时检查该类型的公司是否拥有子记录",
         "SITE_TYPE_UNTICK_CHECK_8HOST" => "当上级公司类型被取消选择时检查该类型的公司是否拥有子记录",
         "SITE_TYPE_UNTICK_FORCED" => "允许用户在某类型的公司拥有子记录的情况下仍然可以强行取消公司的类型",
+        "SITE_USE_STAGING_BAY" => "启用/禁用单据组合发油台在油库的使用",
+        "SITE_CMPY_LOAD_OPTIONS_DEFAULT" => "当启用单据组合发油台时，公司提油方式(普通提单/组合提单，基于公司类型)的默认值",
+        "SITE_CMPY_LOAD_OPTIONS_EDITABLE" => "当启用单据组合发油台时，公司提油方式(普通提单/组合提单，基于公司类型)的可编辑开关",
+        "SITE_PICKUP_TRIP_START" => "油库范围内组合提单的默认起始单号",
+        "SITE_PICKUP_TRIP_END" => "油库范围内组合提单的默认终止单号",
     );
 
     private $ENG_DESC = array(
@@ -293,6 +298,11 @@ class SiteConfig extends CommonClass
         "SITE_TYPE_UNTICK_CHECK_7EMPLOYER" => "Check if the EMPLOYER company has the child records when the EMPLOYER type is unticked",
         "SITE_TYPE_UNTICK_CHECK_8HOST" => "Check if the HOST company has the child records when the HOST type is unticked",
         "SITE_TYPE_UNTICK_FORCED" => "Allow the user to untick the type even if the type of company has the child records",
+        "SITE_USE_STAGING_BAY" => "Enable the Staging Bay for the site",
+        "SITE_CMPY_LOAD_OPTIONS_DEFAULT" => "The default value of the company load options when Staging Bay enabled",
+        "SITE_CMPY_LOAD_OPTIONS_EDITABLE" => "The editibility of company load options when Staging Bay enabled",
+        "SITE_PICKUP_TRIP_START" => "Default start trip number for pickup load at site level",
+        "SITE_PICKUP_TRIP_END" => "Default end trip number for pickup load at site level",
     );
 
     public function read()
