@@ -61,6 +61,7 @@ import {
   StartWeight,
   DiffWeight,
   Isotainer,
+  PopupText,
 } from './fields';
 
 import { SelectInput, PartnershipManager } from '../../../components';
@@ -1768,7 +1769,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
                 {/* <TripNumber form={form} value={value} supplier={supplier} onChange={setTrip} /> */}
                 <Form.Item
                   name="shls_trip_no"
-                  label={t('fields.tripNumber')}
+                  label={
+                    <>
+                      {t('fields.tripNumber')} &nbsp;&nbsp;&nbsp;
+                      <PopupText type="0" config={config} supplier={value?.supplier_code || supplier} />
+                    </>
+                  }
                   rules={[{ required: true, validator: validateTripNumber }]}
                   hasFeedback
                   validateStatus={suppTrip ? status : null}

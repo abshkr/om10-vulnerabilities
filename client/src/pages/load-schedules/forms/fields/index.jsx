@@ -19,6 +19,7 @@ import EndWeight from './end-weight';
 import StartWeight from './start-weight';
 import DiffWeight from './diff-weight';
 import Isotainer from './isotainer';
+import PopupText from './popup-text';
 
 export {
   Supplier,
@@ -42,4 +43,5 @@ export {
   StartWeight,
   DiffWeight,
   Isotainer,
+  PopupText,
 };
