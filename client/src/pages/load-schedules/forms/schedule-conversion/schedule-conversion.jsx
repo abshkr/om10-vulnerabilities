@@ -73,7 +73,9 @@ const ScheduleConversion = ({
 
     const len = new TextEncoder().encode(input).length;
     if (input && len > config?.maxLengthTripNum) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: ${config?.maxLengthTripNum} ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${config?.maxLengthTripNum} ─ ${t('descriptions.maxCharacters')}`
+      );
     }
 
     return Promise.resolve();
@@ -203,25 +205,25 @@ const ScheduleConversion = ({
     }
 
     findResult = _.find(record.compartments, (item) => {
-      return item.qty_scheduled > 0 && item.unit_code === '';
+      return item.qty_scheduled > 0 && (item.unit_code === '' || !item.unit_code);
     });
 
     if (findResult) {
       notification.error({
         message: t('messages.validationFailed'),
-        description: `${t('descriptions.preSchedProdUnit')} ${findResult.compartment} `,
+        description: t('descriptions.preSchedProdUnit', { CMPT: findResult.compartment }),
       });
       return;
     }
 
     findResult = _.find(record.compartments, (item) => {
-      return item.qty_scheduled > 0 && item.prod_code === '';
+      return item.qty_scheduled > 0 && (item.prod_code === '' || !item.prod_code);
     });
 
     if (findResult) {
       notification.error({
         message: t('messages.validationFailed'),
-        description: `${t('descriptions.preSchedProd')} ${findResult.compartment} `,
+        description: t('descriptions.preSchedProd', { CMPT: findResult.compartment }),
       });
       return;
     }

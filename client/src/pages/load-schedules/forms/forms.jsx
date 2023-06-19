@@ -773,15 +773,15 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
       }
 
       findResult = _.find(record.products, (item) => {
-        return item.qty_scheduled > 0 && item.unit_code === '';
+        return item.qty_scheduled > 0 && (item.unit_code === '' || !item.unit_code);
       });
 
       if (findResult) {
         notification.error({
           message: t('messages.validationFailed'),
-          description: `${t('descriptions.preOrderProdUnit')} ${findResult.prod_code}/${
-            findResult.prod_name
-          } `,
+          description: t('descriptions.preOrderProdUnit', {
+            PROD: `${findResult.prod_code} - ${findResult.prod_name}`,
+          }),
         });
         return;
       }
@@ -816,25 +816,25 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
       }
 
       findResult = _.find(record.compartments, (item) => {
-        return item.qty_scheduled > 0 && item.unit_code === '';
+        return item.qty_scheduled > 0 && (item.unit_code === '' || !item.unit_code);
       });
 
       if (findResult) {
         notification.error({
           message: t('messages.validationFailed'),
-          description: `${t('descriptions.preSchedProdUnit')} ${findResult.compartment} `,
+          description: t('descriptions.preSchedProdUnit', { CMPT: findResult.compartment }),
         });
         return;
       }
 
       findResult = _.find(record.compartments, (item) => {
-        return item.qty_scheduled > 0 && item.prod_code === '';
+        return item.qty_scheduled > 0 && (item.prod_code === '' || !item.prod_code);
       });
 
       if (findResult) {
         notification.error({
           message: t('messages.validationFailed'),
-          description: `${t('descriptions.preSchedProd')} ${findResult.compartment} `,
+          description: t('descriptions.preSchedProd', { CMPT: findResult.compartment }),
         });
         return;
       }

@@ -19,8 +19,8 @@ export default class Unit extends Component {
 
     let current = form.getFieldValue('products');
 
-    current[rowIndex].unit_code = record.key;
-    current[rowIndex].unit_name = record.value;
+    current[rowIndex].unit_code = record?.key;
+    current[rowIndex].unit_name = record?.value;
 
     form.setFieldsValue({
       products: current,

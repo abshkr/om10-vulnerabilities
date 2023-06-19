@@ -697,7 +697,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
       } else {
         if (String(cunit?.unit_code) !== String(cmpt?.unit_code)) {
           let title = t('descriptions.schdCmptUnitNotMatchTnkrCmpt');
-          title = title.replace('[[SCHD_UNIT]]', '"' + cmpt?.unit_name + '"');
+          title = title.replace('[[SCHD_UNIT]]', '"' + (cmpt?.unit_name || ' ') + '"');
           title = title.replace('[[TNKR_UNIT]]', '"' + cunit?.unit_name + '"');
           errors.push({
             field: `${t('fields.unit')} (${t('fields.compartment')} ${cmpt?.compartment})`,
@@ -729,7 +729,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
 
       if (!cunit) {
         let title = t('descriptions.schdProdUnitNotMatchTnkrCmpt');
-        title = title.replace('[[SCHD_UNIT]]', '"' + product?.unit_name + '"');
+        title = title.replace('[[SCHD_UNIT]]', '"' + (product?.unit_name || ' ') + '"');
         title = title.replace('[[TNKR_UNIT]]', '"' + tnkrUnits + '"');
         errors.push({
           field: `${t('fields.unit')} (${t('fields.product')} ${product?.prod_code} - ${product?.prod_name})`,
@@ -789,15 +789,15 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
       }
 
       findResult = _.find(record.products, (item) => {
-        return item.qty_scheduled > 0 && item.unit_code === '';
+        return item.qty_scheduled > 0 && (item.unit_code === '' || !item.unit_code);
       });
 
       if (findResult) {
         notification.error({
           message: t('messages.validationFailed'),
-          description: `${t('descriptions.preOrderProdUnit')} ${findResult.prod_code}/${
-            findResult.prod_name
-          } `,
+          description: t('descriptions.preOrderProdUnit', {
+            PROD: `${findResult.prod_code} - ${findResult.prod_name}`,
+          }),
         });
         return;
       }
@@ -832,25 +832,25 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
       }
 
       findResult = _.find(record.compartments, (item) => {
-        return item.qty_scheduled > 0 && item.unit_code === '';
+        return item.qty_scheduled > 0 && (item.unit_code === '' || !item.unit_code);
       });
 
       if (findResult) {
         notification.error({
           message: t('messages.validationFailed'),
-          description: `${t('descriptions.preSchedProdUnit')} ${findResult.compartment} `,
+          description: t('descriptions.preSchedProdUnit', { CMPT: findResult.compartment }),
         });
         return;
       }
 
       findResult = _.find(record.compartments, (item) => {
-        return item.qty_scheduled > 0 && item.prod_code === '';
+        return item.qty_scheduled > 0 && (item.prod_code === '' || !item.prod_code);
       });
 
       if (findResult) {
         notification.error({
           message: t('messages.validationFailed'),
-          description: `${t('descriptions.preSchedProd')} ${findResult.compartment} `,
+          description: t('descriptions.preSchedProd', { CMPT: findResult.compartment }),
         });
         return;
       }
@@ -863,7 +863,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
         if (findResult) {
           notification.error({
             message: t('messages.validationFailed'),
-            description: `${t('descriptions.preSchedCustomer')} ${findResult.compartment} `,
+            description: t('descriptions.preSchedCustomer', { CMPT: findResult.compartment }),
           });
           return;
         }
