@@ -259,6 +259,7 @@
     "preOrderProdUnit": "Select unit for product",
     "preOrderReady": "Input quantity for at least one product",
     "searchRequired": "Please input at least one field to search except for date range",
+    "preSchedCustomer": "Select customer for compartment",
     "preSchedProd": "Select product for compartment",
     "preSchedProdUnit": "Select unit for compartment",
     "prescheduleReady": "Select product in at least one compartment",

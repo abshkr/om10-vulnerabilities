@@ -551,6 +551,14 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     setDrawer(supplier);
   };
 
+  const getCompanyConfigs = async (supplier) => {
+    const results = await api.get(`${COMPANIES.CONFIG}?cmpy_code=${supplier}`);
+
+    const configs = results?.data?.records;
+
+    return configs;
+  };
+
   const getTankerCompartments = async (tanker) => {
     const results = await api.get(`${STAGING_BAY.COMPARTMENTS_BY_TANKER}?tnkr_code=${tanker}`);
 
@@ -749,6 +757,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
       }
     }
 
+    // get the company config of NO_CUSTOMER_ALLOWED
+    const cmpyConfigs = await getCompanyConfigs(record?.supplier_code);
+    const cmpyCfgItem = _.find(cmpyConfigs, (o) => o?.config_key === 'NO_CUSTOMER_ALLOWED');
+    const noCustomerAllowed =
+      cmpyCfgItem?.config_value === 'Y' || cmpyCfgItem?.config_value === 'y' ? true : false;
+
     const cmptUnits = await getTankerCompartments(record?.tnkr_code);
     let errors = [];
     if (record?.shls_ld_type === '3' /* Preorder*/) {
@@ -839,6 +853,20 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
           description: `${t('descriptions.preSchedProd')} ${findResult.compartment} `,
         });
         return;
+      }
+
+      if (noCustomerAllowed === false) {
+        findResult = _.find(record.compartments, (item) => {
+          return item.qty_scheduled > 0 && (item.plss_staged_cust === '' || !item.plss_staged_cust);
+        });
+
+        if (findResult) {
+          notification.error({
+            message: t('messages.validationFailed'),
+            description: `${t('descriptions.preSchedCustomer')} ${findResult.compartment} `,
+          });
+          return;
+        }
       }
 
       // check the compartment units

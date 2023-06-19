@@ -259,6 +259,7 @@
     "preOrderProdUnit": "请为油品选择计量单位",
     "preOrderReady": "给至少一个油品输入油量",
     "searchRequired": "请输入至少一项(不包括日期)查找",
+    "preSchedCustomer": "请为油仓选择客户账号",
     "preSchedProd": "请为油仓选择油品",
     "preSchedProdUnit": "请为油仓选择计量单位",
     "prescheduleReady": "请在至少一个油仓里选择油品",

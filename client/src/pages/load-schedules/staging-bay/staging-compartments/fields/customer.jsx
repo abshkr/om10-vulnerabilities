@@ -38,6 +38,7 @@ export default class CustomerEditor extends Component {
       <div style={{ display: 'flex' }}>
         <Select
           dropdownMatchSelectWidth={false}
+          allowClear
           value={this.state.value}
           disabled={disabled}
           style={{ width: '100%' }}
