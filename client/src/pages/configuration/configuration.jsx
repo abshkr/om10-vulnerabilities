@@ -631,6 +631,21 @@ const FormSwitch = ({ config, onChange }) => {
         </>
       );
 
+    case 'SITE_DEFAULT_PRECISION_VISCOSITY':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRangesRequired')}>
+            <Tag color={'red'}>{'0 - 9'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={0}
+            max={9}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
     case 'SITE_DEFAULT_PRECISION_TEMPERATURE':
       return (
         <>

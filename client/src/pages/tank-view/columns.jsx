@@ -302,6 +302,17 @@ const columns = (t, config) => [
   },
 
   {
+    headerName: t('fields.viscosity'),
+    field: 'tank_viscosity',
+    filter: 'FuzzyFilter',
+    sortable: true,
+    resizable: true,
+    hide: !config?.siteTankViscosityEnabled,
+    width: 120,
+    suppressSizeToFit: true,
+  },
+
+  {
     headerName: t('fields.adaptiveArmPriority'),
     field: 'afc_priority',
     sortable: true,

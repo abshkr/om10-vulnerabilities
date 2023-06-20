@@ -2156,6 +2156,7 @@
     "tankStatusId": "油罐状态编号",
     "tankStatus": "油罐状态",
     "tankViscosity": "油罐粘度",
+    "viscosity": "粘度",
     "tankWater": "油罐水容积",
     "tankWaterLevel": "油罐水液位",
     "tanker": "油槽车",

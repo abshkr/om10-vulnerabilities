@@ -2157,6 +2157,7 @@
     "tankStatusId": "Tank Status Id",
     "tankStatus": "Tank Status",
     "tankViscosity": "Tank Viscosity",
+    "viscosity": "Viscosity",
     "tankWater": "Tank Water Volume",
     "tankWaterLevel": "Tank Water Level",
     "tanker": "Tanker",

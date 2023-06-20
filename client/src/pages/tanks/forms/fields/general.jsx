@@ -72,6 +72,7 @@ const General = ({ form, value, config, densRange }) => {
         tank_ullage: value.tank_ullage,
         tank_sulphur: value.tank_sulphur,
         tank_flashpoint: value.tank_flashpoint,
+        tank_viscosity: value.tank_viscosity,
         tank_code: value.tank_code,
         tank_base: value.tank_base,
         tank_name: value.tank_name,
@@ -257,7 +258,7 @@ const General = ({ form, value, config, densRange }) => {
 
       <Row gutter={[8, 8]}>
         {!config?.siteUllageCalcAuto && (
-          <Col span={8}>
+          <Col span={6}>
             <Form.Item
               name="tank_ullage"
               label={t('fields.ullage')}
@@ -268,13 +269,13 @@ const General = ({ form, value, config, densRange }) => {
           </Col>
         )}
 
-        <Col span={config?.siteUllageCalcAuto ? 10 : 8}>
+        <Col span={config?.siteUllageCalcAuto ? 10 : 6}>
           <Form.Item name="tank_sulphur" label={`${t('fields.sulphur')} (${t('units.sulphur')})`}>
             <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
           </Form.Item>
         </Col>
 
-        <Col span={config?.siteUllageCalcAuto ? 14 : 8}>
+        <Col span={!config?.siteTankViscosityEnabled ? 14 : 7}>
           <Form.Item
             name="tank_flashpoint"
             label={`${t('fields.flashPoint')} (${t(`units.${config?.temperatureUnit}`)})`}
@@ -282,6 +283,23 @@ const General = ({ form, value, config, densRange }) => {
             <InputNumber min={0} max={999999999} style={{ width: '100%' }} />
           </Form.Item>
         </Col>
+
+        {config?.siteTankViscosityEnabled && (
+          <Col span={7}>
+            <Form.Item
+              name="tank_viscosity"
+              label={t('fields.viscosity')}
+              // rules={[{ required: false, validator: validate, label: t('fields.tankViscosity') }]}
+            >
+              <InputNumber
+                min={Math.pow(10, -1 * config?.precisionViscosity)}
+                max={999999999}
+                precision={config?.precisionViscosity}
+                style={{ width: '100%' }}
+              />
+            </Form.Item>
+          </Col>
+        )}
       </Row>
 
       <Row gutter={[8, 8]}>

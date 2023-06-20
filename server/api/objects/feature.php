@@ -568,6 +568,7 @@ class Feature extends CommonClass
 				SITE_OWNERSHIP_MASS_MODE: The mass mode used for site-level ownership stock management. WiV: Weight in Vacuum, WiA: Weight in Air
 
 				SITE_IGNORE_ADTV_DENSITY: Ignore the aditive when calculating product density, Y/N
+				SITE_TANK_VISCOSITY_ENABLED: Control the visibility and editability of the tank viscosity in Tank Status screen, Y/N
 		*/
 		if ( $flag == 'Y' || $flag == true )
 		{
@@ -589,6 +590,7 @@ class Feature extends CommonClass
 			$this->updateSiteConfig( 'GSV', 'SITE_OWNERSHIP_VOLUME_MODE' );
 			$this->updateSiteConfig( 'WiV', 'SITE_OWNERSHIP_MASS_MODE' );
 			$this->updateSiteConfig( 'Y', 'SITE_IGNORE_ADTV_DENSITY' );
+			$this->updateSiteConfig( 'Y', 'SITE_TANK_VISCOSITY_ENABLED' );
 		}
 		else
 		{
@@ -610,6 +612,7 @@ class Feature extends CommonClass
 			$this->updateSiteConfig( 'GSV', 'SITE_OWNERSHIP_VOLUME_MODE' ); // may need to change later
 			$this->updateSiteConfig( 'WiV', 'SITE_OWNERSHIP_MASS_MODE' ); // may need to change later
 			$this->updateSiteConfig( 'N', 'SITE_IGNORE_ADTV_DENSITY' );
+			$this->updateSiteConfig( 'N', 'SITE_TANK_VISCOSITY_ENABLED' );
 		}
 
 		// update the unit message for std volume
