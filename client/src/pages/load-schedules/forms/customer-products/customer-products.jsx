@@ -8,67 +8,66 @@ import { mutate } from 'swr';
 import _ from 'lodash';
 
 import { TableTransfer } from '../../../../components';
-import columns from './columns';
 
-import api, { DELV_LOCATIONS } from '../../../../api';
+import api, { CUSTOMERS } from '../../../../api';
 
-const CustomerLink = ({ form, value, supplier, category, location }) => {
+const CustomerProducts = ({ supplier, customer, disabled }) => {
   const [targetKeys, setTargetKeys] = useState([]);
   //const [data, setData] = useState([]);
+  const [busyFlag, setBusyFlag] = useState(disabled || false);
 
   const { t } = useTranslation();
-  const { setFieldsValue } = form;
 
   const leftTableColumns = [
     {
-      title: t('fields.delvCustAcctDesc'),
-      dataIndex: 'cust_desc',
+      title: t('fields.supplierCode'),
+      dataIndex: 'prod_cmpy',
     },
     {
-      title: t('fields.delvCustSuppCode'),
-      dataIndex: 'cust_supp_code',
+      title: t('fields.supplierName'),
+      dataIndex: 'prod_cmpy_name',
     },
     {
-      title: t('fields.delvCustSuppName'),
-      dataIndex: 'cust_supp_name',
+      title: t('fields.prodCode'),
+      dataIndex: 'prod_code',
     },
     {
-      title: t('fields.delvCustCatgText'),
-      dataIndex: 'cust_ctgr_text',
+      title: t('fields.prodName'),
+      dataIndex: 'prod_name',
     },
   ];
 
   const rightTableColumns = [
     {
-      title: t('fields.delvCustAcctDesc'),
-      dataIndex: 'cust_desc',
+      title: t('fields.supplierCode'),
+      dataIndex: 'prod_cmpy',
     },
     {
-      title: t('fields.delvCustSuppCode'),
-      dataIndex: 'cust_supp_code',
+      title: t('fields.supplierName'),
+      dataIndex: 'prod_cmpy_name',
     },
     {
-      title: t('fields.delvCustSuppName'),
-      dataIndex: 'cust_supp_name',
+      title: t('fields.prodCode'),
+      dataIndex: 'prod_code',
     },
     {
-      title: t('fields.delvCustCatgText'),
-      dataIndex: 'cust_ctgr_text',
+      title: t('fields.prodName'),
+      dataIndex: 'prod_name',
     },
   ];
 
   // use onSuccess option to handle some settings after data is retrieved successfully.
   // note: Tne component of Table Transfer requires the data source to have an index key.
-  const { data: allCustomers, isValidating } = useSWR(
-    `${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`,
+  const { data: allProducts, isValidating } = useSWR(
+    `${CUSTOMERS.ALL_PRODUCTS}?supplier=${supplier}&customer=${customer}`,
     {
       refreshInterval: 0,
       onSuccess: (data, key, config) => {
         console.log('Entered onSuccess!!!');
         console.log({ data });
-        //const originTargetKeys = data?.filter(item => item.delv_code === location).map(item => item.cust_acnt);
+        //const originTargetKeys = data?.filter(item => item.cust_acct === customer).map(item => item.cust_acnt);
         const originTargetKeys = data?.records
-          .filter((item) => item.delv_code === location)
+          .filter((item) => item.cust_acct === customer)
           .map((item) => item.key);
         console.log('originTargetKeys', originTargetKeys);
         setTargetKeys(originTargetKeys);
@@ -76,52 +75,56 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
       },
     }
   );
-  let data = allCustomers?.records;
+  let data = allProducts?.records;
 
   useEffect(() => {
-    if (!!allCustomers) {
-      data = allCustomers?.records;
+    if (!!allProducts) {
+      data = allProducts?.records;
     }
-  }, [allCustomers]);
+  }, [allProducts]);
 
-  /*   const { data: allCustomers } = useSWR(
-    `${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`,
+  /*   const { data: allProducts } = useSWR(
+    `${CUSTOMERS.ALL_PRODUCTS}?supplier=${supplier}&customer=${customer}`,
     { refreshInterval: 0,
     }
   );
 
   useEffect(() => {
-    if (!!allCustomers) {
-      setData(allCustomers?.records);
+    if (!!allProducts) {
+      setData(allProducts?.records);
     }
-  }, [allCustomers, setData]);
+  }, [allProducts, setData]);
 
   useEffect(() => {
     if (!data) {
-      const originTargetKeys = data?.filter(item => item.delv_code === location).map(item => item.key);
+      const originTargetKeys = data?.filter(item => item.cust_acct === customer).map(item => item.key);
       console.log("originTargetKeys", originTargetKeys);
       setTargetKeys(originTargetKeys);
       console.log("targetKeys", targetKeys);
     }
   }, [data, setTargetKeys]);
- */
+  */
+
   const createLinksForEach = async (keys) => {
     console.log('keys:', keys);
     const items = data.filter((item) => _.indexOf(keys, item.key) >= 0);
     console.log('items:', items);
     items.forEach((item) => {
-      item.delv_code = location;
-      console.log('item:', item);
+      const link = {
+        cust_acct: customer,
+        prod_cmpy: item?.prod_cmpy,
+        prod_code: item?.prod_code,
+      };
+      console.log('item:', item, link);
       api
-        .post(DELV_LOCATIONS.CREATE_LINK, item)
+        .post(CUSTOMERS.CREATE_CUSTOMER_PRODUCT, link)
         .then(() => {
-          mutate(
-            `${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`
-          );
+          mutate(`${CUSTOMERS.ALL_PRODUCTS}?supplier=${supplier}&customer=${customer}`);
           notification.success({
             message: t('messages.createSuccess'),
             description: t('descriptions.createSuccess'),
           });
+          setBusyFlag(false);
         })
         .catch((errors) => {
           _.forEach(errors.response.data.errors, (error) => {
@@ -130,6 +133,7 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
               description: error.message,
             });
           });
+          setBusyFlag(false);
         });
     });
   };
@@ -139,18 +143,21 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
     const items = data.filter((item) => _.indexOf(keys, item.key) >= 0);
     console.log('items:', items);
     items.forEach((item) => {
-      item.delv_code = location;
-      console.log('item:', item);
+      const link = {
+        cust_acct: customer,
+        prod_cmpy: item?.prod_cmpy,
+        prod_code: item?.prod_code,
+      };
+      console.log('item:', item, link);
       api
-        .post(DELV_LOCATIONS.DELETE_LINK, item)
+        .post(CUSTOMERS.DELETE_CUSTOMER_PRODUCT, link)
         .then(() => {
-          mutate(
-            `${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`
-          );
+          mutate(`${CUSTOMERS.ALL_PRODUCTS}?supplier=${supplier}&customer=${customer}`);
           notification.success({
             message: t('messages.deleteSuccess'),
             description: t('descriptions.deleteSuccess'),
           });
+          setBusyFlag(false);
         })
         .catch((errors) => {
           _.forEach(errors.response.data.errors, (error) => {
@@ -159,6 +166,7 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
               description: error.message,
             });
           });
+          setBusyFlag(false);
         });
     });
   };
@@ -167,20 +175,25 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
     console.log('keys:', keys);
     const items = data.filter((item) => _.indexOf(keys, item.key) >= 0);
     console.log('items:', items);
+    const links = [];
     items.forEach((item) => {
-      item.delv_code = location;
-      console.log('item:', item);
+      const link = {
+        cust_acct: customer,
+        prod_cmpy: item?.prod_cmpy,
+        prod_code: item?.prod_code,
+      };
+      links.push(link);
+      console.log('item:', item, link);
     });
     api
-      .post(DELV_LOCATIONS.CREATE_LINKS, items)
+      .post(CUSTOMERS.CREATE_CUSTOMER_PRODUCTS, links)
       .then(() => {
-        mutate(
-          `${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`
-        );
+        mutate(`${CUSTOMERS.ALL_PRODUCTS}?supplier=${supplier}&customer=${customer}`);
         notification.success({
-          message: t('messages.createSuccess'),
-          description: t('descriptions.createSuccess'),
+          message: t('messages.createBatchSuccess'),
+          description: t('descriptions.createBatchSuccess'),
         });
+        setBusyFlag(false);
       })
       .catch((errors) => {
         _.forEach(errors.response.data.errors, (error) => {
@@ -189,6 +202,7 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
             description: error.message,
           });
         });
+        setBusyFlag(false);
       });
   };
 
@@ -196,20 +210,25 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
     console.log('keys:', keys);
     const items = data.filter((item) => _.indexOf(keys, item.key) >= 0);
     console.log('items:', items);
+    const links = [];
     items.forEach((item) => {
-      item.delv_code = location;
-      console.log('item:', item);
+      const link = {
+        cust_acct: customer,
+        prod_cmpy: item?.prod_cmpy,
+        prod_code: item?.prod_code,
+      };
+      links.push(link);
+      console.log('item:', item, link);
     });
     api
-      .post(DELV_LOCATIONS.DELETE_LINKS, items)
+      .post(CUSTOMERS.DELETE_CUSTOMER_PRODUCTS, links)
       .then(() => {
-        mutate(
-          `${DELV_LOCATIONS.ALL_CUSTOMERS}?delv_cust_suppcode=${supplier}&delv_cust_catgcode=${category}&delv_code=${location}`
-        );
+        mutate(`${CUSTOMERS.ALL_PRODUCTS}?supplier=${supplier}&customer=${customer}`);
         notification.success({
-          message: t('messages.deleteSuccess'),
-          description: t('descriptions.deleteSuccess'),
+          message: t('messages.deleteBatchSuccess'),
+          description: t('descriptions.deleteBatchSuccess'),
         });
+        setBusyFlag(false);
       })
       .catch((errors) => {
         _.forEach(errors.response.data.errors, (error) => {
@@ -218,6 +237,7 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
             description: error.message,
           });
         });
+        setBusyFlag(false);
       });
   };
 
@@ -227,60 +247,53 @@ const CustomerLink = ({ form, value, supplier, category, location }) => {
     // if new target key is shorter, then item is moved from right to left, therefore need to remove a link
     let currTargetKeys = targetKeys;
     if (currTargetKeys === undefined) {
-      currTargetKeys = data?.filter((item) => item.delv_code === location).map((item) => item.key);
+      currTargetKeys = data?.filter((item) => item.cust_acct === customer).map((item) => item.key);
     }
     console.log(currTargetKeys);
     let keys;
     if (nextTargetKeys.length > currTargetKeys.length) {
       keys = _.differenceWith(nextTargetKeys, currTargetKeys, _.isEqual);
-      //createLinks(keys);
-      createLinksForEach(keys);
+      setBusyFlag(true);
+      createLinks(keys);
+      // createLinksForEach(keys);
     }
     if (nextTargetKeys.length < currTargetKeys.length) {
       keys = _.differenceWith(currTargetKeys, nextTargetKeys, _.isEqual);
-      //deleteLinks(keys);
-      deleteLinksForEach(keys);
+      setBusyFlag(true);
+      deleteLinks(keys);
+      // deleteLinksForEach(keys);
     }
     setTargetKeys(nextTargetKeys);
   };
 
-  const linkTitle = t('fields.delvCustomerLinks');
-  // const leftTitle = (<div style={{fontSize: 14, fontWeight: 'bold', color: 'black'}}>{t('fields.delvAvailableCustomers')}</div>);
-  // const rightTitle = (<div style={{fontSize: 14, fontWeight: 'bold', color: 'black'}}>{t('fields.delvLinkedCustomers')}</div>);
+  const linkTitle = t('fields.custProductLinks');
+  // const leftTitle = (<div style={{fontSize: 14, fontWeight: 'bold', color: 'black'}}>{t('fields.custAvailableProducts')}</div>);
+  // const rightTitle = (<div style={{fontSize: 14, fontWeight: 'bold', color: 'black'}}>{t('fields.custLinkedProducts')}</div>);
   const leftTitle = (
     <Tag color={'red'}>
-      <div style={{ fontWeight: 'bold' }}>{t('fields.delvAvailableCustomers')}</div>
+      <div style={{ fontWeight: 'bold' }}>{t('fields.custAvailableProducts')}</div>
     </Tag>
   );
   const rightTitle = (
     <Tag color={'red'}>
-      <div style={{ fontWeight: 'bold' }}>{t('fields.delvLinkedCustomers')}</div>
+      <div style={{ fontWeight: 'bold' }}>{t('fields.custLinkedProducts')}</div>
     </Tag>
   );
 
-  /* const linkTitle =
-    t('fields.delvCustomerLinks') +
-    '  [ ' +
-    t('fields.delvAvailableCustomers') +
-    '  <<->>  ' +
-    t('fields.delvLinkedCustomers') +
-    ' ]'; */
-
   return (
-    <Form.Item name="customer_link" label={linkTitle} rules={[{ required: false }]}>
-      <TableTransfer
-        dataSource={data}
-        titles={[leftTitle, rightTitle]}
-        targetKeys={targetKeys}
-        onChange={changeTargetKeys}
-        filterOption={(inputValue, item) =>
-          item.cust_desc.indexOf(inputValue) !== -1 || item.cust_cmpy_name.indexOf(inputValue) !== -1
-        }
-        leftColumns={leftTableColumns}
-        rightColumns={rightTableColumns}
-      />
-    </Form.Item>
+    <TableTransfer
+      disabled={busyFlag}
+      dataSource={data}
+      titles={[leftTitle, rightTitle]}
+      targetKeys={targetKeys}
+      onChange={changeTargetKeys}
+      filterOption={(inputValue, item) =>
+        item.prod_name.indexOf(inputValue) !== -1 || item.prod_cmpy_name.indexOf(inputValue) !== -1
+      }
+      leftColumns={leftTableColumns}
+      rightColumns={rightTableColumns}
+    />
   );
 };
 
-export default CustomerLink;
+export default CustomerProducts;

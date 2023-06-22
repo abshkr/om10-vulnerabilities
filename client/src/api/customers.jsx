@@ -18,8 +18,25 @@ export const CREATE = '/api/pages/customer/create.php';
 export const UPDATE = '/api/pages/customer/update.php';
 export const DELETE = '/api/pages/customer/delete.php';
 
-
 export const CUSTOMER_PRODUCTS = '/api/pages/customer/customer_products.php';
 export const SUPPLIER_PRODUCTS = '/api/pages/customer/supplier_products.php';
 export const CUSTOMER_CARRIERS = '/api/pages/customer/customer_carriers.php';
 export const CARRIERS = '/api/pages/customer/carriers.php';
+
+export const ALL_PRODUCTS = '/api/pages/customer_product/read_customer_products.php';
+export const CREATE_CUSTOMER_PRODUCT = '/api/pages/customer_product/create_customer_product.php';
+export const DELETE_CUSTOMER_PRODUCT = '/api/pages/customer_product/delete_customer_product.php';
+export const CREATE_CUSTOMER_PRODUCTS = '/api/pages/customer_product/create_customer_products.php';
+export const DELETE_CUSTOMER_PRODUCTS = '/api/pages/customer_product/delete_customer_products.php';
+
+export const ALL_CARRIERS = '/api/pages/customer_carrier/read_customer_carriers.php';
+export const CREATE_CUSTOMER_CARRIER = '/api/pages/customer_carrier/create_customer_carrier.php';
+export const DELETE_CUSTOMER_CARRIER = '/api/pages/customer_carrier/delete_customer_carrier.php';
+export const CREATE_CUSTOMER_CARRIERS = '/api/pages/customer_carrier/create_customer_carriers.php';
+export const DELETE_CUSTOMER_CARRIERS = '/api/pages/customer_carrier/delete_customer_carriers.php';
+
+export const ALL_LOCATIONS = '/api/pages/customer_location/read_customer_locations.php';
+export const CREATE_CUSTOMER_LOCATION = '/api/pages/customer_location/create_customer_location.php';
+export const DELETE_CUSTOMER_LOCATION = '/api/pages/customer_location/delete_customer_location.php';
+export const CREATE_CUSTOMER_LOCATIONS = '/api/pages/customer_location/create_customer_locations.php';
+export const DELETE_CUSTOMER_LOCATIONS = '/api/pages/customer_location/delete_customer_locations.php';

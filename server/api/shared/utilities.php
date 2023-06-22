@@ -967,7 +967,7 @@ class Utilities
         //Get data from POST
         $data = json_decode(file_get_contents("php://input"));
         foreach ($data as $item) {
-            if (self::delete($class, $method) === false) {
+            if (self::delete($class, $method, $item) === false) {
                 $error = new EchoSchema(500, response("__DELETE_FAILED__"));
                 echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
@@ -1140,7 +1140,9 @@ class Utilities
         }
     }
 
-    public static function delete($class, $method = 'delete')
+    //If $itemData is set, it means it is called from deleteArray(), so
+    //do not echo if it success, just return true or false.
+    public static function delete($class, $method = 'delete', $itemData = null)
     {
         write_log(sprintf("%s::%s() START, class:%s, method:%s",
             __CLASS__, __FUNCTION__, $class, $method),
@@ -1160,7 +1162,12 @@ class Utilities
         $desc = (isset($object->desc) ? $object->desc : $class);
 
         // get posted data
-        $data = json_decode(file_get_contents("php://input"));
+        if (isset($itemData)) {
+            $data = $itemData;
+        } else {
+            $data = json_decode(file_get_contents("php://input"));
+        }
+
         if ($data) {
             foreach ($data as $key => $value) {
                 $object->$key = $value;
@@ -1197,23 +1204,35 @@ class Utilities
 
         try {
             if ($object->$method()) {
-                http_response_code(200);
-                echo '{';
-                echo '"message": "' . response("__DELETE_SUCCEEDED__", $desc . ' deleted') . '"';
-                echo '}';
+                if (!isset($itemData)) {
+                    http_response_code(200);
+                    echo '{';
+                    echo '"message": "' . response("__DELETE_SUCCEEDED__", $desc . ' deleted') . '"';
+                    echo '}';
+                }
+                return true;
             } else {
-                $error = new EchoSchema(500, response("__DELETE_FAILED__", 
-                    sprintf("Unable to delete %s. Most likely this record may have child record(s).", $desc)));
-                echo json_encode($error, JSON_PRETTY_PRINT);
+                if (!isset($itemData)) {
+                    $error = new EchoSchema(500, response("__DELETE_FAILED__", 
+                        sprintf("Unable to delete %s. Most likely this record may have child record(s).", $desc)));
+                    echo json_encode($error, JSON_PRETTY_PRINT);
+                }
+                return false;
             }
         } catch (DatabaseException $e) {
-            write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
-            $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", "Database Error: " . $e->getMessage()));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            if (!isset($itemData)) {
+                write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
+                $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", "Database Error: " . $e->getMessage()));
+                echo json_encode($error, JSON_PRETTY_PRINT);
+            }
+            return false;
         } catch (Exception $e) {
-            write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
-            $error = new EchoSchema(500, response("__GENERAL_EXCEPTION__", "Server Failed Error: " . $e->getMessage()));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            if (!isset($itemData)) {
+                write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
+                $error = new EchoSchema(500, response("__GENERAL_EXCEPTION__", "Server Failed Error: " . $e->getMessage()));
+                echo json_encode($error, JSON_PRETTY_PRINT);
+            }
+            return false;
         }
     }
 

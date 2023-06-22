@@ -1,6 +1,6 @@
 import Supplier from './supplier';
 import Drawer from './drawer';
-import Customer from './customer';
+import Customer from './customer-with-popup';
 import DeliveryLocation from './delv-location';
 import Carrier from './carrier';
 import Tanker from './tanker';

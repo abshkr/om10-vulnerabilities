@@ -1,22 +1,28 @@
 import React, { useEffect, useState } from 'react';
 
-import useSWR from 'swr';
+import useSWR, { SWRConfig } from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Form, Select, Button, Row, Col, Modal } from 'antd';
+import { EditOutlined, PlusOutlined, LinkOutlined } from '@ant-design/icons';
+
+import _ from 'lodash';
+import { fetcher } from 'utils';
 
 import { LOAD_SCHEDULES } from '../../../../api';
-import CustomerProduct from '../../../customers/forms/customer_product/customer_product';
-import CustomerCarrier from '../../../customers/forms/customer_carrier/customer_carrier';
+import CustomerCarriers from '../customer_carriers';
+import CustomerProducts from '../customer-products';
+import CustomerLocations from '../customer-locations';
 
 const Customer = ({ form, supplier, value, onChange, config }) => {
   const { t } = useTranslation();
 
-  const [products, setProducts] = useState(undefined);
-  const [carriers, setCarriers] = useState(undefined);
   const [account, setAccount] = useState(value?.shls_cust);
 
-  const onProduct = !value && config?.site_customer_product;
-  const onCarrier = !value && config?.site_customer_carrier;
+  // const onProduct = !value && config?.site_customer_product;
+  // const onCarrier = !value && config?.site_customer_carrier;
+  const onProduct = config?.site_customer_product;
+  const onCarrier = config?.site_customer_carrier;
+  const onLocation = config?.site_customer_product || config?.site_customer_carrier;
 
   const { setFieldsValue } = form;
 
@@ -36,40 +42,162 @@ const Customer = ({ form, supplier, value, onChange, config }) => {
   };
 
   const handleCustomerProducts = () => {
-    const modal = Modal.info();
-    modal.update({
+    if (!value) {
+      onChange(undefined);
+    }
+    const item = _.find(options?.records, (o) => o?.cust_acnt === account);
+    // const modal = Modal.info();
+    //modal.update({
+    Modal.confirm({
       title: t('tabColumns.customerProduct'),
-      okText: t('operations.exit'),
+      okText: t('operations.ok'),
+      cancelText: t('operations.cancel'),
       centered: true,
-      width: '50vw',
+      width: '70vw',
       maskClosable: false,
+      closable: true,
+      keyboard: true,
       okButtonProps: {
         hidden: false,
       },
+      cancelButtonProps: {
+        hidden: true,
+      },
       content: (
-        <Form>
-          <CustomerProduct form={form} value={{ cust_account: account }} changeProducts={setProducts} />
-        </Form>
+        <SWRConfig
+          value={{
+            refreshInterval: 0,
+            fetcher,
+          }}
+        >
+          <div style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20, color: '#0054a4' }}>
+            {t('fields.custProductLinks')}
+          </div>
+          <div style={{ marginTop: 10, marginBottom: 10 }}>
+            <CustomerProducts
+              supplier={item?.cust_supp_code || supplier}
+              customer={account}
+              disabled={!value ? false : true}
+            />
+          </div>
+        </SWRConfig>
       ),
+      onOk: () => {
+        console.log('...................okProduct');
+        if (!value) {
+          onChange(account);
+        }
+      },
+      onCancel: () => {
+        console.log('...................cancelProduct');
+        if (!value) {
+          onChange(account);
+        }
+      },
     });
   };
 
   const handleCustomerCarriers = () => {
-    const modal = Modal.info();
-    modal.update({
-      title: t('tabColumns.customerProduct'),
-      okText: t('operations.exit'),
+    if (!value) {
+      onChange(undefined);
+    }
+    const item = _.find(options?.records, (o) => o?.cust_acnt === account);
+    // const modal = Modal.info();
+    //modal.update({
+    Modal.confirm({
+      title: t('tabColumns.customerCarrier'),
+      okText: t('operations.ok'),
+      cancelText: t('operations.cancel'),
       centered: true,
-      width: '50vw',
+      width: '70vw',
       maskClosable: false,
+      closable: true,
+      keyboard: true,
       okButtonProps: {
         hidden: false,
       },
+      cancelButtonProps: {
+        hidden: true,
+      },
       content: (
-        <Form>
-          <CustomerCarrier form={form} value={{ cust_account: account }} changeCarriers={setCarriers} />
-        </Form>
+        <SWRConfig
+          value={{
+            refreshInterval: 0,
+            fetcher,
+          }}
+        >
+          <div style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20, color: '#0054a4' }}>
+            {t('fields.custCarrierLinks')}
+          </div>
+          <div style={{ marginTop: 10, marginBottom: 10 }}>
+            <CustomerCarriers customer={account} disabled={!value ? false : true} />
+          </div>
+        </SWRConfig>
       ),
+      onOk: () => {
+        console.log('...................okCarrier');
+        if (!value) {
+          onChange(account);
+        }
+      },
+      onCancel: () => {
+        console.log('...................cancelCarrier');
+        if (!value) {
+          onChange(account);
+        }
+      },
+    });
+  };
+
+  const handleCustomerLocations = () => {
+    if (!value) {
+      onChange(undefined);
+    }
+    const item = _.find(options?.records, (o) => o?.cust_acnt === account);
+    // const modal = Modal.info();
+    //modal.update({
+    Modal.confirm({
+      title: t('tabColumns.customerLocation'),
+      okText: t('operations.ok'),
+      cancelText: t('operations.cancel'),
+      centered: true,
+      width: '70vw',
+      maskClosable: false,
+      closable: true,
+      keyboard: true,
+      okButtonProps: {
+        hidden: false,
+      },
+      cancelButtonProps: {
+        hidden: true,
+      },
+      content: (
+        <SWRConfig
+          value={{
+            refreshInterval: 0,
+            fetcher,
+          }}
+        >
+          <div style={{ fontSize: 16, fontWeight: 'bold', marginTop: 20, color: '#0054a4' }}>
+            {t('fields.custLocationLinks')}
+          </div>
+          <div style={{ marginTop: 10, marginBottom: 10 }}>
+            <CustomerLocations customer={account} disabled={!value ? false : true} />
+          </div>
+        </SWRConfig>
+      ),
+      onOk: () => {
+        console.log('...................okLocation');
+        if (!value) {
+          onChange(account);
+        }
+      },
+      onCancel: () => {
+        console.log('...................cancelLocation');
+        if (!value) {
+          onChange(account);
+        }
+      },
     });
   };
 
@@ -84,49 +212,67 @@ const Customer = ({ form, supplier, value, onChange, config }) => {
   }, [value]);
 
   return (
-    <Row gutter={[8, 8]}>
-      <Col span={onProduct && onCarrier ? 14 : onProduct || onCarrier ? 19 : 24}>
-        <Form.Item
-          name="shls_cust"
-          label={t('fields.customer')}
-          rules={[{ required: true, validator: validate }]}
-        >
-          <Select
-            dropdownMatchSelectWidth={false}
-            loading={isValidating}
-            showSearch
-            allowClear
-            onChange={handleSelection}
-            disabled={!!value}
-            optionFilterProp="children"
-            placeholder={!value ? t('placeholder.selectCustomer') : null}
-            filterOption={(value, option) =>
-              option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
-            }
-          >
-            {options?.records.map((item, index) => (
-              <Select.Option key={index} value={item.cust_acnt}>
-                {item.cust_desc}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-      </Col>
-      {onProduct && (
-        <Col span={5} style={{ paddingTop: '34px' }}>
-          <Button disabled={!account} onClick={() => handleCustomerProducts()}>
-            {t('operations.linkProducts')}
-          </Button>
-        </Col>
-      )}
-      {onCarrier && (
-        <Col span={5} style={{ paddingTop: '34px' }}>
-          <Button disabled={!account} onClick={() => handleCustomerCarriers()}>
-            {t('operations.linkCarriers')}
-          </Button>
-        </Col>
-      )}
-    </Row>
+    <Form.Item
+      name="shls_cust"
+      label={
+        <>
+          {t('fields.customer')}
+          <span style={{ width: 20 }}></span>
+          {onProduct && (
+            <Button
+              size="small"
+              disabled={!account}
+              onClick={() => handleCustomerProducts()}
+              icon={<LinkOutlined />}
+            >
+              {t('operations.linkProducts')}
+            </Button>
+          )}
+          {onCarrier && (
+            <Button
+              size="small"
+              disabled={!account}
+              onClick={() => handleCustomerCarriers()}
+              icon={<LinkOutlined />}
+            >
+              {t('operations.linkCarriers')}
+            </Button>
+          )}
+          {onLocation && (
+            <Button
+              size="small"
+              disabled={!account}
+              onClick={() => handleCustomerLocations()}
+              icon={<LinkOutlined />}
+            >
+              {t('operations.linkLocations')}
+            </Button>
+          )}
+        </>
+      }
+      rules={[{ required: true, validator: validate }]}
+    >
+      <Select
+        dropdownMatchSelectWidth={false}
+        loading={isValidating}
+        showSearch
+        allowClear
+        onChange={handleSelection}
+        disabled={!!value}
+        // style={{width: '100%'}}
+        optionFilterProp="children"
+        placeholder={!value ? t('placeholder.selectCustomer') : null}
+        filterOption={(value, option) =>
+          option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
+        }
+      >
+        {options?.records.map((item, index) => (
+          <Select.Option key={index} value={item.cust_acnt}>
+            {item.cust_desc}
+          </Select.Option>
+        ))}
+      </Select>
+    </Form.Item>
   );
 };
 
