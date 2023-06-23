@@ -1724,6 +1724,7 @@ class Schedule extends CommonClass
                 ccmp.CMPY_CODE     AS SHLS_CUST_CMPYCODE,
                 ccmp.CMPY_NAME     AS SHLS_CUST_CMPYNAME,
                 SHL_SOURCE_TYPES.SOURCE_TYPE_NAME as SHLS_SRCTYPE_DESC,
+                STAGING_LOAD_MODES.STAGING_LOAD_MODE_NAME as SHLS_PICKUP_MODENAME,
                 DECODE(SHLS_SRCTYPE, 
                     1, 'Manually Created',
                     2, 'From Host',
@@ -1731,8 +1732,9 @@ class Schedule extends CommonClass
                     4, 'Standalone or Special',
                     'Unknown'
                 ) SHLS_SRCTYPE_DESC2 
-            FROM " . $this->VIEW_NAME . ", SHL_SOURCE_TYPES, CUSTOMER cust, COMPANYS ccmp
+            FROM " . $this->VIEW_NAME . ", SHL_SOURCE_TYPES, CUSTOMER cust, COMPANYS ccmp, STAGING_LOAD_MODES
             WHERE SHLS_SRCTYPE = SHL_SOURCE_TYPES.SOURCE_TYPE_ID
+                AND SHLS_PICKUP_MODE = STAGING_LOAD_MODES.STAGING_LOAD_MODE_ID
                 AND SHLS_CUST = cust.CUST_ACCT(+)
                 AND cust.CUST_CODE = ccmp.CMPY_CODE(+)
         ";

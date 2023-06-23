@@ -32,8 +32,22 @@ const columns = (IS_NOMINATION, t, config) => [
     hide: IS_NOMINATION,
   },
   {
-    headerName: t('fields.stagingBayPickupLoad'),
+    headerName: t('fields.stagingBayPickupMode'),
     field: 'shls_pickup_mode',
+    filter: 'MultiFilter',
+    sortable: true,
+    resizable: true,
+    width: 130,
+    suppressSizeToFit: true,
+    hide: true, // !config?.siteUseStagingBay,
+    cellRenderer: 'PickupModeRender',
+    cellRendererParams: {
+      t: t,
+    },
+  },
+  {
+    headerName: t('fields.stagingBayPickupLoad'),
+    field: 'shls_pickup_modename',
     filter: 'MultiFilter',
     sortable: true,
     resizable: true,
@@ -63,7 +77,7 @@ const columns = (IS_NOMINATION, t, config) => [
   {
     headerName: t('fields.schdConvertTrace'),
     field: 'shls_cnvrt_trace',
-    filter: 'MultiFilter',
+    //filter: 'MultiFilter',
     sortable: true,
     resizable: true,
     width: 130,

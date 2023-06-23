@@ -18,8 +18,9 @@ export default class PickupModeRender extends Component {
   }
 
   getFlag = () => {
-    // const { data } = this.props;
-    const mode = this.props.value;
+    const { data } = this.props;
+    // const mode = this.props.value;
+    const mode = String(data?.['shls_pickup_mode']);
 
     if (mode === '1') {
       return true;
@@ -29,8 +30,9 @@ export default class PickupModeRender extends Component {
   };
 
   getLabel = () => {
-    const { t } = this.props;
-    const mode = this.props.value;
+    const { t, data } = this.props;
+    // const mode = this.props.value;
+    const mode = String(data?.['shls_pickup_mode']);
 
     if (mode === '1') {
       return t('fields.stagingBayPickupLoad');
@@ -42,12 +44,16 @@ export default class PickupModeRender extends Component {
   };
 
   render() {
+    const { data } = this.props;
+    // const mode = this.props.value;
+    const mode = String(data?.['shls_pickup_mode']);
+
     return (
       <Tooltip placement="left" title={this.getLabel()}>
         <div className="cell-icon">
           {this.getFlag() ? (
             <CheckCircleOutlined style={{ fontSize: 18, color: '#52c41a' }} />
-          ) : this.props.value === '2' ? (
+          ) : mode === '2' ? (
             <CloseCircleFilled style={{ fontSize: 18, color: '#ec6e68' }} />
           ) : (
             <CloseCircleOutlined style={{ fontSize: 18, color: '#ec6e68' }} />
