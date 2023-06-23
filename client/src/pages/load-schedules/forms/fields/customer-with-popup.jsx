@@ -214,41 +214,48 @@ const Customer = ({ form, supplier, value, onChange, config }) => {
   return (
     <Form.Item
       name="shls_cust"
+      lableCol={{ span: 24 }}
       label={
-        <>
-          {t('fields.customer')}
-          <span style={{ width: 20 }}></span>
-          {onProduct && (
-            <Button
-              size="small"
-              disabled={!account}
-              onClick={() => handleCustomerProducts()}
-              icon={<LinkOutlined />}
-            >
-              {t('operations.linkProducts')}
-            </Button>
-          )}
-          {onCarrier && (
-            <Button
-              size="small"
-              disabled={!account}
-              onClick={() => handleCustomerCarriers()}
-              icon={<LinkOutlined />}
-            >
-              {t('operations.linkCarriers')}
-            </Button>
-          )}
-          {onLocation && (
-            <Button
-              size="small"
-              disabled={!account}
-              onClick={() => handleCustomerLocations()}
-              icon={<LinkOutlined />}
-            >
-              {t('operations.linkLocations')}
-            </Button>
-          )}
-        </>
+        <Row gutter={[0, 0]} style={{ width: '35vw', marginBottom: -2, padding: 0 }}>
+          <Col span={4}>{t('fields.customer')}</Col>
+          <Col span={20}>
+            <div style={{ display: 'flex', float: 'right' }}>
+              {onProduct && (
+                <Button
+                  size="small"
+                  disabled={!account}
+                  //style={{float: 'right'}}
+                  onClick={() => handleCustomerProducts()}
+                  icon={<LinkOutlined />}
+                >
+                  {t('operations.linkProducts')}
+                </Button>
+              )}
+              {onCarrier && (
+                <Button
+                  size="small"
+                  disabled={!account}
+                  //style={{float: 'right'}}
+                  onClick={() => handleCustomerCarriers()}
+                  icon={<LinkOutlined />}
+                >
+                  {t('operations.linkCarriers')}
+                </Button>
+              )}
+              {onLocation && (
+                <Button
+                  size="small"
+                  disabled={!account}
+                  //style={{float: 'right'}}
+                  onClick={() => handleCustomerLocations()}
+                  icon={<LinkOutlined />}
+                >
+                  {t('operations.linkLocations')}
+                </Button>
+              )}
+            </div>
+          </Col>
+        </Row>
       }
       rules={[{ required: true, validator: validate }]}
     >
@@ -259,7 +266,7 @@ const Customer = ({ form, supplier, value, onChange, config }) => {
         allowClear
         onChange={handleSelection}
         disabled={!!value}
-        // style={{width: '100%'}}
+        style={{ width: '100%' }}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectCustomer') : null}
         filterOption={(value, option) =>
