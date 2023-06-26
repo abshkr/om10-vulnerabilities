@@ -33,9 +33,9 @@ export default class TripStatusRender extends Component {
     // use color to distingusish the trip status
     let color = 'black';
     if (code === 'E' || code === 'D') {
-      color = '#00ff00'; // GREEN = ENDED or DELIVERED OK
+      color = '#52c41a'; // GREEN = ENDED or DELIVERED OK
     } else if (code === 'A') {
-      color = '#ff0000'; // LIGHT RED = ACTIVE
+      color = '#ec6e68'; // RED = ACTIVE
     } else if (code === 'L') {
       color = '#880000'; // DARK RED = LOADING
     } else {
