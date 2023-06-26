@@ -123,6 +123,7 @@ class SiteConfig extends CommonClass
         "SITE_CMPY_LOAD_OPTIONS_EDITABLE" => "当启用单据组合发油台时，公司提油方式(普通提单/组合提单，基于公司类型)的可编辑开关",
         "SITE_PICKUP_TRIP_START" => "油库范围内组合提单的默认起始单号",
         "SITE_PICKUP_TRIP_END" => "油库范围内组合提单的默认终止单号",
+        "SITE_LIST_PICKUP_LOAD" => "显示/隐藏发油提单列表中的组合提单",
     );
 
     private $ENG_DESC = array(
@@ -305,6 +306,7 @@ class SiteConfig extends CommonClass
         "SITE_CMPY_LOAD_OPTIONS_EDITABLE" => "The editibility of company load options when Staging Bay enabled",
         "SITE_PICKUP_TRIP_START" => "Default start trip number for pickup load at site level",
         "SITE_PICKUP_TRIP_END" => "Default end trip number for pickup load at site level",
+        "SITE_LIST_PICKUP_LOAD" => "Show/Hide Pickup Loads in Load Schedule list",
     );
 
     public function read()

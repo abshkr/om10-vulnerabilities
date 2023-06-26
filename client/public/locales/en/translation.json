@@ -2618,6 +2618,8 @@
     "ownershipTransactionsTank": "Tank Ownership Transactions",
     "paginationOn": "Pagination On",
     "paginationOff": "Pagination Off",
+    "pickupLoadShow": "Show Pickup Load",
+    "pickupLoadHide": "Hide Pickup Load",
     "downloaderOn": "Downloader On",
     "downloaderOff": "Downloader Off",
     "pause": "Pause",

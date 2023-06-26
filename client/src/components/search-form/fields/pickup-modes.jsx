@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Form, Select, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-const PickupModes = ({ value }) => {
+const PickupModes = ({ value, setting }) => {
   const { t } = useTranslation();
 
   const items = [
@@ -15,7 +15,11 @@ const PickupModes = ({ value }) => {
     <Form.Item name="shls_pickup_mode" label={t('fields.stagingBayPickupMode')}>
       <Select disabled={!!value} optionFilterProp="children" placeholder={null} allowClear>
         {items.map((item, index) => (
-          <Select.Option key={index} value={item.code}>
+          <Select.Option
+            key={index}
+            disabled={item.code !== '1' ? false : !setting?.pickupFlag}
+            value={item.code}
+          >
             {item.name}
           </Select.Option>
         ))}

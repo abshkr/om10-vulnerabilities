@@ -1645,6 +1645,10 @@ class Schedule extends CommonClass
             $query = $query . " AND SHLS_PICKUP_MODE = :shls_pickup_mode";
         }
 
+        if (isset($this->pkupflag) && $this->pkupflag == 'N') {
+            $query = $query . " AND SHLS_PICKUP_MODE != 1";
+        }
+
         if (isset($this->status) && $this->status != '') {
             $query = $query . " AND STATUS = :status";
         }
@@ -1761,6 +1765,10 @@ class Schedule extends CommonClass
 
         if (isset($this->shls_pickup_mode) && $this->shls_pickup_mode != '') {
             $query = $query . " AND SHLS_PICKUP_MODE = :shls_pickup_mode";
+        }
+
+        if (isset($this->pkupflag) && $this->pkupflag == 'N') {
+            $query = $query . " AND SHLS_PICKUP_MODE != 1";
         }
 
         if (isset($this->status) && $this->status != '') {

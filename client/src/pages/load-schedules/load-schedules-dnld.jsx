@@ -35,9 +35,16 @@ import usePagination from 'hooks/use-pagination';
 
 const LoadSchedules = () => {
   const config = useConfig();
-  const { siteSchdPaging, siteUseDownloader, siteCustomColumnSchedule } = config;
+  const {
+    siteSchdPaging,
+    siteUseDownloader,
+    siteCustomColumnSchedule,
+    siteUseStagingBay,
+    siteListPickupLoad,
+  } = config;
 
   const [pagingFlag, setPagingFlag] = useState(undefined);
+  const [pickupFlag, setPickupFlag] = useState(undefined);
   const [isSearching, setSearching] = useState(false);
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -73,9 +80,9 @@ const LoadSchedules = () => {
   const [tripStatus, setTripStatus] = useState('');
 
   const [mainUrl, setMainUrl] = useState(
-    `${LOAD_SCHEDULES.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${!start ? '-1' : start}&end_date=${
-      !end ? '-1' : end
-    }`
+    `${LOAD_SCHEDULES.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&pkupflag=${pickupFlag ? 'Y' : 'N'}&start_date=${
+      !start ? '-1' : start
+    }&end_date=${!end ? '-1' : end}`
   );
   const baseUrl = mainUrl.replace('pgflag=N', 'pgflag=Y');
   const url = !pagingFlag && siteUseDownloader ? null : mainUrl + `&start_num=${take}&end_num=${offset}`;
@@ -117,7 +124,7 @@ const LoadSchedules = () => {
           Normal or Staged Load Trip:     Staging Form without Pickup Load
   */
   const handleFormState = (visibility, value) => {
-    if (config?.siteUseStagingBay) {
+    if (siteUseStagingBay) {
       if (visibility && !value) {
         Modal.confirm({
           title: t('prompts.isPickupLoad'),
@@ -154,14 +161,42 @@ const LoadSchedules = () => {
     }
   };
 
+  const onChangePickupFlag = async (v) => {
+    if (!pagingFlag) {
+      setData([]);
+    }
+
+    const tempUrl = `${LOAD_SCHEDULES.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&pkupflag=${
+      v ? 'Y' : 'N'
+    }&start_date=${!start ? '-1' : start}&end_date=${
+      !end ? '-1' : end
+    }&shls_terminal=${tripTerminal}&shls_trip_no=${tripNumber}&supplier_code=${tripSupplier}&carrier_code=${tripCarrier}&tnkr_code=${tripTanker}&status=${tripStatus}&shls_pickup_mode=${tripPickupMode}`;
+    setMainUrl(tempUrl);
+
+    setPage(1);
+    setRunUrlFlag(!pagingFlag);
+
+    setPickupFlag(v);
+
+    // change the value in site_config
+    const values = [
+      {
+        config_key: 'SITE_LIST_PICKUP_LOAD',
+        config_value: v ? 'Y' : 'N',
+      },
+    ];
+
+    await api.post(SITE_CONFIGURATION.UPDATE, values);
+  };
+
   const onChangePagination = async (v) => {
     if (!v) {
       setData([]);
     }
 
-    const tempUrl = `${LOAD_SCHEDULES.READ}?pgflag=${v ? 'Y' : 'N'}&start_date=${
-      !start ? '-1' : start
-    }&end_date=${
+    const tempUrl = `${LOAD_SCHEDULES.READ}?pgflag=${v ? 'Y' : 'N'}&pkupflag=${
+      pickupFlag ? 'Y' : 'N'
+    }&start_date=${!start ? '-1' : start}&end_date=${
       !end ? '-1' : end
     }&shls_terminal=${tripTerminal}&shls_trip_no=${tripNumber}&supplier_code=${tripSupplier}&carrier_code=${tripCarrier}&tnkr_code=${tripTanker}&status=${tripStatus}&shls_pickup_mode=${tripPickupMode}`;
     setMainUrl(tempUrl);
@@ -184,8 +219,8 @@ const LoadSchedules = () => {
 
   const setRange = (start, end) => {
     // revalidate();
-    const tempUrl = `${LOAD_SCHEDULES.READ}?pgflag=${
-      pagingFlag ? 'Y' : 'N'
+    const tempUrl = `${LOAD_SCHEDULES.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&pkupflag=${
+      pickupFlag ? 'Y' : 'N'
     }&start_date=${start}&end_date=${end}&shls_terminal=${tripTerminal}&shls_trip_no=${tripNumber}&supplier_code=${tripSupplier}&carrier_code=${tripCarrier}&tnkr_code=${tripTanker}&status=${tripStatus}&shls_pickup_mode=${tripPickupMode}`;
     setMainUrl(tempUrl);
     setPage(1);
@@ -214,9 +249,9 @@ const LoadSchedules = () => {
     setTripTanker('');
     setTripStatus('');
     /* // const tempUrl = (
-    //   `${LOAD_SCHEDULES.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${!start?'-1':start}&end_date=${!end?'-1':end}&shls_terminal=${tripTerminal}&shls_trip_no=${tripNumber}&supplier_code=${tripSupplier}&carrier_code=${tripCarrier}&tnkr_code=${tripTanker}&status=${tripStatus}&shls_pickup_mode=${tripPickupMode}`
+    //   `${LOAD_SCHEDULES.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&pkupflag=${pickupFlag ? 'Y' : 'N'}&start_date=${!start?'-1':start}&end_date=${!end?'-1':end}&shls_terminal=${tripTerminal}&shls_trip_no=${tripNumber}&supplier_code=${tripSupplier}&carrier_code=${tripCarrier}&tnkr_code=${tripTanker}&status=${tripStatus}&shls_pickup_mode=${tripPickupMode}`
     // );
-    const tempUrl = `${LOAD_SCHEDULES.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${
+    const tempUrl = `${LOAD_SCHEDULES.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&pkupflag=${pickupFlag ? 'Y' : 'N'}&start_date=${
       !start ? '-1' : start
     }&end_date=${
       !end ? '-1' : end
@@ -278,10 +313,10 @@ const LoadSchedules = () => {
     const startTimeSearch = values.use_date_range ? (!values.start_date ? '-1' : values.start_date) : '-1';
     const endTimeSearch = values.use_date_range ? (!values.end_date ? '-1' : values.end_date) : '-1';
     // const tempUrl = (
-    //   `${LOAD_SCHEDULES.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${useSearch?startTimeSearch:start}&end_date=${useSearch?endTimeSearch:end}&shls_terminal=${tripTerminal}&shls_trip_no=${tripNumber}&supplier_code=${tripSupplier}&carrier_code=${tripCarrier}&tnkr_code=${tripTanker}&status=${tripStatus}&shls_pickup_mode=${tripPickupMode}`
+    //   `${LOAD_SCHEDULES.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&pkupflag=${pickupFlag ? 'Y' : 'N'}&start_date=${useSearch?startTimeSearch:start}&end_date=${useSearch?endTimeSearch:end}&shls_terminal=${tripTerminal}&shls_trip_no=${tripNumber}&supplier_code=${tripSupplier}&carrier_code=${tripCarrier}&tnkr_code=${tripTanker}&status=${tripStatus}&shls_pickup_mode=${tripPickupMode}`
     // );
-    const tempUrl = `${LOAD_SCHEDULES.READ}?pgflag=${
-      pagingFlag ? 'Y' : 'N'
+    const tempUrl = `${LOAD_SCHEDULES.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&pkupflag=${
+      pickupFlag ? 'Y' : 'N'
     }&start_date=${startTimeSearch}&end_date=${endTimeSearch}&shls_terminal=${tripTerminal}&shls_trip_no=${tripNumber}&supplier_code=${tripSupplier}&carrier_code=${tripCarrier}&tnkr_code=${tripTanker}&status=${tripStatus}&shls_pickup_mode=${tripPickupMode}`;
     setMainUrl(tempUrl);
 
@@ -337,6 +372,16 @@ const LoadSchedules = () => {
   }, [siteSchdPaging]);
 
   useEffect(() => {
+    if (siteUseStagingBay) {
+      if (siteListPickupLoad !== undefined) {
+        setPickupFlag(siteListPickupLoad);
+      }
+    } else {
+      setPickupFlag(false);
+    }
+  }, [siteUseStagingBay, siteListPickupLoad]);
+
+  useEffect(() => {
     if (isValidating !== undefined) {
       setDownloading(isValidating);
     }
@@ -344,6 +389,15 @@ const LoadSchedules = () => {
 
   const modifiers = (
     <>
+      {siteUseStagingBay && (
+        <Switch
+          style={{ marginRight: 5 }}
+          checked={pickupFlag}
+          checkedChildren={<span>{t('operations.pickupLoadShow')}</span>}
+          unCheckedChildren={<span>{t('operations.pickupLoadHide')}</span>}
+          onChange={(value) => onChangePickupFlag(value)}
+        />
+      )}
       <Switch
         style={{ marginRight: 5 }}
         checked={pagingFlag}
@@ -390,7 +444,7 @@ const LoadSchedules = () => {
               terminal: true,
               shls_trip_no: true,
               supplier_code: true,
-              shls_pickup_mode: config?.siteUseStagingBay,
+              shls_pickup_mode: siteUseStagingBay,
               trip_status: true,
               tnkr_code: true,
               carrier_code: true,
@@ -406,7 +460,10 @@ const LoadSchedules = () => {
               start_date: startTimeSearch,
               end_date: endTimeSearch,
               use_date_range: useDateRange === 'Y' ? true : false,
-            }
+            },
+            true, // rangeRequired
+            false, // timeRequired
+            { pickupFlag: pickupFlag }
           )
         }
       >
@@ -467,7 +524,7 @@ const LoadSchedules = () => {
           />
         )}
       </div>
-      {visible && !config?.siteUseStagingBay && (
+      {visible && !siteUseStagingBay && (
         <Forms
           value={selected}
           visible={visible}
@@ -478,7 +535,7 @@ const LoadSchedules = () => {
           default_shls_ld_type={config?.site_default_shls_ld_type}
         />
       )}
-      {visible && config?.siteUseStagingBay && !isStaging && (
+      {visible && siteUseStagingBay && !isStaging && (
         <StagingForms
           value={selected}
           visible={visible}
@@ -489,7 +546,7 @@ const LoadSchedules = () => {
           default_shls_ld_type={config?.site_default_shls_ld_type}
         />
       )}
-      {visible && config?.siteUseStagingBay && isStaging && (
+      {visible && siteUseStagingBay && isStaging && (
         <StagingBay
           value={selected}
           visible={visible}
