@@ -28,7 +28,7 @@ const PopupText = ({ type, config, supplier }) => {
       setLast('');
     } else {
       if (type === '1') {
-        // pickup load, use company_config
+        // pickup schedule, use company_config
         const item1 = _.find(configs?.records, (o) => o?.config_key === 'CMPY_PICKUP_TRIP_START');
         if (!item1) {
           setStart(config?.sitePickupTripStart);
@@ -48,7 +48,7 @@ const PopupText = ({ type, config, supplier }) => {
           setLast(item3?.config_value);
         }
       } else {
-        // not pickup load, use companys
+        // not pickup schedule, use companys
         const item = _.find(payload?.records, (o) => o?.cmpy_code === supplier);
         if (!item) {
           setStart('');

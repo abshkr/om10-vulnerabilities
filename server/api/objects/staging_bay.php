@@ -2323,7 +2323,7 @@ class StagingBay extends CommonClass
 
             $response = new EchoSchema(200, 
                 response("__CREATE_SUCCEEDED__",
-                    sprintf("Pickup Load (trip number:%d, supplier:%s) created", $this->shls_trip_no, $this->supplier_code)
+                    sprintf("Pickup Schedule (trip number:%d, supplier:%s) created", $this->shls_trip_no, $this->supplier_code)
                 )
             );
             
@@ -2331,7 +2331,7 @@ class StagingBay extends CommonClass
         } else {
             $response = new EchoSchema(500, 
                 response("__CREATE_FAILED__",
-                    sprintf("Pickup Load (trip number:%d, supplier:%s) is failed to create [error: %s]", $this->shls_trip_no, $this->supplier_code, json_encode($array['details']))
+                    sprintf("Pickup Schedule (trip number:%d, supplier:%s) is failed to create [error: %s]", $this->shls_trip_no, $this->supplier_code, json_encode($array['details']))
                 )
             );
             echo json_encode($response, JSON_PRETTY_PRINT);
@@ -2365,7 +2365,7 @@ class StagingBay extends CommonClass
         if (isset($array['result']) && $array['result'] == true) {
             $response = new EchoSchema(200, 
                 response("__DELETE_SUCCEEDED__",
-                    sprintf("Pickup Load (trip number:%d, supplier:%s) deleted", $this->shls_trip_no, $this->supplier_code)
+                    sprintf("Pickup Schedule (trip number:%d, supplier:%s) deleted", $this->shls_trip_no, $this->supplier_code)
                 )
             );
             
@@ -2373,7 +2373,7 @@ class StagingBay extends CommonClass
         } else {
             $response = new EchoSchema(500, 
                 response("__DELETE_FAILED__",
-                    sprintf("Pickup Load (trip number:%d, supplier:%s) is failed to delete [error: %s]", $this->shls_trip_no, $this->supplier_code, json_encode($array['details']))
+                    sprintf("Pickup Schedule (trip number:%d, supplier:%s) is failed to delete [error: %s]", $this->shls_trip_no, $this->supplier_code, json_encode($array['details']))
                 )
             );
             echo json_encode($response, JSON_PRETTY_PRINT);
@@ -2410,7 +2410,7 @@ class StagingBay extends CommonClass
         } else {
             $response = new EchoSchema(500, 
                 response("__DELETE_FAILED__",
-                    sprintf("Pickup Load (trip number:%d, supplier:%s) is failed to delete [error: %s]", $this->shls_trip_no, $this->supplier_code, json_encode($array['details']))
+                    sprintf("Pickup Schedule (trip number:%d, supplier:%s) is failed to delete [error: %s]", $this->shls_trip_no, $this->supplier_code, json_encode($array['details']))
                 )
             );
             echo json_encode($response, JSON_PRETTY_PRINT);
@@ -2503,7 +2503,7 @@ class StagingBay extends CommonClass
         if (isset($array['result']) && $array['result'] == true) {
             $response = new EchoSchema(200, 
                 response("__UPDATE_SUCCEEDED__",
-                    sprintf("Pickup Load (trip number:%d, supplier:%s) activated", $this->shls_trip_no, $this->supplier_code)
+                    sprintf("Pickup Schedule (trip number:%d, supplier:%s) activated", $this->shls_trip_no, $this->supplier_code)
                 )
             );
             
@@ -2511,7 +2511,7 @@ class StagingBay extends CommonClass
         } else {
             $response = new EchoSchema(500, 
                 response("__UPDATE_FAILED__",
-                    sprintf("Pickup Load (trip number:%d, supplier:%s) is failed to activate [error: %s]", $this->shls_trip_no, $this->supplier_code, json_encode($array['details']))
+                    sprintf("Pickup Schedule (trip number:%d, supplier:%s) is failed to activate [error: %s]", $this->shls_trip_no, $this->supplier_code, json_encode($array['details']))
                 )
             );
             echo json_encode($response, JSON_PRETTY_PRINT);
@@ -2563,7 +2563,7 @@ class StagingBay extends CommonClass
         if (isset($array['result']) && $array['result'] == true) {
             $response = new EchoSchema(200, 
                 response("__UPDATE_SUCCEEDED__",
-                    sprintf("Pickup Load (trip number:%d, supplier:%s) deactivated", $this->shls_trip_no, $this->supplier_code)
+                    sprintf("Pickup Schedule (trip number:%d, supplier:%s) deactivated", $this->shls_trip_no, $this->supplier_code)
                 )
             );
             
@@ -2571,7 +2571,7 @@ class StagingBay extends CommonClass
         } else {
             $response = new EchoSchema(500, 
                 response("__UPDATE_FAILED__",
-                    sprintf("Pickup Load (trip number:%d, supplier:%s) is failed to deactivate [error: %s]", $this->shls_trip_no, $this->supplier_code, json_encode($array['details']))
+                    sprintf("Pickup Schedule (trip number:%d, supplier:%s) is failed to deactivate [error: %s]", $this->shls_trip_no, $this->supplier_code, json_encode($array['details']))
                 )
             );
             echo json_encode($response, JSON_PRETTY_PRINT);

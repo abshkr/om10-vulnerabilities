@@ -18,9 +18,9 @@ commit;
     a. it is the STRING value contains 8 characters/bytes;
     b. each character/byte has the value 0, 1, 2, or 3
         0 - No check
-        1 - To restrict loading at Loading bays to Normal loads only.
-        2 - To restrict loading at Loading bays to Pickup loads only.
-        3 - To enable loading at Loading bays to both Normal and Pickup loads.
+        1 - To restrict loading at Loading bays to Load Schedules only.
+        2 - To restrict loading at Loading bays to Pickup Schedules only.
+        3 - To enable loading at Loading bays to both Normal and Pickup Schedules.
     c. each character/byte represents the loading option of a company type:
         byte1: SITE MANAGER
         byte2: SUPPLIER
@@ -71,9 +71,9 @@ commit;
 /*
     add new column BA_LOAD_OPTION to table BAY_AREA, which will have the following values
     0: No check
-    1: To restrict loading at Loading bays to Normal loads only.
-    2: To restrict loading at Loading bays to Pickup loads only.
-    3: To enable loading at Loading bays to both Normal and Pickup loads.
+    1: To restrict loading at Loading bays to Normal Schedules only.
+    2: To restrict loading at Loading bays to Pickup Schedules only.
+    3: To enable loading at Loading bays to both Normal and Pickup Schedules.
 */
 alter table BAY_AREA add BA_LOAD_OPTION NUMBER(2) DEFAULT 0;
 
@@ -83,14 +83,14 @@ alter table BAY_AREA add BA_LOAD_OPTION NUMBER(2) DEFAULT 0;
 	add contents for ENUM STAGING_LOAD_OPTION
 */
 
-delete from MSG_LOOKUP where MSG_ID in (3350, 3353);
+delete from MSG_LOOKUP where MSG_ID in (3350, 3351, 3352, 3353);
 
 commit;
 
 insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3350, 'ENG', 'No Check');
-insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3351, 'ENG', 'Normal Loads only');
-insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3352, 'ENG', 'Pickup Loads only');
-insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3353, 'ENG', 'Both Normal and Pickup Loads');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3351, 'ENG', 'Load Schedules only');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3352, 'ENG', 'Pickup Schedules only');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3353, 'ENG', 'Both Load and Pickup Schedules');
 
 insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3350, 'CHN', '不用检查');
 insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3351, 'CHN', '只允许普通提单');
@@ -129,12 +129,12 @@ commit;
 
 /*
 The following is the specification of the new table PICKUP_SCHEDULE_SPECS
-    PLSS_PICKUP_TRIP	    NUMBER(15,0)	        No	The trip number of a Pickup Load
-    PLSS_PICKUP_SUPP	    VARCHAR2(16 BYTE)	    No	The supplier company code of a Pickup Load
-    PLSS_PICKUP_CMPT	    NUMBER(4,0)	            No	The compartment number of a Pickup Load
+    PLSS_PICKUP_TRIP	    NUMBER(15,0)	        No	The trip number of a Pickup Schedule
+    PLSS_PICKUP_SUPP	    VARCHAR2(16 BYTE)	    No	The supplier company code of a Pickup Schedule
+    PLSS_PICKUP_CMPT	    NUMBER(4,0)	            No	The compartment number of a Pickup Schedule
     PLSS_STAGED_TRIP	    NUMBER(15,0)	        No	The trip number of a Staged Trip
     PLSS_STAGED_SUPP	    VARCHAR2(16 BYTE)	    No	The supplier company code of a Staged Trip
-    PLSS_STAGED_CMPT	    NUMBER(4,0)	            Yes	The compartment number of a Staged Trip (can be different from that of Pickup Load)
+    PLSS_STAGED_CMPT	    NUMBER(4,0)	            Yes	The compartment number of a Staged Trip (can be different from that of Pickup Schedule)
     PLSS_STAGED_PRODCODE	VARCHAR2(36 BYTE)	    Yes	The drawer product code of a Staged Trip (at either product or compartment level)
     PLSS_STAGED_PRODCMPY	VARCHAR2(16 BYTE)	    Yes	The drawer company code of a Staged Trip (at either product or compartment level)
     PLSS_STAGED_UNITS	    NUMBER(4,0)	            Yes	The product unit of a Staged Trip (at either product or compartment level)
@@ -197,9 +197,9 @@ REFERENCES DELV_LOCATION (DLV_CODE);
 
 /*
     add new column SHLS_PICKUP_MODE to table SCHEDULE, which will have the following values
-    0: Normal Load.
-    1: Pickup load.
-    2: Staged Load.
+    0: Load Schedule.
+    1: Pickup Schedule.
+    2: Staged Schedule.
 */
 alter table SCHEDULE add SHLS_PICKUP_MODE NUMBER(2) DEFAULT 0;
 
@@ -208,13 +208,13 @@ alter table SCHEDULE add SHLS_PICKUP_MODE NUMBER(2) DEFAULT 0;
 	add contents for ENUM STAGING_LOAD_MODE
 */
 
-delete from MSG_LOOKUP where MSG_ID in (3354, 3356);
+delete from MSG_LOOKUP where MSG_ID in (3354, 3355, 3356);
 
 commit;
 
-insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3354, 'ENG', 'Normal Load');
-insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3355, 'ENG', 'Pickup Load');
-insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3356, 'ENG', 'Staged Load');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3354, 'ENG', 'Load Schedule');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3355, 'ENG', 'Pickup Schedule');
+insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3356, 'ENG', 'Staged Schedule');
 
 insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3354, 'CHN', '普通提单');
 insert into MSG_LOOKUP (MSG_ID, LANG_ID, MESSAGE) values (3355, 'CHN', '组合提单');
@@ -252,9 +252,9 @@ commit;
 
 /*
     add new column LOAD_PICKUP_MODE to table LOADS, which will have the following values
-    0: Normal Load.
-    1: Pickup load.
-    2: Staged Load.
+    0: Load Schedule.
+    1: Pickup Schedule.
+    2: Staged Schedule.
 */
 alter table LOADS add LOAD_PICKUP_MODE NUMBER(2) DEFAULT 0;
 
@@ -270,9 +270,9 @@ alter table LOADS add LOAD_PICKUP_MODE NUMBER(2) DEFAULT 0;
 
 /*
     add new column SHLS_PICKUP_MODE to view GUISCHEDULES, which will have the following values
-    0: Normal Load.
-    1: Pickup load.
-    2: Staged Load.
+    0: Load Schedule.
+    1: Pickup Schedule.
+    2: Staged Schedule.
 */
 CREATE OR REPLACE FORCE VIEW GUI_SCHEDULES  AS 
 SELECT s.SHLS_TERMINAL,
@@ -485,9 +485,9 @@ ORDER BY s.SHLS_TRIP_NO DESC
 commit;
 
 
--- create a new company 9998 - Pickup Load Company for Staging Bay Pickup Loads
+-- create a new company 9998 - Pickup Schedule Company for Staging Bay Pickup Schedules
 Insert into COMPANYS (CMPY_CODE,CMPY_NAME,CMPY_TYPE,CMPY_COMPRESS_BL,CMPY_CHECK_LICEN,CMPY_LDGO_DELTA,CMPY_MSG,CMPY_VET,CMPY_TKR_CFG,CMPY_ENABLE_EXPD,CMPY_SEAL_NUMBER,CMPY_EXP_CODE,CMPY_ISSU,CMPY_HOST,CMPY_AOI,CMPY_AUTO_LD,CMPY_RTN_PROMPT,CMPY_ADD_PROMPT,CMPY_LOG_LD_DEL,CMPY_HOST_DOCS,CMPY_COMMS_OK,CMPY_TKR_ACTIVAT,CMPY_BOL_VP_NAME,CMPY_LD_REP_VP,CMPY_DRV_INST_VP,CMPY_WGH_COMPLET,CMPY_WGH_AUTO_FL,CMPY_TRIP_STRT,CMPY_TRIP_END,CMPY_TRIP_LAST,CMPY_ORD_CARRIER,CMPY_WIPE_ORDETS,CMPY_FLAG_1,CMPY_FLAG_2,CMPY_FLAG_3,CMPY_RPT_T_UNIT,CMPY_RPT_TEMP,CMPY_AUTO_RECONC,CMPY_BAY_LOOP_CH,CMPY_ORD_STRT,CMPY_ORD_END,CMPY_ORD_LAST,CMPY_MOD_DRAWER,CMPY_MUST_SEALNO,CMPY_BLTOL_FLAG,CMPY_LDTOL_FLAG,CMPY_REQ_PIN_FLAG,CMPY_PLANT,CMPY_SCHD_REV_REPOST,CMPY_SCHD_ARCHIVE,CMPY_MOVEMENTS_REV,CMPY_ADDR,CMPY_REPORT_RECEIVERS,CMPY_PERMIT_NO,CMPY_NO_MSG_TO_SITEMGR,CMPY_LOGO,CMPY_PIDX_CARRIER,CMPY_PIDX_SUPPLIER,CMPY_PIDX_DRAWER,CMPY_PIDX_CUSTOMER,CMPY_PIDX_FEIN,CMPY_PIDX_SSN,CMPY_PIDX_CARRIER_FEIN) 
-values ('9998','Pickup Load Company',18,'N','N',null,null,null,'N','N',null,null,null,null,null,'N',null,'N','N','N','N','N',null,null,null,'N','N',1,999999999,0,'N','N','N','N','N',null,null,'N','N',1,999999999,0,'N','N',0,0,0,null,'N','N','N',null,null,null,'N',null,null,null,null,null,null,null,null);
+values ('9998','Pickup Schedule Company',18,'N','N',null,null,null,'N','N',null,null,null,null,null,'N',null,'N','N','N','N','N',null,null,null,'N','N',1,999999999,0,'N','N','N','N','N',null,null,'N','N',1,999999999,0,'N','N',0,0,0,null,'N','N','N',null,null,null,'N',null,null,null,null,null,null,null,null);
 
 commit;
 

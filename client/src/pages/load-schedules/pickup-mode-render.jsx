@@ -4,9 +4,9 @@ import { CheckCircleOutlined, CloseCircleOutlined, CloseCircleFilled } from '@an
 
 /*
   SHLS_PICKUP_MODE
-  0: Normal Load
-  1: Pickup Load
-  2: Staged Load
+  0: Load Schedule
+  1: Pickup Schedule
+  2: Staged Schedule
 */
 
 export default class PickupModeRender extends Component {

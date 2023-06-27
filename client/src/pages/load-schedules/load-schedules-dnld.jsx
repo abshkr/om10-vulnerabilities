@@ -109,19 +109,19 @@ const LoadSchedules = () => {
   /*
     siteUseStagingBay = false
       isStaging = false
-        Normal Load Trip:                 Normal Form
+        Load Schedule Trip:                 Normal Form
 
     siteUseStagingBay = true
       CREATE
         isStaging = true
-          Pickup Load Trip:               Staging Bay
+          Pickup Schedule Trip:             Staging Bay
         isStaging = false
-          Normal Load Trip:               Staging Form without Pickup Load and Staged Load 
+          Load Schedule Trip:               Staging Form without Pickup Schedule and Staged Schedule 
       UPDATE
         isStaging = true
-          Pickup Load Trip                Staging Bay
+          Pickup Schedule Trip              Staging Bay
         isStaging = false
-          Normal or Staged Load Trip:     Staging Form without Pickup Load
+          Load or Staged Schedule Trip:     Staging Form without Pickup Schedule
   */
   const handleFormState = (visibility, value) => {
     if (siteUseStagingBay) {

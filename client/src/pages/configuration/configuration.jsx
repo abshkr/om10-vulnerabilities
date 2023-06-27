@@ -944,9 +944,9 @@ const FormField = ({ config, onChange }) => {
 
   /*
     "stagingBayAnyLoads": "No Check",
-    "": "Normal Loads",
-    "": "Pickup Loads",
-    "stagingBayBothLoads": "Normal and Pickup Loads",
+    "": "Load Schedules",
+    "": "Pickup Schedules",
+    "stagingBayBothLoads": "Load and Pickup Schedules",
   */
   const loadTypes = [
     { index: 1, code: 'NORMAL_LOADS', title: t('fields.stagingBayNormalLoads') },

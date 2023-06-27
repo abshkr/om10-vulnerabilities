@@ -720,9 +720,9 @@ class Journal
             "SITE_USE_STAGING_BAY" => "Enable the Staging Bay for the site",
             "SITE_CMPY_LOAD_OPTIONS_DEFAULT" => "The default value of the company load options when Staging Bay enabled",
             "SITE_CMPY_LOAD_OPTIONS_EDITABLE" => "The editibility of company load options when Staging Bay enabled",
-            "SITE_PICKUP_TRIP_START" => "Default start trip number for pickup load at site level",
-            "SITE_PICKUP_TRIP_END" => "Default end trip number for pickup load at site level",
-            "SITE_LIST_PICKUP_LOAD" => "Show/Hide Pickup Loads in Load Schedule list",
+            "SITE_PICKUP_TRIP_START" => "Default start trip number for pickup schedule at site level",
+            "SITE_PICKUP_TRIP_END" => "Default end trip number for pickup schedule at site level",
+            "SITE_LIST_PICKUP_LOAD" => "Show/Hide Pickup Schedules in Load Schedule list",
         )
     );
 

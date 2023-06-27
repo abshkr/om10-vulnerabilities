@@ -32,7 +32,7 @@ const columns = (IS_NOMINATION, t, config) => [
     hide: IS_NOMINATION,
   },
   {
-    headerName: t('fields.stagingBayPickupMode'),
+    headerName: t('fields.stagingBayPickupLoad2'),
     field: 'shls_pickup_mode',
     filter: 'MultiFilter',
     sortable: true,
@@ -46,7 +46,7 @@ const columns = (IS_NOMINATION, t, config) => [
     },
   },
   {
-    headerName: t('fields.stagingBayPickupLoad'),
+    headerName: t('fields.stagingBayPickupMode'),
     field: 'shls_pickup_modename',
     filter: 'MultiFilter',
     sortable: true,
@@ -54,10 +54,10 @@ const columns = (IS_NOMINATION, t, config) => [
     width: 130,
     suppressSizeToFit: true,
     hide: !config?.siteUseStagingBay,
-    cellRenderer: 'PickupModeRender',
-    cellRendererParams: {
-      t: t,
-    },
+    // cellRenderer: 'PickupModeRender',
+    // cellRendererParams: {
+    //   t: t,
+    // },
   },
   {
     headerName: t('fields.sourceTrip'),
