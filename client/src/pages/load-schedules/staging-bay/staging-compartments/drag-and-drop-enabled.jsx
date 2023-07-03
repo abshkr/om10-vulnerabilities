@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Form, Row, Col, notification, Descriptions } from 'antd';
+import useSWR, { SWRConfig } from 'swr';
+import { Form, Row, Col, notification, Descriptions, Card, Button, Modal } from 'antd';
+import { EyeOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 
 import { DataTable, PartnershipManager, OrderManager } from '../../../../components';
 
 import api, { LOAD_SCHEDULES, STAGING_BAY } from '../../../../api';
-import { adjustPreloadQuantity } from '../../../../utils';
+import { adjustPreloadQuantity, fetcher } from '../../../../utils';
 
 import {
   ProductEditor,
@@ -18,7 +20,8 @@ import {
   DelvlocEditor,
 } from './fields';
 
-import useSWR from 'swr';
+import TripAllocations from '../../forms/trip-allocations';
+import CompartmentAllocations from '../../forms/compartment-allocations';
 
 const Compartments = ({ form, value, tanker, drawer, supplier, customer, config, setInit }) => {
   const { setFieldsValue, getFieldValue } = form;
@@ -290,7 +293,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
       */
 
       if (pickup?.records) {
-        // when creating a pickup load, the OO-based staged trips and their OOs must be ONE to ONE relations
+        // when creating a pickup schedule, the OO-based staged trips and their OOs must be ONE to ONE relations
         const item = _.find(
           pickup?.records,
           (o) =>
@@ -447,6 +450,135 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
 
     setCompartments([]);
     setCompartments(current);
+  };
+
+  const checkAllocation = () => {
+    const supplier = getFieldValue('supplier_code');
+    const drawer = getFieldValue('drawer_code');
+    const carrier = getFieldValue('carrier_code');
+    const cmpts = getFieldValue('compartments');
+    //    const customer = _.uniq(_.map(cmpts, 'plss_staged_cust'));
+
+    if (!value) {
+      // onChange(undefined);
+    }
+    // const item = _.find(options?.records, (o) => o?.cust_acnt === account);
+    // const modal = Modal.info();
+    //modal.update({
+    Modal.confirm({
+      title: t('operations.checkAllocation'),
+      okText: t('operations.ok'),
+      cancelText: t('operations.cancel'),
+      centered: true,
+      width: '80vw',
+      maskClosable: false,
+      closable: true,
+      keyboard: true,
+      okButtonProps: {
+        hidden: false,
+      },
+      cancelButtonProps: {
+        hidden: true,
+      },
+      content: (
+        <SWRConfig
+          value={{
+            refreshInterval: 0,
+            fetcher,
+          }}
+        >
+          <div style={{ marginTop: 10, marginBottom: 10 }}>
+            {
+              <CompartmentAllocations
+                supplier={supplier}
+                drawer={drawer}
+                carrier={carrier}
+                // customer={customer}
+                disabled={!value ? false : true}
+                config={config}
+                compartments={cmpts}
+              />
+            }
+          </div>
+        </SWRConfig>
+      ),
+      onOk: () => {
+        console.log('...................okProduct');
+        if (!value) {
+          // onChange(account);
+        }
+      },
+      onCancel: () => {
+        console.log('...................cancelProduct');
+        if (!value) {
+          // onChange(account);
+        }
+      },
+    });
+  };
+
+  const checkTripAllocation = () => {
+    const supplier = getFieldValue('supplier_code');
+    const drawer = getFieldValue('drawer_code');
+    const carrier = getFieldValue('carrier_code');
+    const cmpts = getFieldValue('compartments');
+    const customer = _.uniq(_.map(cmpts, 'plss_staged_cust'));
+
+    if (!value) {
+      // onChange(undefined);
+    }
+    // const item = _.find(options?.records, (o) => o?.cust_acnt === account);
+    // const modal = Modal.info();
+    //modal.update({
+    Modal.confirm({
+      title: t('operations.checkAllocation'),
+      okText: t('operations.ok'),
+      cancelText: t('operations.cancel'),
+      centered: true,
+      width: '70vw',
+      maskClosable: false,
+      closable: true,
+      keyboard: true,
+      okButtonProps: {
+        hidden: false,
+      },
+      cancelButtonProps: {
+        hidden: true,
+      },
+      content: (
+        <SWRConfig
+          value={{
+            refreshInterval: 0,
+            fetcher,
+          }}
+        >
+          <div style={{ marginTop: 10, marginBottom: 10 }}>
+            {
+              <TripAllocations
+                supplier={supplier}
+                drawer={drawer}
+                carrier={carrier}
+                customer={customer}
+                disabled={!value ? false : true}
+                config={config}
+              />
+            }
+          </div>
+        </SWRConfig>
+      ),
+      onOk: () => {
+        console.log('...................okProduct');
+        if (!value) {
+          // onChange(account);
+        }
+      },
+      onCancel: () => {
+        console.log('...................cancelProduct');
+        if (!value) {
+          // onChange(account);
+        }
+      },
+    });
   };
 
   const checkExistence = (valueDrop, valueGrid, tripNumber = '') => {
@@ -825,7 +957,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
   const onDragFinished = (index, valueDrop) => {
     const payload = [];
 
-    // get the trip number of pickup load:
+    // get the trip number of pickup schedule:
     const tripNumber = getFieldValue('shls_trip_no');
 
     // const rowNode = tableAPI.getRowNode(index);
@@ -1331,21 +1463,40 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
         <DataTable data={products} columns={productFields} parentHeight="320px" minimal />
       </Col> */}
       <Col flex={4}>
-        <Form.Item name="compartments">
-          <DataTable
-            data={compartments}
-            columns={fields}
-            parentHeight="320px"
-            components={components}
-            minimal
-            apiContext={setTableAPI}
-            rowEditingStopped={rowEditingStopped}
-            onCellUpdate={onCellUpdate}
-            getRowNodeId={(data) => {
-              return data?.compartment;
-            }}
-          />
-        </Form.Item>
+        <Card
+          size="small"
+          title={t('tabColumns.stagingDestination')}
+          hoverable
+          headStyle={{ paddingRight: 10, fontWeight: 'bold' }}
+          style={{ marginTop: 8 }}
+          extra={
+            <Button
+              type="primary"
+              icon={<EyeOutlined />}
+              style={{ float: 'right', marginRight: 5 }}
+              disabled={compartments?.length === 0}
+              onClick={checkAllocation}
+            >
+              {t('operations.checkAllocation')}
+            </Button>
+          }
+        >
+          <Form.Item name="compartments">
+            <DataTable
+              data={compartments}
+              columns={fields}
+              parentHeight="320px"
+              components={components}
+              minimal
+              apiContext={setTableAPI}
+              rowEditingStopped={rowEditingStopped}
+              onCellUpdate={onCellUpdate}
+              getRowNodeId={(data) => {
+                return data?.compartment;
+              }}
+            />
+          </Form.Item>
+        </Card>
       </Col>
     </Row>
   );

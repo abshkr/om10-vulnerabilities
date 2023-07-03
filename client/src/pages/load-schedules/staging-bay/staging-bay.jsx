@@ -1886,25 +1886,16 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
             )}
 
             {mode === '2' && !READ_ONLY && (
-              <Card
-                size="small"
-                title={t('tabColumns.stagingDestination')}
-                hoverable
-                headStyle={{ paddingRight: 10, fontWeight: 'bold' }}
-                style={{ marginTop: 8 }}
-                // extra={popupText}
-              >
-                <StagingCompartments
-                  form={form}
-                  value={value}
-                  drawer={value ? value.supplier_code : supplier} //Same as v9, when supplier != drawer, use supplier product
-                  tanker={!tanker ? value?.tnkr_code : tanker}
-                  supplier={value ? value.supplier_code : supplier}
-                  customer={undefined}
-                  config={config}
-                  setInit={setCompartmentsInit}
-                />
-              </Card>
+              <StagingCompartments
+                form={form}
+                value={value}
+                drawer={value ? value.supplier_code : supplier} //Same as v9, when supplier != drawer, use supplier product
+                tanker={!tanker ? value?.tnkr_code : tanker}
+                supplier={value ? value.supplier_code : supplier}
+                customer={undefined}
+                config={config}
+                setInit={setCompartmentsInit}
+              />
             )}
 
             {mode === '3' && !READ_ONLY && (

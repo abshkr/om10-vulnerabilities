@@ -1998,7 +1998,7 @@ class StagingBay extends CommonClass
         // write_log(json_encode($hook_item), __FILE__, __LINE__);
 
         if (!array_key_exists('trsf_id', $hook_item)) {
-            write_log("hook_item does not have mv_id item, cannot do transactions_hook",
+            write_log("hook_item does not have trsf_id item, cannot do transactions_hook_hook",
                 __FILE__, __LINE__, LogLevel::ERROR);
             return;
         }
@@ -2575,6 +2575,254 @@ class StagingBay extends CommonClass
                 )
             );
             echo json_encode($response, JSON_PRETTY_PRINT);
+        }
+    }
+
+
+    /*
+        $TABLE_NAME = 'LOCKAL';
+        $VIEW_NAME = 'GUI_ALLOCATIONS';
+        $primary_keys = array("lockal_index", "lockatyp_at_type", "lockatyp_at_cmpy", "lockal_supl");
+        $view_keys = array("alloc_index", "alloc_type", "alloc_cmpycode", "alloc_suppcode");
+        
+        $TABLE_NAME = 'ALLOCS';
+        $VIEW_NAME = 'GUI_ALLOCATION_ITEMS';
+        $primary_keys = array("all_index", "all_atky_at_type", "all_atky_at_cmpy", "all_prod_prodcode", "all_prod_prodcmpy");
+        $view_keys = array("aitem_index", "aitem_type", "aitem_cmpycode", "aitem_prodcode", "aitem_suppcode");
+
+        $TABLE_NAME = 'ALL_CHILD';
+        $VIEW_NAME = 'GUI_ALLOCATION_PERIODS';
+        $primary_keys = array("alch_alp_all_index", "alch_alp_all_atky_at_type", "alch_alp_all_atky_at_cmpy", "alch_alp_all_prod_prodcode", "alch_alp_all_prod_prodcmpy", "all_child_p_no");
+        $view_keys = array("aiprd_seq", "aiprd_type", "aiprd_cmpycode", "aiprd_prodcode", "aiprd_suppcode", "aiprd_index");
+    */
+
+    public function allocations()
+    {
+        //write_log("DB error:" . print_r($this, true), __FILE__, __LINE__, LogLevel::ERROR);
+        if (!isset($this->alloc_index)) {
+            $this->alloc_index = -1;
+        }
+        if (!isset($this->alloc_type)) {
+            $this->alloc_type = -1;
+        }
+        if (!isset($this->alloc_cmpycode)) {
+            $this->alloc_cmpycode = "-1";
+        }
+        if (!isset($this->alloc_suppcode)) {
+            $this->alloc_suppcode = "-1";
+        }
+        if (!isset($this->alloc_lock)) {
+            $this->alloc_lock = -1;
+        }
+        
+        $query = "
+            SELECT *
+            FROM GUI_ALLOCATIONS
+            WHERE 
+                1 = 1
+                AND (-1 = :alloc_type OR ALLOC_TYPE = :alloc_type)
+                AND ('-1' = :alloc_cmpycode OR ALLOC_CMPYCODE = :alloc_cmpycode)
+                AND ('-1' = :alloc_suppcode OR ALLOC_SUPPCODE = :alloc_suppcode)
+                AND (-1 = :alloc_lock OR ALLOC_LOCK = :alloc_lock)
+                AND (-1 = :alloc_index OR ALLOC_INDEX = :alloc_index)
+        ";
+
+        $query .= "
+            ORDER BY ALLOC_TYPE DESC
+        ";
+        /* write_log("DB error:" . $query, __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB error: start>>>>" . $this->start_date."<<<<", __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB error: end>>>>" . $this->end_date."<<<<", __FILE__, __LINE__, LogLevel::ERROR); */
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':alloc_suppcode', $this->alloc_suppcode);
+        oci_bind_by_name($stmt, ':alloc_cmpycode', $this->alloc_cmpycode);
+        oci_bind_by_name($stmt, ':alloc_type', $this->alloc_type);
+        oci_bind_by_name($stmt, ':alloc_lock', $this->alloc_lock);
+        oci_bind_by_name($stmt, ':alloc_index', $this->alloc_index);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function allocations_hook(&$hook_item)
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        $result = array();
+        $hook_item['products'] = $result;
+        // write_log(json_encode($hook_item), __FILE__, __LINE__);
+
+        if (!array_key_exists('alloc_index', $hook_item) ||
+            !array_key_exists('alloc_type', $hook_item) ||
+            !array_key_exists('alloc_cmpycode', $hook_item) ||
+            !array_key_exists('alloc_suppcode', $hook_item)
+        ) {
+            write_log("hook_item does not have alloc_index, alloc_type, alloc_cmpycode, or alloc_suppcode item, cannot do allocatioins_hook",
+                __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        $query = "
+            SELECT * FROM GUI_ALLOCATION_PRODUCTS
+            WHERE 
+                AITEM_INDEX = :aitem_index
+                AND AITEM_TYPE = :aitem_type
+                AND AITEM_CMPYCODE = :aitem_cmpycode
+                AND AITEM_SUPPCODE = :aitem_suppcode
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':aitem_index', $hook_item['alloc_index']);
+        oci_bind_by_name($stmt, ':aitem_type', $hook_item['alloc_type']);
+        oci_bind_by_name($stmt, ':aitem_cmpycode', $hook_item['alloc_cmpycode']);
+        oci_bind_by_name($stmt, ':aitem_suppcode', $hook_item['alloc_suppcode']);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        Utilities::retrieve($result, $this, $stmt, $method=__FUNCTION__);
+        $hook_item['products'] = $result;
+    }
+
+    public function allocations_hook_hook(&$hook_item)
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        $result = array();
+        $hook_item['periods'] = $result;
+        // write_log(json_encode($hook_item), __FILE__, __LINE__);
+
+        if (!array_key_exists('aitem_index', $hook_item) ||
+            !array_key_exists('aitem_type', $hook_item) ||
+            !array_key_exists('aitem_cmpycode', $hook_item) ||
+            !array_key_exists('aitem_prodcode', $hook_item) ||
+            !array_key_exists('aitem_suppcode', $hook_item) 
+        ) {
+            write_log("hook_item does not have aitem_index, aitem_type, aitem_cmpycode, aitem_prodcode, or aitem_suppcode item, cannot do allocations_hook_hook",
+                __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        $query = "
+            SELECT GUI_ALLOCATION_PERIODS.*,
+                (CASE WHEN AIPRD_DAYSTART < SYSDATE  AND AIPRD_DAYEND > SYSDATE THEN 'Y' ELSE 'N' END) ACTIVE
+            FROM GUI_ALLOCATION_PERIODS
+            WHERE 
+                AIPRD_SEQ = :aiprd_seq
+                AND AIPRD_TYPE = :aiprd_type
+                AND AIPRD_CMPYCODE = :aiprd_cmpycode
+                AND AIPRD_PRODCODE = :aiprd_prodcode
+                AND AIPRD_SUPPCODE = :aiprd_suppcode
+            ORDER BY AIPRD_TYPE, AIPRD_CMPYCODE, AIPRD_PRODCODE";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':aiprd_seq', $hook_item['aitem_index']);
+        oci_bind_by_name($stmt, ':aiprd_type', $hook_item['aitem_type']);
+        oci_bind_by_name($stmt, ':aiprd_cmpycode', $hook_item['aitem_cmpycode']);
+        oci_bind_by_name($stmt, ':aiprd_prodcode', $hook_item['aitem_prodcode']);
+        oci_bind_by_name($stmt, ':aiprd_suppcode', $hook_item['aitem_suppcode']);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        //The last $method parameter need to be NonExistHook to prevent 
+        Utilities::retrieve($result, $this, $stmt, $method='NonExistHook');
+        $hook_item['periods'] = $result;
+    }
+
+    public function allocation_products()
+    {
+        $query = "
+            SELECT *
+            FROM GUI_ALLOCATION_PRODUCTS
+            WHERE 1=1 
+            ORDER BY AITEM_SUPPCODE, AITEM_PRODCODE, AITEM_TYPE";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function products()
+    {
+        $query = "
+            SELECT *
+            FROM GUI_PRODUCTS
+            WHERE 1=1 
+            ORDER BY PROD_CMPYCODE, PROD_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function products_hook(&$hook_item)
+    {
+        write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+
+        $result = array();
+        $hook_item['ratios'] = $result;
+        // write_log(json_encode($hook_item), __FILE__, __LINE__);
+
+        if (!array_key_exists('prod_cmpycode', $hook_item) ||
+            !array_key_exists('prod_code', $hook_item) 
+        ) {
+            write_log("hook_item does not have prod_cmpycode or prod_code item, cannot do products_hook",
+                __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        $query = "
+            SELECT * 
+            FROM GUI_PRODUCT_ITEMS 
+            WHERE PITEM_PROD_CODE = :prod_code
+                AND PITEM_CMPY_CODE = :prod_cmpy
+            ORDER BY PITEM_BASE_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':prod_code', $hook_item['prod_code']);
+        oci_bind_by_name($stmt, ':prod_cmpy', $hook_item['prod_cmpycode']);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        Utilities::retrieve($result, $this, $stmt, $method=__FUNCTION__);
+        $hook_item['ratios'] = $result;
+    }
+
+    public function ratio_products()
+    {
+        $query = "
+            SELECT *
+            FROM GUI_PRODUCT_ITEMS
+            WHERE 1=1 
+            ORDER BY PITEM_CMPY_CODE, PITEM_PROD_CODE, PITEM_BASE_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
         }
     }
 
