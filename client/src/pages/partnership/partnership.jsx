@@ -44,6 +44,7 @@ const Partnership = () => {
         icon={<PlusOutlined />}
         onClick={() => handleFormState(true, null)}
         loading={isValidating}
+        disabled={!access.canCreate}
       >
         {t('operations.create')}
       </Button>

@@ -28,9 +28,10 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
   const { data: suppliers, isValidating: suppliersLoading } = useSWR(PARTNERS.SUPPLIERS);
   const { data: addresses, isValidating: addressLoading } = useSWR(PARTNERS.ADDRESSES);
   const { data: types, isValidating: typeLoading } = useSWR(PARTNERS.PARTNER_TYPE);
-  const { data: payload, isValidating: readLoading } = useSWR(PARTNERS.READ);
+  // const { data: payload, isValidating: readLoading } = useSWR(PARTNERS.READ);
 
-  const isLoading = suppliersLoading || typeLoading || addressLoading || readLoading;
+  // const isLoading = suppliersLoading || typeLoading || addressLoading || readLoading;
+  const isLoading = suppliersLoading || typeLoading || addressLoading;
 
   const validate = (rule, input) => {
     const map = {
@@ -62,13 +63,13 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     };
 
     if (rule.field === 'prtnr_code') {
-      const match = _.find(payload?.records, (record) => {
+      /* const match = _.find(payload?.records, (record) => {
         return record?.prtnr_code === input;
       });
 
       if (!!match && !value) {
         return Promise.reject(t('descriptions.alreadyExists'));
-      }
+      } */
 
       const regex = new RegExp(REGEX.ALPHANUMERIC);
       const validated = regex.exec(input);
@@ -109,11 +110,52 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
     }
   };
 
+  const checkPartner = async (cmpy, code, type) => {
+    const values = {
+      prtnr_cmpy: cmpy,
+      prtnr_code: code,
+      prtnr_type: type,
+    };
+
+    const results = await api.post(PARTNERS.CHECK_PARTNER, values);
+
+    if (results?.data) {
+      return _.toNumber(results?.data?.records[0]?.cnt);
+    } else {
+      return 0;
+    }
+  };
+
+  const prepareErrorMessage = (values) => {
+    let txt = '"';
+    txt += `${t('fields.company')}: ${values?.prtnr_cmpy}, `;
+    txt += `${t('fields.partnerCode')}: ${values?.prtnr_code}, `;
+    txt += `${t('fields.partnerType')}: ${values?.prtnr_type}`;
+    txt += '"';
+
+    let notes = t('descriptions.alreadyExistsRecord');
+    notes = notes.replace('[[PKEY]]', txt);
+
+    return notes;
+  };
+
   const onFinish = async () => {
     const values = await form.validateFields();
 
     if (!IS_CREATING) {
       values.prtnr_seq = value.prtnr_seq;
+    }
+
+    if (IS_CREATING) {
+      const counter = await checkPartner(values?.prtnr_cmpy, values?.prtnr_code, values?.prtnr_type);
+      if (counter > 0) {
+        const notes = prepareErrorMessage(values);
+        notification.error({
+          message: t('messages.validationFailed'),
+          description: notes,
+        });
+        return;
+      }
     }
 
     Modal.confirm({

@@ -1,4 +1,5 @@
 export const READ = '/api/pages/partner/read.php';
+export const CHECK_PARTNER = '/api/pages/partner/is_partner_existed.php';
 export const SUPPLIERS = '/api/pages/partner/suppliers.php';
 export const PARTNER_TYPE = '/api/pages/partner/partner_types.php';
 export const ADDRESSES = '/api/pages/partner/addresses.php';

@@ -139,4 +139,24 @@ class Partner extends CommonClass
 
         return true;
     }
+
+    public function is_partner_existed()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT 
+            FROM PARTNER
+            WHERE PRTNR_CMPY=:prtnr_cmpy and PRTNR_CODE=:prtnr_code and PRTNR_TYPE=:prtnr_type 
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':prtnr_cmpy', $this->prtnr_cmpy);
+        oci_bind_by_name($stmt, ':prtnr_code', $this->prtnr_code);
+        oci_bind_by_name($stmt, ':prtnr_type', $this->prtnr_type);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+   }
 }
