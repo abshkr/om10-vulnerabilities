@@ -23,14 +23,14 @@ const OtherForm = ({ value, form, config }) => {
   const { TextArea } = Input;
   const { setFieldsValue } = form;
 
-  const [cmpy_bay_loop_ch, setReconc] = useState(value?.cmpy_bay_loop_ch);
-  const [cmpy_mod_drawer, setFlag2] = useState(value?.cmpy_mod_drawer);
-  const [cmpy_auto_reconc, setLogDel] = useState(value?.cmpy_auto_reconc);
-  const [cmpy_must_sealno, setLoadTol] = useState(value?.cmpy_must_sealno);
-  const [cmpy_tkr_activat, setAutoLoad] = useState(value?.cmpy_tkr_activat);
-  const [cmpy_req_pin_flag, setBlendTol] = useState(value?.cmpy_req_pin_flag);
-  const [cmpy_wipe_ordets, setOrdCarrier] = useState(value?.cmpy_wipe_ordets);
-  const [cmpy_enable_expd, setWghComplete] = useState(value?.cmpy_enable_expd);
+  const [cmpy_bay_loop_ch, setEqptMustInArea] = useState(value?.cmpy_bay_loop_ch);
+  const [cmpy_mod_drawer, setModDrawer] = useState(value?.cmpy_mod_drawer);
+  const [cmpy_tkr_cfg, setTnkrAutoConfig] = useState(value?.cmpy_tkr_cfg);
+  const [cmpy_must_sealno, setMustHaveSeal] = useState(value?.cmpy_must_sealno);
+  const [cmpy_tkr_activat, setTnkrAutoActive] = useState(value?.cmpy_tkr_activat);
+  const [cmpy_req_pin_flag, setMustHavePin] = useState(value?.cmpy_req_pin_flag);
+  const [cmpy_wipe_ordets, setHostUpdateOrder] = useState(value?.cmpy_wipe_ordets);
+  const [cmpy_enable_expd, setEnableExpiryCheck] = useState(value?.cmpy_enable_expd);
   const [cmpy_bol_text_copies_value, setCmpyBolTextCopiesValue] = useState(1);
   const [cmpy_load_options, setCmpyLoadOptions] = useState(siteCmpyLoadOptionsDefault);
 
@@ -75,57 +75,57 @@ const OtherForm = ({ value, form, config }) => {
     return Promise.resolve();
   };
 
-  const onAutoReconcChange = (v) => {
-    setReconc(v);
+  const onEqptMustInArea = (v) => {
+    setEqptMustInArea(v);
     setFieldsValue({
       cmpy_bay_loop_ch: v,
     });
   };
 
-  const onFlag2 = (v) => {
-    setFlag2(v);
+  const onModDrawer = (v) => {
+    setModDrawer(v);
     setFieldsValue({
       cmpy_mod_drawer: v,
     });
   };
 
-  const onLogDel = (v) => {
-    setLogDel(v);
+  const onTnkrAutoConfig = (v) => {
+    setTnkrAutoConfig(v);
     setFieldsValue({
-      cmpy_auto_reconc: v,
+      cmpy_tkr_cfg: v,
     });
   };
 
-  const onLoadTol = (v) => {
-    setLoadTol(v);
+  const onMustHaveSeal = (v) => {
+    setMustHaveSeal(v);
     setFieldsValue({
       cmpy_must_sealno: v,
     });
   };
 
-  const onAutoLoad = (v) => {
-    setAutoLoad(v);
+  const onTnkrAutoActive = (v) => {
+    setTnkrAutoActive(v);
     setFieldsValue({
       cmpy_tkr_activat: v,
     });
   };
 
-  const onBlendTol = (v) => {
-    setBlendTol(v);
+  const onMustHavePin = (v) => {
+    setMustHavePin(v);
     setFieldsValue({
       cmpy_req_pin_flag: v,
     });
   };
 
-  const onOrdCarrier = (v) => {
-    setOrdCarrier(v);
+  const onHostUpdateOrder = (v) => {
+    setHostUpdateOrder(v);
     setFieldsValue({
       cmpy_wipe_ordets: v,
     });
   };
 
-  const onWghComplete = (v) => {
-    setWghComplete(v);
+  const onEnableExpiryCheck = (v) => {
+    setEnableExpiryCheck(v);
     setFieldsValue({
       cmpy_enable_expd: v,
     });
@@ -141,7 +141,7 @@ const OtherForm = ({ value, form, config }) => {
         cmpy_bay_loop_ch: value.cmpy_bay_loop_ch,
         cmpy_rtn_prompt: value.cmpy_rtn_prompt,
         cmpy_mod_drawer: value.cmpy_mod_drawer,
-        cmpy_auto_reconc: value.cmpy_auto_reconc,
+        cmpy_tkr_cfg: value.cmpy_tkr_cfg,
         cmpy_must_sealno: value.cmpy_must_sealno,
         cmpy_tkr_activat: value.cmpy_tkr_activat,
         cmpy_req_pin_flag: value.cmpy_req_pin_flag,
@@ -152,14 +152,14 @@ const OtherForm = ({ value, form, config }) => {
         cmpy_report_receivers: value.cmpy_report_receivers,
       });
 
-      setReconc(value.cmpy_bay_loop_ch);
-      setFlag2(value.cmpy_mod_drawer);
-      setLogDel(value.cmpy_auto_reconc);
-      setLoadTol(value.cmpy_must_sealno);
-      setAutoLoad(value.cmpy_tkr_activat);
-      setBlendTol(value.cmpy_req_pin_flag);
-      setOrdCarrier(value.cmpy_wipe_ordets);
-      setWghComplete(value.cmpy_enable_expd);
+      setEqptMustInArea(value.cmpy_bay_loop_ch);
+      setModDrawer(value.cmpy_mod_drawer);
+      setTnkrAutoConfig(value.cmpy_tkr_cfg);
+      setMustHaveSeal(value.cmpy_must_sealno);
+      setTnkrAutoActive(value.cmpy_tkr_activat);
+      setMustHavePin(value.cmpy_req_pin_flag);
+      setHostUpdateOrder(value.cmpy_wipe_ordets);
+      setEnableExpiryCheck(value.cmpy_enable_expd);
     }
     if (
       payload &&
@@ -274,7 +274,7 @@ const OtherForm = ({ value, form, config }) => {
               checkedChildren={t('operations.yes')}
               unCheckedChildren={t('operations.no')}
               checked={cmpy_bay_loop_ch}
-              onChange={onAutoReconcChange}
+              onChange={onEqptMustInArea}
             />
           </Form.Item>
         </Col>
@@ -317,7 +317,7 @@ const OtherForm = ({ value, form, config }) => {
               checkedChildren={t('operations.yes')}
               unCheckedChildren={t('operations.no')}
               checked={cmpy_mod_drawer}
-              onChange={onFlag2}
+              onChange={onModDrawer}
             />
           </Form.Item>
         </Col>
@@ -325,12 +325,12 @@ const OtherForm = ({ value, form, config }) => {
 
       <Row justify="center" gutter="8">
         <Col span={12}>
-          <Form.Item name="cmpy_auto_reconc" label={t('fields.autoConfigTanker')} {...leftItemLayout}>
+          <Form.Item name="cmpy_tkr_cfg" label={t('fields.autoConfigTanker')} {...leftItemLayout}>
             <Switch
               checkedChildren={t('operations.yes')}
               unCheckedChildren={t('operations.no')}
-              checked={cmpy_auto_reconc}
-              onChange={onLogDel}
+              checked={cmpy_tkr_cfg}
+              onChange={onTnkrAutoConfig}
             />
           </Form.Item>
         </Col>
@@ -340,7 +340,7 @@ const OtherForm = ({ value, form, config }) => {
               checkedChildren={t('operations.yes')}
               unCheckedChildren={t('operations.no')}
               checked={cmpy_must_sealno}
-              onChange={onLoadTol}
+              onChange={onMustHaveSeal}
             />
           </Form.Item>
         </Col>
@@ -353,7 +353,7 @@ const OtherForm = ({ value, form, config }) => {
               checkedChildren={t('operations.yes')}
               unCheckedChildren={t('operations.no')}
               checked={cmpy_tkr_activat}
-              onChange={onAutoLoad}
+              onChange={onTnkrAutoActive}
             />
           </Form.Item>
         </Col>
@@ -363,7 +363,7 @@ const OtherForm = ({ value, form, config }) => {
               checkedChildren={t('operations.yes')}
               unCheckedChildren={t('operations.no')}
               checked={cmpy_req_pin_flag}
-              onChange={onBlendTol}
+              onChange={onMustHavePin}
             />
           </Form.Item>
         </Col>
@@ -376,7 +376,7 @@ const OtherForm = ({ value, form, config }) => {
               checkedChildren={t('operations.yes')}
               unCheckedChildren={t('operations.no')}
               checked={cmpy_wipe_ordets}
-              onChange={onOrdCarrier}
+              onChange={onHostUpdateOrder}
             />
           </Form.Item>
         </Col>
@@ -386,7 +386,7 @@ const OtherForm = ({ value, form, config }) => {
               checkedChildren={t('operations.yes')}
               unCheckedChildren={t('operations.no')}
               checked={cmpy_enable_expd}
-              onChange={onWghComplete}
+              onChange={onEnableExpiryCheck}
             />
           </Form.Item>
         </Col>
