@@ -245,7 +245,7 @@ const useConfig = () => {
     siteEnabledSAML: false,
     siteUseProdLock: false,
     siteUseStagingBay: false,
-    siteListPickupLoad: false,
+    siteListPickupLoad: undefined,
     siteCmpyLoadOptionsDefault: '00000000',
     siteCmpyLoadOptionsEditable: '01001000',
     siteTripExpiryHours: null,

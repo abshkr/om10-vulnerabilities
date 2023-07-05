@@ -372,12 +372,14 @@ const LoadSchedules = () => {
   }, [siteSchdPaging]);
 
   useEffect(() => {
-    if (siteUseStagingBay) {
-      if (siteListPickupLoad !== undefined) {
+    if (siteUseStagingBay !== undefined && siteListPickupLoad !== undefined) {
+      if (siteUseStagingBay) {
         setPickupFlag(siteListPickupLoad);
+      } else {
+        setPickupFlag(false);
       }
-    } else {
-      setPickupFlag(false);
+      setPage(1);
+      setRunUrlFlag(!pagingFlag);
     }
   }, [siteUseStagingBay, siteListPickupLoad]);
 
@@ -513,7 +515,7 @@ const LoadSchedules = () => {
           t('fields.totalCount') + ': ' + count
         ) : (
           <DataDownloader
-            baseUrl={pageUrl}
+            baseUrl={mainUrl.replace('pgflag=N', 'pgflag=Y')}
             startVar={'start_num'}
             endVar={'end_num'}
             pageSize={500}
