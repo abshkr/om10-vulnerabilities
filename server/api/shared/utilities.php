@@ -629,6 +629,31 @@ class Utilities
         // write_log(sprintf("%s::%s() START, class:%s, method:%s",
         //     __CLASS__, __FUNCTION__, is_object($object) ? get_class($object) : gettype($object), $method),
         //     __FILE__, __LINE__);
+        /*
+        write_log("DB1111 error:" . "gettype('111')=".gettype('111')."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "gettype(111)=".gettype(111)."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "gettype('abc')=".gettype('abc')."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "gettype('11.1')=".gettype('11.1')."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "gettype(11.1)=".gettype(11.1)."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "is_int(111)=".is_int(111)."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "is_int('111')=".is_int('111')."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "is_int('abc')=".is_int('abc')."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "is_string('111')=".is_string('111')."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "is_string('abc')=".is_string('abc')."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "is_numeric('11.1')=".is_numeric('11.1')."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "is_numeric('a11.1')=".is_numeric('a11.1')."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "is_numeric(11.1)=".is_numeric(11.1)."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "intval(111)=".intval(111)."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "intval('111')=".intval('111')."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "intval('11.1')=".intval('11.1')."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "intval(11.1)=".intval(11.1)."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "intval('abc')=".intval('abc')."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "floatval(111)=".floatval(111)."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "floatval('111')=".floatval('111')."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "floatval('11.1')=".floatval('11.1')."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "floatval(11.1)=".floatval(11.1)."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        write_log("DB1111 error:" . "floatval('abc')=".floatval('abc')."!!!",  __FILE__, __LINE__, LogLevel::ERROR);
+        */
 
         $num = 0;
         //while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS + OCI_RETURN_LOBS)) {
@@ -642,8 +667,10 @@ class Utilities
                 if (isset($object->BOOLEAN_FIELDS) &&
                     array_key_exists($key, $object->BOOLEAN_FIELDS)) {
                     // write_log("getit", __FILE__, __LINE__);
-                    if ($value > 0 || $value === 1 || $value === 'T' || $value === 'Y' ||
-                        $value === 't' || $value === 'y') {
+                    // the value could be an integer or a string
+                    // need do special handling in PHP 8
+                    if ((is_numeric($value) && (intval($value) > 0 || intval($value) === 1))
+                        || $value === 'T' || $value === 'Y' ||  $value === 't' || $value === 'y') {
                         $base_item[$lower_key] = true;
                     } else {
                         $base_item[$lower_key] = false;
