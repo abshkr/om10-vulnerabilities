@@ -386,4 +386,153 @@ class Area extends CommonClass
             }
         }
     }
+
+    /*
+        check the following records:
+
+        tanks (TANKS.TANK_LOCATION) - must do! because this column does not have the foreign key
+        equipment (TRANSP_EQUIP.EQPT_AREA)
+        physical printers (PRINTER.PRNTR_AREA)
+        personnel (PERM_OF_AREA.PERM_AREA and/or PERS_IN_AREA.PERL_ARA)
+        gates (GATE_RC.GATE_AREA)
+        site access devices (ACCDEV.ADV_AREA)  
+        access movements (ACCESS_MOVEMENT.ACM_FROM_AREA_K and/or ACCESS_MOVEMENT.ACM_TO_AREA_K)  
+    */
+
+    // check if the area has been used by tanks
+    //    TANKS         TANK_LOCATION
+    public function check_area_tanks()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM TANKS 
+            WHERE (TANK_LOCATION=:area_id OR (TANK_LOCATION IN (SELECT AREA_NAME FROM AREA_RC WHERE AREA_K=:area_id)))
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':area_id', $this->area_id);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    // check if the area has been used by access devices
+    //    ACCDEV	4	ADV_AREA
+    public function check_area_devices()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM ACCDEV WHERE ADV_AREA=:area_id
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':area_id', $this->area_id);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    // check if the area has been used by gates
+    //    GATE_RC	3	GATE_AREA
+    public function check_area_gates()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM GATE_RC WHERE GATE_AREA=:area_id
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':area_id', $this->area_id);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    // check if the area has been used by printers
+    //    PRINTER	4	PRNTR_AREA
+    public function check_area_printers()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM PRINTER WHERE PRNTR_AREA=:area_id
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':area_id', $this->area_id);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    // check if the area has been used by equipment
+    //    TRANSP_EQUIP	13	EQPT_AREA
+    public function check_area_trailers()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM TRANSP_EQUIP WHERE EQPT_AREA=:area_id
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':area_id', $this->area_id);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    // check if the area has been used by personnel
+    //    PERM_OF_AREA	2	PERM_AREA
+    //    PERS_IN_AREA	2	PERL_ARA
+    public function check_area_persons()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT 
+            FROM (
+                SELECT distinct PERSON
+                FROM (
+                    SELECT PERL_PSN as PERSON FROM PERS_IN_AREA WHERE PERL_ARA=:area_id
+                    UNION ALL 
+                    SELECT PERM_PSN as PERSON FROM PERM_OF_AREA WHERE PERM_AREA=:area_id
+                )
+            )
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':area_id', $this->area_id);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    // check if the area has been used by access movements
+    //    ACCESS_MOVEMENT		ACM_FROM_AREA_K
+    //    ACCESS_MOVEMENT		ACM_TO_AREA_K
+    public function check_area_movements()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT FROM ACCESS_MOVEMENT WHERE ACM_FROM_AREA_K=:area_id OR ACM_TO_AREA_K=:area_id
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':area_id', $this->area_id);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
 }
