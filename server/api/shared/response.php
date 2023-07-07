@@ -458,8 +458,20 @@ function response($case_name, $default = null, $params = null)
     // write_log(sprintf("lang:%s, case:%s, value:%s", $lang, $case_name, $case_response_map[$case_name][$lang]),
     //     __FILE__, __LINE__);
 
-    return vsprintf($case_response_map[$case_name][$lang], $params);
-    // return $case_response_map[$case_name][$lang];
+    /* try {
+        $tmpp = vsprintf($case_response_map[$case_name][$lang], $params);
+    } catch (Exception $e) {
+        //write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
+        write_log(sprintf("%s::%s() STARTaaa, class:%s, method:%s",
+            __CLASS__, __FUNCTION__, $class, $method),
+            __FILE__, __LINE__);
+    } */
+
+    if (isset($params) && is_array($params) && count($params) > 0) {
+        return vsprintf($case_response_map[$case_name][$lang], $params);
+    } else {
+        return $case_response_map[$case_name][$lang];
+    }
 }
 
 //Reponse type with multiple lang support
