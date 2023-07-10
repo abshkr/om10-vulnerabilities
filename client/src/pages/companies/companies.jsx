@@ -71,7 +71,7 @@ const Companies = () => {
         {t('operations.refresh')}
       </Button>
       <Download data={payload?.records} isLoading={isValidating} columns={fields} />
-      <Button
+      {/* <Button
         type="primary"
         icon={<FormOutlined />}
         loading={isValidating}
@@ -80,8 +80,8 @@ const Companies = () => {
         disabled={!currentCmpy || !auth.canUpdate}
       >
         {t('operations.specialAction')}
-      </Button>
-      {siteCompanyRelationAllowed ? (
+      </Button> */}
+      {/* siteCompanyRelationAllowed ? (
         <Button
           type="primary"
           icon={<ApiOutlined />}
@@ -92,7 +92,7 @@ const Companies = () => {
         >
           {t('operations.companyRelation')}
         </Button>
-      ) : null}
+      ) : null */}
       <Button
         type="primary"
         icon={<PlusOutlined />}
