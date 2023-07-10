@@ -99,7 +99,7 @@ const DataDownloader = ({
         endPos = startPos + size - 1;
         startPosition.current = startPos;
         endPosition.current = endPos;
-        if (startPos >= sum) {
+        if (startPos > sum) {
           break;
         }
       }
