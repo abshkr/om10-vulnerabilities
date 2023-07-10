@@ -14,7 +14,14 @@ $db = $database->getConnection();
 // initialize object
 $idassign = new Tanker($db);
 
-$tnkr_code = (isset($_GET["tnkr_code"]) ? $_GET["tnkr_code"] : null);
+// this is an object if it is not null
+$postdata = json_decode(file_get_contents("php://input"));
+if ($postdata) {
+    // echo gettype($postdata).'.........'.print_r($postdata, TRUE);
+    $tnkr_code = (isset($postdata->tnkr_code) ? $postdata->tnkr_code : null);
+} else {
+    $tnkr_code = (isset($_GET["tnkr_code"]) ? $_GET["tnkr_code"] : null);
+}
 if (!isset($tnkr_code)) {
     http_response_code(400);
     echo json_encode(array("message" => "Unable to get tanker compositon. Data is incomplete."));

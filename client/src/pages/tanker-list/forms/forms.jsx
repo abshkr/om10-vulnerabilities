@@ -405,7 +405,8 @@ const FormModal = ({
       centered: true,
       onOk: async () => {
         api
-          .post(`${TANKER_LIST.UNLOCK_ALL}?tnkr_code=${value.tnkr_code}`)
+          // .post(`${TANKER_LIST.UNLOCK_ALL}?tnkr_code=${value.tnkr_code}`)
+          .post(TANKER_LIST.UNLOCK_ALL, { tnkr_code: value.tnkr_code })
           .then((response) => {
             onComplete(value.tnkr_code);
 
