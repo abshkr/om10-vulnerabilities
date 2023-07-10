@@ -29,6 +29,18 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   const { resetFields } = form;
 
+  const checkLogicalPrinter = async (company, usage, printer) => {
+    const results = await api.post(LOGICAL_PRINTERS.CHECK, {
+      prt_cmpy: company,
+      prt_usage: usage,
+      prt_printer: printer,
+    });
+
+    const existed = _.toNumber(results?.data?.records?.[0]?.cnt) > 0;
+
+    return existed;
+  };
+
   const onComplete = () => {
     handleFormState(false, null);
     mutate(LOGICAL_PRINTERS.READ);
@@ -36,6 +48,26 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   const onFinish = async () => {
     const values = await form.validateFields();
+
+    const prt_target = values?.prt_printer;
+    if (!IS_CREATING) {
+      values.prt_new = values?.prt_printer;
+      values.prt_printer = value?.prt_printer;
+    }
+
+    const existed = await checkLogicalPrinter(values?.prt_cmpy, values?.prt_usage, prt_target);
+    if (existed) {
+      let txt = `"${t('fields.company')}: ${values?.prt_cmpy}, ${t('fields.usage')}: ${
+        values?.prt_usage
+      }, ${t('fields.printer')}: ${prt_target}"`;
+      let notes = t('descriptions.alreadyExistsRecord');
+      notes = notes.replace('[[PKEY]]', txt);
+      notification.error({
+        message: t('messages.validationFailed'),
+        description: notes,
+      });
+      return;
+    }
 
     Modal.confirm({
       title: IS_CREATING ? t('prompts.create') : t('prompts.update'),
@@ -111,7 +143,6 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
       destroyOnClose={true}
-      forceRender
       mask={IS_CREATING}
       placement="right"
       width="30vw"

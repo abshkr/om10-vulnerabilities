@@ -1,4 +1,5 @@
 export const READ = '/api/pages/logical_printer/read.php';
+export const CHECK = '/api/pages/logical_printer/check_logical_printer.php';
 export const USAGES = '/api/pages/logical_printer/usages.php';
 export const COMPANYS = '/api/pages/logical_printer/companys.php';
 export const PRINTERS = '/api/pages/logical_printer/printers.php';
