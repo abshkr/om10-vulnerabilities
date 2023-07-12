@@ -77,7 +77,12 @@ class OndemandReport extends CommonClass
 
     public function create_report()
     {
-        write_log(__METHOD__ . " START." . __FILE__, __LINE__);
+        write_log(__METHOD__ . " START.", __FILE__, __LINE__);
+
+        if (!file_exists($_SERVER['DOCUMENT_ROOT'] . "/reports")) {
+            mkdir($_SERVER['DOCUMENT_ROOT'] . "/reports");
+        }
+        
         $rpt_file = rawurlencode(strip_tags($this->report));
         $query = "
             SELECT ARGUMENT_NAME, ARGUMENT_TYPE, REPORT_FILES.JASPER_FILE, LANG_ID
@@ -123,11 +128,7 @@ class OndemandReport extends CommonClass
             } else {
                 $lowercase = strtolower($filter);
                 if (isset($this->$lowercase)) {
-                    $params_str .= " " . $filter . ":" . $this->$lowercase;
-                } else {
-                    if ($filter_type != "LIST") {
-                        $params_str .= " \"" . $filter . ":%\"";
-                    }
+                    $params_str .= " " . $filter . ":\"" . $this->$lowercase . "\"";
                 }
             }
         }
@@ -135,7 +136,7 @@ class OndemandReport extends CommonClass
         if ($lang == "CHN") {
             $params_str .= " REPORT_LOCALE:zh_CN ";
         }
-
+        
         //Sample: ./JReport.sh /usr/omega/bin/jasper/Carr_Loadings.jasper /var/www/htdocs/reports/1636338933ANYcarr_loadings_e.pdf pdf CARRIER_CODE:%START_DATE:2021-10-24 13:28:28END_DATE:2021-11-08 13:28:28
         $jasper_file = $bin . "/jasper/" . $jasper_file;
         if (!file_exists($jasper_file)) {
