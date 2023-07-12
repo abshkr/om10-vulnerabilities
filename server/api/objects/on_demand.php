@@ -78,81 +78,90 @@ class OndemandReport extends CommonClass
     public function create_report()
     {
         write_log(__METHOD__ . " START." . __FILE__, __LINE__);
+        $rpt_file = rawurlencode(strip_tags($this->report));
+        $query = "
+            SELECT ARGUMENT_NAME, ARGUMENT_TYPE, REPORT_FILES.JASPER_FILE, LANG_ID
+            FROM REPORT_FILTER, REPORT_FILES
+            WHERE REPORT_FILTER.JASPER_FILE = REPORT_FILES.JASPER_FILE AND RPT_FILE = :rpt_file 
+            ORDER BY ARGUMENT_SEQ
+            ";
 
-        /**
-         * Check if DOCUMENT_ROOT/reports and phpwrapper exist. If not, create it
-         * This is to avoid do any backend change. 
-        */
-        if (!file_exists($_SERVER['DOCUMENT_ROOT'] . "/reports")) {
-            mkdir($_SERVER['DOCUMENT_ROOT'] . "/reports");
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':rpt_file', $rpt_file);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return -1;
         }
 
-        if (!file_exists($_SERVER['DOCUMENT_ROOT'] . "/phpwrapper")) {
-            mkdir($_SERVER['DOCUMENT_ROOT'] . "/phpwrapper");
+        $bin = "/usr/omega/bin/";
+        if (isset($_SERVER["BIN"])) {
+            $bin = $_SERVER["BIN"];
         }
 
-        if (!isset($this->company)) {
-            if (isset($this->supplier)) {
-                $this->company = $this->supplier;
+        if (strpos($this->report, ".jrxml") !== false) {
+            $this->report = substr($this->report, 0, strpos($this->report, ".jrxml"));
+        }
+        $output_file = $_SERVER['DOCUMENT_ROOT'] . "/reports/" . $this->report . "." . $this->output;
+
+        $params_str = "";
+        $jasper_file = "";
+        $lang = "ENG";
+        while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            $filter = $row['ARGUMENT_NAME'];
+            $filter_type = $row['ARGUMENT_TYPE'];
+            $jasper_file = $row['JASPER_FILE'];
+            $lang = $row['LANG_ID'];
+            if ($filter === "START_DATE") {
+                $params_str .= sprintf(" START_DATE:'%s'", $this->start_date);
+            } else if ($filter === "END_DATE") {
+                $params_str .= sprintf(" END_DATE:'%s'", $this->end_date);
+            } else if ($filter === "START_NR") {
+                $params_str .= sprintf(" START_NR:'%s'", $this->start_date);
+            } else if ($filter === "END_NR") {
+                $params_str .= sprintf(" END_NR:'%s'", $this->end_date);
             } else {
-                $this->company = "";
+                $lowercase = strtolower($filter);
+                if (isset($this->$lowercase)) {
+                    $params_str .= " " . $filter . ":" . $this->$lowercase;
+                } else {
+                    if ($filter_type != "LIST") {
+                        $params_str .= " \"" . $filter . ":%\"";
+                    }
+                }
             }
-        }
-
-        if (!isset($this->carrier)) {
-            $this->carrier = "";
-        }
-
-        if (!isset($this->customer)) {
-            $this->customer = "";
-        }
-
-        if (!isset($this->terminal)) {
-            $this->terminal = "";
         }
         
-        $query_string = "output=" . $this->output . 
-            "&company=" . rawurlencode(strip_tags($this->company)) .
-            "&customer=" . rawurlencode(strip_tags($this->customer)) .
-            "&carrier=" . rawurlencode(strip_tags($this->carrier)) .
-            "&terminal=" . rawurlencode(strip_tags($this->terminal)) .
-            "&report=" . rawurlencode(strip_tags($this->report));
-        if (isset($this->start_date)) {
-            $query_string = $query_string . "&startdate=" . rawurlencode(strip_tags($this->start_date));
+        if ($lang == "CHN") {
+            $params_str .= " REPORT_LOCALE:zh_CN ";
         }
-        if (isset($this->end_date)) {
-            $query_string = $query_string . "&enddate=" . rawurlencode(strip_tags($this->end_date));
+
+        //Sample: ./JReport.sh /usr/omega/bin/jasper/Carr_Loadings.jasper /var/www/htdocs/reports/1636338933ANYcarr_loadings_e.pdf pdf CARRIER_CODE:%START_DATE:2021-10-24 13:28:28END_DATE:2021-11-08 13:28:28
+        $jasper_file = $bin . "/jasper/" . $jasper_file;
+        if (!file_exists($jasper_file)) {
+            write_log(sprintf("jasper file %s does not exist", $jasper_file), __FILE__, __LINE__, LogLevel::ERROR);
+            $error = new EchoSchema(400, response("__JASPER_FILE_NOT_EXIST__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
         }
- 
-        $cgi_result = Utilities::http_cgi_invoke("cgi-bin/en/rpt_adm/jasper_reports.cgi", $query_string);
-        $xml = simplexml_load_string($cgi_result);
-        // echo json_encode($xml, JSON_PRETTY_PRINT);
-        $json = json_encode($xml);
-        $array = json_decode($json, TRUE);
-        if ($array['result'] === 'OK') {
-            write_log("Jasper report created. report:" . $array['report'] . ", created:" . $array['filepath'], 
-                __FILE__, __LINE__, LogLevel::INFO);
 
-            if (strpos($array['filepath'], "temp_ondemand.php") !== false && !file_exists("../amfservices")) {
-                $content = file_get_contents($_SERVER['DOCUMENT_ROOT'] . "/reports//" . $array['filepath']);
-                // write_log($content, __FILE__, __LINE__);
-                $pos_start = strpos($content, '@readfile(');
-                $pos_end = strpos($content, ');?>');
-                $report_file = substr($content, $pos_start + strlen("@readfile('../"), $pos_end - $pos_start - 1 - strlen("@readfile('../"));
-                write_log($report_file, __FILE__, __LINE__);
-                $jasper_result = array(
-                    'result' => $array['result'],
-                    'filepath' => $report_file);
-            } else {
-                $jasper_result = array(
-                    'result' => $array['result'],
-                    'filepath' => JASPERREPORT_DIR . $array['filepath']);
-            }
+        $script_path = $bin . "/JReport.sh";
+        $jreport_cmd = $script_path . " " . $jasper_file . " " . $output_file . " " . $this->output . " " .  $params_str;
+        
+        write_log(sprintf("to run %s", $jreport_cmd), __FILE__, __LINE__, LogLevel::INFO);
+        foreach ($_SERVER as $env_key => $env_value) {
+            putenv("$env_key=$env_value");
+        }
 
+        $output = shell_exec($jreport_cmd);
+        // write_log(sprintf("result %s", $output), __FILE__, __LINE__, LogLevel::INFO);
+        if (strpos($output, "Created file")) {
+            $jasper_result = array(
+                'result' => $array['result'],
+                'filepath' => 'reports/' . $this->report . '.' . $this->output);
             echo json_encode($jasper_result, JSON_PRETTY_PRINT);
         } else {
-            write_log("Jasper report creation failed. report:" . $array['report'] . ", created:" . $array['filepath'], 
-                __FILE__, __LINE__, LogLevel::ERROR);
+            write_log("Jasper report creation failed. output: " . $output, __FILE__, __LINE__, LogLevel::ERROR);
             $error = new EchoSchema(400, response("__CGI_FAILED__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
         }
