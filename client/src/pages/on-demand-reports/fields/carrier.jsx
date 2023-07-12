@@ -5,14 +5,16 @@ import { Form, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { ON_DEMAND_REPORTS } from 'api';
 
-const Carrier = ({ form }) => {
+const Carrier = ({ form, enabled }) => {
   const { data: options, isValidating } = useSWR(ON_DEMAND_REPORTS.CARRIERS);
 
   const { t } = useTranslation();
 
   const validate = (rule, input) => {
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.carrier')}`);
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.select')} ─ ${t('fields.carrier')}`);
+      }
     }
 
     return Promise.resolve();
@@ -27,13 +29,14 @@ const Carrier = ({ form }) => {
       form={form}
       name="carrier"
       label={t('fields.carrier')}
-      rules={[{ required: true, validator: validate }]}
+      rules={[{ required: enabled, validator: validate }]}
     >
       <Select
         dropdownMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch
+        disabled={!enabled}
         // onChange={onCarrierChange}
         optionFilterProp="children"
         placeholder={t('placeholder.selectCarrier')}

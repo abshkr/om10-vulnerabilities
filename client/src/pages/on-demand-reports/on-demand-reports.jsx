@@ -13,7 +13,7 @@ import api, { ON_DEMAND_REPORTS } from 'api';
 import { SETTINGS } from '../../constants';
 import columns from './columns';
 import auth from '../../auth';
-import { Carrier, Customer, Terminal } from './fields';
+import { Carrier, Customer, Employer, Drawer, Product, Terminal } from './fields';
 
 const OnDemandReports = () => {
   const { t } = useTranslation();
@@ -23,10 +23,15 @@ const OnDemandReports = () => {
 
   const [loading, setLoading] = useState(false);
   const [supplier, setSupplier] = useState(null);
+  const [drawer, setDrawer] = useState(null);
+  const [drawerProducts, setDrawerProducts] = useState([]);
   const [reports, setReports] = useState(null);
   const [usefolioRange, setUseFolio] = useState(false);
   const [carrierFilter, setCarrierFilter] = useState(false);
   const [customerFilter, setCustomerFilter] = useState(false);
+  const [employerFilter, setEmployerFilter] = useState(false);
+  const [drawerFilter, setDrawerFilter] = useState(false);
+  const [productFilter, setProductFilter] = useState(false);
   const [terminalFilter, setTerminalFilter] = useState(false);
   const [closeouts, setCloseouts] = useState([]);
   const [fromDatePicker, setFromDatePicker] = useState(true);
@@ -74,7 +79,19 @@ const OnDemandReports = () => {
     setUseFolio(find?.folio_number_parameters);
     setCustomerFilter(false);
     setCarrierFilter(false);
+    setEmployerFilter(false);
+    setDrawerFilter(false);
+    setProductFilter(false);
     setTerminalFilter(false);
+    setDrawer(null);
+    setDrawerProducts([]);
+    form.setFieldsValue({
+      carrier: undefined,
+      customer: undefined,
+      employer: undefined,
+      drawer: undefined,
+      products: [],
+    });
 
     api
       .get(ON_DEMAND_REPORTS.FILTERS, {
@@ -84,8 +101,23 @@ const OnDemandReports = () => {
       })
       .then((res) => {
         const filters = res.data.records;
-        
-        //If there are CARRIER_CODE or CUST_CODE in filter. Skip first 2 filters
+
+        //If there are CARRIER_CODE or CUST_CODE in filter. Skip first 2 filters ???
+        /*
+        results of "select unique ARGUMENT_NAME from report_filter;"
+          DRAWER_CODE
+          START_NR
+          CARR_CODE
+          CARRIER_CODE
+          END_NR
+          END_DATE
+          PRODUCTS
+          START_DATE
+          CMPY_CODE
+          SUPP_CODE
+          SUPPLIER_CODE
+          CUST_CODE        
+        */
         if (filters) {
           for (let i = 0; i < filters.length; i++) {
             if (filters[i] === 'CUST_CODE' || filters[i] === 'CUSTOMER_CODE') {
@@ -96,8 +128,20 @@ const OnDemandReports = () => {
               setCarrierFilter(true);
             }
 
+            if (filters[i] === 'EMPL_CODE' || filters[i] === 'EMPLOYER_CODE') {
+              setEmployerFilter(true);
+            }
+
+            if (filters[i] === 'DRAW_CODE' || filters[i] === 'DRAWER_CODE') {
+              setDrawerFilter(true);
+            }
+
+            if (filters[i] === 'PRODUCTS' || filters[i] === 'PROD_CODE' || filters[i] === 'PRODUCT_CODE') {
+              setProductFilter(true);
+            }
+
             if (filters[i] === 'TERMINAL') {
-              console.log('setTerminalFilter true')
+              console.log('setTerminalFilter true');
               setTerminalFilter(true);
             }
           }
@@ -107,25 +151,55 @@ const OnDemandReports = () => {
 
   const onFinish = (values) => {
     let payload = null;
+    // new parameters : carr_code, cust_code, employer_code, drawer_code, and products
+    // for products, turn array into "'drawer_code,product_code','drawer_code,product_code',...""
+    let strProducts = '';
+    _.forEach(drawerProducts, (o) => {
+      if (strProducts.length > 0) {
+        strProducts += ',';
+      }
+      strProducts += `'${o?.prod_cmpy},${o?.prod_code}'`;
+    });
     if (usefolioRange) {
       payload = {
         ...values,
         start_date: values.close_out_from,
         end_date: values.close_out_to,
-        carrier: values?.carrier === 'ANY' ? null : values?.carrier,
-        customer: values?.customer === 'ANY' ? null : values?.customer,
+        // carrier: values?.carrier === 'ANY' ? null : values?.carrier,
+        // customer: values?.customer === 'ANY' ? null : values?.customer,
+        carrier: undefined,
+        customer: undefined,
+        employer: undefined,
+        drawer: undefined,
+        carr_code: values?.carrier === 'ANY' || !values?.carrier ? null : values?.carrier,
+        cust_code: values?.customer === 'ANY' || !values?.customer ? null : values?.customer,
+        employer_code: values?.employer === 'ANY' || !values?.employer ? null : values?.employer,
+        drawer_code: values?.drawer === 'ANY' || !values?.drawer ? null : values?.drawer,
+        products: strProducts.length > 0 ? strProducts : null,
       };
     } else {
       payload = {
         ...values,
         start_date: start,
         end_date: end,
-        carrier: values?.carrier === 'ANY' ? null : values?.carrier,
-        customer: values?.customer === 'ANY' ? null : values?.customer,
+        // carrier: values?.carrier === 'ANY' ? null : values?.carrier,
+        // customer: values?.customer === 'ANY' ? null : values?.customer,
+        carrier: undefined,
+        customer: undefined,
+        employer: undefined,
+        drawer: undefined,
+        carr_code: values?.carrier === 'ANY' || !values?.carrier ? null : values?.carrier,
+        cust_code: values?.customer === 'ANY' || !values?.customer ? null : values?.customer,
+        employer_code: values?.employer === 'ANY' || !values?.employer ? null : values?.employer,
+        drawer_code: values?.drawer === 'ANY' || !values?.drawer ? null : values?.drawer,
+        products: strProducts.length > 0 ? strProducts : null,
       };
     }
 
     setLoading(true);
+
+    // console.log('..........ondemand', form.getFieldValue("products"), drawerProducts, strProducts, payload);
+    // return;
 
     api
       .post(ON_DEMAND_REPORTS.CREATE, payload)
@@ -250,7 +324,7 @@ const OnDemandReports = () => {
           </Select>
         </Form.Item>
 
-        {(carrierFilter || customerFilter || terminalFilter) && (
+        {/* (carrierFilter || customerFilter || terminalFilter) && (
           <Row gutter={[8, 8]}>
             {carrierFilter && (
               <Col span={8}>
@@ -270,7 +344,28 @@ const OnDemandReports = () => {
               </Col>
             )}
           </Row>
-        )}
+            ) */}
+
+        <Row gutter={[8, 8]}>
+          <Col span={6}>
+            <Carrier form={form} enabled={carrierFilter} />
+          </Col>
+          <Col span={6}>
+            <Customer form={form} enabled={customerFilter} />
+          </Col>
+          <Col span={6}>
+            <Employer form={form} enabled={employerFilter} />
+          </Col>
+          <Col span={6}>
+            <Drawer form={form} enabled={drawerFilter || productFilter} onChange={setDrawer} />
+          </Col>
+        </Row>
+
+        <Row gutter={[8, 8]}>
+          <Col span={24}>
+            <Product form={form} supplier={drawer} enabled={productFilter} onChange={setDrawerProducts} />
+          </Col>
+        </Row>
 
         <Form.Item
           name="dateRange"

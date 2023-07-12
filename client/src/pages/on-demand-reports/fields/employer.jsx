@@ -5,26 +5,30 @@ import { Form, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { ON_DEMAND_REPORTS } from 'api';
 
-const Customer = ({ form, enabled }) => {
-  const { data: options, isValidating } = useSWR(ON_DEMAND_REPORTS.CUSTOMERS);
+const Employer = ({ form, enabled }) => {
+  const { data: options, isValidating } = useSWR(ON_DEMAND_REPORTS.EMPLOYERS);
 
   const { t } = useTranslation();
 
   const validate = (rule, input) => {
     if (rule.required) {
       if (input === '' || !input) {
-        return Promise.reject(`${t('validate.select')} ─ ${t('fields.customer')}`);
+        return Promise.reject(`${t('validate.select')} ─ ${t('fields.employer')}`);
       }
     }
 
     return Promise.resolve();
   };
 
+  // const onEmployerChange = (value) => {
+  //   onChange(value);
+  // };
+
   return (
     <Form.Item
       form={form}
-      name="customer"
-      label={t('fields.customer')}
+      name="employer"
+      label={t('fields.employer')}
       rules={[{ required: enabled, validator: validate }]}
     >
       <Select
@@ -33,8 +37,9 @@ const Customer = ({ form, enabled }) => {
         loading={isValidating}
         showSearch
         disabled={!enabled}
+        // onChange={onEmployerChange}
         optionFilterProp="children"
-        placeholder={t('placeholder.selectCustomer')}
+        placeholder={t('placeholder.selectEmployer')}
         filterOption={(value, option) =>
           option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
         }
@@ -49,4 +54,4 @@ const Customer = ({ form, enabled }) => {
   );
 };
 
-export default Customer;
+export default Employer;

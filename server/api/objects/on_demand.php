@@ -203,20 +203,8 @@ class OndemandReport extends CommonClass
     // get all drawers
     public function drawers()
     {
-        $query = "
-            SELECT CMPY_CODE,
-                CMPY_NAME,
-                CMPY_CODE||' - '||CMPY_NAME AS CMPY_DESC
-            FROM
-                COMPANYS
-            WHERE BITAND(CMPY_TYPE, POWER(2, 4)) <> 0
-            ORDER BY CMPY_CODE";
-        $stmt = oci_parse($this->conn, $query);
-        if (oci_execute($stmt, $this->commit_mode)) {
-            return $stmt;
-        } else {
-            return null;
-        }
+        $serv = new CompanyService($this->conn);
+        return $serv->drawers($plus_any = true);
     }
 
     // get all carriers
@@ -224,40 +212,6 @@ class OndemandReport extends CommonClass
     {
         $serv = new CompanyService($this->conn);
         return $serv->carriers($plus_any = true);
-
-        // write_log(__METHOD__ . " START. is_manager:" . $this->is_manager, __FILE__, __LINE__);
-
-        // $query = " SELECT 'ANY' CMPY_CODE, 'ALL' CMPY_NAME, 'ANY - ALL' CMPY_DESC FROM DUAL UNION ";
-        // if ($this->is_manager) {
-        //     $query .= "
-        //         SELECT CMPY_CODE,
-        //             CMPY_NAME,
-        //             CMPY_CODE||' - '||CMPY_NAME AS CMPY_DESC
-        //         FROM
-        //             COMPANYS
-        //         WHERE BITAND(CMPY_TYPE, POWER(2, 2)) <> 0
-        //         ORDER BY CMPY_NAME DESC";
-        //     $stmt = oci_parse($this->conn, $query);
-        // } else {
-        //     // CHILD_CMPY_ROLE == 2 means carrier
-        //     $query .= "
-        //         SELECT CMPY_CODE,
-        //             CMPY_NAME,
-        //             CMPY_CODE||' - '||CMPY_NAME AS CMPY_DESC
-        //         FROM COMPANY_RELATION, COMPANYS
-        //         WHERE PARENT_CMPY_CODE = :curr_cmpy
-        //             AND CHILD_CMPY_ROLE = 2
-        //             AND CHILD_CMPY_CODE = COMPANYS.CMPY_CODE
-        //             ORDER BY CMPY_NAME DESC";
-        //     $stmt = oci_parse($this->conn, $query);
-        //     oci_bind_by_name($stmt, ':curr_cmpy', $this->curr_cmpy);
-        // }
-
-        // if (oci_execute($stmt, $this->commit_mode)) {
-        //     return $stmt;
-        // } else {
-        //     return null;
-        // }
     }
 
     // get all customers
@@ -265,6 +219,47 @@ class OndemandReport extends CommonClass
     {
         $serv = new CompanyService($this->conn);
         return $serv->customers($plus_any = true);
+    }
+
+    // get all employers
+    public function employers()
+    {
+        $serv = new CompanyService($this->conn);
+        return $serv->employers($plus_any = true);
+    }
+
+    public function products()
+    {
+        // if (!isset($this->supplier_code) || $this->supplier_code == "ANY" || $this->supplier_code == "undefined" || $this->supplier_code == "null") {
+        //     $this->supplier_code = "-1";
+        // }
+        if (isset($this->supplier_code) && $this->supplier_code == "ANY") {
+            $this->supplier_code = "-1";
+        }
+
+        $query = "
+            SELECT 
+                PROD_CODE, 
+                PROD_NAME,
+                PROD_CMPY,
+                CMPY_CODE SUPPLIER_CODE,
+                CMPY_NAME SUPPLIER_NAME
+            FROM PRODUCTS, COMPANYS
+            WHERE 
+                PRODUCTS.PROD_CMPY = COMPANYS.CMPY_CODE
+                AND COMPANYS.CMPY_CODE != 'BaSePrOd'
+                AND ('-1' = :cmpy_code OR COMPANYS.CMPY_CODE = :cmpy_code)
+            ORDER BY PROD_CODE";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':cmpy_code', $this->supplier_code);
+        
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
     }
 
     // get all drawers

@@ -5,14 +5,16 @@ import { Form, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { ON_DEMAND_REPORTS } from 'api';
 
-const Terminal = ({ form }) => {
+const Terminal = ({ form, enabled }) => {
   const { data: options, isValidating } = useSWR(ON_DEMAND_REPORTS.TERMINALS);
 
   const { t } = useTranslation();
 
   const validate = (rule, input) => {
-    if (input === '' || !input) {
-      return Promise.reject(`${t('validate.select')} ─ ${t('fields.terminal')}`);
+    if (rule.required) {
+      if (input === '' || !input) {
+        return Promise.reject(`${t('validate.select')} ─ ${t('fields.terminal')}`);
+      }
     }
 
     return Promise.resolve();
@@ -27,13 +29,14 @@ const Terminal = ({ form }) => {
       form={form}
       name="terminal"
       label={t('fields.terminal')}
-      rules={[{ required: true, validator: validate }]}
+      rules={[{ required: enabled, validator: validate }]}
     >
       <Select
         dropdownMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch
+        disabled={!enabled}
         // onChange={onCarrierChange}
         optionFilterProp="children"
         placeholder={t('placeholder.selectTerminal')}
