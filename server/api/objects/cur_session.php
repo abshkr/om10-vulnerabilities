@@ -31,44 +31,38 @@ class CurSession extends CommonClass
 
         $alarms = array();
 
-        $query = "SELECT MAX(SEQ) AS LAST FROM GUI_SITE_JOURNAL WHERE GEN_DATE > SYSDATE - 1";
-        $stmt = oci_parse($this->conn, $query);
-        if (!oci_execute($stmt, $this->commit_mode)) {
-            $e = oci_error($stmt);
-            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
-            return;
-        }
-        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
-        $last_sequence = $row['LAST'];
-
-        if (isset($this->prev_sequence) && $this->prev_sequence > 0) {
-            $prev_sequence = $this->prev_sequence;
-        } else {
-            if (isset($_SESSION["ALARM_LAST_SEQUENCE"])) {
-                $prev_sequence = $_SESSION["ALARM_LAST_SEQUENCE"];
-            } else {
-                $prev_sequence = $last_sequence;
-            }
-            $_SESSION["ALARM_LAST_SEQUENCE"] = $last_sequence;
-        }
-        
-        if ($prev_sequence != $last_sequence) {
-            $lang = Utilities::getCurrLang();
-            $query = "SELECT * FROM GUI_SITE_JOURNAL 
-                WHERE SEQ > :prev_sequence AND MSG_EVENT = 'ALARM' AND REGION_CODE = :lang
-                ORDER BY GEN_DATE ASC";
+        $start_time = null;
+        $retrieve = false;
+        if (!isset($_SESSION["ALARM_START_DATETIME"])) {
+            $query = "SELECT TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS') AS LAST FROM DUAL";
             $stmt = oci_parse($this->conn, $query);
-            oci_bind_by_name($stmt, ':prev_sequence', $prev_sequence);
-            oci_bind_by_name($stmt, ':lang', $lang);
             if (!oci_execute($stmt, $this->commit_mode)) {
                 $e = oci_error($stmt);
                 write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
                 return;
             }
-
-            Utilities::retrieve($alarms, $this, $stmt, $method=__FUNCTION__);
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+            $start_time = $row['LAST'];
+            $_SESSION["ALARM_START_DATETIME"] = $start_time;
+        } else {
+            $start_time = $_SESSION["ALARM_START_DATETIME"];
+        }
+        
+        $lang = Utilities::getCurrLang();
+        $query = "SELECT * FROM GUI_SITE_JOURNAL 
+            WHERE GEN_DATE > TO_DATE(:prev_sequence, 'YYYY-MM-DD HH24:MI:SS') AND MSG_EVENT = 'ALARM' AND REGION_CODE = :lang
+            ORDER BY GEN_DATE ASC";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':prev_sequence', $start_time);
+        oci_bind_by_name($stmt, ':lang', $lang);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return;
         }
 
+        Utilities::retrieve($alarms, $this, $stmt, $method=__FUNCTION__);   
+        
         $feature_array['alarms'] = $alarms;
         $feature_array['last_sequence'] = $last_sequence;
         $result = array();
