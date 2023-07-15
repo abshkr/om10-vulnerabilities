@@ -251,8 +251,8 @@ class ReportProfile extends CommonClass
             if (!isset($new[$item_key])) {
                 $jnl_data[0] = Utilities::getCurrPsn();
                 $jnl_data[1] = $module;
-                $jnl_data[2] = sprintf("area:%s", $this->area_k);
-                $jnl_data[3] = sprintf("gate:%s", $item_key);
+                $jnl_data[2] = sprintf("report:%s", $this->rpt_file);
+                $jnl_data[3] = sprintf("job id:%s", $item_key);
                 if (!$journal->jnlLogEvent(
                     Lookup::RECORD_DELETED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
                     $e = oci_error($stmt);
@@ -269,8 +269,8 @@ class ReportProfile extends CommonClass
             if (!isset($old[$item_key])) {
                 $jnl_data[0] = Utilities::getCurrPsn();
                 $jnl_data[1] = $module;
-                $jnl_data[2] = sprintf("area:%s", $this->area_k);
-                $jnl_data[3] = sprintf("gate:%s", $item_key);
+                $jnl_data[2] = sprintf("report:%s", $this->rpt_file);
+                $jnl_data[3] = sprintf("job id:%s", $item_key);
                 if (!$journal->jnlLogEvent(
                     Lookup::RECORD_ADDED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
                     $e = oci_error($stmt);
@@ -311,7 +311,11 @@ class ReportProfile extends CommonClass
                             PARAM3 = :param3,
                             PARAM4 = :param4,
                             PARAM5 = :param5,
-                            PARAM6 = :param6
+                            PARAM6 = :param6,
+                            PARAM7 = :param7,
+                            PARAM8 = :param8,
+                            PARAM9 = :param9,
+                            PARAM10 = :param10
                         WHERE JOB_ID = :job_id";
                     $stmt = oci_parse($this->conn, $query);
                     oci_bind_by_name($stmt, ':job_id', $item->job_id);
@@ -327,7 +331,11 @@ class ReportProfile extends CommonClass
                     oci_bind_by_name($stmt, ':param4', $item->param4);
                     oci_bind_by_name($stmt, ':param5', $item->param5);
                     oci_bind_by_name($stmt, ':param6', $item->param6);
-        
+                    oci_bind_by_name($stmt, ':param7', $item->param7);
+                    oci_bind_by_name($stmt, ':param8', $item->param8);
+                    oci_bind_by_name($stmt, ':param9', $item->param9);
+                    oci_bind_by_name($stmt, ':param10', $item->param10);
+               
                     if (!oci_execute($stmt, $this->commit_mode)) {
                         $e = oci_error($stmt);
                         write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
@@ -374,7 +382,11 @@ class ReportProfile extends CommonClass
                 PARAM3,
                 PARAM4,
                 PARAM5,
-                PARAM6
+                PARAM6,
+                PARAM7,
+                PARAM8,
+                PARAM9,
+                PARAM10
                 )
             VALUES (
                 :rpt_file,
@@ -392,7 +404,11 @@ class ReportProfile extends CommonClass
                 :param3,
                 :param4,
                 :param5,
-                :param6
+                :param6,
+                :param7,
+                :param8,
+                :param9,
+                :param10
             )";
             $stmt = oci_parse($this->conn, $query);
             oci_bind_by_name($stmt, ':rpt_file', $this->report_file);
@@ -409,6 +425,10 @@ class ReportProfile extends CommonClass
             oci_bind_by_name($stmt, ':param4', $item->param4);
             oci_bind_by_name($stmt, ':param5', $item->param5);
             oci_bind_by_name($stmt, ':param6', $item->param6);
+            oci_bind_by_name($stmt, ':param7', $item->param7);
+            oci_bind_by_name($stmt, ':param8', $item->param8);
+            oci_bind_by_name($stmt, ':param9', $item->param9);
+            oci_bind_by_name($stmt, ':param10', $item->param10);
             
             if (!oci_execute($stmt, $this->commit_mode)) {
                 $e = oci_error($stmt);
