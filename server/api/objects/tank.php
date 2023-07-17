@@ -902,4 +902,92 @@ class Tank extends CommonClass
         }
     }
 
+    public function get_tank_base()
+    {
+        $query = "
+            SELECT
+                BP.BASE_CODE,
+                BP.BASE_NAME,
+                BP.BASE_PIDX_CODE,
+                DECODE(BP.BASE_PROD_GROUP, 'NULL', '', BP.BASE_PROD_GROUP) AS BASE_PROD_GROUP,
+                BG.PGR_DESCRIPTION AS BASE_GROUP_NAME,
+                BP.BASE_CAT,
+                BC.BCLASS_DESC AS BASE_CLASS_DESC,
+                BP.BASE_RPT_TUNT,
+                BP.BASE_RPT_TEMP,
+                BP.BASE_DENS_LO,
+                BP.BASE_DENS_HI,
+                BP.BASE_COLOR,
+                DECODE(BP.BASE_CAT, 6, 1, 0) AS BASE_ADTV,
+                BP.BASE_CODE||' - '||BP.BASE_NAME AS BASE_TEXT,
+                BP.BASE_CODE||' - '||BP.BASE_NAME||' ('||BC.BCLASS_DESC||') ' AS BASE_DESC,
+                BC.BCLASS_DENS_LO AS BASE_CLASS_DENS_LO,
+                BC.BCLASS_DENS_HI AS BASE_CLASS_DENS_HI,
+                BC.BCLASS_VCF_ALG AS BASE_CLASS_VCF_ALG,
+                BC.BCLASS_TEMP_LO AS BASE_CLASS_TEMP_LO,
+                BC.BCLASS_TEMP_HI AS BASE_CLASS_TEMP_HI,
+                BP.BASE_PUB_DENS_STD,
+                BP.BASE_PRORATE_DENS,
+                BP.BASE_REF_TEMP,
+                BP.BASE_REF_TUNT,
+                BP.BASE_LIMIT_PRESET_HT,
+                BP.BASE_CORR_MTHD,
+                BP.BASE_REF_TEMP_SPEC,
+                BP.AFC_ENABLED,
+                BP.AFC_PRIORITY,
+                BP.BASE_STOCK_UNIT,
+                SUV.STOCK_UNIT_CODE AS BASE_STOCK_UNIT_CODE,
+                SUV.STOCK_UNIT_NAME AS BASE_STOCK_UNIT_NAME,
+                BP.BASE_GAINLOSS_UNIT,
+                GLUV.STOCK_UNIT_CODE AS BASE_GAINLOSS_UNIT_CODE,
+                GLUV.STOCK_UNIT_NAME AS BASE_GAINLOSS_UNIT_NAME,
+                UV.DESCRIPTION AS BASE_REF_TUNT_NAME,
+                CM.COMPENSATION_NAME AS BASE_CORR_MTHD_NAME,
+                RTS.REF_TEMP_SPEC_NAME AS BASE_REF_TEMP_SPEC_NAME
+            FROM
+                BASE_PRODS BP,
+                (
+                    SELECT
+                        BS.BCLASS_NO,
+                        NVL(BM.BCLASS_NAME, BS.BCLASS_DESC)           AS BCLASS_DESC,
+                        BS.BCLASS_DENS_LO,
+                        BS.BCLASS_DENS_HI,
+                        BS.BCLASS_VCF_ALG,
+                        BS.BCLASS_TEMP_LO,
+                        BS.BCLASS_TEMP_HI
+                    FROM BASECLASS BS,
+                        BCLASS_TYP BM
+                    WHERE BS.BCLASS_NO = BM.BCLASS_ID(+)
+                ) BC,
+                PRODUCT_GROUP BG,
+                STOCK_UNIT_VW SUV,
+                STOCK_UNIT_VW GLUV,
+                UNIT_SCALE_VW UV,
+                COMPENSATION_MTHD CM,
+                REF_TEMP_SPEC RTS
+            WHERE
+                ((SYS_CONTEXT('CONN_CONTEXT', 'CMPYCODE') IS NULL)
+                    OR (SYS_CONTEXT('CONN_CONTEXT', 'ISMANAGER') = 'Y')
+                    OR (SYS_CONTEXT('CONN_CONTEXT', 'ISMANAGER') IS NULL)
+                )
+                AND BP.BASE_CAT = BC.BCLASS_NO(+)
+                AND BP.BASE_PROD_GROUP = BG.PGR_CODE(+)
+                AND BP.BASE_STOCK_UNIT = SUV.STOCK_UNIT_ID(+)
+                AND BP.BASE_GAINLOSS_UNIT = GLUV.STOCK_UNIT_ID(+)
+                AND BP.BASE_REF_TUNT = UV.UNIT_ID(+)
+                AND BP.BASE_CORR_MTHD = CM.COMPENSATION_ID(+)
+                AND BP.BASE_REF_TEMP_SPEC = RTS.REF_TEMP_SPEC_ID(+)
+                AND BP.BASE_CODE IN (SELECT TANK_BASE FROM TANKS WHERE TANK_CODE=:tank_code)
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':tank_code', $this->tank_code);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
 }

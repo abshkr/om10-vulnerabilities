@@ -354,6 +354,8 @@
     "spmOnTankBaseChangeOwnershipNotEnough": "警告: 起源供应商[{{FROM_SUPPLIER}}]没有足够的起源基础油品[{{FROM_BASE}}]的所有权库存 (所有权库存: {{OWNER_STOCK}}, 油罐库存: {{TANK_STOCK}})。",
     "spmOnTankBaseChangeGroup": "警告: 当前油罐{{TANK}}将会从油罐组{{TKGRP}}移除。之后您需要手工操作将其加回合适的油罐组。",
     "spmOnTankBaseChangeGroupActive": "当前油罐{{TANK}}在油罐组{{TKGRP}}中处以活跃状态，因此其基础油品不可修改！请先将其活跃状态从所属油罐组去除。",
+    "spmOnTankBaseChangeTankBaseDB1": "您虽然没有修改油罐{{TANK}}中原有的基础油品{{ORIG_BASE}}，但是该基础油品已被其他用户在数据库中改成{{CURR_BASE}}！为了不打破库存平衡，请刷新页面数据重新操作。",
+    "spmOnTankBaseChangeTankBaseDB2": "您将要把油罐{{TANK}}中原有的基础油品{{ORIG_BASE}}修改成{{NEW_BASE}}，但是该基础油品已被其他用户在数据库中改成{{CURR_BASE}}！为了不打破库存平衡，请刷新页面数据重新操作。",
     "stagingCmptOccupied": "组合提单{{TRIP}}的油仓{{CMPT}}目前已被下述子单据占据: ",
     "stagingPreScheduleStaged": "下述油仓提单{{SRC_TRIP}}的油仓{{SRC_CMPT}}已被赋予组合提单{{DST_TRIP}}的油仓{{DST_CMPT}}: ",
     "stagingPreOrderStaged": "下述油品提单{{SRC_TRIP}}的油品{{SRC_PROD}}已被赋予组合提单{{DST_TRIP}}的油仓{{DST_CMPT}}:",

@@ -354,6 +354,8 @@
     "spmOnTankBaseChangeOwnershipNotEnough": "Warning: The FROM supplier [{{FROM_SUPPLIER}}] does not have enough ownership for the FROM tank base product [{{FROM_BASE}}] (Owner Stock: {{OWNER_STOCK}}, Tank Stock: {{TANK_STOCK}}).",
     "spmOnTankBaseChangeGroup": "Note: This tank {{TANK}} will be removed from the tank group {{TKGRP}} automatically. Later you need add it back to the proper tank group manually.",
     "spmOnTankBaseChangeGroupActive": "This tank {{TANK}} is ACTIVE in the tank group {{TKGRP}} so its base product can not be changed. Please deactivate the tank in tank group first.",
+    "spmOnTankBaseChangeTankBaseDB1": "You did not modify the base product {{ORIG_BASE}} in tank {{TANK}} on screen, BUT it has been changed to {{CURR_BASE}} in the database by another user. To avoid of breaking the stock balance, please refresh the data and try again.",
+    "spmOnTankBaseChangeTankBaseDB2": "You are about to change the base product {{ORIG_BASE}} in tank {{TANK}} to {{NEW_BASE}} on screen, BUT it has been changed to {{CURR_BASE}} in the database by another user. To avoid of breaking the stock balance, please refresh the data and try again.",
     "stagingCmptOccupied": "The compartment {{CMPT}} of pickup schedule {{TRIP}} has been occupied by the following: ",
     "stagingPreScheduleStaged": "The compartment {{SRC_CMPT}} of the following staged pre-schedule {{SRC_TRIP}} has been assigned to the compartment {{DST_CMPT}} of pickup schedule {{DST_TRIP}}: ",
     "stagingPreOrderStaged": "The product {{SRC_PROD}} of the following staged pre-order {{SRC_TRIP}} has been assigned to the compartment {{DST_CMPT}} of pickup schedule {{DST_TRIP}}:",

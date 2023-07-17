@@ -125,6 +125,17 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     });
   };
 
+  const getCurrTankBase = async (tank) => {
+    const values = {
+      tank_code: tank,
+    };
+
+    const results = await api.post(TANKS.CURR_TANK_BASE, values);
+    console.log('............getTableChildren', results);
+
+    return results?.data?.records?.[0];
+  };
+
   const getDrawerProductsByBase = async (base) => {
     const results = await api.get(`${SPECIAL_MOVEMENTS.DRAWER_PRODUCTS_BY_BASE}?base_code=${base}`);
 
@@ -419,8 +430,67 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
     setToSupplierProduct(value);
   };
 
+  /*
+    need do the following check at the submission time:
+
+    1. what is the current base in DB: dbBase
+    2. what is the base on screen at the time when form is opened: fromBase
+    3. what is the base on screen at the time when form is submitted: toBase
+    4. when dbBase === fromBase and fromBase !== toBase, trigger the base change procedure
+    5. when  dbBase === fromBase and fromBase === toBase, normal tank configuration
+    6. when  dbBase !== fromBase and fromBase === toBase, alarm and reject, suggest user to refresh and reopen form
+    7. when  dbBase !== fromBase and fromBase !== toBase, would be better to do the same as in step 6    
+  */
   const onFinish = async () => {
     const values = await form.validateFields();
+
+    if (!IS_CREATING) {
+      // get the current base product in the tank, which may have been changed by another user
+      const currBaseItem = await getCurrTankBase(value?.tank_code);
+      const dbBase = currBaseItem?.base_code;
+      const fromBase = value?.tank_base;
+      const toBase = values?.tank_base;
+      if (dbBase !== fromBase) {
+        // another user has changed the tank base in another broaser or tab, alarm and reject
+        if (fromBase === toBase) {
+          notification.error({
+            message: t('messages.updateFailed'),
+            description: (
+              <Tag color={'red'}>
+                <div
+                  style={{ wordWrap: 'break-word', whiteSpace: 'normal', fontWeight: 'bold', color: 'red' }}
+                >
+                  {t('descriptions.spmOnTankBaseChangeTankBaseDB1', {
+                    TANK: value?.tank_code,
+                    ORIG_BASE: baseItemOld?.records?.[0]?.base_text,
+                    CURR_BASE: currBaseItem.base_text,
+                  })}
+                </div>
+              </Tag>
+            ),
+          });
+        } else {
+          notification.error({
+            message: t('messages.updateFailed'),
+            description: (
+              <Tag color={'red'}>
+                <div
+                  style={{ wordWrap: 'break-word', whiteSpace: 'normal', fontWeight: 'bold', color: 'red' }}
+                >
+                  {t('descriptions.spmOnTankBaseChangeTankBaseDB2', {
+                    TANK: value?.tank_code,
+                    ORIG_BASE: baseItemOld?.records?.[0]?.base_text,
+                    NEW_BASE: baseItem?.records?.[0]?.base_text,
+                    CURR_BASE: currBaseItem.base_text,
+                  })}
+                </div>
+              </Tag>
+            ),
+          });
+        }
+        return;
+      }
+    }
 
     if (!IS_CREATING && values?.tank_base !== value?.tank_base) {
       // find if tank is an active one in a group
@@ -430,7 +500,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       // console.log('............', tankGroup, tankGroups);
       if (tankActiveGroup) {
         // active tank in a group, show error and quit
-        notification.success({
+        notification.error({
           message: t('messages.updateFailed'),
           description: (
             <Tag color={'red'}>
