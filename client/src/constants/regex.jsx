@@ -40,7 +40,7 @@ export const DOCUMENT = /^([^\x00-\xff]|[\x00-\xff])*$/;
 // export const EMAIL2 = /^[\\w.-]+@\\w[\\w.-]+\\.[\\w.-]*[a-z][a-z]*([\\;\\:][ \t\v\n\r\f]*[\\w.-]+@\\w[\\w.-]+\\.[\\w.-]*[a-z][a-z]*)*$/;
 export const EMAIL2 = /^[\w.-]+@\w[\w.-]+\.[\w.-]*[a-z][a-z]*([\;\:][ \t\v\n\r\f]*[\w.-]+@\w[\w.-]+\.[\w.-]*[a-z][a-z]*)*$/;
 
-export const INTEGER = /^([0-9]+[ \t\v\n\r\f]*)+$/;
+export const INTEGER = /^(-?[0-9]+[ \t\v\n\r\f]*)+$/;
 export const INTEGER_NONZERO = /^([1-9][0-9]*[ \t\v\n\r\f]*)+$/;
 // export const INTEGER_NEGATIVE = /^-[1-9]\\d*$/;
 export const INTEGER_NEGATIVE = /^-[1-9]\d*$/;

@@ -4,6 +4,7 @@ import { Form, Input } from 'antd';
 import _ from 'lodash';
 import useSWR from 'swr';
 import { AREA } from '../../../../api';
+import { REGEX } from '../../../../constants';
 
 const Area = ({ form, value }) => {
   const { data } = useSWR(AREA.READ);
@@ -35,15 +36,21 @@ const Area = ({ form, value }) => {
       return Promise.reject(`${t('placeholder.maxCharacters')}: 4 ─ ${t('descriptions.maxCharacters')}`);
     }
 
-    if (input && !_.isInteger(parseInt(input))) {
+    /* if (input && !_.isInteger(parseInt(input))) {
       return Promise.reject(`${t('placeholder.wrongType')} ─ ${t('descriptions.mustBeInteger')}`);
-    }
+    } */
 
     if (input !== undefined && input !== input.trimLeft()) {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInBeginning')}`);
     }
     if (input !== undefined && input !== input.trimRight()) {
       return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.whiteSpaceInEnd')}`);
+    }
+
+    const regex = new RegExp(REGEX.INTEGER);
+    const validated = regex.exec(input);
+    if (input && input.length > 0 && !validated) {
+      return Promise.reject(`${t('validate.invalidInput')}: ${t('validate.regexpTextInteger')}`);
     }
 
     return Promise.resolve();

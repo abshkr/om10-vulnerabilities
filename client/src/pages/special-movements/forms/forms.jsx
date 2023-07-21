@@ -722,7 +722,6 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
             icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             htmlType="submit"
             // disabled={DISABLED}
-            style={{ float: 'right', marginRight: 5 }}
             onClick={onFinish}
             style={{ float: 'right', marginRight: 5 }}
             disabled={IS_CREATING ? !access?.canCreate : !access?.canUpdate || value?.mlitm_status !== '0'}
