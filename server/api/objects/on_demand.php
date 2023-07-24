@@ -112,6 +112,10 @@ class OndemandReport extends CommonClass
         $params_str = "";
         $jasper_file = "";
         $lang = "ENG";
+        if ($this->supplier && $this->supplier === 'ANY') {
+            $this->supplier = '%';
+        }
+
         while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
             $filter = $row['ARGUMENT_NAME'];
             $filter_type = $row['ARGUMENT_TYPE'];
@@ -129,6 +133,13 @@ class OndemandReport extends CommonClass
                 $lowercase = strtolower($filter);
                 if (isset($this->$lowercase)) {
                     $params_str .= " " . $filter . ":\"" . $this->$lowercase . "\"";
+                } else {
+                    if ($filter === 'SUPPLIER_CODE' ||
+                        $filter === 'SUPP_CODE' ||
+                        $filter === 'CMPY_CODE' ||
+                        $filter === 'DRAWER_CODE') {
+                        $params_str .= " " . $filter . ":" . $this->supplier;
+                    }
                 }
             }
         }
