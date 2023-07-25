@@ -24,7 +24,9 @@ const DrawerCompany = ({ form, value, onChange }) => {
     setFieldsValue({
       prod_cmpycode: value,
     });
-    onChange(value);
+    if (onChange) {
+      onChange(value);
+    }
   };
 
   useEffect(() => {
@@ -32,7 +34,9 @@ const DrawerCompany = ({ form, value, onChange }) => {
       setFieldsValue({
         prod_cmpycode: value.prod_cmpycode,
       });
-      onChange(value.prod_cmpycode);
+      if (onChange) {
+        onChange(value.prod_cmpycode);
+      }
     }
   }, [value, setFieldsValue]);
 

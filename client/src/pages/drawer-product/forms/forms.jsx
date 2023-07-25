@@ -8,6 +8,7 @@ import {
   QuestionCircleOutlined,
   CloseOutlined,
   TrademarkOutlined,
+  CopyOutlined,
 } from '@ant-design/icons';
 import {
   Form,
@@ -66,6 +67,7 @@ const DrawerForm = ({
 }) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const [copyform] = Form.useForm();
 
   const token = sessionStorage.getItem('token');
   const decoded = jwtDecode(token);
@@ -589,7 +591,101 @@ const DrawerForm = ({
             .catch((errors) => {
               _.forEach(errors.response.data.errors, (error) => {
                 notification.error({
-                  message: error.type,
+                  message:
+                    error.code === 400 || error.code === 500
+                      ? IS_CREATING
+                        ? t('messages.createFailed')
+                        : t('messages.updateFailed')
+                      : error.type,
+                  description: error.message,
+                });
+              });
+            });
+        },
+      });
+    } catch (error) {
+      message.error({
+        key: 'submit',
+        content: t('descriptions.validationFailed'),
+      });
+    }
+  };
+
+  const onCopy = async () => {
+    try {
+      const values = await form.validateFields();
+      console.log('.............base values', values);
+
+      if (values.bases === undefined || values.bases.length <= 0) {
+        Modal.info({
+          title: t('prompts.notEnoughBase'),
+          okText: t('operations.cancel'),
+        });
+        return;
+      }
+
+      /* if (config?.siteRecipeOnPercent) {
+        const totalRatios = getTotalRatios(values.bases, 'pitem_ratio_value');
+        // get total additive ratios
+        const mainBaseTotals = getMainBaseTotals(values.bases, 'pitem_ratio_percent_ppm', 'pitem_base_class');
+        if (totalRatios !== 1000000 || mainBaseTotals !== 100) {
+          Modal.info({
+            // title: (totalRatios !== 1000000 && user_code === '9999' ? t('prompts.ratioTotalNotMillion') : '') + (mainBaseTotals !== 100 ? t('prompts.percentTotalNot100') : ''),
+            title: t('prompts.percentTotalNot100'),
+            okText: t('operations.cancel'),
+          });
+          return;
+        }
+      } */
+
+      values.prod_is_blend = adjustBlendFlag(values?.bases);
+      values.prod_guardmaster_quality =
+        values?.prod_guardmaster_quality === undefined ? '' : values?.prod_guardmaster_quality;
+
+      // now optional dropdown lists can be unselected and have the value of "undefined".
+      // need to send blank string when it is undefined
+      values.prod_group = !values?.prod_group ? '' : values?.prod_group;
+      values.prod_hazid = !values?.prod_hazid ? '' : values?.prod_hazid;
+      values.dg_link_id = !values?.dg_link_id ? '' : values?.dg_link_id;
+
+      Modal.confirm({
+        title: t('prompts.copy'),
+        okText: t('operations.copy'),
+        okType: 'primary',
+        icon: <QuestionCircleOutlined />,
+        cancelText: t('operations.no'),
+        centered: true,
+        content: (
+          <Form
+            // {...layout}
+            layout="vertical"
+            form={copyform}
+            scrollToFirstError
+          >
+            <DrawerCompany form={copyform} value={undefined} onChange={undefined} />
+            <ProductCode form={copyform} value={undefined} config={config} />
+            {/* <ProductName form={copyform} value={undefined} />
+            <Generic form={copyform} value={undefined} flag={genericFlag} setFlag={setGenericFlag} /> */}
+          </Form>
+        ),
+        onOk: async () => {
+          values.prod_code = copyform.getFieldValue('prod_code');
+          values.prod_cmpycode = copyform.getFieldValue('prod_cmpycode');
+
+          await api
+            .post(DRAWER_PRODUCTS.CREATE, values)
+            .then(() => {
+              onComplete(values.prod_code);
+
+              notification.success({
+                message: t('messages.copySuccess'),
+                description: t('descriptions.copySuccess'),
+              });
+            })
+            .catch((errors) => {
+              _.forEach(errors.response.data.errors, (error) => {
+                notification.error({
+                  message: error.code === 400 || error.code === 500 ? t('messages.copyFailed') : error.type,
                   description: error.message,
                 });
               });
@@ -724,6 +820,17 @@ const DrawerForm = ({
           >
             {IS_CREATING ? t('operations.create') : t('operations.update')}
           </Button>
+          {!IS_CREATING && (
+            <Button
+              type="primary"
+              icon={<CopyOutlined />}
+              style={{ float: 'right', marginRight: 5 }}
+              onClick={onCopy}
+              disabled={!access?.canCreate}
+            >
+              {t('operations.copy')}
+            </Button>
+          )}
           {!IS_CREATING && (
             <Button
               type="danger"
