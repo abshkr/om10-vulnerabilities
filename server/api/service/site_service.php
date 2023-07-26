@@ -127,4 +127,53 @@ class SiteService
         $config_value = $this->site_config_boolean('REPORTS_CLOSEOUT_JOB', 'N');
         return ($config_value === 'Y' || $config_value === 'y');
     }
+
+    private function set_closeout_user($user, $config_key)
+    {
+        $query = "SELECT COUNT(*) CN FROM SITE_CONFIG 
+            WHERE CONFIG_KEY = :config_key";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':config_key', $config_key);
+
+        $existing = false;
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        } 
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        if ((int) $row['CN'] > 0) {
+            $existing = true;
+        }
+        
+        if ($existing) {
+            $query = "UPDATE SITE_CONFIG SET CONFIG_VALUE = :config_value
+                WHERE CONFIG_KEY = :config_key";
+        } else {
+            $query = "INSERT INTO SITE_CONFIG (CONFIG_KEY, CONFIG_VALUE)
+                VALUES (:config_key, :config_value)";
+        }
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':config_value', $user);
+        oci_bind_by_name($stmt, ':config_key', $config_key);
+        
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        return true;
+    }
+
+    public function set_closeout_freeze_user($user)
+    {
+        return $this->set_closeout_user($user, "NEXT_CLOSEOUT_FREEZE_USER");
+    } 
+
+    public function set_closeout_close_user($user)
+    {
+        return $this->set_closeout_user($user, "NEXT_CLOSEOUT_CLOSE_USER");
+    } 
 }

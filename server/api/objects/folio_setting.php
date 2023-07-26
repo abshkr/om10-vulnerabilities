@@ -3,6 +3,7 @@
 include_once __DIR__ . '/../shared/journal.php';
 include_once __DIR__ . '/../shared/log.php';
 include_once __DIR__ . '/../shared/utilities.php';
+include_once __DIR__ . '/../service/site_service.php';
 include_once 'common_class.php';
 
 //Old php: amfphp dmsFolioService.php::getFolioScheduling
@@ -253,6 +254,9 @@ class FolioSetting extends CommonClass
             return;
         }
 
+        $set_service = new SiteService($this->conn);
+        $set_service->set_closeout_freeze_user($cur_user);
+
         $journal = new Journal($this->conn, false);
         $jnl_data[0] = Utilities::getCurrPsn();
         if (!$journal->jnlLogEvent(Lookup::CLOSE_MANUAL_FREEZE_FOLIO, $jnl_data,
@@ -296,6 +300,9 @@ class FolioSetting extends CommonClass
 
             return;
         }
+
+        $set_service = new SiteService($this->conn);
+        $set_service->set_closeout_close_user($cur_user);
 
         $query = "UPDATE CLOSEOUT_TANK 
             SET CLOSE_STD_TOT = NVL(CLOSE_STD_TOT, 0),
