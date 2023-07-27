@@ -298,6 +298,22 @@ class ManualTransactionService
         }
         $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
         $this->trsa_id = $row['BA_LAST_TRNO'] + 1;
+        if ($this->trsa_id > 9999999) {
+            $this->trsa_id = 9000001;
+            write_log("Bay999 transaction id restarted from 9000001", __FILE__, __LINE__);
+        }
+
+        $query = "UPDATE BAY_AREA SET BA_LAST_TRNO = :new_last_trno
+            WHERE BA_CODE = :bay_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':new_last_trno', $this->trsa_id);
+        oci_bind_by_name($stmt, ':bay_code', $this->bay_code);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return -1;
+        }
+
         return $this->trsa_id;
     }
 
