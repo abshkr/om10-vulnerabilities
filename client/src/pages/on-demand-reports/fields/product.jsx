@@ -19,7 +19,7 @@ const columns = (t, enabled) => [
     width: 100,
   },
   {
-    headerName: t('fields.supplierCode'),
+    headerName: t('fields.drawerCode'),
     field: 'prod_cmpy',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -29,7 +29,7 @@ const columns = (t, enabled) => [
     // hide: true,
   },
   {
-    headerName: t('fields.supplier'),
+    headerName: t('fields.drawer'),
     field: 'supplier_name',
     filter: 'FuzzyFilter',
     sortable: true,
@@ -71,7 +71,7 @@ const Product = ({ form, supplier, enabled, onChange }) => {
   };
 
   return (
-    <Form.Item form={form} name="products" noStyle>
+    <Form.Item form={form} name="products" label={t('fields.products')}>
       <DataTable
         data={payload?.records}
         // height="20vh"

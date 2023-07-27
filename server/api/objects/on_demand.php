@@ -222,22 +222,34 @@ class OndemandReport extends CommonClass
     // get all carriers
     public function carriers()
     {
+        if (!isset($this->parent) || $this->parent == "ANY") {
+            $this->parent = "-1";
+        }
         $serv = new CompanyService($this->conn);
-        return $serv->carriers($plus_any = true);
+        return $serv->carriers_by_parent($plus_any = true, $this->parent);
+        // return $serv->carriers($plus_any = true);
     }
 
     // get all customers
     public function customers()
     {
+        if (!isset($this->supplier) || $this->supplier == "ANY") {
+            $this->supplier = "-1";
+        }
         $serv = new CompanyService($this->conn);
-        return $serv->customers($plus_any = true);
+        return $serv->customers_by_supplier($plus_any = true, $this->supplier);
+        // return $serv->customers($plus_any = true);
     }
 
     // get all employers
     public function employers()
     {
+        if (!isset($this->parent) || $this->parent=="ANY") {
+            $this->parent = "-1";
+        }
         $serv = new CompanyService($this->conn);
-        return $serv->employers($plus_any = true);
+        return $serv->employers_by_parent($plus_any = true, $this->parent);
+        // return $serv->employers($plus_any = true);
     }
 
     public function products()

@@ -5,8 +5,8 @@ import { Form, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { ON_DEMAND_REPORTS } from 'api';
 
-const Employer = ({ form, enabled }) => {
-  const { data: options, isValidating } = useSWR(ON_DEMAND_REPORTS.EMPLOYERS);
+const Employer = ({ form, enabled, parent }) => {
+  const { data: options, isValidating } = useSWR(`${ON_DEMAND_REPORTS.EMPLOYERS}?parent=${parent}`);
 
   const { t } = useTranslation();
 

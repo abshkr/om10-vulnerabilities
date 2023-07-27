@@ -5,8 +5,8 @@ import { Form, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { ON_DEMAND_REPORTS } from 'api';
 
-const Carrier = ({ form, enabled }) => {
-  const { data: options, isValidating } = useSWR(ON_DEMAND_REPORTS.CARRIERS);
+const Carrier = ({ form, enabled, parent }) => {
+  const { data: options, isValidating } = useSWR(`${ON_DEMAND_REPORTS.CARRIERS}?parent=${parent}`);
 
   const { t } = useTranslation();
 

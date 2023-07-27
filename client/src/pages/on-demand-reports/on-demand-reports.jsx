@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import useSWR from 'swr';
 import { ReloadOutlined } from '@ant-design/icons';
-import { Button, Select, Radio, Form, InputNumber, notification, Row, Col } from 'antd';
+import { Button, Select, Radio, Form, InputNumber, notification, Row, Col, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
 import moment from 'moment';
 import _ from 'lodash';
@@ -264,67 +264,79 @@ const OnDemandReports = () => {
 
   return (
     <Page page={t('pageMenu.reports')} name={t('pageNames.onDemandReports')} access={access}>
-      <Form
-        layout="vertical"
-        form={form}
-        onFinish={onFinish}
-        scrollToFirstError
-        initialValues={{ output: 'csv' }}
+      <Card
+        style={{
+          marginTop: 15,
+          padding: 5,
+          marginBottom: 15,
+          height: 'calc(100vh - 300px)',
+          overflowY: 'auto',
+          minHeight: 720,
+        }}
+        size="small"
+        title={undefined}
       >
-        <Form.Item
-          name="supplier"
-          label={t('fields.supplier')}
-          rules={[{ required: true, message: `${t('validate.select')} ─ ${t('fields.supplier')}` }]}
+        <Form
+          layout="vertical"
+          form={form}
+          onFinish={onFinish}
+          scrollToFirstError
+          initialValues={{ output: 'csv' }}
         >
-          <Select
-            dropdownMatchSelectWidth={false}
-            allowClear
-            loading={isLoading}
-            showSearch
-            style={{ width: '100%' }}
-            onChange={onSupplier}
-            optionFilterProp="children"
-            placeholder={t('placeholder.selectSupplier')}
-            filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }
+          <Form.Item
+            name="supplier"
+            label={t('fields.supplier')}
+            rules={[{ required: true, message: `${t('validate.select')} ─ ${t('fields.supplier')}` }]}
           >
-            {sortedSupplier?.map((item, index) => (
-              <Select.Option key={index} value={item.cmpy_code}>
-                {item.cmpy_name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
+            <Select
+              dropdownMatchSelectWidth={false}
+              allowClear
+              loading={isLoading}
+              showSearch
+              style={{ width: '100%' }}
+              onChange={onSupplier}
+              optionFilterProp="children"
+              placeholder={t('placeholder.selectSupplier')}
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {sortedSupplier?.map((item, index) => (
+                <Select.Option key={index} value={item.cmpy_code}>
+                  {item.cmpy_name}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
 
-        <Form.Item
-          name="report"
-          label={t('fields.report')}
-          rules={[{ required: true, message: `${t('validate.select')} ─ ${t('fields.report')}` }]}
-        >
-          <Select
-            dropdownMatchSelectWidth={false}
-            allowClear
-            loading={isLoading}
-            showSearch
-            onChange={onReport}
-            disabled={!supplier}
-            style={{ width: '100%', marginBottom: 10, marginTop: 10 }}
-            optionFilterProp="children"
-            placeholder={t('placeholder.selectReport')}
-            filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }
+          <Form.Item
+            name="report"
+            label={t('fields.report')}
+            rules={[{ required: true, message: `${t('validate.select')} ─ ${t('fields.report')}` }]}
           >
-            {reports?.map((item, index) => (
-              <Select.Option key={index} value={item.rpt_file}>
-                {item.ondemand_title}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
+            <Select
+              dropdownMatchSelectWidth={false}
+              allowClear
+              loading={isLoading}
+              showSearch
+              onChange={onReport}
+              disabled={!supplier}
+              style={{ width: '100%', marginBottom: 10, marginTop: 10 }}
+              optionFilterProp="children"
+              placeholder={t('placeholder.selectReport')}
+              filterOption={(input, option) =>
+                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {reports?.map((item, index) => (
+                <Select.Option key={index} value={item.rpt_file}>
+                  {item.ondemand_title}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
 
-        {/* (carrierFilter || customerFilter || terminalFilter) && (
+          {/* (carrierFilter || customerFilter || terminalFilter) && (
           <Row gutter={[8, 8]}>
             {carrierFilter && (
               <Col span={8}>
@@ -346,97 +358,103 @@ const OnDemandReports = () => {
           </Row>
             ) */}
 
-        <Row gutter={[8, 8]}>
-          <Col span={6}>
-            <Carrier form={form} enabled={carrierFilter} />
-          </Col>
-          <Col span={6}>
-            <Customer form={form} enabled={customerFilter} />
-          </Col>
-          <Col span={6}>
-            <Employer form={form} enabled={employerFilter} />
-          </Col>
-          <Col span={6}>
-            <Drawer form={form} enabled={drawerFilter || productFilter} onChange={setDrawer} />
-          </Col>
-        </Row>
+          <Row gutter={[8, 8]}>
+            <Col span={6}>
+              <Carrier form={form} enabled={carrierFilter} parent={supplier} />
+            </Col>
+            <Col span={6}>
+              <Customer form={form} enabled={customerFilter} supplier={supplier} />
+            </Col>
+            <Col span={6}>
+              <Employer form={form} enabled={employerFilter} parent={supplier} />
+            </Col>
+            <Col span={6}>
+              <Drawer
+                form={form}
+                enabled={drawerFilter || productFilter}
+                supplier={supplier}
+                onChange={setDrawer}
+              />
+            </Col>
+          </Row>
 
-        <Row gutter={[8, 8]}>
-          <Col span={24}>
-            <Product form={form} supplier={drawer} enabled={productFilter} onChange={setDrawerProducts} />
-          </Col>
-        </Row>
+          <Row gutter={[8, 8]}>
+            <Col span={24}>
+              <Product form={form} supplier={drawer} enabled={productFilter} onChange={setDrawerProducts} />
+            </Col>
+          </Row>
 
-        <Form.Item
-          name="dateRange"
-          label={t('fields.dateRange')}
-          // rules={!usefolioRange && [{ required: true }]}
-        >
-          <Calendar handleChange={onRangeSelect} start={start} end={end} />
-        </Form.Item>
-
-        <Form.Item label={t('fields.closeOutDetails')}>
-          <DataTable
-            columns={fields}
-            data={closeouts}
-            isLoading={false}
-            height="70vh"
-            minimal
-            // extra={extra}
-            handleSelect={onCloseOutSelect}
-          />
-        </Form.Item>
-
-        {usefolioRange && (
-          <Form.Item noStyle>
-            <Form.Item
-              name="close_out_from"
-              label={t('fields.fromCloseOutId')}
-              style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}
-              rules={
-                usefolioRange && [
-                  { required: true, message: `${t('validate.select')} ─ ${t('fields.fromCloseOutId')}` },
-                ]
-              }
-            >
-              <InputNumber min={0} placeholder={t('fields.fromCloseOutId')} style={{ width: '100%' }} />
-            </Form.Item>
-
-            <Form.Item
-              name="close_out_to"
-              label={t('fields.toCloseOutId')}
-              style={{ display: 'inline-block', width: 'calc(50% - 8px)', margin: '0 8px' }}
-              rules={
-                usefolioRange && [
-                  { required: true, message: `${t('validate.select')} ─ ${t('fields.toCloseOutId')}` },
-                ]
-              }
-            >
-              <InputNumber min={0} placeholder={t('fields.toCloseOutId')} style={{ width: '100%' }} />
-            </Form.Item>
+          <Form.Item
+            name="dateRange"
+            label={t('fields.dateRange')}
+            // rules={!usefolioRange && [{ required: true }]}
+          >
+            <Calendar handleChange={onRangeSelect} start={start} end={end} />
           </Form.Item>
-        )}
 
-        <Form.Item
-          name="output"
-          label={t('fields.reportOutput')}
-          style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-        >
-          <Radio.Group buttonStyle="solid" style={{ marginTop: 10, marginBottom: 10 }}>
-            <Radio.Button value="csv">CSV</Radio.Button>
-            <Radio.Button value="xlsx">Excel</Radio.Button>
-            <Radio.Button value="pdf">PDF</Radio.Button>
-            <Radio.Button value="docx">Word</Radio.Button>
-            <Radio.Button value="html">HTML</Radio.Button>
-          </Radio.Group>
-        </Form.Item>
+          <Form.Item label={t('fields.closeOutDetails')}>
+            <DataTable
+              columns={fields}
+              data={closeouts}
+              isLoading={false}
+              height="70vh"
+              minimal
+              // extra={extra}
+              handleSelect={onCloseOutSelect}
+            />
+          </Form.Item>
 
-        <Form.Item style={{ width: '100%' }}>
-          <Button icon={<ReloadOutlined />} type="primary" htmlType="submit" block loading={isLoading}>
-            {t('operations.generateReport')}
-          </Button>
-        </Form.Item>
-      </Form>
+          {usefolioRange && (
+            <Form.Item noStyle>
+              <Form.Item
+                name="close_out_from"
+                label={t('fields.fromCloseOutId')}
+                style={{ display: 'inline-block', width: 'calc(50% - 8px)' }}
+                rules={
+                  usefolioRange && [
+                    { required: true, message: `${t('validate.select')} ─ ${t('fields.fromCloseOutId')}` },
+                  ]
+                }
+              >
+                <InputNumber min={0} placeholder={t('fields.fromCloseOutId')} style={{ width: '100%' }} />
+              </Form.Item>
+
+              <Form.Item
+                name="close_out_to"
+                label={t('fields.toCloseOutId')}
+                style={{ display: 'inline-block', width: 'calc(50% - 8px)', margin: '0 8px' }}
+                rules={
+                  usefolioRange && [
+                    { required: true, message: `${t('validate.select')} ─ ${t('fields.toCloseOutId')}` },
+                  ]
+                }
+              >
+                <InputNumber min={0} placeholder={t('fields.toCloseOutId')} style={{ width: '100%' }} />
+              </Form.Item>
+            </Form.Item>
+          )}
+
+          <Form.Item
+            name="output"
+            label={t('fields.reportOutput')}
+            style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+          >
+            <Radio.Group buttonStyle="solid" style={{ marginTop: 10, marginBottom: 10 }}>
+              <Radio.Button value="csv">CSV</Radio.Button>
+              <Radio.Button value="xlsx">Excel</Radio.Button>
+              <Radio.Button value="pdf">PDF</Radio.Button>
+              <Radio.Button value="docx">Word</Radio.Button>
+              <Radio.Button value="html">HTML</Radio.Button>
+            </Radio.Group>
+          </Form.Item>
+
+          <Form.Item style={{ width: '100%' }}>
+            <Button icon={<ReloadOutlined />} type="primary" htmlType="submit" block loading={isLoading}>
+              {t('operations.generateReport')}
+            </Button>
+          </Form.Item>
+        </Form>
+      </Card>
     </Page>
   );
 };

@@ -5,7 +5,7 @@ import { Form, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { ON_DEMAND_REPORTS } from 'api';
 
-const Drawer = ({ form, enabled, onChange }) => {
+const Drawer = ({ form, enabled, supplier, onChange }) => {
   const { data: options, isValidating } = useSWR(ON_DEMAND_REPORTS.DRAWERS);
 
   const { t } = useTranslation();
@@ -44,11 +44,13 @@ const Drawer = ({ form, enabled, onChange }) => {
           option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
         }
       >
-        {options?.records.map((item, index) => (
-          <Select.Option key={index} value={item.cmpy_code}>
-            {item.cmpy_desc}
-          </Select.Option>
-        ))}
+        {options?.records
+          .filter((o) => supplier === 'ANY' || o.cmpy_code === supplier)
+          .map((item, index) => (
+            <Select.Option key={index} value={item.cmpy_code}>
+              {item.cmpy_desc}
+            </Select.Option>
+          ))}
       </Select>
     </Form.Item>
   );

@@ -5,8 +5,8 @@ import { Form, Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { ON_DEMAND_REPORTS } from 'api';
 
-const Customer = ({ form, enabled }) => {
-  const { data: options, isValidating } = useSWR(ON_DEMAND_REPORTS.CUSTOMERS);
+const Customer = ({ form, enabled, supplier }) => {
+  const { data: options, isValidating } = useSWR(`${ON_DEMAND_REPORTS.CUSTOMERS}?supplier=${supplier}`);
 
   const { t } = useTranslation();
 

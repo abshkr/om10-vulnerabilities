@@ -556,6 +556,31 @@ class CompanyService
         }
     }
 
+    public function customers_by_supplier($plus_any = false, $supplier = "-1")
+    {
+        $query = "";
+        if ($plus_any && $supplier == "-1") {
+            $query .= " SELECT 'ANY' CMPY_CODE, 'ALL' CMPY_NAME, 'ANY - ALL' CMPY_DESC FROM DUAL UNION ";
+        }
+        $query .= "
+            SELECT CMPY_CODE, CMPY_NAME,
+                CMPY_CODE||' - '||CMPY_NAME AS CMPY_DESC
+            FROM GUI_COMPANYS
+            WHERE BITAND(CMPY_TYPE, POWER(2, 3)) != 0
+              AND CMPY_CODE IN (SELECT CUST_CODE FROM CUSTOMER WHERE ('-1' = :supplier OR CUST_SUPP = :supplier))
+            ORDER BY CMPY_NAME ASC";
+        // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':supplier', $supplier);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function drawers($plus_any = false)
     {
         $query = "";
@@ -602,6 +627,35 @@ class CompanyService
         }
     }
 
+    public function carriers_by_parent($plus_any = false, $parent="-1")
+    {
+        $query = "";
+        if ($plus_any && $parent == "-1") {
+            $query .= " SELECT 'ANY' CMPY_CODE, 'ALL' CMPY_NAME, 'ANY - ALL' CMPY_DESC FROM DUAL UNION ";
+        }
+        $query .= "
+            SELECT CMPY_CODE, CMPY_NAME,
+                CMPY_CODE||' - '||CMPY_NAME AS CMPY_DESC
+            FROM GUI_COMPANYS
+            WHERE BITAND(CMPY_TYPE, POWER(2, 2)) != 0
+              AND (:parent = '-1' 
+                OR (CMPY_CODE = :parent)
+                OR (CMPY_CODE IN (SELECT CHILD_CMPY_CODE FROM COMPANY_RELATION WHERE PARENT_CMPY_CODE = :parent AND PARENT_CMPY_ROLE = 1 AND CHILD_CMPY_ROLE = 2))
+              )
+            ORDER BY CMPY_NAME ASC
+        ";
+        // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':parent', $parent);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function employers($plus_any = false)
     {
         $query = "";
@@ -618,6 +672,35 @@ class CompanyService
             ORDER BY CMPY_NAME ASC";
         // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
         $stmt = oci_parse($this->conn, $query);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
+    public function employers_by_parent($plus_any = false, $parent="-1")
+    {
+        $query = "";
+        if ($plus_any && $parent == "-1") {
+            $query .= " SELECT 'ANY' CMPY_CODE, 'ALL' CMPY_NAME, 'ANY - ALL' CMPY_DESC FROM DUAL UNION ";
+        }
+        $query .= "
+            SELECT CMPY_CODE, CMPY_NAME,
+                CMPY_CODE||' - '||CMPY_NAME AS CMPY_DESC
+            FROM GUI_COMPANYS
+            WHERE BITAND(CMPY_TYPE, POWER(2, 6)) != 0
+              AND (:parent = '-1' 
+                OR (CMPY_CODE = :parent)
+                OR (CMPY_CODE IN (SELECT CHILD_CMPY_CODE FROM COMPANY_RELATION WHERE PARENT_CMPY_CODE = :parent AND PARENT_CMPY_ROLE = 1 AND CHILD_CMPY_ROLE = 6))
+              )
+            ORDER BY CMPY_NAME ASC
+        ";
+        // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':parent', $parent);
         if (oci_execute($stmt)) {
             return $stmt;
         } else {
