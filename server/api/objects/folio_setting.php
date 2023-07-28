@@ -234,6 +234,13 @@ class FolioSetting extends CommonClass
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
+        
+        $output = shell_exec('ps -ef | grep "[c]loseout -"');
+        if (strlen($output) > 0) {
+            $error = new EchoSchema(500, response("__CLOSEOUT_RUNNING__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
 
         $this->commit_mode = OCI_NO_AUTO_COMMIT;
 
@@ -282,6 +289,13 @@ class FolioSetting extends CommonClass
     {
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
+        
+        $output = shell_exec('ps -ef | grep "[c]loseout -"');
+        if (strlen($output) > 0) {
+            $error = new EchoSchema(500, response("__CLOSEOUT_RUNNING__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
 
         $this->commit_mode = OCI_NO_AUTO_COMMIT;
 

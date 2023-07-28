@@ -442,6 +442,10 @@ function response($case_name, $default = null, $params = null)
         "__BAY999_ERROR__" => array(
             "ENG" => "Virtual bay error, please check status of BAY999",
             "CHN" => "虚拟油台错误，请检查虚拟油台状态"
+        ),
+        "__CLOSEOUT_RUNNING__" => array(
+            "ENG" => "Another closeout processing is running, please redo later",
+            "CHN" => "已经有一个进程在运行，请稍后重试"
         )
     );
 
