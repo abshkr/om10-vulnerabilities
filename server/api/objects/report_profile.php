@@ -227,6 +227,9 @@ class ReportProfile extends CommonClass
 
     protected function journal_children_change($journal, $old, $new)
     {
+        // the closeout jobs has been moved to report configuration
+        return true;
+
         $serv = new SiteService($this->conn);
         if (!$serv->reports_closeout_job()) {
             return true;
@@ -285,6 +288,9 @@ class ReportProfile extends CommonClass
 
     protected function update_children($old_children = null)
     {
+        // the closeout jobs has been moved to report configuration
+        return true;
+        
         write_log(sprintf("%s::%s() START", __CLASS__, __FUNCTION__),
             __FILE__, __LINE__);
 

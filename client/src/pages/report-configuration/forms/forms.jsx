@@ -13,21 +13,86 @@ import { mutate } from 'swr';
 import _ from 'lodash';
 
 import { Company, Name, Email, Flags } from './fields';
-import api, { REPORT_CONFIGURATION } from '../../../api';
+import api, { REPORT_CONFIGURATION, REPORT_PROFILE } from '../../../api';
+import { DataTable, FormModal } from 'components';
+import columns from './columns';
+import CloseoutJobForm from '../closeout-job/forms';
+import useSWR from 'swr';
 
 const TabPane = Tabs.TabPane;
 
-const FormModal = ({ value, visible, handleFormState, access, config }) => {
+const ConfigForm = ({ value, visible, handleFormState, access, config }) => {
+  const { reports_closeout_job } = config;
   const { t } = useTranslation();
   const [form] = Form.useForm();
+  const { setFieldsValue } = form;
+
+  const { data: payload, isValidating, revalidate } = useSWR(
+    reports_closeout_job && value
+      ? `${REPORT_CONFIGURATION.CLOSEOUT_JOBS}?rpt_file=${value?.report_file}&rpt_cmpy=${value?.report_cmpycode}`
+      : null
+  );
 
   const [company, setCompany] = useState(undefined);
   const [enabled, setEnabled] = useState(undefined);
   const [canEmail, setCanEmail] = useState(undefined);
+  const [selected, setSelected] = useState(null);
+  const [jobs, setJobs] = useState(payload?.records);
+
+  const fields = columns(t, form);
 
   const IS_CREATING = !value;
 
   const { resetFields } = form;
+
+  const handleSpecialJob = (v) => {
+    FormModal({
+      value: v,
+      width: '40vw',
+      form: (
+        <CloseoutJobForm
+          value={v}
+          rpt_file={value?.report_file}
+          rpt_cmpy={value?.report_cmpycode}
+          rpt_value={value}
+          update={onJobUpdate}
+        />
+      ),
+      id: v?.job_id,
+      name: v?.job_name,
+      t,
+    });
+  };
+
+  const onJobUpdate = (values) => {
+    if (values.to_create) {
+      setJobs([...jobs, values]);
+      setFieldsValue({
+        jobs: [...jobs, values],
+      });
+    } else {
+      const filtered = _.filter(jobs, (item) => {
+        return item.job_name !== values.job_name;
+      });
+
+      setJobs([...filtered, values]);
+      setFieldsValue({
+        jobs: [...filtered, values],
+      });
+    }
+  };
+
+  const deleteJob = () => {
+    let payload = _.filter(jobs, (item) => {
+      return item.job_name !== selected.job_name;
+    });
+    setFieldsValue({
+      jobs: payload,
+    });
+
+    setJobs(payload);
+    setSelected(null);
+  };
 
   const onComplete = () => {
     handleFormState(false, null);
@@ -111,6 +176,15 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
     }
   }, [resetFields, value, visible]);
 
+  useEffect(() => {
+    if (payload && visible) {
+      setJobs(payload.records);
+      setFieldsValue({
+        jobs: payload.records,
+      });
+    }
+  }, [payload?.records]);
+
   return (
     <Drawer
       bodyStyle={{ paddingTop: 5 }}
@@ -120,7 +194,7 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
       destroyOnClose={true}
       mask={IS_CREATING}
       placement="right"
-      width="30vw"
+      width="50vw"
       visible={visible}
       footer={
         <>
@@ -172,6 +246,47 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
               enabled={enabled}
               canEmail={canEmail}
             />
+            {reports_closeout_job && value && (
+              <div>
+                <Divider>{t('divider.reportJobs')}</Divider>
+                <Form.Item name="jobs" noStyle>
+                  <DataTable
+                    data={jobs}
+                    columns={fields}
+                    parentHeight="23vh"
+                    handleSelect={(value) => setSelected(value[0])}
+                    minimal
+                  />
+                </Form.Item>
+
+                <Button
+                  type="primary"
+                  // loading={baseLoading && !IS_CREATING}
+                  onClick={() => handleSpecialJob(null)}
+                  style={{ float: 'right', marginRight: 5, marginTop: 10 }}
+                >
+                  {t('operations.addJob')}
+                </Button>
+
+                <Button
+                  type="primary"
+                  onClick={() => handleSpecialJob(selected)}
+                  style={{ float: 'right', marginRight: 5, marginTop: 10 }}
+                  disabled={!selected}
+                >
+                  {t('operations.editJob')}
+                </Button>
+
+                <Button
+                  type="primary"
+                  onClick={deleteJob}
+                  disabled={!selected}
+                  style={{ float: 'right', marginRight: 5, marginTop: 10 }}
+                >
+                  {t('operations.deleteJob')}
+                </Button>
+              </div>
+            )}
           </TabPane>
         </Tabs>
       </Form>
@@ -179,4 +294,4 @@ const FormModal = ({ value, visible, handleFormState, access, config }) => {
   );
 };
 
-export default FormModal;
+export default ConfigForm;

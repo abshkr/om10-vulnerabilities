@@ -2016,6 +2016,7 @@
     "reportCloseoutFlag": "Closeout Report",
     "reportJasperFile": "Report Source",
     "reportJasperFileExist": "Source Exists?",
+    "reportJobScheduled": "Job Scheduled?",
     "reportOndemandTitle": "On-demand Name",
     "reportOndemandFlag": "On-demand Report",
     "reportAccumulativeFlag": "Accumulative Report",

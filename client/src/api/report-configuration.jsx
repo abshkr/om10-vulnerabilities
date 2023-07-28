@@ -5,3 +5,4 @@ export const DELETE = '/api/pages/report_config/delete.php';
 
 export const COMPANY = '/api/pages/report_config/companys.php';
 export const REPORTS = '/api/pages/report_config/reports.php';
+export const CLOSEOUT_JOBS = '/api/pages/report_config/closeout_jobs.php';

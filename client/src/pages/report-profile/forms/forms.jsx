@@ -25,13 +25,15 @@ const TabPane = Tabs.TabPane;
 
 const ProfileForm = ({ value, visible, handleFormState, access, setFilterValue }) => {
   const { t } = useTranslation();
-  const { reports_closeout_job } = useConfig();
+  // hide the closeout jobs
+  // const { reports_closeout_job } = useConfig();
+  const reports_closeout_job = false;
   const [form] = Form.useForm();
   const { setFieldsValue } = form;
 
-  const { data: payload, isValidating, revalidate } = useSWR(reports_closeout_job && value ? 
-    `${REPORT_PROFILE.CLOSEOUT_JOBS}?rpt_file=${value?.report_file}` : 
-    null);
+  const { data: payload, isValidating, revalidate } = useSWR(
+    reports_closeout_job && value ? `${REPORT_PROFILE.CLOSEOUT_JOBS}?rpt_file=${value?.report_file}` : null
+  );
 
   const { resetFields } = form;
 
@@ -47,10 +49,10 @@ const ProfileForm = ({ value, visible, handleFormState, access, setFilterValue }
     FormModal({
       value: v,
       width: '40vw',
-      form: <CloseoutJobForm value={v} rpt_file={value?.report_file} update={onJobUpdate}/>,
+      form: <CloseoutJobForm value={v} rpt_file={value?.report_file} update={onJobUpdate} />,
       id: v?.job_id,
       name: v?.job_name,
-      t
+      t,
     });
   };
 
@@ -68,7 +70,7 @@ const ProfileForm = ({ value, visible, handleFormState, access, setFilterValue }
       setJobs([...filtered, values]);
       setFieldsValue({
         jobs: [...filtered, values],
-      });;
+      });
     }
   };
 
@@ -236,15 +238,14 @@ const ProfileForm = ({ value, visible, handleFormState, access, setFilterValue }
             <Description form={form} value={value} />
             <Divider>{t('divider.flags')}</Divider>
             <Flags form={form} value={value} />
-            {
-              reports_closeout_job && 
+            {reports_closeout_job && value && (
               <div>
                 <Divider>{t('divider.reportJobs')}</Divider>
                 <Form.Item name="jobs" noStyle>
-                  <DataTable 
-                    data={jobs} 
-                    columns={fields} 
-                    parentHeight="23vh" 
+                  <DataTable
+                    data={jobs}
+                    columns={fields}
+                    parentHeight="23vh"
                     handleSelect={(value) => setSelected(value[0])}
                     minimal
                   />
@@ -277,8 +278,7 @@ const ProfileForm = ({ value, visible, handleFormState, access, setFilterValue }
                   {t('operations.deleteJob')}
                 </Button>
               </div>
-            } 
-            
+            )}
           </TabPane>
         </Tabs>
       </Form>

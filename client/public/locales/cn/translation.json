@@ -2012,6 +2012,7 @@
     "reportCloseoutFlag": "盘点报表",
     "reportJasperFile": "报表源文件",
     "reportJasperFileExist": "源文件是否存在?",
+    "reportJobScheduled": "报表任务已创建?",
     "reportOndemandTitle": "即时报表标题",
     "reportOndemandFlag": "即时报表",
     "reportAccumulativeFlag": "汇总报表",

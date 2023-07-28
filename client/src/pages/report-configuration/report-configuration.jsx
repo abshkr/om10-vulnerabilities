@@ -14,29 +14,28 @@ import auth from '../../auth';
 import Forms from './forms';
 
 const ReportConfiguration = () => {
+  const { t } = useTranslation();
   const config = useConfig();
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
-  const { t } = useTranslation();
-
   const access = useAuth('M_REPOCONFIGURATION');
 
   const { data: payload, isValidating, revalidate } = useSWR(REPORT_CONFIGURATION.READ);
 
-  const handleFormState = (visibility, value) => {
-    setVisible(visibility);
-    setSelected(value);
-  };
-
-  const fields = columns(t);
+  const fields = columns(t, config?.reports_closeout_job);
 
   const data = payload?.records;
   const isLoading = isValidating || !data;
 
   const page = t('pageMenu.config');
   const name = t('pageNames.reportConfiguration');
+
+  const handleFormState = (visibility, value) => {
+    setVisible(visibility);
+    setSelected(value);
+  };
 
   const modifiers = (
     <>

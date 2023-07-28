@@ -1,6 +1,6 @@
 const columns = (t, reports_closeout_job) => [
   {
-    headerName: t('divider.reportJobs'),
+    headerName: t('fields.reportJobScheduled'),
     field: 'closeout_jobs',
     sortable: true,
     resizable: true,

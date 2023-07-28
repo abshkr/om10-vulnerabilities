@@ -1,4 +1,15 @@
-const columns = t => [
+const columns = (t, reports_closeout_job) => [
+  {
+    headerName: t('fields.reportJobScheduled'),
+    field: 'closeout_jobs',
+    sortable: true,
+    resizable: true,
+    filter: 'BooleanFilter',
+    hide: !reports_closeout_job,
+    suppressSizeToFit: true,
+    width: 160,
+    cellRenderer: 'BooleanRenderer',
+  },
   {
     headerName: t('fields.reportCmpycode'),
     field: 'report_cmpycode',
