@@ -9,7 +9,7 @@ export default class PpmPercentageRenderer extends Component {
     this.state = {
       value: this.props.value,
     };
-  };
+  }
 
   render() {
     const { value, adtvFlag, data } = this.props;
@@ -24,11 +24,11 @@ export default class PpmPercentageRenderer extends Component {
     if (isAdditive) {
       // display in ppm
       // percentQty = data?.[valueField] + ' ppm';
-      percentQty = value === undefined || value === null ? '' : value + ' ppm';
-      tipQty = value === undefined || value === null ? '' : value;
+      percentQty = value === undefined || value === null || value === '' ? '' : value + ' ppm';
+      tipQty = value === undefined || value === null || value === '' ? '' : value;
     } else {
-      percentQty = value === undefined || value === null ? '' : value + ' %';
-      tipQty = value === undefined || value === null ? '' : value * 10000;
+      percentQty = value === undefined || value === null || value === '' ? '' : value + ' %';
+      tipQty = value === undefined || value === null || value === '' ? '' : value * 10000;
     }
 
     return (

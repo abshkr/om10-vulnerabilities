@@ -1,5 +1,3 @@
-import { BASE_PRODUCTS } from 'constants/routes';
-
 const columns = (t, config, form, pipenodeBases, user_code) => [
   {
     headerName: t('fields.pitemBaseCode'),
@@ -10,12 +8,6 @@ const columns = (t, config, form, pipenodeBases, user_code) => [
     suppressSizeToFit: true,
     width: 140,
     pinned: 'left',
-    cellRenderer: 'LinkRenderer',
-    cellRendererParams: {
-      endpoint: BASE_PRODUCTS,
-      field: 'product',
-      index: 'prod_code',
-    },
   },
   {
     headerName: t('fields.pitemBaseName'),
@@ -315,3 +307,52 @@ const columns = (t, config, form, pipenodeBases, user_code) => [
 ];
 
 export default columns;
+
+/*
+    field: 'pitem_base_code',
+    field: 'pitem_base_name',
+    field: 'pitem_ratio_value',
+       hide: config?.siteRecipeOnPercent && user_code !== '9999',
+    field: 'pitem_ratio_as_percent',
+       hide: config?.siteRecipeOnPercent,
+    field: 'pitem_ratio_percent_ppm',
+	   hide: !config?.siteRecipeOnPercent,
+    field: 'pitem_bltol_flag',
+    field: 'pitem_bltol_ntol',
+    field: 'pitem_bltol_ptol',
+    field: 'pitem_hot_main',
+	   hide: !config.manageHotProduct,
+    field: 'pitem_adtv_flag',
+    field: 'pitem_ratio_subseq',
+	   hide: true,
+    field: 'pitem_ratio_seq',
+       hide: true,
+    field: 'pitem_ratio_subcount',
+       hide: true,
+    field: 'pitem_ratio_count',
+       hide: true,
+    field: 'pitem_ratio_total',
+       hide: true,
+    field: 'pitem_base_group',
+       hide: true,
+    field: 'pitem_base_grpname',
+       hide: true,
+    field: 'pitem_base_class',
+    field: 'pitem_bclass_name',
+    field: 'pitem_hot_check',
+       hide: !config.manageHotProduct,
+    field: 'pitem_base_tunit',
+       hide: true,
+    field: 'pitem_base_tunitname',
+       hide: true,
+    field: 'pitem_base_rpttemp',
+       hide: true,
+    field: 'pitem_bclass_dens_lo',
+    field: 'pitem_bclass_dens_hi',
+    field: 'pitem_bclass_vcf_alg',
+       hide: true,
+    field: 'pitem_bclass_temp_lo',
+    field: 'pitem_bclass_temp_hi',
+    field: 'pitem_pidx_code',
+       hide: !config?.siteEnabledPIDX,
+*/

@@ -46,12 +46,13 @@ import {
   PidxCode,
 } from './fields';
 
-import { DataTable, FormModal } from '../../../components';
+import { DataTable, FormModal, Download } from '../../../components';
 import columns from './columns';
 import BaseProductForm from './base-form';
 import HotLitresForm from './hot-litres';
 import LinkedDrawerProducts from './linked-drawer-products';
 import GuardmasterProduct from './guardmaster-product';
+import RatioImportManager from './import';
 
 const TabPane = Tabs.TabPane;
 
@@ -95,6 +96,26 @@ const DrawerForm = ({
   const fields = columns(t, config, form, pipenodeBases, user_code);
 
   const IS_CREATING = !value;
+
+  const loadRatios = async (ratios) => {
+    console.log('Forms: loadRatios', ratios);
+    setBases(ratios);
+    // revalidate();
+  };
+
+  const handleImport = () => {
+    // pop up the dialog to manage straping data import
+    RatioImportManager(
+      t('operations.import'),
+      value,
+      loadRatios,
+      '60vw',
+      '50vh',
+      config,
+      pipenodeBases,
+      user_code
+    );
+  };
 
   const onFormClosed = () => {
     handleFormState(false, null);
@@ -997,6 +1018,20 @@ const DrawerForm = ({
               // style={{margin:0, padding:0}}
               extra={
                 <>
+                  <div style={{ float: 'right', marginRight: 5, marginTop: 10 }}>
+                    <Download data={bases} isLoading={baseLoading} columns={fields} extra={'ratios'} />
+                  </div>
+
+                  <Button
+                    type="primary"
+                    // loading={code && isLoading}
+                    disabled={baseLoading}
+                    onClick={handleImport}
+                    style={{ float: 'right', marginRight: 5, marginTop: 10 }}
+                  >
+                    {t('operations.import')}
+                  </Button>
+
                   <Button
                     type="primary"
                     icon={<PlusOutlined />}
