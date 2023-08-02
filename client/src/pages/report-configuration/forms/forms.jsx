@@ -84,7 +84,8 @@ const ConfigForm = ({ value, visible, handleFormState, access, config }) => {
 
   const deleteJob = () => {
     let payload = _.filter(jobs, (item) => {
-      return item.job_name !== selected.job_name;
+      // return item.job_name !== selected.job_name;
+      return item.job_id !== selected.job_id;
     });
     setFieldsValue({
       jobs: payload,
