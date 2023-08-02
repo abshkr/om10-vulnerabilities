@@ -65,6 +65,7 @@ const ConfigForm = ({ value, visible, handleFormState, access, config }) => {
   };
 
   const onJobUpdate = (values) => {
+    values.job_owner = value?.report_cmpycode;
     if (values.to_create) {
       setJobs([...jobs, values]);
       setFieldsValue({
@@ -72,9 +73,11 @@ const ConfigForm = ({ value, visible, handleFormState, access, config }) => {
       });
     } else {
       const filtered = _.filter(jobs, (item) => {
-        return item.job_name !== values.job_name;
+        // return item.job_name !== values.job_name;
+        return item.job_id !== values.job_id;
       });
 
+      values.job_lastrun = selected?.job_lastrun;
       setJobs([...filtered, values]);
       setFieldsValue({
         jobs: [...filtered, values],

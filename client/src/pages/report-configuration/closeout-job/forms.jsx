@@ -169,11 +169,11 @@ const CloseoutJobForm = ({ value, rpt_file, rpt_cmpy, rpt_value, update }) => {
         format_array: format_array,
       });
       console.log('...............inside form...', value, productField);
-      if (productField !== '') {
+      if (productField && productField?.length > 0) {
         let arrProducts = [];
         let items = value[productField]?.split("','");
         _.forEach(items, (o) => {
-          arrProducts.push(o?.replace("'", ''));
+          arrProducts.push(o?.replaceAll("'", ''));
         });
         setFieldsValue({ [productField]: arrProducts });
       }
