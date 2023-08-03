@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Button, Input, Row, Col, notification, Modal, Upload, Card } from 'antd';
+import { Form, Button, Input, Row, Col, notification, Modal, Upload, Card, Tag } from 'antd';
 import { CloseOutlined, QuestionCircleOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
@@ -9,10 +9,10 @@ import { DataTable } from '../../../../components';
 import columns from './columns';
 import { csvToJSON } from '../../../../utils';
 
-const RatioImport = ({ value, onClose, config, pipenodeBases, user_code }) => {
+const RatioImport = ({ value, bases, onClose, config, pipenodeBases, user_code }) => {
   const { t } = useTranslation();
 
-  const [ratioList, setRatioList] = useState([]);
+  const [ratioList, setRatioList] = useState(bases);
   const [selected, setSelected] = useState(null);
   const [fileList, setFileList] = useState([]);
   const [canPreview, setCanPreview] = useState(false);
@@ -150,7 +150,7 @@ const RatioImport = ({ value, onClose, config, pipenodeBases, user_code }) => {
     newList[val?.rowIndex] = val?.data;
     setRatioList(newList);
     // loop all lines to see if enabling Upload button
-    onVerifyData(newList, false);
+    onVerifyData(newList, true);
     /* const invalid = verifyRatio(val?.data, val?.rowIndex);
 
     if (invalid) {
@@ -715,7 +715,7 @@ const RatioImport = ({ value, onClose, config, pipenodeBases, user_code }) => {
             disabled={!canPreview}
             onClick={onPreviewData}
           >
-            {t('operations.previewData')}
+            {t('operations.importPreviewData')}
           </Button>
         </Col>
 
@@ -737,11 +737,16 @@ const RatioImport = ({ value, onClose, config, pipenodeBases, user_code }) => {
         columns={fields}
         // extra={extra}
         // handleSelect={(value) => setSelected(value[0])}
-        // onCellUpdate={(value) => onCellUpdate(value)}
+        onCellUpdate={(value) => onCellUpdate(value)}
         height={'40vh'}
       />
 
       <div style={{ marginTop: '2rem' }}>
+        <Tag color="red" style={{ float: 'left', width: '40vw' }}>
+          <div style={{ wordWrap: 'break-word', whiteSpace: 'normal', fontWeight: 'bold', color: 'red' }}>
+            {t('descriptions.importEditBaseRatios')}
+          </div>
+        </Tag>
         <Button
           htmlType="button"
           icon={<CloseOutlined />}

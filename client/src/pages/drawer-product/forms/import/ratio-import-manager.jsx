@@ -8,10 +8,20 @@ import { useTranslation } from 'react-i18next';
 
 import RatioImport from './ratio-import';
 
-const RatioImportManager = (title, value, onClose, width, height, config, pipenodeBases, user_code) => {
+const RatioImportManager = (
+  title,
+  value,
+  bases,
+  onClose,
+  width,
+  height,
+  config,
+  pipenodeBases,
+  user_code
+) => {
   Modal.info({
     className: 'form-container',
-    title: title ? title : 'Import Base Ratios',
+    title: title ? title : 'Import/Edit Base Ratios',
     centered: true,
     closable: true,
     width: width,
@@ -25,6 +35,7 @@ const RatioImportManager = (title, value, onClose, width, height, config, pipeno
       >
         <RatioImport
           value={value}
+          bases={bases}
           onClose={onClose}
           config={config}
           pipenodeBases={pipenodeBases}

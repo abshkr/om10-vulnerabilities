@@ -98,16 +98,19 @@ const DrawerForm = ({
   const IS_CREATING = !value;
 
   const loadRatios = async (ratios) => {
+    setBases([]);
     console.log('Forms: loadRatios', ratios);
     setBases(ratios);
+    // setFieldsValue({bases: ratios});
     // revalidate();
   };
 
   const handleImport = () => {
     // pop up the dialog to manage straping data import
     RatioImportManager(
-      t('operations.import'),
+      t('operations.importEdit'),
       value,
+      bases,
       loadRatios,
       '60vw',
       '50vh',
@@ -1018,10 +1021,6 @@ const DrawerForm = ({
               // style={{margin:0, padding:0}}
               extra={
                 <>
-                  <div style={{ float: 'right', marginRight: 5, marginTop: 10 }}>
-                    <Download data={bases} isLoading={baseLoading} columns={fields} extra={'ratios'} />
-                  </div>
-
                   <Button
                     type="primary"
                     // loading={code && isLoading}
@@ -1029,8 +1028,12 @@ const DrawerForm = ({
                     onClick={handleImport}
                     style={{ float: 'right', marginRight: 5, marginTop: 10 }}
                   >
-                    {t('operations.import')}
+                    {t('operations.importEdit')}
                   </Button>
+
+                  <div style={{ float: 'right', marginRight: 5, marginTop: 10 }}>
+                    <Download data={bases} isLoading={baseLoading} columns={fields} extra={'ratios'} />
+                  </div>
 
                   <Button
                     type="primary"
