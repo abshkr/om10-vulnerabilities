@@ -10,6 +10,7 @@ const Drawer = ({ form, value, param, supplier, onChange }) => {
   const { data: options, isValidating } = useSWR(`${ON_DEMAND_REPORTS.DRAWERS}?parent=${supplier}`);
 
   const { t } = useTranslation();
+  const { setFieldsValue } = form;
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
@@ -28,6 +29,13 @@ const Drawer = ({ form, value, param, supplier, onChange }) => {
       onChange(value[param]);
     }
   }, [value, param]);
+
+  useEffect(() => {
+    if (!value && param && supplier !== 'ANY') {
+      setFieldsValue({ [param]: supplier });
+      onChange(supplier);
+    }
+  }, [value, param, supplier]);
 
   const itemLayout = {
     labelCol: { span: 6 },

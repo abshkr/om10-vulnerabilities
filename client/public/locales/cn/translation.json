@@ -2383,8 +2383,10 @@
     "journalHeatmap": "警报热点图",
     "journalAlarmsToday": "当日警报",
     "journalAlarmsYsd": "昨天警报",
+    "jobCompany": "任务公司",
     "jobID": "任务编号",
     "jobName": "任务名称",
+    "jobFrequency": "任务频率",
     "subject": "邮件标题",
     "lastRun": "上次运行时间"
   },

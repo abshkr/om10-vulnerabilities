@@ -40,7 +40,7 @@ const Product = ({ form, param, supplier, setField }) => {
     <Form.Item
       form={form}
       name={param}
-      label={t('fields.product')}
+      label={t('fields.drawerProduct')}
       rules={[{ required: true, validator: validate }]}
       {...itemLayout}
     >

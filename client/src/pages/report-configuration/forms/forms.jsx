@@ -250,7 +250,7 @@ const ConfigForm = ({ value, visible, handleFormState, access, config }) => {
               enabled={enabled}
               canEmail={canEmail}
             />
-            {reports_closeout_job && value && (
+            {reports_closeout_job && value && value?.report_closeout_flag && (
               <div>
                 <Divider>{t('divider.reportJobs')}</Divider>
                 <Form.Item name="jobs" noStyle>

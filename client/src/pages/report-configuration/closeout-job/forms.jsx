@@ -38,7 +38,7 @@ const CloseoutJobForm = ({ value, rpt_file, rpt_cmpy, rpt_value, update }) => {
           const param = 'param' + param_seq.toString();
           return (
             <Col span={24} key={item}>
-              <Supplier form={form} param={param} supplier={rpt_cmpy} />
+              <Supplier form={form} value={value} param={param} supplier={rpt_cmpy} />
             </Col>
           );
         } else if (item.includes('CARR_CODE')) {
@@ -189,6 +189,7 @@ const CloseoutJobForm = ({ value, rpt_file, rpt_cmpy, rpt_value, update }) => {
         email_receivers: rpt_value?.report_cmpyemail,
         recurrence: rpt_value?.report_type,
         job_enabled: rpt_value?.report_enabled,
+        email_subject: rpt_value?.report_name,
       }}
     >
       {/* <Divider orientation="left">{t('fields.schedule')}</Divider> */}
@@ -214,7 +215,12 @@ const CloseoutJobForm = ({ value, rpt_file, rpt_cmpy, rpt_value, update }) => {
         </Col>
         {carrier}
         <Col span={24}>
-          <Form.Item name="recurrence" label={t('fields.type')} rules={[{ required: true }]} {...itemLayout}>
+          <Form.Item
+            name="recurrence"
+            label={t('fields.jobFrequency')}
+            rules={[{ required: true }]}
+            {...itemLayout}
+          >
             <Radio.Group buttonStyle="solid">
               <Radio.Button value={'D'}>Daily</Radio.Button>
               <Radio.Button value={'W'}>Weekly</Radio.Button>

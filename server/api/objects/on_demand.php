@@ -277,7 +277,8 @@ class OndemandReport extends CommonClass
         // if (!isset($this->supplier_code) || $this->supplier_code == "ANY" || $this->supplier_code == "undefined" || $this->supplier_code == "null") {
         //     $this->supplier_code = "-1";
         // }
-        if (isset($this->supplier_code) && $this->supplier_code == "ANY" || $this->is_manager) {
+        // if ((isset($this->supplier_code) && $this->supplier_code == "ANY") || $this->is_manager) {
+        if (isset($this->supplier_code) && $this->supplier_code == "ANY") {
             $this->supplier_code = "-1";
         }
 

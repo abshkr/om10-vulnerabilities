@@ -479,7 +479,7 @@
     "flags": "Flags",
     "meters": "Meters",
     "variances": "Variances",
-    "reportJobs": "Scheduled Jobs"
+    "reportJobs": "Additional Closeout Report Tasks"
   },
   "features": {
     "BASE_PROD__DENS_RANGE": "Base Product: Density Range",
@@ -2022,7 +2022,7 @@
     "reportCloseoutFlag": "Closeout Report",
     "reportJasperFile": "Report Source",
     "reportJasperFileExist": "Source Exists?",
-    "reportJobScheduled": "Job Scheduled?",
+    "reportJobScheduled": "Task Scheduled?",
     "reportOndemandTitle": "On-demand Name",
     "reportOndemandFlag": "On-demand Report",
     "reportAccumulativeFlag": "Accumulative Report",
@@ -2387,10 +2387,12 @@
     "journalHeatmap": "Alarm Heatmap",
     "journalAlarmsToday": "Alarms Today",
     "journalAlarmsYsd": "Alarms Yesterday",
-    "jobID": "Job ID",
-    "jobName": "Job Name",
+    "jobCompany": "Task Company",
+    "jobID": "Task ID",
+    "jobName": "Task Name",
+    "jobFrequency": "Frequency",
     "subject": "Subject",
-    "lastRun": "Last Run",
+    "lastRun": "Last Run Time",
     "transferIn": "Transfer In",
     "transferOut": "Transfer Out",
     "disposalForOffsite": "Disposal For Offsite"
@@ -2736,9 +2738,9 @@
     "viewTripSeals": "View Schedule Seals",
     "yes": "Yes",
     "scrollUp": "Scroll Up",
-    "addJob": "Add Job",
-    "editJob": "Edit Job",
-    "deleteJob": "Delete Job",
+    "addJob": "Add Task",
+    "editJob": "Edit Task",
+    "deleteJob": "Delete Task",
     "gotoFT": "Go To Fasttrack",
     "sendtoFT": "Send To Fasttrack"
   },

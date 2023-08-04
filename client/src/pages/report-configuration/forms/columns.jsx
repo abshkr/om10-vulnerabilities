@@ -14,10 +14,10 @@ const columns = (t, form, units) => [
     filter: 'FuzzyFilter',
   },
   {
-    headerName: t('fields.owner'),
+    headerName: t('fields.jobCompany'),
     field: 'job_owner',
     resizable: true,
-    width: 80,
+    width: 100,
     filter: 'MultiFilter',
   },
   {

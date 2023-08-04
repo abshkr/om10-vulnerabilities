@@ -71,7 +71,7 @@ const Product = ({ form, supplier, enabled, onChange }) => {
   };
 
   return (
-    <Form.Item form={form} name="products" label={t('fields.products')}>
+    <Form.Item form={form} name="products" label={t('fields.drawerProduct')}>
       <DataTable
         data={payload?.records}
         // height="20vh"
