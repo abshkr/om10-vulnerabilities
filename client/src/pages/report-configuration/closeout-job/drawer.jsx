@@ -6,7 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { ON_DEMAND_REPORTS } from 'api';
 
 const Drawer = ({ form, value, param, supplier, onChange }) => {
-  const { data: options, isValidating } = useSWR(ON_DEMAND_REPORTS.DRAWERS);
+  // const { data: options, isValidating } = useSWR(ON_DEMAND_REPORTS.DRAWERS);
+  const { data: options, isValidating } = useSWR(`${ON_DEMAND_REPORTS.DRAWERS}?parent=${supplier}`);
 
   const { t } = useTranslation();
 
@@ -54,7 +55,7 @@ const Drawer = ({ form, value, param, supplier, onChange }) => {
         }
       >
         {options?.records
-          .filter((o) => supplier === 'ANY' || o.cmpy_code === supplier)
+          // .filter((o) => supplier === 'ANY' || o.cmpy_code === supplier)
           .map((item, index) => (
             <Select.Option key={index} value={item.cmpy_code}>
               {item.cmpy_desc}

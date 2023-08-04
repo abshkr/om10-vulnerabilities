@@ -212,17 +212,37 @@ class OndemandReport extends CommonClass
         }
     }
 
+    // get all suppliers
+    public function strict_suppliers()
+    {
+        $plus_any = false;
+        if ($this->parent == "ANY" || $this->is_manager) {
+            $this->parent = "-1";
+            $plus_any = true;
+        }
+        if (!isset($this->parent)) {
+            $this->parent = "-1";
+        }
+        $serv = new CompanyService($this->conn);
+        return $serv->suppliers_by_parent($plus_any, $this->parent);
+        // return $serv->suppliers($plus_any = true);
+    }
+
     // get all drawers
     public function drawers()
     {
+        if (!isset($this->parent) || $this->parent == "ANY" || $this->is_manager) {
+            $this->parent = "-1";
+        }
         $serv = new CompanyService($this->conn);
-        return $serv->drawers($plus_any = true);
+        return $serv->drawers_by_parent($plus_any = true, $this->parent);
+        // return $serv->drawers($plus_any = true);
     }
 
     // get all carriers
     public function carriers()
     {
-        if (!isset($this->parent) || $this->parent == "ANY") {
+        if (!isset($this->parent) || $this->parent == "ANY" || $this->is_manager) {
             $this->parent = "-1";
         }
         $serv = new CompanyService($this->conn);
@@ -233,7 +253,7 @@ class OndemandReport extends CommonClass
     // get all customers
     public function customers()
     {
-        if (!isset($this->supplier) || $this->supplier == "ANY") {
+        if (!isset($this->supplier) || $this->supplier == "ANY" || $this->is_manager) {
             $this->supplier = "-1";
         }
         $serv = new CompanyService($this->conn);
@@ -244,7 +264,7 @@ class OndemandReport extends CommonClass
     // get all employers
     public function employers()
     {
-        if (!isset($this->parent) || $this->parent=="ANY") {
+        if (!isset($this->parent) || $this->parent=="ANY" || $this->is_manager) {
             $this->parent = "-1";
         }
         $serv = new CompanyService($this->conn);
@@ -257,7 +277,7 @@ class OndemandReport extends CommonClass
         // if (!isset($this->supplier_code) || $this->supplier_code == "ANY" || $this->supplier_code == "undefined" || $this->supplier_code == "null") {
         //     $this->supplier_code = "-1";
         // }
-        if (isset($this->supplier_code) && $this->supplier_code == "ANY") {
+        if (isset($this->supplier_code) && $this->supplier_code == "ANY" || $this->is_manager) {
             $this->supplier_code = "-1";
         }
 

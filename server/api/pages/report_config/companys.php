@@ -6,4 +6,4 @@ include_once '../../shared/header.php';
 include_once '../../config/database.php';
 include_once '../../objects/report_config.php';
 
-Utilities::read('ReportConfig', 'copmanys');
+Utilities::read('ReportConfig', 'companys');

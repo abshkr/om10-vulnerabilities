@@ -9,5 +9,6 @@ export const FILTERS = '/api/pages/on_demand/filters.php';
 export const CLOSE_OUTS = '/api/pages/on_demand/closeout_nrs.php';
 export const TERMINALS = '/api/pages/on_demand/terminals.php';
 export const PRODUCTS = '/api/pages/on_demand/products.php';
+export const STRICT_SUPPLIERS = '/api/pages/on_demand/strict_suppliers.php';
 
 export const CREATE = '/api/pages/on_demand/create.php';
