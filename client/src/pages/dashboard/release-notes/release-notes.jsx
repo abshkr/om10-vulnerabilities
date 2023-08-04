@@ -8,6 +8,22 @@ const { Panel } = Collapse;
 
 const data = [
   {
+    title: `Release Notes (10.8.0-rc.9) - 04/08/2023`,
+    content: (
+      <>
+        <>
+          <p>OM5K-11346 - <a href="https://dev.diamondkey.com/browse/OM5K-11346">https://dev.diamondkey.com/browse/OM5K-11346</a></p>
+          <p>OM5K-11347 - <a href="https://dev.diamondkey.com/browse/OM5K-11347">https://dev.diamondkey.com/browse/OM5K-11347</a></p>
+          <p>OM5K-11349 - <a href="https://dev.diamondkey.com/browse/OM5K-11349">https://dev.diamondkey.com/browse/OM5K-11349</a></p>
+          <p>OM5K-11376 - <a href="https://dev.diamondkey.com/browse/OM5K-11376">https://dev.diamondkey.com/browse/OM5K-11376</a></p>
+          <p>OM5K-11371 - <a href="https://dev.diamondkey.com/browse/OM5K-11371">https://dev.diamondkey.com/browse/OM5K-11371</a></p>
+          <p>OM5K-11374 - <a href="https://dev.diamondkey.com/browse/OM5K-11374">https://dev.diamondkey.com/browse/OM5K-11374</a></p>
+          <p>OM5K-11370 - <a href="https://dev.diamondkey.com/browse/OM5K-11370">https://dev.diamondkey.com/browse/OM5K-11370</a></p>
+	      </>
+      </>
+    ),
+  },
+  {
     title: `Release Notes (10.8.0-rc.8) - 01/08/2023`,
     content: (
       <>
