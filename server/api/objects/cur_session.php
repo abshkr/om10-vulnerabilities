@@ -64,7 +64,7 @@ class CurSession extends CommonClass
         Utilities::retrieve($alarms, $this, $stmt, $method=__FUNCTION__);   
         
         $feature_array['alarms'] = $alarms;
-        $feature_array['last_sequence'] = $last_sequence;
+        $feature_array['last_sequence'] = $start_time;
         $result = array();
         $result["records"] = $feature_array;
         echo json_encode($result, JSON_PRETTY_PRINT);
