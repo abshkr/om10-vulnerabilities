@@ -122,17 +122,17 @@ Team DKI", $auth_code);
         if (!$result)
         {
             write_log("Failed to send mail out, please contact administrator");
-            return [
+            return array(
                 "auth_code" => "",
                 "result" => false,
                 "err_msg" => "Failed to send out authentication mail, please contact administrator"
-            ];
+            );
         }
-        return [
+        array(
             "auth_code" => $auth_code,
             "result" => true,
             "err_msg" => ""
-        ];
+        );
     }
 
     public function post_check()
@@ -263,25 +263,25 @@ Team DKI", $auth_code);
                     $_SESSION['AUTH_CODE_CREATE_TIME'] = time();
 
                     // write_log(json_encode($_SESSION), __FILE__, __LINE__);
-                    return [
+                    return array(
                         "is_success" => true,
                         "twofa_result" => "AUTH 2FA",
                         "err_msg" => ""
-                    ];
+                    );
                 } else {
-                    return [
+                    return array(
                         "is_success" => false,
                         "twofa_result" => "NA",
                         "err_msg" => $mail_result['err_msg']
-                    ];
+                    );
                 }
                 
             }
         }
 
-        return [
+        return array(
             "is_success" => true,
             "twofa_result" => "NA"
-        ];
+        );
     }
 }
