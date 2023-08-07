@@ -83,6 +83,30 @@ class ReportConfig extends CommonClass
         }
     }
 
+    protected function is_closeout_report()
+    {
+        // check if the flag is turned on
+        $query = "
+            SELECT REPORT_CLOSEOUT_FLAG 
+            FROM GUI_REPORT_COMPANY 
+            WHERE REPORT_FILE = :rpt_file AND REPORT_CMPYCODE = :rpt_cmpy
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':rpt_file', $this->report_file);
+        oci_bind_by_name($stmt, ':rpt_cmpy', $this->report_cmpycode);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        } 
+        $row = oci_fetch_array($stmt, OCI_NO_AUTO_COMMIT);
+        if ((int)$row['REPORT_CLOSEOUT_FLAG'] > 0) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function read_decorate(&$result_array)
     {
         $serv = new SiteService($this->conn);
@@ -149,6 +173,9 @@ class ReportConfig extends CommonClass
         if (!$serv->reports_closeout_job()) {
             return true;
         }
+        if (!$this->is_closeout_report()) {
+            return true;
+        }
         
         $module = "REPORT_CLOSEOUT_JOB";
         foreach ($old as $item_key => $item_array) {
@@ -208,7 +235,11 @@ class ReportConfig extends CommonClass
 
         $serv = new SiteService($this->conn);
         if (!$serv->reports_closeout_job()) {
-            write_log("Do not continue because REPORTS_CLOSEOUT_JOB flag is off", __FILE__, __LINE__);
+            write_log("Do not continue because REPORTS_CLOSEOUT_JOB flag in SITE_CONFIG is off", __FILE__, __LINE__);
+            return true;
+        }
+        if (!$this->is_closeout_report()) {
+            write_log("Do not continue because REPORTS_CLOSEOUT_JOB flag in REPORT is off", __FILE__, __LINE__);
             return true;
         }
         
