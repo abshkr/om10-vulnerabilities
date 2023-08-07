@@ -57,7 +57,7 @@ class ReportConfig extends CommonClass
     {
         $query = "
             SELECT CMPY_CODE, CMPY_NAME
-            FROM GUI_COMPANYS
+            FROM COMPANYS
             ORDER BY DECODE(CMPY_CODE, 'ANY', 0, 1), CMPY_CODE";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
