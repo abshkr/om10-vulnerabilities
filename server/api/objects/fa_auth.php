@@ -128,7 +128,7 @@ Team DKI", $auth_code);
                 "err_msg" => "Failed to send out authentication mail, please contact administrator"
             );
         }
-        array(
+        return array(
             "auth_code" => $auth_code,
             "result" => true,
             "err_msg" => ""
