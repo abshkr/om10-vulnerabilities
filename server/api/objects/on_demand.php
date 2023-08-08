@@ -228,6 +228,21 @@ class OndemandReport extends CommonClass
         // return $serv->suppliers($plus_any = true);
     }
 
+    // get all companys
+    public function companys()
+    {
+        $plus_any = false;
+        if ($this->parent == "ANY" || $this->is_manager) {
+            $this->parent = "-1";
+            $plus_any = true;
+        }
+        if (!isset($this->parent)) {
+            $this->parent = "-1";
+        }
+        $serv = new CompanyService($this->conn);
+        return $serv->companys_by_parent($plus_any, $this->parent);
+    }
+
     // get all drawers
     public function drawers()
     {

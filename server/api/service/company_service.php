@@ -762,6 +762,31 @@ class CompanyService
         }
     }
 
+    public function companys_by_parent($plus_any = false, $parent="-1")
+    {
+        $query = "";
+        if ($plus_any && $parent == "-1") {
+            $query .= " SELECT 'ANY' CMPY_CODE, 'ALL' CMPY_NAME, 'ANY - ALL' CMPY_DESC FROM DUAL UNION ";
+        }
+        $query .= "
+            SELECT CMPY_CODE, CMPY_NAME,
+                CMPY_CODE||' - '||CMPY_NAME AS CMPY_DESC
+            FROM GUI_COMPANYS
+            WHERE (:parent = '-1' OR (CMPY_CODE = :parent))
+            ORDER BY CMPY_NAME ASC
+        ";
+        // write_log($query, __FILE__, __LINE__, LogLevel::ERROR);
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':parent', $parent);
+        if (oci_execute($stmt)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
+
     public function plants()
     {
         $query = "

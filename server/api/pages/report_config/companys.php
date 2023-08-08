@@ -4,6 +4,9 @@ include_once '../../shared/header.php';
 
 // include database and object files
 include_once '../../config/database.php';
-include_once '../../objects/report_config.php';
+// include_once '../../objects/report_config.php';
 
-Utilities::read('ReportConfig', 'companys');
+// Utilities::read('ReportConfig', 'companys');
+include_once '../../objects/on_demand.php';
+
+Utilities::read('OndemandReport', "companys");
