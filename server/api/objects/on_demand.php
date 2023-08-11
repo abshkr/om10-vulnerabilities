@@ -87,7 +87,7 @@ class OndemandReport extends CommonClass
         $query = "
             SELECT ARGUMENT_NAME, ARGUMENT_TYPE, REPORT_FILES.JASPER_FILE, LANG_ID
             FROM REPORT_FILTER, REPORT_FILES
-            WHERE REPORT_FILTER.JASPER_FILE = REPORT_FILES.JASPER_FILE AND RPT_FILE = :rpt_file 
+            WHERE REPORT_FILTER.JASPER_FILE(+) = REPORT_FILES.JASPER_FILE AND RPT_FILE = :rpt_file 
             ORDER BY ARGUMENT_SEQ
             ";
 
