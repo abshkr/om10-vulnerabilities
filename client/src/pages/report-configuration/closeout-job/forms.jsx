@@ -13,7 +13,7 @@ import Employer from './employer';
 import Drawer from './drawer';
 import Product from './product';
 
-const CloseoutJobForm = ({ value, rpt_file, rpt_cmpy, rpt_value, update }) => {
+const CloseoutJobForm = ({ value, rpt_file, rpt_cmpy, rpt_value, update, cancel }) => {
   const { t } = useTranslation();
 
   const [drawer, setDrawer] = useState(null);
@@ -84,6 +84,11 @@ const CloseoutJobForm = ({ value, rpt_file, rpt_cmpy, rpt_value, update }) => {
         }
       })
     : null;
+
+  const onCancel = () => {
+    cancel();
+    Modal.destroyAll();
+  };
 
   const onFinish = (values) => {
     values.to_create = IS_CREATING;
@@ -265,12 +270,7 @@ const CloseoutJobForm = ({ value, rpt_file, rpt_cmpy, rpt_value, update }) => {
         </Col>
       </Row>
       <Form.Item>
-        <Button
-          htmlType="button"
-          icon={<CloseOutlined />}
-          style={{ float: 'right' }}
-          onClick={() => Modal.destroyAll()}
-        >
+        <Button htmlType="button" icon={<CloseOutlined />} style={{ float: 'right' }} onClick={onCancel}>
           {t('operations.cancel')}
         </Button>
 

@@ -38,6 +38,7 @@ const ConfigForm = ({ value, visible, handleFormState, access, config }) => {
   const [canEmail, setCanEmail] = useState(undefined);
   const [selected, setSelected] = useState(null);
   const [jobs, setJobs] = useState(payload?.records);
+  const [tableAPI, setTableAPI] = useState(null);
 
   const fields = columns(t, form);
 
@@ -56,12 +57,19 @@ const ConfigForm = ({ value, visible, handleFormState, access, config }) => {
           rpt_cmpy={value?.report_cmpycode}
           rpt_value={value}
           update={onJobUpdate}
+          cancel={onJobCancel}
         />
       ),
       id: v?.job_id,
       name: v?.job_name,
       t,
     });
+  };
+
+  const onJobCancel = () => {
+    tableAPI.deselectAll();
+    setSelected(null);
+    // revalidate();
   };
 
   const onJobUpdate = (values) => {
@@ -83,6 +91,8 @@ const ConfigForm = ({ value, visible, handleFormState, access, config }) => {
         jobs: [...filtered, values],
       });
     }
+    tableAPI.deselectAll();
+    setSelected(null);
   };
 
   const deleteJob = () => {
@@ -259,6 +269,7 @@ const ConfigForm = ({ value, visible, handleFormState, access, config }) => {
                     columns={fields}
                     parentHeight="23vh"
                     handleSelect={(value) => setSelected(value[0])}
+                    apiContext={setTableAPI}
                     minimal
                   />
                 </Form.Item>
