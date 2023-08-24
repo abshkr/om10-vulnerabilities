@@ -107,6 +107,7 @@ const DrawerForm = ({
 
   const handleImport = () => {
     // pop up the dialog to manage straping data import
+    console.log('......handleImport..', bases);
     RatioImportManager(
       t('operations.importEdit'),
       value,
@@ -194,6 +195,19 @@ const DrawerForm = ({
     setFieldsValue({
       prod_check_hot_volume: hotFound,
     });
+  };
+
+  const countMainBase = (bases) => {
+    let countMainBase = 0;
+
+    for (let i = 0; i < bases.length; i++) {
+      const base = bases[i];
+      if (!!base && base?.pitem_adtv_flag === false) {
+        countMainBase += 1;
+      }
+    }
+
+    return countMainBase;
   };
 
   const adjustBlendFlag = (bases) => {
@@ -570,14 +584,16 @@ const DrawerForm = ({
         return;
       }
 
-      if (config?.siteRecipeOnPercent) {
+      const totalMainBases = countMainBase(values.bases);
+      if (config?.siteRecipeOnPercent && totalMainBases > 0) {
         const totalRatios = getTotalRatios(values.bases, 'pitem_ratio_value');
         // get total additive ratios
         const mainBaseTotals = getMainBaseTotals(values.bases, 'pitem_ratio_percent_ppm', 'pitem_base_class');
         if (totalRatios !== 1000000 || mainBaseTotals !== 100) {
           Modal.info({
             // title: (totalRatios !== 1000000 && user_code === '9999' ? t('prompts.ratioTotalNotMillion') : '') + (mainBaseTotals !== 100 ? t('prompts.percentTotalNot100') : ''),
-            title: t('prompts.percentTotalNot100'),
+            // title: t('prompts.percentTotalNot100'),
+            title: `${t('prompts.percentTotalNot100')} (%: ${mainBaseTotals}/ppm: ${totalRatios})`,
             okText: t('operations.cancel'),
           });
           return;

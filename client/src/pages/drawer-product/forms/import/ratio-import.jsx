@@ -357,9 +357,10 @@ const RatioImport = ({ value, bases, onClose, config, pipenodeBases, user_code }
         });
       }
       if (
-        ratio?.pitem_ratio_percent_ppm === undefined ||
-        ratio?.pitem_ratio_percent_ppm === null ||
-        ratio?.pitem_ratio_percent_ppm === ''
+        config?.siteRecipeOnPercent &&
+        (ratio?.pitem_ratio_percent_ppm === undefined ||
+          ratio?.pitem_ratio_percent_ppm === null ||
+          ratio?.pitem_ratio_percent_ppm === '')
       ) {
         errors.push({
           field: `${t('validate.set')} ─ ${t('fields.pitemRatioPercentPPM')}`,
@@ -453,6 +454,7 @@ const RatioImport = ({ value, bases, onClose, config, pipenodeBases, user_code }
 
       // the field "ratio_percent_ppm" must be a positive number
       if (
+        config?.siteRecipeOnPercent &&
         !(
           ratio?.pitem_ratio_percent_ppm === undefined ||
           ratio?.pitem_ratio_percent_ppm === null ||
