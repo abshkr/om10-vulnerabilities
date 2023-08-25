@@ -1,6 +1,13 @@
 import { EQUIPMENT_TYPES, EQUIPMENT_LIST } from 'constants/routes';
 
-const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit, carrcode_tankernum_tag) => {
+const columns = (
+  expiryTypes,
+  t,
+  expiryDateMode,
+  siteUseAxleWeightLimit,
+  carrcode_tankernum_tag,
+  siteUseLongVehicle
+) => {
   const expiryColumns = [];
 
   if (expiryDateMode === '1') {
@@ -172,6 +179,17 @@ const columns = (expiryTypes, t, expiryDateMode, siteUseAxleWeightLimit, carrcod
       filter: 'MultiFilter',
       suppressSizeToFit: true,
       width: 140,
+    },
+    {
+      headerName: t('fields.longVehicle'),
+      field: 'tnkr_long_vehicle',
+      sortable: true,
+      resizable: true,
+      cellRenderer: 'BooleanRenderer',
+      filter: 'BooleanFilter',
+      suppressSizeToFit: true,
+      width: 140,
+      hide: !siteUseLongVehicle,
     },
     {
       headerName: t('fields.locked'),

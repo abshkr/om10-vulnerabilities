@@ -23,6 +23,7 @@ class Tanker extends CommonClass
         "TNKR_ACTIVE" => "Y",
         "TNKR_BAY_LOOP_CH" => "Y",
         "TNKR_ARCHIVE" => "Y",
+        "TNKR_LONG_VEHICLE" => "Y",
         "EQPT_LOCK" => "Y",
         "EQP_MUST_TARE_IN" => "Y",
     );
@@ -828,6 +829,7 @@ class Tanker extends CommonClass
                 TNKR_LOCK,
                 TNKR_ACTIVE,
                 TNKR_BAY_LOOP_CH,
+                TNKR_LONG_VEHICLE,
                 TNKR_ARCHIVE,
                 TNKR_OWN_TXT,
                 TNKR_LAST_DEPOT,
@@ -853,6 +855,7 @@ class Tanker extends CommonClass
                 :tnkr_lock,
                 :tnkr_active,
                 :tnkr_bay_loop_ch,
+                :tnkr_long_vehicle,
                 :tnkr_archive,
                 :tnkr_own_txt,
                 :term_code,
@@ -872,6 +875,7 @@ class Tanker extends CommonClass
         oci_bind_by_name($stmt, ':tnkr_active', $this->tnkr_active);
         oci_bind_by_name($stmt, ':tnkr_max_kg', $this->tnkr_max_kg);
         oci_bind_by_name($stmt, ':tnkr_bay_loop_ch', $this->tnkr_bay_loop_ch);
+        oci_bind_by_name($stmt, ':tnkr_long_vehicle', $this->tnkr_long_vehicle);
         oci_bind_by_name($stmt, ':tnkr_ntrips', $this->tnkr_ntrips);
         oci_bind_by_name($stmt, ':tnkr_own_txt', $this->tnkr_own_txt);
         // oci_bind_by_name($stmt, ':tnkr_lic_exp', $this->tnkr_lic_exp);
@@ -1281,6 +1285,7 @@ class Tanker extends CommonClass
                 TNKR_ACTIVE = :tnkr_active,
                 TNKR_MAX_KG = :tnkr_max_kg,
                 TNKR_BAY_LOOP_CH = :tnkr_bay_loop_ch,
+                TNKR_LONG_VEHICLE = :tnkr_long_vehicle,
                 TNKR_NTRIPS = :tnkr_ntrips,
                 TNKR_OWN_TXT = :tnkr_own_txt,
                 STATS = :stats,
@@ -1300,6 +1305,7 @@ class Tanker extends CommonClass
         oci_bind_by_name($stmt, ':tnkr_active', $this->tnkr_active);
         oci_bind_by_name($stmt, ':tnkr_max_kg', $this->tnkr_max_kg);
         oci_bind_by_name($stmt, ':tnkr_bay_loop_ch', $this->tnkr_bay_loop_ch);
+        oci_bind_by_name($stmt, ':tnkr_long_vehicle', $this->tnkr_long_vehicle);
         oci_bind_by_name($stmt, ':tnkr_ntrips', $this->tnkr_ntrips);
         oci_bind_by_name($stmt, ':tnkr_own_txt', $this->tnkr_own_txt);
         oci_bind_by_name($stmt, ':stats', $this->tnkr_stats);
@@ -1615,7 +1621,7 @@ class Tanker extends CommonClass
         }
 
         $module = "GUI_TANKERS";
-        $record = sprintf("tanker:%s, owner:%s", $this->tnkr_code, $this->tnkr_owner);
+        $record = sprintf("tnkr_code:%s, tnkr_owner:%s", $this->tnkr_code, $this->tnkr_owner);
         if (!$journal->updateChanges($old_row, $new_row, $module, $record)) {
             oci_rollback($this->conn);
             return false;

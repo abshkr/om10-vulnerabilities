@@ -91,7 +91,14 @@ const TankerList = () => {
 
   const [data, setData] = useState(payload?.records);
   const [fields, setFields] = useState(
-    columns(expiryTypes?.records, t, expiryDateMode, siteUseAxleWeightLimit, config?.carrcode_tankernum_tag)
+    columns(
+      expiryTypes?.records,
+      t,
+      expiryDateMode,
+      siteUseAxleWeightLimit,
+      config?.carrcode_tankernum_tag,
+      config?.siteUseLongVehicle
+    )
   );
 
   const handleFormState = (visibility, value) => {
@@ -219,7 +226,8 @@ const TankerList = () => {
           t,
           expiryDateMode,
           siteUseAxleWeightLimit,
-          config?.carrcode_tankernum_tag
+          config?.carrcode_tankernum_tag,
+          config?.siteUseLongVehicle
         )
       );
     }

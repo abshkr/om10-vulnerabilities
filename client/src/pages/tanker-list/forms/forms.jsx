@@ -372,6 +372,9 @@ const FormModal = ({
         </>
       ),
       onOk: async () => {
+        if (!config?.siteUseLongVehicle) {
+          values.tnkr_long_vehicle = IS_CREATING ? false : value?.tnkr_long_vehicle;
+        }
         values.bulk_edit = bulk_edit;
         await api
           .post(IS_CREATING ? TANKER_LIST.CREATE : TANKER_LIST.UPDATE, values)
@@ -665,7 +668,7 @@ const FormModal = ({
             <Row gutter={[8, 2]}>
               <Col span={8}>{tanker_slp_enabled && <SLP form={form} value={value} config={config} />}</Col>
               <Col span={16}>
-                <Locks form={form} value={value} />
+                <Locks form={form} value={value} config={config} />
               </Col>
             </Row>
 

@@ -4324,16 +4324,16 @@
     "TANKERS": {
       "TNKR_LAST_DEPOT": "Tanker Last Depot",
       "TNKR_CODE": "Tanker Code",
-      "TNKR_LOCK": "Tanker Lock",
+      "TNKR_LOCK": "Tanker Locked",
       "TNKR_CARRIER": "Tanker Carrier",
       "TNKR_ETP": "Tanker Equipment Type",
       "TNKR_DEST_DEPOT": "Tanker Dest Depot",
-      "TNKR_CUR_DEPOT": "Tanker Cur Depot",
+      "TNKR_CUR_DEPOT": "Tanker Current Depot",
       "TNKR_OWNER": "Tanker Owner",
       "TNKR_ACTIVE": "Tanker Active",
       "TNKR_BASE_SITE": "Tanker Base Site",
       "TNKR_MAX_KG": "Tanker Max Kg",
-      "TNKR_BAY_LOOP_CH": "Tanker Bay Loop Ch",
+      "TNKR_BAY_LOOP_CH": "Tanker Bay Loop Check",
       "TNKR_NTRIPS": "Tanker Ntrips",
       "TNKR_OWN_TXT": "Tanker Own Txt",
       "TNKR_LIC_EXP": "Tanker Lic Exp",
@@ -4343,7 +4343,8 @@
       "LAST_TRIP": "Last Trip",
       "TNKR_NAME": "Tanker Name",
       "TNKR_PIN": "Tanker Pin",
-      "TNKR_ARCHIVE": "Tanker Archive",
+      "TNKR_ARCHIVE": "Tanker Archived",
+      "TNKR_LONG_VEHICLE": "Long Vehicle",
       "REMARKS": "Remarks"
     },
     "TANKS": {
@@ -9404,6 +9405,7 @@
       "TNKR_NAME": "油槽车名称",
       "TNKR_PIN": "数字密码",
       "TNKR_ARCHIVE": "归档标记",
+      "TNKR_LONG_VEHICLE": "超长车辆标记",
       "REMARKS": "备注"
     },
     "TANKS": {

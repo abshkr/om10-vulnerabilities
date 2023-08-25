@@ -252,6 +252,7 @@ const useConfig = () => {
     prodmvmnt_to_movement: false,
     sitePickupTripStart: 800000000,
     sitePickupTripEnd: 999999999,
+    siteUseLongVehicle: false,
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -566,6 +567,7 @@ const useConfig = () => {
         prodmvmnt_to_movement: configurationObject?.PRODUCT_MVMNT_TO_MOVEMENT || false,
         sitePickupTripStart: configurationObject?.SITE_PICKUP_TRIP_START || 800000000,
         sitePickupTripEnd: configurationObject?.SITE_PICKUP_TRIP_END || 999999999,
+        siteUseLongVehicle: configurationObject?.SITE_USE_LONG_VEHICLE || false,
       });
 
       // utils function cannot use hooks, use global constants to by pass
