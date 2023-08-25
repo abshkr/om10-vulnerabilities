@@ -340,13 +340,44 @@ class Folio extends CommonClass
         return $vcf_response;
     }
 
+    private function get_single_basecode ($prod_code, $prod_cmpy) 
+    {
+        $query = "
+            SELECT RATIO_BASE 
+            FROM RATIOS 
+            WHERE RAT_PROD_PRODCMPY = :drawer 
+                AND RAT_PROD_PRODCODE = :prod 
+            ORDER BY RATIO_VALUE DESC
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':drawer', $prod_cmpy);
+        oci_bind_by_name($stmt, ':prod', $prod_code);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return "";
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $base = $row['RATIO_BASE'];
+        
+        return $base;
+    }
+
     public function calc_vcf()
     {
-        $query = "frm_baseCd=" . $this->frm_baseCd . 
-            "&frm_which_type=" . $this->frm_which_type . 
-            "&frm_real_amount=" . $this->frm_real_amount . 
-            "&frm_real_temp=" . $this->frm_real_temp . 
-            "&frm_real_dens=" . $this->frm_real_dens;
+        $base_code = $this->frm_baseCd;
+        if (isset($this->frm_drawer)) {
+            $ratio_base = $this->get_single_basecode($this->frm_baseCd, $this->frm_drawer);
+            if ($ratio_base != "") {
+                $base_code = $ratio_base;
+            }
+        }
+        $query = "frm_baseCd=" . rawurlencode(strip_tags($base_code)) . 
+            "&frm_which_type=" . rawurlencode(strip_tags($this->frm_which_type)) . 
+            "&frm_real_amount=" . rawurlencode(strip_tags($this->frm_real_amount)) . 
+            "&frm_real_temp=" . rawurlencode(strip_tags($this->frm_real_temp)) . 
+            "&frm_real_dens=" . rawurlencode(strip_tags($this->frm_real_dens));
         $cgi_response = Utilities::http_cgi_invoke("cgi-bin/en/calcvcf.cgi", $query);
         write_log(json_encode($cgi_response), __FILE__, __LINE__);
 
@@ -448,10 +479,10 @@ class Folio extends CommonClass
             }
 
             $query_string = "frm_which_type=" . rawurlencode(strip_tags($value->frm_which_type)) 
-                . "&frm_real_amount=" . $amount 
-                . "&frm_baseCd=" . $value->tank_basecode 
-                . "&frm_real_temp=" . $value->close_temp 
-                . "&frm_real_dens=" . $value->close_density;
+                . "&frm_real_amount=" . rawurlencode(strip_tags($amount)) 
+                . "&frm_baseCd=" . rawurlencode(strip_tags($value->tank_basecode)) 
+                . "&frm_real_temp=" . rawurlencode(strip_tags($value->close_temp)) 
+                . "&frm_real_dens=" . rawurlencode(strip_tags($value->close_density));
             $result = Utilities::http_cgi_invoke("cgi-bin/en/calcvcf.cgi", $query_string);
             write_log(json_encode($result), __FILE__, __LINE__);
 

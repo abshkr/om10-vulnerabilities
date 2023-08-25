@@ -290,6 +290,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
       'mlitm_dens_cor',
       'mlitm_prodcode',
       'mlitm_prodcode_to',
+      'mlitm_prodcmpy',
+      'mlitm_prodcmpy_to',
     ]);
 
     console.log('spec onCalculate', payload, quantitySource);
@@ -400,6 +402,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateSpecial
           await api
             .post(SPECIAL_MOVEMENTS.CALCULATE, {
               frm_baseCd: TO.includes(type) ? values.mlitm_prodcode_to : values.mlitm_prodcode,
+              frm_drawer: TO.includes(type) ? values.mlitm_prodcmpy_to : values.mlitm_prodcmpy,
               frm_which_type: quantitySource?.type,
               frm_real_amount: quantitySource?.qty,
               frm_real_temp: values.mlitm_temp_amb,

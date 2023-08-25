@@ -546,6 +546,7 @@ const FormModal = ({
       await api
         .post(NOMINATION_TRANSACTIONS.CALCULATE, {
           frm_baseCd: pageState === 'receipt' ? value?.mvitm_prodcode_to : value?.mvitm_prodcode_from,
+          frm_drawer: pageState === 'receipt' ? value?.mvitm_prodcmpy_to : value?.mvitm_prodcmpy_from,
           frm_which_type: calcSource?.type, //'LT',
           frm_real_amount: calcSource?.qty, //values.mlitm_qty_amb,
           frm_real_temp: values?.mlitm_temp_amb,
