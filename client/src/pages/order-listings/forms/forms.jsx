@@ -46,6 +46,7 @@ import columns from './columns';
 import Period from './item-periods';
 import OrderTrips from './order-trips';
 import OrderItemTrips from './item-trips';
+import Attachments from './attachments';
 
 import DeliveryDetails from '../../delivery-details';
 import { ManualTransactionsPopup } from '../../manual-transactions';
@@ -898,6 +899,11 @@ const FormModal = ({
                   }}
                 />
               )}
+            </TabPane>
+          )}
+          {config?.siteAllowUploadOODoc && (
+            <TabPane tab={t('tabColumns.attachments')} disabled={IS_CREATING} key="6">
+              <Attachments value={value} config={config} />
             </TabPane>
           )}
         </Tabs>

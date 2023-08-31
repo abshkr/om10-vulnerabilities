@@ -3019,15 +3019,25 @@
       "CREATE_TIME": "Create Time",
       "OPERATOR": "Operator"
     },
+    "ORD_DOCS": {
+      "OD_ORDER_NO": "Order No",
+      "OD_DOC_NAME": "Name",
+      "OD_DOC_FOLDER": "Folder",
+      "OD_DOC_SIZE": "Size",
+      "OD_DOC_CREATOR": "Creator",
+      "OD_DOC_CREATED": "Creation Date",
+      "OD_DOC_DOWNLOADED": "Download Date",
+      "OD_DOC_DNLDCOUNTS": "Download Counts"
+    },
     "ORD_INSTRUCT": {
-      "OI_ORDER_NO": "Oi Order No",
-      "OI_INSTR_COUNTER": "Oi Instr Counter",
-      "OI_INSTRUCTION": "Oi Instruction"
+      "OI_ORDER_NO": "Order No",
+      "OI_INSTR_COUNTER": "Order Instr Counter",
+      "OI_INSTRUCTION": "Order Instruction"
     },
     "ORD_SCHEDULE": {
-      "OS_ORDER_NO": "Os Order No",
-      "OS_SHL_SHLSTRIP": "Os Schedule Trip",
-      "OS_SHL_SHLSSUPP": "Os Schedule Supplier",
+      "OS_ORDER_NO": "Order No",
+      "OS_SHL_SHLSTRIP": "Schedule Trip",
+      "OS_SHL_SHLSSUPP": "Schedule Supplier",
       "OS_INVOICED": "Os Invoiced"
     },
     "OUT_MESSAGES": {
@@ -8079,6 +8089,16 @@
       "EXPIRED_DATE": "Expired Date",
       "CREATE_TIME": "Create Time",
       "OPERATOR": "Operator"
+    },
+    "ORD_DOCS": {
+      "OD_ORDER_NO": "系统订单号",
+      "OD_DOC_NAME": "订单附件名称",
+      "OD_DOC_FOLDER": "附件目录",
+      "OD_DOC_SIZE": "附件大小",
+      "OD_DOC_CREATOR": "附件创建者",
+      "OD_DOC_CREATED": "附件创建时间",
+      "OD_DOC_DOWNLOADED": "附件下载时间",
+      "OD_DOC_DNLDCOUNTS": "附件下载次数"
     },
     "ORD_INSTRUCT": {
       "OI_ORDER_NO": "系统订单号",

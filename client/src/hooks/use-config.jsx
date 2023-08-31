@@ -253,6 +253,8 @@ const useConfig = () => {
     sitePickupTripStart: 800000000,
     sitePickupTripEnd: 999999999,
     siteUseLongVehicle: false,
+    siteAllowUploadOODoc: false,
+    siteFileExtOODoc: '.xls, .xlsx, .csv',
   });
 
   const { data: configuration } = useSWR(SITE_CONFIGURATION.READ, { revalidateOnFocus: false });
@@ -568,6 +570,8 @@ const useConfig = () => {
         sitePickupTripStart: configurationObject?.SITE_PICKUP_TRIP_START || 800000000,
         sitePickupTripEnd: configurationObject?.SITE_PICKUP_TRIP_END || 999999999,
         siteUseLongVehicle: configurationObject?.SITE_USE_LONG_VEHICLE || false,
+        siteAllowUploadOODoc: configurationObject?.SITE_ALLOW_UPLOAD_OO_DOC || false,
+        siteFileExtOODoc: configurationObject?.SITE_FILE_EXT_OO_DOC || '.xls, .xlsx, .csv',
       });
 
       // utils function cannot use hooks, use global constants to by pass

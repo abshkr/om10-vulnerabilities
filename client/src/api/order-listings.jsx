@@ -34,3 +34,11 @@ export const PERIOD_READ = '/api/pages/open_order/ordperiod_read.php';
 export const PERIOD_CREATE = '/api/pages/open_order/ordperiod_create.php';
 export const PERIOD_UPDATE = '/api/pages/open_order/ordperiod_update.php';
 export const PERIOD_DELETE = '/api/pages/open_order/ordperiod_delete.php';
+
+export const READ_FILE = '/api/pages/ord_attachment/read.php';
+export const CREATE_FILE = '/api/pages/ord_attachment/create.php';
+export const UPDATE_FILE = '/api/pages/ord_attachment/update.php';
+export const UPDATE_FILES = '/api/pages/ord_attachment/update_array.php';
+export const DELETE_FILE = '/api/pages/ord_attachment/delete.php';
+export const ATTACHMENTS = '/api/pages/ord_attachment/attachments.php';
+export const UPLOAD_FILE = '/api/pages/ord_attachment/upload.php';

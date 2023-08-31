@@ -3044,6 +3044,16 @@
     "CREATE_TIME": "NA",
     "OPERATOR": "NA"
   },
+  "ORD_DOCS": {
+    "OD_ORDER_NO": "NA",
+    "OD_DOC_NAME": "NA",
+    "OD_DOC_FOLDER": "NA",
+    "OD_DOC_SIZE": "NA",
+    "OD_DOC_CREATOR": "NA",
+    "OD_DOC_CREATED": "NA",
+    "OD_DOC_DOWNLOADED": "NA",
+    "OD_DOC_DNLDCOUNTS": "NA"
+  },
   "ORD_INSTRUCT": {
     "OI_ORDER_NO": "NA",
     "OI_INSTR_COUNTER": "NA",
