@@ -22,6 +22,16 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
+    headerName: t('fields.baseProdRefCode'),
+    field: 'base_ref_code',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
+    hide: !config?.siteUseBaseRefCode,
+    width: 200,
+    suppressSizeToFit: true,
+  },
+  {
     headerName: t('fields.baseProdColor'),
     field: 'base_color',
     sortable: true,

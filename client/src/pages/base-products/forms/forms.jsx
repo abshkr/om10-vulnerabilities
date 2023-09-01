@@ -43,6 +43,7 @@ import {
   AdaptiveFlowControlFlag,
   AdaptiveFlowControlPriority,
   PidxCode,
+  RefCode,
 } from './fields';
 
 import api, { BASE_PRODUCTS, ADAPTIVE_FLOW_CONTROL, BASE_OWNERS } from '../../../api';
@@ -331,7 +332,17 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       <Form layout="vertical" form={form} scrollToFirstError>
         <Tabs defaultActiveKey="1">
           <TabPane tab={t('tabColumns.general')} key="1">
-            <Code form={form} value={value} config={config} />
+            <Row gutter={[12, 4]}>
+              <Col span={config?.siteUseBaseRefCode ? 12 : 24}>
+                <Code form={form} value={value} config={config} />
+              </Col>
+              {config?.siteUseBaseRefCode && (
+                <Col span={12}>
+                  <RefCode form={form} value={value} config={config} />
+                </Col>
+              )}
+            </Row>
+
             <Name form={form} value={value} />
 
             <Row gutter={[12, 4]}>

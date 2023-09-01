@@ -312,6 +312,17 @@ const columns = (t, config, form, pipenodeBases, user_code) => [
     width: 160,
     suppressSizeToFit: true,
   },
+
+  {
+    headerName: t('fields.baseProdRefCode'),
+    field: 'pitem_base_ref_code',
+    sortable: true,
+    resizable: true,
+    filter: 'FuzzyFilter',
+    hide: !config?.siteUseBaseRefCode,
+    width: 200,
+    suppressSizeToFit: true,
+  },
 ];
 
 export default columns;

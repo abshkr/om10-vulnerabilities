@@ -14,6 +14,7 @@ import HotTempFlag from './hot-temp-flag';
 import AdaptiveFlowControlFlag from './afc-flag';
 import AdaptiveFlowControlPriority from './afc-priority';
 import PidxCode from './pidx-code';
+import RefCode from './ref-code';
 
 export {
   Code,
@@ -32,4 +33,5 @@ export {
   AdaptiveFlowControlFlag,
   AdaptiveFlowControlPriority,
   PidxCode,
+  RefCode,
 };

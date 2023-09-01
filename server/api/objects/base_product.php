@@ -73,6 +73,7 @@ class BaseProduct extends CommonClass
             SELECT
                 BP.BASE_CODE,
                 BP.BASE_NAME,
+                BP.BASE_REF_CODE,
                 BP.BASE_PIDX_CODE,
                 DECODE(BP.BASE_PROD_GROUP, 'NULL', '', BP.BASE_PROD_GROUP) AS BASE_PROD_GROUP,
                 BG.PGR_DESCRIPTION AS BASE_GROUP_NAME,
@@ -190,6 +191,7 @@ class BaseProduct extends CommonClass
                 BASE_STOCK_UNIT,
                 BASE_GAINLOSS_UNIT,
                 BASE_PIDX_CODE,
+                BASE_REF_CODE,
                 BASE_CODE
             )
             VALUES (
@@ -209,6 +211,7 @@ class BaseProduct extends CommonClass
                 :base_stock_unit,
                 :base_gainloss_unit,
                 :base_pidx_code,
+                :base_ref_code,
                 :base_code
             )";
         $stmt = oci_parse($this->conn, $query);
@@ -229,6 +232,7 @@ class BaseProduct extends CommonClass
         oci_bind_by_name($stmt, ':base_gainloss_unit', $this->base_gainloss_unit);
         oci_bind_by_name($stmt, ':base_code', $this->base_code);
         oci_bind_by_name($stmt, ':base_pidx_code', $this->base_pidx_code);
+        oci_bind_by_name($stmt, ':base_ref_code', $this->base_ref_code);
 
         if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
             $e = oci_error($stmt);
