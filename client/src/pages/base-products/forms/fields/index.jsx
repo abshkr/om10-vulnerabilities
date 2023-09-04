@@ -15,6 +15,7 @@ import AdaptiveFlowControlFlag from './afc-flag';
 import AdaptiveFlowControlPriority from './afc-priority';
 import PidxCode from './pidx-code';
 import RefCode from './ref-code';
+import ManualFlag from './manual-flag';
 
 export {
   Code,
@@ -34,4 +35,5 @@ export {
   AdaptiveFlowControlPriority,
   PidxCode,
   RefCode,
+  ManualFlag,
 };

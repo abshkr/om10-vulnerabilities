@@ -32,6 +32,17 @@ const columns = (t, config) => [
     suppressSizeToFit: true,
   },
   {
+    headerName: t('fields.baseProdManual'),
+    field: 'base_manual',
+    filter: 'BooleanFilter',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'BooleanRenderer',
+    suppressSizeToFit: true,
+    hide: !config.siteUseBaseManualFlag,
+    width: 200,
+  },
+  {
     headerName: t('fields.baseProdColor'),
     field: 'base_color',
     sortable: true,

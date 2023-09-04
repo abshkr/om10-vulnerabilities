@@ -323,6 +323,17 @@ const columns = (t, config, form, pipenodeBases, user_code) => [
     width: 200,
     suppressSizeToFit: true,
   },
+  {
+    headerName: t('fields.baseProdManual'),
+    field: 'pitem_base_manual',
+    filter: 'BooleanFilter',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'BooleanRenderer',
+    suppressSizeToFit: true,
+    hide: !config.siteUseBaseManualFlag,
+    width: 200,
+  },
 ];
 
 export default columns;

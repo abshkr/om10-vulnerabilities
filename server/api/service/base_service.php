@@ -22,6 +22,7 @@ class BaseService
                 bp.BASE_CODE                    as BASE_CODE,
                 bp.BASE_NAME                    as BASE_NAME,
                 bp.BASE_REF_CODE                as BASE_REF_CODE,
+                bp.BASE_MANUAL                  as BASE_MANUAL,
                 bp.BASE_PIDX_CODE               as BASE_PIDX_CODE,
                 bp.BASE_CAT                     as BCLASS_NO,
                 decode(bp.BASE_CAT, 6, 1, 0)	as BASE_ADTV,

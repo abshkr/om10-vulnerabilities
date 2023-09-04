@@ -44,6 +44,7 @@ import {
   AdaptiveFlowControlPriority,
   PidxCode,
   RefCode,
+  ManualFlag,
 } from './fields';
 
 import api, { BASE_PRODUCTS, ADAPTIVE_FLOW_CONTROL, BASE_OWNERS } from '../../../api';
@@ -379,7 +380,18 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
 
             {/* <Divider style={{padding: 0, margin: 0}} /> */}
 
-            {manageHotProduct && <HotTempFlag form={form} value={value} />}
+            <Row gutter={[12, 4]}>
+              {manageHotProduct && (
+                <Col span={12}>
+                  <HotTempFlag form={form} value={value} />
+                </Col>
+              )}
+              {config?.siteUseBaseManualFlag && (
+                <Col span={12}>
+                  <ManualFlag form={form} value={value} />
+                </Col>
+              )}
+            </Row>
 
             <Row gutter={[12, 4]}>
               <Col span={12}>

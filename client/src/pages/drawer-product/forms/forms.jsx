@@ -415,6 +415,8 @@ const DrawerForm = ({
 
           selected.pitem_base_name = values.pitem_base_name;
           selected.pitem_pidx_code = values.pitem_pidx_code;
+          selected.pitem_base_ref_code = values.pitem_base_ref_code;
+          selected.pitem_base_manual = values.pitem_base_manual;
           selected.pitem_bclass_name = values.pitem_bclass_name;
 
           selected.pitem_base_class = values.pitem_base_class;
@@ -484,6 +486,8 @@ const DrawerForm = ({
         pitem_bclass_vcf_alg: values.pitem_bclass_vcf_alg,
         pitem_bclass_temp_lo: values.pitem_bclass_temp_lo,
         pitem_bclass_temp_hi: values.pitem_bclass_temp_hi,
+        pitem_base_ref_code: values.pitem_base_ref_code,
+        pitem_base_manual: values.pitem_base_manual,
       });
     }
 

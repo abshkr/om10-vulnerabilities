@@ -88,6 +88,8 @@ const FormModal = ({ value, handleBaseCallBack, config, tableBases }) => {
     values.pitem_base_name = baseItem.base_name;
     values.pitem_pidx_code = baseItem.base_pidx_code;
     values.pitem_bclass_name = baseItem.bclass_desc;
+    values.pitem_base_ref_code = baseItem.base_ref_code;
+    values.pitem_base_manual = baseItem.base_manual;
 
     values.pitem_base_class = baseItem.bclass_no;
     values.pitem_adtv_flag = adtvFlag; //baseItem.base_adtv==='0' ? false : true;
