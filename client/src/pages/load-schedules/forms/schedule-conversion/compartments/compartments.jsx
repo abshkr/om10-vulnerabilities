@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { DataTable } from '../../../../../components';
 
 import api, { LOAD_SCHEDULES } from '../../../../../api';
+import { adjustPreloadQuantity } from '../../../../../utils';
 
 import { ProductEditor, UnitEditor, ScheduleEditor, PreloadEditor } from './fields';
 
@@ -23,6 +24,24 @@ const Compartments = ({ form, value, tanker, config, products, units }) => {
 
   const [compartments, setCompartments] = useState([]);
   const [tableAPI, setTableAPI] = useState(null);
+
+  const onCellUpdate = (value) => {
+    if (value?.colDef?.field === 'qty_scheduled') {
+      const current = form.getFieldValue('compartments');
+
+      console.log('...........onCellUpdate', value?.data?.qty_scheduled, value?.data?.qty_preload, value);
+      const preload = adjustPreloadQuantity(
+        config?.sitePreloadDeductFromPreset,
+        value?.data?.safefill,
+        value?.data?.qty_scheduled,
+        value?.data?.qty_preload
+      );
+      current[value.rowIndex].qty_preload = preload;
+      console.log('....................222preload check', preload, current[value.rowIndex]);
+      setCompartments([]);
+      setCompartments(current);
+    }
+  };
 
   const rowEditingStopped = (values) => {
     // console.log(values)
@@ -239,6 +258,7 @@ const Compartments = ({ form, value, tanker, config, products, units }) => {
         components={components}
         minimal
         apiContext={setTableAPI}
+        onCellUpdate={onCellUpdate}
         rowEditingStopped={rowEditingStopped}
       />
     </Form.Item>

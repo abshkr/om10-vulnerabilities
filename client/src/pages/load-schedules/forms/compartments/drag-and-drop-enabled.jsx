@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { DataTable, PartnershipManager, OrderManager } from '../../../../components';
 
 import api, { LOAD_SCHEDULES } from '../../../../api';
+import { adjustPreloadQuantity } from '../../../../utils';
 
 import { ProductEditor, UnitEditor, ScheduleEditor, PreloadEditor, DelvNoEditor } from './fields';
 
@@ -118,6 +119,24 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
         .then((res) => setProducts(res.data.records));
     }
   }, [value, tanker, setFieldsValue, setCompartments]);
+
+  const onCellUpdate = (value) => {
+    if (value?.colDef?.field === 'qty_scheduled') {
+      const current = form.getFieldValue('compartments');
+
+      console.log('...........onCellUpdate', value?.data?.qty_scheduled, value?.data?.qty_preload, value);
+      const preload = adjustPreloadQuantity(
+        config?.sitePreloadDeductFromPreset,
+        value?.data?.safefill,
+        value?.data?.qty_scheduled,
+        value?.data?.qty_preload
+      );
+      current[value.rowIndex].qty_preload = preload;
+      console.log('....................222preload check', preload, current[value.rowIndex]);
+      setCompartments([]);
+      setCompartments(current);
+    }
+  };
 
   const rowEditingStopped = (values) => {
     // console.log(values)
@@ -476,6 +495,7 @@ const Compartments = ({ form, value, tanker, drawer, supplier, customer, config,
             minimal
             apiContext={setTableAPI}
             rowEditingStopped={rowEditingStopped}
+            onCellUpdate={onCellUpdate}
             getRowNodeId={(data) => {
               return data?.compartment;
             }}
