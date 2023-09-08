@@ -113,6 +113,17 @@ const columns = (t, config, form, pipenodeBases, user_code) => [
     width: 150,
   },
   {
+    headerName: t('fields.baseProdManual'),
+    field: 'pitem_base_manual',
+    filter: 'BooleanFilter',
+    sortable: true,
+    resizable: true,
+    cellRenderer: 'BooleanRenderer',
+    suppressSizeToFit: true,
+    hide: !config.siteUseBaseManualFlag,
+    width: 150,
+  },
+  {
     headerName: t('fields.pitemAdtvFlag'),
     field: 'pitem_adtv_flag',
     filter: 'BooleanFilter',
@@ -322,17 +333,6 @@ const columns = (t, config, form, pipenodeBases, user_code) => [
     hide: !config?.siteUseBaseRefCode,
     width: 200,
     suppressSizeToFit: true,
-  },
-  {
-    headerName: t('fields.baseProdManual'),
-    field: 'pitem_base_manual',
-    filter: 'BooleanFilter',
-    sortable: true,
-    resizable: true,
-    cellRenderer: 'BooleanRenderer',
-    suppressSizeToFit: true,
-    hide: !config.siteUseBaseManualFlag,
-    width: 200,
   },
 ];
 
