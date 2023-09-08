@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Switch, Checkbox, Form } from 'antd';
 import useSWR from 'swr';
+import _ from 'lodash';
 
 import { DataTable } from '../../../../components';
 import { LOAD_SCHEDULES } from '../../../../api';
@@ -16,10 +17,11 @@ const Summary = ({ form, value, setInit }) => {
 
   const [hideProd, setHidProd] = useState(false);
   const [compartments, setCompartments] = useState([]);
+  const [products, setProducts] = useState([]);
   // const [tableAPI, setTableAPI] = useState(null);
   const config = useConfig();
 
-  const { data: products } = useSWR(
+  const { data: productsPayload } = useSWR(
     value
       ? `${LOAD_SCHEDULES.PRODUCTS}?shls_trip_no=${value?.shls_trip_no}&supplier_code=${value?.supplier_code}`
       : null
@@ -52,6 +54,28 @@ const Summary = ({ form, value, setInit }) => {
     }
   }, [value, compartmentsPayload, setFieldsValue]);
 
+  useEffect(() => {
+    if (value && compartmentsPayload && productsPayload) {
+      // get cmpt_qty_loaded with rounded values
+      const items = [];
+      for (let i = 0; i < productsPayload?.records?.length; i++) {
+        const item = productsPayload?.records?.[i];
+        let total = 0;
+        for (let j = 0; j < compartmentsPayload?.records?.length; j++) {
+          const cmpt = compartmentsPayload?.records?.[j];
+          if (cmpt?.prod_cmpy === item?.prod_cmpy && cmpt?.prod_code === item?.prod_code) {
+            total += _.round(_.toNumber(cmpt?.qty_loaded), 0);
+          }
+        }
+        if (_.round(_.toNumber(item?.qty_loaded), 0) !== total) {
+          item.qty_loaded = total;
+        }
+        items.push(item);
+      }
+      setProducts(items);
+    }
+  }, [value, compartmentsPayload, productsPayload]);
+
   const components = {
     PreloadEditor,
   };
@@ -64,7 +88,7 @@ const Summary = ({ form, value, setInit }) => {
 
         {!hideProd && (
           <div style={{ width: '50%', marginRight: 10 }}>
-            <DataTable data={products?.records} columns={productFields} parentHeight="300px" minimal />
+            <DataTable data={products} columns={productFields} parentHeight="300px" minimal />
           </div>
         )}
         <div style={{ width: hideProd ? '100%' : '50%' }}>
