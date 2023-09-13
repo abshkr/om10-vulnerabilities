@@ -1032,6 +1032,36 @@ class Folio extends CommonClass
 
     public function create_reports()
     {
+        $query = "
+            SELECT 
+            NVL(NEXT_MANUAL_FREEZE_DATETIME, TO_DATE('1900-01-01 00:00:00', 'YYYY-MM-DD HH24:MI:SS')) FREEZE_DATE, 
+            NVL(NEXT_MANUAL_CLOSE, 'ISNULL') M_CLOSE FROM SITE";
+        $stmt = oci_parse($this->conn, $query);
+        if (!oci_execute($stmt, $this->commit_mode)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        $freeze_date = $row['FREEZE_DATE'];
+        $m_close = $row['M_CLOSE'];
+        if (!($freeze_date == "1900-01-01 00:00:00" && $m_close === "ISNULL")) {
+            write_log("Closeout is about to run. Do not regenerate reports for open folio", 
+                __FILE__, __LINE__, LogLevel::INFO);
+            $error = new EchoSchema(500, response("__CLOSEOUT_RUNNING__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+        $output = shell_exec('ps -ef | grep "[c]loseout -"');
+        if (strlen($output) > 0) {
+            write_log("Closeout running. Do not regenerate reports for open folio", 
+                __FILE__, __LINE__, LogLevel::INFO);
+            $error = new EchoSchema(500, response("__CLOSEOUT_RUNNING__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
         $query = "SELECT SITE_CODE FROM SITE";
         $stmt = oci_parse($this->conn, $query);
         if (oci_execute($stmt, $this->commit_mode)) {
