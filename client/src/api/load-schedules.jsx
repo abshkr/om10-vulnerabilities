@@ -18,6 +18,7 @@ export const UNIT_TYPES = '/api/pages/schedule/unit_types.php';
 export const STATUS = '/api/pages/schedule/status.php';
 export const SEARCH = '/api/pages/schedule/search.php';
 export const CHECK_SUPPLIER_TRIP = '/api/pages/schedule/check_supplier_trip.php';
+export const CHECK_MP = '/api/pages/schedule/check_manual_products.php';
 
 export const CREATE = '/api/pages/schedule/create.php';
 export const UPDATE = '/api/pages/schedule/update.php ';

@@ -619,6 +619,129 @@ class ManualTrans extends CommonClass
         }
     }
 
+    //TODO
+    public function actualise()
+    {
+        write_log(json_encode($this), __FILE__, __LINE__);
+/*
+        $serv = new ManualTransactionService($this->conn);
+        $serv->set_property('supplier', $this->supplier);
+        if (isset($this->trip_no)) {
+            $serv->set_property('trip_no', $this->trip_no);
+            $serv->set_property('load_number', $this->trip_no);
+        }
+
+        if (isset($this->load_security)) {
+            $serv->set_property('load_security', $this->load_security);
+        }
+        
+        $start_time = DateTime::createFromFormat('Y-m-d H:i:s', $this->start_time);
+        $serv->set_property('start_time', $start_time->format('d.m.YH:i:s'));
+        $end_time = DateTime::createFromFormat('Y-m-d H:i:s', $this->end_time);
+        $serv->set_property('finish_time', $end_time->format('d.m.YH:i:s'));
+        // $serv->set_property('drawer_code', $this->supplier);
+        $serv->set_property('drawer_code', $this->drawer);
+        $serv->set_property('drawer_name', "");
+        $serv->set_property('tanker_code', $this->tanker);
+        $serv->set_property('operator_code', '8888');   //By default, use 8888 as driver
+        if (isset($this->driver) && $this->driver != null && $this->driver != 'null' && $this->driver != 'undefined') {
+            $serv->set_property('operator_code', $this->driver);
+        }
+        if (isset($this->order_cust_no)) {
+            $serv->set_property('order_cust_no', $this->order_cust_no);
+            $serv->set_property('load_number', $this->order_cust_no);
+        } else {
+            $serv->set_property('order_cust_no', 0);     //Not an open order 
+        }
+        if (!isset($this->transfers)) {
+            $serv->set_property('num_of_transfers', 0);
+            $num_of_transfers = 0;
+        } else {
+            $serv->set_property('num_of_transfers', count($this->transfers));
+            $num_of_transfers = count($this->transfers);
+        }
+        
+        $transfers = array();
+        for ($i = 0; $i < $num_of_transfers; ++$i) {
+            $transfers[$i] = new Manual_Transfer();
+            $transfers[$i]->Arm_Code = $this->transfers[$i]->arm_code;
+            //$transfers[$i]->Device_Code = "BAY01";       //Not important, baiman does not use it
+            $transfers[$i]->nr_in_tkr = $this->transfers[$i]->nr_in_tkr;
+
+            $transfers[$i]->drawer_code = $this->transfers[$i]->drawer_code;
+            $transfers[$i]->product_code = $this->transfers[$i]->product_code;
+            
+            $transfers[$i]->dens = $this->transfers[$i]->dens * 1000;
+            $transfers[$i]->Temperature = $this->transfers[$i]->temperature * 100;
+            $transfers[$i]->amb_vol = $this->transfers[$i]->amb_vol * 1000;
+            $transfers[$i]->cor_vol = $this->transfers[$i]->cor_vol * 1000;
+            $transfers[$i]->liq_kg = $this->transfers[$i]->liq_kg * 1000;
+
+            $transfers[$i]->num_of_meter = count($this->transfers[$i]->meters);
+            for ($j = 0; $j < $transfers[$i]->num_of_meter; ++$j) {
+                $transfers[$i]->meters[$j] = new stdClass();
+                $transfers[$i]->meters[$j]->Injector_or_Meter = $this->transfers[$i]->meters[$j]->injector_or_meter;
+                $transfers[$i]->meters[$j]->Meter_Injector_Code = $this->transfers[$i]->meters[$j]->meter_injector_code;
+
+                $transfers[$i]->meters[$j]->open_amb = $this->transfers[$i]->meters[$j]->open_amb;
+                $transfers[$i]->meters[$j]->open_kg = $this->transfers[$i]->meters[$j]->open_kg;
+                $transfers[$i]->meters[$j]->open_cor = $this->transfers[$i]->meters[$j]->open_cor;
+                $transfers[$i]->meters[$j]->close_amb = $this->transfers[$i]->meters[$j]->close_amb;
+                $transfers[$i]->meters[$j]->close_cor = $this->transfers[$i]->meters[$j]->close_cor;
+                $transfers[$i]->meters[$j]->close_kg = $this->transfers[$i]->meters[$j]->close_kg;
+            }
+
+            $transfers[$i]->Number_of_Bases = count($this->transfers[$i]->bases);
+            for ($j = 0; $j < $transfers[$i]->Number_of_Bases; ++$j) {
+                $transfers[$i]->bases[$j] = new Transfer_Base();
+                $transfers[$i]->bases[$j]->Tank_Code = $this->transfers[$i]->bases[$j]->tank_code;
+                $transfers[$i]->bases[$j]->product_code = $this->transfers[$i]->bases[$j]->base_code;
+                $transfers[$i]->bases[$j]->prod_class = $this->transfers[$i]->bases[$j]->base_class;
+                if ($this->transfers[$i]->bases[$j]->base_class_code == '6') {
+                    $transfers[$i]->bases[$j]->prod_class = 'ADDITIVE';
+                }
+                $transfers[$i]->bases[$j]->dens = $this->transfers[$i]->bases[$j]->dens * 1000;
+                $transfers[$i]->bases[$j]->Temperature = $this->transfers[$i]->bases[$j]->temperature * 100;
+
+                $transfers[$i]->bases[$j]->amb_vol = $this->transfers[$i]->bases[$j]->amb_vol * 1000;
+                $transfers[$i]->bases[$j]->cor_vol = $this->transfers[$i]->bases[$j]->cor_vol * 1000;
+                $transfers[$i]->bases[$j]->liq_kg = $this->transfers[$i]->bases[$j]->liq_kg * 1000;
+            }
+        }
+
+        $serv->set_property('transfers', $transfers);
+        $serv->set_property('is_nomination', false);
+        $serv->set_property('auto_complete', "F");
+
+        if (isset($this->seals)) {
+            $serv->set_property('seals', $this->seals);
+        }
+
+        if ($serv->do_create($error_msg)) {
+            if (isset($this->order_cust_no)) {
+                $result = new EchoSchema(200, 
+                    response("__MANUAL_TRANS_SUBMITTED__",
+                    sprintf("Manual transaction (open order:%d) submitted", $this->order_cust_no)));
+            } else {
+                $result = new EchoSchema(200, 
+                    response("__MANUAL_TRANS_SUBMITTED__",
+                    sprintf("Manual transaction (load number:%d, supplier:%s) submitted", $this->trip_no, $this->supplier)));
+            }
+            
+            echo json_encode($result, JSON_PRETTY_PRINT);
+        } else {
+            $result = new EchoSchema(500, response("__MANUAL_TRANS_FAILED__",
+                "Failed to submit manual transaction, error message: " . $error_msg));
+            echo json_encode($result, JSON_PRETTY_PRINT);
+        }
+    */
+    
+        $result = new EchoSchema(200, 
+            response("__MANUAL_TRANS_SUBMITTED__",
+            sprintf("Manual transaction (load number:%d, supplier:%s) submitted", $this->trip_no, $this->supplier)));
+        echo json_encode($result, JSON_PRETTY_PRINT);
+    }
+
     public function get_base_details()
     {
         if (is_array($this->arm_code)) {

@@ -26,6 +26,7 @@ export const TANKER_DETAILS = '/api/pages/manual_trans/get_tanker_details.php';
 export const CALCULATE = '/api/pages/manual_trans/calc_vcf.php';
 export const SUBMIT = '/api/pages/manual_trans/submit.php';
 export const SAVE = '/api/pages/manual_trans/save.php ';
+export const ACTUALISE = '/api/pages/manual_trans/actualise.php';
 
 export const READ_MT_HEAD_DATA = '/api/pages/manual_trans/read_mt_head_data.php';
 export const READ_MT_DATA = '/api/pages/manual_trans/read_mt_data.php';

@@ -2698,4 +2698,30 @@ class Schedule extends CommonClass
         http_response_code(200);
         echo json_encode($result, JSON_PRETTY_PRINT);
     }
+    
+    public function check_manual_products()
+    {
+        $query = "
+            SELECT COUNT(*) AS CNT 
+            FROM SPECDETS cmpt, RATIOS prod, BASE_PRODS base
+            WHERE
+                cmpt.SCHDSPEC_SHLSTRIP = :trip_no
+                AND cmpt.SCHDSPEC_SHLSSUPP = :supplier
+                AND cmpt.SCHDPROD_PRODCODE = prod.RAT_PROD_PRODCODE
+                AND cmpt.SCHDPROD_PRODCMPY = prod.RAT_PROD_PRODCMPY
+                AND prod.RATIO_BASE = base.BASE_CODE
+                AND UPPER(NVL(base.BASE_MANUAL, 'N')) = 'Y'
+        ";
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':trip_no', $this->trip_no);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
 }

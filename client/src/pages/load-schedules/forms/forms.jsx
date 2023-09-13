@@ -20,6 +20,7 @@ import {
   Button,
   Card,
   Tabs,
+  Tag,
   Modal,
   notification,
   Drawer,
@@ -66,7 +67,14 @@ import {
 
 import { SelectInput, PartnershipManager } from '../../../components';
 import { SETTINGS } from '../../../constants';
-import { LOAD_SCHEDULES, SITE_CONFIGURATION, TANKER_LIST, ORDER_LISTINGS, COMPANIES } from '../../../api';
+import {
+  LOAD_SCHEDULES,
+  SITE_CONFIGURATION,
+  TANKER_LIST,
+  ORDER_LISTINGS,
+  COMPANIES,
+  MANUAL_TRANSACTIONS,
+} from '../../../api';
 
 import { useConfig } from '../../../hooks';
 import { validatorStatus, checkFormFields } from '../../../utils';
@@ -160,6 +168,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
   const [compartmentsInitString, setCompartmentsInitString] = useState('');
   const [productsInitArray, setProductsInitArray] = useState([]);
   const [productsInitString, setProductsInitString] = useState('');
+  const [mpFound, setMpFound] = useState(false);
 
   /*
     1	F	NEW SCHEDULE
@@ -171,6 +180,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
   */
   const IS_CREATING = !value;
   const SHOW_WEIGHTS = !IS_CREATING && siteUseWeighbridge;
+  const SHOW_ACTUALISE =
+    !IS_CREATING && config?.siteUseBaseManualFlag && value?.status === 'F' && value?.shls_ld_type === '2';
   const CAN_PRINT = ['2', '3', '4'].includes(tab);
   const READ_ONLY = value?.status !== 'F' && !IS_CREATING;
   const CAN_EDIT_PRELOAD = READ_ONLY && config?.siteSchdPreloadEditableEnd;
@@ -216,6 +227,13 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     config?.siteUniqueTripOrdNum
       ? `${COMPANIES.CHECK_TRIPORD_NUM}?trip_order_num=${suppTrip}`
       : `${LOAD_SCHEDULES.CHECK_SUPPLIER_TRIP}?shls_trip_no=${suppTrip}&supplier_code=${supplier}`,
+    {
+      refreshInterval: 0,
+    }
+  );
+
+  const { data: mpCounts } = useSWR(
+    `${LOAD_SCHEDULES.CHECK_MP}?trip_no=${value?.shls_trip_no}&supplier=${value?.supplier_code}`,
     {
       refreshInterval: 0,
     }
@@ -1085,6 +1103,52 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     });
   };
 
+  const onActualise = () => {
+    Modal.confirm({
+      title: t('prompts.actualise'),
+      okText: t('operations.actualise'),
+      okType: 'danger',
+      icon: <EditOutlined />,
+      cancelText: t('operations.cancel'),
+      width: '35vw',
+      content: (
+        <Tag color={'red'} style={{ padding: '5px', marginBottom: '10px' }}>
+          <div style={{ wordWrap: 'break-word', whiteSpace: 'normal', fontWeight: 'bold', color: 'red' }}>
+            {t('descriptions.actualiseComment')}
+          </div>
+        </Tag>
+      ),
+      centered: true,
+      onOk: async () => {
+        await api
+          .post(MANUAL_TRANSACTIONS.ACTUALISE, {
+            supplier: value?.supplier_code,
+            trip_no: value?.shls_trip_no,
+            carrier: value?.carrier_code,
+            tanker: value?.tnkr_code,
+            trans_type: 'SCHEDULE',
+            repost: false,
+          })
+          .then(() => {
+            onComplete();
+
+            notification.success({
+              message: t('messages.actualiseSuccess'),
+              description: `${t('descriptions.actualiseSuccess')}`,
+            });
+          })
+          .catch((errors) => {
+            _.forEach(errors.response.data.errors, (error) => {
+              notification.error({
+                message: error.code === 500 ? t('messages.actualiseFailed') : error.type,
+                description: error.message,
+              });
+            });
+          });
+      },
+    });
+  };
+
   const onExport = () => {
     if (tab === '3') {
       setExportBOL(exportBOL + 1);
@@ -1345,6 +1409,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
   }, [validTrips]);
 
   useEffect(() => {
+    if (mpCounts) {
+      setMpFound(_.toNumber(mpCounts?.records?.[0]?.cnt) > 0);
+    }
+  }, [mpCounts]);
+
+  useEffect(() => {
     if (suppTrip) {
       validateFields(['shls_trip_no']);
     }
@@ -1518,6 +1588,12 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
           {FASTTRACK_ENABLED && (
             <Button type="primary" onClick={sendtoFasttrack} disabled={!send_to_ft_ready}>
               {t('operations.sendtoFT')}
+            </Button>
+          )}
+
+          {SHOW_ACTUALISE && (
+            <Button type="primary" onClick={onActualise} disabled={!mpFound}>
+              {t('operations.actualiseMP')}
             </Button>
           )}
 
