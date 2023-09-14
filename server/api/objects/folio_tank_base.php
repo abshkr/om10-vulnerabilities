@@ -600,6 +600,10 @@ class FolioTankBase extends CommonClass
 
         oci_commit($this->conn);
 
+        if ($this->adjust_base_periods() == false) {
+            return false;
+        }
+
         $error = new EchoSchema(200, response("__SAVE_SUCCEEDED__"));
         echo json_encode($error, JSON_PRETTY_PRINT);
 
@@ -1018,6 +1022,137 @@ class FolioTankBase extends CommonClass
         $error = new EchoSchema(200, response("__SAVE_SUCCEEDED__"));
         echo json_encode($error, JSON_PRETTY_PRINT);
 
+        return true;
+    }
+
+    public  function adjust_base_periods()
+    {
+        $query = "
+            SELECT 
+                TO_CHAR(cls.PREV_CLOSEOUT_DATE, 'YYYY-MM-DD HH24:MI:SS')                 AS FOLIO_OPEN, 
+                TO_CHAR(cls.CLOSEOUT_DATE, 'YYYY-MM-DD HH24:MI:SS')                      AS FOLIO_CLOSE, 
+                TO_CHAR(ctb.BASE_PERIOD_OPEN, 'YYYY-MM-DD HH24:MI:SS')                   AS BASE_PERIOD_OPEN, 
+                TO_CHAR(ctb.BASE_PERIOD_CLOSE, 'YYYY-MM-DD HH24:MI:SS')                  AS BASE_PERIOD_CLOSE, 
+                TO_CHAR(trsa.TRSA_ST_DMY, 'YYYY-MM-DD HH24:MI:SS')                       AS TRSA_START, 
+                TO_CHAR(trsa.TRSA_ED_DMY, 'YYYY-MM-DD HH24:MI:SS')                       AS TRSA_END, 
+				ctb.CLOSEOUT_NR,
+                ctb.TANK_TERMINAL,
+                ctb.TANK_CODE, 
+				ctb.BASE_PERIOD_INDEX, 
+				ctb.TANK_BASECODE, 
+				trsa.TRSA_ID, 
+                trsa.TRSA_CLASS, 
+				trsa.TRSA_IOTYPE
+            FROM 
+                TRANSFERS     trsf, 
+                TRANSACTIONS  trsa, 
+                TRANBASE      trsb,
+                CLOSEOUTS     cls,
+                CLOSEOUT_TANK_BASES   ctb
+            WHERE 
+                trsb.TRSB_ID_TRSF_ID = trsf.TRSF_ID
+                AND trsb.TRSB_ID_TRSF_TRM = trsf.TRSF_TERMINAL
+                AND trsf.TRSFTRID_TRSA_ID = trsa.TRSA_ID
+                AND trsf.TRSFTRID_TRSA_TRM = trsa.TRSA_TERMINAL
+                AND trsa.TRSA_IOTYPE = 1 
+                AND trsa.TRSA_CLASS = 1
+                AND (trsf.TRSF_ID, trsf.TRSF_TERMINAL) IN (SELECT MTITM_TRSF_ID, MTITM_TERMINAL FROM MOV_TRSF_ITEMS, MOVEMENT_ITEMS
+                    WHERE MTITM_MOV_ID = MVITM_MOVE_ID AND MTITM_MOV_LINE = MVITM_LINE_ID AND MVITM_TYPE = 2)
+                AND trsb.TRSB_TK_TANKCODE = ctb.TANK_CODE AND trsb.TRSB_TK_TANKDEPO = ctb.TANK_TERMINAL
+                AND TO_CHAR(trsa.TRSA_ED_DMY, 'YYYY-MM-DD HH24:MI:SS') > TO_CHAR(NVL(ctb.BASE_PERIOD_OPEN, SYSDATE), 'YYYY-MM-DD HH24:MI:SS')
+                AND TO_CHAR(trsa.TRSA_ED_DMY, 'YYYY-MM-DD HH24:MI:SS') <= TO_CHAR(NVL(ctb.BASE_PERIOD_CLOSE, SYSDATE), 'YYYY-MM-DD HH24:MI:SS')
+                AND cls.CLOSEOUT_NR = ctb.CLOSEOUT_NR
+                AND ctb.TANK_BASECODE = trsb.TRSB_BS
+            ORDER BY ctb.CLOSEOUT_NR DESC, ctb.BASE_PERIOD_INDEX, trsb.TRSB_TK_TANKDEPO, trsb.TRSB_TK_TANKCODE
+        ";
+        $stmt = oci_parse($this->conn, $query);
+
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        $flows = array();
+        while ($row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS)) {
+            $flows[] = $row;
+        }
+
+        foreach ($flows as $flow_row) {
+            write_log(sprintf("%s::%s() LOOPING".$flow_row['BASE_PERIOD_OPEN'], __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+            // update BASE_PERIOD_CLOSE if it is not equal to TRSA_START and not null
+           $query = "
+                UPDATE CLOSEOUT_TANK_BASES
+                SET BASE_PERIOD_CLOSE = TO_DATE(:trsa_start, 'YYYY-MM-DD HH24:MI:SS')
+                WHERE 
+                    BASE_PERIOD_CLOSE IS NOT NULL 
+                    AND TO_CHAR(BASE_PERIOD_CLOSE, 'YYYY-MM-DD HH24:MI:SS') != :trsa_start
+                    AND CLOSEOUT_NR = :cls_id
+                    AND TANK_TERMINAL = :term_code
+                    AND TANK_CODE = :tank_code
+                    AND BASE_PERIOD_INDEX = :base_index
+                    AND TANK_BASECODE = :base_code
+            ";
+            $stmt = oci_parse($this->conn, $query);
+
+            oci_bind_by_name($stmt, ':trsa_start', $flow_row['TRSA_START']);
+            oci_bind_by_name($stmt, ':cls_id', $flow_row['CLOSEOUT_NR']);
+            oci_bind_by_name($stmt, ':term_code', $flow_row['TANK_TERMINAL']);
+            oci_bind_by_name($stmt, ':tank_code', $flow_row['TANK_CODE']);
+            oci_bind_by_name($stmt, ':base_index', $flow_row['BASE_PERIOD_INDEX']);
+            oci_bind_by_name($stmt, ':base_code', $flow_row['TANK_BASECODE']);
+
+            if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                write_log(sprintf("%s::%s() LOOPING1111", __CLASS__, __FUNCTION__),
+                __FILE__, __LINE__);
+                oci_commit($this->conn);
+            } else {
+                write_log(sprintf("%s::%s() LOOPING2222", __CLASS__, __FUNCTION__),
+                __FILE__, __LINE__);
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return false;
+            }
+            
+            // find the incoming part and update BASE_PERIOD_OPEN 
+            $query = "
+                UPDATE CLOSEOUT_TANK_BASES
+                SET BASE_PERIOD_OPEN = TO_DATE(:trsa_start, 'YYYY-MM-DD HH24:MI:SS')
+                WHERE 
+                    BASE_PERIOD_OPEN IS NOT NULL 
+                    AND TO_CHAR(BASE_PERIOD_OPEN, 'YYYY-MM-DD HH24:MI:SS') = :base_close
+                    AND TO_CHAR(BASE_PERIOD_OPEN, 'YYYY-MM-DD HH24:MI:SS') != :trsa_start
+                    AND CLOSEOUT_NR = :cls_id
+                    AND TANK_TERMINAL = :term_code
+                    AND TANK_CODE = :tank_code
+            ";
+            $stmt = oci_parse($this->conn, $query);
+
+            oci_bind_by_name($stmt, ':trsa_start', $flow_row['TRSA_START']);
+            oci_bind_by_name($stmt, ':base_close', $flow_row['BASE_PERIOD_CLOSE']);
+            oci_bind_by_name($stmt, ':cls_id', $flow_row['CLOSEOUT_NR']);
+            oci_bind_by_name($stmt, ':term_code', $flow_row['TANK_TERMINAL']);
+            oci_bind_by_name($stmt, ':tank_code', $flow_row['TANK_CODE']);
+
+            if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+                write_log(sprintf("%s::%s() LOOPING3333", __CLASS__, __FUNCTION__),
+                __FILE__, __LINE__);
+                oci_commit($this->conn);
+            } else {
+                write_log(sprintf("%s::%s() LOOPING4444", __CLASS__, __FUNCTION__),
+                __FILE__, __LINE__);
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                oci_rollback($this->conn);
+                return false;
+            }
+            write_log(sprintf("%s::%s() LOOPING_CLOSE".$flow_row['BASE_PERIOD_CLOSE'], __CLASS__, __FUNCTION__),
+            __FILE__, __LINE__);
+        }
+
+        // oci_commit($this->conn);
         return true;
     }
 }
