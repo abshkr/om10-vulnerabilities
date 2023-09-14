@@ -3,11 +3,12 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Select } from 'antd';
 import useSWR from 'swr';
+import _ from 'lodash';
 
 import { ORDER_LISTINGS } from '../../../../api';
 
 const Customer = ({ form, value, supplier, onChange, pageState }) => {
-  const { setFieldsValue } = form;
+  const { setFieldsValue, getFieldValue } = form;
 
   const { t } = useTranslation();
 
@@ -31,6 +32,28 @@ const Customer = ({ form, value, supplier, onChange, pageState }) => {
       });
     }
   }, [value, setFieldsValue]);
+
+  useEffect(() => {
+    if (!value && options?.records) {
+      const account = getFieldValue('order_cust_acnt');
+      const item = _.find(options?.records, (o) => o.cust_acnt === account);
+      if (!item) {
+        setFieldsValue({
+          order_cust_acnt: undefined,
+        });
+        if (onChange) {
+          onChange(undefined);
+        }
+      } else {
+        setFieldsValue({
+          order_cust_acnt: account,
+        });
+        if (onChange) {
+          onChange(account);
+        }
+      }
+    }
+  }, [value, options, setFieldsValue, getFieldValue, onChange]);
 
   return (
     <Form.Item
