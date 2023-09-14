@@ -410,9 +410,10 @@ const RatioImport = ({ value, bases, onClose, config, pipenodeBases, user_code }
         });
       }
       if (
-        ratio?.pitem_hot_main === undefined ||
-        ratio?.pitem_hot_main === null ||
-        ratio?.pitem_hot_main === ''
+        config.manageHotProduct &&
+        (ratio?.pitem_hot_main === undefined ||
+          ratio?.pitem_hot_main === null ||
+          ratio?.pitem_hot_main === '')
       ) {
         errors.push({
           field: `${t('validate.set')} ─ ${t('fields.pitemHotMain')}`,
@@ -568,6 +569,7 @@ const RatioImport = ({ value, bases, onClose, config, pipenodeBases, user_code }
 
       // the field "rat_hot_main" must be a boolean flag
       if (
+        config.manageHotProduct &&
         !(
           ratio?.pitem_hot_main === undefined ||
           ratio?.pitem_hot_main === null ||
