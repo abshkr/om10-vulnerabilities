@@ -32,12 +32,18 @@ class SiteBal extends CommonClass
 
     public function read() 
     {
-        $flag = $this->is_multi_folio_tank_base();
+        /*
+            should always use new SQL regardless of the setting SITE_FOLIO_TANK_BASE_CHANGE
+            because user may turn it on and then off and leave new data in new tables
+        */
+        return $this->read_with_base_change();
+
+        /* $flag = $this->is_multi_folio_tank_base();
         if ($flag) {
             return $this->read_with_base_change();
         } else {
             return $this->read_no_base_change();
-        }
+        } */
 
     }
 
@@ -73,14 +79,16 @@ class SiteBal extends CommonClass
             (NVL(TANKS.TANK_LTR_CLOSE, 0.0)*NVL(TANKS.TANK_RPTVCFCLOSE, 1) 
                 + NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_IN_CVL, 0) 
                 +  NVL(TRSF_IN_CVL, 0))                                                            AS ACCNTTOT,
-            (NVL(TANKS.TANK_TRF_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_OUT_CVL, 0))        AS TRANSFERVOL,
+            (NVL(TANKS.TANK_TRF_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_OUT_CVL, 0))        AS TRANSFERVOL2,
+            NVL(RACK_CVL, 0)                                                                       AS TRANSFERVOL,
             ((NVL(TANKS.TANK_LTR_CLOSE, 0.0)*NVL(TANKS.TANK_RPTVCFCLOSE, 1) 
                 + NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_IN_CVL, 0) 
                 +  NVL(TRSF_IN_CVL, 0)) 
               - (NVL(TANKS.TANK_TRF_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_OUT_CVL, 0)) 
               - (NVL(TRSF_OUT_CVL, 0)))                                                            AS BOOKBALANCE,
             (NVL(TANKS.TANK_COR_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1))                               AS CLOSINGSTOCK,
-            (NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_IN_CVL, 0))        AS RECEIPTSVOL,
+            (NVL(TANKS.TANK_RCPT_VOL, 0.0)*NVL(TANKS.TANK_RPTVCF, 1) - NVL(TRSF_IN_CVL, 0))        AS RECEIPTSVOL1,
+            NVL(RCPT_CVL, 0)                                                                       AS RECEIPTSVOL,
             NVL(TRSF_IN_CVL, 0)                                                                    AS TRANSFERIN,
             NVL(TRSF_OUT_CVL, 0)                                                                   AS TRANSFEROUT,
             NVL(RCPT_CVL, 0)                                                                       AS RCPT_CVL,
