@@ -124,6 +124,8 @@ class SiteConfig extends CommonClass
         "SITE_PICKUP_TRIP_START" => "油库范围内组合提单的默认起始单号",
         "SITE_PICKUP_TRIP_END" => "油库范围内组合提单的默认终止单号",
         "SITE_LIST_PICKUP_LOAD" => "显示/隐藏发油提单列表中的组合提单",
+        "FSC_GATES" => "故障安全控制是否应该一直控制门禁通讯进程?",
+        "RETURN_TO_SECONDARY_SECS" => "故障安全控制从第一级别返回第二级别需要等待的时间(秒)",
     );
 
     private $ENG_DESC = array(
@@ -307,6 +309,8 @@ class SiteConfig extends CommonClass
         "SITE_PICKUP_TRIP_START" => "Default start trip number for pickup schedule at site level",
         "SITE_PICKUP_TRIP_END" => "Default end trip number for pickup schedule at site level",
         "SITE_LIST_PICKUP_LOAD" => "Show/Hide Pickup Schedules in Load Schedule list",
+        "FSC_GATES" => "Should the FSC be in charge of gate comms at all times?",
+        "RETURN_TO_SECONDARY_SECS" => "How long to wait before FSC will return to secondary after being primary (seconds)",
     );
 
     public function read()

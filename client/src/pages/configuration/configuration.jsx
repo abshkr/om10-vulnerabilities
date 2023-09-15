@@ -909,6 +909,21 @@ const FormSwitch = ({ config, onChange }) => {
         </>
       );
 
+    case 'RETURN_TO_SECONDARY_SECS':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRanges')}>
+            <Tag color={'red'}>{'10 - 999999'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={10}
+            max={999999}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
     default:
       return (
         // it is more reasonable to use Input instead of InputNumber as default
@@ -1517,6 +1532,15 @@ const Configuration = ({ user, config }) => {
             <TabPane tab={t('tabColumns.stagingBay')} key="15">
               <ConfigurationItems
                 data={_.filter(configuration, ['config_required_by_gui', 'B'])}
+                onChange={onConfigurationEdit}
+                t={t}
+              />
+            </TabPane>
+          )}
+          {user?.per_code === '9999' && (
+            <TabPane tab={t('tabColumns.fsc')} key="16">
+              <ConfigurationItems
+                data={_.filter(configuration, ['config_required_by_gui', 'G'])}
                 onChange={onConfigurationEdit}
                 t={t}
               />
