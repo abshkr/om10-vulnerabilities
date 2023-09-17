@@ -150,6 +150,8 @@ const buildPayloadToActualise = (values, bases) => {
     transfer.product_code = titem.prod_code;
 
     // now need to get the density, temp, quantities from bases
+    // note: instead of using total ratios of all ratio bases, we get the total ratios of the manul base products
+    // and use it as total_ratio_manual to calculate the drawer product's density and temperature.
     titem.trsf_density = 0.0;
     titem.trsf_temp = 0.0;
     titem.trsf_qty_amb = 0.0;

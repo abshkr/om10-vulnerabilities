@@ -2727,6 +2727,9 @@ class Schedule extends CommonClass
     
     public function get_manual_products()
     {
+        // note: instead of using total ratios of all ratio bases, we get the total ratios of the manul base products 
+        // and use it as total_ratio_manual to calculate the drawer product's density and temperature.
+        // so the SQL is adjusted to get PITEM_RATIO_TOTAL_MANUAL
         $query = "
             SELECT 
                 cmpt.*
