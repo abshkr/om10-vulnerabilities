@@ -90,6 +90,7 @@ import Summary from './summary';
 import Seals from './seals';
 import BOL from './bol';
 import Axles from './axles';
+import ActualisationManager from './actualisation';
 import ScheduleConversion from './schedule-conversion';
 import { ManualTransactionsPopup } from '../../manual-transactions';
 
@@ -1103,6 +1104,41 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     });
   };
 
+  const doActualisation = async (manualProducts) => {
+    await api
+      .post(MANUAL_TRANSACTIONS.SUBMIT, manualProducts)
+      /* .post(MANUAL_TRANSACTIONS.ACTUALISE, {
+        supplier: value?.supplier_code,
+        trip_no: value?.shls_trip_no,
+        carrier: value?.carrier_code,
+        tanker: value?.tnkr_code,
+        trans_type: 'SCHEDULE',
+        repost: false,
+      }) */
+      .then(() => {
+        onComplete();
+
+        notification.success({
+          message: t('messages.actualiseSuccess'),
+          description: `${t('descriptions.actualiseSuccess')}`,
+        });
+      })
+      .catch((errors) => {
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.code === 500 ? t('messages.actualiseFailed') : error.type,
+            description: error.message,
+          });
+        });
+      });
+  };
+
+  const handleActualisation = () => {
+    // pop up the dialog to manage straping data import
+    console.log('......handleActualisation..');
+    ActualisationManager(t('operations.actualiseMP'), value, doActualisation, '90vw', '50vh', config);
+  };
+
   const onActualise = () => {
     Modal.confirm({
       title: t('prompts.actualise'),
@@ -1119,7 +1155,8 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
         </Tag>
       ),
       centered: true,
-      onOk: async () => {
+      onOk: () => handleActualisation(),
+      /* onOk: async () => {
         await api
           .post(MANUAL_TRANSACTIONS.ACTUALISE, {
             supplier: value?.supplier_code,
@@ -1145,7 +1182,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
               });
             });
           });
-      },
+      }, */
     });
   };
 

@@ -2724,4 +2724,38 @@ class Schedule extends CommonClass
             return null;
         }
     }
+    
+    public function get_manual_products()
+    {
+        $query = "
+            SELECT 
+                cmpt.*
+                , pitm.*
+                , tank.*
+                , (cmpt.SCHD_SPECQTY * pitm.PITEM_RATIO_VALUE / pitm.PITEM_RATIO_TOTAL)  as PITEM_RATIO_QTY
+                , pitm.PITEM_PROD_CODE||' - '||pitm.PITEM_PROD_NAME as PITEM_PROD_DESC
+                , pitm.PITEM_BASE_CODE||' - '||pitm.PITEM_BASE_NAME as PITEM_BASE_DESC
+                , pitm.PITEM_BASE_CLASS||' - '||pitm.PITEM_BCLASS_NAME as PITEM_BCLASS_DESC
+            FROM SPECDETS cmpt, GUI_PRODUCT_ITEMS pitm, TANKS tank
+            WHERE
+                cmpt.SCHDSPEC_SHLSTRIP = :trip_no
+                AND cmpt.SCHDSPEC_SHLSSUPP = :supplier
+                AND cmpt.SCHDPROD_PRODCODE = pitm.PITEM_PROD_CODE
+                AND cmpt.SCHDPROD_PRODCMPY = pitm.PITEM_CMPY_CODE
+                -- AND UPPER(NVL(pitm.PITEM_BASE_MANUAL, 'N')) = 'Y'
+                AND pitm.PITEM_BASE_CODE = tank.TANK_BASE
+            ORDER BY cmpt.SCHD_COMP_ID, pitm.PITEM_RATIO_SEQ, tank.TANK_CODE
+        ";
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':trip_no', $this->trip_no);
+        oci_bind_by_name($stmt, ':supplier', $this->supplier);
+        if (oci_execute($stmt, $this->commit_mode)) {
+            return $stmt;
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return null;
+        }
+    }
 }

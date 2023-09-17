@@ -36,7 +36,7 @@ const calcBaseQuantity = async (base, type) => {
       // vcf = cor / amb => cor = amb * vcf
       base.qty_cor_real = _.toNumber(response?.data?.real_litre) * _.toNumber(response?.data?.real_cvf);
       // kg = dens * cor
-      base.load_kg_real = base?.qty_cor_real * base?.base_dens;
+      base.load_kg_real = (base?.qty_cor_real * base?.base_dens) / 1000.0;
     }
     if (type === 'L15') {
       base.qty_amb = _.toNumber(response?.data?.real_litre);
@@ -44,13 +44,13 @@ const calcBaseQuantity = async (base, type) => {
       // vcf = cor / amb => amb = cor / vcf
       base.qty_amb_real = _.toNumber(response?.data?.real_litre15) / _.toNumber(response?.data?.real_cvf);
       // kg = dens * cor
-      base.load_kg_real = base?.qty_cor_real * base?.base_dens;
+      base.load_kg_real = (base?.qty_cor_real * base?.base_dens) / 1000.0;
     }
     if (type === 'KG') {
       base.qty_amb = _.toNumber(response?.data?.real_litre);
       base.qty_cor = _.toNumber(response?.data?.real_litre15);
       // kg = dens * cor => cor = kg / dens
-      base.qty_cor_real = _.toNumber(response?.data?.real_kg) / base?.base_dens;
+      base.qty_cor_real = (_.toNumber(response?.data?.real_kg) / base?.base_dens) * 1000.0;
       // vcf = cor / amb => amb = cor / vcf
       base.qty_amb_real = base?.qty_cor_real / _.toNumber(response?.data?.real_cvf);
     }
