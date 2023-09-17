@@ -160,10 +160,10 @@ const buildPayloadToActualise = (values, bases) => {
       if (String(titem.compartment) === String(mbitem.schd_comp_id)) {
         titem.trsf_density +=
           (_.toNumber(mbitem.tank_density) * _.toNumber(mbitem.pitem_ratio_value)) /
-          _.toNumber(mbitem.pitem_ratio_total);
+          _.toNumber(mbitem.pitem_ratio_total_manual);
         titem.trsf_temp +=
           (_.toNumber(mbitem.tank_temp) * _.toNumber(mbitem.pitem_ratio_value)) /
-          _.toNumber(mbitem.pitem_ratio_total);
+          _.toNumber(mbitem.pitem_ratio_total_manual);
         titem.trsf_qty_amb += _.toNumber(mbitem.base_qty_amb);
         titem.trsf_qty_cor += _.toNumber(mbitem.base_qty_cor);
         titem.trsf_load_kg += _.toNumber(mbitem.base_load_kg);

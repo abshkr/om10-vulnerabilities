@@ -2736,7 +2736,17 @@ class Schedule extends CommonClass
                 , pitm.PITEM_PROD_CODE||' - '||pitm.PITEM_PROD_NAME as PITEM_PROD_DESC
                 , pitm.PITEM_BASE_CODE||' - '||pitm.PITEM_BASE_NAME as PITEM_BASE_DESC
                 , pitm.PITEM_BASE_CLASS||' - '||pitm.PITEM_BCLASS_NAME as PITEM_BCLASS_DESC
-            FROM SPECDETS cmpt, GUI_PRODUCT_ITEMS pitm, TANKS tank
+                , mrat.RATIO_TOTAL_MANUAL  as PITEM_RATIO_TOTAL_MANUAL
+            FROM SPECDETS cmpt, GUI_PRODUCT_ITEMS pitm, TANKS tank, (
+                    SELECT
+                        RATIOS.RAT_PROD_PRODCODE, RATIOS.RAT_PROD_PRODCMPY, SUM(RATIOS.RATIO_VALUE) as RATIO_TOTAL_MANUAL
+                    FROM RATIOS, BASE_PRODS
+                    WHERE
+                        RATIOS.RATIO_BASE = BASE_PRODS.BASE_CODE
+                        AND BASE_PRODS.BASE_MANUAL = 'Y'
+                    GROUP BY  
+                        RATIOS.RAT_PROD_PRODCODE, RATIOS.RAT_PROD_PRODCMPY
+                ) mrat
             WHERE
                 cmpt.SCHDSPEC_SHLSTRIP = :trip_no
                 AND cmpt.SCHDSPEC_SHLSSUPP = :supplier
@@ -2744,6 +2754,8 @@ class Schedule extends CommonClass
                 AND cmpt.SCHDPROD_PRODCMPY = pitm.PITEM_CMPY_CODE
                 -- AND UPPER(NVL(pitm.PITEM_BASE_MANUAL, 'N')) = 'Y'
                 AND pitm.PITEM_BASE_CODE = tank.TANK_BASE
+                AND pitm.PITEM_PROD_CODE = mrat.RAT_PROD_PRODCODE(+)
+                AND pitm.PITEM_CMPY_CODE = mrat.RAT_PROD_PRODCMPY(+)
             ORDER BY cmpt.SCHD_COMP_ID, pitm.PITEM_RATIO_SEQ, tank.TANK_CODE
         ";
 
