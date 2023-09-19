@@ -116,7 +116,7 @@ const Attachments = ({ value, config }) => {
       return;
     }
 
-    window.open('http://localhost:3001/api/attachments/orders/' + selected.od_doc_name);
+    window.open('/api/attachments/orders/' + selected.od_doc_name);
 
     const values = {
       od_order_no: selected.od_order_no,
@@ -139,7 +139,7 @@ const Attachments = ({ value, config }) => {
     for (let i = 0; i < data?.length; i++) {
       const item = data?.[i];
 
-      window.open('http://localhost:3001/api/attachments/orders/' + item.od_doc_name);
+      window.open('/api/attachments/orders/' + item.od_doc_name);
 
       values.push({
         od_order_no: item.od_order_no,
