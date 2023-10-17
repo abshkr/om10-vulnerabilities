@@ -20,7 +20,60 @@ const columns = (t, config, form) => [
     resizable: true,
     width: 120,
     suppressSizeToFit: true,
+    hide: true,
   },
+
+  {
+    headerName: t('fields.scheduled'),
+    field: 'qty_scheduled',
+    resizable: true,
+    width: 120,
+    suppressSizeToFit: true,
+  },
+  {
+    headerName: t('fields.scheduledAuto'),
+    field: 'qty_scheduled_auto',
+    resizable: true,
+    width: 150,
+    suppressSizeToFit: true,
+  },
+  {
+    headerName: t('fields.scheduledManual'),
+    field: 'qty_scheduled_manual',
+    resizable: true,
+    width: 170,
+    suppressSizeToFit: true,
+  },
+  {
+    headerName: t('fields.loaded'),
+    field: 'qty_loaded',
+    resizable: true,
+    width: 110,
+    suppressSizeToFit: true,
+  },
+  {
+    headerName: t('fields.loadedAuto'),
+    field: 'qty_loaded_auto',
+    resizable: true,
+    width: 140,
+    suppressSizeToFit: true,
+  },
+  {
+    headerName: t('fields.loadedManual'),
+    field: 'qty_loaded_manual',
+    resizable: true,
+    width: 150,
+    suppressSizeToFit: true,
+  },
+
+  {
+    headerName: t('fields.preloaded'),
+    field: 'qty_preload',
+    resizable: true,
+    width: 120,
+    suppressSizeToFit: true,
+  },
+
   {
     headerName: t('fields.baseProduct'),
     field: 'pitem_base_desc',

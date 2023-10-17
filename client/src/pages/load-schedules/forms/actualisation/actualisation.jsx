@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Button, Input, Row, Col, notification, Modal, Upload, Card, Tag, Select } from 'antd';
+import { Form, Button, Input, Row, Col, notification, Modal, Upload, Card, Tag, Select, Switch } from 'antd';
 import {
   CloseOutlined,
   QuestionCircleOutlined,
@@ -25,18 +25,21 @@ const Actualisation = ({ value, onClose, config }) => {
   const [manualProducts, setManualProducts] = useState([]);
   const [baseTanks, setBaseTanks] = useState([]);
   const [isLoading, setLoading] = useState(false);
+  const [manualActualisation, setManualActualisation] = useState(true);
 
   const { data: cmptRecords } = useSWR(
-    `${LOAD_SCHEDULES.COMPARTMENTS}?shls_trip_no=${value?.shls_trip_no}&supplier_code=${value?.supplier_code}`,
+    `${LOAD_SCHEDULES.MANUAL_COMPARTMENTS}?shls_trip_no=${value?.shls_trip_no}&supplier_code=${value?.supplier_code}`,
     {
-      refreshInterval: 0,
+      //refreshInterval: 0,
+      revalidateOnFocus: false,
     }
   );
 
   const { data: mpRecords } = useSWR(
     `${LOAD_SCHEDULES.GET_MP}?trip_no=${value?.shls_trip_no}&supplier=${value?.supplier_code}`,
     {
-      refreshInterval: 0,
+      //refreshInterval: 0,
+      revalidateOnFocus: false,
     }
   );
   const [form] = Form.useForm();
@@ -48,10 +51,10 @@ const Actualisation = ({ value, onClose, config }) => {
         selected &&
         selected?.length > 0 &&
         _.find(selected, (bt) => bt === o.pitem_base_code + ',' + o.tank_code)
-        // !selected || selected?.length===0 || _.find(selected, (bt)=>(bt === o.pitem_base_code+','+o.tank_code))
+      // !selected || selected?.length===0 || _.find(selected, (bt)=>(bt === o.pitem_base_code+','+o.tank_code))
     );
     value.compartments = cmptRecords?.records || [];
-    const payload = buildPayloadToActualise(value, bases);
+    const payload = buildPayloadToActualise(value, bases, manualActualisation);
     console.log('actual bases', payload);
     Modal.destroyAll();
     onClose(payload);
@@ -118,18 +121,43 @@ const Actualisation = ({ value, onClose, config }) => {
   };
 
   useEffect(() => {
-    async function caclManualProducts(mpRecords) {
+    async function caclManualProducts(mpRecords, cmptRecords) {
       const products = [];
       const tanks = [];
       setLoading(true);
       for (let i = 0; i < mpRecords?.records?.length; i++) {
         const o = mpRecords?.records?.[i];
+        const cmpt = _.find(
+          cmptRecords?.records,
+          (c) =>
+            String(c?.compartment) === String(o?.schd_comp_id) &&
+            c?.prod_cmpy === o?.schdprod_prodcmpy &&
+            c?.prod_code === o?.schdprod_prodcode
+        );
         const type = String(o?.schd_units) === '11' ? 'L15' : String(o?.schd_units) === '17' ? 'KG' : 'LT';
         const base = {};
         base.base_tank = o?.tank_code;
         base.base_code = o?.pitem_base_code;
         base.base_temp = o?.tank_temp;
         base.base_dens = o?.tank_density;
+        const scheduled_auto = cmpt?.qty_scheduled * (o?.pitem_ratio_total_auto / o?.pitem_ratio_total);
+        const scheduled_manual = cmpt?.qty_scheduled * (o?.pitem_ratio_total_manual / o?.pitem_ratio_total);
+        const loaded_auto = cmpt?.qty_loaded - cmpt?.qty_loaded_m;
+        const loaded_manual = cmpt?.qty_loaded_m;
+        if (o.pitem_base_manual === 'Y') {
+          const percent = _.toNumber(o?.pitem_ratio_value) / _.toNumber(o?.pitem_ratio_total_manual);
+          o.pitem_ratio_qty = _.round(
+            (scheduled_manual - (loaded_manual || 0) - (cmpt?.qty_preload || 0)) * percent,
+            3
+          );
+        } else {
+          const percent = _.toNumber(o?.pitem_ratio_value) / _.toNumber(o?.pitem_ratio_total_auto);
+          o.pitem_ratio_qty = _.round(
+            (scheduled_auto - (loaded_auto || 0) - (cmpt?.qty_preload || 0)) * percent,
+            3
+          );
+        }
+
         base.qty_amb = type === 'LT' ? o?.pitem_ratio_qty : 0;
         base.qty_cor = type === 'L15' ? o?.pitem_ratio_qty : 0;
         base.load_kg = type === 'KG' ? o?.pitem_ratio_qty : 0;
@@ -144,6 +172,13 @@ const Actualisation = ({ value, onClose, config }) => {
           base_qty_amb: newbase.qty_amb, // _real,
           base_qty_cor: newbase.qty_cor, // _real,
           base_load_kg: newbase.load_kg, // _real,
+          qty_scheduled: cmpt?.qty_scheduled,
+          qty_scheduled_auto: scheduled_auto,
+          qty_scheduled_manual: scheduled_manual,
+          qty_loaded: cmpt?.qty_loaded,
+          qty_loaded_auto: _.round(loaded_auto, 3),
+          qty_loaded_manual: loaded_manual,
+          qty_preload: cmpt?.qty_preload,
         });
 
         const item = _.find(
@@ -165,10 +200,10 @@ const Actualisation = ({ value, onClose, config }) => {
       setBaseTanks(tanks);
       setLoading(false);
     }
-    if (mpRecords) {
-      caclManualProducts(mpRecords);
+    if (mpRecords && cmptRecords) {
+      caclManualProducts(mpRecords, cmptRecords);
     }
-  }, [mpRecords]);
+  }, [mpRecords, cmptRecords]);
 
   return (
     <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError style={{ marginTop: '1rem' }}>
@@ -186,29 +221,43 @@ const Actualisation = ({ value, onClose, config }) => {
       </Row>
 
       <Row gutter={[8, 10]}>
-        <Col span={24}>
+        <Col span={18}>
           <Select
             dropdownMatchSelectWidth={false}
-            style={{ width: '80vw' }}
+            style={{ width: '100%' }}
             allowClear
             loading={isLoading}
             showSearch
             mode="multiple"
             onChange={onBaseTankChange}
             optionFilterProp="children"
-            placeholder={t('placeholder.selectManualBaseTank')}
+            placeholder={
+              manualActualisation
+                ? t('placeholder.selectManualBaseTank')
+                : t('placeholder.selectAutoBaseTank')
+            }
             filterOption={(value, option) =>
               option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
             }
           >
             {baseTanks
-              ?.filter((o) => o.pitem_base_manual === 'Y')
+              ?.filter((o) =>
+                manualActualisation ? o.pitem_base_manual === 'Y' : o.pitem_base_manual !== 'Y'
+              )
               .map((item, index) => (
                 <Select.Option key={index} value={`${item.pitem_base_code},${item.tank_code}`}>
                   {`${item.pitem_base_desc} - ${item.tank_code} [${item.tank_temp} C, ${item.tank_density} kg/m3]`}
                 </Select.Option>
               ))}
           </Select>
+        </Col>
+        <Col span={6}>
+          <Switch
+            checked={manualActualisation}
+            checkedChildren={<span>{t('operations.manualActualisationOn')}</span>}
+            unCheckedChildren={<span>{t('operations.manualActualisationOff')}</span>}
+            onChange={(value) => setManualActualisation(value)}
+          />
         </Col>
       </Row>
 
