@@ -126,6 +126,10 @@ class SiteConfig extends CommonClass
         "SITE_LIST_PICKUP_LOAD" => "显示/隐藏发油提单列表中的组合提单",
         "FSC_GATES" => "故障安全控制是否应该一直控制门禁通讯进程?",
         "RETURN_TO_SECONDARY_SECS" => "故障安全控制从第一级别返回第二级别需要等待的时间(秒)",
+        "WRI_ENABLE" => "油库启用废品记录编号(WRI)功能",
+        "WRI_EXPIRY_DAYS" => "WRI首次创建时，自其生效日期起直至失效的默认天数",
+        "WRI_PARTIAL_MATCH" => "允许司机输入WRI编号中的部分数字，但不能少于两位",
+        "SITE_USE_LONG_VEHICLE" => "超长车辆标记可在车辆管理屏幕显示并编辑",
     );
 
     private $ENG_DESC = array(
@@ -311,6 +315,10 @@ class SiteConfig extends CommonClass
         "SITE_LIST_PICKUP_LOAD" => "Show/Hide Pickup Schedules in Load Schedule list",
         "FSC_GATES" => "Should the FSC be in charge of gate comms at all times?",
         "RETURN_TO_SECONDARY_SECS" => "How long to wait before FSC will return to secondary after being primary (seconds)",
+        "WRI_ENABLE" => "WRI functionality is enabled on the site",
+        "WRI_EXPIRY_DAYS" => "The default number of days after the Effective date to set the Expiry Date for a WRI when it is created for the first time",
+        "WRI_PARTIAL_MATCH" => "Allows driver to enter only a part of the numeric included in the WRI number, minimum 2 digits",
+        "SITE_USE_LONG_VEHICLE" => "Show and edit the flag of long vehicles on Tanker List screen",
     );
 
     public function read()
