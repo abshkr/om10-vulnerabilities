@@ -1873,6 +1873,7 @@
     "prodNumber": "Product Number",
     "prodIsCompliant": "Is Compliant?",
     "prodIsBlend": "Is Blended?",
+    "prodWriRequired": "WRI Required?",
     "prodLdtolFlag": "Load Tolerance Check Enabled",
     "prodLdtolFlag2": "Enable load tolerance check",
     "prodLdtolPtol": "Upper limit",

@@ -47,6 +47,7 @@ class Product extends CommonClass
         "PROD_IS_COMPLIANT" => 1,
         "PROD_IS_LOCKED" => 1,
         "PROD_IS_BLEND" => "Y",
+        "PROD_WRI_REQD" => 1,
     );
     
     //Because base cannot be too many, do not do limit

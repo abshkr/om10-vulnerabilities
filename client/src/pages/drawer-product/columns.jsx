@@ -40,6 +40,17 @@ const columns = (t, config) => [
     pinned: 'left',
   },
   {
+    headerName: t('fields.prodWriRequired'),
+    field: 'prod_wri_reqd',
+    filter: 'BooleanFilter',
+    sortable: true,
+    resizable: true,
+    suppressSizeToFit: true,
+    cellRenderer: 'BooleanRenderer',
+    width: 145,
+    hide: !config.wriEnable,
+  },
+  {
     headerName: t('fields.prodIsCompliant'),
     field: 'prod_is_compliant',
     filter: 'BooleanFilter',
@@ -47,7 +58,7 @@ const columns = (t, config) => [
     resizable: true,
     suppressSizeToFit: true,
     cellRenderer: 'BooleanRenderer',
-    width: 120,
+    width: 140,
   },
   {
     headerName: t('fields.locked'),

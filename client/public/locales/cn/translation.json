@@ -1869,6 +1869,7 @@
     "prodNumber": "油品号",
     "prodIsCompliant": "是否符合规格?",
     "prodIsBlend": "是否混合油品？",
+    "prodWriRequired": "需要废品记录编号?",
     "prodLdtolFlag": "发油量超标检查",
     "prodLdtolFlag2": "检查调配油品品的发油量是否超标",
     "prodLdtolPtol": "超标上限",
