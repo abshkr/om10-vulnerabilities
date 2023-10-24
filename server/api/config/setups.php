@@ -72,7 +72,10 @@ define("API_F", "NO");
 define("DENS_RANGE", "NO");
 
 // If CLOSEOUT_TEMP_TRANS_FEATURE == "YES", use CLOSEOUT_TEMP_TRANS_FEATURE message definition, otherwise use the old style
-define("CLOSEOUT_TEMP_TRANS_FEATURE", "NO");
+$is_closeout_tmp = substr(getenv('CLOSEOUT_TEMP_TRANS_FEATURE'), 0, 1);
+if ($is_closeout_tmp == 'Y' || $is_closeout_tmp == 'y') {
+    define("CLOSEOUT_TEMP_TRANS_FEATURE", "YES");
+}
 
 if (DISPLAY_ALL_ERROS) {
     ini_set('display_errors', 1);
