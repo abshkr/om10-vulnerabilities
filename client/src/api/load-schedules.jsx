@@ -1,6 +1,7 @@
 export const READ = '/api/pages/schedule/read.php';
 export const PRODUCTS = '/api/pages/schedule/get_product_details.php';
 export const COMPARTMENTS = '/api/pages/schedule/get_cmpt_details.php';
+export const MANUAL_COMPARTMENTS = '/api/pages/schedule/get_manual_cmpt_details.php';
 export const STAGE_COMPARTMENTS = '/api/pages/schedule/get_stage_cmpt_details.php';
 export const SUPPLIERS = '/api/pages/schedule/suppliers.php';
 export const DRAWERS = '/api/pages/schedule/drawers.php';

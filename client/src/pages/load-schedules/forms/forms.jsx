@@ -182,7 +182,10 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
   const IS_CREATING = !value;
   const SHOW_WEIGHTS = !IS_CREATING && siteUseWeighbridge;
   const SHOW_ACTUALISE =
-    !IS_CREATING && config?.siteUseBaseManualFlag && value?.status === 'F' && value?.shls_ld_type === '2';
+    !IS_CREATING &&
+    config?.siteUseBaseManualFlag &&
+    ['F', 'A'].includes(value?.status) &&
+    value?.shls_ld_type === '2';
   const CAN_PRINT = ['2', '3', '4'].includes(tab);
   const READ_ONLY = value?.status !== 'F' && !IS_CREATING;
   const CAN_EDIT_PRELOAD = READ_ONLY && config?.siteSchdPreloadEditableEnd;
@@ -1119,14 +1122,23 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
         onComplete();
 
         notification.success({
-          message: t('messages.actualiseSuccess'),
-          description: `${t('descriptions.actualiseSuccess')}`,
+          message: manualProducts?.actualise
+            ? t('messages.actualiseSuccess')
+            : t('messages.actualiseSuccessAuto'),
+          description: manualProducts?.actualise
+            ? t('descriptions.actualiseSuccess')
+            : t('descriptions.actualiseSuccessAuto'),
         });
       })
       .catch((errors) => {
         _.forEach(errors.response.data.errors, (error) => {
           notification.error({
-            message: error.code === 500 ? t('messages.actualiseFailed') : error.type,
+            message:
+              error.code === 500
+                ? manualProducts?.actualise
+                  ? t('messages.actualiseFailed')
+                  : t('messages.actualiseFailedAuto')
+                : error.type,
             description: error.message,
           });
         });

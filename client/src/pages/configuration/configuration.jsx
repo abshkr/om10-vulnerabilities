@@ -924,6 +924,21 @@ const FormSwitch = ({ config, onChange }) => {
         </>
       );
 
+    case 'WRI_EXPIRY_DAYS':
+      return (
+        <>
+          <Tooltip placement="topLeft" title={t('descriptions.configNumberRanges')}>
+            <Tag color={'red'}>{'1 - 9999'}</Tag>
+          </Tooltip>
+          <InputNumber
+            min={1}
+            max={9999}
+            onChange={(value) => onChange(config, value)}
+            value={config.config_value}
+          />
+        </>
+      );
+
     default:
       return (
         // it is more reasonable to use Input instead of InputNumber as default
@@ -1541,6 +1556,15 @@ const Configuration = ({ user, config }) => {
             <TabPane tab={t('tabColumns.fsc')} key="16">
               <ConfigurationItems
                 data={_.filter(configuration, ['config_required_by_gui', 'G'])}
+                onChange={onConfigurationEdit}
+                t={t}
+              />
+            </TabPane>
+          )}
+          {user?.per_code === '9999' && (
+            <TabPane tab={t('tabColumns.wri')} key="17">
+              <ConfigurationItems
+                data={_.filter(configuration, ['config_required_by_gui', 'W'])}
                 onChange={onConfigurationEdit}
                 t={t}
               />

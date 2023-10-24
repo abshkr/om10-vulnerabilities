@@ -89,12 +89,13 @@ import { SETTINGS } from '../../../../constants';
 }
 */
 
-const buildPayloadToActualise = (values, bases) => {
+const buildPayloadToActualise = (values, bases, isManual) => {
   const payload = {};
   const qtyFactor = 1000;
 
   console.log('buildPayloadToActualise', values, bases);
 
+  payload.actualise = isManual;
   payload.supplier = values?.supplier_code;
   payload.drawer = values?.drawer_code;
   payload.trip_no = values?.shls_trip_no;
@@ -160,12 +161,13 @@ const buildPayloadToActualise = (values, bases) => {
     for (let mbidx = 0; mbidx < bases?.length; mbidx++) {
       const mbitem = bases?.[mbidx];
       if (String(titem.compartment) === String(mbitem.schd_comp_id)) {
+        const ratio_total = isManual
+          ? _.toNumber(mbitem.pitem_ratio_total_manual)
+          : _.toNumber(mbitem.pitem_ratio_total_auto);
         titem.trsf_density +=
-          (_.toNumber(mbitem.tank_density) * _.toNumber(mbitem.pitem_ratio_value)) /
-          _.toNumber(mbitem.pitem_ratio_total_manual);
+          (_.toNumber(mbitem.tank_density) * _.toNumber(mbitem.pitem_ratio_value)) / ratio_total;
         titem.trsf_temp +=
-          (_.toNumber(mbitem.tank_temp) * _.toNumber(mbitem.pitem_ratio_value)) /
-          _.toNumber(mbitem.pitem_ratio_total_manual);
+          (_.toNumber(mbitem.tank_temp) * _.toNumber(mbitem.pitem_ratio_value)) / ratio_total;
         titem.trsf_qty_amb += _.toNumber(mbitem.base_qty_amb);
         titem.trsf_qty_cor += _.toNumber(mbitem.base_qty_cor);
         titem.trsf_load_kg += _.toNumber(mbitem.base_load_kg);

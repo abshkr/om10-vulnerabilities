@@ -79,6 +79,7 @@ const DrawerForm = ({
   const [bases, setBases] = useState([]);
   const [prod_is_compliant, setCompliant] = useState(value?.prod_ldtol_flag);
   const [prod_is_locked, setLocked] = useState(value?.prod_is_locked);
+  const [prod_wri_reqd, setWRI] = useState(value?.prod_wri_reqd);
   const [selected, setSelected] = useState(null);
   const [hotFlag, setHotFlag] = useState(value?.prod_check_hot_volume);
   const [blendFlag, setBlendFlag] = useState(value?.prod_is_blend);
@@ -781,6 +782,7 @@ const DrawerForm = ({
       setBases([]);
       setCompliant(false);
       setLocked(false);
+      setWRI(false);
     }
 
     if (value) {
@@ -788,9 +790,11 @@ const DrawerForm = ({
         prod_desc: value.prod_desc,
         prod_is_compliant: value.prod_is_compliant,
         prod_is_locked: value.prod_is_locked,
+        prod_wri_reqd: value.prod_wri_reqd,
       });
       setCompliant(value.prod_is_compliant);
       setLocked(value.prod_is_locked);
+      setWRI(value.prod_wri_reqd);
       getBases();
     }
   }, [resetFields, value, visible]);
@@ -936,7 +940,7 @@ const DrawerForm = ({
                   </Col>
                 </Row>
                 <Row gutter={[8, 0]}>
-                  <Col span={config?.siteUseProdLock ? 12 : 24}>
+                  <Col span={8}>
                     <Form.Item name="prod_is_compliant" label={t('fields.prodCompliant')}>
                       <Checkbox
                         valuePropName="checked"
@@ -951,7 +955,7 @@ const DrawerForm = ({
                     </Form.Item>
                   </Col>
                   {config?.siteUseProdLock && (
-                    <Col span={12}>
+                    <Col span={8}>
                       <Form.Item name="prod_is_locked" label={t('fields.locked')}>
                         <Checkbox
                           valuePropName="checked"
@@ -960,6 +964,22 @@ const DrawerForm = ({
                             setLocked(v.target.checked);
                             setFieldsValue({
                               prod_is_locked: v.target.checked,
+                            });
+                          }}
+                        ></Checkbox>
+                      </Form.Item>
+                    </Col>
+                  )}
+                  {config?.wriEnable && (
+                    <Col span={8}>
+                      <Form.Item name="prod_wri_reqd" label={t('fields.prodWriRequired')}>
+                        <Checkbox
+                          valuePropName="checked"
+                          checked={prod_wri_reqd}
+                          onChange={(v) => {
+                            setWRI(v.target.checked);
+                            setFieldsValue({
+                              prod_wri_reqd: v.target.checked,
                             });
                           }}
                         ></Checkbox>
@@ -987,52 +1007,6 @@ const DrawerForm = ({
                 </Col>
               )}
             </Row>
-
-            {/* <Row gutter={[8, 2]}>
-              <Col span={8}>
-                <Form.Item name="prod_is_compliant" label={t('fields.prodCompliant')}>
-                  <Checkbox
-                    valuePropName="checked"
-                    checked={prod_is_compliant}
-                    onChange={(v) => {
-                      setCompliant(v.target.checked);
-                      setFieldsValue({
-                        prod_is_compliant: v.target.checked,
-                      });
-                    }}
-                  ></Checkbox>
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <Form.Item name="prod_is_locked" label={t('fields.locked')}>
-                  <Checkbox
-                    valuePropName="checked"
-                    checked={prod_is_locked}
-                    onChange={(v) => {
-                      setLocked(v.target.checked);
-                      setFieldsValue({
-                        prod_is_locked: v.target.checked,
-                      });
-                    }}
-                  ></Checkbox>
-                </Form.Item>
-              </Col>
-              <Col span={8}>
-                <DangerousGoods form={form} value={value} />
-              </Col>
-            </Row>
-
-            <Row gutter={[8, 2]}>
-              <Col span={3}>
-                <Form.Item name="prod_desc_title" label={t('fields.description')}>
-                </Form.Item>
-              </Col>
-              <Col span={21}>
-                <Form.Item name="prod_desc">
-                  <TextArea rows={2} />
-                </Form.Item>
-              </Col>
-            </Row> */}
 
             <Card
               size="small"

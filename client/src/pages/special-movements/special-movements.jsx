@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
 import moment from 'moment';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -82,6 +82,7 @@ const SpecialMovements = () => {
 
   const onRefresh = () => {
     setRefreshed(true);
+    mutate(url);
 
     // Don't need revalidate, let useSWR handle itself while parameter changes
     // revalidate();
