@@ -5063,6 +5063,18 @@
     "USERTRACE_ACTION_TIME": "NA",
     "USERTRACE_LOCATION": "NA"
   },
+  "WRI": {
+    "WRI_NUMBER": "NA",
+    "ID_STATUS": "NA",
+    "PRODUCER_NAME": "NA",
+    "PICKUP_LOCATION": "NA",
+    "WASTE_CLASSIFICATION": "NA",
+    "VEHICLE_REGISTRATION": "NA",
+    "CONTRACT_NUMBER": "NA",
+    "WRI_EFFECTIVE_DATE": "NA",
+    "WRI_EXPIRY_DATE": "NA",
+    "WRI_STATUS": "NA"
+  },
   "Z_DB_PATCH": {
     "DP_PATCH_SEQ": "NA",
     "DP_PATCH_VER": "NA",

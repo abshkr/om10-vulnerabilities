@@ -391,6 +391,7 @@
       "URBAC_USER_DOMAINS_PRIVILEGES": "User Access Privilege",
       "URBAC_USER_ROLES": "User Roles",
       "URBAC_USER_TRACES": "User Traces",
+      "WRI": "WRI",
       "Z_DB_PATCH": "Z Db Patch",
       "Z_DB_PATCH_DETAIL": "Z Db Patch Detail"
     }
@@ -787,6 +788,7 @@
       "URBAC_USER_DOMAINS_PRIVILEGES": "用户访问权限",
       "URBAC_USER_ROLES": "用户角色关联",
       "URBAC_USER_TRACES": "用户行踪记录",
+      "WRI": "废品记录编号",
       "Z_DB_PATCH": "Z Db Patch",
       "Z_DB_PATCH_DETAIL": "Z Db Patch Detail"
     }

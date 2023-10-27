@@ -78,6 +78,7 @@ import * as ATG_FIELDS from './atg-fields';
 import * as TANK_ATG_FIELDS from './tank-atg-fields';
 import * as USER_COLUMNS from './user-columns';
 import * as AUTH_SERVERS from './auth-servers';
+import * as WRI from './wri';
 
 export {
   AUTH,
@@ -158,6 +159,7 @@ export {
   TANK_ATG_FIELDS,
   USER_COLUMNS,
   AUTH_SERVERS,
+  WRI,
 };
 
 export default api;

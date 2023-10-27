@@ -47,6 +47,7 @@ import Period from './item-periods';
 import OrderTrips from './order-trips';
 import OrderItemTrips from './item-trips';
 import Attachments from './attachments';
+import WriNumbers from './wri-numbers';
 
 import DeliveryDetails from '../../delivery-details';
 import { ManualTransactionsPopup } from '../../manual-transactions';
@@ -163,7 +164,11 @@ const FormModal = ({
       setDrawerWidth('80vw');
       setMainTabOn(true);
     } else {
-      setDrawerWidth('90vw');
+      if (tabPaneKey === '7') {
+        setDrawerWidth('60vw');
+      } else {
+        setDrawerWidth('90vw');
+      }
       setMainTabOn(false);
     }
   };
@@ -904,6 +909,11 @@ const FormModal = ({
           {config?.siteAllowUploadOODoc && (
             <TabPane tab={t('tabColumns.attachments')} disabled={IS_CREATING} key="6">
               <Attachments value={value} config={config} />
+            </TabPane>
+          )}
+          {config?.wriEnable && (
+            <TabPane tab={t('tabColumns.wriNumbers')} disabled={IS_CREATING} key="7">
+              <WriNumbers value={value} access={access} config={config} listing={false} />
             </TabPane>
           )}
         </Tabs>

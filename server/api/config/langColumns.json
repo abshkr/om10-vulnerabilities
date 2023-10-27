@@ -5062,6 +5062,18 @@
       "USERTRACE_ACTION_TIME": "User Action Time",
       "USERTRACE_LOCATION": "User Location"
     },
+    "WRI": {
+      "WRI_NUMBER": "Waste Record ID",
+      "ID_STATUS": "ID Status",
+      "PRODUCER_NAME": "Producer Name",
+      "PICKUP_LOCATION": "Pickup Location",
+      "WASTE_CLASSIFICATION": "Waste Classification",
+      "VEHICLE_REGISTRATION": "Vehicle Registration",
+      "CONTRACT_NUMBER": "Contract Number",
+      "WRI_EFFECTIVE_DATE": "Effective Date",
+      "WRI_EXPIRY_DATE": "Expiry Date",
+      "WRI_STATUS": "Status"
+    },
     "Z_DB_PATCH": {
       "DP_PATCH_SEQ": "Dp Patch Seq",
       "DP_PATCH_VER": "Dp Patch Ver",
@@ -10135,6 +10147,18 @@
       "USERTRACE_ACTION": "用户行为",
       "USERTRACE_ACTION_TIME": "用户行为时间",
       "USERTRACE_LOCATION": "用户行为地点"
+    },
+    "WRI": {
+      "WRI_NUMBER": "WRI编号",
+      "ID_STATUS": "ID状态",
+      "PRODUCER_NAME": "生产者名称",
+      "PICKUP_LOCATION": "提货地点",
+      "WASTE_CLASSIFICATION": "废品分类",
+      "VEHICLE_REGISTRATION": "车辆登记",
+      "CONTRACT_NUMBER": "客户订单系统号",
+      "WRI_EFFECTIVE_DATE": "WRI生效日期",
+      "WRI_EXPIRY_DATE": "WRI失效日期",
+      "WRI_STATUS": "WRI状态"
     },
     "Z_DB_PATCH": {
       "DP_PATCH_SEQ": "Dp Patch Seq",
