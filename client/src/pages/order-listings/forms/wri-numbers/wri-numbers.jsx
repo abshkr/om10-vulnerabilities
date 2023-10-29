@@ -49,7 +49,7 @@ const WriNumbers = ({ value, access, config, listing }) => {
   const decoded = jwtDecode(token);
   const user_code = decoded?.per_code;
 
-  const url = `${WRI.READ}`;
+  const url = `${WRI.READ}?order_id=${value?.order_sys_no}`;
 
   const { data: payload } = useSWR(url);
   const { data: idStats } = useSWR(WRI.WRI_ID_STATS);
