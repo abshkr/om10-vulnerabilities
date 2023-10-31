@@ -6,3 +6,4 @@ export const TANKERS = '/api/pages/wri/tankers.php';
 export const CREATE = '/api/pages/wri/create.php';
 export const UPDATE = '/api/pages/wri/update.php';
 export const DELETE = '/api/pages/wri/delete.php';
+export const IMPORT = '/api/pages/wri/import.php';

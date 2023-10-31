@@ -37,6 +37,7 @@ import { SETTINGS } from '../../../../constants';
 import columns from './columns';
 import EffectiveFrom from './effective-from';
 import ExpiredAfter from './expired-after';
+import WriImportManager from './import';
 
 const { TabPane } = Tabs;
 
@@ -51,7 +52,7 @@ const WriNumbers = ({ value, access, config, listing }) => {
 
   const url = `${WRI.READ}?order_id=${value?.order_sys_no}`;
 
-  const { data: payload } = useSWR(url);
+  const { data: payload, isValidating: payloadLoading, revalidate } = useSWR(url);
   const { data: idStats } = useSWR(WRI.WRI_ID_STATS);
   const { data: statusTypes } = useSWR(WRI.WRI_STATUS_TYPES);
   const { data: tankers, isValidating } = useSWR(WRI.TANKERS);
@@ -71,6 +72,7 @@ const WriNumbers = ({ value, access, config, listing }) => {
   const fields = columns(t, listing);
 
   const handleFormState = (visibility, selection) => {
+    // if (listing) return;
     if (!visibility) {
       setFieldsValue({
         wri_number: null,
@@ -99,10 +101,23 @@ const WriNumbers = ({ value, access, config, listing }) => {
     const values = await form.validateFields();
 
     if (!values?.contract_number) {
-      values.contract_number = value?.order_sys_no;
+      if (!value) {
+        values.contract_number = '';
+      } else {
+        values.contract_number = value?.order_sys_no;
+      }
     }
+
     if (values?.wri_status === undefined || values?.wri_status === null) {
       values.wri_status = 0;
+    }
+
+    if (values.wri_status !== 1) {
+      if (!values?.contract_number) {
+        values.wri_status = 2;
+      } else {
+        values.wri_status = 0;
+      }
     }
 
     // console.log('.....................values.wri_effective_date', values.wri_effective_date);
@@ -214,6 +229,16 @@ const WriNumbers = ({ value, access, config, listing }) => {
     return Promise.resolve();
   };
 
+  const loadWris = async (value) => {
+    console.log('Forms: loadWris', value);
+    revalidate();
+  };
+
+  const handleImport = () => {
+    // pop up the dialog to manage straping data import
+    WriImportManager(t('operations.importWRI'), {}, loadWris, '70vw', '50vh');
+  };
+
   const modifiers = (
     <>
       <Button
@@ -224,14 +249,11 @@ const WriNumbers = ({ value, access, config, listing }) => {
       >
         {t('operations.wriAdd')}
       </Button>
-      {/* <Button
-        type="danger"
-        style={{ float: 'right' }}
-        disabled={!access.canDelete}
-        // onClick={() => handleFormState(true, null)}
-      >
-        {t('operations.wriDelete')}
-      </Button> */}
+      {listing && (
+        <Button type="primary" style={{ float: 'right' }} disabled={!access.canCreate} onClick={handleImport}>
+          {t('operations.importCSV')}
+        </Button>
+      )}
     </>
   );
 
@@ -447,7 +469,7 @@ const WriNumbers = ({ value, access, config, listing }) => {
                   </Checkbox>
                 } */
               >
-                <Select
+                {/* <Select
                   dropdownMatchSelectWidth={false}
                   disabled={isValidating}
                   loading={isValidating}
@@ -471,8 +493,8 @@ const WriNumbers = ({ value, access, config, listing }) => {
                       {item.tnkr_archive === 'Y' ? <PaperClipOutlined style={{ color: 'red' }} /> : ''}
                     </Select.Option>
                   ))}
-                </Select>
-                {/* <Input disabled={false}/> */}
+                </Select> */}
+                <Input disabled={false} />
               </Form.Item>
 
               {listing && (
@@ -481,14 +503,14 @@ const WriNumbers = ({ value, access, config, listing }) => {
                   label={t('fields.wriContractNumber')}
                   rules={[
                     {
-                      required: true,
+                      required: false,
                       validator: validateField,
                       label: t('fields.wriContractNumber'),
                       maxLength: 9,
                     },
                   ]}
                 >
-                  <Input disabled={true} />
+                  <Input disabled={!listing} />
                 </Form.Item>
               )}
 

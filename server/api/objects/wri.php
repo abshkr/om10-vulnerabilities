@@ -155,4 +155,201 @@ class WRI extends CommonClass
             return null;
         }
     }
+
+    protected function find_wri($wri_key)
+    {
+        $query = "
+            SELECT * 
+            FROM WRI
+            WHERE WRI_NUMBER=:code 
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':code', $wri_key);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            return false;
+        }
+
+        $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        return $row;
+    }
+
+    protected function insert_wri($wri_obj)
+    {
+        $serv = new SiteService($this->conn);
+        $config_value = $serv->site_config_value("WRI_EXPIRY_DAYS", "3");
+
+        $query = "
+            INSERT INTO WRI (
+                WRI_NUMBER          
+                , ID_STATUS           
+                , PRODUCER_NAME       
+                , PICKUP_LOCATION     
+                , WASTE_CLASSIFICATION
+                , VEHICLE_REGISTRATION
+                , CONTRACT_NUMBER     
+                , WRI_EFFECTIVE_DATE  
+                , WRI_EXPIRY_DATE     
+                , WRI_STATUS          
+            ) VALUES(
+                :wri_number          
+                , :id_status           
+                , :producer_name       
+                , :pickup_location     
+                , :waste_classification
+                , :vehicle_registration
+                , NULL    
+                , SYSDATE  
+                , SYSDATE+" . $config_value . "      
+                , 2
+            )
+        ";
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':wri_number', $wri_obj->wri_number);
+        oci_bind_by_name($stmt, ':id_status', $wri_obj->id_status);
+        oci_bind_by_name($stmt, ':producer_name', $wri_obj->producer_name);
+        oci_bind_by_name($stmt, ':pickup_location', $wri_obj->pickup_location);
+        oci_bind_by_name($stmt, ':waste_classification', $wri_obj->waste_classification);
+        oci_bind_by_name($stmt, ':vehicle_registration', $wri_obj->vehicle_registration);
+
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function update_wri($wri_obj)
+    {
+        $query = "
+            UPDATE WRI SET
+                ID_STATUS = :id_status,
+                PRODUCER_NAME = :producer_name,
+                PICKUP_LOCATION = :pickup_location,
+                WASTE_CLASSIFICATION = :waste_classification,
+                VEHICLE_REGISTRATION = :vehicle_registration
+            WHERE WRI_NUMBER = :wri_number 
+        ";
+
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':wri_number', $wri_obj->wri_number);
+        oci_bind_by_name($stmt, ':id_status', $wri_obj->id_status);
+        oci_bind_by_name($stmt, ':producer_name', $wri_obj->producer_name);
+        oci_bind_by_name($stmt, ':pickup_location', $wri_obj->pickup_location);
+        oci_bind_by_name($stmt, ':waste_classification', $wri_obj->waste_classification);
+        oci_bind_by_name($stmt, ':vehicle_registration', $wri_obj->vehicle_registration);
+
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function delete_wri($wri_key)
+    {
+        $query = "
+            DELETE 
+            FROM WRI
+            WHERE WRI_NUMBER=:code 
+        ";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':code', $wri_key);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        return true;
+    }
+
+    public function batch_import()
+    {
+        // write_log(sprintf("%s::%s() START.", __CLASS__, __FUNCTION__), 
+        //     __FILE__, __LINE__);
+        // write_log(json_encode($this), __FILE__, __LINE__);
+
+        if (!$this->data || count($this->data) <= 0) {
+            $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__", "parameter missing: data"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            write_log("Data not set, cannot continue", __FILE__, __LINE__, LogLevel::ERROR);
+            return;
+        }
+
+        $this->commit_mode = OCI_NO_AUTO_COMMIT;
+
+        $result = true;
+        foreach ($this->data as $k => $v ) {
+            // find if the WRI in $v exists in DB
+            $row_existed = $this->find_wri($v->wri_number);
+            if ($row_existed !== false) {
+                // the WRI from CSV exists in DB
+                // check the id status in CSV
+                if ($v->id_status != 3) {
+                    // Assigned, In-Transit, or Open => update the record in DB with values from CSV
+                    $result = $this->update_wri($v);
+                    if ($result === false) {
+                        // oci_rollback($this->conn);
+                        break;
+                    }
+                } else {
+                    // 3 = Rejected => remove the WRI from DB
+                    $result = $this->delete_wri($v->wri_number);
+                    if ($result === false) {
+                        // oci_rollback($this->conn);
+                        break;
+                    }
+                }
+            } else {
+                // the WRI from CSV does not exist in DB
+                // check the id status in CSV
+                if ($v->id_status != 3) {
+                    // Assigned, In-Transit, or Open => add the record to DB
+                    $result = $this->insert_wri($v);
+                    if ($result === false) {
+                        // oci_rollback($this->conn);
+                        break;
+                    }
+                } else {
+                    // 3 = Rejected => do nothing 
+                    continue;
+                }
+            }
+        }
+
+        if (!$result) {
+            $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", sprintf("database storage error:%s", $e['message'])));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        } else {
+            $journal = new Journal($this->conn, false);
+            $jnl_data[0] = Utilities::getCurrPsn();
+
+            if (!$journal->jnlLogEvent(
+                Lookup::WRI_IMPORTED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+                $e = oci_error($stmt);
+                write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+                $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", sprintf("database storage error:%s", $e['message'])));
+                echo json_encode($error, JSON_PRETTY_PRINT);
+                oci_rollback($this->conn);
+                return;
+            }
+
+            oci_commit($this->conn);
+            $error = new EchoSchema(200, response("__WRIS_IMPORTED__"));
+            echo json_encode($error, JSON_PRETTY_PRINT);
+            return;
+        }
+
+    }
 }
