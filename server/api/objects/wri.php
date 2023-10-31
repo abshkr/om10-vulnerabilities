@@ -290,6 +290,12 @@ class WRI extends CommonClass
 
         $result = true;
         foreach ($this->data as $k => $v ) {
+            // convert enum string to value
+            if ($v->id_status == "Assigned") $v->id_status = 0;
+            if ($v->id_status == "In-Transit") $v->id_status = 1;
+            if ($v->id_status == "Open") $v->id_status = 2;
+            if ($v->id_status == "Rejected") $v->id_status = 3;
+            
             // find if the WRI in $v exists in DB
             $row_existed = $this->find_wri($v->wri_number);
             if ($row_existed !== false) {

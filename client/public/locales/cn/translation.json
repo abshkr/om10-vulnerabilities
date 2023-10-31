@@ -234,6 +234,7 @@
     "mustBeInteger": "数据必须是整数",
     "mustBeNumber": "数据必须是实数",
     "mustBePositive": "数据必须是正实数",
+    "mustInEnumOfWriIdStats": "数据必须是以下值之一：['0', '1', '2', '3', 'Assigned', 'In-Transit', 'Open', 'Rejected']",
     "noCompanyType": "必须选择至少一个公司类型",
     "nominationItemChanged": "在进行手工交易之前，请将数据还原或者保存修改的数据",
     "noRowsToShow": "暂无数据",

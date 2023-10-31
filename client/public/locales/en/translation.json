@@ -234,6 +234,7 @@
     "mustBeInteger": "Value must be an integer",
     "mustBeNumber": "Value must be a number",
     "mustBePositive": "Value must be a positive number",
+    "mustInEnumOfWriIdStats": "Value must be in the enum ['0', '1', '2', '3', 'Assigned', 'In-Transit', 'Open', 'Rejected']",
     "noCompanyType": "Select at least one company type",
     "nominationItemChanged": "Please restore or save the changes before making the transaction",
     "noRowsToShow": "No Rows To Show",

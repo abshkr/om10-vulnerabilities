@@ -213,13 +213,21 @@ const WriImport = ({ value, onClose }) => {
       }
     }
 
-    if (!_.isInteger(_.toNumber(wri.id_status))) {
+    /*
+      insert into ENUMITEM (ENUMTYPENAME,ENUM_NO,ENUM_CODE,ENUM_TMM)values('WRI_ID_STAT', 0, 'A', 3370);   -- A: 
+      insert into ENUMITEM (ENUMTYPENAME,ENUM_NO,ENUM_CODE,ENUM_TMM)values('WRI_ID_STAT', 1, 'T', 3371);   -- T: 
+      insert into ENUMITEM (ENUMTYPENAME,ENUM_NO,ENUM_CODE,ENUM_TMM)values('WRI_ID_STAT', 2, 'O', 3372);   -- O: 
+      insert into ENUMITEM (ENUMTYPENAME,ENUM_NO,ENUM_CODE,ENUM_TMM)values('WRI_ID_STAT', 3, 'R', 3373);   -- R: 
+    */
+    const stats = ['0', '1', '2', '3', 'Assigned', 'In-Transit', 'Open', 'Rejected'];
+    // if (!_.isInteger(_.toNumber(wri.id_status))) {
+    if (stats.indexOf(wri.id_status) < 0) {
       invalid = true;
       if (showWarning) {
         notification.error({
-          message: t('descriptions.mustBeInteger'),
+          message: t('validate.invalidInput'),
           description: `${t('fields.wriIdStatus')} - ${t('descriptions.inLine')}${line + 1}, ${t(
-            'descriptions.notInteger'
+            'descriptions.mustInEnumOfWriIdStats'
           )}`,
         });
       }
