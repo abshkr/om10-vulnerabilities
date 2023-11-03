@@ -955,6 +955,8 @@ const DrawerProductTransfers = ({
         key: id,
       });
       setDrawerChanges(changes);
+      // remove base array so the changes in trnasfers can trigger the changes in base transfers
+      value.data.trsf_bases = [];
     }
     setSelected({
       ...value?.data,

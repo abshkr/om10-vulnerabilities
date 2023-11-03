@@ -387,6 +387,10 @@ function response($case_name, $default = null, $params = null)
             "ENG" => "Tank strap imported",
             "CHN" => "油罐数据已经导入"
         ),
+        "__WRIS_IMPORTED__" => array(
+            "ENG" => "WRI data imported",
+            "CHN" => "废品记录编号数据已经导入"
+        ),
         "__SESSIONS_KILLED__" => array(
             "ENG" => "All seesions killed",
             "CHN" => "其余会话已经删除"

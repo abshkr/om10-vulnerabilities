@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import useSWR from 'swr';
 import moment from 'moment';
-import { Button, Select, Switch } from 'antd';
+import { Button, Select, Switch, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
+import { SyncOutlined, PlusOutlined, FileSearchOutlined, EyeOutlined } from '@ant-design/icons';
 
 import {
   Page,
@@ -24,6 +24,7 @@ import columns from './columns';
 import auth from '../../auth';
 import Forms from './forms';
 import { useConfig, usePagination } from '../../hooks';
+import WriNumbers from './forms/wri-numbers';
 
 const OrderListings = ({ popup, params }) => {
   const config = useConfig();
@@ -42,6 +43,7 @@ const OrderListings = ({ popup, params }) => {
   const [customer, setCustomer] = useState(null);
   const [data, setData] = useState(null);
   const [maskFlag, setMaskFlag] = useState(true);
+  const [wriListingOpen, setWriListingOpen] = useState(false);
 
   const { t } = useTranslation();
 
@@ -424,6 +426,17 @@ const OrderListings = ({ popup, params }) => {
         // localBased={true}
       />
 
+      {config?.wriEnable && (
+        <Button
+          type="primary"
+          icon={<EyeOutlined />}
+          disabled={false}
+          onClick={() => setWriListingOpen(true)}
+        >
+          {t('operations.wriListing')}
+        </Button>
+      )}
+
       <Button icon={<SyncOutlined />} onClick={onRefresh} loading={isDownloading || isSearching}>
         {t('operations.refresh')}
       </Button>
@@ -491,67 +504,81 @@ const OrderListings = ({ popup, params }) => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access} standalone={popup}>
-      <DataTable
-        minimal={false}
-        data={data}
-        columns={fields}
-        isLoading={isDownloading || isSearching}
-        selectionMode="single"
-        onClick={(payload) => {
-          setMaskFlag(false);
-          handleFormState(true, payload);
-        }}
-        handleSelect={(payload) => {
-          setMaskFlag(false);
-          handleFormState(true, payload[0]);
-        }}
-        autoColWidth
-        clearFilterPlus={revalidate}
-        columnAdjustable={siteCustomColumnOrder}
-        pageModule={'M_ORDERLISTING'}
-      />
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignContent: 'center',
-          alignItems: 'center',
-          marginTop: 10,
-        }}
-      >
-        {/* pagingFlag ? paginator : t('fields.totalCount') + ': ' + count */}
-        {pagingFlag ? (
-          paginator
-        ) : siteUseDownloader === false ? (
-          t('fields.totalCount') + ': ' + count
-        ) : (
-          <DataDownloader
-            baseUrl={pageUrl}
-            startVar={'start_num'}
-            endVar={'end_num'}
-            pageSize={500}
-            setData={setData}
-            setDownloading={setDownloading}
-            runUrl={runUrlFlag.current}
-            setRunUrl={setRunUrlFlag}
+    <>
+      {wriListingOpen && (
+        <Drawer
+          placement="right"
+          bodyStyle={{ paddingTop: 5 }}
+          onClose={() => setWriListingOpen(false)}
+          visible={wriListingOpen}
+          width="100vw"
+          title={t('operations.wriListing')}
+        >
+          <WriNumbers access={access} config={config} listing={true} />
+        </Drawer>
+      )}
+      <Page page={page} name={name} modifiers={modifiers} access={access} standalone={popup}>
+        <DataTable
+          minimal={false}
+          data={data}
+          columns={fields}
+          isLoading={isDownloading || isSearching}
+          selectionMode="single"
+          onClick={(payload) => {
+            setMaskFlag(false);
+            handleFormState(true, payload);
+          }}
+          handleSelect={(payload) => {
+            setMaskFlag(false);
+            handleFormState(true, payload[0]);
+          }}
+          autoColWidth
+          clearFilterPlus={revalidate}
+          columnAdjustable={siteCustomColumnOrder}
+          pageModule={'M_ORDERLISTING'}
+        />
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignContent: 'center',
+            alignItems: 'center',
+            marginTop: 10,
+          }}
+        >
+          {/* pagingFlag ? paginator : t('fields.totalCount') + ': ' + count */}
+          {pagingFlag ? (
+            paginator
+          ) : siteUseDownloader === false ? (
+            t('fields.totalCount') + ': ' + count
+          ) : (
+            <DataDownloader
+              baseUrl={pageUrl}
+              startVar={'start_num'}
+              endVar={'end_num'}
+              pageSize={500}
+              setData={setData}
+              setDownloading={setDownloading}
+              runUrl={runUrlFlag.current}
+              setRunUrl={setRunUrlFlag}
+            />
+          )}
+        </div>
+        {pageState !== 'view' && (
+          <Forms
+            value={selected}
+            visible={visible}
+            handleFormState={handleFormState}
+            access={access}
+            config={config}
+            pageState={pageState}
+            revalidate={revalidate}
+            locateOrder={locateOrder}
+            maskFlag={maskFlag}
           />
         )}
-      </div>
-      {pageState !== 'view' && (
-        <Forms
-          value={selected}
-          visible={visible}
-          handleFormState={handleFormState}
-          access={access}
-          config={config}
-          pageState={pageState}
-          revalidate={revalidate}
-          locateOrder={locateOrder}
-          maskFlag={maskFlag}
-        />
-      )}
-    </Page>
+      </Page>
+    </>
   );
 };
 
