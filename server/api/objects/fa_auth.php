@@ -101,14 +101,14 @@ class FaAuth extends CommonClass
         $to = $mail;
         $subject = "DKI-TAS verification Code";
         $auth_code = $this->TwoFA_code();
-        $msg = sprintf("Please verify that it’s you
+        $msg = sprintf("Please verify that it's you
 
 We have noticed that you are signing in to a DKI TAS system.
 If this is you, please use the following verification code to confirm your identity:
 
 %s
 
-If this wasn’t you, please reset your password.
+If this wasn't you, please reset your password.
 
 Yours securely,
 Team DKI", $auth_code);
