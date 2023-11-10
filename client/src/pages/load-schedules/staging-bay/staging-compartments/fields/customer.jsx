@@ -25,12 +25,28 @@ export default class CustomerEditor extends Component {
   };
 
   render() {
-    const { values, editableColumn, products, flag, data } = this.props;
+    const { values, editableColumn, products, flag, data, tableAPI } = this.props;
+    // get defined customer
+    let defCustomer = '';
+    tableAPI.forEachNodeAfterFilterAndSort((node, tableIndex) => {
+      if (
+        data?.compartment !== node?.data?.compartment &&
+        data?.trip_order_no === node?.data?.trip_order_no &&
+        node?.data?.plss_staged_cust
+      ) {
+        defCustomer = node?.data?.plss_staged_cust;
+      }
+    });
+
+    // console.log('...........props', this.props);
     const disabled = data?.[editableColumn] === undefined || data?.[editableColumn] ? false : true;
     console.log('................cus edit', disabled, editableColumn, data?.[editableColumn]);
     const prodCustomers = _.filter(
       products,
-      (o) => data?.prod_code === o?.prod_code && data?.prod_cmpy === o?.prod_cmpy
+      (o) =>
+        data?.prod_code === o?.prod_code &&
+        data?.prod_cmpy === o?.prod_cmpy &&
+        (defCustomer === '' || defCustomer === o?.cust_acct)
     );
     const availCustomers = _.uniq(_.map(prodCustomers, 'cust_acct'));
 
