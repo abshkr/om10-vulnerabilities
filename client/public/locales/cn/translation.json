@@ -198,6 +198,7 @@
     "isNegative": "，为负数",
     "keyReaderDeviceNotUsed": "该标识密钥设备尚未被任何油库出入安检设备使用，可以删除。",
     "keyReaderDeviceUsed": "该标识密钥设备已被油库出入安检设备使用，不可删除。",
+    "keyReaderDevicePrompt": "请注意：\"类别\"和\"区域\"的内容只能由\"油库出入安检设备管理\"屏幕管理，\"油库出入安检设备管理\"负责把\"标识密钥设备\"和\"油库出入安检设备\"关联。",
     "lastFieldChanged": "最后修改的字段",
     "linkNotExist": "未定义FastTrack系统的URL。",
     "listFirstIn": "先进",

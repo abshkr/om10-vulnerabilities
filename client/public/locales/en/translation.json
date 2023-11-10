@@ -198,6 +198,7 @@
     "isNegative": " is negative",
     "keyReaderDeviceNotUsed": "This Key Reader Device is not used by any Site Access Devices so can be deleted.",
     "keyReaderDeviceUsed": "This Key Reader Device is used by a Site Access Device so cannot be deleted.",
+    "keyReaderDevicePrompt": "Please note: the field \"Class\" and \"Area\" are managed on \"Site Access Devices\" screen where a key reader device can be linked or unlinked with a site access device.",
     "lastFieldChanged": "Last field changed",
     "linkNotExist": "The FastTrack URL is not defined.",
     "listFirstIn": "First in",

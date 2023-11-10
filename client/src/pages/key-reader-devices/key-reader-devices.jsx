@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import useSWR from 'swr';
-import { Button } from 'antd';
+import { Button, Tag } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 
@@ -61,6 +61,7 @@ const KeyReaderDevices = () => {
       <DataTable
         data={data}
         columns={fields}
+        extra={<Tag color="red">{t('descriptions.keyReaderDevicePrompt')}</Tag>}
         isLoading={isLoading}
         selectionMode="single"
         onClick={(payload) => handleFormState(true, payload)}
