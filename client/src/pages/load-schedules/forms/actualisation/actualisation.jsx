@@ -42,6 +42,7 @@ const Actualisation = ({ value, onClose, config }) => {
       revalidateOnFocus: false,
     }
   );
+
   const [form] = Form.useForm();
   const fields = columns(t, config, form);
 
@@ -142,20 +143,20 @@ const Actualisation = ({ value, onClose, config }) => {
         base.base_dens = o?.tank_density;
         const scheduled_auto = cmpt?.qty_scheduled * (o?.pitem_ratio_total_auto / o?.pitem_ratio_total);
         const scheduled_manual = cmpt?.qty_scheduled * (o?.pitem_ratio_total_manual / o?.pitem_ratio_total);
+        const preload_auto = (cmpt?.qty_preload || 0) * (o?.pitem_ratio_total_auto / o?.pitem_ratio_total);
+        const preload_manual =
+          (cmpt?.qty_preload || 0) * (o?.pitem_ratio_total_manual / o?.pitem_ratio_total);
         const loaded_auto = cmpt?.qty_loaded - cmpt?.qty_loaded_m;
         const loaded_manual = cmpt?.qty_loaded_m;
         if (o.pitem_base_manual === 'Y') {
           const percent = _.toNumber(o?.pitem_ratio_value) / _.toNumber(o?.pitem_ratio_total_manual);
           o.pitem_ratio_qty = _.round(
-            (scheduled_manual - (loaded_manual || 0) - (cmpt?.qty_preload || 0)) * percent,
+            (scheduled_manual - (loaded_manual || 0) - preload_manual) * percent,
             3
           );
         } else {
           const percent = _.toNumber(o?.pitem_ratio_value) / _.toNumber(o?.pitem_ratio_total_auto);
-          o.pitem_ratio_qty = _.round(
-            (scheduled_auto - (loaded_auto || 0) - (cmpt?.qty_preload || 0)) * percent,
-            3
-          );
+          o.pitem_ratio_qty = _.round((scheduled_auto - (loaded_auto || 0) - preload_auto) * percent, 3);
         }
 
         base.qty_amb = type === 'LT' ? o?.pitem_ratio_qty : 0;
@@ -179,6 +180,7 @@ const Actualisation = ({ value, onClose, config }) => {
           qty_loaded_auto: _.round(loaded_auto, 3),
           qty_loaded_manual: loaded_manual,
           qty_preload: cmpt?.qty_preload,
+          // qty_preload: o?.pitem_base_manual === 'Y' ? preload_manual: preload_auto,
         });
 
         const item = _.find(
