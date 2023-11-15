@@ -2606,6 +2606,8 @@
     "archive": "Archive",
     "assignToTanker": "Assign To Tanker",
     "authenticate": "Authenticate",
+    "baseColorOn": "The charts should use the colors defined in \"Base Products\" screen",
+    "baseColorOff": "The charts should use the default colors defined in graphic module",
     "calculate": "Calculate",
     "calculateDensity": "Calculate Density",
     "calculateDensityByLevel": "Calculate Density By Level",

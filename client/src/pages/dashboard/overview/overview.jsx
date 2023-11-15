@@ -6,9 +6,36 @@ import Chart from 'react-apexcharts';
 import useSWR from 'swr';
 import _ from 'lodash';
 
-import { DASHBOARD } from '../../../api';
+import { DASHBOARD, BASE_PRODUCTS } from '../../../api';
+import { getRealColor } from '../../../utils';
 
 import locale from './locale';
+
+/*
+palette1	#008FFB	#00E396	#FEB019	#FF4560	#775DD0
+palette2	#3F51B5	#03A9F4	#4CAF50	#F9CE1D	#FF9800
+palette3	#33B2DF	#546E7A	#D4526E	#13D8AA	#A5978B
+palette4	#4ECDC4	#C7F464	#81D4FA	#546E7A	#FD6A6A
+palette5	#2B908F	#F9A3A4	#90EE7E	#FA4443	#69D2E7
+palette6	#449DD1	#F86624	#EA3546	#662E9B	#C5D86D
+palette7	#D7263D	#1B998B	#2E294E	#F46036	#E2C044
+palette8	#662E9B	#F86624	#F9C80E	#EA3546	#43BCCD
+palette9	#5C4742	#A5978B	#8D5B4C	#5A2A27	#C4BBAF
+palette10	#A300D6	#7D02EB	#5653FE	#2983FF	#00B1F2
+
+[
+'#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0', 
+'#3F51B5', '#03A9F4', '#4CAF50', '#F9CE1D', '#FF9800', 
+'#33B2DF', '#546E7A', '#D4526E', '#13D8AA', '#A5978B', 
+'#4ECDC4', '#C7F464', '#81D4FA', '#546E7A', '#FD6A6A', 
+'#2B908F', '#F9A3A4', '#90EE7E', '#FA4443', '#69D2E7', 
+'#449DD1', '#F86624', '#EA3546', '#662E9B', '#C5D86D', 
+'#D7263D', '#1B998B', '#2E294E', '#F46036', '#E2C044', 
+'#662E9B', '#F86624', '#F9C80E', '#EA3546', '#43BCCD', 
+'#5C4742', '#A5978B', '#8D5B4C', '#5A2A27', '#C4BBAF', 
+'#A300D6', '#7D02EB', '#5653FE', '#2983FF', '#00B1F2'
+]; 
+*/
 
 /*
 yaxis: {
@@ -88,12 +115,65 @@ yaxis: {
   
 */
 
-const Overview = () => {
+const Overview = ({ baseFlag }) => {
   const { t, i18n } = useTranslation();
 
   const txtAll = t('fields.all');
+  const defaultColors = [
+    '#008FFB',
+    '#00E396',
+    '#FEB019',
+    '#FF4560',
+    '#775DD0',
+    '#3F51B5',
+    '#03A9F4',
+    '#4CAF50',
+    '#F9CE1D',
+    '#FF9800',
+    '#33B2DF',
+    '#546E7A',
+    '#D4526E',
+    '#13D8AA',
+    '#A5978B',
+    '#4ECDC4',
+    '#C7F464',
+    '#81D4FA',
+    '#546E7A',
+    '#FD6A6A',
+    '#2B908F',
+    '#F9A3A4',
+    '#90EE7E',
+    '#FA4443',
+    '#69D2E7',
+    '#449DD1',
+    '#F86624',
+    '#EA3546',
+    '#662E9B',
+    '#C5D86D',
+    '#D7263D',
+    '#1B998B',
+    '#2E294E',
+    '#F46036',
+    '#E2C044',
+    '#662E9B',
+    '#F86624',
+    '#F9C80E',
+    '#EA3546',
+    '#43BCCD',
+    '#5C4742',
+    '#A5978B',
+    '#8D5B4C',
+    '#5A2A27',
+    '#C4BBAF',
+    '#A300D6',
+    '#7D02EB',
+    '#5653FE',
+    '#2983FF',
+    '#00B1F2',
+  ];
 
   const { data: payload } = useSWR(DASHBOARD.OVERVIEW);
+  const { data: payloadBases } = useSWR(BASE_PRODUCTS.READ);
 
   const [dailySeries, setDailySeries] = useState([]);
   const [dailyOptions, setDailyOptions] = useState({});
@@ -114,6 +194,205 @@ const Overview = () => {
 
   const [folioClass, setFolioClass] = useState(txtAll);
   const [folioTypes, setFolioTypes] = useState([]);
+
+  const [colorsWeekly, setColorsWeekly] = useState([]);
+  const [colorsStorage, setColorsStorage] = useState([]);
+  const [colorsFolio, setColorsFolio] = useState([]);
+
+  const adjustBaseColors = (category, payload, payloadBases, flag) => {
+    if (!flag) return;
+    // colorsStorage - tank_base, bclass_no
+    /*
+      {
+        "qty_abm": "21720.042",
+        "qty_cor": "21687.083",
+        "tank_base": "400004540",
+        "base_name": "GO Best",
+        "bclass_no": "4",
+        "bclass_desc": "Diesel oils/Fuel oils/Heating oils"
+      },
+    */
+    const entry = payload?.records && payload?.records[0];
+    const classStorages = [];
+    if (category === txtAll) {
+      // legend shows base classifications
+      for (let i = 0; i < entry?.storage?.length; i++) {
+        const bs = entry?.storage?.[i];
+        const item = _.find(
+          classStorages,
+          (o) => o.bclass_no === bs?.bclass_no && o.bclass_desc === bs?.bclass_desc
+        );
+        if (!item) {
+          const base = _.find(payloadBases?.records, (o) => o.base_code === bs?.tank_base);
+          classStorages.push({
+            bclass_no: bs?.bclass_no,
+            bclass_desc: bs?.bclass_desc,
+            qty_cor: _.toNumber(bs?.qty_cor),
+            qty_abm: _.toNumber(bs?.qty_abm),
+            base_color: !base ? '' : base?.base_color,
+          });
+        } else {
+          for (let j = 0; j < classStorages?.length; j++) {
+            if (
+              classStorages?.[j]?.bclass_no === bs?.bclass_no &&
+              classStorages?.[j]?.bclass_desc === bs?.bclass_desc
+            ) {
+              classStorages[j].qty_cor += _.toNumber(bs?.qty_cor);
+              classStorages[j].qty_abm += _.toNumber(bs?.qty_abm);
+              break;
+            }
+          }
+        }
+      }
+      console.log('..............classStorages', classStorages);
+    } else {
+      for (let i = 0; i < entry?.storage?.length; i++) {
+        const bs = entry?.storage[i];
+
+        if (bs.bclass_desc === category) {
+          const item = _.find(
+            classStorages,
+            (o) => o.tank_base === bs?.tank_base && o.base_name === bs?.base_name
+          );
+          if (!item) {
+            const base = _.find(payloadBases?.records, (o) => o.base_code === bs?.tank_base);
+            classStorages.push({
+              tank_base: bs?.tank_base,
+              base_name: bs?.base_name,
+              bclass_no: bs?.bclass_no,
+              bclass_desc: bs?.bclass_desc,
+              qty_cor: _.toNumber(bs?.qty_cor),
+              qty_abm: _.toNumber(bs?.qty_abm),
+              base_color: !base ? '' : base?.base_color,
+            });
+          } else {
+            for (let j = 0; j < classStorages?.length; j++) {
+              if (
+                classStorages?.[j]?.tank_base === bs?.tank_base &&
+                classStorages?.[j]?.base_name === bs?.base_name
+              ) {
+                classStorages[j].qty_cor += _.toNumber(bs?.qty_cor);
+                classStorages[j].qty_abm += _.toNumber(bs?.qty_abm);
+                break;
+              }
+            }
+          }
+        }
+      }
+    }
+    const scolors = [];
+    for (let i = 0; i < classStorages?.length; i++) {
+      const bs = classStorages?.[i];
+      scolors.push(getRealColor(bs?.base_color));
+    }
+    setColorsStorage(scolors);
+    console.log('...............scolors', scolors);
+  };
+
+  const adjustFolioColors = (category, payload, payloadBases, flag) => {
+    if (!flag) return;
+    // colorsFolio - trsf_base_p
+    /*
+      {
+        "qty_amb": "4.578968",
+        "qty_cmb": "4.53528",
+        "trsf_base_p": "400003052",
+        "base_name": "ETOH Denatured",
+        "bclass_desc": "Ethanol/Water"
+      },
+    */
+    const entry = payload?.records && payload?.records[0];
+    const fcolors = [];
+    for (let i = 0; i < entry?.folio_throughput?.length; i++) {
+      const bs = entry?.folio_throughput?.[i];
+      const item = _.find(
+        payloadBases?.records,
+        (o) => o.base_code === bs?.trsf_base_p && (category === txtAll || category === bs?.bclass_desc)
+      );
+      if (!item) {
+        // do nothing ?
+      } else {
+        fcolors.push(getRealColor(item?.base_color));
+      }
+    }
+    setColorsFolio(fcolors);
+    console.log('...............fcolors', fcolors);
+  };
+
+  const adjustWeeklyColors = (category, payload, payloadBases, flag) => {
+    if (!flag) return;
+    // colorsWeekly - trsf_base_p
+    /*
+      {
+        "wk": "02",
+        "trsf_base_p": "400000916",
+        "base_name": "MFO 180",
+        "qty_cor": "646.293",
+        "qty_amb": "651.374"
+      },
+    */
+    const entry = payload?.records && payload?.records[0];
+    const weekThruputs = [];
+    for (let i = 0; i < entry?.weekly_throughput?.length; i++) {
+      const bs = entry?.weekly_throughput?.[i];
+      const item = _.find(
+        weekThruputs,
+        (o) => o.trsf_base_p === bs?.trsf_base_p && o.base_name === bs?.base_name
+      );
+      if (!item) {
+        weekThruputs.push({
+          trsf_base_p: bs?.trsf_base_p,
+          base_name: bs?.base_name,
+          qty_cor: _.toNumber(bs?.qty_cor),
+          qty_amb: _.toNumber(bs?.qty_amb),
+        });
+      } else {
+        for (let j = 0; j < weekThruputs?.length; j++) {
+          if (
+            weekThruputs?.[j]?.trsf_base_p === bs?.trsf_base_p &&
+            weekThruputs?.[j]?.base_name === bs?.base_name
+          ) {
+            weekThruputs[j].qty_cor += _.toNumber(bs?.qty_cor);
+            weekThruputs[j].qty_amb += _.toNumber(bs?.qty_amb);
+            break;
+          }
+        }
+      }
+    }
+    console.log('..............weekThruputs', weekThruputs);
+    const wcolors = [];
+    for (let i = 0; i < weekThruputs?.length; i++) {
+      const bs = weekThruputs?.[i];
+      const item = _.find(payloadBases?.records, (o) => o.base_code === bs?.trsf_base_p);
+      if (!item) {
+        wcolors.push('');
+      } else {
+        wcolors.push(getRealColor(item?.base_color));
+      }
+    }
+    console.log('...............wcolors', wcolors);
+    setColorsWeekly(wcolors);
+  };
+
+  useEffect(() => {
+    if (!baseFlag) {
+      setColorsWeekly(defaultColors);
+      setColorsStorage(defaultColors);
+      setColorsFolio(defaultColors);
+    } else {
+      // get base colors
+      if (payload && payloadBases) {
+        // colorsStorage - tank_base, bclass_no
+        adjustBaseColors(txtAll, payload, payloadBases, baseFlag);
+
+        // colorsFolio - trsf_base_p
+        adjustFolioColors(txtAll, payload, payloadBases, baseFlag);
+
+        // colorsWeekly - trsf_base_p
+        adjustWeeklyColors(txtAll, payload, payloadBases, baseFlag);
+      }
+    }
+  }, [baseFlag, payloadBases, payload]);
 
   useEffect(() => {
     const entry = payload?.records && payload?.records[0];
@@ -204,10 +483,14 @@ const Overview = () => {
   }, [payload]);
 
   useEffect(() => {
+    if (baseFlag && storageClass && payload && payloadBases) {
+      adjustBaseColors(storageClass, payload, payloadBases, baseFlag);
+    }
+
     const entry = payload?.records && payload?.records[0];
 
     if (entry?.storage && storageClass) {
-      const payload = [];
+      const storagePayload = [];
 
       if (storageClass === txtAll) {
         const transformed = _.chain(entry?.storage)
@@ -216,7 +499,7 @@ const Overview = () => {
           })
           .mapValues((products) => {
             const value = _.sumBy(products, (product) => {
-              return _.toNumber(product?.qty_cor) || 0;
+              return _.toNumber(product?.qty_cor) || 0.000001;
             });
 
             return value;
@@ -224,12 +507,12 @@ const Overview = () => {
           .value();
 
         Object.keys(transformed).forEach((key) => {
-          payload.push({
+          storagePayload.push({
             name: key,
             type: 'bar',
             data: [
               {
-                x: 'Litres',
+                x: t('fields.baseProdClassDesc'),
                 y: transformed[key],
               },
             ],
@@ -241,13 +524,13 @@ const Overview = () => {
         const base = entry?.storage[index];
 
         if (base.bclass_desc === storageClass) {
-          payload.push({
+          storagePayload.push({
             name: base.base_name,
             type: 'bar',
             data: [
               {
-                x: 'Litres',
-                y: _.toNumber(base.qty_cor),
+                x: t('fields.baseProduct'),
+                y: _.toNumber(base.qty_cor) || 0.000001,
               },
             ],
           });
@@ -292,7 +575,7 @@ const Overview = () => {
         },
 
         xaxis: {
-          categories: [t('fields.products')],
+          categories: [t('fields.baseProduct')],
 
           labels: {
             show: false,
@@ -305,9 +588,9 @@ const Overview = () => {
       };
 
       setStorageOptions(options);
-      setStorageSeries(payload);
+      setStorageSeries(storagePayload);
     }
-  }, [payload, storageMode, storageClass, i18n]);
+  }, [payload, payloadBases, baseFlag, storageMode, storageClass, i18n]);
 
   useEffect(() => {
     const entry = payload?.records && payload?.records[0];
@@ -320,23 +603,27 @@ const Overview = () => {
   }, [payload]);
 
   useEffect(() => {
+    if (baseFlag && folioClass && payload && payloadBases) {
+      adjustFolioColors(folioClass, payload, payloadBases, baseFlag);
+    }
+
     const entry = payload?.records && payload?.records[0];
 
     if (entry?.folio_throughput) {
-      const payload = [];
+      const folioPayload = [];
 
       for (let index = 0; index < entry?.folio_throughput.length; index++) {
         const base = entry?.folio_throughput[index];
 
         if (folioClass === txtAll) {
-          payload.push({
+          folioPayload.push({
             name: base.base_name,
             data: [_.toNumber(base.qty_cmb)],
           });
         }
 
         if (base.bclass_desc === folioClass) {
-          payload.push({
+          folioPayload.push({
             name: base.base_name,
             data: [_.toNumber(base.qty_cmb)],
           });
@@ -386,7 +673,7 @@ const Overview = () => {
         },
 
         xaxis: {
-          categories: [t('fields.products')],
+          categories: [t('fields.baseProduct')],
 
           labels: {
             show: false,
@@ -395,20 +682,20 @@ const Overview = () => {
       };
 
       setFolioOptions(options);
-      setFolioSeries(payload);
+      setFolioSeries(folioPayload);
     }
-  }, [payload, folioClass, i18n]);
+  }, [payload, payloadBases, baseFlag, folioClass, i18n]);
 
   useEffect(() => {
     const entry = payload?.records && payload?.records[0];
 
     if (entry?.throughput) {
-      const payload = {};
+      const dailyPayload = {};
 
       for (let index = 0; index < entry?.throughput.length; index++) {
         const base = entry?.throughput[index];
 
-        payload[base.dmy] = _.toNumber(base.qty_cor);
+        dailyPayload[base.dmy] = _.toNumber(base.qty_cor);
       }
 
       const options = {
@@ -436,13 +723,13 @@ const Overview = () => {
         dataLabels: {
           enabled: false,
         },
-        labels: Object.keys(payload),
+        labels: Object.keys(dailyPayload),
       };
 
       const series = [
         {
           name: t('fields.throughput'),
-          data: Object.values(payload),
+          data: Object.values(dailyPayload),
         },
       ];
 
@@ -520,6 +807,7 @@ const Overview = () => {
                   ...storageOptions.chart,
                   ...options,
                 },
+                colors: colorsStorage,
               }}
               series={storageSeries}
               type="line"
@@ -560,6 +848,7 @@ const Overview = () => {
                   ...folioOptions.chart,
                   ...options,
                 },
+                colors: colorsFolio,
               }}
               series={folioSeries}
               type="bar"
@@ -592,6 +881,7 @@ const Overview = () => {
                   ...weeklyOptions.chart,
                   ...options,
                 },
+                colors: colorsWeekly,
               }}
               series={weeklySeries}
               type="line"

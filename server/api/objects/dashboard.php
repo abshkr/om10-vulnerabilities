@@ -365,8 +365,8 @@ class Dashboard extends CommonClass
         */
         $query = "
             SELECT 
-                NVL(DECODE(TRSB_UNT, 34, SUM(TRSB_AVL) / 1000, SUM(TRSB_AVL)), 0) / 1000    QTY_AMB, 
-                NVL(DECODE(TRSB_UNT, 34, SUM(TRSB_CVL) / 1000, SUM(TRSB_CVL)), 0) / 1000    QTY_CMB, 
+                SUM(NVL(DECODE(TRANBASE.TRSB_UNT, 34, TRANBASE.TRSB_AVL/1000.0, TRANBASE.TRSB_AVL), 0)) / 1000    QTY_AMB, 
+                SUM(NVL(DECODE(TRANBASE.TRSB_UNT, 34, TRANBASE.TRSB_CVL/1000.0, TRANBASE.TRSB_CVL), 0)) / 1000    QTY_CMB, 
                 BASE_CODE                                                                   TRSF_BASE_P, 
                 BASE_NAME, 
                 BC.BCLASS_DESC                                                              BCLASS_DESC
@@ -471,6 +471,7 @@ class Dashboard extends CommonClass
             GROUP BY TO_CHAR(TRSA_ST_DMY, 'IW'), TRSF_BASE_P, BASE_NAME
             ORDER BY TO_CHAR(TRSA_ST_DMY, 'IW'), BASE_NAME";
         */
+        /*
         $query = "
             SELECT TO_CHAR(TO_DATE(TRSA_ST_DMY, 'YYYY-MM-DD HH24:MI:SS'),'IW') AS WK,
                 TRSF_BASE_P,
@@ -490,6 +491,29 @@ class Dashboard extends CommonClass
             WHERE TO_DATE(TRSA_ST_DMY, 'YYYY-MM-DD HH24:MI:SS') >= (SELECT TRUNC(SYSDATE,'YEAR') FROM DUAL)
             GROUP BY TO_CHAR(TO_DATE(TRSA_ST_DMY, 'YYYY-MM-DD HH24:MI:SS'), 'IW'), TRSF_BASE_P, BASE_NAME
             ORDER BY TO_CHAR(TO_DATE(TRSA_ST_DMY, 'YYYY-MM-DD HH24:MI:SS'), 'IW'), BASE_NAME
+        ";
+        */
+        $query = "
+            SELECT 
+                TO_CHAR(TO_DATE(TRSA.TRSA_ST_DMY, 'YYYY-MM-DD HH24:MI:SS'),'IW')                      AS WK,
+                TRSB.TRSB_BS                                                                          AS TRSF_BASE_P,
+                BPRD.BASE_NAME                                                                        AS BASE_NAME,
+                SUM(NVL(DECODE(TRSB.TRSB_UNT, 34, TRSB.TRSB_CVL/1000.0, TRSB.TRSB_CVL), 0)) / 1000    AS QTY_COR, 
+                SUM(NVL(DECODE(TRSB.TRSB_UNT, 34, TRSB.TRSB_AVL/1000.0, TRSB.TRSB_AVL), 0)) / 1000    AS QTY_AMB 
+            FROM
+                GUI_TRANSACTIONS       TRSA,
+                TRANSFERS              TRSF,
+                TRANBASE               TRSB,
+                BASE_PRODS             BPRD
+            WHERE
+                TRSA.TRSA_ID = TRSF.TRSFTRID_TRSA_ID 
+                AND TRSA.TRSA_TERMINAL = TRSF.TRSFTRID_TRSA_TRM 
+                AND TRSF.TRSF_ID = TRSB.TRSB_ID_TRSF_ID
+                AND TRSF.TRSF_TERMINAL = TRSB.TRSB_ID_TRSF_TRM 
+                AND TRSB.TRSB_BS = BPRD.BASE_CODE
+                AND TO_DATE(TRSA.TRSA_ST_DMY, 'YYYY-MM-DD HH24:MI:SS') >= (SELECT TRUNC(SYSDATE,'YEAR') FROM DUAL)
+            GROUP BY TO_CHAR(TO_DATE(TRSA.TRSA_ST_DMY, 'YYYY-MM-DD HH24:MI:SS'), 'IW'), TRSB.TRSB_BS, BPRD.BASE_NAME
+            ORDER BY TO_CHAR(TO_DATE(TRSA.TRSA_ST_DMY, 'YYYY-MM-DD HH24:MI:SS'), 'IW'), BPRD.BASE_NAME
         ";
         $stmt = oci_parse($this->conn, $query);
         if (!oci_execute($stmt, $this->commit_mode)) {
