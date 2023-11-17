@@ -418,6 +418,73 @@ class BaseProduct extends CommonClass
         return true;
     }
 
+    public function update_color()
+    {
+        $query = "
+            SELECT BASE_CODE, BASE_COLOR
+            FROM BASE_PRODS
+            WHERE BASE_CODE = :base_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':base_code', $this->base_code);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $row = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
+        $query = "
+            UPDATE BASE_PRODS
+            SET BASE_COLOR = :base_color
+            WHERE BASE_CODE = :base_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':base_color', $this->base_color);
+        oci_bind_by_name($stmt, ':base_code', $this->base_code);
+        if (!oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        $journal = new Journal($this->conn, false);
+        $curr_psn = Utilities::getCurrPsn();
+        $jnl_data[0] = $curr_psn;
+        $jnl_data[1] = $this->TABLE_NAME; // "BASE_PRODS";
+        $jnl_data[2] = sprintf("base_code:%s", $this->base_code); // $this->base_code;
+
+        if (!$journal->jnlLogEvent(
+            Lookup::RECORD_ALTERED, $jnl_data, JnlEvent::JNLT_CONF, JnlClass::JNLC_EVENT)) {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        $query = "
+            SELECT BASE_CODE, BASE_COLOR
+            FROM BASE_PRODS
+            WHERE BASE_CODE = :base_code";
+        $stmt = oci_parse($this->conn, $query);
+        oci_bind_by_name($stmt, ':base_code', $this->base_code);
+        if (oci_execute($stmt, OCI_NO_AUTO_COMMIT)) {
+            $row2 = oci_fetch_array($stmt, OCI_ASSOC + OCI_RETURN_NULLS);
+        } else {
+            $e = oci_error($stmt);
+            write_log("DB error:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+        }
+
+        $module = $this->TABLE_NAME; // "BASE_PRODS";
+        $record = sprintf("base_code:%s", $this->base_code);
+        if (!$journal->updateChanges($row, $row2, $module, $record)) {
+            oci_rollback($this->conn);
+            return false;
+        }
+
+        oci_commit($this->conn);
+        return true;
+    }
+
     public function delete()
     {
         $query = "

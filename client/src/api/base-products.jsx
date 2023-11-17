@@ -7,6 +7,7 @@ export const STOCK_UNITS = '/api/pages/base_prod/stock_units.php';
 
 export const CREATE = '/api/pages/base_prod/create.php';
 export const UPDATE = '/api/pages/base_prod/update.php';
+export const UPDATE_COLOR = '/api/pages/base_prod/update_color.php';
 export const DELETE = '/api/pages/base_prod/delete.php';
 
 export const CHECK_BASE_RATIOS = '/api/pages/base_prod/check_base_ratios.php';

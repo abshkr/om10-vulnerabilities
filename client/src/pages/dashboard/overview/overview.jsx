@@ -115,7 +115,7 @@ yaxis: {
   
 */
 
-const Overview = ({ baseFlag }) => {
+const Overview = ({ baseFlag, payloadBases }) => {
   const { t, i18n } = useTranslation();
 
   const txtAll = t('fields.all');
@@ -173,7 +173,7 @@ const Overview = ({ baseFlag }) => {
   ];
 
   const { data: payload } = useSWR(DASHBOARD.OVERVIEW);
-  const { data: payloadBases } = useSWR(BASE_PRODUCTS.READ);
+  // const { data: payloadBases } = useSWR(`${BASE_PRODUCTS.READ}?trigger=${baseFlag}`);
 
   const [dailySeries, setDailySeries] = useState([]);
   const [dailyOptions, setDailyOptions] = useState({});

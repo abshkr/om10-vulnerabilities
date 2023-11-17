@@ -2601,6 +2601,7 @@
     "authenticate": "认证",
     "baseColorOn": "图表的颜色应该使用“基础油品管理”屏幕中定义的颜色组",
     "baseColorOff": "图表的颜色应该使用图表模块中定义的默认颜色组",
+    "baseProdColor": "管理基础油品颜色",
     "calculate": "计算",
     "calculateDensity": "计算密度",
     "calculateDensityByLevel": "根据液位计算密度",

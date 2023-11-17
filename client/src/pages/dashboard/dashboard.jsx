@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Tabs, Switch } from 'antd';
+import { Tabs, Switch, Button } from 'antd';
+import useSWR from 'swr';
 
 import { DashboardContainer } from './styles';
 import { Page } from '../../components';
 import auth from '../../auth';
 
+import BaseColorsManager from './base-colors';
 import Home from './home';
 import Overview from './overview';
 import ReleaseNotes from './release-notes';
 import { useAuth } from '../../hooks';
+import { BASE_PRODUCTS } from '../../api';
 
 const Dashboard = ({ user }) => {
   const { t } = useTranslation();
+
+  const { data: payloadBases, mutate: revalidate } = useSWR(`${BASE_PRODUCTS.READ}`);
 
   const [baseFlag, setBaseFlag] = useState(false);
   const [tabKey, setTabKey] = useState('0');
@@ -23,8 +28,25 @@ const Dashboard = ({ user }) => {
     setBaseFlag(v);
   };
 
+  const loadBaseColors = async () => {
+    console.log('Forms: loadBaseColors', baseFlag);
+    // setFieldsValue({bases: ratios});
+    revalidate();
+  };
+
+  const handleBaseColors = () => {
+    // pop up the dialog to manage straping data import
+    console.log('......handleBaseColors..', baseFlag);
+    BaseColorsManager(t('operations.baseProdColor'), loadBaseColors, '80vw', '50vh');
+  };
+
   const modifiers = (
     <>
+      {tabKey === '1' && baseFlag && (
+        <Button type="primary" onClick={handleBaseColors} style={{ float: 'left', marginRight: 5 }}>
+          {t('operations.baseProdColor')}
+        </Button>
+      )}
       {tabKey === '1' && (
         <Switch
           checked={baseFlag}
@@ -45,7 +67,7 @@ const Dashboard = ({ user }) => {
           </Tabs.TabPane>
 
           <Tabs.TabPane tab={t('tabColumns.overview')} key="1">
-            <Overview baseFlag={baseFlag} />
+            <Overview baseFlag={baseFlag} payloadBases={payloadBases} />
           </Tabs.TabPane>
 
           {user?.per_code === '9999' && (
