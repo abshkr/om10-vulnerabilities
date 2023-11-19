@@ -566,7 +566,7 @@ const Overview = ({ baseFlag, payloadBases }) => {
         yaxis: {
           logarithmic: storageMode !== 'linear',
           forceNiceScale: true,
-          min: 0,
+          min: 0.01,
           showAlways: true,
           labels: {
             formatter: function (value, timestamp) {
