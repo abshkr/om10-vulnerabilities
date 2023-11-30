@@ -12,7 +12,7 @@ const PsnlRole = ({ value }) => {
   return (
     <Form.Item name="psnl_role" label={t('fields.role')}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

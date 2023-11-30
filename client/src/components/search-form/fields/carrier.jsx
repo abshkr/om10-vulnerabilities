@@ -12,15 +12,12 @@ const Carrier = ({ value, onChange }) => {
   const { data: options, isValidating } = useSWR(LOAD_SCHEDULES.CARRIERS);
 
   return (
-    <Form.Item
-      name="carrier_code"
-      label={t('fields.carrier')}
-    >
+    <Form.Item name="carrier_code" label={t('fields.carrier')}>
       <Select
         loading={isValidating}
         showSearch
         allowClear
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         onChange={onChange}
         disabled={!!value}
         optionFilterProp="children"

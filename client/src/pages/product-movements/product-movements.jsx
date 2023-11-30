@@ -25,12 +25,13 @@ const ProductMovements = () => {
 
   const config = useConfig();
   const { refreshProductMovement, scheduleDateRange, siteCustomColumnProdMove } = useConfig();
-  const { data: payload, isValidating, revalidate } = useSWR(
-    `${PRODUCT_MOVEMENTS.READ}?start_date=${start}&end_date=${end}`,
-    {
-      refreshInterval: refreshProductMovement,
-    }
-  );
+  const {
+    data: payload,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(`${PRODUCT_MOVEMENTS.READ}?start_date=${start}&end_date=${end}`, {
+    refreshInterval: refreshProductMovement,
+  });
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);

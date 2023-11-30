@@ -34,7 +34,7 @@ const Company = ({ form, value, onChange }) => {
   return (
     <Form.Item name="prt_cmpy" label={t('fields.company')} rules={[{ required: true, validator: validate }]}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

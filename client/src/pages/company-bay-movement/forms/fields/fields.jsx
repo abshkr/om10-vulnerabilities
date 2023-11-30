@@ -49,7 +49,7 @@ const Fields = ({ form, value }) => {
         rules={[{ required: true, validator: validate }]}
       >
         <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           allowClear
           loading={isLoading}
           showSearch
@@ -74,7 +74,7 @@ const Fields = ({ form, value }) => {
         rules={[{ required: true, validator: validate }]}
       >
         <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           allowClear
           loading={isLoading}
           showSearch
@@ -99,7 +99,7 @@ const Fields = ({ form, value }) => {
         rules={[{ required: true, validator: validate }]}
       >
         <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           allowClear
           loading={isLoading}
           showSearch

@@ -53,7 +53,7 @@ const AuthType = ({ value, form, enabled }) => {
     <div>
       <Form.Item name="rule_auth" label={t('fields.authorityType')} rules={enabled && [{ required: true }]}>
         <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           allowClear
           loading={isValidating}
           disabled={!enabled}

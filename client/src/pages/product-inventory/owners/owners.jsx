@@ -85,7 +85,7 @@ const TankProductOwners = ({ value, access, config, unit, units }) => {
               )}
               <Descriptions.Item label={t('fields.volumeUnit')} span={1}>
                 <Select
-                  dropdownMatchSelectWidth={false}
+                  popupMatchSelectWidth={false}
                   allowClear
                   key="1"
                   style={{ width: '100%' }}

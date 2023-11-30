@@ -40,7 +40,7 @@ const Employer = ({ form, value, onChange, enabled }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         allowClear

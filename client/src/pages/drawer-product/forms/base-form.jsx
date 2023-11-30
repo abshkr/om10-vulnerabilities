@@ -400,7 +400,7 @@ const FormModal = ({ value, handleBaseCallBack, config, tableBases }) => {
               rules={[{ required: true, validator: validateBase }]}
             >
               <Select
-                dropdownMatchSelectWidth={false}
+                popupMatchSelectWidth={false}
                 allowClear
                 // loading={isValidating}
                 showSearch

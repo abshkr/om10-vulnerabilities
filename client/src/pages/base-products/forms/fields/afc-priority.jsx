@@ -41,7 +41,7 @@ const AdaptiveFlowControlPriority = ({ form, value, config, flag }) => {
       rules={[{ required: flag, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         showSearch
         allowClear
         disabled={true}

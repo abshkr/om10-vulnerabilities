@@ -73,7 +73,7 @@ const Schedules = ({ selected, cbFunction, closeForm }) => {
   //   ? `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&mvitm_item_id=${selected?.mvitm_item_id}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}&start_num=${take}&end_num=${offset}`
   //   : `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}&start_num=${take}&end_num=${offset}`;
 
-  const { data: payload, isValidating, revalidate } = useSWR(url);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(url);
 
   const [data, setData] = useState(payload?.records);
   const isLoading = isValidating || !data;

@@ -24,9 +24,10 @@ export default class PowerListEditor extends Component {
 
   getText = (items, codes, names, columns, data) => {
     // let option = _.find(items, function(o) { return o.code === item; });
-    let option = _.find(items, (item) => (
-      this.groupValuesByKeys(item, codes) === this.groupValuesByKeys(data, columns)
-    ));
+    let option = _.find(
+      items,
+      (item) => this.groupValuesByKeys(item, codes) === this.groupValuesByKeys(data, columns)
+    );
     if (!option) {
       return this.state.value;
     } else {
@@ -52,20 +53,25 @@ export default class PowerListEditor extends Component {
 
     return (
       <div style={{ display: 'flex' }}>
-        <Select 
-          dropdownMatchSelectWidth={false}
-          value={this.state.value} 
-          style={{ width: '100%' }} 
-          onChange={this.onClick} 
+        <Select
+          popupMatchSelectWidth={false}
+          value={this.state.value}
+          style={{ width: '100%' }}
+          onChange={this.onClick}
           bordered={false}
         >
-          {values?.filter((item) => (
-            this.groupValuesByKeys(item, pcodes) === this.groupValuesByKeys(data, pcolumns)
-          ))?.map((item) => (
-            <Select.Option key={this.groupValuesByKeys(item, ccodes)} value={this.groupValuesByKeys(item, ccodes)}>
-              {this.groupValuesByKeys(item, names)}
-            </Select.Option>
-          ))}
+          {values
+            ?.filter(
+              (item) => this.groupValuesByKeys(item, pcodes) === this.groupValuesByKeys(data, pcolumns)
+            )
+            ?.map((item) => (
+              <Select.Option
+                key={this.groupValuesByKeys(item, ccodes)}
+                value={this.groupValuesByKeys(item, ccodes)}
+              >
+                {this.groupValuesByKeys(item, names)}
+              </Select.Option>
+            ))}
         </Select>
       </div>
     );

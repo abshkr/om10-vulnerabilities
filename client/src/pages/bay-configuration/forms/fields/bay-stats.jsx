@@ -27,7 +27,7 @@ const BayStats = ({ form, value, disabled }) => {
 
   return (
     <Form.Item name="stats" label={t('fields.bayStats')}>
-      <Select dropdownMatchSelectWidth={false} allowClear disabled={disabled}>
+      <Select popupMatchSelectWidth={false} allowClear disabled={disabled}>
         {flags.map((item, index) => (
           <Select.Option key={index} value={item.value}>
             {item.name}

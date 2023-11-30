@@ -336,14 +336,14 @@ const AtgFields = ({ access, config }) => {
       </Card>
 
       <Drawer
-        bodyStyle={{ paddingTop: 5 }}
+        styles={{ body: { paddingTop: 5 } }}
         onClose={() => handleFormState(false, null)}
         maskClosable={IS_CREATING}
         destroyOnClose={true}
         mask={IS_CREATING}
         placement="right"
         width="40vw"
-        visible={visible}
+        open={visible}
         footer={
           <>
             <Button
@@ -389,7 +389,7 @@ const AtgFields = ({ access, config }) => {
                 rules={[{ required: true, validator: validateList, label: t('fields.atgFieldCode') }]}
               >
                 <Select
-                  dropdownMatchSelectWidth={false}
+                  popupMatchSelectWidth={false}
                   allowClear
                   loading={isValidating}
                   showSearch

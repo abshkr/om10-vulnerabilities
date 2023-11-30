@@ -31,9 +31,11 @@ const AuditingData = () => {
 
   const [end, setEnd] = useState(moment().format(SETTINGS.DATE_TIME_FORMAT));
 
-  const { data: payload, isValidating, revalidate } = useSWR(
-    `${AUDITING_DATA.READ}?start_date=${start}&end_date=${end}`
-  );
+  const {
+    data: payload,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(`${AUDITING_DATA.READ}?start_date=${start}&end_date=${end}`);
 
   const page = t('pageMenu.reports');
   const name = t('pageNames.auditingData');
@@ -55,28 +57,40 @@ const AuditingData = () => {
   const onRefresh = async () => {
     if (auditDateRange !== false) {
       const ranges = getDateRangeOffset(String(auditDateRange), '1');
-      
+
       const currTime = await getCurrentTime();
-      const startTime = moment(currTime, SETTINGS.DATE_TIME_FORMAT).subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT);
-      const endTime = moment(currTime, SETTINGS.DATE_TIME_FORMAT).add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT);
+      const startTime = moment(currTime, SETTINGS.DATE_TIME_FORMAT)
+        .subtract(ranges.beforeToday, 'days')
+        .format(SETTINGS.DATE_TIME_FORMAT);
+      const endTime = moment(currTime, SETTINGS.DATE_TIME_FORMAT)
+        .add(ranges.afterToday, 'days')
+        .format(SETTINGS.DATE_TIME_FORMAT);
       setStart(startTime);
       setEnd(endTime);
     }
 
     // Don't need revalidate, let useSWR handle itself while parameter changes
     // revalidate();
-  }
+  };
 
   useEffect(() => {
     if (auditDateRange !== false && serverTime) {
       const ranges = getDateRangeOffset(String(auditDateRange), '1');
 
       if (ranges.beforeToday !== -1) {
-        setStart(moment(serverTime, SETTINGS.DATE_TIME_FORMAT).subtract(ranges.beforeToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+        setStart(
+          moment(serverTime, SETTINGS.DATE_TIME_FORMAT)
+            .subtract(ranges.beforeToday, 'days')
+            .format(SETTINGS.DATE_TIME_FORMAT)
+        );
       }
 
       if (ranges.afterToday !== -1) {
-        setEnd(moment(serverTime, SETTINGS.DATE_TIME_FORMAT).add(ranges.afterToday, 'days').format(SETTINGS.DATE_TIME_FORMAT));
+        setEnd(
+          moment(serverTime, SETTINGS.DATE_TIME_FORMAT)
+            .add(ranges.afterToday, 'days')
+            .format(SETTINGS.DATE_TIME_FORMAT)
+        );
       }
     }
   }, [auditDateRange, serverTime]);
@@ -104,13 +118,13 @@ const AuditingData = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         filterValue={filterValue}
       />
-      <Forms 
-        value={selected} 
-        visible={visible} 
-        handleFormState={handleFormState} 
+      <Forms
+        value={selected}
+        visible={visible}
+        handleFormState={handleFormState}
         access={access}
         setFilterValue={setFilterValue}
-     />
+      />
     </Page>
   );
 };

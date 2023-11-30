@@ -225,7 +225,7 @@ const Actualisation = ({ value, onClose, config }) => {
       <Row gutter={[8, 10]}>
         <Col span={18}>
           <Select
-            dropdownMatchSelectWidth={false}
+            popupMatchSelectWidth={false}
             style={{ width: '100%' }}
             allowClear
             loading={isLoading}

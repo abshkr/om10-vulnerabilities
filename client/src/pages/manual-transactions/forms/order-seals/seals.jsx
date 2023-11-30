@@ -18,7 +18,7 @@ const OrderSeals = ({ value, onClose }) => {
 
   const { t } = useTranslation();
 
-  const { data: nextSeal, revalidate: refreshNextSeal } = useSWR(LOAD_SCHEDULES.NEXT_SEAL);
+  const { data: nextSeal, mutate: refreshNextSeal } = useSWR(LOAD_SCHEDULES.NEXT_SEAL);
 
   const [origList, setOrigList] = useState([]);
   const [sealList, setSealList] = useState([]);

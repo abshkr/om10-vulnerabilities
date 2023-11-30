@@ -19,20 +19,20 @@ import Forms from '../../../../pages/load-schedules/forms';
 import api from 'api';
 import SourceRender from '../../../../pages/load-schedules/source-render';
 
-const Schedules = ({popup, params}) => {
+const Schedules = ({ popup, params }) => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
   const { t } = useTranslation();
 
   const access = useAuth('M_LOADSCHEDULES');
-  
+
   const [start, setStart] = useState(moment().subtract(1, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().add(1, 'days').format(SETTINGS.DATE_TIME_FORMAT));
 
   const url = `${LOAD_SCHEDULES.READ}?start_date=${start}&end_date=${end}`;
 
-  const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(url, { revalidateOnFocus: false });
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -43,16 +43,18 @@ const Schedules = ({popup, params}) => {
     setSearch({
       shls_trip_no: value.shls_trip_no,
       supplier_code: value.supplier_code,
-    })
-  }
+    });
+  };
 
   const setSearch = (values) => {
-    if (!values.shls_trip_no && 
+    if (
+      !values.shls_trip_no &&
       !values.supplier_code &&
-      !values.tnkr_code && 
-      !values.carrier_code && 
+      !values.tnkr_code &&
+      !values.carrier_code &&
       !values.trip_status &&
-      !values.use_date_range) {
+      !values.use_date_range
+    ) {
       return;
     }
 
@@ -91,15 +93,13 @@ const Schedules = ({popup, params}) => {
     if (payload?.records) {
       setData(payload?.records);
       payload.records = null;
-    } 
-    
+    }
   }, [payload]);
 
   useEffect(() => {
     if (params) {
       locateTrip(params);
-    } 
-    
+    }
   }, [params]);
 
   return (
@@ -116,12 +116,14 @@ const Schedules = ({popup, params}) => {
         autoColWidth
       />
 
-      <Forms 
-        value={selected} 
-        visible={visible} 
-        handleFormState={handleFormState} 
-        access={access} url={url}
-        locateTrip={locateTrip} />
+      <Forms
+        value={selected}
+        visible={visible}
+        handleFormState={handleFormState}
+        access={access}
+        url={url}
+        locateTrip={locateTrip}
+      />
     </Page>
   );
 };

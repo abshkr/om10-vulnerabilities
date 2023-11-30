@@ -24,7 +24,7 @@ const Address = ({ form, value }) => {
   return (
     <Form.Item name="term_addr" label={t('fields.address')}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

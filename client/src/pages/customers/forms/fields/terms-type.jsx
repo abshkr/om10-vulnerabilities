@@ -38,7 +38,7 @@ const TermsType = ({ form, value }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

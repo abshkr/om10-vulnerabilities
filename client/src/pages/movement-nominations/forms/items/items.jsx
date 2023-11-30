@@ -35,7 +35,7 @@ const Items = ({
 
   const url = value ? `${MOVEMENT_NOMIATIONS.ITEMS}?mv_id=${value?.mv_id}` : null;
 
-  const { data: payload, revalidate } = useSWR(url, { revalidateOnFocus: false });
+  const { data: payload, mutate: revalidate } = useSWR(url, { revalidateOnFocus: false });
   const { data: nomItemStatus, isValidating } = useSWR(MOVEMENT_NOMIATIONS.STATUS);
   const { data: bases } = useSWR(BASE_PRODUCTS.READ);
   const urlTran = value ? `${MOVEMENT_NOMIATIONS.TRANSACTIONS}?mv_id=${value?.mv_id}&mv_all=${'ALL'}` : null;
@@ -708,9 +708,9 @@ const Items = ({
       {transactionVisible && (
         <Drawer
           placement="right"
-          bodyStyle={{ paddingTop: 5 }}
+          styles={{ body: { paddingTop: 5 } }}
           onClose={() => setTransactionVisible(false)}
-          visible={transactionVisible}
+          open={transactionVisible}
           width="100vw"
         >
           <TransactionList selected={selected?.[0]} config={config} />
@@ -720,9 +720,9 @@ const Items = ({
       {makeTransactionVisible && (
         <Drawer
           placement="right"
-          bodyStyle={{ paddingTop: 5 }}
+          styles={{ body: { paddingTop: 5 } }}
           onClose={() => onExitClicked()}
-          visible={makeTransactionVisible}
+          open={makeTransactionVisible}
           width="100vw"
         >
           <NominationTransactions
@@ -738,9 +738,9 @@ const Items = ({
       {scheduleVisible && (
         <Drawer
           placement="right"
-          bodyStyle={{ paddingTop: 5 }}
+          styles={{ body: { paddingTop: 5 } }}
           onClose={() => setScheduleVisible(false)}
-          visible={scheduleVisible}
+          open={scheduleVisible}
           width="100vw"
         >
           <Schedules

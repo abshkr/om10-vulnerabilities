@@ -28,7 +28,7 @@ const TransactionList = () => {
   const {
     data: payload,
     isValidating,
-    revalidate,
+    mutate: revalidate,
   } = useSWR(`${TRANSACTION_LIST.READ}?start_date=${start}&end_date=${end}`, { revalidateOnFocus: false });
 
   // const data = transactions?.records;

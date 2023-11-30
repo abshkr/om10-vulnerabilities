@@ -34,7 +34,7 @@ const BayType = ({ form, value, disabled }) => {
   return (
     <Form.Item name="ba_type" label={t('fields.bayType')} rules={[{ required: true, validator: validate }]}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

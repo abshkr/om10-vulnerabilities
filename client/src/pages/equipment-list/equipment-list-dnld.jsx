@@ -94,7 +94,11 @@ const EquipmentList = () => {
           pagingFlag ? 'Y' : 'N'
         }&start_num=${take}&end_num=${offset}&eqpt_id=${eqptId}&eqpt_code=${encodeURIComponent(eqptCode)}&eqpt_title=${encodeURIComponent(eqptTitle)}&eqpt_owner=${eqptOwner}&eqpt_etyp=${eqptEtyp}`; */
 
-  const { data: payload, isValidating, revalidate } = useSWR(pagingFlag === undefined ? null : url, {
+  const {
+    data: payload,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(pagingFlag === undefined ? null : url, {
     revalidateOnFocus: false,
   });
   const { data: expiryTypes } = useSWR(EQUIPMENT_LIST.EXPIRY, { revalidateOnFocus: false });

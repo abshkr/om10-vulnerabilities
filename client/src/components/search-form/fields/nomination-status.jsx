@@ -17,7 +17,7 @@ const NominationStatus = ({ value, onChange }) => {
         loading={isValidating}
         showSearch
         allowClear
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectNominationStatus') : null}

@@ -24,7 +24,7 @@ const IdAssignment = () => {
 
   const access = useAuth('M_IDENTIFICATIONASSIGNMENT');
 
-  const { data: payload, isValidating, revalidate } = useSWR(ID_ASSIGNMENT.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(ID_ASSIGNMENT.READ);
 
   const fields = columns(t);
 

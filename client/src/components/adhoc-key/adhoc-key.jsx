@@ -29,7 +29,7 @@ const AdhocKeyForm = ({ assignAdhocKey, options, modal }) => {
         <Col span={24}>
           <Select
             style={{ marginTop: 10, width: '100%' }}
-            dropdownMatchSelectWidth={false}
+            popupMatchSelectWidth={false}
             // loading={isValidating}
             allowClear
             showSearch

@@ -260,13 +260,13 @@ const FormModal = ({
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={onFormClosed}
       destroyOnClose={true}
       placement="right"
       width={drawerWidth}
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button

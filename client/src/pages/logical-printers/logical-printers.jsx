@@ -21,7 +21,7 @@ const LogicalPrinters = ({ config }) => {
 
   const access = useAuth('M_LOGICALPRINTERS');
 
-  const { data: payload, isValidating, revalidate } = useSWR(LOGICAL_PRINTERS.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(LOGICAL_PRINTERS.READ);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);

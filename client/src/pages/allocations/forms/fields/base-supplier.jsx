@@ -95,7 +95,7 @@ const BaseSupplier = ({ form, value, type, company, onChangeSupplier, onChangeOw
   return (
     <Form.Item name="alloc_suppcode" label={label} rules={[{ required: type !== '1', validator: validate }]}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         onChange={handleSelection}

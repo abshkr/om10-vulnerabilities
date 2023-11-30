@@ -556,7 +556,7 @@ const FormModal = ({
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={onExitClicked}
       maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
@@ -564,7 +564,7 @@ const FormModal = ({
       mask={config?.siteFormCloseAlert ? true : maskFlag || tabKey === '5'}
       placement="right"
       width={drawerWidth}
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button
@@ -931,9 +931,9 @@ const FormModal = ({
         <Drawer
           title={t('pageNames.manualTransactions')}
           placement="right"
-          bodyStyle={{ paddingTop: 5 }}
+          styles={{ body: { paddingTop: 5 } }}
           onClose={() => onPopupExitClicked()}
-          visible={showMakeTransactions}
+          open={showMakeTransactions}
           width="100vw"
           destroyOnClose={true}
         >

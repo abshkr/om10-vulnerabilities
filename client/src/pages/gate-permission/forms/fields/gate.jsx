@@ -35,7 +35,7 @@ const Gate = ({ form, value }) => {
   return (
     <Form.Item name="prmssn_gate" label={t('fields.gate')} rules={[{ required: true, validator: validate }]}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         disabled={!!value}

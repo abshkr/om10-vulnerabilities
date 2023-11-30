@@ -36,7 +36,7 @@ const TransportType = ({ form, value, pageState }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

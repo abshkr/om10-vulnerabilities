@@ -18,7 +18,7 @@ const TrsaStatus = ({ value, onChange }) => {
       <Select
         showSearch
         allowClear
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         onChange={onChange}
         disabled={!!value}
         optionFilterProp="children"

@@ -21,7 +21,7 @@ const KeyReaderDevices = () => {
 
   const access = useAuth('M_KEYREADERDEVICES');
 
-  const { data: payload, isValidating, revalidate } = useSWR(KEY_READER_DEVICES.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(KEY_READER_DEVICES.READ);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);

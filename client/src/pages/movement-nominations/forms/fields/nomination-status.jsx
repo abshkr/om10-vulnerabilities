@@ -38,7 +38,7 @@ const NominationStatus = ({ form, value }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         disabled={true}
         loading={isValidating}

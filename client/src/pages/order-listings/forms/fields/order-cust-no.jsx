@@ -13,7 +13,11 @@ const OrderCustNo = ({ form, value, supplier, pageState, digits, config }) => {
   const [custOrder, setCustOrder] = useState(0);
   const [existed, setExisted] = useState(false);
 
-  const { data, isValidating, revalidate } = useSWR(
+  const {
+    data,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(
     config?.siteUniqueTripOrdNum
       ? `${COMPANIES.CHECK_TRIPORD_NUM}?trip_order_num=${custOrder}`
       : `${ORDER_LISTINGS.CHECK_CUST_ORDER}?order_cust_no=${custOrder}`,

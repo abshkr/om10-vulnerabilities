@@ -69,7 +69,7 @@ const CustSupplier = ({ form, value, type, onChange, onChangeSupplier, onChangeO
       rules={[{ required: type !== '1', validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         onChange={onChange}

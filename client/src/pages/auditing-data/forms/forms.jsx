@@ -54,13 +54,13 @@ const FormModal = ({ value, visible, handleFormState }) => {
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={() => handleFormState(false, null)}
       destroyOnClose={true}
       placement="right"
       width="45vw"
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button

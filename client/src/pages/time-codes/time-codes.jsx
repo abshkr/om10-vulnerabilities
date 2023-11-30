@@ -240,13 +240,7 @@ const TimeCodes = () => {
 
   const extra = (
     <>
-      <Select
-        dropdownMatchSelectWidth={false}
-        allowClear
-        style={{ width: 200 }}
-        value={code}
-        onChange={setCode}
-      >
+      <Select popupMatchSelectWidth={false} allowClear style={{ width: 200 }} value={code} onChange={setCode}>
         {payload?.records.map((item) => {
           return (
             <Select.Option key={item.tcd_title} value={item.tcd_title}>

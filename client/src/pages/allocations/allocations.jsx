@@ -45,7 +45,7 @@ const Allocations = ({ popup, params }) => {
       ? `${ALLOCATIONS.READ}?start_date=${start}&end_date=${end}`
       : null;
 
-  const { data: payload, isValidating, revalidate } = useSWR(url);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(url);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);

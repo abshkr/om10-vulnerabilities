@@ -58,7 +58,7 @@ const Personnel = ({ form, value, employer, role }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         disabled={!employer || !role}
         loading={isValidating}
         showSearch

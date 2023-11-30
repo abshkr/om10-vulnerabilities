@@ -7,7 +7,7 @@ import _ from 'lodash';
 
 import { ID_ASSIGNMENT } from '../../../../api';
 
-import {validatorStatus} from '../../../../utils';
+import { validatorStatus } from '../../../../utils';
 
 const AssignmentNumber = ({ form, value, physType, onChange }) => {
   const [keyNo, setKeyNo] = useState(value?.kya_key_no);
@@ -17,12 +17,12 @@ const AssignmentNumber = ({ form, value, physType, onChange }) => {
 
   const url = keyNo ? `${ID_ASSIGNMENT.CHECK_ASSN_NUM}?kya_key_no=${keyNo}` : null;
   // const { data: idAssignments, isValidating } = useSWR(ID_ASSIGNMENT.READ);
-  const { data, isValidating, revalidate } = useSWR(url);
+  const { data, isValidating, mutate: revalidate } = useSWR(url);
 
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        kya_key_no: value.kya_key_no
+        kya_key_no: value.kya_key_no,
       });
 
       onChange(value.kya_key_no);
@@ -49,13 +49,13 @@ const AssignmentNumber = ({ form, value, physType, onChange }) => {
 
   // this part is crucial for the instant verification of value
   useEffect(() => {
-    if (keyNo!==undefined && String(keyNo)?.length>0) {
+    if (keyNo !== undefined && String(keyNo)?.length > 0) {
       validateFields(['kya_key_no']);
     }
   }, [matched, keyNo, validateFields]);
 
   const validate = (rule, input, callback) => {
-    console.log("key num validate")
+    console.log('key num validate');
     // if (input && matched && !value) {
     if (matched && !value) {
       return Promise.reject(t('descriptions.alreadyExists'));
@@ -83,13 +83,13 @@ const AssignmentNumber = ({ form, value, physType, onChange }) => {
       validateStatus={keyNo ? status : null}
       shouldUpdate
     >
-      <InputNumber 
-        disabled={!!value} 
+      <InputNumber
+        disabled={!!value}
         min={0}
-        max={physType==='2' ? 9999 : 999999999}
-        maxLength={physType==='2' ? 4 : 9}
+        max={physType === '2' ? 9999 : 999999999}
+        maxLength={physType === '2' ? 4 : 9}
         precision={0}
-        style={{width: '100%'}}
+        style={{ width: '100%' }}
         onChange={handleFieldChange}
       />
     </Form.Item>

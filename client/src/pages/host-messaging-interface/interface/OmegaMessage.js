@@ -47,7 +47,11 @@ const OmegaMessages = ({ handleClick }) => {
     });
   };
 
-  const { data: payload, isValidating, revalidate } = useSWR(url, getData, { revalidateOnFocus: false });
+  const {
+    data: payload,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(url, getData, { revalidateOnFocus: false });
   //const [messages, setMessages] = useState(payload?.message);
   const [messages, setMessages] = useState({});
   const [clearSelected, setClearSelected] = useState(false);

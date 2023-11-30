@@ -1,8 +1,16 @@
 const config = {
   maintainAspectRatio: false,
-  legend: {
-    display: false,
+  plugins: {
+    legend: {
+      display: false,
+    },
+    tooltip: {
+      enabled: false,
+    },
   },
+  // legend: {
+  //   display: false,
+  // },
 
   layout: {
     padding: {
@@ -12,36 +20,40 @@ const config = {
       bottom: 5,
     },
   },
-  tooltips: {
-    enabled: false,
-  },
+  // tooltips: {
+  //   enabled: false,
+  // },
   scales: {
-    xAxes: [
-      {
-        stacked: true,
+    x: {
+      stacked: true,
+      display: false,
+      grid: {
         display: false,
-        gridLines: {
-          display: false,
+      },
+      border: {
+        display: false,
+      },
+    },
+    y: {
+      stacked: true,
+      // display: false,
+      position: 'right',
+      ticks: {
+        drawBorder: false,
+        suggestedMin: 0,
+        suggestedMax: 100,
+        stepSize: 100,
+        callback: (value, index, values) => {
+          return `${value}%`;
         },
       },
-    ],
-    yAxes: [
-      {
-        stacked: true,
-        position: 'right',
-        ticks: {
-          suggestedMin: 0,
-          suggestedMax: 100,
-          stepSize: 100,
-          callback: (value, index, values) => {
-            return `${value}%`;
-          },
-        },
-        gridLines: {
-          display: false,
-        },
+      grid: {
+        display: false,
       },
-    ],
+      border: {
+        display: false,
+      },
+    },
   },
 };
 

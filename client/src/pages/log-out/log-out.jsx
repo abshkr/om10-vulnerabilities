@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Modal } from 'antd';
 
@@ -8,17 +8,17 @@ import * as actions from '../../actions/auth';
 import { ROUTES } from '../../constants';
 
 const Logout = ({ signout, idle }) => {
-  sessionStorage.removeItem("user");
-  sessionStorage.removeItem("password");
+  sessionStorage.removeItem('user');
+  sessionStorage.removeItem('password');
 
-  let history = useHistory();
+  let navigate = useNavigate();
 
   useEffect(() => {
     signout(idle);
     Modal.destroyAll();
 
-    history.push(ROUTES.LOG_IN);
-  }, [history, idle, signout]);
+    navigate(ROUTES.LOG_IN);
+  }, [navigate, idle, signout]);
 
   return null;
 };

@@ -27,7 +27,11 @@ const ConfigForm = ({ value, visible, handleFormState, access, config }) => {
   const [form] = Form.useForm();
   const { setFieldsValue } = form;
 
-  const { data: payload, isValidating, revalidate } = useSWR(
+  const {
+    data: payload,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(
     reports_closeout_job && value
       ? `${REPORT_CONFIGURATION.CLOSEOUT_JOBS}?rpt_file=${value?.report_file}&rpt_cmpy=${value?.report_cmpycode}`
       : null
@@ -201,7 +205,7 @@ const ConfigForm = ({ value, visible, handleFormState, access, config }) => {
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
@@ -209,7 +213,7 @@ const ConfigForm = ({ value, visible, handleFormState, access, config }) => {
       mask={IS_CREATING}
       placement="right"
       width="50vw"
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button

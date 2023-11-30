@@ -71,9 +71,9 @@ const OrderTrips = ({ value, orderNo, config }) => {
       {transactionVisible && (
         <Drawer
           placement="right"
-          bodyStyle={{ paddingTop: 5 }}
+          styles={{ body: { paddingTop: 5 } }}
           onClose={() => setTransactionVisible(false)}
-          visible={transactionVisible}
+          open={transactionVisible}
           width="100vw"
         >
           <Card size="small" title={t('tabColumns.transactions')}>
@@ -91,9 +91,9 @@ const OrderTrips = ({ value, orderNo, config }) => {
       {scheduleVisible && (
         <Drawer
           placement="right"
-          bodyStyle={{ paddingTop: 5 }}
+          styles={{ body: { paddingTop: 5 } }}
           onClose={() => setScheduleVisible(false)}
-          visible={scheduleVisible}
+          open={scheduleVisible}
           width="100vw"
         >
           <Card size="small" title={t('tabColumns.loadSchedulesForOpenOrder')}>

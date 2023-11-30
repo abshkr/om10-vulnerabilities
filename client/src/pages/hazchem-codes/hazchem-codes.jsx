@@ -17,7 +17,7 @@ const HazchemCodes = () => {
 
   const access = useAuth('M_HAZCHEM');
 
-  const { data: payload, isValidating, revalidate } = useSWR(HAZCHEM_CODES.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(HAZCHEM_CODES.READ);
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -67,11 +67,11 @@ const HazchemCodes = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         filterValue={filterValue}
       />
-      <Forms 
-        value={selected} 
-        visible={visible} 
-        handleFormState={handleFormState} 
-        access={access} 
+      <Forms
+        value={selected}
+        visible={visible}
+        handleFormState={handleFormState}
+        access={access}
         setFilterValue={setFilterValue}
       />
     </Page>

@@ -114,7 +114,7 @@ const OrderListings = ({ popup, params }) => {
       ? `${ORDER_LISTINGS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}`
       : null; */
 
-  const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(url, { revalidateOnFocus: false });
 
   //const data = payload?.records;
   const isLoading = isValidating || !data;
@@ -398,7 +398,7 @@ const OrderListings = ({ popup, params }) => {
       />
 
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         defaultValue={filterByExpiry ? 'ORDER_EXP_TIME' : 'ORDER_ORD_TIME'}
         value={timeOption}
         onChange={onTimeOptionChanged}
@@ -508,9 +508,9 @@ const OrderListings = ({ popup, params }) => {
       {wriListingOpen && (
         <Drawer
           placement="right"
-          bodyStyle={{ paddingTop: 5 }}
+          styles={{ body: { paddingTop: 5 } }}
           onClose={() => setWriListingOpen(false)}
-          visible={wriListingOpen}
+          open={wriListingOpen}
           width="100vw"
           title={t('operations.wriListing')}
         >

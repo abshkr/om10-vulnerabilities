@@ -20,7 +20,9 @@ import physicalPrinters from '../physical-printers';
 const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access }) => {
-  const { data: logicalPrinters, revalidate } = useSWR(LOGICAL_PRINTERS.READ, { revalidateOnFocus: false });
+  const { data: logicalPrinters, mutate: revalidate } = useSWR(LOGICAL_PRINTERS.READ, {
+    revalidateOnFocus: false,
+  });
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -122,7 +124,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
@@ -130,7 +132,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       mask={IS_CREATING}
       placement="right"
       width="30vw"
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button

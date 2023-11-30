@@ -135,7 +135,7 @@ const AssetForm = ({ value, visible, handleFormState, access, setFilterValue, re
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={() => handleFormState(false, null)}
       // maskClosable={IS_CREATING}
@@ -143,7 +143,7 @@ const AssetForm = ({ value, visible, handleFormState, access, setFilterValue, re
       // mask={IS_CREATING}
       placement="right"
       width="50vw"
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button

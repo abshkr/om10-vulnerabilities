@@ -21,7 +21,7 @@ const Historical = ({
   setDownloading,
   setSortBy,
 }) => {
-  const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(url, { revalidateOnFocus: false });
 
   const fields = pagingFlag ? columns(t) : columnsLive(t);
 

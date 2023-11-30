@@ -110,7 +110,7 @@ const General = ({ form, value, config, densRange }) => {
         <Col span={10}>
           <Form.Item name="tank_terminal" label={t('fields.terminal')}>
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               allowClear
               loading={isLoading}
               showSearch
@@ -132,7 +132,7 @@ const General = ({ form, value, config, densRange }) => {
         <Col span={14}>
           <Form.Item name="tank_status" label={t('fields.tankStatus')}>
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               allowClear
               loading={isLoading}
               showSearch
@@ -155,7 +155,7 @@ const General = ({ form, value, config, densRange }) => {
         <Col span={10}>
           <Form.Item name="tank_base" label={t('fields.baseProduct')}>
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               allowClear
               loading={isLoading}
               showSearch
@@ -216,7 +216,7 @@ const General = ({ form, value, config, densRange }) => {
             rules={[{ required: true, validator: validate, label: t('fields.gaugingMethod') }]}
           >
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               allowClear
               loading={isLoading}
               showSearch
@@ -237,7 +237,7 @@ const General = ({ form, value, config, densRange }) => {
         <Col span={14}>
           <Form.Item name="tank_location" label={t('fields.area')}>
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               allowClear
               loading={isLoading}
               showSearch

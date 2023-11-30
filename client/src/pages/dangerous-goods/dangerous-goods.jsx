@@ -15,7 +15,7 @@ import useAuth from 'hooks/use-auth';
 const HazchemCodes = () => {
   const { t } = useTranslation();
 
-  const { data: payload, isValidating, revalidate } = useSWR(DANGEROUS_GOODS.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(DANGEROUS_GOODS.READ);
 
   const access = useAuth('M_DANGEROUSGOODS');
 
@@ -62,11 +62,11 @@ const HazchemCodes = () => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         filterValue={filterValue}
       />
-      <Forms 
-        value={selected} 
-        visible={visible} 
-        handleFormState={handleFormState} 
-        access={access} 
+      <Forms
+        value={selected}
+        visible={visible}
+        handleFormState={handleFormState}
+        access={access}
         setFilterValue={setFilterValue}
       />
     </Page>

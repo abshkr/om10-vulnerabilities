@@ -35,7 +35,7 @@ const SoldTo = ({ form, value, mode }) => {
   return (
     <Form.Item name="shls_sold_to_num" label={t('fields.soldTo')}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

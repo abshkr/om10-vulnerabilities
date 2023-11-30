@@ -267,7 +267,7 @@ const To = ({
             rules={[{ required: type === '0' || type === '2', validator: validate }]}
           >
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               allowClear
               showSearch
               loading={isLoading}
@@ -295,7 +295,7 @@ const To = ({
             rules={[{ required: type === '0' || type === '2', validator: validate }]}
           >
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               allowClear
               showSearch
               loading={isLoading}
@@ -325,7 +325,7 @@ const To = ({
             rules={[{ required: type === '0' || type === '2', validator: validate }]}
           >
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               allowClear
               showSearch
               loading={isLoading}

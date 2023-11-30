@@ -18,12 +18,13 @@ const OpenOrders = ({ value, form, supplier, config }) => {
 
   const { data: units } = useSWR(STAGING_BAY.UNIT_TYPES);
 
-  const { data: payload, isValidating, revalidate } = useSWR(
-    `${STAGING_BAY.OPEN_ORDERS}?supplier=${supplier}`,
-    {
-      refreshInterval: 0,
-    }
-  );
+  const {
+    data: payload,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(`${STAGING_BAY.OPEN_ORDERS}?supplier=${supplier}`, {
+    refreshInterval: 0,
+  });
 
   const { data: itemsPayload } = useSWR(
     selected

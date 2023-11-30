@@ -37,7 +37,7 @@ const EquipmentType = ({ form, value, onChange }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         dropdownStyle={{ maxWidth: '30vw' }}
         loading={isValidating}

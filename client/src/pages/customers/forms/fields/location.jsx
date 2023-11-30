@@ -9,7 +9,7 @@ import { Form, Select } from 'antd';
 const Location = ({ form, value, reload }) => {
   const { t } = useTranslation();
 
-  const { data: options, isValidating, revalidate } = useSWR(CUSTOMERS.DELV_LOCATIONS);
+  const { data: options, isValidating, mutate: revalidate } = useSWR(CUSTOMERS.DELV_LOCATIONS);
 
   const { setFieldsValue } = form;
 
@@ -44,7 +44,7 @@ const Location = ({ form, value, reload }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

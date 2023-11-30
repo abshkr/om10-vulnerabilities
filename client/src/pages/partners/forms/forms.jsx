@@ -240,7 +240,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={onFormClosed}
       maskClosable={IS_CREATING}
@@ -248,7 +248,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       mask={IS_CREATING}
       placement="right"
       width="35vw"
-      visible={visible}
+      open={visible}
       footer={
         <>
           {!IS_CREATING && value?.mr_status !== '2' && (
@@ -312,7 +312,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               rules={[{ required: true, validator: validate }]}
             >
               <Select
-                dropdownMatchSelectWidth={false}
+                popupMatchSelectWidth={false}
                 allowClear
                 loading={isLoading}
                 showSearch
@@ -337,7 +337,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               rules={[{ required: true, validator: validate }]}
             >
               <Select
-                dropdownMatchSelectWidth={false}
+                popupMatchSelectWidth={false}
                 allowClear
                 loading={isLoading}
                 showSearch
@@ -386,7 +386,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
               rules={[{ required: true, validator: validate }]}
             >
               <Select
-                dropdownMatchSelectWidth={false}
+                popupMatchSelectWidth={false}
                 allowClear
                 loading={isLoading}
                 showSearch

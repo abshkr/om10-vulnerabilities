@@ -21,7 +21,7 @@ const TankStrapping = () => {
 
   const auth = useAuth('M_TANKSTATUS');
 
-  const { data: payload, isValidating, revalidate } = useSWR(TANK_STRAPPING.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(TANK_STRAPPING.READ);
 
   const fields = columns(t);
 

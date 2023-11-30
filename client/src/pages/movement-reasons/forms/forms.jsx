@@ -115,7 +115,7 @@ const FormModal = ({ value, length, visible, handleFormState, access }) => {
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
@@ -123,7 +123,7 @@ const FormModal = ({ value, length, visible, handleFormState, access }) => {
       mask={IS_CREATING}
       placement="right"
       width="50vw"
-      visible={visible}
+      open={visible}
       footer={
         <>
           {!IS_CREATING && value?.mr_status !== '2' && (
@@ -149,7 +149,6 @@ const FormModal = ({ value, length, visible, handleFormState, access }) => {
             type="primary"
             icon={IS_CREATING ? <PlusOutlined /> : <EditOutlined />}
             htmlType="submit"
-            style={{ float: 'right', marginRight: 5 }}
             style={{ float: 'right', marginRight: 5 }}
             disabled={(IS_CREATING ? !access?.canCreate : !access?.canUpdate) || value?.mr_status === '2'}
             onClick={onFinish}

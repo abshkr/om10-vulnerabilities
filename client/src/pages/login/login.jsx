@@ -9,7 +9,7 @@ import Icon, {
 } from '@ant-design/icons';
 import { Form, Input, Button, notification, Divider, Carousel, Modal, Select, Row, Col } from 'antd';
 
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
@@ -58,7 +58,7 @@ const Login = ({ handleLogin, auth }) => {
   const [status, setStatus] = useState(1);
   const [authMode, setAuthMode] = useState('DEFAULT');
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const handleLanguage = (value) => {
     i18n.changeLanguage(value);
@@ -107,7 +107,7 @@ const Login = ({ handleLogin, auth }) => {
 
   const onChangePassword = (ret) => {
     if (ret.ret_code === 'cancel') {
-      history.push(ROUTES.LOG_OUT);
+      navigate(ROUTES.LOG_OUT);
     } else {
       const { dispatch } = ret;
       const payload = hash(ret.language, ret.user_code, ret.new_password);
@@ -123,7 +123,7 @@ const Login = ({ handleLogin, auth }) => {
           const token = sessionStorage.getItem('token_as_new');
           sessionStorage.setItem('token', token);
           dispatch({ type: AUTHORIZED, payload: token });
-          history.push(ROUTES.HOME);
+          navigate(ROUTES.HOME);
 
           notification.success({
             placement: 'bottomRight',
@@ -140,7 +140,7 @@ const Login = ({ handleLogin, auth }) => {
               description: t('messages.loginFailed'),
             });
           });
-          history.push(ROUTES.LOG_OUT);
+          navigate(ROUTES.LOG_OUT);
         });
     }
   };
@@ -179,7 +179,7 @@ const Login = ({ handleLogin, auth }) => {
 
   const onFaAuth = (ret) => {
     if (ret.ret_code === 'cancel') {
-      history.push(ROUTES.LOG_OUT);
+      navigate(ROUTES.LOG_OUT);
     } else {
       const { dispatch } = ret;
       api
@@ -192,7 +192,7 @@ const Login = ({ handleLogin, auth }) => {
           const token = sessionStorage.getItem('token_as_fa');
           sessionStorage.setItem('token', token);
           dispatch({ type: AUTHORIZED, payload: token });
-          history.push(ROUTES.HOME);
+          navigate(ROUTES.HOME);
 
           notification.success({
             placement: 'bottomRight',
@@ -209,7 +209,7 @@ const Login = ({ handleLogin, auth }) => {
               description: t('messages.loginFailed'),
             });
           });
-          history.push(ROUTES.LOG_OUT);
+          navigate(ROUTES.LOG_OUT);
         });
     }
   };
@@ -273,7 +273,7 @@ const Login = ({ handleLogin, auth }) => {
                   sess_id: response?.data.sess_id,
                 })
                 .then(() => {
-                  history.push(ROUTES.HOME);
+                  navigate(ROUTES.HOME);
 
                   notification.success({
                     placement: 'bottomRight',
@@ -290,7 +290,7 @@ const Login = ({ handleLogin, auth }) => {
             },
             onCancel() {
               sessionStorage.setItem('token', response.data.token); //So log out can delete session from db
-              history.push(ROUTES.LOG_OUT);
+              navigate(ROUTES.LOG_OUT);
             },
           });
         } else if (response.data.user_status_flag === '0') {
@@ -300,7 +300,7 @@ const Login = ({ handleLogin, auth }) => {
           sessionStorage.setItem('token_as_fa', response.data.token);
           faAuth(values.language, response.data.userid, values.password, dispatch);
         } else {
-          history.push(ROUTES.HOME);
+          navigate(ROUTES.HOME);
 
           notification.success({
             placement: 'bottomRight',
@@ -390,9 +390,9 @@ const Login = ({ handleLogin, auth }) => {
 
   useEffect(() => {
     if (auth) {
-      history.push(ROUTES.HOME);
+      navigate(ROUTES.HOME);
     }
-  }, [auth, history]);
+  }, [auth, navigate]);
 
   useEffect(() => {
     form.setFieldsValue({

@@ -13,7 +13,11 @@ const Account = ({ form, value, config }) => {
   const { t } = useTranslation();
   const { setFieldsValue, validateFields } = form;
 
-  const { data, isValidating, revalidate } = useSWR(`${CUSTOMERS.CHECK_ACCOUNT}?cust_account=${account}`, {
+  const {
+    data,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(`${CUSTOMERS.CHECK_ACCOUNT}?cust_account=${account}`, {
     refreshInterval: 0,
   });
 

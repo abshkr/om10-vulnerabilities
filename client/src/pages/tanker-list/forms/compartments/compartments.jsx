@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Scrollbars } from 'react-custom-scrollbars';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 
 import { Equipment } from '../../../../components';
 import api, { TANKER_LIST } from '../../../../api';
@@ -170,7 +170,7 @@ const Compartments = ({ form, value, equipment }) => {
                 <b>{item.etyp_title}</b>
               </div> */}
               <Select
-                dropdownMatchSelectWidth={false}
+                popupMatchSelectWidth={false}
                 // allowClear
                 onChange={(value) => changeType(item, value, index)}
                 // value={item.tc_eqpt || undefined}

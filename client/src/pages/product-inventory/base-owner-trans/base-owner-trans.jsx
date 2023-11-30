@@ -608,7 +608,7 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
             <Descriptions bordered size="small" layout="horizontal" style={{ marginTop: 0 }} column={1}>
               <Descriptions.Item label={t('fields.baseProduct')} span={1}>
                 <Select
-                  dropdownMatchSelectWidth={false}
+                  popupMatchSelectWidth={false}
                   allowClear
                   style={{ width: '100%' }}
                   defaultValue={base}
@@ -632,7 +632,7 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
               </Descriptions.Item>
               <Descriptions.Item label={t('fields.supplier')} span={1}>
                 <Select
-                  dropdownMatchSelectWidth={false}
+                  popupMatchSelectWidth={false}
                   allowClear
                   style={{ width: '100%' }}
                   defaultValue={supplier}
@@ -679,14 +679,14 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
       </Card>
 
       <Drawer
-        bodyStyle={{ paddingTop: 5 }}
+        styles={{ body: { paddingTop: 5 } }}
         onClose={() => handleFormState(false, null)}
         maskClosable={IS_CREATING}
         destroyOnClose={true}
         mask={IS_CREATING}
         placement="right"
         width="50vw"
-        visible={visible}
+        open={visible}
         footer={
           <>
             <Button
@@ -740,7 +740,7 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
                 rules={[{ required: true, validator: validateList, label: t('fields.baseProduct') }]}
               >
                 <Select
-                  dropdownMatchSelectWidth={false}
+                  popupMatchSelectWidth={false}
                   allowClear
                   style={{ width: '100%' }}
                   defaultValue={base}
@@ -774,7 +774,7 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
                           rules={[{ required: true, validator: validateList, label: t('fields.supplier') }]}
                         >
                           <Select
-                            dropdownMatchSelectWidth={false}
+                            popupMatchSelectWidth={false}
                             allowClear
                             style={{ width: '100%' }}
                             defaultValue={supplier}
@@ -871,7 +871,7 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
                           rules={[{ required: true, validator: validateList, label: t('fields.supplier') }]}
                         >
                           <Select
-                            dropdownMatchSelectWidth={false}
+                            popupMatchSelectWidth={false}
                             allowClear
                             style={{ width: '100%' }}
                             // defaultValue={supplier}
@@ -965,7 +965,7 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
                 rules={[{ required: true, validator: validateList, label: t('fields.baseOwnerTransReason') }]}
               >
                 <Select
-                  dropdownMatchSelectWidth={false}
+                  popupMatchSelectWidth={false}
                   allowClear
                   showSearch
                   defaultValue={2}
@@ -1021,7 +1021,7 @@ const BaseOwnerTransactions = ({ baseCode, suppCode, bases, suppliers, value, ac
                 rules={[{ required: true, validator: validateList, label: t('fields.baseOwnerTransUnit') }]}
               >
                 <Select
-                  dropdownMatchSelectWidth={false}
+                  popupMatchSelectWidth={false}
                   allowClear
                   showSearch
                   disabled={true}

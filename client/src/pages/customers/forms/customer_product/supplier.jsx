@@ -14,7 +14,7 @@ const Supplier = ({ onChange }) => {
   return (
     <Form.Item name="supplier_code" label={t('fields.supplier')}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

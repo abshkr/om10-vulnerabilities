@@ -9,15 +9,13 @@ import { Page, DataTable, Download } from '../../components';
 import { PARTNERSHIP } from '../../api';
 import columns from './columns';
 
-const Partnership = ({value, onClose, modal}) => {
+const Partnership = ({ value, onClose, modal }) => {
   const { t } = useTranslation();
   const url =
     value && value?.partner_cmpy_code && value?.partner_type
       ? `${PARTNERSHIP.FIND}?partner_cmpy_code=${value?.partner_cmpy_code}&partner_type=${value?.partner_type}`
-      : `${PARTNERSHIP.FIND}`
-    ;
-
-  const { data: payload, isValidating, revalidate } = useSWR(url);
+      : `${PARTNERSHIP.FIND}`;
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(url);
 
   const fields = columns(t);
   const [form] = Form.useForm();
@@ -36,12 +34,7 @@ const Partnership = ({value, onClose, modal}) => {
   };
 
   return (
-    <Form 
-      layout="vertical" 
-      form={form} 
-      onFinish={onFinish} 
-      scrollToFirstError style={{marginTop: "1rem"}}
-    >
+    <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError style={{ marginTop: '1rem' }}>
       <DataTable
         minimal={true}
         columns={fields}
@@ -50,8 +43,8 @@ const Partnership = ({value, onClose, modal}) => {
         onClick={(payload) => handleSelect(payload)}
         handleSelect={(payload) => handleSelect(payload[0])}
       />
-      
-      <div style={{marginTop: "2rem"}}>
+
+      <div style={{ marginTop: '2rem' }}>
         <Button
           htmlType="button"
           icon={<CloseOutlined />}

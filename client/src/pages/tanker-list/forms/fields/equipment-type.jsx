@@ -46,7 +46,7 @@ const EquipmentType = ({ form, value, onChange }) => {
         disabled={!!value}
         showSearch
         // allowClear
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectEquipmentType') : null}

@@ -19,7 +19,7 @@ const BayTanks = ({ bay, value, access, config }) => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
-  const { data: payload, isValidating, revalidate } = useSWR(BAY_CONFIGURATION.PIPENODES);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(BAY_CONFIGURATION.PIPENODES);
   // const { data: configuration } = useSWR(COMMON.CONFIG);
 
   const fields = columns(config, t);

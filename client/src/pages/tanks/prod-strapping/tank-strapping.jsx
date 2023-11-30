@@ -32,7 +32,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
-import { Scrollbars } from 'react-custom-scrollbars';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 
 import { DataTable, Download } from '../../../components';
 import api, { TANK_STRAPPING } from '../../../api';
@@ -46,7 +46,7 @@ const { TabPane } = Tabs;
 const TankStrapping = ({ terminal, code, tanks, access }) => {
   const url = code ? `${TANK_STRAPPING.READ}?strap_tankcode=${code}` : null;
 
-  const { data, isValidating, revalidate } = useSWR(url);
+  const { data, isValidating, mutate: revalidate } = useSWR(url);
 
   const isLoading = isValidating || !data;
   const { t } = useTranslation();
@@ -353,14 +353,14 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
       </Card>
 
       <Drawer
-        bodyStyle={{ paddingTop: 5 }}
+        styles={{ body: { paddingTop: 5 } }}
         onClose={() => handleFormState(false, null)}
         maskClosable={IS_CREATING}
         destroyOnClose={true}
         mask={IS_CREATING}
         placement="right"
         width="30vw"
-        visible={visible}
+        open={visible}
         footer={
           <>
             <Button
@@ -404,7 +404,7 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
                 rules={[{ required: true, validator: validate, label: t('fields.tank') }]}
               >
                 <Select
-                  dropdownMatchSelectWidth={false}
+                  popupMatchSelectWidth={false}
                   allowClear
                   loading={isLoading}
                   disabled={true}

@@ -233,7 +233,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
@@ -241,7 +241,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       mask={IS_CREATING}
       placement="right"
       width="40vw"
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button
@@ -310,7 +310,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
             <Form.Item name="tgr_tanklist">
               <Select
-                dropdownMatchSelectWidth={false}
+                popupMatchSelectWidth={false}
                 showSearch
                 onChange={handleTankChange}
                 mode="multiple"

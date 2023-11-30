@@ -39,7 +39,7 @@ export default class ShipTo extends Component {
     return (
       <div style={{ width: '100%', display: 'flex' }}>
         <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           allowClear
           value={this.state.value}
           style={{ width: '100%' }}

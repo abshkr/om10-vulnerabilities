@@ -68,7 +68,7 @@ const BayDetails = ({ selected, access, isLoading, config, setSelected }) => {
       centered: true,
       onOk: async () => {
         await api
-          .post(BAY_CONFIGURATION.DELETE, selected)
+          .post(BAY_CONFIGURATION.DELETE_BAY, selected)
           .then(() => {
             mutate(BAY_CONFIGURATION.READ);
 

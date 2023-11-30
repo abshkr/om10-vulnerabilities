@@ -18,7 +18,7 @@ const Partnership = () => {
 
   const access = useAuth('M_PARTNERSHIP');
 
-  const { data: payload, isValidating, revalidate } = useSWR(PARTNERSHIP.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(PARTNERSHIP.READ);
 
   const fields = columns(t);
   const data = payload?.records;

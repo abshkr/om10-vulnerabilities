@@ -64,7 +64,11 @@ const Personnel = () => {
       : mainUrl.replace('pgflag=N', 'pgflag=Y') + `&start_num=${take}&end_num=${offset}`;
   const pageUrl = mainUrl.replace('pgflag=N', 'pgflag=Y');
 
-  const { data: payload, isValidating, revalidate } = useSWR(pagingFlag === undefined ? null : url, {
+  const {
+    data: payload,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(pagingFlag === undefined ? null : url, {
     revalidateOnFocus: false,
   });
 

@@ -13,12 +13,12 @@ import auth from '../../auth';
 import { useAuth } from '../../hooks';
 import Forms from './forms';
 
-const CustomerCategories = ({popup}) => {
+const CustomerCategories = ({ popup }) => {
   const { t } = useTranslation();
 
   const access = useAuth('M_CUSTOMERCATEGORIES');
 
-  const { data: payload, isValidating, revalidate } = useSWR(CUSTOMER_CATEGORIES.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(CUSTOMER_CATEGORIES.READ);
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -52,7 +52,14 @@ const CustomerCategories = ({popup}) => {
   );
 
   return (
-    <Page page={page} name={name} modifiers={modifiers} access={access} standalone={popup} avatar="customerCategories">
+    <Page
+      page={page}
+      name={name}
+      modifiers={modifiers}
+      access={access}
+      standalone={popup}
+      avatar="customerCategories"
+    >
       <DataTable
         minimal={false}
         columns={fields}

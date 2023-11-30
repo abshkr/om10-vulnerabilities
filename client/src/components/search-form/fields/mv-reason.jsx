@@ -23,7 +23,7 @@ const MovementReason = ({ value, type, onChange }) => {
         loading={isValidating}
         showSearch
         allowClear
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         onChange={onChange}
         disabled={!!value || !type}
         optionFilterProp="children"

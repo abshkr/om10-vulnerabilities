@@ -37,7 +37,7 @@ const DrawerProduct = () => {
 
   const access = useAuth('M_DRAWERPRODUCTS');
 
-  const { data: payload, isValidating, revalidate } = useSWR(DRAWER_PRODUCTS.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(DRAWER_PRODUCTS.READ);
   const { data: pipenode } = useSWR(DRAWER_PRODUCTS.PIPENODE_BASES);
 
   const doTabChanges = (tabPaneKey) => {

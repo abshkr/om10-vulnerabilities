@@ -47,8 +47,8 @@ const DeliveryNoteTemplates = ({
   const { data: templates } = useSWR(`${DELIVERY_DETAILS.TEMPLATES}?tmpl_type=2`);
 
   const { data: payload, isValidating } = useSWR(
-    `${DELIVERY_DETAILS.DD_DN_TEMPLATES}?dd_number=${value?.dd_number}&dd_supp_code=${value?.dd_supp_code}&dd_tripord_no=${value?.dd_tripord_no}&dd_ld_type=${value?.dd_ld_type}`
-    , { revalidateOnFocus: false }
+    `${DELIVERY_DETAILS.DD_DN_TEMPLATES}?dd_number=${value?.dd_number}&dd_supp_code=${value?.dd_supp_code}&dd_tripord_no=${value?.dd_tripord_no}&dd_ld_type=${value?.dd_ld_type}`,
+    { revalidateOnFocus: false }
   );
 
   const data = payload?.records;
@@ -57,7 +57,7 @@ const DeliveryNoteTemplates = ({
   const adjustTemplates = (templates, records) => {
     const list = [];
     _.forEach(templates, (item) => {
-      const found = _.find(records, (o) => (o.ddd_templ_id === item.template_code));
+      const found = _.find(records, (o) => o.ddd_templ_id === item.template_code);
       if (found !== undefined) {
         item.template_used = true;
       } else {
@@ -71,7 +71,7 @@ const DeliveryNoteTemplates = ({
   const adjustRecords = () => {
     let size = 0;
     const payload = [];
-    
+
     tableAPI.forEachNode((rowNode, index) => {
       size = size + 1;
       payload.push(rowNode?.data);
@@ -150,14 +150,14 @@ const DeliveryNoteTemplates = ({
   return (
     <>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         allowClear
         value={templateItem?.template_code}
         disabled={false}
         onChange={onClick}
-        style={{width: '50%'}}
+        style={{ width: '50%' }}
         optionFilterProp="children"
         // placeholder={!templateItem ? t('placeholder.selectDnTemplate') : null}
         placeholder={t('placeholder.selectDnTemplate')}
@@ -166,22 +166,17 @@ const DeliveryNoteTemplates = ({
         }
       >
         {templateList?.map((item, index) => (
-          <Select.Option
-            key={index}
-            value={item.template_code}
-            item={item}
-            disabled={item.template_used}
-          >
+          <Select.Option key={index} value={item.template_code} item={item} disabled={item.template_used}>
             {item.template_name}
           </Select.Option>
         ))}
       </Select>
 
-      <Button 
-        type="primary" 
-        icon={<PlusOutlined />} 
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
         disabled={!templateItem}
-        onClick={handleItemAdd} 
+        onClick={handleItemAdd}
         style={{ marginRight: 5 }}
       >
         {t('operations.addLineItem')}
@@ -197,15 +192,12 @@ const DeliveryNoteTemplates = ({
         {t('operations.deleteLineItem')}
       </Button>
 
-      <Tooltip 
-        placement="topLeft" 
-        title={t('tabColumns.dddAddlInfo')}
-      >
+      <Tooltip placement="topLeft" title={t('tabColumns.dddAddlInfo')}>
         <Button
           type="primary"
           icon={<EditOutlined />}
           style={{ float: 'right', marginRight: 5 }}
-          disabled={disabled || selected?.[0]?.ddd_action==='+'}
+          disabled={disabled || selected?.[0]?.ddd_action === '+'}
           onClick={() => setDddAddlInfoVisible(true)}
         >
           {t('operations.additionalInfo')}
@@ -216,9 +208,9 @@ const DeliveryNoteTemplates = ({
         <Drawer
           title={t('tabColumns.dddAddlInfo')}
           placement="right"
-          bodyStyle={{ paddingTop: 40, paddingRight: 30 }}
+          styles={{ body: { paddingTop: 40, paddingRight: 30 } }}
           onClose={() => setDddAddlInfoVisible(false)}
-          visible={dddAddlInfoVisible}
+          open={dddAddlInfoVisible}
           width="50vw"
         >
           <DddAdditionalInfo

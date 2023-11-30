@@ -64,7 +64,7 @@ const AxleLimitTypes = ({ form, value, config, onChange }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         // disabled={!!value}

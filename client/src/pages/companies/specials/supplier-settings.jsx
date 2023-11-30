@@ -798,7 +798,7 @@ const SupplierForm = ({ value, form, config }) => {
           {externalBlendAllowed && (
             <Form.Item name="cmpy_2nd_drawer" label={t('fields.linkedDrawer')} {...rightItemLayout}>
               <Select
-                dropdownMatchSelectWidth={false}
+                popupMatchSelectWidth={false}
                 allowClear
                 // loading={isValidating}
                 // style={{ width: '14vh' }}

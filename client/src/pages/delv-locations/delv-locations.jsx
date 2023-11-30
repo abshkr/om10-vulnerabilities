@@ -27,8 +27,7 @@ const DelvLocations = ({ popup, params }) => {
 
   const url = popup && customer ? `${DELV_LOCATIONS.READ}?delv_cust_acct=${customer}` : DELV_LOCATIONS.READ;
 
-  const { data: payload, isValidating, revalidate } = useSWR(url);
-  //const { data: payload, isValidating, revalidate } = useSWR(DELV_LOCATIONS.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(url);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
-import { PageHeader, Modal, Form, Input, notification } from 'antd';
+import { Modal, Form, Input, notification } from 'antd';
+import { PageHeader } from '@ant-design/pro-layout';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import jwtDecode from 'jwt-decode';
 import _ from 'lodash';
@@ -18,7 +19,7 @@ const Page = ({ name, page, children, modifiers, minimal, transparent, access, a
   const [form] = Form.useForm();
 
   const { t } = useTranslation();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [authenticated, setAuthenticated] = useState(false);
   const [isFetching, setFetching] = useState(false);
@@ -29,15 +30,15 @@ const Page = ({ name, page, children, modifiers, minimal, transparent, access, a
   const routes = [
     {
       path: 'index',
-      breadcrumbName: 'OMEGA 5000',
+      title: 'OMEGA 5000',
     },
     {
       path: 'first',
-      breadcrumbName: page,
+      title: page,
     },
     {
       path: 'second',
-      breadcrumbName: name,
+      title: <div style={{ color: 'black', fontWeight: 'bolder' }}>{name}</div>,
     },
   ];
 
@@ -86,7 +87,7 @@ const Page = ({ name, page, children, modifiers, minimal, transparent, access, a
           });
         });
     } catch (error) {
-      history.push(ROUTES.LOG_OUT);
+      navigate(ROUTES.LOG_OUT);
     }
   };
 
@@ -117,7 +118,7 @@ const Page = ({ name, page, children, modifiers, minimal, transparent, access, a
     return (
       <Modal
         title={t('generic.pleaseAuthenticate')}
-        visible={isLocked}
+        open={isLocked}
         closable={false}
         centered
         // cancelButtonProps={{ style: { display: 'none' } }}
@@ -145,7 +146,7 @@ const Page = ({ name, page, children, modifiers, minimal, transparent, access, a
         <div>
           {!minimal && (
             <PageHeaderContainer>
-              <PageHeader title={name || page} style={{ width: '30vw' }} breadcrumb={{ routes: filtered }} />
+              <PageHeader title={name || page} style={{ width: '30vw' }} breadcrumb={{ items: filtered }} />
 
               <PageHeaderExtras style={{ width: '75vw' }}>
                 <div style={{ float: 'right' }}>{modifiers}</div>

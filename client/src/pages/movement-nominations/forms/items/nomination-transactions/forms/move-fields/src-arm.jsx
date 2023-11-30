@@ -13,10 +13,7 @@ const SourceArm = ({ form, value, setArms, onChange, tank, pageState }) => {
 
   const { setFieldsValue } = form;
 
-  const {
-    data: options,
-    isValidating,
-  } = useSWR(
+  const { data: options, isValidating } = useSWR(
     // `${NOMINATION_TRANSACTIONS.ARMS}?prod_code=${value?.mvitm_prodcode_from}&prod_cmpy=${value?.mvitm_prodcmpy_from}`,
     `${MANUAL_TRANSACTIONS.GET_PROD_ARMS}?prod_code=${value?.mvitm_prodcode_from}&prod_cmpy=${value?.mvitm_prodcmpy_from}`,
     { refreshInterval: 0 }
@@ -36,7 +33,7 @@ const SourceArm = ({ form, value, setArms, onChange, tank, pageState }) => {
     // find the item having a particular stream_armcode
     const values = _.split(code, ' - ');
     let arm_item = _.filter(list, (item) => {
-      return (values?.[1] === item.stream_baycode && values?.[2] === item.stream_armcode);
+      return values?.[1] === item.stream_baycode && values?.[2] === item.stream_armcode;
       // return code === (item.stream_tankcode + ' - ' + item.stream_baycode + ' - ' + item.stream_armcode);
     });
     console.log('src arm, getArmItem', code, list, arm_item);
@@ -71,7 +68,7 @@ const SourceArm = ({ form, value, setArms, onChange, tank, pageState }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         loading={isValidating}
         allowClear
         showSearch
@@ -84,26 +81,32 @@ const SourceArm = ({ form, value, setArms, onChange, tank, pageState }) => {
         {!((pageState!=='disposal' || tank?.length === 0) && (pageState!=='transfer') && (pageState!=='receipt'))}
         {(!(pageState!=='disposal' || tank?.length === 0) || (pageState==='transfer') || (pageState==='receipt'))}
         {(pageState==='disposal' && tank?.length !== 0) || (pageState==='transfer') || (pageState==='receipt')} */
-        disabled={(pageState==='disposal' && tank?.length !== 0) || (pageState==='transfer') || (pageState==='receipt')}
+        disabled={
+          (pageState === 'disposal' && tank?.length !== 0) ||
+          pageState === 'transfer' ||
+          pageState === 'receipt'
+        }
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectFromArm') : null}
         filterOption={(value, option) =>
           option.props.children.toLowerCase().indexOf(value.toLowerCase()) >= 0
         }
       >
-        {_.filter(options?.records, (o) => (o.stream_bclass_code!=='6' && o.rat_seq === '1'))?.map((item, index) => (
-          /* <Select.Option key={index} value={item.stream_armcode}>
+        {_.filter(options?.records, (o) => o.stream_bclass_code !== '6' && o.rat_seq === '1')?.map(
+          (item, index) => (
+            /* <Select.Option key={index} value={item.stream_armcode}>
             {item.stream_armcode}
           </Select.Option> */
-          <Select.Option
-            key={index}
-            value={`${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
-            item={item}
-          >
-            {`${item.stream_baycode} - ${item.stream_armcode}`}
-            {/* {`${item.ratio_seq}: ${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`} */}
-          </Select.Option>
-        ))}
+            <Select.Option
+              key={index}
+              value={`${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`}
+              item={item}
+            >
+              {`${item.stream_baycode} - ${item.stream_armcode}`}
+              {/* {`${item.ratio_seq}: ${item.stream_tankcode} - ${item.stream_baycode} - ${item.stream_armcode}`} */}
+            </Select.Option>
+          )
+        )}
       </Select>
     </Form.Item>
   );

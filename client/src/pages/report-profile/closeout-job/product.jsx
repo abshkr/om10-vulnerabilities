@@ -45,7 +45,7 @@ const Product = ({ form, param, supplier, setField }) => {
       {...itemLayout}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

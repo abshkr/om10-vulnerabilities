@@ -14,14 +14,14 @@ import auth from '../../auth';
 
 import Forms from './forms';
 
-const TerminalGroups = ({access, popup}) => {
+const TerminalGroups = ({ access, popup }) => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const { t } = useTranslation();
 
   // const access = useAuth('M_TANKGROUPS');
 
-  const { data: payload, isValidating, revalidate } = useSWR(TERMINAL_GROUPS.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(TERMINAL_GROUPS.READ);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);

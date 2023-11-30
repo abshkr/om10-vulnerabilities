@@ -89,7 +89,7 @@ const ProductMovements = () => {
       : mainUrl.replace('pgflag=N', 'pgflag=Y') + `&start_num=${0}&end_num=${siteDownloaderBatchMax}`;
   const pageUrl = mainUrl.replace('pgflag=N', 'pgflag=Y');
 
-  const { data: payload, isValidating, revalidate } = useSWR(url, { refreshInterval: interval });
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(url, { refreshInterval: interval });
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -345,7 +345,7 @@ const ProductMovements = () => {
       )}
 
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         defaultValue={filterDateType === 'END' ? 'PMV_DATE2' : 'PMV_DATE1'}
         value={timeOption}
         onChange={onTimeOptionChanged}

@@ -14,7 +14,11 @@ const Code = ({ form, value, config }) => {
   const [matched, setMatched] = useState(false);
   const { t } = useTranslation();
 
-  const { data, isValidating, revalidate } = useSWR(`${PERSONNEL.CHECK_PSNL_CODE}?psnl_code=${psnlCode}`);
+  const {
+    data,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(`${PERSONNEL.CHECK_PSNL_CODE}?psnl_code=${psnlCode}`);
 
   const { setFieldsValue, validateFields } = form;
 

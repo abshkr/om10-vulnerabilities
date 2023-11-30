@@ -133,7 +133,7 @@ const BaseProductOwners = ({ value, access, config, unit, units }) => {
               <Descriptions.Item label={t('fields.baseProduct')} span={1}>
                 {/* value?.base_code + ' - ' + value?.base_name */}
                 <Select
-                  dropdownMatchSelectWidth={false}
+                  popupMatchSelectWidth={false}
                   allowClear
                   style={{ width: '100%' }}
                   defaultValue={base}
@@ -157,7 +157,7 @@ const BaseProductOwners = ({ value, access, config, unit, units }) => {
               </Descriptions.Item>
               <Descriptions.Item label={t('fields.supplier')} span={1}>
                 <Select
-                  dropdownMatchSelectWidth={false}
+                  popupMatchSelectWidth={false}
                   allowClear
                   style={{ width: '100%' }}
                   defaultValue={supplier}
@@ -182,7 +182,7 @@ const BaseProductOwners = ({ value, access, config, unit, units }) => {
               {hideUnits && (
                 <Descriptions.Item label={t('fields.volumeUnit')} span={1}>
                   <Select
-                    dropdownMatchSelectWidth={false}
+                    popupMatchSelectWidth={false}
                     allowClear
                     key="1"
                     style={{ width: '100%' }}
@@ -241,9 +241,9 @@ const BaseProductOwners = ({ value, access, config, unit, units }) => {
         <Drawer
           title={t('tabColumns.baseOwnerTransactions')}
           placement="right"
-          bodyStyle={{ paddingTop: 5 }}
+          styles={{ body: { paddingTop: 5 } }}
           onClose={() => onFormClose()}
-          visible={showMakeTransactions}
+          open={showMakeTransactions}
           width="80vw"
           destroyOnClose={true}
           maskClosable={false}
@@ -263,9 +263,9 @@ const BaseProductOwners = ({ value, access, config, unit, units }) => {
         <Drawer
           title={t('tabColumns.ownerTrsaReasons')}
           placement="right"
-          bodyStyle={{ paddingTop: 5 }}
+          styles={{ body: { paddingTop: 5 } }}
           onClose={() => setShowOwnerTrsaReason(false)}
-          visible={showOwnerTrsaReason}
+          open={showOwnerTrsaReason}
           width="70vw"
           destroyOnClose={true}
         >

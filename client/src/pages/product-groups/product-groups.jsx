@@ -26,7 +26,7 @@ const ProductGroups = () => {
   const [messageGrpVisible, setMessageGrpVisible] = useState(false);
   const [selected, setSelected] = useState(null);
 
-  const { data: payload, isValidating, revalidate } = useSWR(endpoint);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(endpoint);
 
   const data = payload ? payload.records : [];
 

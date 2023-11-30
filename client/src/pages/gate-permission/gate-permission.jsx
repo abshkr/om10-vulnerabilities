@@ -21,7 +21,7 @@ const GatePermission = () => {
 
   const access = useAuth('M_GATEPERMISSION');
 
-  const { data: payload, isValidating, revalidate } = useSWR(GATE_PERMISSION.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(GATE_PERMISSION.READ);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);

@@ -57,7 +57,7 @@ const ExpiryDateTarget = ({ form, value, all }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         disabled={!!value}
         showSearch

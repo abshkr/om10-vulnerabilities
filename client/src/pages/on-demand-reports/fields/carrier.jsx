@@ -32,7 +32,7 @@ const Carrier = ({ form, enabled, parent }) => {
       rules={[{ required: enabled, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

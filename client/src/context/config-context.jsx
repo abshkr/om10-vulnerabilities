@@ -134,15 +134,15 @@ const ConfigProvider = ({ children }) => {
     siteEnabledSAML: false,
   });
 
-  const { data: configuration, revalidate: revalidateConfiguration } = useSWR(SITE_CONFIGURATION.READ, {
+  const { data: configuration, mutate: revalidateConfiguration } = useSWR(SITE_CONFIGURATION.READ, {
     revalidateOnFocus: false,
   });
 
-  const { data: features, revalidate: revalidateFeatures } = useSWR(SITE_CONFIGURATION.FEATURES, {
+  const { data: features, mutate: revalidateFeatures } = useSWR(SITE_CONFIGURATION.FEATURES, {
     revalidateOnFocus: false,
   });
 
-  const { data: environment, revalidate: revalidateEnvironment } = useSWR(AUTH.ENVIRONMENT, {
+  const { data: environment, mutate: revalidateEnvironment } = useSWR(AUTH.ENVIRONMENT, {
     revalidateOnFocus: false,
   });
 

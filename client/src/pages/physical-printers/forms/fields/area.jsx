@@ -24,7 +24,7 @@ const Area = ({ form, value }) => {
   return (
     <Form.Item name="prntr_area" label={t('fields.areaLocation')}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

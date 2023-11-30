@@ -26,7 +26,7 @@ export default class AdaptiveFlowControl extends Component {
         {getFieldDecorator('afc_enabled', {
           rules: [{ required: false, message: 'Please Select A Flow Control Type' }],
         })(
-          <Select dropdownMatchSelectWidth={false} allowClear>
+          <Select popupMatchSelectWidth={false} allowClear>
             {control.map((item, index) => (
               <Option key={index} value={item.key}>
                 {item.value}

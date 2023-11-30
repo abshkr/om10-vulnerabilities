@@ -64,7 +64,7 @@ const OrderItemTrips = ({ form, value, config, orderItem, items }) => {
     <>
       <Form.Item name="order_prod_list" label={''} rules={[{ required: false }]}>
         <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           loading={isValidating}
           showSearch
           allowClear

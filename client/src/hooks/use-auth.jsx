@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { notification } from 'antd';
 import useSWR from 'swr';
 import _ from 'lodash';
@@ -8,11 +8,11 @@ import { useTranslation } from 'react-i18next';
 import { AUTH } from '../api';
 
 const useAuth = (module) => {
-  const { data: payload, revalidate } = useSWR(`${AUTH.PERMISSIONS}?object_text=${module}`, {
+  const { data: payload, mutate: revalidate } = useSWR(`${AUTH.PERMISSIONS}?object_text=${module}`, {
     revalidateOnFocus: false,
   });
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const [access, setAccess] = useState({
@@ -47,7 +47,7 @@ const useAuth = (module) => {
         });
       }
     }
-  }, [payload, history, module]);
+  }, [payload, navigate, module]);
 
   useEffect(() => {
     // Revalidate Auth Status Upon Window Refocus

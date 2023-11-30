@@ -27,7 +27,7 @@ const BaseProducts = () => {
   const config = useConfig();
   const access = useAuth('M_BASEPRODUCTS');
 
-  const { data: payload, isValidating, revalidate } = useSWR(BASE_PRODUCTS.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(BASE_PRODUCTS.READ);
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -88,14 +88,14 @@ const BaseProducts = () => {
     <>
       {ownershipOpen && (
         <Drawer
-          bodyStyle={{ paddingTop: 5 }}
+          styles={{ body: { paddingTop: 5 } }}
           onClose={() => setOwnershipOpen(false)}
           maskClosable={false}
           destroyOnClose={true}
           mask={false}
           placement="right"
           width={config?.siteUseProdOwnership && config?.siteProdOwnershipLevel === 'TANK' ? '70vw' : '80vw'}
-          visible={ownershipOpen}
+          open={ownershipOpen}
           footer={
             <>
               <Button

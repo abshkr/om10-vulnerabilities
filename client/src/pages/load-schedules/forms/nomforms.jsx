@@ -65,12 +65,8 @@ const TabPane = Tabs.TabPane;
 
 const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, cbFunction, closeForm }) => {
   const config = useConfig();
-  const {
-    manageMakeManualTransaction,
-    showSeals,
-    manageAdditionalHostData,
-    manageViewDeliveryDetails,
-  } = config;
+  const { manageMakeManualTransaction, showSeals, manageAdditionalHostData, manageViewDeliveryDetails } =
+    config;
 
   const { t } = useTranslation();
   const [form] = Form.useForm();
@@ -533,7 +529,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, c
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={() => onFormClosed()}
       maskClosable={IS_CREATING}
@@ -541,7 +537,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, c
       destroyOnClose
       placement="right"
       width={drawerWidth}
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button

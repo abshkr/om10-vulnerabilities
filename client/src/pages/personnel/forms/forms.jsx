@@ -288,7 +288,7 @@ const FormModal = ({
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={() => onExitClicked()}
       maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
@@ -296,7 +296,7 @@ const FormModal = ({
       mask={config?.siteFormCloseAlert ? true : maskFlag}
       placement="right"
       width="80vw"
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button
@@ -403,9 +403,9 @@ const FormModal = ({
             <Drawer
               title={t('tabColumns.resetPassword')}
               placement="right"
-              bodyStyle={{ paddingTop: 25 }}
+              styles={{ body: { paddingTop: 25 } }}
               onClose={() => setPasswordResetVisible(false)}
-              visible={passwordResetVisible}
+              open={passwordResetVisible}
               width="36vw"
             >
               <Form layout="vertical">
@@ -418,9 +418,9 @@ const FormModal = ({
             <Drawer
               title={t('tabColumns.changeArea')}
               placement="right"
-              bodyStyle={{ paddingTop: 25 }}
+              styles={{ body: { paddingTop: 25 } }}
               onClose={() => setAreaVisible(false)}
-              visible={areaVisible}
+              open={areaVisible}
               width="36vw"
             >
               <ChangeArea value={value} setHide={() => setAreaVisible(false)} />

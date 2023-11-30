@@ -20,7 +20,7 @@ const CompanyBayMovement = () => {
 
   const access = useAuth('M_BAYMOVEMENT');
 
-  const { data: payload, isValidating, revalidate } = useSWR(COMPANY_BAY_MOVEMENT.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(COMPANY_BAY_MOVEMENT.READ);
 
   const fields = columns(t);
   const data = payload?.records;

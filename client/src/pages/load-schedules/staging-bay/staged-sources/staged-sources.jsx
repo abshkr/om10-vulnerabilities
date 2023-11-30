@@ -3,7 +3,7 @@ import React, { useEffect, useState, Fragment } from 'react';
 import { EditOutlined, PlusOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
 
 import { Form, Button, Card, Tabs, Modal, notification, Drawer, Row, Col, InputNumber } from 'antd';
-import { Scrollbars } from 'react-custom-scrollbars';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';

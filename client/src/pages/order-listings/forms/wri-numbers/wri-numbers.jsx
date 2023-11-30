@@ -52,7 +52,7 @@ const WriNumbers = ({ value, access, config, listing }) => {
 
   const url = `${WRI.READ}?order_id=${value?.order_sys_no}`;
 
-  const { data: payload, isValidating: payloadLoading, revalidate } = useSWR(url);
+  const { data: payload, isValidating: payloadLoading, mutate: revalidate } = useSWR(url);
   const { data: idStats } = useSWR(WRI.WRI_ID_STATS);
   const { data: statusTypes } = useSWR(WRI.WRI_STATUS_TYPES);
   const { data: tankers, isValidating } = useSWR(WRI.TANKERS);
@@ -316,14 +316,14 @@ const WriNumbers = ({ value, access, config, listing }) => {
       </Card>
 
       <Drawer
-        bodyStyle={{ paddingTop: 5 }}
+        styles={{ body: { paddingTop: 5 } }}
         onClose={() => handleFormState(false, null)}
         maskClosable={IS_CREATING}
         destroyOnClose={true}
         mask={IS_CREATING}
         placement="right"
         width="40vw"
-        visible={visible}
+        open={visible}
         footer={
           <>
             <Button
@@ -380,7 +380,7 @@ const WriNumbers = ({ value, access, config, listing }) => {
                   rules={[{ required: true, validator: validateList, label: t('fields.wriIdStatus') }]}
                 >
                   <Select
-                    dropdownMatchSelectWidth={false}
+                    popupMatchSelectWidth={false}
                     allowClear
                     // loading={isValidating}
                     showSearch
@@ -470,7 +470,7 @@ const WriNumbers = ({ value, access, config, listing }) => {
                 } */
               >
                 {/* <Select
-                  dropdownMatchSelectWidth={false}
+                  popupMatchSelectWidth={false}
                   disabled={isValidating}
                   loading={isValidating}
                   showSearch
@@ -523,7 +523,7 @@ const WriNumbers = ({ value, access, config, listing }) => {
                 rules={[{ required: true, validator: validateList, label: t('fields.wriStatus') }]}
               >
                 <Select
-                  dropdownMatchSelectWidth={false}
+                  popupMatchSelectWidth={false}
                   allowClear
                   // loading={isValidating}
                   showSearch

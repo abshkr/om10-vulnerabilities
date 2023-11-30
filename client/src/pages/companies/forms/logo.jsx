@@ -4,9 +4,9 @@ import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { COMPANIES } from 'api';
 
-const LOGOPATH = "api/assets/companys/"
+const LOGOPATH = 'api/assets/companys/';
 
-const Logo = ({form, value}) => {
+const Logo = ({ form, value }) => {
   const { setFieldsValue } = form;
 
   const { t } = useTranslation();
@@ -19,30 +19,29 @@ const Logo = ({form, value}) => {
     name: 'file',
     action: COMPANIES.UPLOAD_LOGO,
     headers: {
-      'Authorization': sessionStorage.getItem('token')
+      Authorization: sessionStorage.getItem('token'),
     },
 
     onPreview() {
-      setPreviewVisible(true)
+      setPreviewVisible(true);
     },
 
     onChange(info) {
       if (info.file.status == 'uploading') {
-        setLoading(true)
+        setLoading(true);
       }
       if (info.file.status === 'done') {
         notification.success({
           message: t('messages.createSuccess'),
           description: `${t('descriptions.uploadSuccess')} ${info.file.name}`,
         });
-        setImageUrl(LOGOPATH + info.file.name)
-        setLoading(false)
+        setImageUrl(LOGOPATH + info.file.name);
+        setLoading(false);
         setFieldsValue({
-          cmpy_logo: info.file.name
+          cmpy_logo: info.file.name,
         });
 
-        setFileList(info.fileList)
-
+        setFileList(info.fileList);
       } else if (info.file.status === 'error') {
         notification.error({
           message: t('messages.submitFailed'),
@@ -51,10 +50,10 @@ const Logo = ({form, value}) => {
       }
 
       if (info?.fileList?.length <= 0) {
-        setFileList([])
-        setImageUrl(null)
+        setFileList([]);
+        setImageUrl(null);
         setFieldsValue({
-          cmpy_logo: null
+          cmpy_logo: null,
         });
       }
     },
@@ -75,16 +74,16 @@ const Logo = ({form, value}) => {
         });
       }
       return isJpgOrPng && isLt2M;
-    }
+    },
   };
 
   useEffect(() => {
     if (value) {
       setFieldsValue({
-        cmpy_logo: value?.cmpy_logo
+        cmpy_logo: value?.cmpy_logo,
       });
       if (value?.cmpy_logo) {
-        setImageUrl(LOGOPATH + value?.cmpy_logo)
+        setImageUrl(LOGOPATH + value?.cmpy_logo);
         setFileList([
           {
             uid: '-1',
@@ -92,12 +91,12 @@ const Logo = ({form, value}) => {
             status: 'done',
             url: LOGOPATH + value?.cmpy_logo,
           },
-        ])
+        ]);
       } else {
-        setImageUrl(null)
-        setFileList([])
+        setImageUrl(null);
+        setFileList([]);
       }
-    };
+    }
   }, [value]);
 
   const uploadButton = (
@@ -109,9 +108,10 @@ const Logo = ({form, value}) => {
 
   return (
     <React.Fragment>
-      <Form.Item name="cmpy_logo" hidden/>
-      <div style={{marginTop: "1rem"}}>
-        <Upload {...props} 
+      <Form.Item name="cmpy_logo" hidden />
+      <div style={{ marginTop: '1rem' }}>
+        <Upload
+          {...props}
           listType="picture-card"
           accept=".png,.jpg,.gif"
           className="avatar-uploader"
@@ -121,15 +121,17 @@ const Logo = ({form, value}) => {
         </Upload>
       </div>
       <Modal
-        visible={previewVisible}
+        open={previewVisible}
         title={fileList[0]?.name}
         footer={null}
-        onCancel={() => { setPreviewVisible(false)}}
+        onCancel={() => {
+          setPreviewVisible(false);
+        }}
       >
         <img alt="example" style={{ width: '100%' }} src={imageUrl} />
       </Modal>
     </React.Fragment>
   );
-}
+};
 
-export default Logo
+export default Logo;

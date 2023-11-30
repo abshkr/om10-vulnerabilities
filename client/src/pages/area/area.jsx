@@ -18,7 +18,7 @@ const Area = () => {
 
   const access = useAuth('M_AREA');
 
-  const { data: payload, isValidating, revalidate } = useSWR(AREA.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(AREA.READ);
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);

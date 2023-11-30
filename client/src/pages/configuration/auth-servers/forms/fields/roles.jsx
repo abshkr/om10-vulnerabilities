@@ -30,7 +30,7 @@ const Roles = ({ form, value }) => {
   return (
     <Form.Item name="as_role" label={t('fields.asRole')} rules={[{ required: true, validator: validate }]}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

@@ -36,13 +36,17 @@ const ProductInventory = () => {
   // const [terminal, setTerminal] = useState(site_code);
   const [terminal, setTerminal] = useState('');
 
-  const { data: payloadBases, revalidate: revalidateBases, isValidating: isValidatingBases } = useSWR(
-    `${STOCK_MANAGEMENT.PRODUCT_INVENTORY}?terminal=${terminal}`
-  );
+  const {
+    data: payloadBases,
+    mutate: revalidateBases,
+    isValidating: isValidatingBases,
+  } = useSWR(`${STOCK_MANAGEMENT.PRODUCT_INVENTORY}?terminal=${terminal}`);
 
-  const { data: payloadTanks, revalidate: revalidateTanks, isValidating: isValidatingTanks } = useSWR(
-    `${STOCK_MANAGEMENT.TANK_INVENTORY}?terminal=${terminal}`
-  );
+  const {
+    data: payloadTanks,
+    mutate: revalidateTanks,
+    isValidating: isValidatingTanks,
+  } = useSWR(`${STOCK_MANAGEMENT.TANK_INVENTORY}?terminal=${terminal}`);
 
   const fields = columns(t, config);
   const isLoading = isValidatingBases && isValidatingTanks;
@@ -111,7 +115,7 @@ const ProductInventory = () => {
       )}
 
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         key="1"
         style={{ width: 200, marginLeft: 5 }}
@@ -154,14 +158,14 @@ const ProductInventory = () => {
       />
 
       <Drawer
-        bodyStyle={{ paddingTop: 5 }}
+        styles={{ body: { paddingTop: 5 } }}
         onClose={() => handleFormState(false, null)}
         maskClosable={false}
         destroyOnClose={true}
         mask={false}
         placement="right"
         width={config?.siteUseProdOwnership && config?.siteProdOwnershipLevel === 'TANK' ? '55vw' : '80vw'}
-        visible={visible}
+        open={visible}
         footer={
           <>
             <Button

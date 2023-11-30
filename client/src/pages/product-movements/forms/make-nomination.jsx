@@ -285,7 +285,7 @@ const MakeNomination = ({ value, config, t, visible, setVisible, onComplete }) =
       centered
       maskClosable={false}
       mask={true}
-      visible={visible}
+      open={visible}
       okButtonProps={{ disabled: disabled }}
       onOk={finishHandler}
       onCancel={() => setVisible(false)}

@@ -46,7 +46,7 @@ const Terminal = ({ form, value }) => {
       <Select
         loading={isValidating}
         showSearch
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         // onChange={onChange}
         disabled={!!value}

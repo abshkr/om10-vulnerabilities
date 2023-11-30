@@ -18,7 +18,7 @@ const Metering = () => {
 
   const config = useConfig();
 
-  const { data, revalidate, isValidating } = useSWR(STOCK_MANAGEMENT.METERING);
+  const { data, mutate: revalidate, isValidating } = useSWR(STOCK_MANAGEMENT.METERING);
 
   const access = useAuth('M_METERING');
 
@@ -62,7 +62,7 @@ const Metering = () => {
           {t('fields.massUnit') + ':'}
         </span>
         <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           allowClear
           key="1"
           style={{ width: 200 }}
@@ -92,7 +92,7 @@ const Metering = () => {
           {t('fields.volumeUnit') + ':'}
         </span>
         <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           allowClear
           key="1"
           style={{ width: 200 }}

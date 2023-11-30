@@ -7,6 +7,18 @@ import {
   ArrowDownOutlined,
 } from '@ant-design/icons';
 import { Card, Tag } from 'antd';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarController,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { useTranslation } from 'react-i18next';
 
@@ -28,6 +40,18 @@ import config from './config';
 
 const Tank = React.memo(function Tank({ item }) {
   const { t } = useTranslation();
+
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    BarController,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+  );
 
   const getLevels = () => {
     let levels = item?.tank_prod_lvl?.toLocaleString('en-AU') || '0' + ' ' + t('units.mm');
@@ -65,7 +89,7 @@ const Tank = React.memo(function Tank({ item }) {
           <img src={Image} alt="Logo" />
         </TankImage>
 
-        <TankChart className="tank-bar">
+        <TankChart>
           <Bar height={210} data={item?.payload || {}} options={config} />
         </TankChart>
 

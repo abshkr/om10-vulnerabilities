@@ -37,7 +37,7 @@ const BaseProduct = ({ form, value, setBase }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         // loading={isValidating}
         showSearch

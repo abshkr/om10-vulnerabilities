@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 import { Form, Select, Radio, Row, Col, Input, Button, InputNumber } from 'antd';
-import { Scrollbars } from 'react-custom-scrollbars';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 import _ from 'lodash';
@@ -104,7 +104,7 @@ const NonCombination = ({ form, value }) => {
         {!IS_DISABLED && (
           <Form.Item name="unit">
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               allowClear
               showSearch
               style={{ width: '100%', marginTop: 10 }}

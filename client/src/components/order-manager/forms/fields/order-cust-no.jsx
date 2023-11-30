@@ -13,27 +13,30 @@ const OrderCustNo = ({ form, value, supplier, pageState, digits }) => {
   const [custOrder, setCustOrder] = useState(0);
   const [existed, setExisted] = useState(false);
 
-  const { data, isValidating, revalidate } = useSWR(
-    `${ORDER_LISTINGS.CHECK_CUST_ORDER}?order_cust_no=${custOrder}`,
-    {
-      refreshInterval: 0,
-    }
-  );
+  const {
+    data,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(`${ORDER_LISTINGS.CHECK_CUST_ORDER}?order_cust_no=${custOrder}`, {
+    refreshInterval: 0,
+  });
 
   const onChange = (v) => {
     setExisted(false);
     setCustOrder(v);
     revalidate();
-  }
+  };
 
   const validate = (rule, input) => {
     if (input === '' || !input) {
       return Promise.reject(`${t('validate.set')} ─ ${t('fields.orderCustNo')}`);
     }
-    
+
     const len = new TextEncoder().encode(input).length;
     if (input && len > digits) {
-      return Promise.reject(`${t('placeholder.maxCharacters')}: ${digits} ─ ${t('descriptions.maxCharacters')}`);
+      return Promise.reject(
+        `${t('placeholder.maxCharacters')}: ${digits} ─ ${t('descriptions.maxCharacters')}`
+      );
     }
 
     if (existed && !value) {
@@ -67,7 +70,7 @@ const OrderCustNo = ({ form, value, supplier, pageState, digits }) => {
 
   useEffect(() => {
     if (data) {
-      setExisted(!(data?.records[0]?.is_valid));
+      setExisted(!data?.records[0]?.is_valid);
     }
   }, [data]);
 
@@ -80,17 +83,17 @@ const OrderCustNo = ({ form, value, supplier, pageState, digits }) => {
   const status = validatorStatus(isValidating, existed);
 
   return (
-    <Form.Item 
-      name="order_cust_no" 
+    <Form.Item
+      name="order_cust_no"
       label={t('fields.orderCustNo')}
       rules={[{ required: true, validator: validate }]}
       hasFeedback
       validateStatus={custOrder ? status : null}
       shouldUpdate
     >
-      <InputNumber 
-        style={{ width: '100%' }} 
-        //disabled={!supplier} 
+      <InputNumber
+        style={{ width: '100%' }}
+        //disabled={!supplier}
         disabled={true}
         onChange={onChange}
       />

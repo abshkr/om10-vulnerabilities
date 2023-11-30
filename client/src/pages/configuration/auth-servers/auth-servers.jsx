@@ -10,7 +10,7 @@ import columns from './columns';
 import { AUTH_SERVERS } from 'api';
 
 const AuthServers = ({ handleFormState, visible, selected, access }) => {
-  const { data: payload, isValidating, revalidate } = useSWR(AUTH_SERVERS.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(AUTH_SERVERS.READ);
 
   const { t } = useTranslation();
 

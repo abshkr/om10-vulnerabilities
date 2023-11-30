@@ -67,7 +67,7 @@ const TerminalList = ({ value, listOptions, itemCode, itemTitle, itemRequired, i
   return (
     <Select
       showSearch
-      dropdownMatchSelectWidth={false}
+      popupMatchSelectWidth={false}
       allowClear
       defaultValue={value}
       disabled={itemDisabled === undefined ? false : itemDisabled}

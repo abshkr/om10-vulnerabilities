@@ -66,7 +66,7 @@ const SiteAxleLimitTypes = () => {
   return (
     <Tooltip placement="topRight" title={t('descriptions.siteAxleLimitType')}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         disabled={false}

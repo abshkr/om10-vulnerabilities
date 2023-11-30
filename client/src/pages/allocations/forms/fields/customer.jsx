@@ -74,7 +74,7 @@ const Customer = ({ form, value, onChange, supplier, owner, baseFlag }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidatingCompany || isValidatingAccount}
         disabled={!!value || !supplier}

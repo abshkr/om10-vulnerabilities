@@ -47,7 +47,7 @@ const Tanker = ({ form, value, carrier, onChange, pageState }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

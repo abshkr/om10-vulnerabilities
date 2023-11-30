@@ -127,7 +127,7 @@ const Fields = ({ value, units, revalidate, data }) => {
 
           <Form.Item name="aiprd_produnit" label={t('fields.unit')}>
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               allowClear
               loading={!units}
               showSearch
@@ -194,7 +194,11 @@ const Period = ({ selected, setVisibility, visible }) => {
 
   const SHOULD_FETCH = !!selected;
 
-  const { data, isValidating, revalidate } = useSWR(
+  const {
+    data,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(
     SHOULD_FETCH
       ? `${ALLOCATIONS.PERIOD_READ}?aiprd_type=${selected?.aitem_type}&aiprd_cmpycode=${selected?.aitem_cmpycode}&aiprd_prodcode=${selected?.aitem_prodcode}&aiprd_suppcode=${selected?.aitem_suppcode}`
       : null
@@ -233,11 +237,11 @@ const Period = ({ selected, setVisibility, visible }) => {
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       width="33vw"
       onClose={() => setVisibility(false)}
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button

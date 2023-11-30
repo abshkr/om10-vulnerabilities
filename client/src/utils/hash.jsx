@@ -1,5 +1,5 @@
 import { md, util } from 'node-forge';
-import Blowfish from 'egoroof-blowfish';
+import { Blowfish } from 'egoroof-blowfish';
 
 const hexToArray = (hex) => {
   hex = hex.replace(/\s|:/gm, '');

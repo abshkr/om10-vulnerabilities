@@ -34,7 +34,7 @@ const AdditionalHostData = ({ value }) => {
     ? `${LOAD_SCHEDULES.HOST_DATA}?supplier=${value.supplier_code}&trip_no=${value?.shls_trip_no}`
     : null;
 
-  const { data: payload, revalidate } = useSWR(url);
+  const { data: payload, mutate: revalidate } = useSWR(url);
   const { data: types, isValidating } = useSWR(LOAD_SCHEDULES.HOST_DATA_TYPES);
 
   const { t } = useTranslation();
@@ -205,10 +205,10 @@ const AdditionalHostData = ({ value }) => {
       />
 
       <Drawer
-        bodyStyle={{ paddingTop: 5 }}
+        styles={{ body: { paddingTop: 5 } }}
         width="33vw"
         onClose={() => handleFormState(false, null)}
-        visible={visible}
+        open={visible}
         footer={
           <>
             <Button
@@ -251,7 +251,7 @@ const AdditionalHostData = ({ value }) => {
                 rules={[{ required: true, validator: validateList }]}
               >
                 <Select
-                  dropdownMatchSelectWidth={false}
+                  popupMatchSelectWidth={false}
                   allowClear
                   loading={isValidating}
                   showSearch

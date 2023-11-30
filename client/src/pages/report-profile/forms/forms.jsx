@@ -31,7 +31,11 @@ const ProfileForm = ({ value, visible, handleFormState, access, setFilterValue }
   const [form] = Form.useForm();
   const { setFieldsValue } = form;
 
-  const { data: payload, isValidating, revalidate } = useSWR(
+  const {
+    data: payload,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(
     reports_closeout_job && value ? `${REPORT_PROFILE.CLOSEOUT_JOBS}?rpt_file=${value?.report_file}` : null
   );
 
@@ -183,7 +187,7 @@ const ProfileForm = ({ value, visible, handleFormState, access, setFilterValue }
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
@@ -191,7 +195,7 @@ const ProfileForm = ({ value, visible, handleFormState, access, setFilterValue }
       mask={IS_CREATING}
       placement="right"
       width="50vw"
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button

@@ -33,7 +33,7 @@ const Hazchem = ({ form, value }) => {
   return (
     <Form.Item name="prod_hazid" label={t('fields.prodHazid')} rules={[{ validator: validate }]}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

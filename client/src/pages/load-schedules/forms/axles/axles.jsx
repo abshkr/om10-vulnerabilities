@@ -21,7 +21,7 @@ const Axles = ({ value }) => {
     ? `${TRIP_AXLES.READ}?supplier_code=${value.supplier_code}&shls_trip_no=${value?.shls_trip_no}`
     : null;
 
-  const { data: payload, revalidate } = useSWR(url);
+  const { data: payload, mutate: revalidate } = useSWR(url);
 
   const { t } = useTranslation();
 
@@ -237,10 +237,10 @@ const Axles = ({ value }) => {
       />
 
       <Drawer
-        bodyStyle={{ paddingTop: 5 }}
+        styles={{ body: { paddingTop: 5 } }}
         width="33vw"
         onClose={() => handleFormState(false, null)}
-        visible={visible}
+        open={visible}
         footer={
           <>
             <Button

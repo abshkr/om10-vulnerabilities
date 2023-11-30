@@ -19,8 +19,8 @@ const TripSeals = ({ value, onClose }) => {
 
   const { t } = useTranslation();
 
-  const { data: payload, revalidate: refreshSeals } = useSWR(url);
-  const { data: nextSeal, revalidate: refreshNextSeal } = useSWR(LOAD_SCHEDULES.NEXT_SEAL);
+  const { data: payload, mutate: refreshSeals } = useSWR(url);
+  const { data: nextSeal, mutate: refreshNextSeal } = useSWR(LOAD_SCHEDULES.NEXT_SEAL);
 
   const [next, setNext] = useState(null);
   const [selected, setSelected] = useState(null);

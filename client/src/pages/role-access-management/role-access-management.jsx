@@ -23,7 +23,7 @@ const RoleAccessManagement = () => {
 
   const access = useAuth('M_ROLEACCESS');
 
-  const { data: payload, isValidating, revalidate } = useSWR(ROLE_ACCESS_MANAGEMENT.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(ROLE_ACCESS_MANAGEMENT.READ);
 
   const fields = columns(t);
   // const data = payload?.records;
@@ -37,7 +37,7 @@ const RoleAccessManagement = () => {
     if (payload?.records) {
       _.forEach(payload?.records, (o) => {
         o.role_note_org = o.role_note;
-        o.role_note = o.role_id<10 ? t('fields.roleDefault') : o.role_note;
+        o.role_note = o.role_id < 10 ? t('fields.roleDefault') : o.role_note;
       });
 
       setData(payload?.records);

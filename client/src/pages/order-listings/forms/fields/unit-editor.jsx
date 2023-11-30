@@ -41,11 +41,11 @@ export default class UnitEditor extends Component {
 
     return (
       <div style={{ display: 'flex' }}>
-        <Select 
-          dropdownMatchSelectWidth={false}
-          value={this.state.value} 
-          style={{ width: '100%' }} 
-          onChange={this.onClick} 
+        <Select
+          popupMatchSelectWidth={false}
+          value={this.state.value}
+          style={{ width: '100%' }}
+          onChange={this.onClick}
           bordered={false}
         >
           {values?.map((item) => (

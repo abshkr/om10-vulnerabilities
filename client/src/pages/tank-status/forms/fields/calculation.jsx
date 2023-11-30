@@ -59,7 +59,7 @@ const Calculation = ({ form, value, range, envrionment }) => {
   const temperaturePostfix = (
     <Form.Item name="tank_temp_unit" noStyle>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         defaultValue={envrionment?.SITE_TEMPERATURE_UNIT || 'degC'}
         onChange={handleTemperature}
       >

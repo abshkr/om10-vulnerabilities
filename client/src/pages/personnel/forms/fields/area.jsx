@@ -28,7 +28,7 @@ const Area = ({ form, value, onAreaChange }) => {
   return (
     <Form.Item name="perl_ara" label={t('fields.areaName')}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

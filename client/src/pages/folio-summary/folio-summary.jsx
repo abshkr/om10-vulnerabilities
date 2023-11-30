@@ -85,8 +85,8 @@ const FolioSummary = () => {
   const url = !pagingFlag && siteUseDownloader ? null : mainUrl + `&start_num=${take}&end_num=${offset}`;
   const pageUrl = mainUrl.replace('pgflag=N', 'pgflag=Y');
 
-  // const { data: payload, isValidating, revalidate } = useSWR(FOLIO_SUMMARY.READ);
-  const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
+  // const { data: payload, isValidating, mutate: revalidate } = useSWR(FOLIO_SUMMARY.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(url, { revalidateOnFocus: false });
 
   const access = useAuth('M_FOLIOMANAGEMENT');
 
@@ -257,7 +257,7 @@ const FolioSummary = () => {
       />
 
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         defaultValue={
           filterDateType === 'CHANGE'
             ? 'LAST_CHG_TIME'

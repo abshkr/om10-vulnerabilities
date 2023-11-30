@@ -40,7 +40,7 @@ import transform from './transform';
 const { TabPane } = Tabs;
 
 const Tanks = () => {
-  const { data: read, revalidate, isValidating } = useSWR(TANKS.READ);
+  const { data: read, mutate: revalidate, isValidating } = useSWR(TANKS.READ);
   const { t } = useTranslation();
 
   const location = useLocation();
@@ -311,14 +311,14 @@ const Tanks = () => {
       )}
       {atgFieldOpen && (
         <Drawer
-          bodyStyle={{ paddingTop: 5 }}
+          styles={{ body: { paddingTop: 5 } }}
           onClose={() => setAtgFieldOpen(false)}
           maskClosable={false}
           destroyOnClose={true}
           mask={false}
           placement="right"
           width={'60vw'}
-          visible={atgFieldOpen}
+          open={atgFieldOpen}
           footer={
             <>
               <Button

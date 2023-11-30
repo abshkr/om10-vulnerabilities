@@ -147,7 +147,7 @@ const Compartments = ({ form, value, eqptType, onChange, config }) => {
     return (
       <Form.Item name="compartments">
         <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           allowClear
           placeholder={t('placeholder.selectPlease')}
           style={{ marginBottom: 10, marginTop: 10 }}

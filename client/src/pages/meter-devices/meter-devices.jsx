@@ -21,7 +21,7 @@ const MeterDevices = () => {
 
   const access = useAuth('M_METERINGDEVICES');
 
-  const { data: payload, isValidating, revalidate } = useSWR(METER_DEVICES.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(METER_DEVICES.READ);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);

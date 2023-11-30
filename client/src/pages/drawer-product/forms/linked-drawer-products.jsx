@@ -12,19 +12,19 @@ const LinkedDrawerProducts = ({ value, form }) => {
 
   const [products, setProducts] = useState([]);
   const [drawer, setDrawer] = useState(value?.prod_2nd_drawer);
-  const [flag, setFlag] = useState(value?.prod_check_2nd_drawer)
+  const [flag, setFlag] = useState(value?.prod_check_2nd_drawer);
   const { setFieldsValue } = form;
 
   const { data: drawers, isValidating } = useSWR(DRAWER_PRODUCTS.DRAWERS);
 
   useEffect(() => {
     api
-    .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
-      params: {
-        drawer_code: drawer,
-      },
-    })
-    .then((res) => setProducts(res.data.records));
+      .get(LOAD_SCHEDULES.DRAWER_PRODUCTS, {
+        params: {
+          drawer_code: drawer,
+        },
+      })
+      .then((res) => setProducts(res.data.records));
   }, [drawer, setProducts]);
 
   useEffect(() => {
@@ -37,15 +37,14 @@ const LinkedDrawerProducts = ({ value, form }) => {
       setFlag(value.prod_check_2nd_drawer);
       setDrawer(value.prod_2nd_drawer);
     }
-    
   }, [value, setFieldsValue, setFlag, setDrawer]);
 
-  const onCheck = v => {
-    setFlag(v.target.checked)
+  const onCheck = (v) => {
+    setFlag(v.target.checked);
     setFieldsValue({
       prod_check_2nd_drawer: v.target.checked,
     });
-  }
+  };
 
   const handleDrawerChange = (value) => {
     setDrawer(value);
@@ -58,18 +57,14 @@ const LinkedDrawerProducts = ({ value, form }) => {
     <>
       <Row gutter={[8, 2]}>
         <Col span={8}>
-          <Form.Item name="prod_check_2nd_drawer" label={t('fields.prodCheck2ndDrawer2')} >
-            <Checkbox 
-              checked={flag} 
-              onChange={onCheck}
-              disabled={false}
-            ></Checkbox>
+          <Form.Item name="prod_check_2nd_drawer" label={t('fields.prodCheck2ndDrawer2')}>
+            <Checkbox checked={flag} onChange={onCheck} disabled={false}></Checkbox>
           </Form.Item>
         </Col>
         <Col span={8}>
           <Form.Item name="prod_2nd_drawer" label={t('fields.prod2ndDrawer2')}>
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               loading={isValidating}
               disabled={!flag}
               showSearch
@@ -90,9 +85,9 @@ const LinkedDrawerProducts = ({ value, form }) => {
           </Form.Item>
         </Col>
         <Col span={8}>
-        <Form.Item name="prod_2nd_product" label={t('fields.prod2ndProduct2')}>
+          <Form.Item name="prod_2nd_product" label={t('fields.prod2ndProduct2')}>
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               loading={isValidating}
               disabled={!flag || !drawer}
               showSearch
@@ -113,7 +108,6 @@ const LinkedDrawerProducts = ({ value, form }) => {
         </Col>
       </Row>
     </>
-
   );
 };
 

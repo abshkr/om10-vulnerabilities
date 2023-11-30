@@ -4,7 +4,7 @@ import { Button, List, Select, Input, Modal, Card, Tag } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import { Scrollbars } from 'react-custom-scrollbars';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 
 import { BASE_PRODUCTS } from 'api';
 
@@ -39,7 +39,7 @@ const BaseColors = ({ onClose }) => {
     <>
       <div style={{ marginBottom: 5 }}>
         <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           allowClear
           loading={isValidatingCat}
           showSearch

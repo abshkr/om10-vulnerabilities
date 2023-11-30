@@ -151,7 +151,7 @@ const PartnerForm = ({ value, visible, handleFormState, access }) => {
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={onFormClosed}
       maskClosable={IS_CREATING}
@@ -159,7 +159,7 @@ const PartnerForm = ({ value, visible, handleFormState, access }) => {
       mask={IS_CREATING}
       placement="right"
       width="40vw"
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button

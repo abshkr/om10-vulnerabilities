@@ -121,7 +121,7 @@ const Source = ({ form, value, base, setBase, setType }) => {
           rules={[{ required: true, validator: validateType }]}
         >
           <Select
-            dropdownMatchSelectWidth={false}
+            popupMatchSelectWidth={false}
             allowClear
             loading={isLoading}
             showSearch
@@ -149,7 +149,7 @@ const Source = ({ form, value, base, setBase, setType }) => {
           rules={[{ required: source === '3', validator: validateBase }]}
         >
           <Select
-            dropdownMatchSelectWidth={false}
+            popupMatchSelectWidth={false}
             allowClear
             loading={basesLoading}
             showSearch
@@ -189,7 +189,7 @@ const Source = ({ form, value, base, setBase, setType }) => {
         >
           {source === '3' ? (
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               allowClear
               loading={isLoading}
               showSearch

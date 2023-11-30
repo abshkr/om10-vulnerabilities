@@ -12,15 +12,12 @@ const Terminal = ({ value, onChange }) => {
   const { data: options, isValidating } = useSWR(SITE_CONFIGURATION.TERMINALS);
 
   return (
-    <Form.Item
-      name="terminal"
-      label={t('fields.terminal')}
-    >
+    <Form.Item name="terminal" label={t('fields.terminal')}>
       <Select
         loading={isValidating}
         showSearch
         allowClear
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         onChange={onChange}
         disabled={!!value}
         optionFilterProp="children"

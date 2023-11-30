@@ -223,7 +223,7 @@ const FormModal = ({
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={onFormClosed}
       maskClosable={IS_CREATING}
@@ -231,7 +231,7 @@ const FormModal = ({
       mask={IS_CREATING}
       placement="right"
       width={drawerWidth}
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button

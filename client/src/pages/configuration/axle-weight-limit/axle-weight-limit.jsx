@@ -11,7 +11,7 @@ import columns from './columns';
 import { AXLE_WEIGHTS } from 'api';
 
 const AxleWeightLimit = ({ handleFormState, visible, selected, access }) => {
-  const { data: payload, isValidating, revalidate } = useSWR(AXLE_WEIGHTS.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(AXLE_WEIGHTS.READ);
 
   const { t } = useTranslation();
 

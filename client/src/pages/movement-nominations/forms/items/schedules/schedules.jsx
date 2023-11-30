@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { SyncOutlined, PlusOutlined, FileSearchOutlined } from '@ant-design/icons';
 
-import { DataTable, Download, PageDownloader, PageExporter, WindowSearch, WindowSearchForm } from '../../../../../components';
+import {
+  DataTable,
+  Download,
+  PageDownloader,
+  PageExporter,
+  WindowSearch,
+  WindowSearchForm,
+} from '../../../../../components';
 import { useTranslation } from 'react-i18next';
 import { MOVEMENT_NOMIATIONS, MOVEMENT_SCHEDULES } from '../../../../../api';
 import useSWR from 'swr';
-import { Button, Tabs, notification,Space } from 'antd';
+import { Button, Tabs, notification, Space } from 'antd';
 import columns from './columns';
 import { useAuth, useConfig } from '../../../../../hooks';
 import usePagination from 'hooks/use-pagination';
@@ -35,12 +42,13 @@ const Schedules = ({ selected, cbFunction, closeForm }) => {
 
   const { t } = useTranslation();
   const access = useAuth('M_LOADSCHEDULES');
-  
+
   const { setCount, take, offset, paginator, setPage, count } = usePagination(200);
 
-  const [mainUrl, setMainUrl] = useState(selected
-    ? `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&mvitm_item_id=${selected?.mvitm_item_id}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}`
-    : `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}`
+  const [mainUrl, setMainUrl] = useState(
+    selected
+      ? `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&mvitm_item_id=${selected?.mvitm_item_id}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}`
+      : `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}`
   );
   const baseUrl = mainUrl;
   const url = mainUrl + `&start_num=${take}&end_num=${offset}`;
@@ -52,7 +60,7 @@ const Schedules = ({ selected, cbFunction, closeForm }) => {
   //   ? `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&mvitm_item_id=${selected?.mvitm_item_id}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}&start_num=${take}&end_num=${offset}`
   //   : `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}&start_num=${take}&end_num=${offset}`;
 
-  const { data: payload, isValidating, revalidate } = useSWR(url);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(url);
 
   const [data, setData] = useState(payload?.records);
   const isLoading = isValidating || !data;
@@ -80,15 +88,18 @@ const Schedules = ({ selected, cbFunction, closeForm }) => {
     setTerminalCode('');
     setTankerCode('');
     setTripStatus('');
-    
+
     // const tempUrl = (selected
     //   ? `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&mvitm_item_id=${selected?.mvitm_item_id}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}`
     //   : `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}`
     // );
-    const tempUrl = (selected
-      ? `${MOVEMENT_SCHEDULES.READ}?mv_key=${selected?.mvitm_key}&mvitm_item_id=${selected?.mvitm_item_id}&shls_trip_no=${''}&supplier_code=${''}&carrier_code=${''}&shls_terminal=${''}&tnkr_code=${''}&status=${''}`
-      : `${MOVEMENT_SCHEDULES.READ}?mv_key=${''}&shls_trip_no=${''}&supplier_code=${''}&carrier_code=${''}&shls_terminal=${''}&tnkr_code=${''}&status=${''}`
-    );
+    const tempUrl = selected
+      ? `${MOVEMENT_SCHEDULES.READ}?mv_key=${selected?.mvitm_key}&mvitm_item_id=${
+          selected?.mvitm_item_id
+        }&shls_trip_no=${''}&supplier_code=${''}&carrier_code=${''}&shls_terminal=${''}&tnkr_code=${''}&status=${''}`
+      : `${
+          MOVEMENT_SCHEDULES.READ
+        }?mv_key=${''}&shls_trip_no=${''}&supplier_code=${''}&carrier_code=${''}&shls_terminal=${''}&tnkr_code=${''}&status=${''}`;
     setMainUrl(tempUrl);
 
     setPage(1);
@@ -116,25 +127,23 @@ const Schedules = ({ selected, cbFunction, closeForm }) => {
     setTerminalCode(!values.terminal ? '' : values.terminal);
     setTankerCode(!values.tnkr_code ? '' : values.tnkr_code);
     setTripStatus(!values.trip_status ? '' : values.trip_status);
-    
+
     // useState variables may be async, so use local variables here.
-    const movKey = (selected ? selected?.mvitm_key : !values.mv_key ? '' : values.mv_key);
-    const tripNumber = (!values.shls_trip_no ? '' : values.shls_trip_no);
-    const supplierCode = (!values.supplier_code ? '' : values.supplier_code);
-    const carrierCode = (!values.carrier_code ? '' : values.carrier_code);
-    const terminalCode = (!values.terminal ? '' : values.terminal);
-    const tankerCode = (!values.tnkr_code ? '' : values.tnkr_code);
-    const tripStatus = (!values.trip_status ? '' : values.trip_status);
-    const tempUrl = (selected
+    const movKey = selected ? selected?.mvitm_key : !values.mv_key ? '' : values.mv_key;
+    const tripNumber = !values.shls_trip_no ? '' : values.shls_trip_no;
+    const supplierCode = !values.supplier_code ? '' : values.supplier_code;
+    const carrierCode = !values.carrier_code ? '' : values.carrier_code;
+    const terminalCode = !values.terminal ? '' : values.terminal;
+    const tankerCode = !values.tnkr_code ? '' : values.tnkr_code;
+    const tripStatus = !values.trip_status ? '' : values.trip_status;
+    const tempUrl = selected
       ? `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&mvitm_item_id=${selected?.mvitm_item_id}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}`
-      : `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}`
-    );
+      : `${MOVEMENT_SCHEDULES.READ}?mv_key=${movKey}&shls_trip_no=${tripNumber}&supplier_code=${supplierCode}&carrier_code=${carrierCode}&shls_terminal=${terminalCode}&tnkr_code=${tankerCode}&status=${tripStatus}`;
     setMainUrl(tempUrl);
 
     setPage(1);
     if (revalidate) revalidate();
     setSearching(false);
-
   };
 
   useEffect(() => {
@@ -152,36 +161,46 @@ const Schedules = ({ selected, cbFunction, closeForm }) => {
         {t('operations.refresh')}
       </Button>
 
-      {!pagingFlag && (
-        <Download data={data} isLoading={isLoading} columns={fields} />
-      )}
-      
+      {!pagingFlag && <Download data={data} isLoading={isLoading} columns={fields} />}
+
       {pagingFlag && (
         // <PageExporter baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} columns={fields} />
-        <PageDownloader baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} pageSize={500} columns={fields} />
+        <PageDownloader
+          baseUrl={baseUrl}
+          startVar={'start_num'}
+          endVar={'end_num'}
+          pageSize={500}
+          columns={fields}
+        />
       )}
 
       <Button
         type="primary"
         icon={<FileSearchOutlined />}
         onClick={() =>
-          WindowSearchForm(setSearch, t('operations.search'), {
-            terminal: true,
-            mv_key: !selected ? true : false,
-            shls_trip_no: true,
-            supplier_code: true,
-            trip_status: true,
-            tnkr_code: true,
-            carrier_code: true,
-          }, {
-            terminal: terminalCode,
-            mv_key: movKey,
-            shls_trip_no: tripNumber,
-            supplier_code: supplierCode,
-            trip_status: tripStatus,
-            tnkr_code: tankerCode,
-            carrier_code: carrierCode,
-          }, false)
+          WindowSearchForm(
+            setSearch,
+            t('operations.search'),
+            {
+              terminal: true,
+              mv_key: !selected ? true : false,
+              shls_trip_no: true,
+              supplier_code: true,
+              trip_status: true,
+              tnkr_code: true,
+              carrier_code: true,
+            },
+            {
+              terminal: terminalCode,
+              mv_key: movKey,
+              shls_trip_no: tripNumber,
+              supplier_code: supplierCode,
+              trip_status: tripStatus,
+              tnkr_code: tankerCode,
+              carrier_code: carrierCode,
+            },
+            false
+          )
         }
       >
         {t('operations.search')}
@@ -213,7 +232,7 @@ const Schedules = ({ selected, cbFunction, closeForm }) => {
               marginTop: 10,
             }}
           >
-            {pagingFlag ? paginator : t('fields.totalCount') + ': ' + count }
+            {pagingFlag ? paginator : t('fields.totalCount') + ': ' + count}
           </div>
         </Tabs.TabPane>
       </Tabs>

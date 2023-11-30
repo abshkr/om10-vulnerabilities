@@ -38,7 +38,7 @@ const OrderStatus = ({ form, value, pageState }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         disabled={true}

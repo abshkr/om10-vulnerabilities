@@ -32,7 +32,7 @@ const Drawer = ({ form, value, config }) => {
   return (
     <Form.Item name="kya_drawer" label={t('fields.drawer')} rules={[{ required: true, validator: validate }]}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         allowClear

@@ -36,7 +36,7 @@ const EquipmentTypes = () => {
     parentEqpt && parentEqpt?.length > 0 && !_.isNaN(_.toNumber(parentEqpt))
       ? `${EQUIPMENT_TYPES.READ}?etyp_id=${parentEqpt}`
       : `${EQUIPMENT_TYPES.READ}`;
-  const { data: payload, isValidating, revalidate } = useSWR(url);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(url);
 
   const handleFormState = (visibility, value) => {
     if (visibility && !value) {

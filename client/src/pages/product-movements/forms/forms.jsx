@@ -368,7 +368,7 @@ const FormModal = ({
 
   return IS_CREATING || value?.pmv_status === '0' ? (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
@@ -376,7 +376,7 @@ const FormModal = ({
       mask={maskFlag}
       placement="right"
       width="50vw"
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button
@@ -510,7 +510,7 @@ const FormModal = ({
     //Modify/View
     <React.Fragment>
       <Drawer
-        bodyStyle={{ paddingTop: 5 }}
+        styles={{ body: { paddingTop: 5 } }}
         forceRender
         onClose={() => handleFormState(false, null)}
         maskClosable={IS_CREATING}
@@ -518,7 +518,7 @@ const FormModal = ({
         mask={maskFlag}
         placement="right"
         width="50vw"
-        visible={visible}
+        open={visible}
         footer={
           <>
             <Button

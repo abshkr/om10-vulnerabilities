@@ -12,3 +12,4 @@ export const DEVICE_TYPES = '/api/pages/bay_configuration/device_types.php';
 export const BAY_LOAD_OPTIONS = '/api/pages/bay_configuration/bay_load_options.php';
 
 export const UPDATE_BAY = '/api/pages/bay_configuration/update_bay.php';
+export const DELETE_BAY = '/api/pages/bay_configuration/delete_bay.php';

@@ -21,7 +21,7 @@ const Partners = () => {
   const [selected, setSelected] = useState(null);
   const [filterValue, setFilterValue] = useState('');
 
-  const { data: payload, isValidating, revalidate } = useSWR(PARTNERS.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(PARTNERS.READ);
 
   const fields = columns(t);
   const data = payload?.records;

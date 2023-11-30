@@ -21,7 +21,7 @@ const Personnel = () => {
 
   const access = useAuth('M_PERSONNEL');
 
-  const { data: payload, isValidating, revalidate } = useSWR(PERSONNEL.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(PERSONNEL.READ);
   const { data: expiryTypes } = useSWR(PERSONNEL.EXPIRY_TYPES);
 
   const [fields, setFields] = useState(columns(expiryTypes?.records, t, expiryDateMode));

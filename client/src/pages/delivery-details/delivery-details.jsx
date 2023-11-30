@@ -4,7 +4,7 @@ import useSWR from 'swr';
 import { Button, Drawer, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons';
-import _ from  'lodash';
+import _ from 'lodash';
 
 import { Page, DataTable, Download } from '../../components';
 import { DELIVERY_DETAILS } from '../../api';
@@ -15,7 +15,6 @@ import Forms from './forms';
 import DeliveryBolTemplates from './forms/dlv-bol-templates/delivery-bol-templates';
 
 const DeliveryDetails = ({ access, params }) => {
-
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [pageState, setPageState] = useState('view');
@@ -32,10 +31,11 @@ const DeliveryDetails = ({ access, params }) => {
 
   const { data: loadTypes } = useSWR(DELIVERY_DETAILS.LOAD_TYPES);
 
-  const url = supplier && loadNumber && loadType
-    ? `${DELIVERY_DETAILS.READ}?dd_supp_code=${supplier}&dd_tripord_no=${loadNumber}&dd_ld_type=${loadType}`
-    : null;
-  const { data: payload, isValidating, revalidate } = useSWR(url);
+  const url =
+    supplier && loadNumber && loadType
+      ? `${DELIVERY_DETAILS.READ}?dd_supp_code=${supplier}&dd_tripord_no=${loadNumber}&dd_ld_type=${loadType}`
+      : null;
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(url);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -68,19 +68,28 @@ const DeliveryDetails = ({ access, params }) => {
       setLoadNumber(params?.dd_tripord_no);
       setLoadType(params?.dd_ld_type);
       if (suppliers) {
-        const item = _.find(suppliers?.records, (o) => (o.cmpy_code === params?.dd_supp_code));
+        const item = _.find(suppliers?.records, (o) => o.cmpy_code === params?.dd_supp_code);
         if (item !== undefined) {
           setSupplierName(item.cmpy_name);
         }
       }
       if (loadTypes) {
-        const item = _.find(loadTypes?.records, (o) => (o.load_type_id === params?.dd_ld_type));
+        const item = _.find(loadTypes?.records, (o) => o.load_type_id === params?.dd_ld_type);
         if (item !== undefined) {
           setLoadTypeName(item.load_type_name);
         }
       }
     }
-  }, [params, setSupplier, setLoadNumber, setLoadType, suppliers, loadTypes, setSupplierName, setLoadTypeName]);
+  }, [
+    params,
+    setSupplier,
+    setLoadNumber,
+    setLoadType,
+    suppliers,
+    loadTypes,
+    setSupplierName,
+    setLoadTypeName,
+  ]);
 
   const modifiers = (
     <>
@@ -90,10 +99,7 @@ const DeliveryDetails = ({ access, params }) => {
 
       <Download data={data} isLoading={isLoading} columns={fields} />
 
-      <Tooltip 
-        placement="topLeft" 
-        title={t('tabColumns.delvBolTemplate')}
-      >
+      <Tooltip placement="topLeft" title={t('tabColumns.delvBolTemplate')}>
         <Button
           type="primary"
           icon={<EditOutlined />}
@@ -109,9 +115,9 @@ const DeliveryDetails = ({ access, params }) => {
         <Drawer
           title={t('tabColumns.delvBolTemplate')}
           placement="right"
-          bodyStyle={{ paddingTop: 40, paddingRight: 30 }}
+          styles={{ body: { paddingTop: 40, paddingRight: 30 } }}
           onClose={() => setDelvBolVisible(false)}
-          visible={delvBolVisible}
+          open={delvBolVisible}
           width="60vw"
         >
           <DeliveryBolTemplates

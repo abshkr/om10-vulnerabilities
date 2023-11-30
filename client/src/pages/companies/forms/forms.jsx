@@ -28,7 +28,7 @@ import {
 // import 'antd/dist/antd.css';
 import { useTranslation } from 'react-i18next';
 import { mutate } from 'swr';
-import { Scrollbars } from 'react-custom-scrollbars';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 
 import api, { COMPANIES, ROLE_ACCESS_MANAGEMENT } from '../../../api';
 import { InputNumber, NumericInput } from '../../../components';
@@ -630,7 +630,7 @@ const FormModal = ({
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={() => onExitClicked()}
       maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
@@ -638,7 +638,7 @@ const FormModal = ({
       mask={config?.siteFormCloseAlert ? true : IS_CREATING}
       placement="right"
       width="60vw"
-      visible={visible}
+      open={visible}
       footer={
         <>
           {!IS_CREATING && (
@@ -753,7 +753,7 @@ const FormModal = ({
             />
             <Form.Item name="cmpy_addr" label={t('fields.address')}>
               <Select
-                dropdownMatchSelectWidth={false}
+                popupMatchSelectWidth={false}
                 allowClear
                 loading={isValidating}
                 // onChange={onChange}

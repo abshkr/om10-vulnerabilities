@@ -18,7 +18,7 @@ const NominationSource = ({ value, onChange }) => {
         loading={isValidating}
         showSearch
         allowClear
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         onChange={onChange}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectNominationSource') : null}

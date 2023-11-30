@@ -38,7 +38,7 @@ const PhysicalType = ({ form, value, onChange }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         allowClear

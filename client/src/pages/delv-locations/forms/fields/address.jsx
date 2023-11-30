@@ -9,7 +9,7 @@ import { Form, Select } from 'antd';
 const Address = ({ form, value, reload }) => {
   const { t } = useTranslation();
 
-  const { data: options, isValidating, revalidate } = useSWR(PARTNERS.ADDRESSES);
+  const { data: options, isValidating, mutate: revalidate } = useSWR(PARTNERS.ADDRESSES);
 
   const { setFieldsValue } = form;
 
@@ -42,7 +42,7 @@ const Address = ({ form, value, reload }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

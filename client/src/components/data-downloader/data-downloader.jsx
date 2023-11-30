@@ -207,7 +207,7 @@ const DataDownloader = ({
 
       <Select
         style={{ paddingLeft: 10 }}
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         defaultValue={pageSize}
         onChange={setPageSize}
         optionFilterProp="children"

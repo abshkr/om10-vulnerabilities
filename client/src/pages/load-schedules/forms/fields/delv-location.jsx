@@ -66,7 +66,7 @@ const DeliveryLocation = ({ form, value, customer, enabled }) => {
     >
       <Select
         allowClear
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         disabled={!customer || (!value ? false : !enabled)}

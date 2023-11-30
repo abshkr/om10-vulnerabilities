@@ -12,15 +12,12 @@ const PlantSupplier = ({ value, onChange }) => {
   const { data: options, isValidating } = useSWR(SPECIAL_MOVEMENTS.PLANT_SUPPLIERS);
 
   return (
-    <Form.Item
-      name="mlitm_prodcmpy"
-      label={t('fields.plantSupplier')}
-    >
+    <Form.Item name="mlitm_prodcmpy" label={t('fields.plantSupplier')}>
       <Select
         loading={isValidating}
         showSearch
         allowClear
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         onChange={onChange}
         disabled={!!value}
         optionFilterProp="children"

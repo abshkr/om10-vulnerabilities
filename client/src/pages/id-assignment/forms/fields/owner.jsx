@@ -38,7 +38,7 @@ const Owner = ({ form, value, setOwner }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         allowClear

@@ -14,9 +14,11 @@ const Code = ({ form, value, config }) => {
   const [matched, setMatched] = useState(false);
   const { t } = useTranslation();
 
-  const { data, isValidating, revalidate } = useSWR(
-    `${EQUIPMENT_LIST.CHECK_EQPT_CODE}?eqpt_code=${eqptCode}`
-  );
+  const {
+    data,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(`${EQUIPMENT_LIST.CHECK_EQPT_CODE}?eqpt_code=${eqptCode}`);
 
   const { setFieldsValue, validateFields } = form;
 

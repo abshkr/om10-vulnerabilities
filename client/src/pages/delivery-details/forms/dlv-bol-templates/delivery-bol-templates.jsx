@@ -10,14 +10,7 @@ import api, { DELIVERY_DETAILS } from '../../../../api';
 
 import columns from './columns';
 
-const DeliveryBolTemplates = ({
-  pageState,
-  supplier,
-  loadNumber,
-  loadType,
-  supplierName,
-  loadTypeName,
-}) => {
+const DeliveryBolTemplates = ({ pageState, supplier, loadNumber, loadType, supplierName, loadTypeName }) => {
   // const [data, setData] = useState(undefined);
   const [selected, setSelected] = useState(null);
   const [tableAPI, setTableAPI] = useState(null);
@@ -37,95 +30,95 @@ const DeliveryBolTemplates = ({
   const { data: templates } = useSWR(`${DELIVERY_DETAILS.TEMPLATES}?tmpl_type=1`);
 
   const { data: payload, isValidating } = useSWR(
-    `${DELIVERY_DETAILS.DLV_BOL_TEMPLATES}?dd_supp_code=${supplier}&dd_tripord_no=${loadNumber}&dd_ld_type=${loadType}`
-    , { revalidateOnFocus: false }
+    `${DELIVERY_DETAILS.DLV_BOL_TEMPLATES}?dd_supp_code=${supplier}&dd_tripord_no=${loadNumber}&dd_ld_type=${loadType}`,
+    { revalidateOnFocus: false }
   );
 
   let data = payload?.records;
   const isLoading = isValidating || !data;
-  
+
   const onCreate = async (line) => {
     await api
-    .post(DELIVERY_DETAILS.DELV_BOL_CREATE, line)
-    .then((response) => {
-      tableAPI.updateRowData({ add: [line] });
-      setTemplateItem(undefined);
-      // revalidate();
-      // adjustPayload();
-      adjustRecords();
+      .post(DELIVERY_DETAILS.DELV_BOL_CREATE, line)
+      .then((response) => {
+        tableAPI.updateRowData({ add: [line] });
+        setTemplateItem(undefined);
+        // revalidate();
+        // adjustPayload();
+        adjustRecords();
 
-      notification.success({
-        message: t('messages.createSuccess'),
-        description: t('descriptions.createSuccess'),
-      });
-
-      setClickedIns(false);
-    })
-    .catch((errors) => {
-      adjustRecords();
-      _.forEach(errors.response.data.errors, (error) => {
-        notification.error({
-          message: error.type,
-          description: error.message,
+        notification.success({
+          message: t('messages.createSuccess'),
+          description: t('descriptions.createSuccess'),
         });
+
+        setClickedIns(false);
+      })
+      .catch((errors) => {
+        adjustRecords();
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
+        });
+        setClickedIns(false);
       });
-      setClickedIns(false);
-    });
   };
-  
+
   const onUpdate = async (line) => {
     await api
-    .post(DELIVERY_DETAILS.DELV_BOL_UPDATE, line)
-    .then((response) => {
-      tableAPI.updateRowData({ update: [line] });
-      // revalidate();
-      // adjustPayload();
-      adjustRecords();
+      .post(DELIVERY_DETAILS.DELV_BOL_UPDATE, line)
+      .then((response) => {
+        tableAPI.updateRowData({ update: [line] });
+        // revalidate();
+        // adjustPayload();
+        adjustRecords();
 
-      notification.success({
-        message: t('messages.updateSuccess'),
-        description: t('messages.updateSuccess'),
-      });
-    })
-    .catch((errors) => {
-      adjustRecords();
-      _.forEach(errors.response.data.errors, (error) => {
-        notification.error({
-          message: error.type,
-          description: error.message,
+        notification.success({
+          message: t('messages.updateSuccess'),
+          description: t('messages.updateSuccess'),
+        });
+      })
+      .catch((errors) => {
+        adjustRecords();
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
         });
       });
-    });
   };
-  
+
   const onDelete = async (line) => {
     await api
-    .post(DELIVERY_DETAILS.DELV_BOL_DELETE, line)
-    .then((response) => {
-      tableAPI.updateRowData({ remove: [line] });
-      // revalidate();
-      // adjustPayload();
-      adjustRecords();
+      .post(DELIVERY_DETAILS.DELV_BOL_DELETE, line)
+      .then((response) => {
+        tableAPI.updateRowData({ remove: [line] });
+        // revalidate();
+        // adjustPayload();
+        adjustRecords();
 
-      notification.success({
-        message: t('messages.deleteSuccess'),
-        description: t('messages.deleteSuccess'),
-      });
-
-      setClickedDel(false);
-      setClickedClr(false);
-    })
-    .catch((errors) => {
-      adjustRecords();
-      _.forEach(errors.response.data.errors, (error) => {
-        notification.error({
-          message: error.type,
-          description: error.message,
+        notification.success({
+          message: t('messages.deleteSuccess'),
+          description: t('messages.deleteSuccess'),
         });
+
+        setClickedDel(false);
+        setClickedClr(false);
+      })
+      .catch((errors) => {
+        adjustRecords();
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
+        });
+        setClickedDel(false);
+        setClickedClr(false);
       });
-      setClickedDel(false);
-      setClickedClr(false);
-    });
   };
 
   const adjustPayload = () => {
@@ -147,7 +140,7 @@ const DeliveryBolTemplates = ({
   const adjustTemplates = (templates, records) => {
     const list = [];
     _.forEach(templates, (item) => {
-      const found = _.find(records, (o) => (o.db_templ_id === item.template_code));
+      const found = _.find(records, (o) => o.db_templ_id === item.template_code);
       if (found !== undefined) {
         item.template_used = true;
       } else {
@@ -161,7 +154,7 @@ const DeliveryBolTemplates = ({
   const adjustRecords = () => {
     let size = 0;
     const payload = [];
-    
+
     tableAPI.forEachNode((rowNode, index) => {
       size = size + 1;
       payload.push(rowNode?.data);
@@ -259,14 +252,14 @@ const DeliveryBolTemplates = ({
   return (
     <>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         allowClear
         value={templateItem?.template_code}
         disabled={false}
         onChange={onClick}
-        style={{width: '50%'}}
+        style={{ width: '50%' }}
         optionFilterProp="children"
         // placeholder={!templateItem ? t('placeholder.selectBolTemplate') : null}
         placeholder={t('placeholder.selectBolTemplate')}
@@ -275,22 +268,17 @@ const DeliveryBolTemplates = ({
         }
       >
         {templateList?.map((item, index) => (
-          <Select.Option
-            key={index}
-            value={item.template_code}
-            item={item}
-            disabled={item.template_used}
-          >
+          <Select.Option key={index} value={item.template_code} item={item} disabled={item.template_used}>
             {item.template_name}
           </Select.Option>
         ))}
       </Select>
 
-      <Button 
-        type="primary" 
-        icon={<PlusOutlined />} 
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
         disabled={!templateItem || clickedIns}
-        onClick={handleItemAdd} 
+        onClick={handleItemAdd}
         style={{ marginRight: 5 }}
       >
         {t('operations.addLineItem')}

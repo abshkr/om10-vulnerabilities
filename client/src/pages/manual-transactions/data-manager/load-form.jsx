@@ -11,7 +11,7 @@ import { SETTINGS } from '../../../constants';
 import { DataTable } from '../../../components';
 import api, { MANUAL_TRANSACTIONS } from '../../../api';
 
-const LoadForm = ({onLoad, params, fields, url, height}) => {
+const LoadForm = ({ onLoad, params, fields, url, height }) => {
   const [data, setData] = useState(null);
   const [records, setRecords] = useState(null);
   const [selected, setSelected] = useState(null);
@@ -19,8 +19,11 @@ const LoadForm = ({onLoad, params, fields, url, height}) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
 
-  const { data: payload, isValidating, revalidate } = useSWR(`${MANUAL_TRANSACTIONS.READ_MT_HEAD_DATA}`, { revalidateOnFocus: true });
-
+  const {
+    data: payload,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(`${MANUAL_TRANSACTIONS.READ_MT_HEAD_DATA}`, { revalidateOnFocus: true });
 
   const onFinish = () => {
     Modal.destroyAll();
@@ -42,7 +45,7 @@ const LoadForm = ({onLoad, params, fields, url, height}) => {
         //value.gud_id = 999999999;
         //console.log("save_mt_data value", records);
         await api
-          .post(MANUAL_TRANSACTIONS.DELETE_MT_DATA, {gud_id: selected?.mt_id})
+          .post(MANUAL_TRANSACTIONS.DELETE_MT_DATA, { gud_id: selected?.mt_id })
           //.post(MANUAL_TRANSACTIONS.SAVE_MT_DATA, value)
           .then(() => {
             revalidate();
@@ -74,36 +77,43 @@ const LoadForm = ({onLoad, params, fields, url, height}) => {
     const items = [];
     _.forEach(records, (record) => {
       const item = {};
-      item.mt_id            = Number(record.gud_id);
-      item.mt_status        = record.gud_status;
-      if (record.gud_head_data !== "" && record.gud_head_data !== null && record.gud_head_data !== false ) {
+      item.mt_id = Number(record.gud_id);
+      item.mt_status = record.gud_status;
+      if (record.gud_head_data !== '' && record.gud_head_data !== null && record.gud_head_data !== false) {
         const header = JSON.parse(_.replace(record.gud_head_data, '{}', '""'));
-        item.mt_type          = (header?.TRANSACTION_TYPE == 'S') 
-                                ? t('fields.mtTypeSchedule') 
-                                : ((header?.TRANSACTION_TYPE == 'O') ? t('fields.mtTypeOrder') : '');
-        item.mt_type_code     = String(header?.TRANSACTION_TYPE);
-        item.mt_supplier      = String(header?.SUPPLIER);
-        item.mt_customer      = !header?.CUSTOMER ? '' : String(header?.CUSTOMER);
-        item.mt_trip_no       = String(header?.LOAD_NUMBER);
-        item.mt_order_no      = String(header?.ORDER_TRIP_IND);
-        item.mt_carrier       = String(header?.CARRIER);
-        item.mt_tanker        = String(header?.TANKER_CODE);
-        item.mt_driver        = String(header?.OPERATOR_CODE);
-        item.mt_tas_ref       = String(header?.TAS_REF);
+        item.mt_type =
+          header?.TRANSACTION_TYPE == 'S'
+            ? t('fields.mtTypeSchedule')
+            : header?.TRANSACTION_TYPE == 'O'
+            ? t('fields.mtTypeOrder')
+            : '';
+        item.mt_type_code = String(header?.TRANSACTION_TYPE);
+        item.mt_supplier = String(header?.SUPPLIER);
+        item.mt_customer = !header?.CUSTOMER ? '' : String(header?.CUSTOMER);
+        item.mt_trip_no = String(header?.LOAD_NUMBER);
+        item.mt_order_no = String(header?.ORDER_TRIP_IND);
+        item.mt_carrier = String(header?.CARRIER);
+        item.mt_tanker = String(header?.TANKER_CODE);
+        item.mt_driver = String(header?.OPERATOR_CODE);
+        item.mt_tas_ref = String(header?.TAS_REF);
         item.mt_user_comments = String(header?.USER_COMMENTS);
-        item.mt_datetime_st   = moment(header?.START_TIME, 'YYYY-MM-DD HH:mm:ss').format(SETTINGS.DATE_TIME_FORMAT);
-        item.mt_datetime_ed   = moment(header?.FINISH_TIME, 'YYYY-MM-DD HH:mm:ss').format(SETTINGS.DATE_TIME_FORMAT);
+        item.mt_datetime_st = moment(header?.START_TIME, 'YYYY-MM-DD HH:mm:ss').format(
+          SETTINGS.DATE_TIME_FORMAT
+        );
+        item.mt_datetime_ed = moment(header?.FINISH_TIME, 'YYYY-MM-DD HH:mm:ss').format(
+          SETTINGS.DATE_TIME_FORMAT
+        );
         //item.mt_datetime_st   = moment(header?.START_TIME).format(SETTINGS.DATE_TIME_FORMAT);
         //item.mt_datetime_ed   = moment(header?.FINISH_TIME).format(SETTINGS.DATE_TIME_FORMAT);
       }
-      item.mt_user          = record.gud_user;
-      item.mt_create_date   = record.gud_create_date;
-      item.mt_update_date   = record.gud_update_date;
+      item.mt_user = record.gud_user;
+      item.mt_create_date = record.gud_create_date;
+      item.mt_update_date = record.gud_update_date;
       items.push(item);
     });
 
     return items;
-  }
+  };
 
   useEffect(() => {
     if (payload) {
@@ -111,15 +121,23 @@ const LoadForm = ({onLoad, params, fields, url, height}) => {
       const data = prepareData(payload?.records);
       if (params?.popup) {
         if (params?.type === 'SCHEDULE') {
-          setData(_.filter(data, (item) => (
-            // item.mt_supplier === params?.supplier && item.mt_trip_no === String(params?.trip)
-            item.mt_supplier === params?.supplier && item.mt_type_code === 'S'
-          )));
+          setData(
+            _.filter(
+              data,
+              (item) =>
+                // item.mt_supplier === params?.supplier && item.mt_trip_no === String(params?.trip)
+                item.mt_supplier === params?.supplier && item.mt_type_code === 'S'
+            )
+          );
         } else {
-          setData(_.filter(data, (item) => (
-            // item.mt_supplier === params?.supplier && item.mt_order_no === String(params?.order)
-            item.mt_supplier === params?.supplier && item.mt_type_code === 'O'
-          )));
+          setData(
+            _.filter(
+              data,
+              (item) =>
+                // item.mt_supplier === params?.supplier && item.mt_order_no === String(params?.order)
+                item.mt_supplier === params?.supplier && item.mt_type_code === 'O'
+            )
+          );
         }
       } else {
         setData(data);
@@ -130,12 +148,7 @@ const LoadForm = ({onLoad, params, fields, url, height}) => {
   }, [payload, params]);
 
   return (
-    <Form 
-      layout="vertical" 
-      form={form} 
-      onFinish={onFinish} 
-      scrollToFirstError style={{marginTop: "1rem"}}
-    >
+    <Form layout="vertical" form={form} onFinish={onFinish} scrollToFirstError style={{ marginTop: '1rem' }}>
       <DataTable
         data={data}
         columns={fields}
@@ -147,8 +160,8 @@ const LoadForm = ({onLoad, params, fields, url, height}) => {
         autoColWidth
         height={height}
       />
-      
-      <div style={{marginTop: "2rem"}}>
+
+      <div style={{ marginTop: '2rem' }}>
         <Button
           htmlType="button"
           icon={<CloseOutlined />}
@@ -183,4 +196,3 @@ const LoadForm = ({onLoad, params, fields, url, height}) => {
 };
 
 export default LoadForm;
-  

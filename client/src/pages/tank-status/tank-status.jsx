@@ -16,7 +16,7 @@ import Forms from './forms';
 const TankStatus = () => {
   const { t } = useTranslation();
 
-  const { data: payload, isValidating, revalidate } = useSWR(TANK_STATUS.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(TANK_STATUS.READ);
 
   const fields = columns(t);
   const data = payload?.records;
@@ -44,11 +44,11 @@ const TankStatus = () => {
 
   return (
     <Page page={t('pageMenu.stockManagement')} name={t('pageNames.tankStatus')} modifiers={modifiers}>
-      <DataTable 
-        columns={fields} 
-        data={data} 
-        isLoading={isValidating} 
-        onClick={handleClick} 
+      <DataTable
+        columns={fields}
+        data={data}
+        isLoading={isValidating}
+        onClick={handleClick}
         components={{
           TemperatureRender: TemperatureRender,
         }}

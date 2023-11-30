@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 
 import useSWR from 'swr';
 
-import { Scrollbars } from 'react-custom-scrollbars';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 import { useTranslation } from 'react-i18next';
 import { Form, Radio, notification } from 'antd';
 import _ from 'lodash';

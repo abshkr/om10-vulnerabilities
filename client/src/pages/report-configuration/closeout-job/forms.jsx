@@ -24,9 +24,11 @@ const CloseoutJobForm = ({ value, rpt_file, rpt_cmpy, rpt_value, update, cancel 
 
   const IS_CREATING = !value;
 
-  const { data: payload, isValidating, revalidate } = useSWR(
-    rpt_file ? `${ON_DEMAND_REPORTS.FILTERS}?rpt_file=${rpt_file}` : null
-  );
+  const {
+    data: payload,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(rpt_file ? `${ON_DEMAND_REPORTS.FILTERS}?rpt_file=${rpt_file}` : null);
 
   let param_seq = 0;
   const carrier = payload?.records

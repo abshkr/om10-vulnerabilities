@@ -12,15 +12,12 @@ const OrderSupplier = ({ value, onChange }) => {
   const { data: options, isValidating } = useSWR(ORDER_LISTINGS.SUPPLIERS);
 
   return (
-    <Form.Item
-      name="order_supp_code"
-      label={t('fields.supplier')}
-    >
+    <Form.Item name="order_supp_code" label={t('fields.supplier')}>
       <Select
         loading={isValidating}
         showSearch
         allowClear
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         onChange={onChange}
         disabled={!!value}
         optionFilterProp="children"

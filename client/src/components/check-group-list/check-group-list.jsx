@@ -4,7 +4,7 @@ import { List, Checkbox, Card, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { EyeOutlined, EditOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import { Scrollbars } from 'react-custom-scrollbars';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 import { CheckGroupListContainer } from './styles';
 
 const CheckGroupList = ({ value, defaultValue, flags, listOptions, checkOptions, onChange }) => {

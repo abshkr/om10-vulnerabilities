@@ -617,7 +617,7 @@ const Calculate = ({
         <Col span={12}>
           <Form.Item name="mlitm_unit_rpt" label={t('fields.alternateUnit')}>
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               showSearch
               allowClear
               loading={isValidating}

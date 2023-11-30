@@ -14,11 +14,20 @@ const Historical = ({ t, start, end, setData, setFields, search, pagingFlag }) =
 
   const { setCount, take, offset, paginator, setPage, count } = usePagination();
 
-  const { data: payload, isValidating, revalidate } = useSWR(search || pagingFlag === undefined ? null :
-      `${JOURNAL.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${start}&end_date=${end}&start_num=${take}&end_num=${offset}${
-        sortBy ? `&sort_by=${sortBy}` : ''
-      }`, { revalidateOnFocus: false }
-    );
+  const {
+    data: payload,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(
+    search || pagingFlag === undefined
+      ? null
+      : `${JOURNAL.READ}?pgflag=${
+          pagingFlag ? 'Y' : 'N'
+        }&start_date=${start}&end_date=${end}&start_num=${take}&end_num=${offset}${
+          sortBy ? `&sort_by=${sortBy}` : ''
+        }`,
+    { revalidateOnFocus: false }
+  );
 
   const fields = columns(t);
 
@@ -33,7 +42,7 @@ const Historical = ({ t, start, end, setData, setFields, search, pagingFlag }) =
         setCount(res?.data?.count || res?.data?.records?.length);
         setLocalData(res.data.records);
         setData(res.data.records);
-        setPage(1)
+        setPage(1);
       });
   };
 
@@ -71,7 +80,7 @@ const Historical = ({ t, start, end, setData, setFields, search, pagingFlag }) =
           marginTop: 10,
         }}
       >
-        {pagingFlag && !search ? paginator : t('fields.totalCount') + ': ' + count }
+        {pagingFlag && !search ? paginator : t('fields.totalCount') + ': ' + count}
       </div>
     </>
   );

@@ -118,8 +118,8 @@ const MovementNominations = () => {
       ? `${MOVEMENT_NOMIATIONS.READ}?start_date=${useSearch?startTimeSearch:start}&end_date=${useSearch?endTimeSearch:end}&time_option=${useSearch?timeOptionSearch:timeOption}&mv_key=${movKey}&mv_status=${movStatus}&mv_srctype=${movSrcType}&mv_terminal=${movTerminal}&mv_number=${movNumber}&start_num=${take}&end_num=${offset}`
       : null; */
 
-  const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
-  /* const { data: payload, isValidating, revalidate } = useSWR({url: `${MOVEMENT_NOMIATIONS.READ}`, args: {
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(url, { revalidateOnFocus: false });
+  /* const { data: payload, isValidating, mutate: revalidate } = useSWR({url: `${MOVEMENT_NOMIATIONS.READ}`, args: {
     use_range: useDateRange, 
     start_date: start, 
     end_date: end, 
@@ -363,7 +363,7 @@ const MovementNominations = () => {
       />
 
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         defaultValue={filterByExpiry ? 'MV_DTIM_EXPIRY' : 'MV_DTIM_CREATE'}
         value={timeOption}
         onChange={onTimeOptionChanged}
@@ -466,9 +466,9 @@ const MovementNominations = () => {
       {scheduleOpen && (
         <Drawer
           placement="right"
-          bodyStyle={{ paddingTop: 5 }}
+          styles={{ body: { paddingTop: 5 } }}
           onClose={() => setScheduleOpen(false)}
-          visible={scheduleOpen}
+          open={scheduleOpen}
           width="100vw"
         >
           <Schedules selected={null} />

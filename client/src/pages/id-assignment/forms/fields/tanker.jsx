@@ -73,7 +73,7 @@ const Tanker = ({ form, value, owner, carrier, setTnkrNumber }) => {
   return (
     <Form.Item name="kya_tanker" label={t('fields.tanker')} rules={[{ required: true, validator: validate }]}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         disabled={!owner && !carrier}
         loading={isValidating}
         showSearch

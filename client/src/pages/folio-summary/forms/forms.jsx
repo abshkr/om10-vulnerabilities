@@ -77,7 +77,7 @@ const Forms = ({ value, visible, handleFormState, closeoutIsIdle, access, config
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={() => onExitClicked()}
       maskClosable={config?.siteFormCloseAlert ? false : true}
@@ -85,7 +85,7 @@ const Forms = ({ value, visible, handleFormState, closeoutIsIdle, access, config
       destroyOnClose={true}
       placement="right"
       width="90vw"
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button

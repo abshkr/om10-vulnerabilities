@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import ReactHtmlParser from 'react-html-parser';
+import ReactHtmlParser from 'html-react-parser';
 import { LoadingOutlined, AuditOutlined } from '@ant-design/icons';
 import { Spin, Button, notification } from 'antd';
 import api from 'api';
 import _ from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { LOAD_SCHEDULES } from '../../../../api';
-import { jsPDF } from "jspdf";
+import { jsPDF } from 'jspdf';
 
 const BOL = ({ value, redo, supermode, dcsmode, locateTrip, setCurStatus, exportPDF }) => {
   const { t } = useTranslation();
@@ -22,12 +22,12 @@ const BOL = ({ value, redo, supermode, dcsmode, locateTrip, setCurStatus, export
           params: {
             supplier: value.supplier_code,
             trip_no: value.shls_trip_no,
-            supermode: supermode ? "on" : "off",
-            dcsmode: dcsmode ? "on" : "off",
+            supermode: supermode ? 'on' : 'off',
+            dcsmode: dcsmode ? 'on' : 'off',
           },
         })
         .then((res) => {
-          setData(res.data)
+          setData(res.data);
           if (value?.status === 'A') {
             setCurStatus('E');
             locateTrip(value);
@@ -52,12 +52,12 @@ const BOL = ({ value, redo, supermode, dcsmode, locateTrip, setCurStatus, export
       const end = data.search('</pre>');
 
       // console.log(data.substring(start , end))
-      doc.setFont('courier');   //courier font gives all character same width in PDF
+      doc.setFont('courier'); //courier font gives all character same width in PDF
       doc.setFontSize(11);
-      
-      doc.text(data.substring(start , end), 20, 15);
-      
-      doc.save("BOL_" + value.shls_trip_no + ".pdf");
+
+      doc.text(data.substring(start, end), 20, 15);
+
+      doc.save('BOL_' + value.shls_trip_no + '.pdf');
     }
   }, [exportPDF]);
 

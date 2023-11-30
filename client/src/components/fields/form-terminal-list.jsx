@@ -120,7 +120,7 @@ const TerminalList = ({
     >
       <Select
         showSearch
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         disabled={itemDisabled === undefined ? false : itemDisabled}
         loading={loading}

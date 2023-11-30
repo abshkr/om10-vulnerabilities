@@ -25,7 +25,7 @@ const Vehicle = ({ form, value, carrier }) => {
   return (
     <Form.Item name="mv_vehicle" label={t('fields.vehicle')}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

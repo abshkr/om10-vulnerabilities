@@ -17,8 +17,11 @@ const Assets = ({ access, tabFlag }) => {
   const { t } = useTranslation();
 
   // the variable tabFlag does nothing but trigger the reload of product assets
-  // const { data: payload, isValidating, revalidate } = useSWR(DRAWER_PRODUCTS.ASSETS);
-  const { data: payload, isValidating, revalidate } = useSWR(`${DRAWER_PRODUCTS.ASSETS}?tab_flag=${tabFlag}`);
+  const {
+    data: payload,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(`${DRAWER_PRODUCTS.ASSETS}?tab_flag=${tabFlag}`);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);

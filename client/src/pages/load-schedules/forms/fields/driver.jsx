@@ -61,7 +61,7 @@ const Driver = ({ form, value, employer, enabled }) => {
   return (
     <Form.Item name="driver" label={t('fields.driver')} rules={[{ required: false, validator: validate }]}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         disabled={!employer || (!value ? false : !enabled)}
         loading={isValidating}
         showSearch

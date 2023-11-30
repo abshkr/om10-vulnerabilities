@@ -11,7 +11,7 @@ import Icon, {
 
 import { Layout, AutoComplete, Button, Input, Modal, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { NavBarContainer } from './style';
 import { ROUTES } from '../../constants';
@@ -33,7 +33,7 @@ const NavBar = () => {
   const { t } = useTranslation();
   const config = useConfig();
 
-  let history = useHistory();
+  let navigate = useNavigate();
 
   const [options, setOptions] = useState([]);
 
@@ -50,14 +50,14 @@ const NavBar = () => {
       api.get(`${AUTH.PERMISSIONS}?object_text=M_BAYVIEW`).then((res) => {
         if (!res.data.records[0].priv_view) {
           console.log('Do not have view privilege');
-          history.push(ROUTES.UNAUTHORIZED);
+          navigate(ROUTES.UNAUTHORIZED);
         } else {
           const port = window.location.port ? window.location.port : 443;
           api
             .get(`https://${window.location.hostname}:${port}/scadaviews/bayview/index.html`)
             .then((res) => {
               if (res.data.includes('<title>OMEGA 5000</title>')) {
-                history.push(ROUTES.BAY_VIEW);
+                navigate(ROUTES.BAY_VIEW);
               } else {
                 window.open(
                   `https://${window.location.hostname}:${port}/scadaviews/bayview/index.html`,
@@ -66,12 +66,12 @@ const NavBar = () => {
               }
             })
             .catch(function (error) {
-              history.push(ROUTES.BAY_VIEW);
+              navigate(ROUTES.BAY_VIEW);
             });
         }
       });
     } else if (data?.path) {
-      history.push(data?.path);
+      navigate(data?.path);
     }
   };
 
@@ -83,7 +83,7 @@ const NavBar = () => {
       centered: true,
       okType: 'danger',
       cancelText: t('operations.cancel'),
-      onOk: () => history.push(ROUTES.LOG_OUT),
+      onOk: () => navigate(ROUTES.LOG_OUT),
     });
   };
 
@@ -120,7 +120,7 @@ const NavBar = () => {
               size="large"
               shape="circle"
               style={{ marginRight: 7 }}
-              onClick={() => history.push(ROUTES.CONFIGURATION)}
+              onClick={() => navigate(ROUTES.CONFIGURATION)}
             >
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <SettingOutlined style={{ transform: 'scale(1.5)' }} />
@@ -162,7 +162,7 @@ const NavBar = () => {
               size="large"
               shape="circle"
               style={{ marginRight: 7 }}
-              onClick={() => history.push(ROUTES.SETTINGS)}
+              onClick={() => navigate(ROUTES.SETTINGS)}
             >
               <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <UserOutlined style={{ transform: 'scale(1.5)' }} />

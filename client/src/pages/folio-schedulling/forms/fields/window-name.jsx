@@ -34,7 +34,7 @@ const WindowName = ({ form, value, onTypeChange }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         // defaultValue="DATE_WINDOW"
         disabled={!IS_CREATING}

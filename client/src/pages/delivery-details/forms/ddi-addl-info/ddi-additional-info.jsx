@@ -32,88 +32,92 @@ const DdiAdditionalInfo = ({
   const { t } = useTranslation();
   const fields = columns(t, pageState, form);
 
-  const { data: payload, isValidating, revalidate } = useSWR(
-    `${DELIVERY_DETAILS.DDI_ADDL_INFO_READ}?dd_number=${value?.ddi_dd_number}&dd_supp_code=${value?.ddi_dd_supp_code}&dd_tripord_no=${value?.ddi_dd_tripord_no}&dd_ld_type=${value?.ddi_dd_ld_type}&ddi_line_item_num=${value?.ddi_line_item_num}`
-    , { revalidateOnFocus: false }
+  const {
+    data: payload,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(
+    `${DELIVERY_DETAILS.DDI_ADDL_INFO_READ}?dd_number=${value?.ddi_dd_number}&dd_supp_code=${value?.ddi_dd_supp_code}&dd_tripord_no=${value?.ddi_dd_tripord_no}&dd_ld_type=${value?.ddi_dd_ld_type}&ddi_line_item_num=${value?.ddi_line_item_num}`,
+    { revalidateOnFocus: false }
   );
 
   let data = payload?.records;
   const isLoading = isValidating || !data;
-  
+
   const onCreate = async (line) => {
     await api
-    .post(DELIVERY_DETAILS.DDI_ADDL_INFO_CREATE, line)
-    .then((response) => {
-      tableAPI.updateRowData({ add: [line] });
-      setAdditionalField('');
-      // revalidate();
-      // adjustPayload();
-      setDataSize();
+      .post(DELIVERY_DETAILS.DDI_ADDL_INFO_CREATE, line)
+      .then((response) => {
+        tableAPI.updateRowData({ add: [line] });
+        setAdditionalField('');
+        // revalidate();
+        // adjustPayload();
+        setDataSize();
 
-      notification.success({
-        message: t('messages.createSuccess'),
-        description: t('descriptions.createSuccess'),
-      });
-    })
-    .catch((errors) => {
-      setDataSize();
-      _.forEach(errors.response.data.errors, (error) => {
-        notification.error({
-          message: error.type,
-          description: error.message,
+        notification.success({
+          message: t('messages.createSuccess'),
+          description: t('descriptions.createSuccess'),
+        });
+      })
+      .catch((errors) => {
+        setDataSize();
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
         });
       });
-    });
   };
-  
+
   const onUpdate = async (line) => {
     await api
-    .post(DELIVERY_DETAILS.DDI_ADDL_INFO_UPDATE, line)
-    .then((response) => {
-      tableAPI.updateRowData({ update: [line] });
-      // revalidate();
-      // adjustPayload();
-      setDataSize();
+      .post(DELIVERY_DETAILS.DDI_ADDL_INFO_UPDATE, line)
+      .then((response) => {
+        tableAPI.updateRowData({ update: [line] });
+        // revalidate();
+        // adjustPayload();
+        setDataSize();
 
-      notification.success({
-        message: t('messages.updateSuccess'),
-        description: t('messages.updateSuccess'),
-      });
-    })
-    .catch((errors) => {
-      setDataSize();
-      _.forEach(errors.response.data.errors, (error) => {
-        notification.error({
-          message: error.type,
-          description: error.message,
+        notification.success({
+          message: t('messages.updateSuccess'),
+          description: t('messages.updateSuccess'),
+        });
+      })
+      .catch((errors) => {
+        setDataSize();
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
         });
       });
-    });
   };
-  
+
   const onDelete = async (line) => {
     await api
-    .post(DELIVERY_DETAILS.DDI_ADDL_INFO_DELETE, line)
-    .then((response) => {
-      tableAPI.updateRowData({ remove: [line] });
-      // revalidate();
-      // adjustPayload();
-      setDataSize();
+      .post(DELIVERY_DETAILS.DDI_ADDL_INFO_DELETE, line)
+      .then((response) => {
+        tableAPI.updateRowData({ remove: [line] });
+        // revalidate();
+        // adjustPayload();
+        setDataSize();
 
-      notification.success({
-        message: t('messages.deleteSuccess'),
-        description: t('messages.deleteSuccess'),
-      });
-    })
-    .catch((errors) => {
-      setDataSize();
-      _.forEach(errors.response.data.errors, (error) => {
-        notification.error({
-          message: error.type,
-          description: error.message,
+        notification.success({
+          message: t('messages.deleteSuccess'),
+          description: t('messages.deleteSuccess'),
+        });
+      })
+      .catch((errors) => {
+        setDataSize();
+        _.forEach(errors.response.data.errors, (error) => {
+          notification.error({
+            message: error.type,
+            description: error.message,
+          });
         });
       });
-    });
   };
 
   const adjustPayload = () => {
@@ -136,7 +140,7 @@ const DdiAdditionalInfo = ({
 
   const setDataSize = () => {
     let size = 0;
-    
+
     tableAPI.forEachNode((rowNode, index) => {
       size = size + 1;
     });
@@ -210,24 +214,24 @@ const DdiAdditionalInfo = ({
       errors.push({
         key: String(line) + ':' + label,
         field: label + ' [' + t('fields.line') + ' ' + line + ']',
-        message: `${t('validate.set')} ─ ${label}`
+        message: `${t('validate.set')} ─ ${label}`,
       });
     }
 
-    const len = (new TextEncoder().encode(input)).length;
+    const len = new TextEncoder().encode(input).length;
     if (maxLength !== undefined && input && len > maxLength) {
       errors.push({
         key: String(line) + ':' + label,
         field: label + ' [' + t('fields.line') + ' ' + line + ']',
-        message: `${t('placeholder.maxCharacters')}: ${maxLength} ─ ${t('descriptions.maxCharacters')}`
+        message: `${t('placeholder.maxCharacters')}: ${maxLength} ─ ${t('descriptions.maxCharacters')}`,
       });
     }
 
-    _.forEach(errors, error => {
+    _.forEach(errors, (error) => {
       notification.error({
         message: error.field,
         description: error.message,
-        key: error.key
+        key: error.key,
       });
     });
 
@@ -239,7 +243,14 @@ const DdiAdditionalInfo = ({
 
     let payload = value.data;
 
-    const errors = validateString(true, value?.newValue, 'text', 420, t('fields.dddAddiFldInfo'), payload?.addi_fld_line_no);
+    const errors = validateString(
+      true,
+      value?.newValue,
+      'text',
+      420,
+      t('fields.dddAddiFldInfo'),
+      payload?.addi_fld_line_no
+    );
 
     if (value?.newValue !== value?.oldValue && errors.length === 0) {
       onUpdate(payload);
@@ -252,7 +263,7 @@ const DdiAdditionalInfo = ({
 
   const handleValueChange = (event) => {
     setAdditionalField(event?.target?.value);
-  }
+  };
 
   useEffect(() => {
     if (payload) {
@@ -263,40 +274,28 @@ const DdiAdditionalInfo = ({
   return (
     <>
       <Row gutter={[8, 10]}>
-        <Col span={8}>
-          {t('fields.ddiDdSuppCode') + ' : ' + value?.ddi_dd_supp_code}
-        </Col>
-        <Col span={8}>
-          {t('fields.ddiDdSuppName') + ' : ' + value?.ddi_dd_supp_name}
-        </Col>
-        <Col span={8}>
-          {t('fields.ddiDdLoadTypeName') + ' : ' + value?.ddi_dd_load_typename}
-        </Col>
+        <Col span={8}>{t('fields.ddiDdSuppCode') + ' : ' + value?.ddi_dd_supp_code}</Col>
+        <Col span={8}>{t('fields.ddiDdSuppName') + ' : ' + value?.ddi_dd_supp_name}</Col>
+        <Col span={8}>{t('fields.ddiDdLoadTypeName') + ' : ' + value?.ddi_dd_load_typename}</Col>
       </Row>
       <Row gutter={[8, 10]}>
-        <Col span={8}>
-          {t('fields.ddiDdTripOrdNo') + ' : ' + value?.ddi_dd_tripord_no}
-        </Col>
-        <Col span={8}>
-          {t('fields.ddiDdNumber') + ' : ' + value?.ddi_dd_number}
-        </Col>
-        <Col span={8}>
-          {t('fields.ddiLineItemNum') + ' : ' + value?.ddi_line_item_num}
-        </Col>
+        <Col span={8}>{t('fields.ddiDdTripOrdNo') + ' : ' + value?.ddi_dd_tripord_no}</Col>
+        <Col span={8}>{t('fields.ddiDdNumber') + ' : ' + value?.ddi_dd_number}</Col>
+        <Col span={8}>{t('fields.ddiLineItemNum') + ' : ' + value?.ddi_line_item_num}</Col>
       </Row>
 
       <Input
-        style={{width: '40%'}}
+        style={{ width: '40%' }}
         placeholder={t('fields.ddiAddiFldInfo')}
         onChange={handleValueChange}
         value={additionalField}
       />
 
-      <Button 
-        type="primary" 
-        icon={<PlusOutlined />} 
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
         disabled={!additionalField}
-        onClick={handleItemAdd} 
+        onClick={handleItemAdd}
         style={{ marginRight: 5 }}
       >
         {t('operations.addLineItem')}

@@ -14,7 +14,7 @@ const Carrier = ({ form, customer, onChange, disabled, config }) => {
   return (
     <Form.Item name="carrier" label={t('fields.mtDataCarrier')} rules={[{ required: true }]}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         showSearch
         disabled={disabled}
@@ -23,13 +23,13 @@ const Carrier = ({ form, customer, onChange, disabled, config }) => {
         optionFilterProp="children"
         placeholder={t('placeholder.selectCarrier')}
         filterOption={(input, option) =>
-        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
         }
       >
         {carriers?.records?.map((item, index) => (
-        <Select.Option key={index} value={item.cmpy_code}>
+          <Select.Option key={index} value={item.cmpy_code}>
             {item.cmpy_code + ' - ' + item.cmpy_name}
-        </Select.Option>
+          </Select.Option>
         ))}
       </Select>
     </Form.Item>

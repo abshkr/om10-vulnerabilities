@@ -22,7 +22,7 @@ const ReportConfiguration = () => {
 
   const access = useAuth('M_REPOCONFIGURATION');
 
-  const { data: payload, isValidating, revalidate } = useSWR(REPORT_CONFIGURATION.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(REPORT_CONFIGURATION.READ);
 
   const fields = columns(t, config?.reports_closeout_job);
 

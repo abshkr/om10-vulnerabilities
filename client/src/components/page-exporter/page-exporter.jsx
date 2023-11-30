@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { FileTextOutlined, QuestionCircleOutlined, CloseOutlined, DownloadOutlined } from '@ant-design/icons';
 import { Button, notification, Progress, Modal, Drawer, Tag, Statistic, Row, Col } from 'antd';
 import { CSVLink } from 'react-csv';
@@ -20,11 +20,11 @@ const PageExporter = ({ baseUrl, startVar, endVar, columns, round, icon }) => {
   const [canSave, setCanSave] = useState(false);
 
   const onDownloadPages = async () => {
-    let counter=0;
-    let startPos=0;
-    let size=500;
-    let endPos=500;
-    let pages=[];
+    let counter = 0;
+    let startPos = 0;
+    let size = 500;
+    let endPos = 500;
+    let pages = [];
     setLoading(true);
     setRatio(0);
     setCanSave(false);
@@ -39,7 +39,7 @@ const PageExporter = ({ baseUrl, startVar, endVar, columns, round, icon }) => {
       counter += items?.length;
       setCounter(counter);
       setTotal(total);
-      const percent = total > 0 ? _.round(counter/total*100.0, 0) : 0
+      const percent = total > 0 ? _.round((counter / total) * 100.0, 0) : 0;
       setRatio(percent);
       setLabel(`${counter} / ${total}`);
       if (counter >= total) {
@@ -58,7 +58,7 @@ const PageExporter = ({ baseUrl, startVar, endVar, columns, round, icon }) => {
     notification.success({
       message: t('messages.csvDownloadSuccessful'),
     });
-  }
+  };
 
   const onReset = () => {
     setRatio(0);
@@ -86,14 +86,14 @@ const PageExporter = ({ baseUrl, startVar, endVar, columns, round, icon }) => {
       {visible && (
         <Drawer
           title={t('operations.export')}
-          bodyStyle={{ paddingTop: 5 }}
+          styles={{ body: { paddingTop: 5 } }}
           onClose={() => setVisible(false)}
           maskClosable={false}
           destroyOnClose={true}
           mask={true}
           placement="right"
           width="30vw"
-          visible={visible}
+          open={visible}
           footer={
             <>
               <Button
@@ -135,19 +135,28 @@ const PageExporter = ({ baseUrl, startVar, endVar, columns, round, icon }) => {
                       message: t('messages.csvSaveSuccessful'),
                     })
                   }
-                  disabled={loading || pageRecords?.length===0 || !canSave}
+                  disabled={loading || pageRecords?.length === 0 || !canSave}
                 >
                   {t('operations.save')}
                 </Button>
               </CSVLink>
-
             </>
           }
         >
-          <div style={{textAlign: 'center'}}>
-            <Progress type="circle" style={{fontSize: '96px', fontWeight: 'bold'}} percent={ratio} width={360} />
+          <div style={{ textAlign: 'center' }}>
+            <Progress
+              type="circle"
+              style={{ fontSize: '96px', fontWeight: 'bold' }}
+              percent={ratio}
+              width={360}
+            />
             {/* <Tag color='blue'>{label}</Tag> */}
-            <Statistic title="" valueStyle={{ color: 'green' }} value={counter} suffix={` / ${t('fields.totalSum')}: ${total}`} />
+            <Statistic
+              title=""
+              valueStyle={{ color: 'green' }}
+              value={counter}
+              suffix={` / ${t('fields.totalSum')}: ${total}`}
+            />
           </div>
         </Drawer>
       )}

@@ -255,14 +255,14 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
   // if (IS_CREATING) {
   //   return (
   //     <Drawer
-  //       bodyStyle={{ paddingTop: 5 }}
+  //       styles={{body: { paddingTop: 5 }}}
   //       onClose={() => handleFormState(false, null)}
   //       maskClosable={IS_CREATING}
   //       destroyOnClose={true}
   //       mask={IS_CREATING}
   //       placement="right"
   //       width="50vw"
-  //       visible={visible}
+  //       open={visible}
   //       footer={
   //         <>
   //           <Button
@@ -354,14 +354,14 @@ const FormModal = ({ value, visible, handleFormState, access, data, setFilterVal
   return (
     <Drawer
       closable={false}
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       onClose={onExitClicked}
       maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
       destroyOnClose={true}
       mask={config?.siteFormCloseAlert ? true : IS_CREATING}
       placement="right"
       width="50vw"
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button

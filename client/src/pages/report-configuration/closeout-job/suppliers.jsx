@@ -42,7 +42,7 @@ const Supplier = ({ form, value, param, supplier }) => {
       {...itemLayout}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

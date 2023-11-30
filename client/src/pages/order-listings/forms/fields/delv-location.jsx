@@ -39,7 +39,7 @@ const DeliveryLocation = ({ form, value, pageState }) => {
     >
       <Select
         allowClear
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         disabled={pageState === 'create' || pageState === 'edit' ? false : true}

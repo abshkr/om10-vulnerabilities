@@ -13,7 +13,7 @@ import auth from '../../auth';
 
 import Forms from './forms';
 
-const Addresses = ({popup}) => {
+const Addresses = ({ popup }) => {
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
   const [filterValue, setFilterValue] = useState('');
@@ -22,7 +22,7 @@ const Addresses = ({popup}) => {
 
   const access = useAuth('M_ADDRESSES');
 
-  const { data: payload, isValidating, revalidate } = useSWR(ADDRESSES.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(ADDRESSES.READ);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -69,13 +69,13 @@ const Addresses = ({popup}) => {
         handleSelect={(payload) => handleFormState(true, payload[0])}
         filterValue={filterValue}
       />
-      <Forms 
-        value={selected} 
-        visible={visible} 
-        handleFormState={handleFormState} 
+      <Forms
+        value={selected}
+        visible={visible}
+        handleFormState={handleFormState}
         access={access}
         setFilterValue={setFilterValue}
-     />
+      />
     </Page>
   );
 };

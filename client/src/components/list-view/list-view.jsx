@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { List, Avatar, Card, Input, Spin, Row, Col } from 'antd';
-import { Scrollbars } from 'react-custom-scrollbars';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 import { LoadingOutlined } from '@ant-design/icons';
 
 import { ListViewContainer, ViewContainer, CardContainer, DescriptionContainer } from './style';

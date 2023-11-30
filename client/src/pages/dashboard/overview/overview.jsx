@@ -786,7 +786,7 @@ const Overview = ({ baseFlag, payloadBases }) => {
                   <Radio.Button value="log">{t('fields.chartLogarithmic')}</Radio.Button>
                 </Radio.Group>
                 <Select
-                  dropdownMatchSelectWidth={false}
+                  popupMatchSelectWidth={false}
                   value={storageClass}
                   style={{ width: 250 }}
                   loading={!payload}
@@ -828,7 +828,7 @@ const Overview = ({ baseFlag, payloadBases }) => {
             bodyStyle={{ overflow: 'hidden' }}
             extra={
               <Select
-                dropdownMatchSelectWidth={false}
+                popupMatchSelectWidth={false}
                 value={folioClass}
                 style={{ width: 250 }}
                 loading={!payload}

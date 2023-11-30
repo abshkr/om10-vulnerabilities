@@ -32,7 +32,7 @@ const Type = ({ form, value }) => {
   return (
     <Form.Item name="mtd_type" label={t('fields.type')} rules={[{ required: true, validator: validate }]}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

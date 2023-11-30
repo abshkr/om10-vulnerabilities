@@ -53,7 +53,7 @@ export default class CustomerEditor extends Component {
     return (
       <div style={{ display: 'flex' }}>
         <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           allowClear
           value={this.state.value}
           disabled={disabled}

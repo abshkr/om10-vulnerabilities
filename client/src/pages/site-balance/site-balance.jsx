@@ -29,12 +29,14 @@ const SiteBalance = () => {
   const access = useAuth('M_SITEBALANCE');
 
   const { t } = useTranslation();
-  const { data: closeouts, revalidate: closeoutRevalidate, isValidating: closeoutValidationg } = useSWR(
-    STOCK_MANAGEMENT.CURR_CLOSEOUT
-  );
+  const {
+    data: closeouts,
+    mutate: closeoutRevalidate,
+    isValidating: closeoutValidationg,
+  } = useSWR(STOCK_MANAGEMENT.CURR_CLOSEOUT);
 
   const url = !closeout ? null : `${STOCK_MANAGEMENT.SITE_BALANCE}?cls_out=${closeout}&terminal=${terminal}`;
-  const { data, revalidate, isValidating } = useSWR(url);
+  const { data, mutate: revalidate, isValidating } = useSWR(url);
 
   const fields = columns(t, config);
   const payload = transform(data?.records, unit);
@@ -64,7 +66,7 @@ const SiteBalance = () => {
       )}
 
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         key="1"
         style={{ width: 200, marginLeft: 5 }}

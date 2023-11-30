@@ -38,7 +38,7 @@ const SaleType = ({ form, value }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         loading={isValidating}
         allowClear={true}
         showSearch

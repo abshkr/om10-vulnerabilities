@@ -66,7 +66,7 @@ const FormModal = ({ visible, onCreate, onCancel, gates }) => {
 
   return (
     <Modal
-      visible={visible}
+      open={visible}
       title={t('prompts.createNewGate')}
       okText={t('operations.create')}
       cancelText={t('operations.cancel')}
@@ -88,7 +88,7 @@ const FormModal = ({ visible, onCreate, onCancel, gates }) => {
           rules={[{ required: true, validator: onDeviceCodeValidation }]}
         >
           <Select
-            dropdownMatchSelectWidth={false}
+            popupMatchSelectWidth={false}
             allowClear
             loading={isLoading}
             showSearch

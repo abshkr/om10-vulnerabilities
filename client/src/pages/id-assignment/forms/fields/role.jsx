@@ -34,7 +34,7 @@ const Role = ({ form, value, onChange }) => {
   return (
     <Form.Item name="kya_role" label={t('fields.role')} rules={[{ required: true, validator: validate }]}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         allowClear

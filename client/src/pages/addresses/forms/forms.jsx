@@ -11,7 +11,7 @@ import { Form, Button, Tabs, Modal, notification, Drawer, Divider, Card } from '
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
-import { Scrollbars } from 'react-custom-scrollbars';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 
 import { AddressCode } from './fields';
 
@@ -334,7 +334,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={onFormClosed}
       maskClosable={IS_CREATING}
@@ -342,7 +342,7 @@ const FormModal = ({ value, visible, handleFormState, access, setFilterValue }) 
       mask={IS_CREATING}
       placement="right"
       width="50vw"
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button

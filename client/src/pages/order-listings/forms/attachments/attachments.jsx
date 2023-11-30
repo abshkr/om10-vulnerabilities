@@ -27,9 +27,11 @@ const Attachments = ({ value, config }) => {
 
   const fields = columns(t);
 
-  const { data: payload, revalidate, isValidating } = useSWR(
-    `${ORDER_LISTINGS.READ_FILE}?order_no=${value?.order_sys_no}`
-  );
+  const {
+    data: payload,
+    mutate: revalidate,
+    isValidating,
+  } = useSWR(`${ORDER_LISTINGS.READ_FILE}?order_no=${value?.order_sys_no}`);
 
   const data = payload?.records;
   const isLoading = isValidating || !data;

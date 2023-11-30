@@ -1,6 +1,6 @@
 import React from 'react';
 // import { useConfig } from 'hooks';
-import NumberFormat from 'react-number-format';
+import { NumericFormat } from 'react-number-format';
 
 /*
 1,234,567.89	Australia,[49][50] Cambodia, Canada (English-speaking; unofficial), China, Hong Kong, Iran, Ireland, Israel, Japan, Korea, Macau (in Chinese and English text), Malaysia, Malta, Mexico, Namibia, New Zealand, Pakistan, Peru (currency numbers), Philippines, Singapore, South Africa (English-speaking; unofficial), Taiwan, Thailand, United Kingdom and other Commonwealth states (except Mozambique), United States.
@@ -111,15 +111,15 @@ const DecimalThousandSeparator = ({ text, type }) => {
   ];
   if (seperatorType >= 0 && seperatorType < types?.length) {
     return (
-      <NumberFormat
+      <NumericFormat
         value={text}
         displayType={'text'}
-        thousandSeparator={true}
+        // thousandSeparator={true}
         thousandSeparator={types[seperatorType]?.thousandSeparator}
         decimalSeparator={types[seperatorType]?.decimalSeparator}
         // decimalScale={types[seperatorType]?.decimalScale}
         fixedDecimalScale={true}
-        isNumericString={true}
+        valueIsNumericString={true}
       />
     );
   } else {

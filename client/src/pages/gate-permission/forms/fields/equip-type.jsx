@@ -53,7 +53,7 @@ const EquipType = ({ value, form, enabled }) => {
     <div>
       <Form.Item name="rule_etyp" label={t('fields.equipmentType')} rules={enabled && [{ required: true }]}>
         <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           allowClear
           loading={isValidating}
           disabled={!enabled}

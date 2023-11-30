@@ -31,7 +31,7 @@ const EquipmentType = ({ form, value }) => {
   return (
     <Form.Item name="eqpt_area" label={t('fields.area')} rules={[{ required: true, validator: validate }]}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

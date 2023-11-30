@@ -24,7 +24,7 @@ const ReportProfile = () => {
 
   const access = useAuth('M_REPOPROFILE');
 
-  const { data: payload, isValidating, revalidate } = useSWR(REPORT_PROFILE.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(REPORT_PROFILE.READ);
 
   const fields = columns(t, reports_closeout_job);
   const data = transfrom(payload?.records, t);

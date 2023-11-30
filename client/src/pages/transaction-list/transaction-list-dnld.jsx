@@ -77,7 +77,7 @@ const TransactionList = () => {
   const url = !pagingFlag && siteUseDownloader ? null : mainUrl + `&start_num=${take}&end_num=${offset}`;
   const pageUrl = mainUrl.replace('pgflag=N', 'pgflag=Y');
 
-  const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(url, { revalidateOnFocus: false });
 
   const fields = columns(t, config);
 

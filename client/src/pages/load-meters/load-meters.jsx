@@ -19,7 +19,7 @@ const LoadMeters = () => {
   const { t } = useTranslation();
   const [filterValue, setFilterValue] = useState('');
 
-  const { data: payload, isValidating, revalidate } = useSWR(LOAD_METERS.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(LOAD_METERS.READ);
 
   const access = useAuth('M_LOADMETERS');
 
@@ -54,7 +54,13 @@ const LoadMeters = () => {
 
   return (
     <Page page={t('pageMenu.config')} name={t('pageNames.loadMeters')} modifiers={modifiers} access={access}>
-      <DataTable columns={fields} data={data} isLoading={isValidating} onClick={handleClick} filterValue={filterValue} />
+      <DataTable
+        columns={fields}
+        data={data}
+        isLoading={isValidating}
+        onClick={handleClick}
+        filterValue={filterValue}
+      />
     </Page>
   );
 };

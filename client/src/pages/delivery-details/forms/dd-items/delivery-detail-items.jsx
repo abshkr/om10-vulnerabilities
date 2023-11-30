@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  EditOutlined,
-  PlusOutlined,
-  MinusOutlined
-} from '@ant-design/icons';
+import { EditOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Button, Form, Select, Drawer, Tooltip, notification } from 'antd';
 import useSWR from 'swr';
@@ -45,8 +41,8 @@ const DeliveryDetailItems = ({
   const fields = columns(t, pageState, form);
 
   const { data: payload, isValidating } = useSWR(
-    `${DELIVERY_DETAILS.DD_ITEMS}?dd_number=${value?.dd_number}&dd_supp_code=${value?.dd_supp_code}&dd_tripord_no=${value?.dd_tripord_no}&dd_ld_type=${value?.dd_ld_type}`
-    , { revalidateOnFocus: false }
+    `${DELIVERY_DETAILS.DD_ITEMS}?dd_number=${value?.dd_number}&dd_supp_code=${value?.dd_supp_code}&dd_tripord_no=${value?.dd_tripord_no}&dd_ld_type=${value?.dd_ld_type}`,
+    { revalidateOnFocus: false }
   );
 
   // const data = payload?.records;
@@ -75,7 +71,7 @@ const DeliveryDetailItems = ({
       ddi_dd_number: !value ? deliveryNumber : value?.dd_number,
       ddi_item_cat: '',
       ddi_cmpt_num: !productItem?.ddi_cmpt_num ? '' : productItem?.ddi_cmpt_num,
-      ddi_cmpy_code: !productItem?.ddi_cmpy_code ? supplier: productItem?.ddi_cmpy_code,
+      ddi_cmpy_code: !productItem?.ddi_cmpy_code ? supplier : productItem?.ddi_cmpy_code,
       ddi_prod_code: !productItem?.ddi_prod_code ? '' : productItem?.ddi_prod_code,
       ddi_prod_name: !productItem?.ddi_prod_name ? '' : productItem?.ddi_prod_name,
       ddi_qty: !productItem?.ddi_qty ? '' : productItem?.ddi_qty,
@@ -116,7 +112,7 @@ const DeliveryDetailItems = ({
 
   const handleItemRemove = () => {
     tableAPI.updateRowData({ remove: selected });
-    setSize(size>0 ? size-1 : 0);
+    setSize(size > 0 ? size - 1 : 0);
   };
 
   const handleItemSelect = (items) => {
@@ -152,68 +148,68 @@ const DeliveryDetailItems = ({
       errors.push({
         key: String(line) + ':' + rule.code + '_required',
         field: rule.label + ' [' + t('fields.line') + ' ' + line + ']',
-        message: `${t('validate.set')} ─ ${rule.label}`
+        message: `${t('validate.set')} ─ ${rule.label}`,
       });
     }
 
-    const len = (new TextEncoder().encode(input)).length;
-    if ((rule.maxLength !== undefined && rule.maxLength !== null) && input && len > rule.maxLength) {
+    const len = new TextEncoder().encode(input).length;
+    if (rule.maxLength !== undefined && rule.maxLength !== null && input && len > rule.maxLength) {
       errors.push({
         key: String(line) + ':' + rule.code + '_maxlen',
         field: rule.label + ' [' + t('fields.line') + ' ' + line + ']',
-        message: `${t('placeholder.maxCharacters')}: ${rule.maxLength} ─ ${t('descriptions.maxCharacters')}`
+        message: `${t('placeholder.maxCharacters')}: ${rule.maxLength} ─ ${t('descriptions.maxCharacters')}`,
       });
     }
 
     if (rule.dataType === 'STRING') {
-
     }
 
     if (rule.dataType === 'NUMBER') {
       const number = _.toNumber(input);
       const invalid = _.isNaN(number);
-  
+
       const decimals = _.toString(number).split('.')[1]?.length || 0;
-      
+
       if (input && input !== '' && invalid) {
         errors.push({
           key: String(line) + ':' + rule.code + '_invalid',
           field: rule.label + ' [' + t('fields.line') + ' ' + line + ']',
-          message: `${t('validate.wrongType')}: ${t('validate.mustBeNumber')}`
+          message: `${t('validate.wrongType')}: ${t('validate.mustBeNumber')}`,
         });
       }
-  
+
       if (rule.precision !== undefined && rule.precision !== null && decimals > rule.precision) {
         errors.push({
           key: String(line) + ':' + rule.code + '_precision',
           field: rule.label + ' [' + t('fields.line') + ' ' + line + ']',
-          message: `${t('validate.decimalPlacesExceeded')} ${rule.precision} ─ ${t('descriptions.invalidDecimals')}`
+          message: `${t('validate.decimalPlacesExceeded')} ${rule.precision} ─ ${t(
+            'descriptions.invalidDecimals'
+          )}`,
         });
       }
-  
+
       if (rule.max !== undefined && rule.max !== null && input !== '' && !invalid && number > rule.max) {
         errors.push({
           key: String(line) + ':' + rule.code + '_maximum',
           field: rule.label + ' [' + t('fields.line') + ' ' + line + ']',
-          message: `${t('validate.outOfRangeMax')} ${rule.max} ─ ${t('descriptions.maxNumber')}`
+          message: `${t('validate.outOfRangeMax')} ${rule.max} ─ ${t('descriptions.maxNumber')}`,
         });
       }
-  
+
       if (rule.min !== undefined && rule.min !== null && input !== '' && !invalid && number < rule.min) {
         errors.push({
           key: String(line) + ':' + rule.code + '_minimum',
           field: rule.label + ' [' + t('fields.line') + ' ' + line + ']',
-          message: `${t('validate.outOfRangeMin')} ${rule.min} ─ ${t('descriptions.minNumber')}`
+          message: `${t('validate.outOfRangeMin')} ${rule.min} ─ ${t('descriptions.minNumber')}`,
         });
       }
-  
     }
 
-    _.forEach(errors, error => {
+    _.forEach(errors, (error) => {
       notification.error({
         message: error.field,
         description: error.message,
-        key: error.key
+        key: error.key,
       });
     });
 
@@ -225,7 +221,7 @@ const DeliveryDetailItems = ({
 
     console.log('onEditingFinished', value, value.colDef);
 
-    const rule = _.find(cells(t), (o) => (o.code ===value.colDef.field));
+    const rule = _.find(cells(t), (o) => o.code === value.colDef.field);
     console.log('onEditingFinished, rule', rule);
 
     const errors = onCellValidation(payload[value.colDef.field], payload?.ddi_line_item_num, rule);
@@ -255,13 +251,13 @@ const DeliveryDetailItems = ({
   return (
     <>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         allowClear
         disabled={false}
         onChange={onClick}
-        style={{width: '50%'}}
+        style={{ width: '50%' }}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectDdiProduct') : null}
         filterOption={(input, option) =>
@@ -275,12 +271,12 @@ const DeliveryDetailItems = ({
         ))}
       </Select>
 
-      <Button 
-        type="primary" 
-        icon={<PlusOutlined />} 
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
         // disabled={!(productItem || size===0)}
-        disabled={!productItem && (productItem || !(products?.records?.length>0) || size>0)}
-        onClick={handleItemAdd} 
+        disabled={!productItem && (productItem || !(products?.records?.length > 0) || size > 0)}
+        onClick={handleItemAdd}
         style={{ marginRight: 5 }}
       >
         {t('operations.addLineItem')}
@@ -296,15 +292,12 @@ const DeliveryDetailItems = ({
         {t('operations.deleteLineItem')}
       </Button>
 
-      <Tooltip 
-        placement="topLeft" 
-        title={t('tabColumns.ddiAddlInfo')}
-      >
+      <Tooltip placement="topLeft" title={t('tabColumns.ddiAddlInfo')}>
         <Button
           type="primary"
           icon={<EditOutlined />}
           style={{ float: 'right', marginRight: 5 }}
-          disabled={disabled || selected?.[0]?.ddi_action==='+'}
+          disabled={disabled || selected?.[0]?.ddi_action === '+'}
           onClick={() => setDdiAddlInfoVisible(true)}
         >
           {t('operations.additionalInfo')}
@@ -315,9 +308,9 @@ const DeliveryDetailItems = ({
         <Drawer
           title={t('tabColumns.ddiAddlInfo')}
           placement="right"
-          bodyStyle={{ paddingTop: 40, paddingRight: 30 }}
+          styles={{ body: { paddingTop: 40, paddingRight: 30 } }}
           onClose={() => setDdiAddlInfoVisible(false)}
-          visible={ddiAddlInfoVisible}
+          open={ddiAddlInfoVisible}
           width="50vw"
         >
           <DdiAdditionalInfo

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BackTop, Button, Input, Tabs, Checkbox } from 'antd';
+import { FloatButton, Button, Input, Tabs, Checkbox } from 'antd';
 import { UpOutlined, PlusOutlined } from '@ant-design/icons';
 
 import useSWR from 'swr';
@@ -25,6 +25,7 @@ import sumcolumns from './summary/columns';
 
 const { Search } = Input;
 const { TabPane } = Tabs;
+const { BackTop } = FloatButton;
 
 const TankView = () => {
   const config = useConfig();
@@ -32,7 +33,7 @@ const TankView = () => {
 
   const access = useAuth('M_TANKVIEW');
 
-  const { data, revalidate } = useSWR(TANKS.READ, {
+  const { data, mutate: revalidate } = useSWR(TANKS.READ, {
     refreshInterval: 1000,
   });
 

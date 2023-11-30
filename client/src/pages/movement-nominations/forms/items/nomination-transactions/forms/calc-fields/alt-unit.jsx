@@ -38,7 +38,7 @@ const AltQtyUnit = ({ form, value, altQty, pageState }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         loading={isValidating}
         showSearch
         allowClear

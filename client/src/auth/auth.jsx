@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { connect } from 'react-redux';
 import jwtDecode from 'jwt-decode';
 
@@ -12,7 +12,7 @@ export default (Authenticated) => {
     const config = useContext(ConfigStore);
     const isIdle = useIdle();
 
-    let history = useHistory();
+    let navigate = useNavigate();
 
     const [user, setUser] = useState(null);
 
@@ -24,15 +24,15 @@ export default (Authenticated) => {
           setUser(decoded);
         }
       } catch (error) {
-        history.push(ROUTES.LOG_OUT);
+        navigate(ROUTES.LOG_OUT);
       }
     }, [token]);
 
     useEffect(() => {
       if (isIdle) {
-        history.push(ROUTES.LOG_OUT);
+        navigate(ROUTES.LOG_OUT);
       }
-    }, [isIdle, history]);
+    }, [isIdle, navigate]);
 
     return <Authenticated user={user} config={config} />;
   };

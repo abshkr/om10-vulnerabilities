@@ -14,12 +14,13 @@ const NominationKey = ({ form, value }) => {
   const { t } = useTranslation();
   const { setFieldsValue, validateFields } = form;
 
-  const { data, isValidating, revalidate } = useSWR(
-    `${MOVEMENT_NOMIATIONS.CHECK_NOMKEY}?nomination_key=${nomkey}`,
-    {
-      refreshInterval: 0,
-    }
-  );
+  const {
+    data,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(`${MOVEMENT_NOMIATIONS.CHECK_NOMKEY}?nomination_key=${nomkey}`, {
+    refreshInterval: 0,
+  });
 
   useEffect(() => {
     if (value) {

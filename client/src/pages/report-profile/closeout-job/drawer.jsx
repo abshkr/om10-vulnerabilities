@@ -43,7 +43,7 @@ const Drawer = ({ form, value, param, supplier, onChange }) => {
       {...itemLayout}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

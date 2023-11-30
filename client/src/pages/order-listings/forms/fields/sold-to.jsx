@@ -24,7 +24,7 @@ const SoldTo = ({ form, value, supplier, pageState }) => {
   return (
     <Form.Item name="order_sold_to_num" label={t('fields.orderSoldTo')}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

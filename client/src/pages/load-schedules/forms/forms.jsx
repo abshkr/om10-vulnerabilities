@@ -39,7 +39,7 @@ import moment from 'moment';
 import useSWR, { mutate } from 'swr';
 import api from 'api';
 import _ from 'lodash';
-import { Scrollbars } from 'react-custom-scrollbars';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 
 import {
   Supplier,
@@ -227,7 +227,11 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
     refreshInterval: 0,
   });
 
-  const { data: validTrips, isValidating, revalidate } = useSWR(
+  const {
+    data: validTrips,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(
     config?.siteUniqueTripOrdNum
       ? `${COMPANIES.CHECK_TRIPORD_NUM}?trip_order_num=${suppTrip}`
       : `${LOAD_SCHEDULES.CHECK_SUPPLIER_TRIP}?shls_trip_no=${suppTrip}&supplier_code=${supplier}`,
@@ -463,7 +467,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
       <div style={{ width: '15w' }}>
         <Select
           style={{ width: '100%' }}
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           showSearch
           // optionFilterProp="children"
           placeholder={t('descriptions.cancelWarningFields')}
@@ -1475,7 +1479,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
   // const MASK_FLAG = config?.siteFormCloseAlert ? true : (IS_CREATING || tab === '8' || tab === '9');
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={() => onExitClicked()}
       maskClosable={IS_CREATING}
@@ -1483,7 +1487,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
       destroyOnClose
       placement="right"
       width={drawerWidth}
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button
@@ -2129,9 +2133,9 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
           <Drawer
             title={t('tabColumns.createTripTransactions')}
             placement="right"
-            bodyStyle={{ paddingTop: 5 }}
+            styles={{ body: { paddingTop: 5 } }}
             onClose={() => onPopupExitClicked(setShowCreateTransactions)}
-            visible={showCreateTransactions}
+            open={showCreateTransactions}
             width="100vw"
             destroyOnClose={true}
           >
@@ -2155,9 +2159,9 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateTrip, d
         <Drawer
           title={t('tabColumns.repostTripTransactions')}
           placement="right"
-          bodyStyle={{ paddingTop: 5 }}
+          styles={{ body: { paddingTop: 5 } }}
           onClose={() => onPopupExitClicked(setShowRepostTransactions)}
-          visible={showRepostTransactions}
+          open={showRepostTransactions}
           width="100vw"
           destroyOnClose={true}
         >

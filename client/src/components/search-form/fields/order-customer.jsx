@@ -9,22 +9,17 @@ import { ORDER_LISTINGS } from 'api';
 const OrderCustomer = ({ value, supplier, onChange }) => {
   const { t } = useTranslation();
 
-  const { data: options, isValidating } = useSWR(
-    `${ORDER_LISTINGS.SUPP_CUSTOMERS}?supplier=${supplier}`,
-    { refreshInterval: 0,
-    }
-  );
+  const { data: options, isValidating } = useSWR(`${ORDER_LISTINGS.SUPP_CUSTOMERS}?supplier=${supplier}`, {
+    refreshInterval: 0,
+  });
 
   return (
-    <Form.Item
-      name="order_cust_acnt"
-      label={t('fields.custCompany')}
-    >
+    <Form.Item name="order_cust_acnt" label={t('fields.custCompany')}>
       <Select
         loading={isValidating}
         showSearch
         allowClear
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         onChange={onChange}
         disabled={!!value}
         optionFilterProp="children"

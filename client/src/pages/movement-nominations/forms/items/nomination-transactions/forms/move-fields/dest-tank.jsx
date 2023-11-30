@@ -12,10 +12,7 @@ const DestinationTank = ({ form, value, onChange, pageState, config }) => {
 
   const { setFieldsValue } = form;
 
-  const {
-    data: options,
-    isValidating,
-  } = useSWR(
+  const { data: options, isValidating } = useSWR(
     `${NOMINATION_TRANSACTIONS.TANKS_BY_DRAWPROD}?supplier=${value?.mvitm_prodcmpy_to}&product=${value?.mvitm_prodcode_to}`,
     { refreshInterval: 0 }
   );
@@ -67,7 +64,7 @@ const DestinationTank = ({ form, value, onChange, pageState, config }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         loading={isValidating}
         allowClear
         showSearch

@@ -15,7 +15,11 @@ const Meters = ({ id, folioLine, enabled, meterTrigger, saveToMetersTrigger }) =
 
   const [data, setData] = useState([]);
 
-  const { data: payload, isValidating, revalidate } = useSWR(`${FOLIO_SUMMARY.METERS}?closeout_nr=${id}`, {
+  const {
+    data: payload,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(`${FOLIO_SUMMARY.METERS}?closeout_nr=${id}`, {
     revalidateOnFocus: false,
   });
 

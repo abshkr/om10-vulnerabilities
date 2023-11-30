@@ -90,7 +90,7 @@ const FormSwitch = ({ config, onChange }) => {
     case 'URBAC_PWD_COMPLEXITY':
       return (
         <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           allowClear
           defaultValue={config.config_value}
           style={{ width: 280 }}
@@ -105,7 +105,7 @@ const FormSwitch = ({ config, onChange }) => {
     case 'SITE_AFC_ARM_PRIORITY':
       return (
         <Select
-          // dropdownMatchSelectWidth={false}
+          // popupMatchSelectWidth={false}
           defaultValue={config.config_value}
           allowClear
           style={{ width: 280 }}
@@ -123,7 +123,7 @@ const FormSwitch = ({ config, onChange }) => {
     case 'SHLS_SEAL_FMT':
       return (
         <Select
-          // dropdownMatchSelectWidth={false}
+          // popupMatchSelectWidth={false}
           allowClear
           defaultValue={config.config_value}
           style={{ width: 280 }}
@@ -137,7 +137,7 @@ const FormSwitch = ({ config, onChange }) => {
     case 'SITE_SEAL_MODE':
       return (
         <Select
-          // dropdownMatchSelectWidth={false}
+          // popupMatchSelectWidth={false}
           allowClear
           defaultValue={config.config_value}
           style={{ width: 280 }}
@@ -502,7 +502,7 @@ const FormSwitch = ({ config, onChange }) => {
     case 'SITE_DEC_TH_SEPERATORS':
       return (
         <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           allowClear
           defaultValue={config.config_value}
           style={{ width: 360 }}

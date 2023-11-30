@@ -163,7 +163,7 @@ const PeriodForm = ({ value, units, parent, revalidate, data, form }) => {
 
           <Form.Item name="oprd_prod_unit" label={t('fields.oprdUnitName')}>
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               allowClear
               loading={!units}
               showSearch
@@ -231,7 +231,11 @@ const Period = ({ visible, setVisibility, selected, order, form }) => {
 
   const SHOULD_FETCH = !!selected;
 
-  const { data, isValidating, revalidate } = useSWR(
+  const {
+    data,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(
     SHOULD_FETCH
       ? `${ORDER_LISTINGS.PERIOD_READ}?oprd_order_id=${selected?.oitem_order_id}&oprd_prod_cmpy=${selected?.oitem_prod_cmpy}&oprd_prod_code=${selected?.oitem_prod_code}`
       : null
@@ -275,11 +279,11 @@ const Period = ({ visible, setVisibility, selected, order, form }) => {
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       width="40vw"
       onClose={() => setVisibility(false)}
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button

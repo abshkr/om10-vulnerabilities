@@ -20,14 +20,19 @@ const PreSchedules = ({ value, form, supplier, config }) => {
   const [compartments, setCompartments] = useState([]);
   const [selected, setSelected] = useState(null);
 
-  const { data: payload, isValidating, revalidate } = useSWR(
-    `${STAGING_BAY.PRE_SCHEDULES}?supplier=${supplier}`,
-    {
-      refreshInterval: 0,
-    }
-  );
+  const {
+    data: payload,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(`${STAGING_BAY.PRE_SCHEDULES}?supplier=${supplier}`, {
+    refreshInterval: 0,
+  });
 
-  const { data: pickup, isValidatingPickup, revalidatePickup } = useSWR(
+  const {
+    data: pickup,
+    isValidating: isValidatingPickup,
+    mutate: revalidatePickup,
+  } = useSWR(
     `${STAGING_BAY.PICKUP_SPECS}?shls_trip_no=${value?.shls_trip_no}&supplier_code=${value?.supplier_code}`,
     {
       refreshInterval: 0,

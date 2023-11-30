@@ -24,10 +24,12 @@ const TankInventory = () => {
   // const [terminal, setTerminal] = useState(site_code);
   const [terminal, setTerminal] = useState('');
 
-  // const { data, revalidate, isValidating } = useSWR(STOCK_MANAGEMENT.TANK_INVENTORY);
-  const { data, revalidate, isValidating } = useSWR(
-    `${STOCK_MANAGEMENT.TANK_INVENTORY}?terminal=${terminal}`
-  );
+  // const { data, mutate: revalidate, isValidating } = useSWR(STOCK_MANAGEMENT.TANK_INVENTORY);
+  const {
+    data,
+    mutate: revalidate,
+    isValidating,
+  } = useSWR(`${STOCK_MANAGEMENT.TANK_INVENTORY}?terminal=${terminal}`);
 
   const payload = data?.records;
   const fields = columns(t, config);

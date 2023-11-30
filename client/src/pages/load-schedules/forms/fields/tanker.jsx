@@ -98,7 +98,7 @@ const Tanker = ({ form, value, carrier, onChange, activeTrips }) => {
           rules={[{ required: true, validator: validate }]}
         >
           <Select
-            dropdownMatchSelectWidth={false}
+            popupMatchSelectWidth={false}
             allowClear
             loading={isValidating}
             showSearch

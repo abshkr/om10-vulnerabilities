@@ -233,7 +233,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={() => onExitClicked()}
       maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
@@ -241,7 +241,7 @@ const FormModal = ({ value, visible, handleFormState, isCombination, access, set
       mask={config?.siteFormCloseAlert ? true : IS_CREATING}
       placement="right"
       width={IS_CREATING && IS_COMBINATION && visible ? '100vw' : '50vw'}
-      visible={visible}
+      open={visible}
       footer={
         <>
           {!IS_CREATING && (

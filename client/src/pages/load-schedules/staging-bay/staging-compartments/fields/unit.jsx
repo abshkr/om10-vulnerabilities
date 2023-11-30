@@ -40,7 +40,7 @@ export default class Unit extends Component {
     return (
       <div style={{ display: 'flex' }}>
         <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           allowClear
           value={this.state.value}
           style={{ width: '100%' }}

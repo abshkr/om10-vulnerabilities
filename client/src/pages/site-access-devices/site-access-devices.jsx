@@ -17,7 +17,7 @@ const SiteAccessDevices = () => {
 
   const access = useAuth('M_SITEACCESSDEVICES');
 
-  const { data: payload, isValidating, revalidate } = useSWR(SITE_ACCESS_DEVICES.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(SITE_ACCESS_DEVICES.READ);
   const { data: codes } = useSWR(SITE_ACCESS_DEVICES.DEVICE_CODES);
 
   const [visible, setVisible] = useState(false);

@@ -322,7 +322,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={onExitClicked}
       maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
@@ -330,7 +330,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, locateNominat
       mask={config?.siteFormCloseAlert ? true : maskFlag}
       placement="right"
       width="80vw"
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button

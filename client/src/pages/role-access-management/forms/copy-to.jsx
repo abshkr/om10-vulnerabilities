@@ -51,7 +51,7 @@ const CopyTo = ({ current, targets, onCopyReturn }) => {
     <Form form={form} onFinish={onFinish} scrollToFirstError style={{ marginTop: '1rem' }}>
       <Form.Item name="role_id" label={t('fields.copyToRole')}>
         <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           allowClear
           showSearch
           optionFilterProp="children"

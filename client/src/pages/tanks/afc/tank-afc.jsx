@@ -300,14 +300,14 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks, config 
       </Card>
 
       <Drawer
-        bodyStyle={{ paddingTop: 5 }}
+        styles={{ body: { paddingTop: 5 } }}
         onClose={() => handleFormState(false, null)}
         maskClosable={IS_CREATING}
         destroyOnClose={true}
         mask={IS_CREATING}
         placement="right"
         width="30vw"
-        visible={visible}
+        open={visible}
         footer={
           <>
             <Button
@@ -351,7 +351,7 @@ const TankAdaptiveFlowControl = ({ terminal, code, value, access, tanks, config 
                 rules={[{ required: true, label: t('fields.tank') }]}
               >
                 <Select
-                  dropdownMatchSelectWidth={false}
+                  popupMatchSelectWidth={false}
                   allowClear
                   disabled={true}
                   showSearch

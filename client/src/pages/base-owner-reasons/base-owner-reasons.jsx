@@ -18,7 +18,7 @@ const BaseOwnerReasons = ({ access }) => {
 
   // const access = useAuth('M_MOVEMENTREASON');
 
-  const { data: payload, isValidating, revalidate } = useSWR(OWNER_TRSA_REASONS.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(OWNER_TRSA_REASONS.READ);
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);

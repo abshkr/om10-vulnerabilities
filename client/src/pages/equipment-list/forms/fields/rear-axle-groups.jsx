@@ -56,7 +56,7 @@ const RearAxleGroups = ({ form, value, etype }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         disabled={false}

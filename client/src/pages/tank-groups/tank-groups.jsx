@@ -21,7 +21,7 @@ const TankGroups = () => {
 
   const access = useAuth('M_TANKGROUPS');
 
-  const { data: payload, isValidating, revalidate } = useSWR(TANK_GROUPS.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(TANK_GROUPS.READ);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);

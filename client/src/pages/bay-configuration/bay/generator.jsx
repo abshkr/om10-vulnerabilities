@@ -96,10 +96,12 @@ const generator = (array, t) => {
             name: `${t('fields.tank')}: ${getKeyText(tanks[0]?.stream_tankcode, tanks[0]?.stream_tankname)}`,
             type: 'tank',
             attributes: {
-              [t('fields.baseProduct')]: `${tanks[0]?.stream_basecode} - ${tanks[0]?.stream_basename}`,
-              [t(
-                'fields.baseClass'
-              )]: `${tanks[0]?.stream_bclass_code} - ${tanks[0]?.stream_bclass_nmae} (${tanks[0]?.stream_bclass_lodens} ~ ${tanks[0]?.stream_bclass_hidens})`,
+              baseprod: `${t('fields.baseProduct')}: ${tanks[0]?.stream_basecode} - ${
+                tanks[0]?.stream_basename
+              }`,
+              baseclass: `${t('fields.baseClass')}: ${tanks[0]?.stream_bclass_code} - ${
+                tanks[0]?.stream_bclass_nmae
+              } (${tanks[0]?.stream_bclass_lodens} ~ ${tanks[0]?.stream_bclass_hidens})`,
             },
 
             nodeSvgShape: {
@@ -134,10 +136,12 @@ const generator = (array, t) => {
                 )}`,
                 type: 'tank',
                 attributes: {
-                  [t('fields.baseProduct')]: `${tanks[0]?.stream_basecode} - ${tanks[0]?.stream_basename}`,
-                  [t(
-                    'fields.baseClass'
-                  )]: `${tanks[0]?.stream_bclass_code} - ${tanks[0]?.stream_bclass_nmae} (${tanks[0]?.stream_bclass_lodens} ~ ${tanks[0]?.stream_bclass_hidens})`,
+                  baseprod: `${t('fields.baseProduct')}: ${tanks[0]?.stream_basecode} - ${
+                    tanks[0]?.stream_basename
+                  }`,
+                  baseclass: `${t('fields.baseClass')}: ${tanks[0]?.stream_bclass_code} - ${
+                    tanks[0]?.stream_bclass_nmae
+                  } (${tanks[0]?.stream_bclass_lodens} ~ ${tanks[0]?.stream_bclass_hidens})`,
                 },
 
                 nodeSvgShape: {

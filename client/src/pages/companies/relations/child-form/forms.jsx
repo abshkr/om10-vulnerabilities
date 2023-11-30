@@ -18,7 +18,7 @@ const ChildForm = ({ value, visible, returnChild, setChildVisible }) => {
   const onCancel = () => {
     setChildVisible(false);
     resetFields();
-  }
+  };
 
   const onFinish = async () => {
     const values = await form.validateFields();
@@ -31,20 +31,17 @@ const ChildForm = ({ value, visible, returnChild, setChildVisible }) => {
 
   return (
     <Modal
-      title={(IS_CREATING?t("operations.add"):t("operations.update")) + " " + t('tabColumns.companyRelation') }
-      visible={visible}
+      title={
+        (IS_CREATING ? t('operations.add') : t('operations.update')) + ' ' + t('tabColumns.companyRelation')
+      }
+      open={visible}
       footer={null}
       // onOk={this.handleOk}
       onCancel={onCancel}
       // okButtonProps={{ disabled: true }}
       // cancelButtonProps={{ disabled: true }}
     >
-      <Form 
-        form={form} 
-        onFinish={onFinish} 
-        scrollToFirstError
-        layout="vertical" 
-      >
+      <Form form={form} onFinish={onFinish} scrollToFirstError layout="vertical">
         <ParentSelect value={value} form={form} visible={visible} />
 
         <ChildSelect value={value} form={form} visible={visible} />
@@ -53,23 +50,15 @@ const ChildForm = ({ value, visible, returnChild, setChildVisible }) => {
 
         <CommentInput value={value} form={form} visible={visible} />
 
-        <br/>
+        <br />
 
         <Form.Item>
-          <Button
-            htmlType="button"
-            style={{ float: 'right' }}
-            onClick={onCancel}
-          >
+          <Button htmlType="button" style={{ float: 'right' }} onClick={onCancel}>
             {t('operations.cancel')}
           </Button>
 
-          <Button
-            type="primary"
-            htmlType="submit"
-            style={{ float: 'right', marginRight: 5 }}
-          >
-            {IS_CREATING?t("operations.add"):t("operations.update")}
+          <Button type="primary" htmlType="submit" style={{ float: 'right', marginRight: 5 }}>
+            {IS_CREATING ? t('operations.add') : t('operations.update')}
           </Button>
         </Form.Item>
       </Form>

@@ -13,7 +13,7 @@ const EqptType = ({ value, onChange }) => {
   return (
     <Form.Item name="eqpt_etp" label={t('fields.equipmentType')}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         dropdownStyle={{ maxWidth: '40vw' }}
         loading={isValidating}
         disabled={!!value}

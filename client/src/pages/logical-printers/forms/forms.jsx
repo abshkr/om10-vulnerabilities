@@ -138,7 +138,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
@@ -146,7 +146,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       mask={IS_CREATING}
       placement="right"
       width="30vw"
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button

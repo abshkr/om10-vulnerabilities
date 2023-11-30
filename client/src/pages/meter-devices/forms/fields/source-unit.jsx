@@ -43,7 +43,7 @@ const SourceUnit = ({ form, value, source }) => {
     >
       {IS_TANK ? (
         <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           allowClear
           loading={isValidating}
           showSearch

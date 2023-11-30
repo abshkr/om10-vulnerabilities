@@ -103,7 +103,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, config }) => 
   // const MASK_FLAG = config?.siteFormCloseAlert ? true : (IS_CREATING || tab === '8' || tab === '9');
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={() => onExitClicked()}
       maskClosable={false}
@@ -111,7 +111,7 @@ const FormModal = ({ value, visible, handleFormState, access, url, config }) => 
       destroyOnClose
       placement="right"
       width={'75vw'}
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button

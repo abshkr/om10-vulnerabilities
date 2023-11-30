@@ -829,7 +829,7 @@ const DrawerForm = ({
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={() => onExitClicked()}
       maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
@@ -837,7 +837,7 @@ const DrawerForm = ({
       mask={config?.siteFormCloseAlert ? true : maskFlag}
       placement="right"
       width="60vw"
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button

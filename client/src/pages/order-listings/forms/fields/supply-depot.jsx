@@ -34,7 +34,7 @@ const SupplyDepot = ({ form, value, pageState }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         disabled={pageState === 'create' || pageState === 'edit' ? false : true}

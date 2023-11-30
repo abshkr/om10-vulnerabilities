@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, List, Dropdown, Button, Badge } from 'antd';
-import { Scrollbars } from 'react-custom-scrollbars';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 
 import { BellOutlined, CloseOutlined, StopOutlined } from '@ant-design/icons';
 
@@ -174,7 +174,7 @@ const Events = () => {
   );
 
   return (
-    <Dropdown visible={visible} overlay={menu} onVisibleChange={setVisible} trigger={['click']}>
+    <Dropdown open={visible} menu={menu} onOpenChange={setVisible} trigger={['click']}>
       <Button type="primary" size="large" shape="circle" style={{ marginRight: 7 }}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <Badge count={alarms?.length} offset={[10, -5]}>

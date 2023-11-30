@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, Dropdown, Menu, message, notification, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { StarOutlined } from '@ant-design/icons';
-import { useHistory } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import useSWR from 'swr';
 import _ from 'lodash';
 
@@ -14,18 +14,20 @@ import api, { AUTH } from '../../api';
 
 const Favourites = () => {
   const config = useConfig();
-  // const { data, revalidate } = useSWR(AUTH.SETUP);
+  // const { data, mutate: revalidate } = useSWR(AUTH.SETUP);
   // these two parameters have no effects on URL itself, but will trigger the refresh when features change
-  const { data, revalidate } = useSWR(
+  const { data, mutate: revalidate } = useSWR(
     `${AUTH.SETUP}?audit=${config.manageAuditing}&partner=${config.managePartnersAndPartnership}`
   );
 
   const { t } = useTranslation();
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [items, setItems] = useState([]);
 
-  const current = history?.location?.pathname;
+  const current = location?.pathname;
+  console.log('...............current', current, location);
   const disabled = ['/home', '/configuration', '/settings'].includes(current);
   const exists = _.find(data?.records, ['config_key', current]);
 
@@ -100,7 +102,7 @@ const Favourites = () => {
     }
 
     if (event?.key?.startsWith('/')) {
-      history.push(event?.key);
+      navigate(event?.key);
     }
   };
 
@@ -122,16 +124,20 @@ const Favourites = () => {
           item.config_key !== ROUTES.PARTNERS &&
           item.config_key !== ROUTES.PARTNERSHIP
         ) {
-          payload.push(<Menu.Item key={item.config_key}>{item.config_value}</Menu.Item>);
+          // payload.push(<Menu.Item key={item.config_key}>{item.config_value}</Menu.Item>);
+          payload.push({ key: item.config_key, label: item.config_value });
         } else {
           if (item.config_key === ROUTES.AUDITING_DATA && config.manageAuditing) {
-            payload.push(<Menu.Item key={item.config_key}>{item.config_value}</Menu.Item>);
+            // payload.push(<Menu.Item key={item.config_key}>{item.config_value}</Menu.Item>);
+            payload.push({ key: item.config_key, label: item.config_value });
           }
           if (item.config_key === ROUTES.PARTNERS && config.managePartnersAndPartnership) {
-            payload.push(<Menu.Item key={item.config_key}>{item.config_value}</Menu.Item>);
+            // payload.push(<Menu.Item key={item.config_key}>{item.config_value}</Menu.Item>);
+            payload.push({ key: item.config_key, label: item.config_value });
           }
           if (item.config_key === ROUTES.PARTNERSHIP && config.managePartnersAndPartnership) {
-            payload.push(<Menu.Item key={item.config_key}>{item.config_value}</Menu.Item>);
+            // payload.push(<Menu.Item key={item.config_key}>{item.config_value}</Menu.Item>);
+            payload.push({ key: item.config_key, label: item.config_value });
           }
         }
         // payload.push(<Menu.Item key={item.config_key}>{item.config_value}</Menu.Item>);
@@ -142,19 +148,22 @@ const Favourites = () => {
   }, [data]);
 
   const menu = (
-    <Menu onClick={onMenuEvent}>
-      {items}
-
-      <Menu.Divider />
-
-      <Menu.Item key="9999" disabled={disabled}>
-        {exists ? t('operations.removeFromFavourites') : t('operations.addToFavourites')}
-      </Menu.Item>
-    </Menu>
+    <Menu
+      onClick={onMenuEvent}
+      items={[
+        ...items,
+        { type: 'divider' },
+        {
+          key: '9999',
+          disabled: disabled,
+          label: exists ? t('operations.removeFromFavourites') : t('operations.addToFavourites'),
+        },
+      ]}
+    ></Menu>
   );
 
   return (
-    <Dropdown overlay={menu} trigger={['click']}>
+    <Dropdown menu={menu} trigger={['click']}>
       <Tooltip placement="topLeft" title={t('messages.favourites')}>
         <Button type="primary" size="large" shape="circle" style={{ marginRight: 7 }}>
           <div style={{ display: 'flex', justifyContent: 'center' }}>

@@ -37,7 +37,7 @@ const ProductGroup = ({ form, value }) => {
         rules={[{ required: true, validator: validate }]}
       >
         <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           allowClear
           loading={isValidating}
           disabled={value}

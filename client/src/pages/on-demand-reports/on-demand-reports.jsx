@@ -289,7 +289,7 @@ const OnDemandReports = () => {
             rules={[{ required: true, message: `${t('validate.select')} ─ ${t('fields.supplier')}` }]}
           >
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               allowClear
               loading={isLoading}
               showSearch
@@ -315,7 +315,7 @@ const OnDemandReports = () => {
             rules={[{ required: true, message: `${t('validate.select')} ─ ${t('fields.report')}` }]}
           >
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               allowClear
               loading={isLoading}
               showSearch

@@ -19,7 +19,7 @@ const OrderCustomer = ({ value, supplier, onChange }) => {
         loading={isValidating}
         allowClear
         showSearch
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         onChange={onChange}
         disabled={!!value}
         optionFilterProp="children"

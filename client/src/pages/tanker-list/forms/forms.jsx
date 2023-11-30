@@ -9,7 +9,7 @@ import {
   UnlockOutlined,
 } from '@ant-design/icons';
 
-import { Scrollbars } from 'react-custom-scrollbars';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 import {
   Form,
   Button,
@@ -514,7 +514,7 @@ const FormModal = ({
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={onExitClicked}
       maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
@@ -522,7 +522,7 @@ const FormModal = ({
       mask={config?.siteFormCloseAlert ? true : maskFlag}
       placement="right"
       width="60vw"
-      visible={visible}
+      open={visible}
       footer={
         <>
           {!IS_CREATING && (

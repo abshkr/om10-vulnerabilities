@@ -7,7 +7,7 @@ import {
   SaveOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
-import { Scrollbars } from 'react-custom-scrollbars';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 import { Button, Form, Modal, notification, message, Card, Spin } from 'antd';
 import { useTranslation } from 'react-i18next';
 

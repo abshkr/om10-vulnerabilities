@@ -57,7 +57,7 @@ const SuppCompany = ({ form, value, type, onChange, exchange, owner }) => {
   return (
     <Form.Item name="alloc_cmpycode" label={label} rules={[{ required: true, validator: validate }]}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         // loading={isValidating}
         disabled={!!value}

@@ -32,7 +32,7 @@ const Employer = ({ form, param, parent }) => {
       {...itemLayout}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

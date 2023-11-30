@@ -27,7 +27,7 @@ const SpecialMovements = () => {
   const [start, setStart] = useState(moment().subtract(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const [end, setEnd] = useState(moment().add(7, 'days').format(SETTINGS.DATE_TIME_FORMAT));
   const url = `${SPECIAL_MOVEMENTS.READ}?start_date=${start}&end_date=${end}`;
-  const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(url, { revalidateOnFocus: false });
 
   const fields = columns(t);
   // const data = payload?.records;

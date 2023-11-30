@@ -28,7 +28,7 @@ const Supplier = ({ form, value }) => {
   return (
     <Form.Item name="mv_supplier" label={t('fields.supplier')}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

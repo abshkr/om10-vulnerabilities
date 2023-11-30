@@ -63,7 +63,7 @@ const Supplier = ({ form, value, type, onChange, multiAllocFlag }) => {
       rules={[{ required: type !== '1', validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         onChange={onChange}

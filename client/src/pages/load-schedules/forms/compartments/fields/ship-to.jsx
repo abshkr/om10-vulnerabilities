@@ -38,12 +38,12 @@ export default class ShipTo extends Component {
 
     return (
       <div style={{ width: '100%', display: 'flex' }}>
-        <Select 
-          dropdownMatchSelectWidth={false}
+        <Select
+          popupMatchSelectWidth={false}
           allowClear
-          value={this.state.value} 
-          style={{ width: '100%' }} 
-          onChange={this.onClick} 
+          value={this.state.value}
+          style={{ width: '100%' }}
+          onChange={this.onClick}
           bordered={false}
         >
           {values?.map((item) => (

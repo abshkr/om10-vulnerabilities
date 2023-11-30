@@ -71,7 +71,7 @@ const OrderPicker = ({ params, onClose, modal }) => {
       ? `${ORDER_LISTINGS.READ}?start_date=${start}&end_date=${end}&time_option=${timeOption}`
       : null;
 
-  const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(url, { revalidateOnFocus: false });
 
   //const data = payload?.records;
   const isLoading = isValidating || !data;
@@ -244,7 +244,7 @@ const OrderPicker = ({ params, onClose, modal }) => {
     <>
       <div style={{ float: 'left' }}>
         <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           allowClear
           defaultValue={filterByExpiry ? 'ORDER_EXP_TIME' : 'ORDER_ORD_TIME'}
           onChange={setTimeOption}

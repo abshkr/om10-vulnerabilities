@@ -4,7 +4,7 @@ const InterfaceContainer = styled.div`
   & .ant-layout {
     background: rgb(95, 126, 152);
     background: ${(props) =>
-      props.isFSC
+      props?.isFSC
         ? 'radial-gradient(circle, rgba(254,111,111,1) 0%, rgba(95,98,152,1) 100%)'
         : 'linear-gradient(250deg, rgba(95, 126, 152, 1) 0%, rgba(168, 181, 189, 1) 100%)'};
   }

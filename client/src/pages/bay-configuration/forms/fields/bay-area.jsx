@@ -34,7 +34,7 @@ const BayArea = ({ form, value, disabled }) => {
   return (
     <Form.Item name="ba_area" label={t('fields.bayArea')} rules={[{ required: true, validator: validate }]}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

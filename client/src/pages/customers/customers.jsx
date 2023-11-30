@@ -23,7 +23,7 @@ const Customers = () => {
 
   const access = useAuth('M_CUSTOMERS');
 
-  const { data: payload, isValidating, revalidate } = useSWR(CUSTOMERS.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(CUSTOMERS.READ);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);

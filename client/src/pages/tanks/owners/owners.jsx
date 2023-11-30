@@ -360,7 +360,7 @@ const TankOwners = ({ terminal, code, value, access, tanks, config }) => {
     <>
       <Card hoverable>
         {/* <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           disabled={true}
           style={{ width: '100%' }}
           value={code+'|'+terminal}
@@ -435,14 +435,14 @@ const TankOwners = ({ terminal, code, value, access, tanks, config }) => {
       </Card>
 
       <Drawer
-        bodyStyle={{ paddingTop: 5 }}
+        styles={{ body: { paddingTop: 5 } }}
         onClose={() => handleFormState(false, null)}
         maskClosable={IS_CREATING}
         destroyOnClose={true}
         mask={IS_CREATING}
         placement="right"
         width="30vw"
-        visible={visible}
+        open={visible}
         footer={
           <>
             <Button
@@ -488,7 +488,7 @@ const TankOwners = ({ terminal, code, value, access, tanks, config }) => {
                 rules={[{ required: true, label: t('fields.tank') }]}
               >
                 <Select
-                  dropdownMatchSelectWidth={false}
+                  popupMatchSelectWidth={false}
                   disabled={true}
                   showSearch
                   optionFilterProp="children"
@@ -519,7 +519,7 @@ const TankOwners = ({ terminal, code, value, access, tanks, config }) => {
                 rules={[{ required: true, validator: validateList, label: t('fields.tkcmpyLink') }]}
               >
                 <Select
-                  dropdownMatchSelectWidth={false}
+                  popupMatchSelectWidth={false}
                   allowClear
                   loading={isValidating}
                   showSearch

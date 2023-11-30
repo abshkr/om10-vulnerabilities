@@ -4,7 +4,7 @@ import { Button, Dropdown, Menu, message, notification, Tooltip, List, Switch } 
 import { useTranslation } from 'react-i18next';
 import { EyeOutlined, EditOutlined } from '@ant-design/icons';
 import _ from 'lodash';
-import { Scrollbars } from 'react-custom-scrollbars';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 
 import api, { AUTH } from '../../api';
 import { updateUserPageColumns } from 'utils';
@@ -129,7 +129,7 @@ const AdjustableColumns = ({ pageColumns, pageModule, columnAPI, columnLoader, s
   );
 
   return (
-    <Dropdown visible={visible} overlay={menu} onVisibleChange={handleVisibleChange} trigger={['click']}>
+    <Dropdown open={visible} menu={menu} onOpenChange={handleVisibleChange} trigger={['click']}>
       <Tooltip placement="topLeft" title={t('descriptions.columnVisibility')}>
         <Button type="primary" icon={<EyeOutlined />} style={{ float: 'right', marginRight: 5 }}>
           {t('operations.updateColumnVisibility')}

@@ -22,7 +22,7 @@ const Locations = ({ handleFormState, visible, selected, access }) => {
   const config = useConfig();
   const [visibleGroup, setVisibleGroup] = useState(false);
 
-  const { data: payload, isValidating, revalidate } = useSWR(SITE_CONFIGURATION.TERMINALS);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(SITE_CONFIGURATION.TERMINALS);
 
   const { t } = useTranslation();
 
@@ -65,7 +65,7 @@ const Locations = ({ handleFormState, visible, selected, access }) => {
 
       <Drawer
         title={t('pageNames.terminalGroups')}
-        bodyStyle={{ paddingTop: 5 }}
+        styles={{ body: { paddingTop: 5 } }}
         forceRender
         onClose={() => setVisibleGroup(false)}
         maskClosable={false}
@@ -73,7 +73,7 @@ const Locations = ({ handleFormState, visible, selected, access }) => {
         mask={true}
         placement="right"
         width="80vw"
-        visible={visibleGroup}
+        open={visibleGroup}
         footer={
           <>
             <Button

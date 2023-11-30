@@ -9,7 +9,7 @@ import { Form, Select } from 'antd';
 const Category = ({ form, value, reload }) => {
   const { t } = useTranslation();
 
-  const { data: options, isValidating, revalidate } = useSWR(CUSTOMER_CATEGORIES.READ);
+  const { data: options, isValidating, mutate: revalidate } = useSWR(CUSTOMER_CATEGORIES.READ);
 
   const { setFieldsValue } = form;
 
@@ -38,13 +38,13 @@ const Category = ({ form, value, reload }) => {
   }, [reload, revalidate]);
 
   const handChange = (value) => {
-    console.log('selection',value);
+    console.log('selection', value);
     if (value === undefined) {
       setFieldsValue({
         cust_ctgr_code: '',
       });
     }
-  }
+  };
 
   return (
     <Form.Item
@@ -53,7 +53,7 @@ const Category = ({ form, value, reload }) => {
       rules={[{ required: false, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         loading={isValidating}
         allowClear
         showSearch

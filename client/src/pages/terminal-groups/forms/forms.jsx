@@ -9,7 +9,20 @@ import {
   CheckOutlined,
 } from '@ant-design/icons';
 
-import { Form, Button, Tabs, notification, Modal, Input, Select, Drawer, Divider, Checkbox, Row, Col } from 'antd';
+import {
+  Form,
+  Button,
+  Tabs,
+  notification,
+  Modal,
+  Input,
+  Select,
+  Drawer,
+  Divider,
+  Checkbox,
+  Row,
+  Col,
+} from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
@@ -45,22 +58,26 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     return results?.data;
   };
 
-  const onCheckGroupFlag = v => {
+  const onCheckGroupFlag = (v) => {
     setGroupFlag(v.target.checked);
     setFieldsValue({
       trmgrp_active: v.target.checked,
     });
-  }
+  };
 
   const onFinish = async () => {
     const values = await form.validateFields();
     // console.log('..................onFinish', values);
     let terminal_items = [];
     for (let i = 0; i < values?.tgl_terminal_list?.length; i++) {
-      const item = _.find(groupedTerminals, (o)=>(o?.term_code === values?.tgl_terminal_list?.[i]));
+      const item = _.find(groupedTerminals, (o) => o?.term_code === values?.tgl_terminal_list?.[i]);
       terminal_items.push({
         tgl_term_code: values?.tgl_terminal_list?.[i],
-        tgl_link_active: !item ? true : (item?.tgl_link_active==='' || item?.tgl_link_active===undefined) ? false : item?.tgl_link_active,
+        tgl_link_active: !item
+          ? true
+          : item?.tgl_link_active === '' || item?.tgl_link_active === undefined
+          ? false
+          : item?.tgl_link_active,
       });
     }
     values.terminal_items = terminal_items;
@@ -110,7 +127,10 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     setGroupedTerminals(items); */
 
     const option = selected[0];
-    const flag = (option?.tgl_link_active==='' || option?.tgl_link_active===undefined) ? false : option?.tgl_link_active
+    const flag =
+      option?.tgl_link_active === '' || option?.tgl_link_active === undefined
+        ? false
+        : option?.tgl_link_active;
     option.tgl_link_active = !flag;
 
     setSelected([option]);
@@ -251,7 +271,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
     // check if the group code is unique in CREATE mode
     if (IS_CREATING) {
       const groups = await getGroupsAsync();
-      const item = _.find(groups?.records, (o)=>(o?.trmgrp_code === input.trim()));
+      const item = _.find(groups?.records, (o) => o?.trmgrp_code === input.trim());
       console.log('..............validate uniqueness', groups, item, input);
       if (item) {
         return Promise.reject(t('descriptions.alreadyExists'));
@@ -299,7 +319,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={() => handleFormState(false, null)}
       maskClosable={IS_CREATING}
@@ -307,7 +327,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
       mask={IS_CREATING}
       placement="right"
       width="50vw"
-      visible={visible}
+      open={visible}
       footer={
         <>
           <Button
@@ -324,11 +344,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               htmlType="button"
               icon={<CheckOutlined />}
               style={{ float: 'right', marginRight: 5 }}
-              disabled={
-                IS_CREATING ||
-                selected.length <= 0 ||
-                !access.canUpdate
-              }
+              disabled={IS_CREATING || selected.length <= 0 || !access.canUpdate}
               onClick={onToggle}
             >
               {t('operations.toggle')}
@@ -386,11 +402,7 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
             <Row gutter={[8, 3]}>
               <Col span={20}>
-                <Form.Item
-                  name="trmgrp_note"
-                  label={t('fields.trmgrpNote')}
-                  rules={[{ required: false }]}
-                >
+                <Form.Item name="trmgrp_note" label={t('fields.trmgrpNote')} rules={[{ required: false }]}>
                   <Input disabled={false}></Input>
                 </Form.Item>
               </Col>
@@ -405,12 +417,11 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
               </Col>
             </Row>
 
-
             <Divider>{t('fields.availableTerminals')}</Divider>
 
             <Form.Item name="tgl_terminal_list">
               <Select
-                dropdownMatchSelectWidth={false}
+                popupMatchSelectWidth={false}
                 showSearch
                 onChange={handleTerminalChange}
                 mode="multiple"
@@ -430,12 +441,12 @@ const FormModal = ({ value, visible, handleFormState, access }) => {
 
             <Divider>{t('fields.terminalGroupMemebers')}</Divider>
 
-            <DataTable 
-              height="60vh" 
-              data={groupedTerminals} 
-              columns={fields} 
-              handleSelect={setSelected} 
-              minimal 
+            <DataTable
+              height="60vh"
+              data={groupedTerminals}
+              columns={fields}
+              handleSelect={setSelected}
+              minimal
               apiContext={setTableAPI}
             />
           </TabPane>

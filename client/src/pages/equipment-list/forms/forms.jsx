@@ -301,14 +301,14 @@ const FormModal = ({
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5, overflowY: 'hidden' }}
+      styles={{ body: { paddingTop: 5, overflowY: 'hidden' } }}
       onClose={() => onExitClicked()}
       maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
       destroyOnClose={true}
       mask={config?.siteFormCloseAlert ? true : maskFlag}
       placement="right"
       width="60vw"
-      visible={visible}
+      open={visible}
       footer={
         <>
           {!IS_CREATING && (

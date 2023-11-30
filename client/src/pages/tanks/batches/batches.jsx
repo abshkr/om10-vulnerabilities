@@ -74,7 +74,7 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
       ? `${TANK_BATCHES.READ}?start_date=${start}&end_date=${end}`
       : null;
 
-  const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(url, { revalidateOnFocus: false });
 
   const isLoading = isValidating || !data;
 
@@ -541,7 +541,7 @@ const TankBatches = ({ terminal, code, value, access, tanks, config }) => {
                 rules={[{ required: false, label: t('fields.tank') }]}
               >
                 <Select
-                  dropdownMatchSelectWidth={false}
+                  popupMatchSelectWidth={false}
                   allowClear
                   disabled={true}
                   showSearch

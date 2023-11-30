@@ -606,7 +606,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
 
   return (
     <Drawer
-      bodyStyle={{ paddingTop: 5 }}
+      styles={{ body: { paddingTop: 5 } }}
       forceRender
       onClose={() => onExitClicked()}
       maskClosable={config?.siteFormCloseAlert ? false : IS_CREATING}
@@ -614,7 +614,7 @@ const FormModal = ({ value, visible, handleFormState, access, config, setFilterV
       mask={config?.siteFormCloseAlert ? true : IS_CREATING}
       placement="right"
       width="55vw"
-      visible={visible}
+      open={visible}
       disabled={flagTankUpdated === 1 && (flagSpmTransfer === 0 || flagFolioTank === 0)}
       footer={
         <>

@@ -23,7 +23,7 @@ const Group = ({ form, value }) => {
   return (
     <Form.Item name="base_prod_group" label={t('fields.baseProdGroupName')}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

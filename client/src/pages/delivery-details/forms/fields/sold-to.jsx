@@ -36,7 +36,7 @@ const SoldTo = ({ form, value, supplier, pageState }) => {
       rules={[{ required: true, validator: validate }]}
     >
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         mode="tags"
         loading={isValidating}

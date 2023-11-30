@@ -31,7 +31,7 @@ const Supplier = ({ value }) => {
         loading={isValidating}
         allowClear
         showSearch
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         disabled={!!value}
         optionFilterProp="children"
         placeholder={!value ? t('placeholder.selectSupplier') : null}

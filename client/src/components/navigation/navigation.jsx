@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Menu, Tooltip, notification } from 'antd';
 
@@ -22,7 +22,7 @@ const Navigation = () => {
   // console.log(payload?.records)
 
   const { t } = useTranslation();
-  const history = useHistory();
+  const navigate = useNavigate();
   const config = useConfig();
 
   const [active, setActive] = useState([ROUTES.HOME]);
@@ -33,7 +33,7 @@ const Navigation = () => {
     setActive([[event.key]]);
 
     if (event?.key === ROUTES.TANK_STATUS) {
-      history.push(ROUTES.TANKS, {
+      navigate(ROUTES.TANKS, {
         listed: true,
       });
     } else if (event?.key === ROUTES.BAY_VIEW) {
@@ -41,14 +41,14 @@ const Navigation = () => {
       api.get(`${AUTH.PERMISSIONS}?object_text=M_BAYVIEW`).then((res) => {
         if (!res.data.records[0].priv_view) {
           console.log('Do not have view privilege');
-          history.push(ROUTES.UNAUTHORIZED);
+          navigate(ROUTES.UNAUTHORIZED);
         } else {
           const port = window.location.port ? window.location.port : 443;
           api
             .get(`https://${window.location.hostname}:${port}/scadaviews/bayview/index.html`)
             .then((res) => {
               if (res.data.includes('<title>OMEGA 5000</title>')) {
-                history.push(ROUTES.BAY_VIEW);
+                navigate(ROUTES.BAY_VIEW);
               } else {
                 window.open(
                   `https://${window.location.hostname}:${port}/scadaviews/bayview/index.html`,
@@ -57,12 +57,12 @@ const Navigation = () => {
               }
             })
             .catch(function (error) {
-              history.push(ROUTES.BAY_VIEW);
+              navigate(ROUTES.BAY_VIEW);
             });
         }
       });
     } else {
-      history.push(event.key);
+      navigate(event.key);
     }
   };
 
@@ -128,6 +128,7 @@ const Navigation = () => {
         </Menu.Item>
 
         <SubMenu
+          key="operationsManagement"
           title={
             <>
               <Icons type="operations" />
@@ -266,6 +267,7 @@ const Navigation = () => {
         </SubMenu>
 
         <SubMenu
+          key="stocksManagement"
           title={
             <>
               <Icons type="stockManagement" />
@@ -343,6 +345,7 @@ const Navigation = () => {
         </SubMenu>
 
         <SubMenu
+          key="reportsManagement"
           title={
             <>
               <Icons type="reports" />
@@ -422,6 +425,7 @@ const Navigation = () => {
         </SubMenu>
 
         <SubMenu
+          key="securitysManagement"
           title={
             <>
               <Icons type="accessControl" />
@@ -493,6 +497,7 @@ const Navigation = () => {
         </SubMenu>
 
         <SubMenu
+          key="productsManagement"
           title={
             <>
               <Icons type="products" />
@@ -556,6 +561,7 @@ const Navigation = () => {
         </SubMenu>
 
         <SubMenu
+          key="companysManagement"
           title={
             <>
               <Icons type="companies" />
@@ -637,6 +643,7 @@ const Navigation = () => {
         </SubMenu>
 
         <SubMenu
+          key="settingsManagement"
           title={
             <>
               <Icons type="config" />
@@ -791,6 +798,7 @@ const Navigation = () => {
         </SubMenu>
 
         <SubMenu
+          key="modulesManagement"
           title={
             <>
               <Icons type="modules" />

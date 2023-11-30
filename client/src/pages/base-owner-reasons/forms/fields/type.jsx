@@ -33,7 +33,7 @@ const ReasonType = ({ form, value }) => {
   return (
     <Form.Item name="otr_type" label={t('fields.otrType')} rules={[{ required: true, validator: validate }]}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

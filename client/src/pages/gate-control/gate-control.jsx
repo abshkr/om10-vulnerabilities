@@ -15,7 +15,7 @@ import useAuth from 'hooks/use-auth';
 
 const GateControl = () => {
   const { t } = useTranslation();
-  const { data: payload, isValidating, revalidate } = useSWR(GATE_CONTROL.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(GATE_CONTROL.READ);
   const access = useAuth('M_GATECONTROL');
 
   const [selected, setSelected] = useState([]);
@@ -25,7 +25,7 @@ const GateControl = () => {
   const handleGateOpening = () => {
     const values = {
       gates: selected,
-    }
+    };
     api
       .post(GATE_CONTROL.OPEN_ALL_GATES, values)
       .then((response) => {

@@ -16,7 +16,7 @@ const SelfFuelTransactionList = () => {
 
   const access = useAuth('M_SFTRANSACTIONLIST');
 
-  const { data: payload, isValidating, revalidate } = useSWR(SELF_FUEL_TRANSACTION_LIST.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(SELF_FUEL_TRANSACTION_LIST.READ);
 
   const data = payload?.records;
   const fields = columns(t);

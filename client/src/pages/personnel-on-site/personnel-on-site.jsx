@@ -22,7 +22,7 @@ const PersonnelOnSite = () => {
 
   const access = useAuth('M_ONSITEREPORT');
 
-  const { data: payload, isValidating, revalidate } = useSWR(PERSONNEL_ON_SITE.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(PERSONNEL_ON_SITE.READ);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);
@@ -31,11 +31,11 @@ const PersonnelOnSite = () => {
 
   const generateReport = () => {
     const payload = {
-      report: "Personnel_onsite.jrxml", //Hardcode here
-      supplier: "ANY",
-      output: "pdf"
+      report: 'Personnel_onsite.jrxml', //Hardcode here
+      supplier: 'ANY',
+      output: 'pdf',
     };
-  
+
     setReporting(true);
 
     api
@@ -60,7 +60,7 @@ const PersonnelOnSite = () => {
         });
         setReporting(false);
       });
-  }
+  };
 
   const fields = columns(t);
 
@@ -70,7 +70,7 @@ const PersonnelOnSite = () => {
   const page = t('pageMenu.reports');
   const name = t('pageNames.personnelOnSite');
 
-  const site = {value:"ON_SITE"};
+  const site = { value: 'ON_SITE' };
 
   const modifiers = (
     <>
@@ -83,19 +83,17 @@ const PersonnelOnSite = () => {
       <Download data={data} isLoading={isLoading} columns={fields} />
     </>
   );
-  
-  
+
   return (
     <Page page={page} name={name} modifiers={modifiers} access={access} avatar="personnelOnSite">
-      
-      <DataTable 
-        columns={fields} 
-        data={data} 
+      <DataTable
+        columns={fields}
+        data={data}
         isLoading={isLoading}
         selectionMode="single"
         onClick={(payload) => handleFormState(true, payload)}
         handleSelect={(payload) => handleFormState(true, payload[0])}
-        filterValue = {site.value}
+        filterValue={site.value}
       />
       <Forms value={selected} visible={visible} handleFormState={handleFormState} access={access} />
     </Page>

@@ -24,7 +24,7 @@ const Companies = () => {
   const config = useConfig();
   const { siteCompanyRelationAllowed, siteCustomColumnCompany } = config;
 
-  const { data: payload, isValidating, revalidate } = useSWR(COMPANIES.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(COMPANIES.READ);
 
   const fields = columns(t, config);
   const data = payload?.records;

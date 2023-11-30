@@ -18,7 +18,7 @@ const MovementReasons = () => {
 
   const access = useAuth('M_MOVEMENTREASON');
 
-  const { data: payload, isValidating, revalidate } = useSWR(MOVEMENT_REASONS.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(MOVEMENT_REASONS.READ);
 
   const [visible, setVisible] = useState(false);
   const [selected, setSelected] = useState(null);
@@ -35,17 +35,22 @@ const MovementReasons = () => {
   useEffect(() => {
     if (payload?.records) {
       _.forEach(payload?.records, (o) => {
-        o.mr_flag = o.mr_flag>0? true : false;
+        o.mr_flag = o.mr_flag > 0 ? true : false;
 
-        if (o.mr_flag_desc === 'Active, Do not send to host') { // 0
+        if (o.mr_flag_desc === 'Active, Do not send to host') {
+          // 0
           o.mr_flag_desc = t('fields.movReasonStatusActiveNotSend');
-        } else if (o.mr_flag_desc === 'Active, Send to host') { // 1
+        } else if (o.mr_flag_desc === 'Active, Send to host') {
+          // 1
           o.mr_flag_desc = t('fields.movReasonStatusActiveSend');
-        } else if (o.mr_flag_desc === 'Active, Read only, Send to host') { // 2
+        } else if (o.mr_flag_desc === 'Active, Read only, Send to host') {
+          // 2
           o.mr_flag_desc = t('fields.movReasonStatusActiveReadSend');
-        } else if (o.mr_flag_desc === 'Deleted') { // -1
+        } else if (o.mr_flag_desc === 'Deleted') {
+          // -1
           o.mr_flag_desc = t('fields.movReasonStatusDeleted');
-        } else { // Unknown
+        } else {
+          // Unknown
           o.mr_flag_desc = t('fields.movReasonStatusUnknown');
         }
       });

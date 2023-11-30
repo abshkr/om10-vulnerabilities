@@ -6,7 +6,16 @@ import { Button, Select, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, FileSearchOutlined, EyeOutlined } from '@ant-design/icons';
 
-import { Page, DataTable, Download, PageDownloader, PageExporter, DateTimeRangePicker, WindowSearch, WindowSearchForm } from '../../components';
+import {
+  Page,
+  DataTable,
+  Download,
+  PageDownloader,
+  PageExporter,
+  DateTimeRangePicker,
+  WindowSearch,
+  WindowSearchForm,
+} from '../../components';
 import api, { MOVEMENT_NOMIATIONS } from '../../api';
 import { SETTINGS } from '../../constants';
 import columns from './columns';
@@ -57,7 +66,7 @@ const MovementNominations = () => {
   ];
 
   const access = useAuth('M_NOMINATION');
-  
+
   const { setCount, take, offset, paginator, setPage, count } = usePagination(200);
 
   const [refreshed, setRefreshed] = useState(false);
@@ -67,7 +76,9 @@ const MovementNominations = () => {
   const [end, setEnd] = useState(null);
   const [useDateRange, setUseDateRange] = useState('N');
 
-  const [timeOptionSearch, setTimeOptionSearch] = useState(filterByExpiry ? 'MV_DTIM_EXPIRY' : 'MV_DTIM_CREATE'); //'MV_DTIM_EFFECT');
+  const [timeOptionSearch, setTimeOptionSearch] = useState(
+    filterByExpiry ? 'MV_DTIM_EXPIRY' : 'MV_DTIM_CREATE'
+  ); //'MV_DTIM_EFFECT');
   const [startTimeSearch, setStartTimeSearch] = useState(null);
   const [endTimeSearch, setEndTimeSearch] = useState(null);
   const [useSearch, setUseSearch] = useState(false);
@@ -79,7 +90,11 @@ const MovementNominations = () => {
   const [movNumber, setMovNumber] = useState('');
 
   // const [mainUrl, setMainUrl] = useState(`${MOVEMENT_NOMIATIONS.READ}?start_date=${useSearch?startTimeSearch:start}&end_date=${useSearch?endTimeSearch:end}&time_option=${useSearch?timeOptionSearch:timeOption}`);
-  const [mainUrl, setMainUrl] = useState(`${MOVEMENT_NOMIATIONS.READ}?start_date=${!start?'-1':start}&end_date=${!end?'-1':end}&time_option=${timeOption}`);
+  const [mainUrl, setMainUrl] = useState(
+    `${MOVEMENT_NOMIATIONS.READ}?start_date=${!start ? '-1' : start}&end_date=${
+      !end ? '-1' : end
+    }&time_option=${timeOption}`
+  );
   const baseUrl = mainUrl;
   const url = mainUrl + `&start_num=${take}&end_num=${offset}`;
 
@@ -93,8 +108,8 @@ const MovementNominations = () => {
       ? `${MOVEMENT_NOMIATIONS.READ}?start_date=${useSearch?startTimeSearch:start}&end_date=${useSearch?endTimeSearch:end}&time_option=${useSearch?timeOptionSearch:timeOption}&mv_key=${movKey}&mv_status=${movStatus}&mv_srctype=${movSrcType}&mv_terminal=${movTerminal}&mv_number=${movNumber}&start_num=${take}&end_num=${offset}`
       : null; */
 
-  const { data: payload, isValidating, revalidate } = useSWR(url, { revalidateOnFocus: false });
-  /* const { data: payload, isValidating, revalidate } = useSWR({url: `${MOVEMENT_NOMIATIONS.READ}`, args: {
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(url, { revalidateOnFocus: false });
+  /* const { data: payload, isValidating, mutate: revalidate } = useSWR({url: `${MOVEMENT_NOMIATIONS.READ}`, args: {
     use_range: useDateRange, 
     start_date: start, 
     end_date: end, 
@@ -107,7 +122,7 @@ const MovementNominations = () => {
     start_num: take,
     end_num: offset,
   }}, { revalidateOnFocus: false }); */
-  
+
   //const data = payload?.records;
   const isLoading = isValidating || !data;
   const fields = columns(t, config);
@@ -136,17 +151,19 @@ const MovementNominations = () => {
     setEndTimeSearch(null);
     setTimeOptionSearch(filterByExpiry ? 'MV_DTIM_EXPIRY' : 'MV_DTIM_CREATE');
     setUseDateRange('N');
-    
+
     setTimeOption(filterByExpiry ? 'MV_DTIM_EXPIRY' : 'MV_DTIM_CREATE');
     setUseSearch(false);
-  
+
     setMovKey('');
     setMovStatus('');
     setMovSrcType('');
     setMovTerminal('');
     setMovNumber('');
     // const tempUrl = `${MOVEMENT_NOMIATIONS.READ}?start_date=${useSearch?startTimeSearch:start}&end_date=${useSearch?endTimeSearch:end}&time_option=${useSearch?timeOptionSearch:timeOption}`;
-    const tempUrl = `${MOVEMENT_NOMIATIONS.READ}?start_date=${!start?'-1':start}&end_date=${!end?'-1':end}&time_option=${timeOption}`;
+    const tempUrl = `${MOVEMENT_NOMIATIONS.READ}?start_date=${!start ? '-1' : start}&end_date=${
+      !end ? '-1' : end
+    }&time_option=${timeOption}`;
     setMainUrl(tempUrl);
 
     setPage(1);
@@ -184,21 +201,27 @@ const MovementNominations = () => {
     setMovSrcType(!values.mv_srctype ? '' : values?.mv_srctype);
     setMovTerminal(!values.mv_terminal ? '' : values?.mv_terminal);
     setMovNumber(!values.mv_number ? '' : values?.mv_number);
-    setUseDateRange(!values.use_date_range ? 'N': 'Y');
+    setUseDateRange(!values.use_date_range ? 'N' : 'Y');
     setStartTimeSearch(values.use_date_range ? (!values.start_date ? '-1' : values.start_date) : '-1');
     setEndTimeSearch(values.use_date_range ? (!values.end_date ? '-1' : values.end_date) : '-1');
-    setTimeOptionSearch(values.use_date_range ? values.time_option : (filterByExpiry ? 'MV_DTIM_EXPIRY' : 'MV_DTIM_CREATE'));
+    setTimeOptionSearch(
+      values.use_date_range ? values.time_option : filterByExpiry ? 'MV_DTIM_EXPIRY' : 'MV_DTIM_CREATE'
+    );
     setUseSearch(true);
-    
-    const movKey = (!values.mv_key ? '' : values?.mv_key);
-    const movStatus = (!values.mv_status ? '' : values?.mv_status);
-    const movSrcType = (!values.mv_srctype ? '' : values?.mv_srctype);
-    const movTerminal = (!values.mv_terminal ? '' : values?.mv_terminal);
-    const movNumber = (!values.mv_number ? '' : values?.mv_number);
-    const useDateRange = (!values.use_date_range ? 'N': 'Y');
-    const startTimeSearch = (values.use_date_range ? (!values.start_date ? '-1' : values.start_date) : '-1');
-    const endTimeSearch = (values.use_date_range ? (!values.end_date ? '-1' : values.end_date) : '-1');
-    const timeOptionSearch = (values.use_date_range ? values.time_option : (filterByExpiry ? 'MV_DTIM_EXPIRY' : 'MV_DTIM_CREATE'));
+
+    const movKey = !values.mv_key ? '' : values?.mv_key;
+    const movStatus = !values.mv_status ? '' : values?.mv_status;
+    const movSrcType = !values.mv_srctype ? '' : values?.mv_srctype;
+    const movTerminal = !values.mv_terminal ? '' : values?.mv_terminal;
+    const movNumber = !values.mv_number ? '' : values?.mv_number;
+    const useDateRange = !values.use_date_range ? 'N' : 'Y';
+    const startTimeSearch = values.use_date_range ? (!values.start_date ? '-1' : values.start_date) : '-1';
+    const endTimeSearch = values.use_date_range ? (!values.end_date ? '-1' : values.end_date) : '-1';
+    const timeOptionSearch = values.use_date_range
+      ? values.time_option
+      : filterByExpiry
+      ? 'MV_DTIM_EXPIRY'
+      : 'MV_DTIM_CREATE';
     // const tempUrl = `${MOVEMENT_NOMIATIONS.READ}?start_date=${useSearch?startTimeSearch:start}&end_date=${useSearch?endTimeSearch:end}&time_option=${useSearch?timeOptionSearch:timeOption}&mv_key=${movKey}&mv_status=${movStatus}&mv_srctype=${movSrcType}&mv_terminal=${movTerminal}&mv_number=${movNumber}`;
     const tempUrl = `${MOVEMENT_NOMIATIONS.READ}?start_date=${startTimeSearch}&end_date=${endTimeSearch}&time_option=${timeOptionSearch}&mv_key=${movKey}&mv_status=${movStatus}&mv_srctype=${movSrcType}&mv_terminal=${movTerminal}&mv_number=${movNumber}`;
     setMainUrl(tempUrl);
@@ -206,7 +229,6 @@ const MovementNominations = () => {
     setPage(1);
     if (revalidate) revalidate();
     setSearching(false);
-
 
     /* api
       .get(MOVEMENT_NOMIATIONS.SEARCH, {
@@ -254,7 +276,7 @@ const MovementNominations = () => {
     <>
       <div style={{ float: 'left' }}>
         <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           defaultValue={filterByExpiry ? 'MV_DTIM_EXPIRY' : 'MV_DTIM_CREATE'}
           onChange={setTimeOption}
           optionFilterProp="children"
@@ -290,40 +312,48 @@ const MovementNominations = () => {
         {t('operations.refresh')}
       </Button>
 
-      {!pagingFlag && (
-        <Download data={data} isLoading={isLoading} columns={fields} />
-      )}
-      
+      {!pagingFlag && <Download data={data} isLoading={isLoading} columns={fields} />}
+
       {pagingFlag && (
         // <PageExporter baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} columns={fields} />
-        <PageDownloader baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} pageSize={500} columns={fields} />
+        <PageDownloader
+          baseUrl={baseUrl}
+          startVar={'start_num'}
+          endVar={'end_num'}
+          pageSize={500}
+          columns={fields}
+        />
       )}
-
 
       <Button
         type="primary"
         icon={<FileSearchOutlined />}
         onClick={() =>
-          WindowSearchForm(runSearch, t('operations.search'), {
-            mv_key: true,
-            mv_status: true,
-            mv_srctype: true,
-            mv_terminal: true,
-            mv_number: true,
-            time_option_type: 'movement_nomination',
-            time_option: true,
-          }, {
-            mv_key: movKey,
-            mv_status: movStatus,
-            mv_srctype: movSrcType,
-            mv_terminal: movTerminal,
-            mv_number: movNumber,
-            time_option_type: 'movement_nomination',
-            time_option: timeOptionSearch,
-            start_date: startTimeSearch,
-            end_date: endTimeSearch,
-            use_date_range: useDateRange === 'Y' ? true : false,
-          })
+          WindowSearchForm(
+            runSearch,
+            t('operations.search'),
+            {
+              mv_key: true,
+              mv_status: true,
+              mv_srctype: true,
+              mv_terminal: true,
+              mv_number: true,
+              time_option_type: 'movement_nomination',
+              time_option: true,
+            },
+            {
+              mv_key: movKey,
+              mv_status: movStatus,
+              mv_srctype: movSrcType,
+              mv_terminal: movTerminal,
+              mv_number: movNumber,
+              time_option_type: 'movement_nomination',
+              time_option: timeOptionSearch,
+              start_date: startTimeSearch,
+              end_date: endTimeSearch,
+              use_date_range: useDateRange === 'Y' ? true : false,
+            }
+          )
         }
       >
         {t('operations.search')}
@@ -346,9 +376,9 @@ const MovementNominations = () => {
       {scheduleOpen && (
         <Drawer
           placement="right"
-          bodyStyle={{ paddingTop: 5 }}
+          styles={{ body: { paddingTop: 5 } }}
           onClose={() => setScheduleOpen(false)}
-          visible={scheduleOpen}
+          open={scheduleOpen}
           width="100vw"
         >
           <Schedules selected={null} />
@@ -373,7 +403,7 @@ const MovementNominations = () => {
             marginTop: 10,
           }}
         >
-          {pagingFlag ? paginator : t('fields.totalCount') + ': ' + count }
+          {pagingFlag ? paginator : t('fields.totalCount') + ': ' + count}
         </div>
 
         {visible && (

@@ -24,7 +24,7 @@ const TransferProduct = ({ form, value, code, title, prompt, base, options, onCh
   return (
     <Form.Item name={code} label={t('fields.' + title)} rules={[{ required: true, validator: validate }]}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         showSearch
         onChange={onSelectionChange}

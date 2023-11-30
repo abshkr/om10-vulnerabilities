@@ -5,7 +5,7 @@ import { Form, Input } from 'antd';
 import _ from 'lodash';
 import { CUSTOMERS } from '../../../../api';
 
-import {validatorStatus} from '../../../../utils';
+import { validatorStatus } from '../../../../utils';
 /*
 const validateSwitch = (isLoading, match) => {
   if (isLoading) {
@@ -23,7 +23,11 @@ const Account = ({ form, value }) => {
   const { t } = useTranslation();
   const { setFieldsValue, validateFields } = form;
 
-  const { data, isValidating, revalidate } = useSWR(`${CUSTOMERS.CHECK_ACCOUNT}?cust_account=${account}`, {
+  const {
+    data,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(`${CUSTOMERS.CHECK_ACCOUNT}?cust_account=${account}`, {
     refreshInterval: 0,
   });
 

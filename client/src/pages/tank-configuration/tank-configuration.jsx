@@ -28,7 +28,7 @@ const TankConfiguration = () => {
 
   const access = useAuth('M_TANKCONFIGURATION');
 
-  const { data: payload, isValidating, revalidate } = useSWR(TANKS.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(TANKS.READ);
   // const { data: configuration } = useSWR(COMMON.CONFIG);
 
   const fields = columns(config, t);

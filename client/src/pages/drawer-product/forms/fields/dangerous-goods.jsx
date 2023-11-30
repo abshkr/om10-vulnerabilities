@@ -29,7 +29,7 @@ const Generic = ({ form, value }) => {
   return (
     <Form.Item name="dg_link_id" label={t('fields.dangerousGoods')}>
       <Select
-        dropdownMatchSelectWidth={false}
+        popupMatchSelectWidth={false}
         allowClear
         loading={isValidating}
         showSearch

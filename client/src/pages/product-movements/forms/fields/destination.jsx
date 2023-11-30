@@ -125,7 +125,7 @@ const Destination = ({ form, value, base, setBase, setType, setLoading }) => {
           rules={[{ required: true, validator: validateType }]}
         >
           <Select
-            dropdownMatchSelectWidth={false}
+            popupMatchSelectWidth={false}
             allowClear
             loading={isLoading}
             showSearch
@@ -153,7 +153,7 @@ const Destination = ({ form, value, base, setBase, setType, setLoading }) => {
           rules={[{ required: source === '3', validator: validateBase }]}
         >
           <Select
-            dropdownMatchSelectWidth={false}
+            popupMatchSelectWidth={false}
             allowClear
             loading={basesLoading}
             showSearch
@@ -193,7 +193,7 @@ const Destination = ({ form, value, base, setBase, setType, setLoading }) => {
         >
           {source === '3' ? (
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               allowClear
               loading={isLoading}
               showSearch

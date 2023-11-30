@@ -68,7 +68,7 @@ const GuardmasterProduct = ({ value, form, flag }) => {
         <Col span={16}>
           <Form.Item name="prod_guardmaster_quality" label={t('fields.copsGuardMasterProdQuality')}>
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               loading={isValidating}
               disabled={!flag}
               showSearch

@@ -144,14 +144,14 @@ const PageDownloader = ({ baseUrl, startVar, endVar, pageSize, columns, round, i
       {visible && (
         <Drawer
           title={t('operations.export')}
-          bodyStyle={{ paddingTop: 5 }}
+          styles={{ body: { paddingTop: 5 } }}
           onClose={onClose}
           maskClosable={false}
           destroyOnClose={true}
           mask={true}
           placement="right"
           width="40vw"
-          visible={visible}
+          open={visible}
           footer={
             <>
               <Button
@@ -215,7 +215,7 @@ const PageDownloader = ({ baseUrl, startVar, endVar, pageSize, columns, round, i
 
               <Select
                 style={{ paddingLeft: 10 }}
-                dropdownMatchSelectWidth={false}
+                popupMatchSelectWidth={false}
                 defaultValue={stepSize.current}
                 disabled={loading}
                 onChange={setPageSize}

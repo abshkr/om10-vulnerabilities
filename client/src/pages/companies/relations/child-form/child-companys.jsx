@@ -72,7 +72,7 @@ const ChildSelectFields = ({ value, form, visible }) => {
   return (
     <div>
       <Form.Item name="child_cmpy_role" label={t('fields.childCmpyType')} rules={[{ required: true }]}>
-        <Select dropdownMatchSelectWidth={false} onChange={onRoleChange} disabled={!IS_CREATING} allowClear>
+        <Select popupMatchSelectWidth={false} onChange={onRoleChange} disabled={!IS_CREATING} allowClear>
           {childRoles?.records.map((item, index) => (
             <Select.Option key={index} value={item.cmpy_role_id}>
               {item.cmpy_role_name}
@@ -87,7 +87,7 @@ const ChildSelectFields = ({ value, form, visible }) => {
 
       <Form.Item name="child_cmpy_code" label={t('fields.childCmpyName')} rules={[{ required: true }]}>
         <Select
-          dropdownMatchSelectWidth={false}
+          popupMatchSelectWidth={false}
           allowClear
           disabled={!IS_CREATING}
           onChange={onCompanyChange}

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import ReactHtmlParser from 'react-html-parser';
+import ReactHtmlParser from 'html-react-parser';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Spin } from 'antd';
-import { jsPDF } from "jspdf";
+import { jsPDF } from 'jspdf';
 import api, { LOAD_SCHEDULES } from '../../../../api';
 
 const DriverInstructions = ({ value, redoDLI, exportPDF }) => {
@@ -31,12 +31,12 @@ const DriverInstructions = ({ value, redoDLI, exportPDF }) => {
       const end = data.search('</pre>');
 
       // console.log(data.substring(start , end))
-      doc.setFont('courier');   //courier font gives all character same width in PDF
+      doc.setFont('courier'); //courier font gives all character same width in PDF
       doc.setFontSize(11);
-      
-      doc.text(data.substring(start , end), 20, 15);
-      
-      doc.save("DLI_" + value.shls_trip_no + ".pdf");
+
+      doc.text(data.substring(start, end), 20, 15);
+
+      doc.save('DLI_' + value.shls_trip_no + '.pdf');
     }
   }, [exportPDF]);
 

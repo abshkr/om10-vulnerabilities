@@ -643,7 +643,7 @@ const Forms = ({
         <Col span={8}>
           <Form.Item name="source_type" label={t('fields.mtDataType')} rules={[{ required: true }]}>
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               allowClear
               disabled={popup}
               onChange={handleTypeSelect}
@@ -680,7 +680,7 @@ const Forms = ({
         <Col span={8}>
           <Form.Item name="supplier" label={t('fields.mtDataSupplier')} rules={[{ required: true }]}>
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               loading={suppliersLoading}
               allowClear
               showSearch
@@ -719,7 +719,7 @@ const Forms = ({
             rules={[{ required: true }]}
           >
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               allowClear
               showSearch
               disabled={sourceType === 'SCHEDULE' && (loadType === 'BY_COMPARTMENT' || activeFlag === true)}
@@ -767,7 +767,7 @@ const Forms = ({
             rules={[{ required: sourceType === 'OPENORDER' }]}
           >
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               allowClear
               showSearch
               disabled={
@@ -796,7 +796,7 @@ const Forms = ({
         <Col span={8}>
           <Form.Item name="driver" label={t('fields.mtDataDriver')} rules={[{ required: true }]}>
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               loading={driversLoading}
               allowClear
               showSearch
@@ -820,7 +820,7 @@ const Forms = ({
         <Col span={8}>
           <Form.Item name="drawer" label={t('fields.drawer')} rules={[{ required: false }]}>
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               loading={drawersLoading}
               allowClear
               showSearch
@@ -849,7 +849,7 @@ const Forms = ({
             rules={[{ required: sourceType === 'SCHEDULE' }]}
           >
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               loading={tripsLoading}
               allowClear
               showSearch
@@ -903,7 +903,7 @@ const Forms = ({
             rules={[{ required: sourceType === 'OPENORDER' }]}
           >
             <Select
-              dropdownMatchSelectWidth={false}
+              popupMatchSelectWidth={false}
               loading={ordersLoading}
               allowClear
               showSearch

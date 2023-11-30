@@ -21,7 +21,7 @@ const PhysicalPrinters = () => {
 
   const access = useAuth('M_PHYSICALPRINTERS');
 
-  const { data: payload, isValidating, revalidate } = useSWR(PHYSICAL_PRINTERS.READ);
+  const { data: payload, isValidating, mutate: revalidate } = useSWR(PHYSICAL_PRINTERS.READ);
 
   const handleFormState = (visibility, value) => {
     setVisible(visibility);

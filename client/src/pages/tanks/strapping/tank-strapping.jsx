@@ -25,7 +25,7 @@ const { TabPane } = Tabs;
 const TankStrapping = ({ terminal, code, tanks, access }) => {
   const url = code ? `${TANK_STRAPPING.READ}?strap_tankcode=${code}` : null;
 
-  const { data, isValidating, revalidate } = useSWR(url);
+  const { data, isValidating, mutate: revalidate } = useSWR(url);
 
   const isLoading = isValidating || !data;
   const { data: types } = useSWR(TANK_STRAPPING.TYPES);
@@ -269,14 +269,14 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
       </Card>
 
       <Drawer
-        bodyStyle={{ paddingTop: 5 }}
+        styles={{ body: { paddingTop: 5 } }}
         onClose={() => handleFormState(false, null)}
         maskClosable={IS_CREATING}
         destroyOnClose={true}
         mask={IS_CREATING}
         placement="right"
         width="30vw"
-        visible={visible}
+        open={visible}
         footer={
           <>
             <Button
@@ -320,7 +320,7 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
                 rules={[{ required: true, validator: validate, label: t('fields.tank') }]}
               >
                 <Select
-                  dropdownMatchSelectWidth={false}
+                  popupMatchSelectWidth={false}
                   allowClear
                   loading={isLoading}
                   disabled={true}
@@ -375,7 +375,7 @@ const TankStrapping = ({ terminal, code, tanks, access }) => {
                 rules={[{ required: true, validator: validate, label: t('fields.strapType') }]}
               >
                 <Select
-                  dropdownMatchSelectWidth={false}
+                  popupMatchSelectWidth={false}
                   allowClear
                   loading={isLoading}
                   showSearch

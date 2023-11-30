@@ -16,7 +16,7 @@ const getVCF = (table, density, temperature) => {
     delta = temperature - 15;
 
     if (density > 1075) {
-      message.warn('Density Out of Range, too High, 653-1075 Kg/M3 !');
+      message.warning('Density Out of Range, too High, 653-1075 Kg/M3 !');
       mans = -1;
     } else if (density > 838.9) {
       k0 = 186.9696;
@@ -35,7 +35,7 @@ const getVCF = (table, density, temperature) => {
       k1 = 0.4388;
       k2 = 0;
     } else {
-      message.warn('API Out of Range, too Low, 0-85 !');
+      message.warning('API Out of Range, too Low, 0-85 !');
       mans = -2;
     }
   } else if (table === '6B') {
@@ -45,7 +45,7 @@ const getVCF = (table, density, temperature) => {
     density = (141.5 * 999.012) / (131.5 + api);
 
     if (api < 0) {
-      message.warn('API Out of Range, too Low, 0-85 !');
+      message.warning('API Out of Range, too Low, 0-85 !');
       mans = -3;
     } else if (api <= 37) {
       k0 = 103.872;
@@ -64,11 +64,11 @@ const getVCF = (table, density, temperature) => {
       k1 = 0.2438;
       k2 = 0;
     } else {
-      message.warn('API Out of Range, too High, 0-85 !');
+      message.warning('API Out of Range, too High, 0-85 !');
       mans = -4;
     }
   } else {
-    message.warn('Invalid ASTM Table, Must be 54B or 6B !');
+    message.warning('Invalid ASTM Table, Must be 54B or 6B !');
     mans = -5;
   }
 
@@ -89,7 +89,7 @@ export const standard54B = (observed, density, temperature) => {
 
 export const massInVaccum = (observed, density) => {
   if (density > 1.5 || density < 0.5) {
-    message.warn('DEN_VAC must be in KG/L');
+    message.warning('DEN_VAC must be in KG/L');
 
     return 0;
   } else {
@@ -103,7 +103,7 @@ export const massInAir = (observed, density) => {
   const buoyancy = 0.0011;
 
   if (density > 1.5 || density < 0.5) {
-    message.warn('DEN_VAC must be in KG/L');
+    message.warning('DEN_VAC must be in KG/L');
 
     return 0;
   } else {
@@ -132,7 +132,7 @@ export const temepratureDensity = (density, temperature, type) => {
   } else if (type === 'F') {
     payload = density * getVCF('54B', density, temperatureF2C(temperature));
   } else {
-    message.warn('usage: Density_Temp(Density,Temp,[C|F])');
+    message.warning('usage: Density_Temp(Density,Temp,[C|F])');
     payload = density;
   }
 

@@ -42,12 +42,16 @@ const InventoryRequests = () => {
 
   const access = useAuth('M_INVENTORYREQUEST');
 
-  const { data: requests, isValidating: requestsLoading, revalidate } = useSWR(
-    `${INVENTORY_REQUESTS.READ}?terminal=${terminal}`
-  );
-  const { data: tanks, revalidate: revalidateTanks, isValidating: tanksLoading } = useSWR(
-    `${INVENTORY_REQUESTS.TANKS}?terminal=${terminal}`
-  );
+  const {
+    data: requests,
+    isValidating: requestsLoading,
+    mutate: revalidate,
+  } = useSWR(`${INVENTORY_REQUESTS.READ}?terminal=${terminal}`);
+  const {
+    data: tanks,
+    mutate: revalidateTanks,
+    isValidating: tanksLoading,
+  } = useSWR(`${INVENTORY_REQUESTS.TANKS}?terminal=${terminal}`);
 
   const [selected, setSelected] = useState([]);
   const [tableAPI, setTableAPI] = useState(null);

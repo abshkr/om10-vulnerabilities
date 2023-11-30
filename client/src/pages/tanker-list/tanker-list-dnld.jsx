@@ -83,7 +83,11 @@ const TankerList = () => {
   //   pagingFlag ? 'Y' : 'N'
   // }&start_num=${take}&end_num=${offset}&tnkr_code=${encodeURIComponent(tnkrCode)}&tnkr_name=${encodeURIComponent(tnkrName)}&tnkr_carrier=${tnkrCarrier}&tnkr_owner=${tnkrOwner}&tnkr_etyp=${tnkrEtyp}&tnkr_lock=${tnkrLock}&tnkr_active=${tnkrActive}`;
 
-  const { data: payload, isValidating, revalidate } = useSWR(pagingFlag === undefined ? null : url, {
+  const {
+    data: payload,
+    isValidating,
+    mutate: revalidate,
+  } = useSWR(pagingFlag === undefined ? null : url, {
     revalidateOnFocus: false,
   });
 
