@@ -1,8 +1,0 @@
-# Field mapping
-# - Lines beginning with hash will be treated as comments and will be ignored
-# - One mapping per line, of the format: source_field,target_field.
-# - The value of the target field will be the value of the source field. If the source field is not specified or has no value,
-#   the target field will be created and filled with blank.
-# - Lines that do not conform to this format will be ignored
-#
-# - Leave this file blank and do the customisation in the custom script. This simplifies the process and reduce the mental load.
