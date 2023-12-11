@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from 'react';
-import moment from 'moment';
+import moment from 'dayjs';
 import _ from 'lodash';
 
 import { DATE_TIME_FORMAT } from 'constants/settings';

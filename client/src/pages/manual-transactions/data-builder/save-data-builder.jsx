@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import moment from 'moment';
+import moment from 'dayjs';
 import { SETTINGS } from '../../../constants';
 
 const buildPayloadToSave = (values, customers, sourceType, repost, user_code, save_format, t) => {
@@ -110,10 +110,14 @@ const buildPayloadToSave = (values, customers, sourceType, repost, user_code, sa
     transfer.PRODUCT_NAME = titem.trsf_prod_name;
     transfer.SOLD_TO = titem.trsf_sold_to;
     transfer.SHIP_TO = titem.trsf_delv_loc;
-    const baseCount = _.filter(values?.base_transfers, (o) => titem.trsf_cmpt_no === o.trsf_bs_cmpt_no)
-      ?.length;
-    const meterCount = _.filter(values?.meter_transfers, (o) => titem.trsf_cmpt_no === o.trsf_cmpt_no)
-      ?.length;
+    const baseCount = _.filter(
+      values?.base_transfers,
+      (o) => titem.trsf_cmpt_no === o.trsf_bs_cmpt_no
+    )?.length;
+    const meterCount = _.filter(
+      values?.meter_transfers,
+      (o) => titem.trsf_cmpt_no === o.trsf_cmpt_no
+    )?.length;
     transfer.NUMBER_OF_BASES = baseCount;
     transfer.NUMBER_OF_METERS = meterCount;
 

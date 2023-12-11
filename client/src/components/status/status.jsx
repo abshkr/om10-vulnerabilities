@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import moment from 'moment';
+import moment from 'dayjs';
 import useSWR from 'swr';
 
 import api, { ROLE_ACCESS_MANAGEMENT } from '../../api';

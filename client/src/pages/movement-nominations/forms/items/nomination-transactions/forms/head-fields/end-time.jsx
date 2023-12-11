@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { Form, DatePicker, Col } from 'antd';
-import moment from 'moment';
+import moment from 'dayjs';
 
 import { useConfig } from '../../../../../../../hooks';
 import { SETTINGS } from '../../../../../../../constants';
@@ -33,8 +33,10 @@ const ItemExpiryTime = ({ form, value, pageState }) => {
     const serverCurrent = moment(config?.serverTime, SETTINGS.DATE_TIME_FORMAT);
     if (value) {
       setFieldsValue({
-        mvitm_dtim_expiry: 
-          value.mvitm_dtim_expiry === '' ? serverCurrent : moment(value.mvitm_dtim_expiry, SETTINGS.DATE_TIME_FORMAT),
+        mvitm_dtim_expiry:
+          value.mvitm_dtim_expiry === ''
+            ? serverCurrent
+            : moment(value.mvitm_dtim_expiry, SETTINGS.DATE_TIME_FORMAT),
       });
     } else {
       setFieldsValue({

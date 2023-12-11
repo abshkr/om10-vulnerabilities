@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import moment from 'moment';
+import moment from 'dayjs';
 
 import { QuestionCircleOutlined, CloseOutlined, CalculatorOutlined, SaveOutlined } from '@ant-design/icons';
 

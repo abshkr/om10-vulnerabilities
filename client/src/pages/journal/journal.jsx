@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 
-import moment from 'moment';
+import moment from 'dayjs';
 import { Radio, Tabs } from 'antd';
 import { useTranslation } from 'react-i18next';
 

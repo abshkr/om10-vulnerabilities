@@ -5,7 +5,7 @@ import { DownloadOutlined, UploadOutlined, DeleteOutlined, SyncOutlined } from '
 import { Form, Button, Modal, notification, Divider, Upload } from 'antd';
 import { useTranslation } from 'react-i18next';
 import _ from 'lodash';
-import moment from 'moment';
+import moment from 'dayjs';
 import jwtDecode from 'jwt-decode';
 
 import { DataTable } from 'components';

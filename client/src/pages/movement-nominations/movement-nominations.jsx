@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 import useSWR from 'swr';
-import moment from 'moment';
+import moment from 'dayjs';
 import { Button, Select, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, FileSearchOutlined, EyeOutlined } from '@ant-design/icons';

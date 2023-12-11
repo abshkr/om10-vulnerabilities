@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import moment from 'moment';
+import moment from 'dayjs';
 import { Form, DatePicker } from 'antd';
 import { SETTINGS } from '../../../../constants';
 import { useConfig } from '../../../../hooks';

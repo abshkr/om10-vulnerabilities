@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 
 import _ from 'lodash';
 import jwtDecode from 'jwt-decode';
-import moment from 'moment';
+import moment from 'dayjs';
 import useSWR from 'swr';
 
 import { Page } from '../../components';

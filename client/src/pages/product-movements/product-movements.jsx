@@ -3,7 +3,7 @@ import { SyncOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
 import useSWR from 'swr';
-import moment from 'moment';
+import moment from 'dayjs';
 
 import { Page, PowerTable as DataTable, Download, DateTimeRangePicker } from '../../components';
 import { PRODUCT_MOVEMENTS } from '../../api';

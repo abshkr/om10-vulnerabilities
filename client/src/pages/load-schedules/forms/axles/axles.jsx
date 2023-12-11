@@ -4,7 +4,7 @@ import { Button, Drawer, Tabs, Form, InputNumber, Modal, notification, message, 
 import { useTranslation } from 'react-i18next';
 
 import useSWR from 'swr';
-import moment from 'moment';
+import moment from 'dayjs';
 import jwtDecode from 'jwt-decode';
 import _ from 'lodash';
 

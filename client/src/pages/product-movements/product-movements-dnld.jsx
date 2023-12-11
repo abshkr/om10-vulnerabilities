@@ -3,7 +3,7 @@ import { SyncOutlined, PlusOutlined, CaretLeftOutlined, CaretRightOutlined } fro
 import { useTranslation } from 'react-i18next';
 import { Button, Checkbox, Select, Switch, Tag } from 'antd';
 import useSWR from 'swr';
-import moment from 'moment';
+import moment from 'dayjs';
 
 import {
   Page,

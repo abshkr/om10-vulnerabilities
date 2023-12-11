@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, DatePicker } from 'antd';
-import moment from 'moment';
+import moment from 'dayjs';
 
 import { SETTINGS } from '../../../../constants';
 
@@ -10,10 +10,10 @@ const DefaultValue = ({ form, value }) => {
 
   const { t } = useTranslation();
 
-  const onChange = value => {
+  const onChange = (value) => {
     if (!value) {
       setFieldsValue({
-        edt_def_exp_date: ''
+        edt_def_exp_date: '',
       });
     }
   };
@@ -22,7 +22,7 @@ const DefaultValue = ({ form, value }) => {
     if (value) {
       setFieldsValue({
         edt_def_exp_date:
-          value.edt_def_exp_date === '' ? null : moment(value.edt_def_exp_date, SETTINGS.DATE_TIME_FORMAT)
+          value.edt_def_exp_date === '' ? null : moment(value.edt_def_exp_date, SETTINGS.DATE_TIME_FORMAT),
       });
     } else {
       setFieldsValue({

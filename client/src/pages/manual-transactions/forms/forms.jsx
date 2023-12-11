@@ -3,7 +3,7 @@ import { Form, Select, Input, Button, Row, Col, DatePicker, Divider, Tag, Toolti
 import { LockOutlined, PaperClipOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
-import moment from 'moment';
+import moment from 'dayjs';
 import { useState } from 'react';
 
 import api, { LOAD_SCHEDULES, MANUAL_TRANSACTIONS, TANKER_LIST } from '../../../api';

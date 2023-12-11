@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { Form, Modal, Input, notification, DatePicker, Row, Col, message } from 'antd';
-import moment from 'moment';
+import moment from 'dayjs';
 import _ from 'lodash';
 import FromSupplier from './fields/from-supplier';
 import ToSupplier from './fields/to-supplier';

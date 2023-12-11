@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { Form, DatePicker, Col } from 'antd';
-import moment from 'moment';
+import moment from 'dayjs';
 import _ from 'lodash';
 
 import { useConfig } from '../../../../hooks';

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 import useSWR from 'swr';
-import moment from 'moment';
+import moment from 'dayjs';
 import { Button, notification, Switch, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined, PlusOutlined, FileSearchOutlined, ExclamationCircleOutlined } from '@ant-design/icons';

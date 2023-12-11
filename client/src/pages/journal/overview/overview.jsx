@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Row, Col, Card, Select, Statistic } from 'antd';
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
-import moment from 'moment';
+import moment from 'dayjs';
 
 import { JOURNAL } from 'api';
 

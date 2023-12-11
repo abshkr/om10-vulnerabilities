@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CalendarOutlined } from '@ant-design/icons';
 import { Table, Button, Popconfirm, Form, Checkbox } from 'antd';
 import { useTranslation } from 'react-i18next';
-import moment from 'moment';
+import moment from 'dayjs';
 import _ from 'lodash';
 
 import Cell from './cell';
@@ -20,15 +20,15 @@ const Expiry = ({ form, value, type }) => {
 
   const handleSave = (row) => {
     const tempData = [...data];
-    
+
     const types = [...payload?.records];
     const index = types.findIndex((item) => row.edt_type_desc === item.edt_type_desc);
     const targetType = types[index];
 
     const index2 = tempData.findIndex((item) => row.edt_type_code === item.edt_type_code);
-    tempData[index2] = {...row}
+    tempData[index2] = { ...row };
     tempData[index2].edt_type_code = targetType.edt_type_code;
-    
+
     setData(tempData);
 
     setFieldsValue({
@@ -115,8 +115,8 @@ const Expiry = ({ form, value, type }) => {
       key: 'edt_reject',
       align: 'center',
       render: (text, record) => {
-        return <Checkbox disabled checked={record?.edt_reject} /> 
-      }
+        return <Checkbox disabled checked={record?.edt_reject} />;
+      },
     },
     {
       title: t('fields.operations'),

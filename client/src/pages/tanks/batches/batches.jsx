@@ -33,7 +33,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
-import moment from 'moment';
+import moment from 'dayjs';
 import jwtDecode from 'jwt-decode';
 
 import { DataTable, Download, DateTimeRangePicker } from '../../../components';

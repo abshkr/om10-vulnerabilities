@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import moment from 'moment';
+import moment from 'dayjs';
 import { Radio, Tabs } from 'antd';
 import { useTranslation } from 'react-i18next';
 
@@ -41,8 +41,10 @@ const Journal = () => {
       sortBy ? `&sort_by=${sortBy}` : ''
     }`; */
 
-  const baseUrl = search || pagingFlag === undefined ? null :
-    `${JOURNAL.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${start}&end_date=${end}`;
+  const baseUrl =
+    search || pagingFlag === undefined
+      ? null
+      : `${JOURNAL.READ}?pgflag=${pagingFlag ? 'Y' : 'N'}&start_date=${start}&end_date=${end}`;
 
   const setRange = (start, end) => {
     setStart(start);
@@ -126,14 +128,14 @@ const Journal = () => {
     <>
       {selected !== '1' && selected !== '0' && (
         <React.Fragment>
-        <Switch 
-          style={{marginRight: 5}}
-          checked={pagingFlag}
-          checkedChildren={<span>{t('operations.paginationOn')}</span>}
-          unCheckedChildren={<span>{t('operations.paginationOff')}</span>}
-          onChange={(value) => onChangePagination(value)}
-        />
-        <Calendar handleChange={setRange} start={start} end={end} disabled={selected === '1'} />
+          <Switch
+            style={{ marginRight: 5 }}
+            checked={pagingFlag}
+            checkedChildren={<span>{t('operations.paginationOn')}</span>}
+            unCheckedChildren={<span>{t('operations.paginationOff')}</span>}
+            onChange={(value) => onChangePagination(value)}
+          />
+          <Calendar handleChange={setRange} start={start} end={end} disabled={selected === '1'} />
         </React.Fragment>
       )}
 
@@ -143,21 +145,21 @@ const Journal = () => {
         </Button>
       )}
 
-      {selected === '1' && (
-        <Download data={data} columns={fields} />
-      )}
+      {selected === '1' && <Download data={data} columns={fields} />}
 
-      {!pagingFlag && selected === '2' && (
-        <Download data={data} columns={fields} />
-      )}
+      {!pagingFlag && selected === '2' && <Download data={data} columns={fields} />}
 
-      {pagingFlag && selected === '2' && search && (
-        <Download data={data} columns={fields} />
-      )}
-      
+      {pagingFlag && selected === '2' && search && <Download data={data} columns={fields} />}
+
       {pagingFlag && selected === '2' && !search && (
         // <PageExporter baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} columns={fields} />
-        <PageDownloader baseUrl={baseUrl} startVar={'start_num'} endVar={'end_num'} pageSize={500} columns={fields} />
+        <PageDownloader
+          baseUrl={baseUrl}
+          startVar={'start_num'}
+          endVar={'end_num'}
+          pageSize={500}
+          columns={fields}
+        />
       )}
 
       {selected !== '0' && (
@@ -182,7 +184,10 @@ const Journal = () => {
           style={{ marginLeft: 5 }}
           value={selected}
           buttonStyle="solid"
-          onChange={(val) => {setSearch(null); setSelected(val.target.value)}}
+          onChange={(val) => {
+            setSearch(null);
+            setSelected(val.target.value);
+          }}
         >
           <Radio.Button value="0"> {t('tabColumns.overview')}</Radio.Button>
           <Radio.Button value="1"> {t('tabColumns.liveJournal')}</Radio.Button>
@@ -193,8 +198,8 @@ const Journal = () => {
   );
 
   const doTabChanges = (tabPaneKey) => {
-    setSearch(null); 
-    setSelected(tabPaneKey)
+    setSearch(null);
+    setSelected(tabPaneKey);
   };
 
   return (
@@ -210,22 +215,26 @@ const Journal = () => {
           <Tabs defaultActiveKey="1" onChange={doTabChanges} size="small" type="card">
             <TabPane tab={t('tabColumns.overview')} key="0">
               {selected === '0' && (
-                <Overview start={start} end={end} doSearch={doSearch} setTab={setSelected} setRange={setRange} />
+                <Overview
+                  start={start}
+                  end={end}
+                  doSearch={doSearch}
+                  setTab={setSelected}
+                  setRange={setRange}
+                />
               )}
             </TabPane>
             <TabPane tab={t('tabColumns.liveJournal')} key="1">
-              {selected === '1' && (
-                <Live t={t} setData={setData} setFields={setFields}/>
-              )}
+              {selected === '1' && <Live t={t} setData={setData} setFields={setFields} />}
             </TabPane>
             <TabPane tab={t('tabColumns.historicalJournal')} key="2">
               {selected === '2' && (
-                <Historical 
-                  t={t} 
-                  start={start} 
-                  end={end} 
-                  setData={setData} 
-                  setFields={setFields} 
+                <Historical
+                  t={t}
+                  start={start}
+                  end={end}
+                  setData={setData}
+                  setFields={setFields}
                   search={search}
                   pagingFlag={pagingFlag}
                 />
@@ -238,12 +247,12 @@ const Journal = () => {
         )}
         {!tabMode && selected === '1' && <Live t={t} setData={setData} setFields={setFields} />}
         {!tabMode && selected === '2' && (
-          <Historical 
-            t={t} 
-            start={start} 
-            end={end} 
-            setData={setData} 
-            setFields={setFields} 
+          <Historical
+            t={t}
+            start={start}
+            end={end}
+            setData={setData}
+            setFields={setFields}
             search={search}
             pagingFlag={pagingFlag}
           />

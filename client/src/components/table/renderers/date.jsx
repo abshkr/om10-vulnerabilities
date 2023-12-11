@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import moment from 'moment';
+import moment from 'dayjs';
 
 import { DATE_TIME_FORMAT } from 'constants/settings';
 import ConfigStore from 'stores/config-store';
@@ -11,7 +11,7 @@ const DateRenderer = (props) => {
   // console.log('...................dateTimeFormat', dateTimeFormat, defaultFormat, props);
 
   if (value !== '') {
-    const payload = moment(value, DATE_TIME_FORMAT).format(dateTimeFormat||defaultFormat);
+    const payload = moment(value, DATE_TIME_FORMAT).format(dateTimeFormat || defaultFormat);
 
     return <div>{payload}</div>;
   }

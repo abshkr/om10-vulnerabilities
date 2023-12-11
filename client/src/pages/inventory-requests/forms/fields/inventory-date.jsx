@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, DatePicker, Tag, Row, Col } from 'antd';
-import moment from 'moment';
+import moment from 'dayjs';
 import _ from 'lodash';
 import jwtDecode from 'jwt-decode';
 

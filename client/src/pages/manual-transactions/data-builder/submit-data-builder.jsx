@@ -1,5 +1,5 @@
 import _ from 'lodash';
-// import moment from 'moment';
+// import moment from 'dayjs';
 import { SETTINGS } from '../../../constants';
 
 const buildPayloadToSubmit = (values, sourceType, orderSeals, t) => {

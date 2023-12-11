@@ -5,7 +5,7 @@ import { WarningOutlined, QuestionCircleOutlined, CloseOutlined } from '@ant-des
 import { Form, Button, Card, Tabs, Modal, notification, Drawer } from 'antd';
 
 import { useTranslation } from 'react-i18next';
-import moment from 'moment';
+import moment from 'dayjs';
 import useSWR, { mutate } from 'swr';
 import _ from 'lodash';
 

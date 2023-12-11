@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Form, Select, Row, Col } from 'antd';
-import moment from 'moment';
+import moment from 'dayjs';
 import _ from 'lodash';
 import api, { SPECIAL_MOVEMENTS } from 'api';
 import { SETTINGS } from '../../../../constants';
