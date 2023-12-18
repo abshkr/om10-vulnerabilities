@@ -51,7 +51,7 @@ class Database
         if (!$this->conn) {
             $e = oci_error();
             echo ("Connect DB failed:" . $e['message']);
-            write_log("Connect DB failed:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
+            // write_log("Connect DB failed:" . $e['message'], __FILE__, __LINE__, LogLevel::ERROR);
         }
 
         //Set data format, otherwise data update will fail
@@ -157,7 +157,7 @@ class Database
             return $row['CNT'];
         } else {
             $e = oci_error($stmt);
-            write_log($e['message'], __FILE__, __LINE__);
+            // write_log($e['message'], __FILE__, __LINE__);
             return false;
         }
     }
@@ -293,7 +293,7 @@ class Database
                 return $row['CNT'];
             } else {
                 $e = oci_error($stmt);
-                write_log($e['message'], __FILE__, __LINE__);
+                // write_log($e['message'], __FILE__, __LINE__);
                 return false;
             }
         } else {
