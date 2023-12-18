@@ -1,6 +1,7 @@
 <?php
 // required headers
-header("Access-Control-Allow-Origin: *");
+$host = basename($_SERVER['HTTP_HOST']);
+header('Access-Control-Allow-Origin: '.$host);
 header("Content-Type: application/json; charset=UTF-8");
  
 // include database and object files
