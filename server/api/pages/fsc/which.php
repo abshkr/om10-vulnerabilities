@@ -1,7 +1,7 @@
 
 <?php
 header("Access-Control-Allow-Origin: *");
-$host = $_SERVER['HTTP_HOST'];
+$host = basename($_SERVER['HTTP_HOST']);
 
 $url = "http://{$host}:5200/is_master";
 $strJsonFileContents = file_get_contents($url);
