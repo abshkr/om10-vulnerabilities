@@ -45,7 +45,7 @@ class Utilities
 
     public static function sanitize($obj)
     {
-        $class = get_class($obj);
+        $class_name = get_class($obj);
         foreach ($obj as $key => $value) {
             if (!is_string($value)) {
                 continue;
@@ -247,10 +247,10 @@ class Utilities
         return $result;
     }
 
-    public static function read($class, $method = 'read', $filter = true, $params = null)
+    public static function read($class_name, $method = 'read', $filter = true, $params = null)
     {
         write_log(sprintf("%s::%s() START, class:%s, method:%s",
-            __CLASS__, __FUNCTION__, $class, $method),
+            __CLASS__, __FUNCTION__, $class_name, $method),
             __FILE__, __LINE__);
 
         $database = new Database();
@@ -258,7 +258,7 @@ class Utilities
 
         // initialize object
         try {
-            $db = $database->getConnection($class, $method);
+            $db = $database->getConnection($class_name, $method);
         } catch (InvalidToeknException $e) {
             $error = new EchoSchema(498, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
             echo json_encode($error, JSON_PRETTY_PRINT);
@@ -270,13 +270,13 @@ class Utilities
         }
 
         $access_check = new AccessCheck($db);
-        if (!$access_check->check($class, $method, self::getCurrPsn())) {
+        if (!$access_check->check($class_name, $method, self::getCurrPsn())) {
             $error = new EchoSchema(400, response("__INVALID_PRIV__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
             return;
         }
 
-        $object = new $class($db);
+        $object = new $class_name($db);
 
         if ($filter) {
             //Prior to PHP 5.6, a stream opened with php://input could only be read once
@@ -401,10 +401,10 @@ class Utilities
     /**
      * Identical to read(), the difference is it does not continue after calling $object->$method()
      */
-    public static function exec2($class, $method = 'read', $filter = true)
+    public static function exec2($class_name, $method = 'read', $filter = true)
     {
         write_log(sprintf("%s::%s() START, class:%s, method:%s",
-            __CLASS__, __FUNCTION__, $class, $method),
+            __CLASS__, __FUNCTION__, $class_name, $method),
             __FILE__, __LINE__);
 
         $database = new Database();
@@ -412,7 +412,7 @@ class Utilities
 
         // initialize object
         try {
-            $db = $database->getConnection2($class, $method);
+            $db = $database->getConnection2($class_name, $method);
         } catch (UnauthException $e) {
             $error = new EchoSchema(401, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
             echo json_encode($error, JSON_PRETTY_PRINT);
@@ -420,13 +420,13 @@ class Utilities
         }
 
         $access_check = new AccessCheck($db);
-        if (!$access_check->check($class, $method, self::getCurrPsn())) {
+        if (!$access_check->check($class_name, $method, self::getCurrPsn())) {
             $error = new EchoSchema(400, response("__INVALID_PRIV__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
             return;
         }
 
-        $object = new $class($db);
+        $object = new $class_name($db);
 
         if ($filter) {
             //Prior to PHP 5.6, a stream opened with php://input could only be read once
@@ -456,10 +456,10 @@ class Utilities
     /**
      * Identical to read(), the difference is it does not continue after calling $object->$method()
      */
-    public static function exec($class, $method = 'read', $filter = true, $params = null)
+    public static function exec($class_name, $method = 'read', $filter = true, $params = null)
     {
         write_log(sprintf("%s::%s() START, class:%s, method:%s",
-            __CLASS__, __FUNCTION__, $class, $method),
+            __CLASS__, __FUNCTION__, $class_name, $method),
             __FILE__, __LINE__);
 
         $database = new Database();
@@ -467,7 +467,7 @@ class Utilities
 
         // initialize object
         try {
-            $db = $database->getConnection($class, $method);
+            $db = $database->getConnection($class_name, $method);
         } catch (InvalidToeknException $e) {
             $error = new EchoSchema(498, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
             echo json_encode($error, JSON_PRETTY_PRINT);
@@ -479,13 +479,13 @@ class Utilities
         }
 
         $access_check = new AccessCheck($db);
-        if (!$access_check->check($class, $method, self::getCurrPsn())) {
+        if (!$access_check->check($class_name, $method, self::getCurrPsn())) {
             $error = new EchoSchema(400, response("__INVALID_PRIV__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
             return;
         }
 
-        $object = new $class($db);
+        $object = new $class_name($db);
 
         if ($filter) {
             //Prior to PHP 5.6, a stream opened with php://input could only be read once
@@ -518,12 +518,12 @@ class Utilities
         return $object->$method();
     }
 
-    public static function count($class, $method = 'count', $filter = false)
+    public static function count($class_name, $method = 'count', $filter = false)
     {
         $database = new Database();
         $db = null;
         try {
-            $db = $database->getConnection($class, $method);
+            $db = $database->getConnection($class_name, $method);
         } catch (InvalidToeknException $e) {
             $error = new EchoSchema(498, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
             echo json_encode($error, JSON_PRETTY_PRINT);
@@ -535,7 +535,7 @@ class Utilities
         }
 
         // initialize object
-        $object = new $class($db);
+        $object = new $class_name($db);
 
         if ($filter) {
             $data = json_decode(file_get_contents("php://input"));
@@ -575,12 +575,12 @@ class Utilities
     "000001096EDE",
     "0000011B0BB9"
     ] */
-    public static function simpliedRead($class, $method = 'read', $filter = false)
+    public static function simpliedRead($class_name, $method = 'read', $filter = false)
     {
         $database = new Database();
         $db = null;
         try {
-            $db = $database->getConnection($class, $method);
+            $db = $database->getConnection($class_name, $method);
         } catch (InvalidToeknException $e) {
             $error = new EchoSchema(498, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
             echo json_encode($error, JSON_PRETTY_PRINT);
@@ -592,7 +592,7 @@ class Utilities
         }
 
         // initialize object
-        $object = new $class($db);
+        $object = new $class_name($db);
 
         if ($filter) {
             $data = json_decode(file_get_contents("php://input"));
@@ -736,16 +736,16 @@ class Utilities
 
     //If $itemData is set, it means it is called from createArray(), so
     //do not echo if it success, just return true or false.
-    public static function create($class, $method = 'create', $itemData = null)
+    public static function create($class_name, $method = 'create', $itemData = null)
     {
         write_log(sprintf("%s::%s() START, class:%s, method:%s",
-            __CLASS__, __FUNCTION__, $class, $method),
+            __CLASS__, __FUNCTION__, $class_name, $method),
             __FILE__, __LINE__);
 
         $database = new Database();
         $db = null;
         try {
-            $db = $database->getConnection($class, $method);
+            $db = $database->getConnection($class_name, $method);
         } catch (InvalidToeknException $e) {
             $error = new EchoSchema(498, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
             echo json_encode($error, JSON_PRETTY_PRINT);
@@ -757,14 +757,14 @@ class Utilities
         }
 
         $access_check = new AccessCheck($db);
-        if (!$access_check->check($class, $method, self::getCurrPsn())) {
+        if (!$access_check->check($class_name, $method, self::getCurrPsn())) {
             $error = new EchoSchema(400, response("__INVALID_PRIV__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
             return;
         }
 
-        $object = new $class($db);
-        $desc = (isset($object->desc) ? $object->desc : $class);
+        $object = new $class_name($db);
+        $desc = (isset($object->desc) ? $object->desc : $class_name);
 
         // get posted data
         if (isset($itemData)) {
@@ -911,7 +911,7 @@ class Utilities
     {
         $upper_key = strtoupper($key);
         // write_log(sprintf("%s => %s", $key, $value), __FILE__, __LINE__);
-        // write_log(sprintf("%s, %s", strtoupper($class), $upper_key), __FILE__, __LINE__);
+        // write_log(sprintf("%s, %s", strtoupper($class_name), $upper_key), __FILE__, __LINE__);
 
         if (isset($class_object->BOOLEAN_FIELDS) &&
             array_key_exists($upper_key, $class_object->BOOLEAN_FIELDS)) {
@@ -941,13 +941,13 @@ class Utilities
     }
 
     //Loop to update for an array. sample: pages/folio/update_meters.php
-    public static function updateArray($class, $method = 'update')
+    public static function updateArray($class_name, $method = 'update')
     {
-        if (method_exists($class, "pre_update_array")) {
+        if (method_exists($class_name, "pre_update_array")) {
             $database = new Database();
             $db = null;
             try {
-                $db = $database->getConnection($class, "pre_update_array");
+                $db = $database->getConnection($class_name, "pre_update_array");
             } catch (InvalidToeknException $e) {
                 $error = new EchoSchema(498, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
                 echo json_encode($error, JSON_PRETTY_PRINT);
@@ -959,20 +959,20 @@ class Utilities
             }
 
             $access_check = new AccessCheck($db);
-            if (!$access_check->check($class, $method, self::getCurrPsn())) {
+            if (!$access_check->check($class_name, $method, self::getCurrPsn())) {
                 $error = new EchoSchema(400, response("__INVALID_PRIV__"));
                 echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
             }
 
-            $object = new $class($db);
+            $object = new $class_name($db);
             $object->pre_update_array();
         }
 
         //Get data from POST
         $data = json_decode(file_get_contents("php://input"));
         foreach ($data as $item) {
-            if (self::update($class, $method, $item) === false) {
+            if (self::update($class_name, $method, $item) === false) {
                 $error = new EchoSchema(500, response("__UPDATE_FAILED__"));
                 echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
@@ -987,12 +987,12 @@ class Utilities
     }
 
     //Loop to create for an array. sample: pages/delv_location/create_links.php
-    public static function createArray($class, $method = 'create')
+    public static function createArray($class_name, $method = 'create')
     {
         //Get data from POST
         $data = json_decode(file_get_contents("php://input"));
         foreach ($data as $item) {
-            if (self::create($class, $method, $item) === false) {
+            if (self::create($class_name, $method, $item) === false) {
                 $error = new EchoSchema(500, response("__CREATE_FAILED__"));
                 echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
@@ -1007,12 +1007,12 @@ class Utilities
     }
 
     //Loop to delete for an array. sample: pages/delv_location/delete_links.php
-    public static function deleteArray($class, $method = 'delete')
+    public static function deleteArray($class_name, $method = 'delete')
     {
         //Get data from POST
         $data = json_decode(file_get_contents("php://input"));
         foreach ($data as $item) {
-            if (self::delete($class, $method, $item) === false) {
+            if (self::delete($class_name, $method, $item) === false) {
                 $error = new EchoSchema(500, response("__DELETE_FAILED__"));
                 echo json_encode($error, JSON_PRETTY_PRINT);
                 return;
@@ -1029,16 +1029,16 @@ class Utilities
 
     //If $itemData is set, it means it is called from updateArray(), so
     //do not echo if it success, just return true or false.
-    public static function update($class, $method = 'update', $itemData = null)
+    public static function update($class_name, $method = 'update', $itemData = null)
     {
         write_log(sprintf("%s::%s() START, class:%s, method:%s",
-            __CLASS__, __FUNCTION__, $class, $method),
+            __CLASS__, __FUNCTION__, $class_name, $method),
             __FILE__, __LINE__);
 
         $database = new Database();
         $db = null;
         try {
-            $db = $database->getConnection($class, $method);
+            $db = $database->getConnection($class_name, $method);
         } catch (InvalidToeknException $e) {
             $error = new EchoSchema(498, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
             echo json_encode($error, JSON_PRETTY_PRINT);
@@ -1050,14 +1050,14 @@ class Utilities
         }
 
         $access_check = new AccessCheck($db);
-        if (!$access_check->check($class, $method, self::getCurrPsn())) {
+        if (!$access_check->check($class_name, $method, self::getCurrPsn())) {
             $error = new EchoSchema(400, response("__INVALID_PRIV__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
             return;
         }
 
-        $object = new $class($db);
-        $desc = (isset($object->desc) ? $object->desc : $class);
+        $object = new $class_name($db);
+        $desc = (isset($object->desc) ? $object->desc : $class_name);
 
         // get posted data
         if (isset($itemData)) {
@@ -1187,24 +1187,24 @@ class Utilities
 
     //If $itemData is set, it means it is called from deleteArray(), so
     //do not echo if it success, just return true or false.
-    public static function delete($class, $method = 'delete', $itemData = null)
+    public static function delete($class_name, $method = 'delete', $itemData = null)
     {
         write_log(sprintf("%s::%s() START, class:%s, method:%s",
-            __CLASS__, __FUNCTION__, $class, $method),
+            __CLASS__, __FUNCTION__, $class_name, $method),
             __FILE__, __LINE__);
 
         $database = new Database();
-        $db = $database->getConnection($class, $method);
+        $db = $database->getConnection($class_name, $method);
 
         $access_check = new AccessCheck($db);
-        if (!$access_check->check($class, $method, self::getCurrPsn())) {
+        if (!$access_check->check($class_name, $method, self::getCurrPsn())) {
             $error = new EchoSchema(400, reponse("__INVALID_PRIV__"));
             echo json_encode($error, JSON_PRETTY_PRINT);
             return;
         }
 
-        $object = new $class($db);
-        $desc = (isset($object->desc) ? $object->desc : $class);
+        $object = new $class_name($db);
+        $desc = (isset($object->desc) ? $object->desc : $class_name);
 
         // get posted data
         if (isset($itemData)) {
