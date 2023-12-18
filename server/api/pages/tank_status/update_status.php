@@ -27,7 +27,7 @@ if ($data) {
     }
 }
 
-write_log(json_encode($tank), __FILE__, __LINE__);
+//write_log(json_encode($tank), __FILE__, __LINE__);
 
 if (!isset($tank->tank_code)) {
     http_response_code(400);
