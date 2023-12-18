@@ -151,7 +151,7 @@ class Utilities
         if (getenv('USE_SERVER_NAME_IN_CGI') == 'Y') {
             $host = $_SERVER['SERVER_NAME'];
         }
-        $url = URL_PROTOCOL . $host . ":" . $_SERVER['SERVER_PORT'] . "/" . $cgi . "?";
+        $url = URL_PROTOCOL . basename($host) . ":" . basename($_SERVER['SERVER_PORT']) . "/" . $cgi . "?";
         
         foreach ($_GET as $key => $value)
         {
@@ -162,7 +162,7 @@ class Utilities
         {
             session_start();
             if (isset($_SESSION["SESSION"])) {
-                $url .= "sess_id=" . $_SESSION["SESSION"];
+                $url .= "sess_id=" . basename($_SESSION["SESSION"]);
             }
         }
         
@@ -218,7 +218,7 @@ class Utilities
             }
         }
         
-        $url .= "sess_id=" . self::getCurrentSession();
+        $url .= "sess_id=" . basename(self::getCurrentSession());
 
         write_log(sprintf("%s::%s(), url:%s", __CLASS__, __FUNCTION__, $url),
             __FILE__, __LINE__);
