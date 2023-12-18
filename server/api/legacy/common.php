@@ -11,6 +11,13 @@ $PORT = $_SERVER['SERVER_PORT'];
  
 function http_get_cgi($cgi)
 {
+    $location = realpath($cgi);
+    if ($location !== false) {
+        if (!str_starts_with($location, 'cgi-bin')) {
+            return "invalid cgi";
+        }
+    }
+
     global $PROTOCOL;
     global $HOST;
     global $PORT;
@@ -34,6 +41,13 @@ function http_get_cgi($cgi)
  
 function http_post_cgi($cgi)
 {
+    $location = realpath($cgi);
+    if ($location !== false) {
+        if (!str_starts_with($location, 'cgi-bin')) {
+            return "invalid cgi";
+        }
+    }
+
     global $PROTOCOL;
     global $HOST;
     global $PORT;
@@ -54,38 +68,6 @@ function http_post_cgi($cgi)
     return file_get_contents($url, false, stream_context_create($arrContextOptions));
 }
 
-function http_post($url)
-{
-	$postdata = new \stdClass();
-    $opt = null;
-	$context = null;
-
-
-    foreach ($_POST as $key => $value)
-    {
-		$postdata->$key = rawurlencode(strip_tags($value)); 
-    }
-
-/*	$certfile = './cert.pem'; */
-
-	$opt = array(
-		'http' => array(
-			'method' => 'POST',
-			'header' => 'Content-Type: application/x-www-form-urlencoded',
-			'content' => json_encode($postdata)
-		)
-/*
-		'ssl' => array(
-			'verify_peer' => true,
-			'cafile' => $certfile,
-			//'ciphers' => 'HIGH:TLSv1.2:TLSv1.1:TLSv1.0:!SSLv3:!SSLv2',
-			'disable_compression' => true
-		)	
-*/
-	);
-	$context = stream_context_create($opt);
-    return file_get_contents($url, false, $context);
-}
  
  
 ?>
