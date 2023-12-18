@@ -25,10 +25,10 @@ function http_get_cgi($cgi)
  
     foreach ($_GET as $key => $value)
     {
-        $url .= $key . "=". rawurlencode(strip_tags($value)) . "&";
+        $url .= basename($key) . "=". rawurlencode(strip_tags($value)) . "&";
     }
     //$url = substr($url, 0, -1);
-    $url .= "sess_id=" . $_SESSION["SESSION"];
+    $url .= "sess_id=" . basename($_SESSION["SESSION"]);
     $arrContextOptions = array(
                 "ssl"=>array(
                     "verify_peer"=>false,
@@ -54,10 +54,10 @@ function http_post_cgi($cgi)
     $url = $PROTOCOL . $HOST . ":" . $PORT . "/" . $cgi . "?";
     foreach ($_POST as $key => $value)
     {
-        $url .= $key . "=". rawurlencode(strip_tags($value)) . "&";
+        $url .= basename($key) . "=". rawurlencode(strip_tags($value)) . "&";
     }
     //$url = substr($url, 0, -1);
-    $url .= "sess_id=" . $_SESSION["SESSION"];
+    $url .= "sess_id=" . basename($_SESSION["SESSION"]);
     $arrContextOptions = array(
                 "ssl"=>array(
                     "verify_peer"=>false,
