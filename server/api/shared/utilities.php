@@ -155,6 +155,9 @@ class Utilities
         
         foreach ($_GET as $key => $value)
         {
+		if (str_contains($key, '..')) {
+                   return "Invalid key";
+		}
             $url .= $key . "=". rawurlencode(strip_tags($value)) . "&";
         }
         //$url = substr($url, 0, -1);
