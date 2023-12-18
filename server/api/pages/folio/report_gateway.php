@@ -11,6 +11,14 @@ if (isset($_SERVER['REPORT_DIR'])) {
 
 $file = $report_dir . $siteCode . "/" . $_GET["report"];
 
+$location = realpath($file);
+if ($location !== false) {
+    if (strpos($location, $report_dir) !== 0) {
+        // requested directory begins with our allowed path
+        echo "invalid file path";
+    }
+}
+
 // IMPORTANT!!! DO NOT REMOVE!!! SECURITY BREACH EMMINENT
 $file = implode('', explode('../', $file));
 $filename = array_pop(explode('/', $_GET["report"]));
