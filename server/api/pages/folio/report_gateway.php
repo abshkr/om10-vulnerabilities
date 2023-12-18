@@ -9,7 +9,7 @@ if (isset($_SERVER['REPORT_DIR'])) {
     $report_dir = "/var/www/htdocs/folio_rpts/";
 }
 
-$file = $report_dir . $siteCode . "/" . $_GET["report"];
+$file = $report_dir . $siteCode . "/" . basename($_GET["report"]);
 
 $location = realpath($file);
 if ($location !== false) {
