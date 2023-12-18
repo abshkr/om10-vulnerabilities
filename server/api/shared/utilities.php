@@ -261,18 +261,18 @@ class Utilities
             $db = $database->getConnection($class_name, $method);
         } catch (InvalidToeknException $e) {
             $error = new EchoSchema(498, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             return;
         } catch (UnauthException $e) {
             $error = new EchoSchema(401, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             return;
         }
 
         $access_check = new AccessCheck($db);
         if (!$access_check->check($class_name, $method, self::getCurrPsn())) {
             $error = new EchoSchema(400, response("__INVALID_PRIV__"));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             return;
         }
 
@@ -318,7 +318,7 @@ class Utilities
             return;
         } else if (!$stmt) {
             $error = new EchoSchema(500, response("__INTERNAL_ERROR__"));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             return;
         }
 
@@ -415,14 +415,14 @@ class Utilities
             $db = $database->getConnection2($class_name, $method);
         } catch (UnauthException $e) {
             $error = new EchoSchema(401, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             return;
         }
 
         $access_check = new AccessCheck($db);
         if (!$access_check->check($class_name, $method, self::getCurrPsn())) {
             $error = new EchoSchema(400, response("__INVALID_PRIV__"));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             return;
         }
 
@@ -470,18 +470,18 @@ class Utilities
             $db = $database->getConnection($class_name, $method);
         } catch (InvalidToeknException $e) {
             $error = new EchoSchema(498, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             return;
         } catch (UnauthException $e) {
             $error = new EchoSchema(401, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             return;
         }
 
         $access_check = new AccessCheck($db);
         if (!$access_check->check($class_name, $method, self::getCurrPsn())) {
             $error = new EchoSchema(400, response("__INVALID_PRIV__"));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             return;
         }
 
@@ -526,11 +526,11 @@ class Utilities
             $db = $database->getConnection($class_name, $method);
         } catch (InvalidToeknException $e) {
             $error = new EchoSchema(498, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             return;
         } catch (UnauthException $e) {
             $error = new EchoSchema(401, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             return;
         }
 
@@ -583,11 +583,11 @@ class Utilities
             $db = $database->getConnection($class_name, $method);
         } catch (InvalidToeknException $e) {
             $error = new EchoSchema(498, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             return;
         } catch (UnauthException $e) {
             $error = new EchoSchema(401, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             return;
         }
 
@@ -748,18 +748,18 @@ class Utilities
             $db = $database->getConnection($class_name, $method);
         } catch (InvalidToeknException $e) {
             $error = new EchoSchema(498, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             return;
         } catch (UnauthException $e) {
             $error = new EchoSchema(401, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             return;
         }
 
         $access_check = new AccessCheck($db);
         if (!$access_check->check($class_name, $method, self::getCurrPsn())) {
             $error = new EchoSchema(400, response("__INVALID_PRIV__"));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             return;
         }
 
@@ -809,7 +809,7 @@ class Utilities
                 write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
                 // $error = new EchoSchema(400, sprintf("Caught exception: %s", $e->getMessage()));
                 $error = new EchoSchema(400, response("__GENERAL_EXCEPTION__", sprintf("Caught exception: %s", $e->getMessage())));
-                echo json_encode($error, JSON_PRETTY_PRINT);
+                echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
                 return;
             }
 
@@ -821,7 +821,7 @@ class Utilities
                 $record_str = strlen($object->primiary_key_str()) > 0 ? " (" . $object->primiary_key_str() . ") ": " ";
                 // $error = new EchoSchema(400, sprintf("record%salready exist", $record_str));
                 $error = new EchoSchema(400, response("__ALREADY_EXIST__", sprintf("record%salready exist", $record_str)));
-                echo json_encode($error, JSON_PRETTY_PRINT);
+                echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
                 return;
             }
         }
@@ -859,7 +859,7 @@ class Utilities
                     // sprintf("Unable to create %s . Check logs/php_rest_*.log file for details.", $desc));
                     $error = new EchoSchema(500, response("__CREATE_FAILED__", 
                         sprintf("Unable to create %s . Internal server error.", $desc)));
-                    echo json_encode($error, JSON_PRETTY_PRINT);
+                    echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
                     return;
                 }
                 return false;
@@ -868,7 +868,7 @@ class Utilities
             if (!isset($itemData)) {
                 write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
                 $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", sprintf("Database Error: %s", $e->getMessage())));
-                echo json_encode($error, JSON_PRETTY_PRINT);
+                echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
                 return;
             }
             return false;
@@ -876,7 +876,7 @@ class Utilities
             if (!isset($itemData)) {
                 // $error = new EchoSchema(400, "Bad Request: " . $e->getMessage());
                 $error = new EchoSchema(400, response("__PARAMETER_EXCEPTION__", "Bad Request: " . $e->getMessage()));
-                echo json_encode($error, JSON_PRETTY_PRINT);
+                echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
                 return;
             }
             return false;
@@ -950,18 +950,18 @@ class Utilities
                 $db = $database->getConnection($class_name, "pre_update_array");
             } catch (InvalidToeknException $e) {
                 $error = new EchoSchema(498, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
-                echo json_encode($error, JSON_PRETTY_PRINT);
+                echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
                 return;
             } catch (UnauthException $e) {
                 $error = new EchoSchema(401, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
-                echo json_encode($error, JSON_PRETTY_PRINT);
+                echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
                 return;
             }
 
             $access_check = new AccessCheck($db);
             if (!$access_check->check($class_name, $method, self::getCurrPsn())) {
                 $error = new EchoSchema(400, response("__INVALID_PRIV__"));
-                echo json_encode($error, JSON_PRETTY_PRINT);
+                echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
                 return;
             }
 
@@ -974,7 +974,7 @@ class Utilities
         foreach ($data as $item) {
             if (self::update($class_name, $method, $item) === false) {
                 $error = new EchoSchema(500, response("__UPDATE_FAILED__"));
-                echo json_encode($error, JSON_PRETTY_PRINT);
+                echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
                 return;
             }
         }
@@ -994,7 +994,7 @@ class Utilities
         foreach ($data as $item) {
             if (self::create($class_name, $method, $item) === false) {
                 $error = new EchoSchema(500, response("__CREATE_FAILED__"));
-                echo json_encode($error, JSON_PRETTY_PRINT);
+                echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
                 return;
             }
         }
@@ -1014,7 +1014,7 @@ class Utilities
         foreach ($data as $item) {
             if (self::delete($class_name, $method, $item) === false) {
                 $error = new EchoSchema(500, response("__DELETE_FAILED__"));
-                echo json_encode($error, JSON_PRETTY_PRINT);
+                echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
                 return;
             }
         }
@@ -1041,18 +1041,18 @@ class Utilities
             $db = $database->getConnection($class_name, $method);
         } catch (InvalidToeknException $e) {
             $error = new EchoSchema(498, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             return;
         } catch (UnauthException $e) {
             $error = new EchoSchema(401, response("__NOT_AUTH__", sprintf("Caught exception: %s", $e->getMessage())));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             return;
         }
 
         $access_check = new AccessCheck($db);
         if (!$access_check->check($class_name, $method, self::getCurrPsn())) {
             $error = new EchoSchema(400, response("__INVALID_PRIV__"));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             return;
         }
 
@@ -1109,7 +1109,7 @@ class Utilities
             if (!isset($itemData)) {
                 write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
                 $error = new EchoSchema(400, response("__GENERAL_EXCEPTION__", sprintf("Caught exception: %s", $e->getMessage())));
-                echo json_encode($error, JSON_PRETTY_PRINT);
+                echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
                 return;
             }
 
@@ -1126,7 +1126,7 @@ class Utilities
                     write_log(sprintf("record%sdoes not not exist", $record_str), __FILE__, __LINE__, LogLevel::ERROR);
                     // $error = new EchoSchema(400, sprintf("record%sdoes not not exist", $record_str));
                     $error = new EchoSchema(400, response("__NOT_EXIST__", sprintf("record%sdoes not not exist", $record_str)));
-                    echo json_encode($error, JSON_PRETTY_PRINT);
+                    echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
                     return;
                 }
             }
@@ -1161,7 +1161,7 @@ class Utilities
                 if (!isset($itemData)) {
                     $error = new EchoSchema(500, response("__UPDATE_FAILED__",
                         sprintf("Unable to update %s . Internal server error.", $desc)));
-                    echo json_encode($error, JSON_PRETTY_PRINT);
+                    echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
                     return;
                 }
                 return false;
@@ -1170,7 +1170,7 @@ class Utilities
             if (!isset($itemData)) {
                 write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
                 $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", "Database Error: " . $e->getMessage()));
-                echo json_encode($error, JSON_PRETTY_PRINT);
+                echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
                 return;
             }
             return false;
@@ -1178,7 +1178,7 @@ class Utilities
             if (!isset($itemData)) {
                 write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
                 $error = new EchoSchema(500, response("__GENERAL_EXCEPTION__", "Server Failed Error: " . $e->getMessage()));
-                echo json_encode($error, JSON_PRETTY_PRINT);
+                echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
                 return;
             }
             return false;
@@ -1199,7 +1199,7 @@ class Utilities
         $access_check = new AccessCheck($db);
         if (!$access_check->check($class_name, $method, self::getCurrPsn())) {
             $error = new EchoSchema(400, reponse("__INVALID_PRIV__"));
-            echo json_encode($error, JSON_PRETTY_PRINT);
+            echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             return;
         }
 
@@ -1234,7 +1234,7 @@ class Utilities
                 write_log(sprintf("record (%s) does not not exist", $object->primiary_key_str()), __FILE__, __LINE__, LogLevel::ERROR);
                 $error = new EchoSchema(400, response("__NOT_EXIST__", 
                     sprintf("Record (%s) does not not exist", $object->primiary_key_str())));
-                echo json_encode($error, JSON_PRETTY_PRINT);
+                echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
 
                 return;
             }
@@ -1260,7 +1260,7 @@ class Utilities
                 if (!isset($itemData)) {
                     $error = new EchoSchema(500, response("__DELETE_FAILED__", 
                         sprintf("Unable to delete %s. Most likely this record may have child record(s).", $desc)));
-                    echo json_encode($error, JSON_PRETTY_PRINT);
+                    echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
                 }
                 return false;
             }
@@ -1268,14 +1268,14 @@ class Utilities
             if (!isset($itemData)) {
                 write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
                 $error = new EchoSchema(500, response("__DATABASE_EXCEPTION__", "Database Error: " . $e->getMessage()));
-                echo json_encode($error, JSON_PRETTY_PRINT);
+                echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             }
             return false;
         } catch (Exception $e) {
             if (!isset($itemData)) {
                 write_log(sprintf("Caught exception: %s", $e->getMessage()), __FILE__, __LINE__, LogLevel::ERROR);
                 $error = new EchoSchema(500, response("__GENERAL_EXCEPTION__", "Server Failed Error: " . $e->getMessage()));
-                echo json_encode($error, JSON_PRETTY_PRINT);
+                echo json_encode(array('Error' => "Failed"), JSON_PRETTY_PRINT);
             }
             return false;
         }
