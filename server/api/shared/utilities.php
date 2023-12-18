@@ -155,9 +155,6 @@ class Utilities
         
         foreach ($_GET as $key => $value)
         {
-		if (str_contains($key, '..')) {
-                   return "Invalid key";
-		}
             $url .= basename($key) . "=". rawurlencode(strip_tags($value)) . "&";
         }
         //$url = substr($url, 0, -1);
@@ -212,11 +209,11 @@ class Utilities
              */
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 foreach ($_POST as $key => $value) {
-                    $url .= $key . "=" . rawurlencode(strip_tags($value)) . "&";
+                    $url .= basename($key) . "=" . rawurlencode(strip_tags($value)) . "&";
                 }
             } else {
                 foreach ($_GET as $key => $value) {
-                    $url .= $key . "=" . rawurlencode(strip_tags($value)) . "&";
+                    $url .= basename($key) . "=" . rawurlencode(strip_tags($value)) . "&";
                 }
             }
         }
