@@ -31,7 +31,7 @@ import { useTranslation } from 'react-i18next';
 
 import _ from 'lodash';
 import useSWR from 'swr';
-import moment from 'moment';
+import moment from 'dayjs';
 
 import { FormModal } from '../../../../components/';
 import { getDateTimeFormat } from '../../../../utils';

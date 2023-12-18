@@ -27,7 +27,7 @@ import {
 } from 'antd';
 
 import { useTranslation } from 'react-i18next';
-import moment from 'moment';
+import moment from 'dayjs';
 import useSWR, { mutate } from 'swr';
 import api from 'api';
 import _ from 'lodash';

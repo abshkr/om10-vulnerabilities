@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import useSWR from 'swr';
-import moment from 'moment';
+import moment from 'dayjs';
 import { CloseOutlined, DeleteOutlined, SyncOutlined } from '@ant-design/icons';
 
 import { Form, Button, Modal, notification } from 'antd';

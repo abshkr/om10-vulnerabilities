@@ -12,7 +12,7 @@ import { Form, Button, Tabs, Modal, notification, Drawer, Card, Space } from 'an
 import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 import { mutate } from 'swr';
-import moment from 'moment';
+import moment from 'dayjs';
 import _ from 'lodash';
 
 import { Type, Period, InventoryDate, SelectAllTanks, Terminal } from './fields';

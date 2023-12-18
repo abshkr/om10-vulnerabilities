@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from 'dayjs';
 
 import getServerTime from './get-server-time';
 import { SETTINGS } from '../constants';

@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from 'dayjs';
 import { SETTINGS } from '../constants';
 
 const convertToLocale = (value) => {

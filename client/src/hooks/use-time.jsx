@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import moment from 'moment';
+import moment from 'dayjs';
 import useSWR from 'swr';
 
 import { AUTH } from '../api';

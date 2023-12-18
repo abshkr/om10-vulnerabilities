@@ -5,7 +5,7 @@ import useSWR, { mutate } from 'swr';
 import { useTranslation } from 'react-i18next';
 import { Button, Tabs, notification, Modal } from 'antd';
 import jwtDecode from 'jwt-decode';
-import moment from 'moment';
+import moment from 'dayjs';
 
 import {
   SyncOutlined,

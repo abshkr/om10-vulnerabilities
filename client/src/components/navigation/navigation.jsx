@@ -29,6 +29,938 @@ const Navigation = () => {
   const [modules, setmodules] = useState([]);
   // const modules = {};
 
+  const getItem = (key, label, icon, title, disabled, children, theme, type, popupOffset) => {
+    return {
+      key: key,
+      icon,
+      label: label,
+      title: title,
+      children: children,
+      theme: theme,
+      popupOffset: popupOffset,
+    };
+  };
+
+  const getSubItemsOperation = () => {
+    const items = [];
+
+    if (modules?.M_LOADSCHEDULES) {
+      items.push(
+        getItem(
+          ROUTES.LOAD_SCHEDULES,
+          <span>{t('pageNames.loadSchedules')}</span>,
+          <Icons size={40} hidden type="loadSchedules" />
+        )
+      );
+    }
+
+    if (modules?.M_ORDERLISTING) {
+      items.push(
+        getItem(
+          ROUTES.ORDER_LISTING,
+          <span>{t('pageNames.orderListing')}</span>,
+          <Icons size={40} hidden type="orderListing" />
+        )
+      );
+    }
+
+    if (modules?.M_TRANSACTIONLIST) {
+      items.push(
+        getItem(
+          ROUTES.TRANSACTION_LIST,
+          <span>{t('pageNames.transactionList')}</span>,
+          <Icons size={40} hidden type="transactionList" />
+        )
+      );
+    }
+
+    if (modules?.M_NOMINATION) {
+      items.push(
+        getItem(
+          ROUTES.MOVEMENT_NOMINATIONS,
+          <span>{t('pageNames.movementNominations')}</span>,
+          <Icons size={40} hidden type="movementNominations" />
+        )
+      );
+    }
+
+    if (modules?.M_SPECIALMOVEMENTS) {
+      items.push(
+        getItem(
+          ROUTES.SPECIAL_MOVEMENTS,
+          <span>{t('pageNames.specialMovements')}</span>,
+          <Icons size={40} hidden type="specialMovements" />
+        )
+      );
+    }
+
+    if (modules?.M_MANUALTRANSACTIONS && config?.manageMakeManualTransaction) {
+      items.push(
+        getItem(
+          ROUTES.MANUAL_TRANSACTIONS,
+          <span>{t('pageNames.manualTransactions')}</span>,
+          <Icons size={40} hidden type="manualTransactions" />
+        )
+      );
+    }
+
+    if (modules?.M_PRODUCTMOVEMENT) {
+      items.push(
+        getItem(
+          ROUTES.PRODUCT_MOVEMENTS,
+          <span>{t('pageNames.productMovements')}</span>,
+          <Icons size={40} hidden type="productMovements" />
+        )
+      );
+    }
+
+    if (modules?.M_INVENTORYREQUEST) {
+      items.push(
+        getItem(
+          ROUTES.INVENTORY_REQUESTS,
+          <span>{t('pageNames.inventoryRequests')}</span>,
+          <Icons size={40} hidden type="inventoryRequests" />
+        )
+      );
+    }
+
+    if (modules?.M_GATECONTROL) {
+      items.push(
+        getItem(
+          ROUTES.GATE_CONTROL,
+          <span>{t('pageNames.gateControl')}</span>,
+          <Icons size={40} hidden type="gateControl" />
+        )
+      );
+    }
+
+    if (modules?.M_EQUIPMENT) {
+      items.push(
+        getItem(
+          ROUTES.EQUIPMENT_TYPES,
+          <span>{t(config?.siteLabelUser + 'pageNames.equipmentTypes')}</span>,
+          <Icons size={40} hidden type="equipmentTypes" />
+        )
+      );
+    }
+
+    if (modules?.M_EQUIPMENTLIST) {
+      items.push(
+        getItem(
+          ROUTES.EQUIPMENT_LIST,
+          <span>{t(config?.siteLabelUser + 'pageNames.equipmentList')}</span>,
+          <Icons size={40} hidden type="equipmentList" />
+        )
+      );
+    }
+
+    if (modules?.M_TANKERS) {
+      items.push(
+        getItem(
+          ROUTES.TANKER_LIST,
+          <span>{t('pageNames.tankerList')}</span>,
+          <Icons size={40} hidden type="tankerList" />
+        )
+      );
+    }
+
+    if (items.length > 0) {
+      const header = getItem(
+        'operations',
+        <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.operations')}</div>,
+        undefined,
+        undefined,
+        true
+      );
+      items.unshift(header);
+    }
+
+    return items;
+  };
+
+  const getSubItemsStock = () => {
+    const items = [];
+
+    if (modules?.M_TANKSTATUS) {
+      items.push(
+        getItem(
+          ROUTES.TANKS,
+          <span>{t('pageNames.tanks')}</span>,
+          <Icons size={40} hidden type="tankScreen" />
+        )
+      );
+    }
+
+    if (modules?.M_TANKGROUPS) {
+      items.push(
+        getItem(
+          ROUTES.TANK_GROUPS,
+          <span>{t('pageNames.tankGroups')}</span>,
+          <Icons size={40} hidden type="tankGroups" />
+        )
+      );
+    }
+
+    if (modules?.M_SITEBALANCE) {
+      items.push(
+        getItem(
+          ROUTES.SITE_BALANCE,
+          <span>{t('pageNames.siteBalance')}</span>,
+          <Icons size={40} hidden type="siteBalance" />
+        )
+      );
+    }
+
+    if (modules?.M_TANKINVENTORY) {
+      items.push(
+        getItem(
+          ROUTES.TANK_INVENTORY,
+          <span>{t('pageNames.tankInventory')}</span>,
+          <Icons size={40} hidden type="tankInventory" />
+        )
+      );
+    }
+
+    if (modules?.M_PRODUCTINVENTORY) {
+      items.push(
+        getItem(
+          ROUTES.PRODUCT_INVENTORY,
+          <span>{t('pageNames.productInventory')}</span>,
+          <Icons size={40} hidden type="productInventory" />
+        )
+      );
+    }
+
+    if (modules?.M_SFTRANSACTIONLIST) {
+      items.push(
+        getItem(
+          ROUTES.SELF_FUEL_TRANSACTION_LIST,
+          <span>{t('pageNames.selfFuelTransactionList')}</span>,
+          <Icons size={40} hidden type="selfFuelTransactionList" />
+        )
+      );
+    }
+
+    if (items.length > 0) {
+      const header = getItem(
+        'stock',
+        <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.stock')}</div>,
+        undefined,
+        undefined,
+        true
+      );
+      items.unshift(header);
+    }
+
+    return items;
+  };
+
+  const getSubItemsReport = () => {
+    const items = [];
+
+    if (modules?.M_FOLIOMANAGEMENT) {
+      items.push(
+        getItem(
+          ROUTES.FOLIO_SUMMARY,
+          <span>{t('pageNames.folioSummary')}</span>,
+          <Icons size={40} hidden type="folioSummary" />
+        )
+      );
+    }
+
+    if (modules?.M_JASPERREPORTS) {
+      items.push(
+        getItem(
+          ROUTES.ON_DEMAND_REPORTS,
+          <span>{t('pageNames.onDemandReports')}</span>,
+          <Icons size={40} hidden type="onDemandReports" />
+        )
+      );
+    }
+
+    if (modules?.M_JOURNALREPORT) {
+      items.push(
+        getItem(
+          ROUTES.JOURNAL,
+          <span>{t('pageNames.journal')}</span>,
+          <Icons size={40} hidden type="journal" />
+        )
+      );
+    }
+
+    if (modules?.M_GSAPMESSAGING) {
+      items.push(
+        getItem(
+          ROUTES.HOST_MESSAGING_INTERFACE,
+          <span>{t('pageNames.hostMessagingInterface')}</span>,
+          <Icons size={40} hidden type="hostMessagingInterface" />
+        )
+      );
+    }
+
+    if (modules?.M_ONSITEREPORT) {
+      items.push(
+        getItem(
+          ROUTES.PERSONNEL_ON_SITE,
+          <span>{t('pageNames.personnelOnSite')}</span>,
+          <Icons size={40} hidden type="personnelOnSite" />
+        )
+      );
+    }
+
+    if (modules?.M_AUDITREPORT && config?.manageAuditing) {
+      items.push(
+        getItem(
+          ROUTES.AUDITING_DATA,
+          <span>{t('pageNames.auditingData')}</span>,
+          <Icons size={40} hidden type="auditingData" />
+        )
+      );
+    }
+
+    if (modules?.M_METERING) {
+      items.push(
+        getItem(
+          ROUTES.METERING,
+          <span>{t('pageNames.metering')}</span>,
+          <Icons size={40} hidden type="metering" />
+        )
+      );
+    }
+
+    if (items.length > 0) {
+      const header = getItem(
+        'reports',
+        <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.reports')}</div>,
+        undefined,
+        undefined,
+        true
+      );
+      items.unshift(header);
+    }
+
+    return items;
+  };
+
+  const getSubItemsSecurity = () => {
+    const items = [];
+
+    if (modules?.M_PERSONNEL) {
+      items.push(
+        getItem(
+          ROUTES.PERSONNEL,
+          <span>{t('pageNames.personnel')}</span>,
+          <Icons size={40} hidden type="personnel" />
+        )
+      );
+    }
+
+    if (modules?.M_IDENTIFICATIONASSIGNMENT) {
+      items.push(
+        getItem(
+          ROUTES.ID_ASSIGNMENT,
+          <span>{t('pageNames.idAssignment')}</span>,
+          <Icons size={40} hidden type="idAssignment" />
+        )
+      );
+    }
+
+    if (modules?.M_EXPIRYDATES) {
+      items.push(
+        getItem(
+          ROUTES.EXPIRY_DATES,
+          <span>{t('pageNames.expiryDates')}</span>,
+          <Icons size={40} hidden type="expiryDates" />
+        )
+      );
+    }
+
+    if (modules?.M_TIMECODES) {
+      items.push(
+        getItem(
+          ROUTES.TIME_CODES,
+          <span>{t('pageNames.timeCodes')}</span>,
+          <Icons size={40} hidden type="timeCodes" />
+        )
+      );
+    }
+
+    if (modules?.M_ROLEACCESS) {
+      items.push(
+        getItem(
+          ROUTES.ROLE_ACCESS_MANAGEMENT,
+          <span>{t('pageNames.roleAccessManagement')}</span>,
+          <Icons size={40} hidden type="roleAccessManagement" />
+        )
+      );
+    }
+
+    if (modules?.M_AREA) {
+      items.push(
+        getItem(ROUTES.AREA, <span>{t('pageNames.area')}</span>, <Icons size={40} hidden type="area" />)
+      );
+    }
+
+    if (modules?.M_GATEPERMISSION) {
+      items.push(
+        getItem(
+          ROUTES.GATE_PERMISSION,
+          <span>{t('pageNames.gatePermission')}</span>,
+          <Icons size={40} hidden type="gatePermission" />
+        )
+      );
+    }
+
+    if (items.length > 0) {
+      const header = getItem(
+        'security',
+        <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.security')}</div>,
+        undefined,
+        undefined,
+        true
+      );
+      items.unshift(header);
+    }
+
+    return items;
+  };
+
+  const getSubItemsProduct = () => {
+    const items = [];
+
+    if (modules?.M_BASEPRODUCTS) {
+      items.push(
+        getItem(
+          ROUTES.BASE_PRODUCTS,
+          <span>{t('pageNames.baseProducts')}</span>,
+          <Icons size={40} hidden type="baseProducts" />
+        )
+      );
+    }
+
+    if (modules?.M_DRAWERPRODUCTS) {
+      items.push(
+        getItem(
+          ROUTES.DRAWER_PRODUCTS,
+          <span>{t('pageNames.drawerProducts')}</span>,
+          <Icons size={40} hidden type="drawerProducts" />
+        )
+      );
+    }
+
+    if (modules?.M_HAZCHEM) {
+      items.push(
+        getItem(
+          ROUTES.HAZCHEM_CODES,
+          <span>{t('pageNames.hazchemCodes')}</span>,
+          <Icons size={40} hidden type="hazchemCodes" />
+        )
+      );
+    }
+
+    if (modules?.M_DANGEROUSGOODS) {
+      items.push(
+        getItem(
+          ROUTES.DANGEROUS_GOODS,
+          <span>{t('pageNames.dangerousGoods')}</span>,
+          <Icons size={40} hidden type="dangerousGoods" />
+        )
+      );
+    }
+
+    if (modules?.M_PRODUCTS) {
+      items.push(
+        getItem(
+          ROUTES.PRODUCT_GROUPS,
+          <span>{t('pageNames.productGroups')}</span>,
+          <Icons size={40} hidden type="productGroups" />
+        )
+      );
+    }
+
+    if (items.length > 0) {
+      const header = getItem(
+        'products',
+        <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.products')}</div>,
+        undefined,
+        undefined,
+        true
+      );
+      items.unshift(header);
+    }
+
+    return items;
+  };
+
+  const getSubItemsCompany = () => {
+    const items = [];
+
+    if (modules?.M_COMPANIES) {
+      items.push(
+        getItem(
+          ROUTES.COMPANIES,
+          <span>{t('pageNames.companies')}</span>,
+          <Icons size={40} hidden type="companies" />
+        )
+      );
+    }
+
+    if (modules?.M_ALLOCATIONS) {
+      items.push(
+        getItem(
+          ROUTES.ALLOCATIONS,
+          <span>{t('pageNames.allocations')}</span>,
+          <Icons size={40} hidden type="allocations" />
+        )
+      );
+    }
+
+    if (modules?.M_CUSTOMERS) {
+      items.push(
+        getItem(
+          ROUTES.CUSTOMERS,
+          <span>{t('pageNames.customers')}</span>,
+          <Icons size={40} hidden type="customerScreen" />
+        )
+      );
+    }
+
+    if (modules?.M_ADDRESSES) {
+      items.push(
+        getItem(
+          ROUTES.ADDRESSES,
+          <span>{t('pageNames.addresses')}</span>,
+          <Icons size={40} hidden type="addresses" />
+        )
+      );
+    }
+
+    if (modules?.M_DELIVERYLOCATIONS) {
+      items.push(
+        getItem(
+          ROUTES.DELIVERY_LOCATIONS,
+          <span>{t('pageNames.deliveryLocations')}</span>,
+          <Icons size={40} hidden type="deliveryLocations" />
+        )
+      );
+    }
+
+    if (modules?.M_PARTNERS && config?.managePartnersAndPartnership) {
+      items.push(
+        getItem(
+          ROUTES.PARTNERS,
+          <span>{t('pageNames.partners')}</span>,
+          <Icons size={40} hidden type="partners" />
+        )
+      );
+    }
+
+    if (modules?.M_PARTNERSHIP && config?.managePartnersAndPartnership) {
+      items.push(
+        getItem(
+          ROUTES.PARTNERSHIP,
+          <span>{t('pageNames.partnership')}</span>,
+          <Icons size={40} hidden type="partnership" />
+        )
+      );
+    }
+
+    if (modules?.M_CUSTOMERCATEGORIES) {
+      items.push(
+        getItem(
+          ROUTES.CUSTOMER_CATEGORIES,
+          <span>{t('pageNames.customerCategories')}</span>,
+          <Icons size={40} hidden type="customerCategories" />
+        )
+      );
+    }
+
+    if (items.length > 0) {
+      const header = getItem(
+        'companies',
+        <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.companies')}</div>,
+        undefined,
+        undefined,
+        true
+      );
+      items.unshift(header);
+    }
+
+    return items;
+  };
+
+  const getSubItemsConfig = () => {
+    const items = [];
+
+    if (modules?.M_LOADBAYS) {
+      items.push(
+        getItem(
+          ROUTES.LOAD_BAYS,
+          <span>{t('pageNames.loadBays')}</span>,
+          <Icons size={40} hidden type="loadBays" />
+        )
+      );
+    }
+
+    if (modules?.M_LOADBAYS) {
+      items.push(
+        getItem(
+          ROUTES.BAY_CONFIGURATION,
+          <span>{t('pageNames.bayConfiguration')}</span>,
+          <Icons size={40} hidden type="bayConfiguration" />
+        )
+      );
+    }
+
+    if (modules?.M_BAYMOVEMENT) {
+      items.push(
+        getItem(
+          ROUTES.COMPANY_BAY_MOVEMENT,
+          <span>{t('pageNames.companyBayMovement')}</span>,
+          <Icons size={40} hidden type="companyBayMovement" />
+        )
+      );
+    }
+
+    if (modules?.M_LOADMETERS) {
+      items.push(
+        getItem(
+          ROUTES.LOAD_METERS,
+          <span>{t('pageNames.loadMeters')}</span>,
+          <Icons size={40} hidden type="loadMeters" />
+        )
+      );
+    }
+
+    if (modules?.M_METERINGDEVICES) {
+      items.push(
+        getItem(
+          ROUTES.METER_DEVICES,
+          <span>{t('pageNames.meterDevices')}</span>,
+          <Icons size={40} hidden type="meterDevices" />
+        )
+      );
+    }
+
+    if (modules?.M_PHYSICALPRINTERS) {
+      items.push(
+        getItem(
+          ROUTES.PHYSICAL_PRINTERS,
+          <span>{t('pageNames.physicalPrinters')}</span>,
+          <Icons size={40} hidden type="physicalPrinters" />
+        )
+      );
+    }
+
+    if (modules?.M_SITEACCESSDEVICES) {
+      items.push(
+        getItem(
+          ROUTES.SITE_ACCESS_DEVICES,
+          <span>{t('pageNames.siteAccessDevices')}</span>,
+          <Icons size={40} hidden type="siteAccessDevices" />
+        )
+      );
+    }
+
+    if (modules?.M_KEYREADERDEVICES) {
+      items.push(
+        getItem(
+          ROUTES.KEY_READER_DEVICES,
+          <span>{t('pageNames.keyReaderDevices')}</span>,
+          <Icons size={40} hidden type="keyReaderDevices" />
+        )
+      );
+    }
+
+    if (modules?.M_TANKCONFIGURATION) {
+      items.push(
+        getItem(
+          ROUTES.TANK_CONFIGURATION,
+          <span>{t('pageNames.tankConfiguration')}</span>,
+          <Icons size={40} hidden type="tankConfiguration" />
+        )
+      );
+    }
+
+    if (modules?.M_LOGICALPRINTERS) {
+      items.push(
+        getItem(
+          ROUTES.LOGICAL_PRINTERS,
+          <span>{t('pageNames.logicalPrinters')}</span>,
+          <Icons size={40} hidden type="logicalPrinters" />
+        )
+      );
+    }
+
+    if (modules?.M_REPOCONFIGURATION) {
+      items.push(
+        getItem(
+          ROUTES.REPORT_CONFIGURATION,
+          <span>{t('pageNames.reportConfiguration')}</span>,
+          <Icons size={40} hidden type="reportConfiguration" />
+        )
+      );
+    }
+
+    if (modules?.M_REPOPROFILE) {
+      items.push(
+        getItem(
+          ROUTES.REPORT_PROFILE,
+          <span>{t('pageNames.reportProfile')}</span>,
+          <Icons size={40} hidden type="reportProfile" />
+        )
+      );
+    }
+
+    if (modules?.M_FOLIOSCHEDULING) {
+      items.push(
+        getItem(
+          ROUTES.FOLIO_SCHEDULLING,
+          <span>{t('pageNames.folioScheduling')}</span>,
+          <Icons size={40} hidden type="folioScheduling" />
+        )
+      );
+    }
+
+    if (modules?.M_MOVEMENTREASON) {
+      items.push(
+        getItem(
+          ROUTES.MOVEMENT_REASONS,
+          <span>{t('pageNames.movementReasons')}</span>,
+          <Icons size={40} hidden type="movementReasons" />
+        )
+      );
+    }
+
+    if (items.length > 0) {
+      const header = getItem(
+        'config',
+        <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.config')}</div>,
+        undefined,
+        undefined,
+        true
+      );
+      items.unshift(header);
+    }
+
+    return items;
+  };
+
+  const getSubItemsModule = () => {
+    const items = [];
+
+    if (modules?.M_BAYVIEW) {
+      items.push(
+        getItem(
+          ROUTES.BAY_VIEW,
+          <span>{t('pageNames.bayView')}</span>,
+          <Icons size={40} hidden type="bayView" />
+        )
+      );
+    }
+
+    if (modules?.M_ADAPTIVEFLOW) {
+      items.push(
+        getItem(
+          ROUTES.ADAPTIVE_FLOW_CONTROL,
+          <span>{t('pageNames.adaptiveFlowControl')}</span>,
+          <Icons size={40} hidden type="adaptiveFlowControl" />
+        )
+      );
+    }
+
+    if (modules?.M_FSCSTATUS) {
+      items.push(
+        getItem(
+          ROUTES.FSC_STATUS,
+          <span>{t('pageNames.fscStatus')}</span>,
+          <Icons size={40} hidden type="fscStatus" />
+        )
+      );
+    }
+
+    if (modules?.M_TANKVIEW) {
+      items.push(
+        getItem(
+          ROUTES.TANK_VIEW,
+          <span>{t('pageNames.tankView')}</span>,
+          <Icons size={40} hidden type="tankView" />
+        )
+      );
+    }
+
+    if (items.length > 0) {
+      const header = getItem(
+        'modules',
+        <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.modules')}</div>,
+        undefined,
+        undefined,
+        true
+      );
+      items.unshift(header);
+    }
+
+    return items;
+  };
+
+  const getMenuItems = () => {
+    const items = [];
+
+    /* items.push(
+      getItem(
+        'dki_logo', 
+        (
+          <LogoContainer>
+            <img src="/images/dki_small.png" alt="logo" style={{ height: 300 }} />
+          </LogoContainer>        
+        ),
+        undefined,
+        `${t('generic.version')} ${SETTINGS.VERSION}`,
+      )
+    ); */
+
+    items.push(getItem(ROUTES.HOME, <span>{t('pageMenu.dashboard')}</span>, <Icons type="dashboard" />));
+
+    const operItems = getSubItemsOperation();
+    if (operItems.length > 0) {
+      items.push(
+        getItem(
+          'operationsManagement',
+          <span>{t('pageMenu.operations')}</span>,
+          <Icons type="operations" />,
+          undefined,
+          undefined,
+          operItems,
+          undefined,
+          undefined,
+          [10, 0]
+        )
+      );
+    }
+
+    const stckItems = getSubItemsStock();
+    if (stckItems.length > 0) {
+      items.push(
+        getItem(
+          'stocksManagement',
+          <span>{t('pageMenu.stock')}</span>,
+          <Icons type="stockManagement" />,
+          undefined,
+          undefined,
+          stckItems,
+          undefined,
+          undefined,
+          [10, 0]
+        )
+      );
+    }
+
+    const rprtItems = getSubItemsReport();
+    if (rprtItems.length > 0) {
+      items.push(
+        getItem(
+          'reportsManagement',
+          <span>{t('pageMenu.reports')}</span>,
+          <Icons type="reports" />,
+          undefined,
+          undefined,
+          rprtItems,
+          undefined,
+          undefined,
+          [10, 0]
+        )
+      );
+    }
+
+    const safeItems = getSubItemsSecurity();
+    if (safeItems.length > 0) {
+      items.push(
+        getItem(
+          'securitysManagement',
+          <span>{t('pageMenu.security')}</span>,
+          <Icons type="accessControl" />,
+          undefined,
+          undefined,
+          safeItems,
+          undefined,
+          undefined,
+          [10, 0]
+        )
+      );
+    }
+
+    const prodItems = getSubItemsProduct();
+    if (prodItems.length > 0) {
+      items.push(
+        getItem(
+          'productsManagement',
+          <span>{t('pageMenu.products')}</span>,
+          <Icons type="products" />,
+          undefined,
+          undefined,
+          prodItems,
+          undefined,
+          undefined,
+          [10, 0]
+        )
+      );
+    }
+
+    const cmpyItems = getSubItemsCompany();
+    if (cmpyItems.length > 0) {
+      items.push(
+        getItem(
+          'companysManagement',
+          <span>{t('pageMenu.companies')}</span>,
+          <Icons type="companies" />,
+          undefined,
+          undefined,
+          cmpyItems,
+          undefined,
+          undefined,
+          [10, 0]
+        )
+      );
+    }
+
+    const cnfgItems = getSubItemsConfig();
+    if (cnfgItems.length > 0) {
+      items.push(
+        getItem(
+          'settingsManagement',
+          <span>{t('pageMenu.config')}</span>,
+          <Icons type="config" />,
+          undefined,
+          undefined,
+          cnfgItems,
+          undefined,
+          undefined,
+          [10, 0]
+        )
+      );
+    }
+
+    const modlItems = getSubItemsModule();
+    if (modlItems.length > 0) {
+      items.push(
+        getItem(
+          'modulesManagement',
+          <span>{t('pageMenu.modules')}</span>,
+          <Icons type="modules" />,
+          undefined,
+          undefined,
+          modlItems,
+          undefined,
+          undefined,
+          [10, 0]
+        )
+      );
+    }
+
+    return items;
+  };
+
+  // props: onClick -	Called when a menu item is clicked -	function({ item, key, keyPath, domEvent })
   const handleNavigation = (event) => {
     setActive([[event.key]]);
 
@@ -68,9 +1000,10 @@ const Navigation = () => {
 
   //Middle click to open on a new tab. Use newscreen because cannot find a better way
   const onMouseDown = (event) => {
+    console.log(',,,,,,,,,,,,,,,', event, event.target);
     if (event.button === 1) {
-      event.target.getAttribute('newscreen') &&
-        window.open(window.location.origin + event.target.getAttribute('newscreen'), '_blank');
+      event.target.getAttribute('key') &&
+        window.open(window.location.origin + event.target.getAttribute('key'), '_blank');
       // event.preventDefault();
     }
   };
@@ -101,760 +1034,25 @@ const Navigation = () => {
       });
   }, []);
 
-  // console.log(modules);
-
   return (
     <MenuContainer>
+      <LogoContainer>
+        <Tooltip
+          placement="right"
+          title={`${t('generic.version')} ${SETTINGS.VERSION}`}
+          align={{ offset: [28, 0] }}
+        >
+          <img src="/images/dki_small.png" alt="logo" style={{ height: 300 }} />
+        </Tooltip>
+      </LogoContainer>
       <Menu
         onMouseDown={onMouseDown}
         onClick={handleNavigation}
         defaultSelectedKeys={active}
         style={{ width: '100%' }}
         theme="dark"
-      >
-        <LogoContainer>
-          <Tooltip
-            placement="right"
-            title={`${t('generic.version')} ${SETTINGS.VERSION}`}
-            align={{ offset: [28, 0] }}
-          >
-            <img src="/images/dki_small.png" alt="logo" style={{ height: 300 }} />
-          </Tooltip>
-        </LogoContainer>
-
-        <Menu.Item key={ROUTES.HOME}>
-          <Icons type="dashboard" />
-          <span>{t('pageMenu.dashboard')}</span>
-        </Menu.Item>
-
-        <SubMenu
-          key="operationsManagement"
-          title={
-            <>
-              <Icons type="operations" />
-              <span>{t('pageMenu.operations')}</span>
-            </>
-          }
-        >
-          <Menu.Item key="operations" disabled>
-            <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.operations')}</div>
-          </Menu.Item>
-
-          {modules?.M_LOADSCHEDULES && (
-            <Menu.Item
-              key={ROUTES.LOAD_SCHEDULES}
-              style={{ display: 'flex', marginTop: 10 }}
-              newscreen={ROUTES.LOAD_SCHEDULES}
-            >
-              <Icons size={40} hidden type="loadSchedules" /> {t('pageNames.loadSchedules')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_ORDERLISTING && (
-            <Menu.Item
-              key={ROUTES.ORDER_LISTING}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.ORDER_LISTING}
-            >
-              <Icons size={40} hidden type="orderListing" /> {t('pageNames.orderListing')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_TRANSACTIONLIST && (
-            <Menu.Item
-              key={ROUTES.TRANSACTION_LIST}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.TRANSACTION_LIST}
-            >
-              <Icons size={40} hidden type="transactionList" /> {t('pageNames.transactionList')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_NOMINATION && (
-            <Menu.Item
-              key={ROUTES.MOVEMENT_NOMINATIONS}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.MOVEMENT_NOMINATIONS}
-            >
-              <Icons size={40} hidden type="movementNominations" />
-              {t('pageNames.movementNominations')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_SPECIALMOVEMENTS && (
-            <Menu.Item
-              key={ROUTES.SPECIAL_MOVEMENTS}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.SPECIAL_MOVEMENTS}
-            >
-              <Icons size={40} hidden type="specialMovements" />
-              {t('pageNames.specialMovements')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_MANUALTRANSACTIONS && (
-            <Menu.Item
-              key={ROUTES.MANUAL_TRANSACTIONS}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.MANUAL_TRANSACTIONS}
-            >
-              <Icons size={40} hidden type="manualTransactions" />
-              {t('pageNames.manualTransactions')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_PRODUCTMOVEMENT && (
-            <Menu.Item
-              key={ROUTES.PRODUCT_MOVEMENTS}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.PRODUCT_MOVEMENTS}
-            >
-              <Icons size={40} hidden type="productMovements" />
-              {t('pageNames.productMovements')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_INVENTORYREQUEST && (
-            <Menu.Item
-              key={ROUTES.INVENTORY_REQUESTS}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.INVENTORY_REQUESTS}
-            >
-              <Icons size={40} hidden type="inventoryRequests" />
-              {t('pageNames.inventoryRequests')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_GATECONTROL && (
-            <Menu.Item key={ROUTES.GATE_CONTROL} style={{ display: 'flex' }} newscreen={ROUTES.GATE_CONTROL}>
-              <Icons size={40} hidden type="gateControl" />
-              {t('pageNames.gateControl')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_EQUIPMENT && (
-            <Menu.Item
-              key={ROUTES.EQUIPMENT_TYPES}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.EQUIPMENT_TYPES}
-            >
-              <Icons size={40} hidden type="equipmentTypes" />
-              {t(config?.siteLabelUser + 'pageNames.equipmentTypes')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_EQUIPMENTLIST && (
-            <Menu.Item
-              key={ROUTES.EQUIPMENT_LIST}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.EQUIPMENT_LIST}
-            >
-              <Icons size={40} hidden type="equipmentList" />
-              {t(config?.siteLabelUser + 'pageNames.equipmentList')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_TANKERS && (
-            <Menu.Item
-              key={ROUTES.TANKER_LIST}
-              style={{ display: 'flex', marginBottom: 10 }}
-              newscreen={ROUTES.TANKER_LIST}
-            >
-              <Icons size={40} hidden type="tankerList" />
-              {t('pageNames.tankerList')}
-            </Menu.Item>
-          )}
-        </SubMenu>
-
-        <SubMenu
-          key="stocksManagement"
-          title={
-            <>
-              <Icons type="stockManagement" />
-              <span>{t('pageMenu.stock')}</span>
-            </>
-          }
-        >
-          <Menu.Item key="stock" disabled>
-            <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.stock')}</div>
-          </Menu.Item>
-
-          {modules?.M_TANKSTATUS && (
-            <Menu.Item key={ROUTES.TANKS} style={{ display: 'flex', marginTop: 10 }} newscreen={ROUTES.TANKS}>
-              <Icons size={40} hidden type="tankScreen" />
-              {t('pageNames.tanks')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_TANKGROUPS && (
-            <Menu.Item key={ROUTES.TANK_GROUPS} style={{ display: 'flex' }} newscreen={ROUTES.TANK_GROUPS}>
-              <Icons size={40} hidden type="tankGroups" />
-              {t('pageNames.tankGroups')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_SITEBALANCE && (
-            <Menu.Item key={ROUTES.SITE_BALANCE} style={{ display: 'flex' }} newscreen={ROUTES.SITE_BALANCE}>
-              <Icons size={40} hidden type="siteBalance" />
-              {t('pageNames.siteBalance')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_TANKINVENTORY && (
-            <Menu.Item
-              key={ROUTES.TANK_INVENTORY}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.TANK_INVENTORY}
-            >
-              <Icons size={40} hidden type="tankInventory" />
-              {t('pageNames.tankInventory')}
-            </Menu.Item>
-          )}
-
-          {/* <Menu.Item key={ROUTES.TANK_STRAPPING} style={{ display: 'flex' }}>
-            <Icons size={40}  hidden type="tankInventory" />
-            {t('pageNames.tankStrapping')}
-          </Menu.Item> */}
-
-          {modules?.M_PRODUCTINVENTORY && (
-            <Menu.Item
-              key={ROUTES.PRODUCT_INVENTORY}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.PRODUCT_INVENTORY}
-            >
-              <Icons size={40} hidden type="productInventory" />
-              <span>{t('pageNames.productInventory')}</span>
-            </Menu.Item>
-          )}
-
-          {/* <Menu.Item key={ROUTES.TANK_STATUS} style={{ display: 'flex' }} newscreen={ROUTES.TANK_STATUS}>
-            <Icons size={40} hidden type="tankStatus" />
-            {t('pageNames.tankStatus')}
-          </Menu.Item> */}
-
-          {modules?.M_SFTRANSACTIONLIST && (
-            <Menu.Item
-              key={ROUTES.SELF_FUEL_TRANSACTION_LIST}
-              style={{ display: 'flex', marginBottom: 10 }}
-              newscreen={ROUTES.SELF_FUEL_TRANSACTION_LIST}
-            >
-              <Icons size={40} hidden type="selfFuelTransactionList" />
-              {t('pageNames.selfFuelTransactionList')}
-            </Menu.Item>
-          )}
-        </SubMenu>
-
-        <SubMenu
-          key="reportsManagement"
-          title={
-            <>
-              <Icons type="reports" />
-              <span>{t('pageMenu.reports')}</span>
-            </>
-          }
-        >
-          <Menu.Item key="reports" disabled>
-            <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.reports')}</div>
-          </Menu.Item>
-
-          {modules?.M_FOLIOMANAGEMENT && (
-            <Menu.Item
-              key={ROUTES.FOLIO_SUMMARY}
-              style={{ display: 'flex', marginTop: 10 }}
-              newscreen={ROUTES.FOLIO_SUMMARY}
-            >
-              <Icons size={40} hidden type="folioSummary" /> {t('pageNames.folioSummary')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_JASPERREPORTS && (
-            <Menu.Item
-              key={ROUTES.ON_DEMAND_REPORTS}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.ON_DEMAND_REPORTS}
-            >
-              <Icons size={40} hidden type="onDemandReports" /> {t('pageNames.onDemandReports')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_JOURNALREPORT && (
-            <Menu.Item key={ROUTES.JOURNAL} style={{ display: 'flex' }} newscreen={ROUTES.JOURNAL}>
-              <Icons size={40} hidden type="journal" /> {t('pageNames.journal')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_GSAPMESSAGING && (
-            <Menu.Item
-              key={ROUTES.HOST_MESSAGING_INTERFACE}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.HOST_MESSAGING_INTERFACE}
-            >
-              <Icons size={40} hidden type="hostMessagingInterface" /> {t('pageNames.hostMessagingInterface')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_ONSITEREPORT && (
-            <Menu.Item
-              key={ROUTES.PERSONNEL_ON_SITE}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.PERSONNEL_ON_SITE}
-            >
-              <Icons size={40} hidden type="personnelOnSite" /> {t('pageNames.personnelOnSite')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_AUDITREPORT && config.manageAuditing && (
-            <Menu.Item
-              key={ROUTES.AUDITING_DATA}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.AUDITING_DATA}
-            >
-              <Icons size={40} hidden type="auditingData" /> {t('pageNames.auditingData')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_METERING && (
-            <Menu.Item
-              key={ROUTES.METERING}
-              style={{ display: 'flex', marginBottom: 10 }}
-              newscreen={ROUTES.METERING}
-            >
-              <Icons size={40} hidden type="metering" /> {t('pageNames.metering')}
-            </Menu.Item>
-          )}
-        </SubMenu>
-
-        <SubMenu
-          key="securitysManagement"
-          title={
-            <>
-              <Icons type="accessControl" />
-              <span>{t('pageMenu.security')}</span>
-            </>
-          }
-        >
-          <Menu.Item key="security" disabled>
-            <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.security')}</div>
-          </Menu.Item>
-
-          {modules?.M_PERSONNEL && (
-            <Menu.Item
-              key={ROUTES.PERSONNEL}
-              style={{ display: 'flex', marginTop: 10 }}
-              newscreen={ROUTES.PERSONNEL}
-            >
-              <Icons size={40} hidden type="personnel" /> {t('pageNames.personnel')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_IDENTIFICATIONASSIGNMENT && (
-            <Menu.Item
-              key={ROUTES.ID_ASSIGNMENT}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.ID_ASSIGNMENT}
-            >
-              <Icons size={40} hidden type="idAssignment" /> {t('pageNames.idAssignment')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_EXPIRYDATES && (
-            <Menu.Item key={ROUTES.EXPIRY_DATES} style={{ display: 'flex' }} newscreen={ROUTES.EXPIRY_DATES}>
-              <Icons size={40} hidden type="expiryDates" /> {t('pageNames.expiryDates')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_TIMECODES && (
-            <Menu.Item key={ROUTES.TIME_CODES} style={{ display: 'flex' }} newscreen={ROUTES.TIME_CODES}>
-              <Icons size={40} hidden type="timeCodes" /> {t('pageNames.timeCodes')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_ROLEACCESS && (
-            <Menu.Item
-              key={ROUTES.ROLE_ACCESS_MANAGEMENT}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.ROLE_ACCESS_MANAGEMENT}
-            >
-              <Icons size={40} hidden type="roleAccessManagement" /> {t('pageNames.roleAccessManagement')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_AREA && (
-            <Menu.Item key={ROUTES.AREA} style={{ display: 'flex' }} newscreen={ROUTES.AREA}>
-              <Icons size={40} hidden type="area" /> {t('pageNames.area')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_GATEPERMISSION && (
-            <Menu.Item
-              key={ROUTES.GATE_PERMISSION}
-              style={{ display: 'flex', marginBottom: 10 }}
-              newscreen={ROUTES.GATE_PERMISSION}
-            >
-              <Icons size={40} hidden type="gatePermission" /> {t('pageNames.gatePermission')}
-            </Menu.Item>
-          )}
-        </SubMenu>
-
-        <SubMenu
-          key="productsManagement"
-          title={
-            <>
-              <Icons type="products" />
-              <span>{t('pageMenu.products')}</span>
-            </>
-          }
-        >
-          <Menu.Item key="products" disabled>
-            <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.products')}</div>
-          </Menu.Item>
-
-          {modules?.M_BASEPRODUCTS && (
-            <Menu.Item
-              key={ROUTES.BASE_PRODUCTS}
-              style={{ display: 'flex', marginTop: 10 }}
-              newscreen={ROUTES.BASE_PRODUCTS}
-            >
-              <Icons size={40} hidden type="baseProducts" /> {t('pageNames.baseProducts')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_DRAWERPRODUCTS && (
-            <Menu.Item
-              key={ROUTES.DRAWER_PRODUCTS}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.DRAWER_PRODUCTS}
-            >
-              <Icons size={40} hidden type="drawerProducts" /> {t('pageNames.drawerProducts')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_HAZCHEM && (
-            <Menu.Item
-              key={ROUTES.HAZCHEM_CODES}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.HAZCHEM_CODES}
-            >
-              <Icons size={40} hidden type="hazchemCodes" /> {t('pageNames.hazchemCodes')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_DANGEROUSGOODS && (
-            <Menu.Item
-              key={ROUTES.DANGEROUS_GOODS}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.DANGEROUS_GOODS}
-            >
-              <Icons size={40} hidden type="dangerousGoods" /> {t('pageNames.dangerousGoods')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_PRODUCTS && (
-            <Menu.Item
-              key={ROUTES.PRODUCT_GROUPS}
-              style={{ display: 'flex', marginBottom: 10 }}
-              newscreen={ROUTES.PRODUCT_GROUPS}
-            >
-              <Icons size={40} hidden type="productGroups" /> {t('pageNames.productGroups')}
-            </Menu.Item>
-          )}
-        </SubMenu>
-
-        <SubMenu
-          key="companysManagement"
-          title={
-            <>
-              <Icons type="companies" />
-              <span>{t('pageMenu.companies')}</span>
-            </>
-          }
-        >
-          <Menu.Item key="companies" disabled>
-            <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.companies')}</div>
-          </Menu.Item>
-
-          {modules?.M_COMPANIES && (
-            <Menu.Item
-              key={ROUTES.COMPANIES}
-              style={{ display: 'flex', marginTop: 10 }}
-              newscreen={ROUTES.COMPANIES}
-            >
-              <Icons size={40} hidden type="companies" />
-              {t('pageNames.companies')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_ALLOCATIONS && (
-            <Menu.Item key={ROUTES.ALLOCATIONS} style={{ display: 'flex' }} newscreen={ROUTES.ALLOCATIONS}>
-              <Icons size={40} hidden type="allocations" />
-              {t('pageNames.allocations')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_CUSTOMERS && (
-            <Menu.Item key={ROUTES.CUSTOMERS} style={{ display: 'flex' }} newscreen={ROUTES.CUSTOMERS}>
-              <Icons size={40} hidden type="customerScreen" />
-              {t('pageNames.customers')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_ADDRESSES && (
-            <Menu.Item key={ROUTES.ADDRESSES} style={{ display: 'flex' }} newscreen={ROUTES.ADDRESSES}>
-              <Icons size={40} hidden type="addresses" />
-              {t('pageNames.addresses')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_DELIVERYLOCATIONS && (
-            <Menu.Item
-              key={ROUTES.DELIVERY_LOCATIONS}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.DELIVERY_LOCATIONS}
-            >
-              <Icons size={40} hidden type="deliveryLocations" />
-              {t('pageNames.deliveryLocations')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_PARTNERS && config.managePartnersAndPartnership && (
-            <Menu.Item key={ROUTES.PARTNERS} style={{ display: 'flex' }} newscreen={ROUTES.PARTNERS}>
-              <Icons size={40} hidden type="partners" />
-              {t('pageNames.partners')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_PARTNERSHIP && config.managePartnersAndPartnership && (
-            <Menu.Item key={ROUTES.PARTNERSHIP} style={{ display: 'flex' }} newscreen={ROUTES.PARTNERSHIP}>
-              <Icons size={40} hidden type="partnership" />
-              {t('pageNames.partnership')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_CUSTOMERCATEGORIES && (
-            <Menu.Item
-              key={ROUTES.CUSTOMER_CATEGORIES}
-              style={{ display: 'flex', marginBottom: 10 }}
-              newscreen={ROUTES.CUSTOMER_CATEGORIES}
-            >
-              <Icons size={40} hidden type="customerCategories" />
-              {t('pageNames.customerCategories')}
-            </Menu.Item>
-          )}
-        </SubMenu>
-
-        <SubMenu
-          key="settingsManagement"
-          title={
-            <>
-              <Icons type="config" />
-              <span>{t('pageMenu.config')}</span>
-            </>
-          }
-        >
-          <Menu.Item key="config" disabled>
-            <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.config')}</div>
-          </Menu.Item>
-
-          {modules?.M_LOADBAYS && (
-            <Menu.Item
-              key={ROUTES.LOAD_BAYS}
-              style={{ display: 'flex', marginTop: 10 }}
-              newscreen={ROUTES.LOAD_BAYS}
-            >
-              <Icons size={40} hidden type="loadBays" />
-              {t('pageNames.loadBays')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_LOADBAYS && (
-            <Menu.Item
-              key={ROUTES.BAY_CONFIGURATION}
-              style={{ display: 'flex', marginTop: 10 }}
-              newscreen={ROUTES.BAY_CONFIGURATION}
-            >
-              <Icons size={40} hidden type="bayConfiguration" />
-              {t('pageNames.bayConfiguration')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_BAYMOVEMENT && (
-            <Menu.Item
-              key={ROUTES.COMPANY_BAY_MOVEMENT}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.COMPANY_BAY_MOVEMENT}
-            >
-              <Icons size={40} hidden type="companyBayMovement" />
-              {t('pageNames.companyBayMovement')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_LOADMETERS && (
-            <Menu.Item key={ROUTES.LOAD_METERS} style={{ display: 'flex' }} newscreen={ROUTES.LOAD_METERS}>
-              <Icons size={40} hidden type="loadMeters" />
-              {t('pageNames.loadMeters')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_METERINGDEVICES && (
-            <Menu.Item
-              key={ROUTES.METER_DEVICES}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.METER_DEVICES}
-            >
-              <Icons size={40} hidden type="meterDevices" />
-              {t('pageNames.meterDevices')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_PHYSICALPRINTERS && (
-            <Menu.Item
-              key={ROUTES.PHYSICAL_PRINTERS}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.PHYSICAL_PRINTERS}
-            >
-              <Icons size={40} hidden type="physicalPrinters" /> {t('pageNames.physicalPrinters')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_SITEACCESSDEVICES && (
-            <Menu.Item
-              key={ROUTES.SITE_ACCESS_DEVICES}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.SITE_ACCESS_DEVICES}
-            >
-              <Icons size={40} hidden type="siteAccessDevices" /> {t('pageNames.siteAccessDevices')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_KEYREADERDEVICES && (
-            <Menu.Item
-              key={ROUTES.KEY_READER_DEVICES}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.KEY_READER_DEVICES}
-            >
-              <Icons size={40} hidden type="keyReaderDevices" /> {t('pageNames.keyReaderDevices')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_TANKCONFIGURATION && (
-            <Menu.Item
-              key={ROUTES.TANK_CONFIGURATION}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.TANK_CONFIGURATION}
-            >
-              <Icons size={40} hidden type="tankConfiguration" /> {t('pageNames.tankConfiguration')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_LOGICALPRINTERS && (
-            <Menu.Item
-              key={ROUTES.LOGICAL_PRINTERS}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.LOGICAL_PRINTERS}
-            >
-              <Icons size={40} hidden type="logicalPrinters" /> {t('pageNames.logicalPrinters')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_REPOCONFIGURATION && (
-            <Menu.Item
-              key={ROUTES.REPORT_CONFIGURATION}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.REPORT_CONFIGURATION}
-            >
-              <Icons size={40} hidden type="reportConfiguration" /> {t('pageNames.reportConfiguration')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_REPOPROFILE && (
-            <Menu.Item
-              key={ROUTES.REPORT_PROFILE}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.REPORT_PROFILE}
-            >
-              <Icons size={40} hidden type="reportProfile" /> {t('pageNames.reportProfile')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_FOLIOSCHEDULING && (
-            <Menu.Item
-              key={ROUTES.FOLIO_SCHEDULLING}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.FOLIO_SCHEDULLING}
-            >
-              <Icons size={40} hidden type="folioScheduling" /> {t('pageNames.folioScheduling')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_MOVEMENTREASON && (
-            <Menu.Item
-              key={ROUTES.MOVEMENT_REASONS}
-              style={{ display: 'flex', marginBottom: 10 }}
-              newscreen={ROUTES.MOVEMENT_REASONS}
-            >
-              <Icons size={40} hidden type="movementReasons" /> {t('pageNames.movementReasons')}
-            </Menu.Item>
-          )}
-        </SubMenu>
-
-        <SubMenu
-          key="modulesManagement"
-          title={
-            <>
-              <Icons type="modules" />
-              <span>{t('pageMenu.modules')}</span>
-            </>
-          }
-        >
-          <Menu.Item key="modules" disabled>
-            <div style={{ fontSize: 18, fontWeight: 500, color: 'white' }}>{t('pageMenu.modules')}</div>
-          </Menu.Item>
-
-          {modules?.M_BAYVIEW && (
-            <Menu.Item
-              key={ROUTES.BAY_VIEW}
-              style={{ display: 'flex', marginTop: 10 }}
-              newscreen={ROUTES.BAY_VIEW}
-            >
-              <Icons size={40} hidden type="bayView" />
-              {t('pageNames.bayView')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_ADAPTIVEFLOW && (
-            <Menu.Item
-              key={ROUTES.ADAPTIVE_FLOW_CONTROL}
-              style={{ display: 'flex' }}
-              newscreen={ROUTES.ADAPTIVE_FLOW_CONTROL}
-            >
-              <Icons size={40} hidden type="adaptiveFlowControl" />
-              {t('pageNames.adaptiveFlowControl')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_FSCSTATUS && (
-            <Menu.Item
-              key={ROUTES.FSC_STATUS}
-              style={{ display: 'flex', marginBottom: 10 }}
-              newscreen={ROUTES.FSC_STATUS}
-            >
-              <Icons size={40} hidden type="fscStatus" />
-              {t('pageNames.fscStatus')}
-            </Menu.Item>
-          )}
-
-          {modules?.M_TANKVIEW && (
-            <Menu.Item
-              key={ROUTES.TANK_VIEW}
-              style={{ display: 'flex', marginTop: 10 }}
-              newscreen={ROUTES.TANK_VIEW}
-            >
-              <Icons size={40} hidden type="tankView" />
-              {t('pageNames.tankView')}
-            </Menu.Item>
-          )}
-        </SubMenu>
-      </Menu>
+        items={getMenuItems()}
+      ></Menu>
     </MenuContainer>
   );
 };

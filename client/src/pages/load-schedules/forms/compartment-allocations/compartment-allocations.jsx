@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Form, Select, notification, Tag, Row, Col, Card, Descriptions, Table, Tabs } from 'antd';
 import { mutate } from 'swr';
 
-import moment from 'moment';
+import moment from 'dayjs';
 import _ from 'lodash';
 
 import api, { STAGING_BAY } from 'api';

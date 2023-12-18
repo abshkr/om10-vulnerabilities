@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { Form, DatePicker } from 'antd';
-import moment from 'moment';
+import moment from 'dayjs';
 
 import { SETTINGS } from '../../../../constants';
 import { getDateTimeFormat } from '../../../../utils';
 
-const VehicleArrvTime= ({ form, value, pageState }) => {
+const VehicleArrvTime = ({ form, value, pageState }) => {
   const { t } = useTranslation();
 
   const { setFieldsValue } = form;
@@ -20,7 +20,7 @@ const VehicleArrvTime= ({ form, value, pageState }) => {
         return Promise.reject(`${t('validate.select')} ─ ${t('fields.ddVehArrTime')}`);
       }
     }
-    
+
     return Promise.resolve();
   };
 
@@ -38,16 +38,16 @@ const VehicleArrvTime= ({ form, value, pageState }) => {
   }, [value, setFieldsValue]);
 
   return (
-    <Form.Item 
-      name="dd_veh_arr_time" 
+    <Form.Item
+      name="dd_veh_arr_time"
       label={t('fields.ddVehArrTime')}
       rules={[{ required: false, validator: validate }]}
     >
-      <DatePicker 
-        showTime 
-        format={FORMAT} 
-        style={{ width: '100%' }} 
-        disabled={(pageState==='create')? false : false}
+      <DatePicker
+        showTime
+        format={FORMAT}
+        style={{ width: '100%' }}
+        disabled={pageState === 'create' ? false : false}
       />
     </Form.Item>
   );

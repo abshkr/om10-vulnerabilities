@@ -10,7 +10,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Button, Form, Drawer, Modal, notification, Card } from 'antd';
 import useSWR, { mutate } from 'swr';
-import moment from 'moment';
+import moment from 'dayjs';
 import _ from 'lodash';
 
 import Schedules from './schedules';

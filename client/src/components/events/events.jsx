@@ -120,61 +120,71 @@ const Events = () => {
     return () => clearInterval(interval);
   }, [alarms, seen]);
 
-  const menu = (
-    <Menu style={{ minWidth: 200 }}>
-      <div style={{ paddingLeft: 5, paddingRight: 5, display: 'flex' }}>
-        <Button type="primary" block onClick={() => setMuted(!muted)} style={{ marginRight: 2.5 }}>
-          {muted ? 'Unmute' : 'Mute'}
-        </Button>
+  const menuItems = [
+    {
+      key: 'button_line',
+      label: (
+        <div style={{ paddingLeft: 5, paddingRight: 5, display: 'flex' }}>
+          <Button type="primary" block onClick={() => setMuted(!muted)} style={{ marginRight: 2.5 }}>
+            {muted ? 'Unmute' : 'Mute'}
+          </Button>
 
-        <Button
-          type="danger"
-          block
-          onClick={() => onClearAll()}
-          style={{ marginLeft: 2.5 }}
-          disabled={alarms.length === 0}
-        >
-          Clear All
-        </Button>
-      </div>
+          <Button
+            type="danger"
+            block
+            onClick={() => onClearAll()}
+            style={{ marginLeft: 2.5 }}
+            disabled={alarms.length === 0}
+          >
+            Clear All
+          </Button>
+        </div>
+      ),
+    },
+    {
+      key: 'list_line',
+      type: 'group',
+      label: (
+        <div>
+          <Scrollbars
+            style={{
+              height: 'calc(100vh - 235px)',
+              width: '25vw',
+              marginTop: 5,
+              padding: 5,
+            }}
+          >
+            <List
+              style={{ width: '100%' }}
+              itemLayout="horizontal"
+              dataSource={alarms}
+              size="small"
+              renderItem={(item) => (
+                <List.Item
+                  actions={[
+                    <Button
+                      type="danger"
+                      size="small"
+                      icon={<CloseOutlined />}
+                      onClick={() => onRemove(`${item?.gen_date}-${item?.message}`)}
+                      shape="circle"
+                    ></Button>,
+                  ]}
+                >
+                  <List.Item.Meta title={item.gen_date} description={item.message} />
+                </List.Item>
+              )}
+            />
+          </Scrollbars>
+        </div>
+      ),
+    },
+  ];
 
-      <div>
-        <Scrollbars
-          style={{
-            height: 'calc(100vh - 235px)',
-            width: '25vw',
-            marginTop: 5,
-            padding: 5,
-          }}
-        >
-          <List
-            style={{ width: '100%' }}
-            itemLayout="horizontal"
-            dataSource={alarms}
-            size="small"
-            renderItem={(item) => (
-              <List.Item
-                actions={[
-                  <Button
-                    type="danger"
-                    size="small"
-                    icon={<CloseOutlined />}
-                    onClick={() => onRemove(`${item?.gen_date}-${item?.message}`)}
-                    shape="circle"
-                  ></Button>,
-                ]}
-              >
-                <List.Item.Meta title={item.gen_date} description={item.message} />
-              </List.Item>
-            )}
-          />
-        </Scrollbars>
-      </div>
-    </Menu>
-  );
+  const menu = <Menu style={{ minWidth: 200 }} items={menuItems} />;
 
   return (
-    <Dropdown open={visible} menu={menu} onOpenChange={setVisible} trigger={['click']}>
+    <Dropdown open={visible} menu={{ items: menuItems }} onOpenChange={setVisible} trigger={['click']}>
       <Button type="primary" size="large" shape="circle" style={{ marginRight: 7 }}>
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <Badge count={alarms?.length} offset={[10, -5]}>

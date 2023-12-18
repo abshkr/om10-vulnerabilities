@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
 import useSWR from 'swr';
-import moment from 'moment';
+import moment from 'dayjs';
 
 import columns from './HostColumns';
 import { DataTable, Calendar, Download } from '../../../components';

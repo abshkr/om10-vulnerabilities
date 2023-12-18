@@ -4,7 +4,7 @@ import useSWR from 'swr';
 import { ReloadOutlined } from '@ant-design/icons';
 import { Button, Select, Radio, Form, InputNumber, notification, Row, Col, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
-import moment from 'moment';
+import moment from 'dayjs';
 import _ from 'lodash';
 
 import { useAuth } from '../../hooks';

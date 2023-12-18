@@ -71,65 +71,81 @@ const AdjustableColumns = ({ pageColumns, pageModule, columnAPI, columnLoader, s
     }
   }, [columnAPI]);
 
-  const menu = (
-    <Menu multiple={true} style={{ minWidth: 200 }}>
-      <div style={{ paddingLeft: 5, paddingRight: 5, display: 'flex' }}>
-        <Button
-          type="primary"
-          icon={<EditOutlined />}
-          onClick={() => onFinish()}
-          style={{ float: 'right', marginRight: 5, width: '100%' }}
-        >
-          {t('operations.saveColumns')}
-        </Button>
-      </div>
-      <div>
-        <Scrollbars
-          style={{
-            height: 'calc(100vh - 235px)',
-            width: '25vw',
-            marginTop: 5,
-            padding: 5,
-          }}
-        >
-          <List
-            style={{ height: 'calc(100vh - 300px)', overflowY: 'auto', minHeight: 500 }}
-            itemLayout="horizontal"
-            size="small"
-            dataSource={items?.filter((o) => {
-              return hideDisabled ? !isColumnDisabled(o?.colDef?.field) : true;
-            })}
-            renderItem={(item) => {
-              return (
-                <List.Item
-                  style={{ background: 'white', marginBottom: 10, marginRight: 10, borderRadius: 5 }}
-                >
-                  <List.Item.Meta
-                    style={{ justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}
-                    avatar={
-                      <Switch
-                        checked={!item?.colDef?.hide}
-                        // style={{ visibility: item.hide === false || item.hide === true ? 'visible' : 'hidden', }}
-                        checkedChildren={<span>{t('operations.switchShow')}</span>}
-                        unCheckedChildren={<span>{t('operations.switchHide')}</span>}
-                        onChange={(value) => onColumnChanged(item, value)}
-                        disabled={isColumnDisabled(item?.colDef?.field)}
-                      />
-                    }
-                    // eslint-disable-next-line
-                    title={item?.colDef?.headerName}
-                  />
-                </List.Item>
-              );
+  const menuItems = [
+    {
+      key: 'button_line',
+      label: (
+        <div style={{ paddingLeft: 5, paddingRight: 5, display: 'flex' }}>
+          <Button
+            type="primary"
+            icon={<EditOutlined />}
+            onClick={() => onFinish()}
+            style={{ float: 'right', marginRight: 5, width: '100%' }}
+          >
+            {t('operations.saveColumns')}
+          </Button>
+        </div>
+      ),
+    },
+    {
+      key: 'list_line',
+      type: 'group',
+      label: (
+        <div>
+          <Scrollbars
+            style={{
+              height: 'calc(100vh - 235px)',
+              width: '25vw',
+              marginTop: 5,
+              padding: 5,
             }}
-          />
-        </Scrollbars>
-      </div>
-    </Menu>
-  );
+          >
+            <List
+              style={{ height: 'calc(100vh - 300px)', overflowY: 'auto', minHeight: 500 }}
+              itemLayout="horizontal"
+              size="small"
+              dataSource={items?.filter((o) => {
+                return hideDisabled ? !isColumnDisabled(o?.colDef?.field) : true;
+              })}
+              renderItem={(item) => {
+                return (
+                  <List.Item
+                    style={{ background: 'white', marginBottom: 10, marginRight: 10, borderRadius: 5 }}
+                  >
+                    <List.Item.Meta
+                      style={{ justifyContent: 'center', alignContent: 'center', alignItems: 'center' }}
+                      avatar={
+                        <Switch
+                          checked={!item?.colDef?.hide}
+                          // style={{ visibility: item.hide === false || item.hide === true ? 'visible' : 'hidden', }}
+                          checkedChildren={<span>{t('operations.switchShow')}</span>}
+                          unCheckedChildren={<span>{t('operations.switchHide')}</span>}
+                          onChange={(value) => onColumnChanged(item, value)}
+                          disabled={isColumnDisabled(item?.colDef?.field)}
+                        />
+                      }
+                      // eslint-disable-next-line
+                      title={item?.colDef?.headerName}
+                    />
+                  </List.Item>
+                );
+              }}
+            />
+          </Scrollbars>
+        </div>
+      ),
+    },
+  ];
+
+  const menu = <Menu multiple={true} style={{ minWidth: 200 }} items={menuItems}></Menu>;
 
   return (
-    <Dropdown open={visible} menu={menu} onOpenChange={handleVisibleChange} trigger={['click']}>
+    <Dropdown
+      open={visible}
+      menu={{ items: menuItems, multiple: true }}
+      onOpenChange={handleVisibleChange}
+      trigger={['click']}
+    >
       <Tooltip placement="topLeft" title={t('descriptions.columnVisibility')}>
         <Button type="primary" icon={<EyeOutlined />} style={{ float: 'right', marginRight: 5 }}>
           {t('operations.updateColumnVisibility')}

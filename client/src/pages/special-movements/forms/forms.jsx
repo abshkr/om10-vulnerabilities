@@ -13,7 +13,7 @@ import {
 
 import { Form, Button, Tabs, notification, Modal, Divider, message, Drawer, Row, Col, Card } from 'antd';
 import { useTranslation } from 'react-i18next';
-import moment from 'moment';
+import moment from 'dayjs';
 import { mutate } from 'swr';
 import api from 'api';
 import _ from 'lodash';

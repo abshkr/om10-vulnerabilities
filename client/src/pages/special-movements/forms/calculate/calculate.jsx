@@ -4,7 +4,7 @@ import api from 'api';
 import { useTranslation } from 'react-i18next';
 import { Form, InputNumber, Select, Row, Col } from 'antd';
 import _ from 'lodash';
-import moment from 'moment';
+import moment from 'dayjs';
 
 import { SETTINGS } from '../../../../constants';
 

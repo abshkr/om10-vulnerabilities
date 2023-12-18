@@ -4,7 +4,7 @@ import useSWR from 'swr';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SyncOutlined } from '@ant-design/icons';
-import moment from 'moment';
+import moment from 'dayjs';
 
 import { Page, DataTable, Download, Calendar } from 'components';
 import * as SETTINGS from 'constants/settings';

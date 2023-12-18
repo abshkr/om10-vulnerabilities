@@ -147,23 +147,19 @@ const Favourites = () => {
     }
   }, [data]);
 
-  const menu = (
-    <Menu
-      onClick={onMenuEvent}
-      items={[
-        ...items,
-        { type: 'divider' },
-        {
-          key: '9999',
-          disabled: disabled,
-          label: exists ? t('operations.removeFromFavourites') : t('operations.addToFavourites'),
-        },
-      ]}
-    ></Menu>
-  );
+  const menuItems = [
+    ...items,
+    { type: 'divider' },
+    {
+      key: '9999',
+      disabled: disabled,
+      label: exists ? t('operations.removeFromFavourites') : t('operations.addToFavourites'),
+    },
+  ];
+  const menu = <Menu onClick={onMenuEvent} items={menuItems} />;
 
   return (
-    <Dropdown menu={menu} trigger={['click']}>
+    <Dropdown menu={{ items: menuItems, onClick: onMenuEvent }} trigger={['click']}>
       <Tooltip placement="topLeft" title={t('messages.favourites')}>
         <Button type="primary" size="large" shape="circle" style={{ marginRight: 7 }}>
           <div style={{ display: 'flex', justifyContent: 'center' }}>

@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { DatePicker, notification } from 'antd';
 import { useTranslation } from 'react-i18next';
-import moment from 'moment';
+import moment from 'dayjs';
 
 import ConfigStore from 'stores/config-store';
 import { DATE_TIME_FORMAT } from 'constants/settings';
@@ -59,6 +59,25 @@ const DateTimeRangePicker = ({
     [t('fields.today')]: [moment().startOf('day'), moment().endOf('day'), 'range'],
     [t('fields.thisWeek')]: [moment().startOf('week'), moment().endOf('week'), 'range'],
   };
+
+  const rangePresets = [
+    {
+      label: t('fields.today'),
+      value: [moment().startOf('day'), moment().endOf('day'), 'range'],
+    },
+    {
+      label: t('fields.thisWeek'),
+      value: [moment().startOf('week'), moment().endOf('week'), 'range'],
+    },
+    {
+      label: t('fields.thisMonth'),
+      value: [moment().startOf('month'), moment().endOf('month'), 'range'],
+    },
+    {
+      label: t('fields.thisYear'),
+      value: [moment().startOf('year'), moment().endOf('year'), 'range'],
+    },
+  ];
 
   const getRangeValue = (dt) => {
     // console.log('..........getRangeValue', dt);
@@ -201,7 +220,8 @@ const DateTimeRangePicker = ({
       value={[getRangeValue(start), getRangeValue(end)]}
       onOk={(dates) => onChange(dates)}
       onChange={(dates) => onRangeSelect(dates)}
-      ranges={ranges}
+      // ranges={ranges}
+      presets={rangePresets}
       style={{ width: '360px' }}
       locale={locale}
     />

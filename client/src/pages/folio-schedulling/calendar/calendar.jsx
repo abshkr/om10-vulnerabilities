@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import useSWR, { mutate } from 'swr';
 import './calendar.css';
-import moment from 'moment';
+import moment from 'dayjs';
 
 import _ from 'lodash';
 
@@ -183,8 +183,8 @@ const FolioCalendar = ({ access, value }) => {
 
   const dateCellRender = (v) => {
     let isPast = v.diff(moment()) < 0;
-    if (v.format("YYYY-MM-DD") === moment().format("YYYY-MM-DD")) {
-      isPast = v.format("HH:mm:ss") > closeoutTime;
+    if (v.format('YYYY-MM-DD') === moment().format('YYYY-MM-DD')) {
+      isPast = v.format('HH:mm:ss') > closeoutTime;
     }
     const checkDateRet = checkDate(v);
     return (
@@ -220,13 +220,11 @@ const FolioCalendar = ({ access, value }) => {
       const records = payload?.records;
       const nextTime = _.find(records, (record) => {
         return record.param_key === 'NEXT_REPORT_TIME';
-      })
-      
-      const nextCloseoutTime = moment(
-        nextTime.param_value, 'YYYY-MM-DD HH:mm:ss'
-      );
+      });
 
-      setCloseoutTime(nextCloseoutTime.format("HH:mm:ss"))
+      const nextCloseoutTime = moment(nextTime.param_value, 'YYYY-MM-DD HH:mm:ss');
+
+      setCloseoutTime(nextCloseoutTime.format('HH:mm:ss'));
     }
   }, [payload]);
 

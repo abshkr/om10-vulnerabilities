@@ -138,6 +138,15 @@ class Utilities
 
     public static function http_get_cgi($cgi)
     {
+        $location = realpath($cgi);
+        if ($location !== false) {
+            write_log(sprintf("%s::%s(), location:%s", __CLASS__, __FUNCTION__, $location),
+                __FILE__, __LINE__, LogLevel::ERROR);
+            if (!str_starts_with($location, 'cgi-bin')) {
+                return "invalid cgi";
+            }
+        }
+
         $host = $_SERVER['SERVER_ADDR'];
         if (getenv('USE_SERVER_NAME_IN_CGI') == 'Y') {
             $host = $_SERVER['SERVER_NAME'];
@@ -174,6 +183,15 @@ class Utilities
 
     public static function http_cgi_invoke($cgi, $query_string = null)
     {
+        $location = realpath($cgi);
+        if ($location !== false) {
+            write_log(sprintf("%s::%s(), location:%s", __CLASS__, __FUNCTION__, $location),
+                __FILE__, __LINE__, LogLevel::ERROR);
+            if (!str_starts_with($location, 'cgi-bin')) {
+                return "invalid cgi";
+            }
+        }
+
         $host = $_SERVER['SERVER_ADDR'];
         if (getenv('USE_SERVER_NAME_IN_CGI') == 'Y') {
             $host = $_SERVER['SERVER_NAME'];

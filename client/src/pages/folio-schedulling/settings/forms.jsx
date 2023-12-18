@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next';
 import useSWR from 'swr';
 
 import _ from 'lodash';
-import moment from 'moment';
+import moment from 'dayjs';
 import { useConfig } from '../../../hooks';
 
 import api, { FOLIO_SCHEDULING } from '../../../api';

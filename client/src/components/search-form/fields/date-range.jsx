@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { useTranslation } from 'react-i18next';
 import { Form, DatePicker, Checkbox, Input, Select } from 'antd';
-import moment from 'moment';
+import moment from 'dayjs';
 import { SETTINGS } from '../../../constants';
 
 import 'moment/locale/en-gb';
