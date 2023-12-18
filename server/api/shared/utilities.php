@@ -158,7 +158,7 @@ class Utilities
 		if (str_contains($key, '..')) {
                    return "Invalid key";
 		}
-            $url .= $key . "=". rawurlencode(strip_tags($value)) . "&";
+            $url .= basename($key) . "=". rawurlencode(strip_tags($value)) . "&";
         }
         //$url = substr($url, 0, -1);
         if (!JWT_AUTH)
