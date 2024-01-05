@@ -9,7 +9,7 @@
     "ag-grid-react": "^30.2.1",
     "antd": "^5.11.2",
     "apexcharts": "^3.44.0",
-    "axios": "^1.6.2",
+    "axios": "^1.6.4",
     "chart.js": "^4.4.0",
     "egoroof-blowfish": "^4.0.1",
     "html-react-parser": "^5.0.6",
